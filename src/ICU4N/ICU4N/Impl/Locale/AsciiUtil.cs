@@ -1,0 +1,230 @@
+﻿using ICU4N.Support.Text;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ICU4N.Impl.Locale
+{
+    public sealed class AsciiUtil
+    {
+        public static bool CaseIgnoreMatch(string s1, string s2)
+        {
+            if (Utility.SameObjects(s1, s2))
+            {
+                return true;
+            }
+            int len = s1.Length;
+            if (len != s2.Length)
+            {
+                return false;
+            }
+            int i = 0;
+            while (i < len)
+            {
+                char c1 = s1[i];
+                char c2 = s2[i];
+                if (c1 != c2 && ToLower(c1) != ToLower(c2))
+                {
+                    break;
+                }
+                i++;
+            }
+            return (i == len);
+        }
+
+        public static int CaseIgnoreCompare(string s1, string s2)
+        {
+            if (Utility.SameObjects(s1, s2))
+            {
+                return 0;
+            }
+            return AsciiUtil.ToLowerString(s1).CompareToOrdinal(AsciiUtil.ToLowerString(s2));
+        }
+
+
+        public static char ToUpper(char c)
+        {
+            if (c >= 'a' && c <= 'z')
+            {
+                c -= (char)0x20;
+            }
+            return c;
+        }
+
+        public static char ToLower(char c)
+        {
+            if (c >= 'A' && c <= 'Z')
+            {
+                c += (char)0x20;
+            }
+            return c;
+        }
+
+        public static string ToLowerString(string s)
+        {
+            int idx = 0;
+            for (; idx < s.Length; idx++)
+            {
+                char c = s[idx];
+                if (c >= 'A' && c <= 'Z')
+                {
+                    break;
+                }
+            }
+            if (idx == s.Length)
+            {
+                return s;
+            }
+            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0));
+            for (; idx < s.Length; idx++)
+            {
+                buf.Append(ToLower(s[idx]));
+            }
+            return buf.ToString();
+        }
+
+        public static string ToUpperString(string s)
+        {
+            int idx = 0;
+            for (; idx < s.Length; idx++)
+            {
+                char c = s[idx];
+                if (c >= 'a' && c <= 'z')
+                {
+                    break;
+                }
+            }
+            if (idx == s.Length)
+            {
+                return s;
+            }
+            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0));
+            for (; idx < s.Length; idx++)
+            {
+                buf.Append(ToUpper(s[idx]));
+            }
+            return buf.ToString();
+        }
+
+        public static string ToTitleString(string s)
+        {
+            if (s.Length == 0)
+            {
+                return s;
+            }
+            int idx = 0;
+            char c = s[idx];
+            if (!(c >= 'a' && c <= 'z'))
+            {
+                for (idx = 1; idx < s.Length; idx++)
+                {
+                    if (c >= 'A' && c <= 'Z')
+                    {
+                        break;
+                    }
+                }
+            }
+            if (idx == s.Length)
+            {
+                return s;
+            }
+            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0));
+            if (idx == 0)
+            {
+                buf.Append(ToUpper(s[idx]));
+                idx++;
+            }
+            for (; idx < s.Length; idx++)
+            {
+                buf.Append(ToLower(s[idx]));
+            }
+            return buf.ToString();
+        }
+
+        public static bool IsAlpha(char c)
+        {
+            return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+        }
+
+        public static bool IsAlphaString(String s)
+        {
+            bool b = true;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (!IsAlpha(s[i]))
+                {
+                    b = false;
+                    break;
+                }
+            }
+            return b;
+        }
+
+        public static bool IsNumeric(char c)
+        {
+            return (c >= '0' && c <= '9');
+        }
+
+        public static bool IsNumericString(string s)
+        {
+            bool b = true;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (!IsNumeric(s[i]))
+                {
+                    b = false;
+                    break;
+                }
+            }
+            return b;
+        }
+
+        public static bool IsAlphaNumeric(char c)
+        {
+            return IsAlpha(c) || IsNumeric(c);
+        }
+
+        public static bool IsAlphaNumericString(string s)
+        {
+            bool b = true;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (!IsAlphaNumeric(s[i]))
+                {
+                    b = false;
+                    break;
+                }
+            }
+            return b;
+        }
+
+        public class CaseInsensitiveKey
+        {
+            private string _key;
+            private int _hash;
+
+            public CaseInsensitiveKey(string key)
+            {
+                _key = key;
+                _hash = AsciiUtil.ToLowerString(key).GetHashCode();
+            }
+
+            public override bool Equals(Object o)
+            {
+                if (this == o)
+                {
+                    return true;
+                }
+                if (o is CaseInsensitiveKey) {
+                    return AsciiUtil.CaseIgnoreMatch(_key, ((CaseInsensitiveKey)o)._key);
+                }
+                return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return _hash;
+            }
+        }
+    }
+}
