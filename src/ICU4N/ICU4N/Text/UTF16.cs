@@ -12,7 +12,7 @@ namespace ICU4N.Text
         // public variables ---------------------------------------------------
 
         /**
-         * Value returned in {@link #bounds(String, int) bounds()}.
+         * Value returned in {@link #bounds(string, int) bounds()}.
          * These values are chosen specifically so that it actually represents the position of the
          * character [offset16 - (value &gt;&gt; 2), offset16 + (value &amp; 3)]
          *
@@ -694,7 +694,7 @@ namespace ICU4N.Text
          * two char string containing the UTF-32 value in UTF16 format. If offset16 indexes a surrogate
          * character, the whole supplementary codepoint will be returned. If a validity check is
          * required, use {@link com.ibm.icu.lang.UCharacter#isLegal(int)} on the
-         * codepoint at offset16 before calling. The result returned will be a newly created String
+         * codepoint at offset16 before calling. The result returned will be a newly created string
          * obtained by calling source.substring(..) with the appropriate indexes.
          *
          * @param source The input string.
@@ -720,7 +720,7 @@ namespace ICU4N.Text
          * one or two char string containing the UTF-32 value in UTF16 format. If offset16 indexes a
          * surrogate character, the whole supplementary codepoint will be returned. If a validity check
          * is required, use {@link com.ibm.icu.lang.UCharacter#isLegal(int)} on
-         * the codepoint at offset16 before calling. The result returned will be a newly created String
+         * the codepoint at offset16 before calling. The result returned will be a newly created string
          * obtained by calling source.substring(..) with the appropriate indexes.
          *
          * @param source The input string buffer.
@@ -748,7 +748,7 @@ namespace ICU4N.Text
          * specified subarray. In the latter case, only the surrogate character within bounds will be
          * returned. If a validity check is required, use
          * {@link com.ibm.icu.lang.UCharacter#isLegal(int)} on the codepoint at
-         * offset16 before calling. The result returned will be a newly created String containing the
+         * offset16 before calling. The result returned will be a newly created string containing the
          * relevant characters.
          *
          * @param source The input char array.
@@ -1143,7 +1143,7 @@ namespace ICU4N.Text
         }
 
         /**
-         * Number of codepoints in a UTF16 String
+         * Number of codepoints in a UTF16 string
          *
          * @param source UTF16 string
          * @return number of codepoint in string
@@ -1159,7 +1159,7 @@ namespace ICU4N.Text
         }
 
         /**
-         * Number of codepoints in a UTF16 String buffer
+         * Number of codepoints in a UTF16 string buffer
          *
          * @param source UTF16 string buffer
          * @return number of codepoint in string
@@ -1382,7 +1382,7 @@ namespace ICU4N.Text
         /**
          * Shifts offset16 by the argument number of codepoints
          *
-         * @param source String buffer
+         * @param source string buffer
          * @param offset16 UTF16 position to shift
          * @param shift32 Number of codepoints to shift
          * @return new shifted offset16
@@ -1677,7 +1677,7 @@ namespace ICU4N.Text
          *         -1 if the codepoint does not occur.
          * @stable ICU 2.6
          */
-        public static int IndexOf(String source, int char32)
+        public static int IndexOf(string source, int char32)
         {
             if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
             {
@@ -2131,7 +2131,7 @@ namespace ICU4N.Text
         /**
          * Returns a new UTF16 format Unicode string resulting from replacing all occurrences of
          * oldChar32 in source with newChar32. If the character oldChar32 does not occur in the UTF16
-         * format Unicode string source, then source will be returned. Otherwise, a new String object is
+         * format Unicode string source, then source will be returned. Otherwise, a new string object is
          * created that represents a codepoint sequence identical to the codepoint sequence represented
          * by source, except that every occurrence of oldChar32 is replaced by an occurrence of
          * newChar32.
@@ -2152,7 +2152,7 @@ namespace ICU4N.Text
          * @param source UTF16 format Unicode string which the codepoint replacements will be based on.
          * @param oldChar32 Non-zero old codepoint to be replaced.
          * @param newChar32 The new codepoint to replace oldChar32
-         * @return new String derived from source by replacing every occurrence of oldChar32 with
+         * @return new string derived from source by replacing every occurrence of oldChar32 with
          *         newChar32, unless when no oldChar32 is found in source then source will be returned.
          * @stable ICU 2.6
          */
@@ -2197,7 +2197,7 @@ namespace ICU4N.Text
         /**
          * Returns a new UTF16 format Unicode string resulting from replacing all occurrences of oldStr
          * in source with newStr. If the string oldStr does not occur in the UTF16 format Unicode string
-         * source, then source will be returned. Otherwise, a new String object is created that
+         * source, then source will be returned. Otherwise, a new string object is created that
          * represents a codepoint sequence identical to the codepoint sequence represented by source,
          * except that every occurrence of oldStr is replaced by an occurrence of newStr.
          * <p>
@@ -2219,7 +2219,7 @@ namespace ICU4N.Text
          * @param source UTF16 format Unicode string which the replacements will be based on.
          * @param oldStr Non-zero-length string to be replaced.
          * @param newStr The new string to replace oldStr
-         * @return new String derived from source by replacing every occurrence of oldStr with newStr.
+         * @return new string derived from source by replacing every occurrence of oldStr with newStr.
          *         When no oldStr is found in source, then source will be returned.
          * @stable ICU 2.6
          */
@@ -2504,12 +2504,12 @@ namespace ICU4N.Text
         }
 
         /**
-         * Cover JDK 1.5 API. Create a String from an array of codePoints.
+         * Cover JDK 1.5 API. Create a string from an array of codePoints.
          *
          * @param codePoints The code array
          * @param offset The start of the text in the code point array
          * @param count The number of code points
-         * @return a String representing the code points between offset and count
+         * @return a string representing the code points between offset and count
          * @throws IllegalArgumentException If an invalid code point is encountered
          * @throws IndexOutOfBoundsException If the offset or count are out of bounds.
          * @stable ICU 3.0
@@ -2736,7 +2736,7 @@ namespace ICU4N.Text
              * @param b second source string.
              * @return 0 returned if a == b. If a &lt; b, a negative value is returned. Otherwise if a &gt; b,
              *         a positive value is returned.
-             * @exception InvalidCastException thrown when either a or b is not a String object
+             * @exception InvalidCastException thrown when either a or b is not a string object
              * @stable ICU 4.4
              */
             public int Compare(string a, string b)
@@ -3075,7 +3075,7 @@ namespace ICU4N.Text
 
         /**
          * <p>
-         * Converts argument code point and returns a String object representing the code point's value
+         * Converts argument code point and returns a string object representing the code point's value
          * in UTF16 format.
          * </p>
          * <p>

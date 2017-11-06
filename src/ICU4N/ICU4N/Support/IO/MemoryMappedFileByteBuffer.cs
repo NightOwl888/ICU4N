@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;
-using System.Text;
 
 namespace ICU4N.Support.IO
 {
@@ -58,7 +56,7 @@ namespace ICU4N.Support.IO
             return accessor.ReadByte(Ix(CheckIndex(index)));
         }
 
-#if !NETSTANDARD1_6
+#if !NETSTANDARD1_3
         // Implementation provided by Vincent Van Den Berghe: http://git.net/ml/general/2017-02/msg31639.html
         public override ByteBuffer Get(byte[] dst, int offset, int length)
         {
@@ -317,6 +315,14 @@ namespace ICU4N.Support.IO
         /// NOTE: This was asCharBuffer() in the JDK
         /// </summary>
         internal override CharBuffer AsCharBuffer()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// NOTE: This was asIntBuffer() in the JDK
+        /// </summary>
+        public override Int32Buffer AsInt32Buffer()
         {
             throw new NotSupportedException();
         }

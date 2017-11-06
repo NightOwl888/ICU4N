@@ -235,7 +235,7 @@ namespace ICU4N.Text
             {
                 return src;
             }
-            StringBuilder sb = new StringBuilder(src.Length).Append(src, 0, spanLength);
+            StringBuilder sb = new StringBuilder(src.Length).Append(src, 0, spanLength - 0); // ICU4N: Checked 3rd parameter math
             return NormalizeSecondAndAppend(sb, src.Substring(spanLength, src.Length - spanLength)).ToString();
         }
 
@@ -268,7 +268,7 @@ namespace ICU4N.Text
         {
             if (src is StringCharSequence)
             {
-                // Fastpath: Do not construct a new String if the src is a String
+                // Fastpath: Do not construct a new string if the src is a string
                 // and is already normalized.
                 return Normalize(((StringCharSequence)src).String);
             }
@@ -475,7 +475,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Tests if the string is normalized.
-        /// Internally, in cases where the <see cref="QuickCheck(String)"/> method would return "maybe"
+        /// Internally, in cases where the <see cref="QuickCheck(string)"/> method would return "maybe"
         /// (which is only possible for the two COMPOSE modes) this method
         /// resolves to "yes" or "no" to provide a definitive result,
         /// at the cost of doing more work in those cases.
@@ -521,8 +521,8 @@ namespace ICU4N.Text
         /// Tests if the string is normalized.
         /// For the two COMPOSE modes, the result could be "maybe" in cases that
         /// would take a little more work to resolve definitively.
-        /// Use <see cref="SpanQuickCheckYes(String)"/> and
-        /// <see cref="NormalizeSecondAndAppend(StringBuilder, String)"/> for a faster
+        /// Use <see cref="SpanQuickCheckYes(string)"/> and
+        /// <see cref="NormalizeSecondAndAppend(StringBuilder, string)"/> for a faster
         /// combination of quick check + normalization, to avoid
         /// re-checking the "yes" prefix.
         /// </summary>

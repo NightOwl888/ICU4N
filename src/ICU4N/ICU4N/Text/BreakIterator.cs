@@ -304,10 +304,10 @@ namespace ICU4N.Text
 
         /**
          * Sets the iterator to analyze a new piece of text.  The new
-         * piece of text is passed in as a String, and the current
+         * piece of text is passed in as a string, and the current
          * iteration position is reset to the beginning of the string.
          * (The old text is dropped.)
-         * @param newText A String containing the text to analyze with
+         * @param newText A string containing the text to analyze with
          * this BreakIterator.
          * @stable ICU 2.0
          */

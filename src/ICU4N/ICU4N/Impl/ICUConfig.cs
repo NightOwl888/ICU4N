@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ICU4N.Support;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Resources;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -10,30 +12,30 @@ namespace ICU4N.Impl
     /// </summary>
     public class ICUConfig
     {
-        public static readonly string CONFIG_PROPS_FILE = "/com/ibm/icu/ICUConfig.properties";
-        private static readonly IDictionary<string, string> CONFIG_PROPS;
+        //public static readonly string CONFIG_PROPS_FILE = "/com/ibm/icu/ICUConfig.properties";
+        //private static readonly IDictionary<string, string> CONFIG_PROPS;
 
-        static ICUConfig()
-        {
-            CONFIG_PROPS = new Dictionary<string, string>();
-            try
-            {
-                using (Stream input = ICUData.GetStream(CONFIG_PROPS_FILE))
-                {
-                    if (input != null)
-                    {
-                        // ICU4N TODO: Go with some other type of "properties" in .NET?
-                        //CONFIG_PROPS.Load(input);
-                    }
-                }
-                //} catch (MissingResourceException mre) {
-                // If it does not exist, ignore.
-            }
-            catch (IOException ioe)
-            {
-                // Any IO errors, ignore
-            }
-        }
+        //static ICUConfig()
+        //{
+        //    CONFIG_PROPS = new Dictionary<string, string>();
+        //    try
+        //    {
+        //        using (Stream input = ICUData.GetStream(CONFIG_PROPS_FILE))
+        //        {
+        //            if (input != null)
+        //            {
+        //                // ICU4N TODO: Go with some other type of "properties" in .NET?
+        //                //CONFIG_PROPS.Load(input);
+        //            }
+        //        }
+        //        //} catch (MissingResourceException mre) {
+        //        // If it does not exist, ignore.
+        //    }
+        //    catch (IOException ioe)
+        //    {
+        //        // Any IO errors, ignore
+        //    }
+        //}
 
         /**
          * Get ICU configuration property value for the given name.
@@ -54,34 +56,22 @@ namespace ICU4N.Impl
          */
         public static string Get(string name, string def)
         {
-            throw new NotImplementedException();
-            // ICU4N TODO: finish
-            //            string val = null;
-            //    string fname = name;
-            //    if (System.getSecurityManager() != null)
-            //    {
-            //        try
-            //        {
-            //            val = AccessController.doPrivileged(new PrivilegedAction<string>() {
-            //                    @Override
-            //                    public string run()
-            //            {
-            //                return System.getProperty(fname);
-            //            }
-            //        });
-            //    } catch (AccessControlException e)
-            //    {
-            //        // ignore
-            //        // TODO log this message
-            //    }
-            //} else {
-            //            val = System.getProperty(name);
-            //        }
+            if (string.IsNullOrEmpty(name))
+                return def;
 
-            //        if (val == null) {
-            //            val = CONFIG_PROPS.getProperty(name, def);
-            //        }
-            //        return val;
+            // Try to get an environment variable first
+            var value = SystemProperties.GetProperty(name, null);
+            if (value != null)
+                return value;
+
+            try
+            {
+                return global::ICU4N.ICUConfig.ResourceManager.GetString(name.Replace(".", "_"));
+            }
+            catch (MissingManifestResourceException)
+            {
+                return def;
+            }
         }
     }
 }

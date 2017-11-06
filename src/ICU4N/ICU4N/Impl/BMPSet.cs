@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Text;
+﻿using ICU4N.Support;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System.Diagnostics;
@@ -712,7 +713,7 @@ namespace ICU4N.Impl
             // invariant: c < list[hi]
             for (; ; )
             {
-                int i = (int)((uint)(lo + hi) >> 1);
+                int i = (lo + hi).TripleShift(1);
                 if (i == lo)
                 {
                     break; // Found!

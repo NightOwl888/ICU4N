@@ -480,12 +480,12 @@ namespace ICU4N.Impl
                 if (ei.HasChange)
                 {
                     int i = ei.ReplacementIndex;
-                    result.Append(replacementChars.ToString(), i, i + ei.NewLength);
+                    result.Append(replacementChars.ToString(), i, ei.NewLength); // ICU4N: (i + ei.NewLength) - i == ei.NewLength
                 }
                 else
                 {
                     int i = ei.SourceIndex;
-                    result.Append(src, i, i + ei.OldLength);
+                    result.Append(src, i, i + ei.OldLength); // ICU4N: Extension method takes care of end to length conversion
                 }
             }
             return result.ToString();

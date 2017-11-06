@@ -148,7 +148,7 @@ namespace ICU4N.Impl
                 int limit = count;
                 while (start < limit)
                 {
-                    int mid = (int)((uint)(start + limit) >> 1);
+                    int mid = (start + limit).TripleShift(1);
                     int nameOffset = GetNameOffset(bytes, mid);
                     // Skip "icudt54b/".
                     nameOffset += ICUData.PACKAGE_NAME.Length + 1;
@@ -336,8 +336,9 @@ namespace ICU4N.Impl
 
         static ICUBinary()
         {
+            // ICU4N TODO: Fix path
             // Normally com.ibm.icu.impl.ICUBinary.dataPath.
-            string dataPath = ICUConfig.Get(typeof(ICUBinary).GetTypeInfo().Name + ".dataPath");
+            string dataPath = ICUConfig.Get(typeof(ICUBinary).GetTypeInfo().Name + "_DataPath");
             if (dataPath != null)
             {
                 AddDataFilesFromPath(dataPath, icuDataFiles);
@@ -347,7 +348,7 @@ namespace ICU4N.Impl
         private static void AddDataFilesFromPath(string dataPath, IList<DataFile> files)
         {
             // Split the path and find files in each location.
-            // This splitting code avoids the regex pattern compilation in String.split()
+            // This splitting code avoids the regex pattern compilation in string.split()
             // and its array allocation.
             // (There is no simple by-character split()
             // and the StringTokenizer "is discouraged in new code".)
@@ -507,8 +508,6 @@ namespace ICU4N.Impl
             return GetData(null, null, itemPath, false);
         }
 
-
-        // ICU4N TODO: Work out how to do this without ClassLoader
         /**
          * Loads an ICU binary data file and returns it as a ByteBuffer.
          * The buffer contents is normally read-only, but its position etc. can be modified.
@@ -519,7 +518,7 @@ namespace ICU4N.Impl
          * @return The data as a read-only ByteBuffer,
          *         or null if the resource could not be found.
          */
-        public static ByteBuffer GetData(/*ClassLoader*/ object loader, string resourceName, string itemPath)
+        public static ByteBuffer GetData(Assembly loader, string resourceName, string itemPath)
         {
             return GetData(loader, resourceName, itemPath, false);
         }
@@ -547,12 +546,11 @@ namespace ICU4N.Impl
          * @return The data as a read-only ByteBuffer.
          * @throws MissingResourceException if required==true and the resource could not be found
          */
-        //    public static ByteBuffer getRequiredData(ClassLoader loader, String resourceName,
-        //            String itemPath) {
-        //        return getData(loader, resourceName, itemPath, true);
-        //    }
-
-        // ICU4N TODO: Finish implementation
+        public static ByteBuffer GetRequiredData(Assembly loader, string resourceName,
+                string itemPath)
+        {
+            return GetData(loader, resourceName, itemPath, true);
+        }
 
         /**
          * Loads an ICU binary data file and returns it as a ByteBuffer.
@@ -567,37 +565,41 @@ namespace ICU4N.Impl
          *         or null if required==false and the resource could not be found.
          * @throws MissingResourceException if required==true and the resource could not be found
          */
-        private static ByteBuffer GetData(/*ClassLoader*/ object loader, string resourceName,
+        private static ByteBuffer GetData(Assembly loader, string resourceName,
                 string itemPath, bool required)
         {
-            throw new NotImplementedException();
-            //    ByteBuffer bytes = GetDataFromFile(itemPath);
-            //    if (bytes != null)
-            //    {
-            //        return bytes;
-            //    }
-            //    if (loader == null)
-            //    {
-            //        loader = ClassLoaderUtil.getClassLoader(ICUData.class);
-            //        }
-            //        if (resourceName == null) {
-            //            resourceName = ICUData.ICU_BASE_NAME + '/' + itemPath;
-            //        }
-            //        ByteBuffer buffer = null;
-            //        try {
-            //            @SuppressWarnings("resource")  // Closed by getByteBufferFromInputStreamAndCloseStream().
-            //            Stream @is = ICUData.GetStream(loader, resourceName, required);
-            //            if (is == null) {
-            //                return null;
-            //            }
-            //            buffer = GetByteBufferFromInputStreamAndCloseStream(@is);
-            //        } catch (IOException e) {
-            //            throw new ICUUncheckedIOException(e);
-            //        }
-            //        return buffer;
+            ByteBuffer bytes = GetDataFromFile(itemPath);
+            if (bytes != null)
+            {
+                return bytes;
+            }
+            if (loader == null)
+            {
+                loader = typeof(ICUData).GetTypeInfo().Assembly;
+            }
+            if (resourceName == null)
+            {
+                resourceName = ICUData.ICU_BASE_NAME + '.' + itemPath;
+            }
+            ByteBuffer buffer = null;
+            try
+            {
+                // Closed by getByteBufferFromInputStreamAndCloseStream().
+                Stream @is = ICUData.GetStream(loader, resourceName, required);
+                if (@is == null)
+                {
+                    return null;
+                }
+                buffer = GetByteBufferFromInputStreamAndCloseStream(@is);
+            }
+            catch (IOException e)
+            {
+                throw new ICUUncheckedIOException(e);
+            }
+            return buffer;
         }
 
-    private static ByteBuffer GetDataFromFile(string itemPath)
+        private static ByteBuffer GetDataFromFile(string itemPath)
         {
             foreach (DataFile dataFile in icuDataFiles)
             {
@@ -775,7 +777,7 @@ namespace ICU4N.Impl
         public static string GetString(ByteBuffer bytes, int length, int additionalSkipLength)
         {
             ICharSequence cs = bytes.AsCharBuffer();
-            String s = cs.SubSequence(0, length).ToString();
+            string s = cs.SubSequence(0, length).ToString();
             SkipBytes(bytes, length * 2 + additionalSkipLength);
             return s;
         }
@@ -800,11 +802,10 @@ namespace ICU4N.Impl
 
         public static int[] GetInts(ByteBuffer bytes, int length, int additionalSkipLength)
         {
-            throw new NotImplementedException();
-            //int[] dest = new int[length];
-            //bytes.AsInt32Buffer().Get(dest);
-            //SkipBytes(bytes, length * 4 + additionalSkipLength);
-            //return dest;
+            int[] dest = new int[length];
+            bytes.AsInt32Buffer().Get(dest);
+            SkipBytes(bytes, length * 4 + additionalSkipLength);
+            return dest;
         }
 
         public static long[] GetLongs(ByteBuffer bytes, int length, int additionalSkipLength)
@@ -854,7 +855,7 @@ namespace ICU4N.Impl
                     if (length < bytes.Length)
                     {
                         int numRead = input.Read(bytes, length, bytes.Length - length);
-                        if (numRead < 0)
+                        if (numRead <= 0) // ICU4N specific - In .NET, 0 rather than -1 is returned when complete
                         {
                             break;  // end of stream
                         }
@@ -898,7 +899,7 @@ namespace ICU4N.Impl
         public static VersionInfo GetVersionInfoFromCompactInt(int version)
         {
             return VersionInfo.GetInstance(
-                    (int)((uint)version >> 24), (version >> 16) & 0xff, (version >> 8) & 0xff, version & 0xff);
+                    (version.TripleShift(24)), (version >> 16) & 0xff, (version >> 8) & 0xff, version & 0xff);
         }
 
         /**

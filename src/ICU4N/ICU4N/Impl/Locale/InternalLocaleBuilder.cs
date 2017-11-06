@@ -454,7 +454,7 @@ namespace ICU4N.Impl.Locale
                     variant = "";
                 }
                 // Exception 3 - no_NO_NY
-                else if (language.Equals("no") && region.Equals("NO") && variant.Equals("NY"))
+                else if (language.Equals("no") && region.Equals("NO") && variant.Equals("NY")) // ICU4N TODO: Fix this handling for .NET (no-NO is not reliable across platforms)
                 {
                     // no_NO_NY is a valid locale and used by Java 6 or older versions.
                     // The build ignores the variant "NY" and change the language to "nn".

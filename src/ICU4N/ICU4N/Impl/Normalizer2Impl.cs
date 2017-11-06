@@ -1438,7 +1438,7 @@ namespace ICU4N.Impl
             // c decomposes, get everything from the variable-length extra data
             int mapping = norm16 >> OFFSET_SHIFT;
             int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
-            return extraData.Substring(mapping, length); // mapping + length - mapping
+            return extraData.Substring(mapping, length); // mapping + length - mapping == length
         }
 
         /**
@@ -1477,20 +1477,20 @@ namespace ICU4N.Impl
                 char rm0 = extraData[rawMapping];
                 if (rm0 <= MAPPING_LENGTH_MASK)
                 {
-                    return extraData.Substring(rawMapping - rm0, rm0); // rawMapping - rm0 - rawMapping = rm0
+                    return extraData.Substring(rawMapping - rm0, rm0); // rawMapping - rm0 - rawMapping == rm0
                 }
                 else
                 {
                     // Copy the normal mapping and replace its first two code units with rm0.
                     StringBuilder buffer = new StringBuilder(mLength - 1).Append(rm0);
                     mapping += 1 + 2;  // skip over the firstUnit and the first two mapping code units
-                    return buffer.Append(extraData, mapping, mapping + mLength - 2).ToString();
+                    return buffer.Append(extraData, mapping, mLength - 2).ToString(); // (mapping + mLength - 2) - mapping == mLength - 2
                 }
             }
             else
             {
                 mapping += 1;  // skip over the firstUnit
-                return extraData.Substring(mapping, mLength); // mapping + mLength - mapping = mLength
+                return extraData.Substring(mapping, mLength); // mapping + mLength - mapping == mLength
             }
         }
 
@@ -1914,301 +1914,301 @@ namespace ICU4N.Impl
             int prevBoundary = src;
             int minNoMaybeCP = minCompNoMaybeCP;
 
-            for (; ; )
-            {
-                // Fast path: Scan over a sequence of characters below the minimum "no or maybe" code point,
-                // or with (compYes && ccc==0) properties.
-                int prevSrc;
-                int c = 0;
-                int norm16 = 0;
                 for (; ; )
                 {
-                    if (src == limit)
+                    // Fast path: Scan over a sequence of characters below the minimum "no or maybe" code point,
+                    // or with (compYes && ccc==0) properties.
+                    int prevSrc;
+                    int c = 0;
+                    int norm16 = 0;
+                    for (; ; )
                     {
-                        if (prevBoundary != limit && doCompose)
+                        if (src == limit)
                         {
-                            buffer.Append(s, prevBoundary, limit);
+                            if (prevBoundary != limit && doCompose)
+                            {
+                                buffer.Append(s, prevBoundary, limit);
+                            }
+                            return true;
                         }
-                        return true;
-                    }
-                    if ((c = s[src]) < minNoMaybeCP ||
-                        IsCompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
-                    )
-                    {
-                        ++src;
-                    }
-                    else
-                    {
-                        prevSrc = src++;
-                        if (!UTF16.IsSurrogate((char)c))
+                        if ((c = s[src]) < minNoMaybeCP ||
+                            IsCompYesAndZeroCC(norm16 = normTrie.GetFromU16SingleLead((char)c))
+                        )
                         {
-                            break;
+                            ++src;
                         }
                         else
                         {
-                            char c2;
-                            if (UTF16Plus.IsSurrogateLead(c))
-                            {
-                                if (src != limit && char.IsLowSurrogate(c2 = s[src]))
-                                {
-                                    ++src;
-                                    c = Character.ToCodePoint((char)c, c2);
-                                }
-                            }
-                            else /* trail surrogate */
-                            {
-                                if (prevBoundary < prevSrc && char.IsHighSurrogate(c2 = s[prevSrc - 1]))
-                                {
-                                    --prevSrc;
-                                    c = Character.ToCodePoint(c2, (char)c);
-                                }
-                            }
-                            if (!IsCompYesAndZeroCC(norm16 = GetNorm16(c)))
+                            prevSrc = src++;
+                            if (!UTF16.IsSurrogate((char)c))
                             {
                                 break;
                             }
-                        }
-                    }
-                }
-                // isCompYesAndZeroCC(norm16) is false, that is, norm16>=minNoNo.
-                // The current character is either a "noNo" (has a mapping)
-                // or a "maybeYes" (combines backward)
-                // or a "yesYes" with ccc!=0.
-                // It is not a Hangul syllable or Jamo L because those have "yes" properties.
-
-                // Medium-fast path: Handle cases that do not require full decomposition and recomposition.
-                if (!IsMaybeOrNonZeroCC(norm16))
-                {  // minNoNo <= norm16 < minMaybeYes
-                    if (!doCompose)
-                    {
-                        return false;
-                    }
-                    // Fast path for mapping a character that is immediately surrounded by boundaries.
-                    // In this case, we need not decompose around the current character.
-                    if (IsDecompNoAlgorithmic(norm16))
-                    {
-                        // Maps to a single isCompYesAndZeroCC character
-                        // which also implies hasCompBoundaryBefore.
-                        if (Norm16HasCompBoundaryAfter(norm16, onlyContiguous) ||
-                                HasCompBoundaryBefore(s, src, limit))
-                        {
-                            if (prevBoundary != prevSrc)
-                            {
-                                buffer.Append(s, prevBoundary, prevSrc);
-                            }
-                            buffer.Append(MapAlgorithmic(c, norm16), 0);
-                            prevBoundary = src;
-                            continue;
-                        }
-                    }
-                    else if (norm16 < minNoNoCompBoundaryBefore)
-                    {
-                        // The mapping is comp-normalized which also implies hasCompBoundaryBefore.
-                        if (Norm16HasCompBoundaryAfter(norm16, onlyContiguous) ||
-                                HasCompBoundaryBefore(s, src, limit))
-                        {
-                            if (prevBoundary != prevSrc)
-                            {
-                                buffer.Append(s, prevBoundary, prevSrc);
-                            }
-                            int mapping = norm16 >> OFFSET_SHIFT;
-                            int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
-                            buffer.Append(extraData, mapping, mapping + length);
-                            prevBoundary = src;
-                            continue;
-                        }
-                    }
-                    else if (norm16 >= minNoNoEmpty)
-                    {
-                        // The current character maps to nothing.
-                        // Simply omit it from the output if there is a boundary before _or_ after it.
-                        // The character itself implies no boundaries.
-                        if (HasCompBoundaryBefore(s, src, limit) ||
-                                HasCompBoundaryAfter(s, prevBoundary, prevSrc, onlyContiguous))
-                        {
-                            if (prevBoundary != prevSrc)
-                            {
-                                buffer.Append(s, prevBoundary, prevSrc);
-                            }
-                            prevBoundary = src;
-                            continue;
-                        }
-                    }
-                    // Other "noNo" type, or need to examine more text around this character:
-                    // Fall through to the slow path.
-                }
-                else if (IsJamoVT(norm16) && prevBoundary != prevSrc)
-                {
-                    char prev = s[prevSrc - 1];
-                    if (c < Hangul.JAMO_T_BASE)
-                    {
-                        // The current character is a Jamo Vowel,
-                        // compose with previous Jamo L and following Jamo T.
-                        char l = (char)(prev - Hangul.JAMO_L_BASE);
-                        if (l < Hangul.JAMO_L_COUNT)
-                        {
-                            if (!doCompose)
-                            {
-                                return false;
-                            }
-                            int t;
-                            if (src != limit &&
-                                    0 < (t = (s[src] - Hangul.JAMO_T_BASE)) &&
-                                    t < Hangul.JAMO_T_COUNT)
-                            {
-                                // The next character is a Jamo T.
-                                ++src;
-                            }
-                            else if (HasCompBoundaryBefore(s, src, limit))
-                            {
-                                // No Jamo T follows, not even via decomposition.
-                                t = 0;
-                            }
                             else
                             {
-                                t = -1;
+                                char c2;
+                                if (UTF16Plus.IsSurrogateLead(c))
+                                {
+                                    if (src != limit && char.IsLowSurrogate(c2 = s[src]))
+                                    {
+                                        ++src;
+                                        c = Character.ToCodePoint((char)c, c2);
+                                    }
+                                }
+                                else /* trail surrogate */
+                                {
+                                    if (prevBoundary < prevSrc && char.IsHighSurrogate(c2 = s[prevSrc - 1]))
+                                    {
+                                        --prevSrc;
+                                        c = Character.ToCodePoint(c2, (char)c);
+                                    }
+                                }
+                                if (!IsCompYesAndZeroCC(norm16 = GetNorm16(c)))
+                                {
+                                    break;
+                                }
                             }
-                            if (t >= 0)
+                        }
+                    }
+                    // isCompYesAndZeroCC(norm16) is false, that is, norm16>=minNoNo.
+                    // The current character is either a "noNo" (has a mapping)
+                    // or a "maybeYes" (combines backward)
+                    // or a "yesYes" with ccc!=0.
+                    // It is not a Hangul syllable or Jamo L because those have "yes" properties.
+
+                    // Medium-fast path: Handle cases that do not require full decomposition and recomposition.
+                    if (!IsMaybeOrNonZeroCC(norm16))
+                    {  // minNoNo <= norm16 < minMaybeYes
+                        if (!doCompose)
+                        {
+                            return false;
+                        }
+                        // Fast path for mapping a character that is immediately surrounded by boundaries.
+                        // In this case, we need not decompose around the current character.
+                        if (IsDecompNoAlgorithmic(norm16))
+                        {
+                            // Maps to a single isCompYesAndZeroCC character
+                            // which also implies hasCompBoundaryBefore.
+                            if (Norm16HasCompBoundaryAfter(norm16, onlyContiguous) ||
+                                    HasCompBoundaryBefore(s, src, limit))
                             {
-                                int syllable = Hangul.HANGUL_BASE +
-                                    (l * Hangul.JAMO_V_COUNT + (c - Hangul.JAMO_V_BASE)) *
-                                    Hangul.JAMO_T_COUNT + t;
-                                --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
                                     buffer.Append(s, prevBoundary, prevSrc);
                                 }
-                                buffer.Append((char)syllable);
+                                buffer.Append(MapAlgorithmic(c, norm16), 0);
                                 prevBoundary = src;
                                 continue;
                             }
-                            // If we see L+V+x where x!=T then we drop to the slow path,
-                            // decompose and recompose.
-                            // This is to deal with NFKC finding normal L and V but a
-                            // compatibility variant of a T.
-                            // We need to either fully compose that combination here
-                            // (which would complicate the code and may not work with strange custom data)
-                            // or use the slow path.
                         }
-                    }
-                    else if (Hangul.IsHangulLV(prev))
-                    {
-                        // The current character is a Jamo Trailing consonant,
-                        // compose with previous Hangul LV that does not contain a Jamo T.
-                        if (!doCompose)
+                        else if (norm16 < minNoNoCompBoundaryBefore)
                         {
-                            return false;
-                        }
-                        int syllable = prev + c - Hangul.JAMO_T_BASE;
-                        --prevSrc;  // Replace the Hangul LV as well.
-                        if (prevBoundary != prevSrc)
-                        {
-                            buffer.Append(s, prevBoundary, prevSrc);
-                        }
-                        buffer.Append((char)syllable);
-                        prevBoundary = src;
-                        continue;
-                    }
-                    // No matching context, or may need to decompose surrounding text first:
-                    // Fall through to the slow path.
-                }
-                else if (norm16 > JAMO_VT)
-                {  // norm16 >= MIN_YES_YES_WITH_CC
-                   // One or more combining marks that do not combine-back:
-                   // Check for canonical order, copy unchanged if ok and
-                   // if followed by a character with a boundary-before.
-                    int cc = GetCCFromNormalYesOrMaybe(norm16);  // cc!=0
-                    if (onlyContiguous /* FCC */ && GetPreviousTrailCC(s, prevBoundary, prevSrc) > cc)
-                    {
-                        // Fails FCD test, need to decompose and contiguously recompose.
-                        if (!doCompose)
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        // If !onlyContiguous (not FCC), then we ignore the tccc of
-                        // the previous character which passed the quick check "yes && ccc==0" test.
-                        int n16;
-                        for (; ; )
-                        {
-                            if (src == limit)
+                            // The mapping is comp-normalized which also implies hasCompBoundaryBefore.
+                            if (Norm16HasCompBoundaryAfter(norm16, onlyContiguous) ||
+                                    HasCompBoundaryBefore(s, src, limit))
                             {
-                                if (doCompose)
+                                if (prevBoundary != prevSrc)
                                 {
-                                    buffer.Append(s, prevBoundary, limit);
+                                    buffer.Append(s, prevBoundary, prevSrc);
                                 }
-                                return true;
+                                int mapping = norm16 >> OFFSET_SHIFT;
+                                int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
+                                buffer.Append(extraData, mapping, mapping + length);
+                                prevBoundary = src;
+                                continue;
                             }
-                            int prevCC = cc;
-                            c = Character.CodePointAt(s, src);
-                            n16 = normTrie.Get(c);
-                            if (n16 >= MIN_YES_YES_WITH_CC)
+                        }
+                        else if (norm16 >= minNoNoEmpty)
+                        {
+                            // The current character maps to nothing.
+                            // Simply omit it from the output if there is a boundary before _or_ after it.
+                            // The character itself implies no boundaries.
+                            if (HasCompBoundaryBefore(s, src, limit) ||
+                                    HasCompBoundaryAfter(s, prevBoundary, prevSrc, onlyContiguous))
                             {
-                                cc = GetCCFromNormalYesOrMaybe(n16);
-                                if (prevCC > cc)
+                                if (prevBoundary != prevSrc)
                                 {
-                                    if (!doCompose)
+                                    buffer.Append(s, prevBoundary, prevSrc);
+                                }
+                                prevBoundary = src;
+                                continue;
+                            }
+                        }
+                        // Other "noNo" type, or need to examine more text around this character:
+                        // Fall through to the slow path.
+                    }
+                    else if (IsJamoVT(norm16) && prevBoundary != prevSrc)
+                    {
+                        char prev = s[prevSrc - 1];
+                        if (c < Hangul.JAMO_T_BASE)
+                        {
+                            // The current character is a Jamo Vowel,
+                            // compose with previous Jamo L and following Jamo T.
+                            char l = (char)(prev - Hangul.JAMO_L_BASE);
+                            if (l < Hangul.JAMO_L_COUNT)
+                            {
+                                if (!doCompose)
+                                {
+                                    return false;
+                                }
+                                int t;
+                                if (src != limit &&
+                                        0 < (t = (s[src] - Hangul.JAMO_T_BASE)) &&
+                                        t < Hangul.JAMO_T_COUNT)
+                                {
+                                    // The next character is a Jamo T.
+                                    ++src;
+                                }
+                                else if (HasCompBoundaryBefore(s, src, limit))
+                                {
+                                    // No Jamo T follows, not even via decomposition.
+                                    t = 0;
+                                }
+                                else
+                                {
+                                    t = -1;
+                                }
+                                if (t >= 0)
+                                {
+                                    int syllable = Hangul.HANGUL_BASE +
+                                        (l * Hangul.JAMO_V_COUNT + (c - Hangul.JAMO_V_BASE)) *
+                                        Hangul.JAMO_T_COUNT + t;
+                                    --prevSrc;  // Replace the Jamo L as well.
+                                    if (prevBoundary != prevSrc)
                                     {
-                                        return false;
+                                        buffer.Append(s, prevBoundary, prevSrc);
                                     }
-                                    break;
+                                    buffer.Append((char)syllable);
+                                    prevBoundary = src;
+                                    continue;
                                 }
+                                // If we see L+V+x where x!=T then we drop to the slow path,
+                                // decompose and recompose.
+                                // This is to deal with NFKC finding normal L and V but a
+                                // compatibility variant of a T.
+                                // We need to either fully compose that combination here
+                                // (which would complicate the code and may not work with strange custom data)
+                                // or use the slow path.
                             }
-                            else
-                            {
-                                break;
-                            }
-                            src += Character.CharCount(c);
                         }
-                        // p is after the last in-order combining mark.
-                        // If there is a boundary here, then we continue with no change.
-                        if (Norm16HasCompBoundaryBefore(n16))
+                        else if (Hangul.IsHangulLV(prev))
                         {
-                            if (IsCompYesAndZeroCC(n16))
+                            // The current character is a Jamo Trailing consonant,
+                            // compose with previous Hangul LV that does not contain a Jamo T.
+                            if (!doCompose)
                             {
-                                src += Character.CharCount(c);
+                                return false;
                             }
+                            int syllable = prev + c - Hangul.JAMO_T_BASE;
+                            --prevSrc;  // Replace the Hangul LV as well.
+                            if (prevBoundary != prevSrc)
+                            {
+                                buffer.Append(s, prevBoundary, prevSrc);
+                            }
+                            buffer.Append((char)syllable);
+                            prevBoundary = src;
                             continue;
                         }
-                        // Use the slow path. There is no boundary in [prevSrc, src[.
+                        // No matching context, or may need to decompose surrounding text first:
+                        // Fall through to the slow path.
                     }
-                }
+                    else if (norm16 > JAMO_VT)
+                    {  // norm16 >= MIN_YES_YES_WITH_CC
+                       // One or more combining marks that do not combine-back:
+                       // Check for canonical order, copy unchanged if ok and
+                       // if followed by a character with a boundary-before.
+                        int cc = GetCCFromNormalYesOrMaybe(norm16);  // cc!=0
+                        if (onlyContiguous /* FCC */ && GetPreviousTrailCC(s, prevBoundary, prevSrc) > cc)
+                        {
+                            // Fails FCD test, need to decompose and contiguously recompose.
+                            if (!doCompose)
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            // If !onlyContiguous (not FCC), then we ignore the tccc of
+                            // the previous character which passed the quick check "yes && ccc==0" test.
+                            int n16;
+                            for (; ; )
+                            {
+                                if (src == limit)
+                                {
+                                    if (doCompose)
+                                    {
+                                        buffer.Append(s, prevBoundary, limit);
+                                    }
+                                    return true;
+                                }
+                                int prevCC = cc;
+                                c = Character.CodePointAt(s, src);
+                                n16 = normTrie.Get(c);
+                                if (n16 >= MIN_YES_YES_WITH_CC)
+                                {
+                                    cc = GetCCFromNormalYesOrMaybe(n16);
+                                    if (prevCC > cc)
+                                    {
+                                        if (!doCompose)
+                                        {
+                                            return false;
+                                        }
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    break;
+                                }
+                                src += Character.CharCount(c);
+                            }
+                            // p is after the last in-order combining mark.
+                            // If there is a boundary here, then we continue with no change.
+                            if (Norm16HasCompBoundaryBefore(n16))
+                            {
+                                if (IsCompYesAndZeroCC(n16))
+                                {
+                                    src += Character.CharCount(c);
+                                }
+                                continue;
+                            }
+                            // Use the slow path. There is no boundary in [prevSrc, src[.
+                        }
+                    }
 
-                // Slow path: Find the nearest boundaries around the current character,
-                // decompose and recompose.
-                if (prevBoundary != prevSrc && !Norm16HasCompBoundaryBefore(norm16))
-                {
-                    c = Character.CodePointBefore(s, prevSrc);
-                    norm16 = normTrie.Get(c);
-                    if (!Norm16HasCompBoundaryAfter(norm16, onlyContiguous))
+                    // Slow path: Find the nearest boundaries around the current character,
+                    // decompose and recompose.
+                    if (prevBoundary != prevSrc && !Norm16HasCompBoundaryBefore(norm16))
                     {
-                        prevSrc -= Character.CharCount(c);
+                        c = Character.CodePointBefore(s, prevSrc);
+                        norm16 = normTrie.Get(c);
+                        if (!Norm16HasCompBoundaryAfter(norm16, onlyContiguous))
+                        {
+                            prevSrc -= Character.CharCount(c);
+                        }
                     }
-                }
-                if (doCompose && prevBoundary != prevSrc)
-                {
-                    buffer.Append(s, prevBoundary, prevSrc);
-                }
-                int recomposeStartIndex = buffer.Length;
-                // We know there is not a boundary here.
-                DecomposeShort(s, prevSrc, src, false /* !stopAtCompBoundary */, onlyContiguous,
-                               buffer);
-                // Decompose until the next boundary.
-                src = DecomposeShort(s, src, limit, true /* stopAtCompBoundary */, onlyContiguous,
-                                     buffer);
-                Recompose(buffer, recomposeStartIndex, onlyContiguous);
-                if (!doCompose)
-                {
-                    if (!buffer.Equals(s, prevSrc, src))
+                    if (doCompose && prevBoundary != prevSrc)
                     {
-                        return false;
+                        buffer.Append(s, prevBoundary, prevSrc);
                     }
-                    buffer.Remove();
+                    int recomposeStartIndex = buffer.Length;
+                    // We know there is not a boundary here.
+                    DecomposeShort(s, prevSrc, src, false /* !stopAtCompBoundary */, onlyContiguous,
+                                   buffer);
+                    // Decompose until the next boundary.
+                    src = DecomposeShort(s, src, limit, true /* stopAtCompBoundary */, onlyContiguous,
+                                         buffer);
+                    Recompose(buffer, recomposeStartIndex, onlyContiguous);
+                    if (!doCompose)
+                    {
+                        if (!buffer.Equals(s, prevSrc, src))
+                        {
+                            return false;
+                        }
+                        buffer.Remove();
+                    }
+                    prevBoundary = src;
                 }
-                prevBoundary = src;
-            }
         }
 
         /// <summary>
@@ -2440,31 +2440,31 @@ namespace ICU4N.Impl
                                  bool onlyContiguous,
                                  ReorderingBuffer buffer)
         {
-            int src = 0, limit = s.Length;
-            if (!buffer.IsEmpty)
-            {
-                int firstStarterInSrc = FindNextCompBoundary(s, 0, limit, onlyContiguous);
-                if (0 != firstStarterInSrc)
+                int src = 0, limit = s.Length;
+                if (!buffer.IsEmpty)
                 {
-                    int lastStarterInDest = FindPreviousCompBoundary(buffer.StringBuilder.ToCharSequence(),
-                                                                   buffer.Length, onlyContiguous);
-                    StringBuilder middle = new StringBuilder((buffer.Length - lastStarterInDest) +
-                                                           firstStarterInSrc + 16);
-                    middle.Append(buffer.StringBuilder.ToString(), lastStarterInDest, buffer.Length);
-                    buffer.RemoveSuffix(buffer.Length - lastStarterInDest);
-                    middle.Append(s, 0, firstStarterInSrc);
-                    Compose(middle, 0, middle.Length, onlyContiguous, true, buffer);
-                    src = firstStarterInSrc;
+                    int firstStarterInSrc = FindNextCompBoundary(s, 0, limit, onlyContiguous);
+                    if (0 != firstStarterInSrc)
+                    {
+                        int lastStarterInDest = FindPreviousCompBoundary(buffer.StringBuilder.ToCharSequence(),
+                                                                       buffer.Length, onlyContiguous);
+                        StringBuilder middle = new StringBuilder((buffer.Length - lastStarterInDest) +
+                                                               firstStarterInSrc + 16);
+                        middle.Append(buffer.StringBuilder.ToString(), lastStarterInDest, buffer.Length - lastStarterInDest); // ICU4N : Fixed 2nd parameter
+                        buffer.RemoveSuffix(buffer.Length - lastStarterInDest);
+                        middle.Append(s, 0, firstStarterInSrc - 0);
+                        Compose(middle, 0, middle.Length, onlyContiguous, true, buffer);
+                        src = firstStarterInSrc;
+                    }
                 }
-            }
-            if (doCompose)
-            {
-                Compose(s, src, limit, onlyContiguous, true, buffer);
-            }
-            else
-            {
-                buffer.Append(s, src, limit);
-            }
+                if (doCompose)
+                {
+                    Compose(s, src, limit, onlyContiguous, true, buffer);
+                }
+                else
+                {
+                    buffer.Append(s, src, limit);
+                }
         }
 
         // Dual functionality:
@@ -2693,9 +2693,9 @@ namespace ICU4N.Impl
                                                                    buffer.Length);
                     StringBuilder middle = new StringBuilder((buffer.Length - lastBoundaryInDest) +
                                                            firstBoundaryInSrc + 16);
-                    middle.Append(buffer.StringBuilder.ToString(), lastBoundaryInDest, buffer.Length);
+                    middle.Append(buffer.StringBuilder.ToString(), lastBoundaryInDest, buffer.Length - lastBoundaryInDest); // ICU4N : Fixed 2nd parameter
                     buffer.RemoveSuffix(buffer.Length - lastBoundaryInDest);
-                    middle.Append(s, 0, firstBoundaryInSrc);
+                    middle.Append(s, 0, firstBoundaryInSrc - 0);
                     MakeFCD(middle, 0, middle.Length, buffer);
                     src = firstBoundaryInSrc;
                 }

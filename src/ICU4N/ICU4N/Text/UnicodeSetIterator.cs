@@ -196,10 +196,13 @@ namespace ICU4N.Text
             if (set.Strings != null)
             {
                 stringIterator = set.Strings.GetEnumerator();
-                if (!stringIterator.MoveNext())
-                {
-                    stringIterator = null;
-                }
+                // ICU4N: We can't peek whether there is another element
+                // so we can safely skip that step. It is repeated anyway
+                // in Next() and NextRange().
+                //if (!stringIterator.MoveNext())
+                //{
+                //    stringIterator = null;
+                //}
             }
         }
 
@@ -207,7 +210,7 @@ namespace ICU4N.Text
          * Gets the current string from the iterator. Only use after calling next(), not nextRange().
          * @stable ICU 4.0
          */
-        public string GetString()
+        public string GetString() // ICU4N TODO: String vs GetString() - confusing
         {
             if (Codepoint != IS_STRING)
             {
@@ -226,8 +229,8 @@ namespace ICU4N.Text
          * @internal
          * @deprecated This API is ICU internal only.
          */
-        //@Deprecated
-        internal UnicodeSet Set // ICU4N specific - made internal because of comment
+        [Obsolete("This API is ICU internal only.")]
+        public UnicodeSet Set
         {
             get { return set; }
         }

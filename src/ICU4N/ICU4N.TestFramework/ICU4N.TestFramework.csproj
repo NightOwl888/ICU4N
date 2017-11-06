@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <!--<TargetFramework>net45</TargetFramework>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Dev\Data\IDNATestInput.txt" />
+    <None Remove="Dev\Data\numberformattestspecification.txt" />
+    <None Remove="Dev\Data\Unicode\BidiCharacterTest.txt" />
+    <None Remove="Dev\Data\Unicode\BidiTest.txt" />
+    <None Remove="Dev\Data\Unicode\CompositionExclusions.txt" />
+    <None Remove="Dev\Data\Unicode\confusables.txt" />
+    <None Remove="Dev\Data\Unicode\confusablesWholeScript.txt" />
+    <None Remove="Dev\Data\Unicode\IdnaTest.txt" />
+    <None Remove="Dev\Data\Unicode\NormalizationCorrections.txt" />
+    <None Remove="Dev\Data\Unicode\NormalizationTest-3.2.0.txt" />
+    <None Remove="Dev\Data\Unicode\NormalizationTest.txt" />
+    <None Remove="Dev\Data\Unicode\SpecialCasing.txt" />
+    <None Remove="Dev\Data\Unicode\UnicodeData.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Dev\Data\IDNATestInput.txt" />
+    <EmbeddedResource Include="Dev\Data\numberformattestspecification.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\BidiCharacterTest.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\BidiTest.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\CompositionExclusions.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\confusables.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\confusablesWholeScript.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\IdnaTest.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\NormalizationCorrections.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\NormalizationTest-3.2.0.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\NormalizationTest.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\SpecialCasing.txt" />
+    <EmbeddedResource Include="Dev\Data\Unicode\UnicodeData.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.8.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DefineConstants>$(DefineConstants);FEATURE_STACKTRACE</DefineConstants>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
+  </ItemGroup>
+
+</Project>

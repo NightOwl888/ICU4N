@@ -32,21 +32,21 @@ namespace ICU4N.Text
 
         private static XSymbolTable XSYMBOL_TABLE = null; // for overriding the the function processing
 
-        private static readonly int LOW = 0x000000; // LOW <= all valid values. ZERO for codepoints
-        private static readonly int HIGH = 0x110000; // HIGH > all valid values. 10000 for code units.
-                                                     // 110000 for codepoints
+        private const int LOW = 0x000000; // LOW <= all valid values. ZERO for codepoints
+        private const int HIGH = 0x110000; // HIGH > all valid values. 10000 for code units.
+                                           // 110000 for codepoints
 
         /**
          * Minimum value that can be stored in a UnicodeSet.
          * @stable ICU 2.0
          */
-        public static readonly int MIN_VALUE = LOW;
+        public const int MIN_VALUE = LOW;
 
         /**
          * Maximum value that can be stored in a UnicodeSet.
          * @stable ICU 2.0
          */
-        public static readonly int MAX_VALUE = HIGH - 1;
+        public const int MAX_VALUE = HIGH - 1;
 
         private int len;      // length used; list may be longer to minimize reallocs
         private int[] list;   // MUST be terminated with HIGH
@@ -68,13 +68,13 @@ namespace ICU4N.Text
          */
         private string pat = null;
 
-        private static readonly int START_EXTRA = 16;         // initial storage. Must be >= 0
-        private static readonly int GROW_EXTRA = START_EXTRA; // extra amount for growth. Must be >= 0
+        private const int START_EXTRA = 16;         // initial storage. Must be >= 0
+        private const int GROW_EXTRA = START_EXTRA; // extra amount for growth. Must be >= 0
 
         // Special property set IDs
-        private static readonly String ANY_ID = "ANY";   // [\u0000-\U0010FFFF]
-        private static readonly String ASCII_ID = "ASCII"; // [\u0000-\u007F]
-        private static readonly String ASSIGNED = "Assigned"; // [:^Cn:]
+        private const string ANY_ID = "ANY";   // [\u0000-\U0010FFFF]
+        private const string ASCII_ID = "ASCII"; // [\u0000-\u007F]
+        private const string ASSIGNED = "Assigned"; // [:^Cn:]
 
         /**
          * A set of all characters _except_ the second through last characters of
@@ -664,7 +664,7 @@ namespace ICU4N.Text
          * @return <tt>true</tt> if this set contains no elements.
          * @stable ICU 2.0
          */
-        public bool IsEmpty()
+        public bool IsEmpty() // ICU4N TODO: API - this is weird in .NET, but Count alone or LINQ Any() doesn't cut it.
         {
             return len == 1 && strings.Count == 0;
         }
@@ -1014,35 +1014,62 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the character at the given index within this set, where
-         * the set is ordered by ascending code point.  If the index is
-         * out of range, return -1.  The inverse of this method is
-         * <code>indexOf()</code>.
-         * @param index an index from 0..size()-1
-         * @return the character at the given index, or -1.
-         * @stable ICU 2.0
-         */
-        public int CharAt(int index)
+        // ICU4N specific - replaced int CharAt(index) with int this[int index]
+
+        ///**
+        // * Returns the character at the given index within this set, where
+        // * the set is ordered by ascending code point.  If the index is
+        // * out of range, return -1.  The inverse of this method is
+        // * <code>indexOf()</code>.
+        // * @param index an index from 0..size()-1
+        // * @return the character at the given index, or -1.
+        // * @stable ICU 2.0
+        // */
+        //private int CharAt(int index)
+        //{
+        //    if (index >= 0)
+        //    {
+        //        // len2 is the largest even integer <= len, that is, it is len
+        //        // for even values and len-1 for odd values.  With odd values
+        //        // the last entry is UNICODESET_HIGH.
+        //        int len2 = len & ~1;
+        //        for (int i = 0; i < len2;)
+        //        {
+        //            int start = list[i++];
+        //            int count = list[i++] - start;
+        //            if (index < count)
+        //            {
+        //                return start + index;
+        //            }
+        //            index -= count;
+        //        }
+        //    }
+        //    return -1;
+        //}
+
+        public int this[int index]
         {
-            if (index >= 0)
+            get
             {
-                // len2 is the largest even integer <= len, that is, it is len
-                // for even values and len-1 for odd values.  With odd values
-                // the last entry is UNICODESET_HIGH.
-                int len2 = len & ~1;
-                for (int i = 0; i < len2;)
+                if (index >= 0)
                 {
-                    int start = list[i++];
-                    int count = list[i++] - start;
-                    if (index < count)
+                    // len2 is the largest even integer <= len, that is, it is len
+                    // for even values and len-1 for odd values.  With odd values
+                    // the last entry is UNICODESET_HIGH.
+                    int len2 = len & ~1;
+                    for (int i = 0; i < len2;)
                     {
-                        return start + index;
+                        int start = list[i++];
+                        int count = list[i++] - start;
+                        if (index < count)
+                        {
+                            return start + index;
+                        }
+                        index -= count;
                     }
-                    index -= count;
                 }
+                return -1;
             }
-            return -1;
         }
 
         /**
@@ -2071,7 +2098,7 @@ namespace ICU4N.Text
             // invariant: c < list[hi]
             for (; ; )
             {
-                int i = (int)((uint)(lo + hi) >> 1);
+                int i = (lo + hi).TripleShift(1);
                 if (i == lo) return hi;
                 if (c < list[i])
                 {
@@ -2861,7 +2888,10 @@ namespace ICU4N.Text
                 {
                     if (list[i] != that.list[i]) return false;
                 }
-                if (!strings.Equals(that.strings)) return false;
+
+                // ICU4N: In .NET, the Equals method of collections do not compare contents,
+                // so we must do a manual check here.
+                if (!strings.SequenceEqual(that.strings)) return false; // ICU4N TODO: This could be optimized so it doesn't create an enumerator by implementing a custom collection
             }
             catch (Exception e)
             {
@@ -3475,21 +3505,21 @@ namespace ICU4N.Text
          * @param target collection to add into
          * @stable ICU 4.4
          */
-        public ICollection<string> AddAllTo(ICollection<string> target)
+        public T AddAllTo<T>(T target) where T : ICollection<string>
         {
             return AddAllTo(this, target);
         }
 
-
-        /**
-         * Add the contents of the UnicodeSet (as strings) into a collection.
-         * @param target collection to add into
-         * @stable ICU 4.4
-         */
-        public string[] AddAllTo(string[] target)
-        {
-            return AddAllTo(this, target);
-        }
+        // ICU4N NOTE: This overload is redundant since in .NET array implements ICollection<T>
+        ///**
+        // * Add the contents of the UnicodeSet (as strings) into a collection.
+        // * @param target collection to add into
+        // * @stable ICU 4.4
+        // */
+        //public string[] AddAllTo(string[] target)
+        //{
+        //    return AddAllTo(this, target);
+        //}
 
         /**
          * Add the contents of the UnicodeSet (as strings) into an array.
@@ -3510,6 +3540,44 @@ namespace ICU4N.Text
         public UnicodeSet Add<T>(IEnumerable<T> source)
         {
             return AddAll(source);
+        }
+
+        /**
+         * Add a collection (as strings) into this UnicodeSet.
+         * Uses standard naming convention.
+         * @param source collection to add into
+         * @return a reference to this object
+         * @stable ICU 4.4
+         */
+        public UnicodeSet AddAll(IEnumerable<string> source)
+        {
+            CheckFrozen();
+            foreach (var o in source)
+            {
+                Add(o);
+            }
+            return this;
+        }
+
+        // ICU4N NOTE: No point in having a StringBuilder overload because
+        // we would need to call ToString() on it anyway, so the generic
+        // one will suffice.
+
+        /**
+         * Add a collection (as strings) into this UnicodeSet.
+         * Uses standard naming convention.
+         * @param source collection to add into
+         * @return a reference to this object
+         * @stable ICU 4.4
+         */
+        public UnicodeSet AddAll(IEnumerable<char[]> source)
+        {
+            CheckFrozen();
+            foreach (var o in source)
+            {
+                Add(o);
+            }
+            return this;
         }
 
         /**
@@ -3903,7 +3971,7 @@ namespace ICU4N.Text
             }
             public bool Contains(int ch)
             {
-                return UCharacter.GetIntPropertyValue(ch, (UnicodeProperty)Prop) == Value;
+                return UCharacter.GetIntPropertyValue(ch, (UProperty)Prop) == Value;
             }
         }
 
@@ -4103,14 +4171,14 @@ namespace ICU4N.Text
          *
          * @stable ICU 2.4
          */
-        public UnicodeSet ApplyIntPropertyValue(int prop, int value)
+        public UnicodeSet ApplyIntPropertyValue(int prop, int value) // ICU4N TODO: API Rename ApplyInt32PropertyValue
         {
             CheckFrozen();
-            if (prop == (int)UnicodeProperty.GENERAL_CATEGORY_MASK)
+            if (prop == (int)UProperty.GENERAL_CATEGORY_MASK)
             {
                 ApplyFilter(new GeneralCategoryMaskFilter(value), UCharacterProperty.SRC_CHAR);
             }
-            else if (prop == (int)UnicodeProperty.SCRIPT_EXTENSIONS)
+            else if (prop == (int)UProperty.SCRIPT_EXTENSIONS)
             {
                 ApplyFilter(new ScriptExtensionsFilter(value), UCharacterProperty.SRC_PROPSVEC);
             }
@@ -4170,8 +4238,8 @@ namespace ICU4N.Text
                 string valueAlias, ISymbolTable symbols)
         {
             CheckFrozen();
-            UnicodeProperty p;
-            UnicodeProperty v;
+            UProperty p;
+            UProperty v;
             bool invert = false;
 
             if (symbols != null
@@ -4191,35 +4259,46 @@ namespace ICU4N.Text
 
             if (valueAlias.Length > 0)
             {
-                p = (UnicodeProperty)UCharacter.GetPropertyEnum(propertyAlias);
+                p = (UProperty)UCharacter.GetPropertyEnum(propertyAlias);
 
                 // Treat gc as gcm
-                if (p == UnicodeProperty.GENERAL_CATEGORY)
+                if (p == UProperty.GENERAL_CATEGORY)
                 {
-                    p = UnicodeProperty.GENERAL_CATEGORY_MASK;
+                    p = UProperty.GENERAL_CATEGORY_MASK;
                 }
 
 #pragma warning disable 612, 618
-                if ((p >= UnicodeProperty.BINARY_START && p < UnicodeProperty.BINARY_LIMIT) ||
-                        (p >= UnicodeProperty.INT_START && p < UnicodeProperty.INT_LIMIT) ||
-                        (p >= UnicodeProperty.MASK_START && p < UnicodeProperty.MASK_LIMIT))
+                if ((p >= UProperty.BINARY_START && p < UProperty.BINARY_LIMIT) ||
+                        (p >= UProperty.INT_START && p < UProperty.INT_LIMIT) ||
+                        (p >= UProperty.MASK_START && p < UProperty.MASK_LIMIT))
 #pragma warning restore 612, 618
                 {
                     try
                     {
-                        v = (UnicodeProperty)UCharacter.GetPropertyValueEnum(p, valueAlias);
+                        v = (UProperty)UCharacter.GetPropertyValueEnum(p, valueAlias);
                     }
-                    catch (ArgumentException e)
+                    catch (ArgumentException e) // ICU4N TODO: Optimize this so it doesn't throw exceptions if not expected in the output
                     {
                         // Handle numeric CCC
-                        if (p == UnicodeProperty.CANONICAL_COMBINING_CLASS ||
-                                p == UnicodeProperty.LEAD_CANONICAL_COMBINING_CLASS ||
-                                p == UnicodeProperty.TRAIL_CANONICAL_COMBINING_CLASS)
+                        if (p == UProperty.CANONICAL_COMBINING_CLASS ||
+                                p == UProperty.LEAD_CANONICAL_COMBINING_CLASS ||
+                                p == UProperty.TRAIL_CANONICAL_COMBINING_CLASS)
                         {
-                            v = (UnicodeProperty)int.Parse(PatternProps.TrimWhiteSpace(valueAlias), CultureInfo.InvariantCulture);
+                            try
+                            {
+                                // ICU4N TODO: Use TryParse
+                                v = (UProperty)int.Parse(PatternProps.TrimWhiteSpace(valueAlias), CultureInfo.InvariantCulture);
+                            }
+                            catch (FormatException fe)
+                            {
+                                // ICU4N specific. FormatException doesn't subclass ArgumentException in .NET, so we need
+                                // to wrap it in one for the expected exception to occur.
+                                throw new ArgumentException(fe.Message, fe);
+                            }
+
                             // Anything between 0 and 255 is valid even if unused.
                             if (v < 0 || (int)v > 255) throw e;
-                        }
+                            }
                         else
                         {
                             throw e;
@@ -4231,13 +4310,13 @@ namespace ICU4N.Text
                 {
                     switch (p)
                     {
-                        case UnicodeProperty.NUMERIC_VALUE:
+                        case UProperty.NUMERIC_VALUE:
                             {
                                 double value = double.Parse(PatternProps.TrimWhiteSpace(valueAlias), CultureInfo.InvariantCulture);
                                 ApplyFilter(new NumericValueFilter(value), UCharacterProperty.SRC_CHAR);
                                 return this;
                             }
-                        case UnicodeProperty.NAME:
+                        case UProperty.NAME:
                             {
                                 // Must munge name, since
                                 // UCharacter.charFromName() does not do
@@ -4253,11 +4332,11 @@ namespace ICU4N.Text
                                 return this;
                             }
 #pragma warning disable 612, 618
-                        case UnicodeProperty.UNICODE_1_NAME:
+                        case UProperty.UNICODE_1_NAME:
                             // ICU 49 deprecates the Unicode_1_Name property APIs.
                             throw new ArgumentException("Unicode_1_Name (na1) not supported");
 #pragma warning restore 612, 618
-                        case UnicodeProperty.AGE:
+                        case UProperty.AGE:
                             {
                                 // Must munge name, since
                                 // VersionInfo.getInstance() does not do
@@ -4266,8 +4345,8 @@ namespace ICU4N.Text
                                 ApplyFilter(new VersionFilter(version), UCharacterProperty.SRC_PROPSVEC);
                                 return this;
                             }
-                        case UnicodeProperty.SCRIPT_EXTENSIONS:
-                            v = (UnicodeProperty)UCharacter.GetPropertyValueEnum(UnicodeProperty.SCRIPT, valueAlias);
+                        case UProperty.SCRIPT_EXTENSIONS:
+                            v = (UProperty)UCharacter.GetPropertyValueEnum(UProperty.SCRIPT, valueAlias);
                             // fall through to calling applyIntPropertyValue()
                             break;
                         default:
@@ -4284,24 +4363,24 @@ namespace ICU4N.Text
                 // Binary property, or ANY or ASCII.  Upon success, p and v will
                 // be set.
                 UPropertyAliases pnames = UPropertyAliases.INSTANCE;
-                p = UnicodeProperty.GENERAL_CATEGORY_MASK;
-                v = (UnicodeProperty)pnames.GetPropertyValueEnum((int)p, propertyAlias);
+                p = UProperty.GENERAL_CATEGORY_MASK;
+                v = (UProperty)pnames.GetPropertyValueEnum((int)p, propertyAlias);
 #pragma warning disable 612, 618
-                if (v == UnicodeProperty.UNDEFINED)
+                if (v == UProperty.UNDEFINED)
                 {
-                    p = UnicodeProperty.SCRIPT;
-                    v = (UnicodeProperty)pnames.GetPropertyValueEnum((int)p, propertyAlias);
-                    if (v == UnicodeProperty.UNDEFINED)
+                    p = UProperty.SCRIPT;
+                    v = (UProperty)pnames.GetPropertyValueEnum((int)p, propertyAlias);
+                    if (v == UProperty.UNDEFINED)
                     {
-                        p = (UnicodeProperty)pnames.GetPropertyEnum(propertyAlias);
-                        if (p == UnicodeProperty.UNDEFINED)
+                        p = (UProperty)pnames.GetPropertyEnum(propertyAlias);
+                        if (p == UProperty.UNDEFINED)
                         {
-                            p = (UnicodeProperty)(-1);
+                            p = (UProperty)(-1);
                         }
-                        if (p >= UnicodeProperty.BINARY_START && p < UnicodeProperty.BINARY_LIMIT)
+                        if (p >= UProperty.BINARY_START && p < UProperty.BINARY_LIMIT)
 #pragma warning restore 612, 618
                         {
-                            v = (UnicodeProperty)1;
+                            v = (UProperty)1;
                         }
                         else if ((int)p == -1)
                         {
@@ -4318,8 +4397,8 @@ namespace ICU4N.Text
                             else if (0 == UPropertyAliases.Compare(ASSIGNED, propertyAlias))
                             {
                                 // [:Assigned:]=[:^Cn:]
-                                p = UnicodeProperty.GENERAL_CATEGORY_MASK;
-                                v = (UnicodeProperty)(1 << UCharacter.UNASSIGNED);
+                                p = UProperty.GENERAL_CATEGORY_MASK;
+                                v = (UProperty)(1 << UCharacter.UNASSIGNED);
                                 invert = true;
                             }
                             else
@@ -5545,8 +5624,12 @@ namespace ICU4N.Text
                 if (sourceList == null)
                 {
                     bool hasNext = stringIterator.MoveNext();
-                    if (!hasNext)
-                        return false;
+                    if (hasNext)
+                    {
+                        currentElement = stringIterator.Current;
+                        return true;
+                    }
+                    return false;
                 }
 
                 int codepoint = current++;
@@ -5706,25 +5789,86 @@ namespace ICU4N.Text
             return !ContainsNone(collection);
         }
 
+        ///**
+        // * @see #addAll(com.ibm.icu.text.UnicodeSet)
+        // * @stable ICU 4.4
+        // */
+        //// See ticket #11395, this is safe.
+        //public UnicodeSet AddAll<T>(params T[] collection) where T : class
+        //{
+        //    CheckFrozen();
+        //    foreach (T str in collection)
+        //    {
+        //        var csq = str.ConvertToCharSequence();
+        //        if (csq != null)
+        //        {
+        //            Add(csq);
+        //        }
+        //        else
+        //        {
+        //            throw new ArgumentException("Only string, StringBuilder, char[], and ICharSequence types are allowed.");
+        //        }
+        //    }
+        //    return this;
+        //}
+
         /**
          * @see #addAll(com.ibm.icu.text.UnicodeSet)
          * @stable ICU 4.4
          */
         // See ticket #11395, this is safe.
-        public UnicodeSet AddAll<T>(params T[] collection) where T : class
+        public UnicodeSet AddAll(params string[] collection) 
         {
             CheckFrozen();
-            foreach (T str in collection)
+            foreach (var csq in collection)
             {
-                var csq = str.ConvertToCharSequence();
-                if (csq != null)
-                {
-                    Add(csq);
-                }
-                else
-                {
-                    throw new ArgumentException("Only string, StringBuilder, char[], and ICharSequence types are allowed.");
-                }
+                Add(csq);
+            }
+            return this;
+        }
+
+        /**
+         * @see #addAll(com.ibm.icu.text.UnicodeSet)
+         * @stable ICU 4.4
+         */
+        // See ticket #11395, this is safe.
+        public UnicodeSet AddAll(params StringBuilder[] collection)
+        {
+            CheckFrozen();
+            foreach (var csq in collection)
+            {
+                Add(csq);
+            }
+            return this;
+        }
+
+        /**
+         * @see #addAll(com.ibm.icu.text.UnicodeSet)
+         * @stable ICU 4.4
+         */
+        // See ticket #11395, this is safe.
+        [CLSCompliant(false)]
+        public UnicodeSet AddAll(params char[][] collection)
+        {
+            CheckFrozen();
+            foreach (var csq in collection)
+            {
+                Add(csq);
+            }
+            return this;
+        }
+
+        /**
+         * @see #addAll(com.ibm.icu.text.UnicodeSet)
+         * @stable ICU 4.4
+         */
+        // See ticket #11395, this is safe.
+        internal UnicodeSet AddAll(params ICharSequence[] collection)
+        {
+            CheckFrozen();
+            foreach (var csq in collection)
+            {
+                Add(csq);
             }
             return this;
         }

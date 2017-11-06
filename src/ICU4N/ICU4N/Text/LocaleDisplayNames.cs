@@ -341,7 +341,7 @@ namespace ICU4N.Text
              * @param nameInSelf name of the modified locale in itself
              * @stable ICU 55
              */
-            public UiListItem(ULocale minimized, ULocale modified, String nameInDisplayLocale, String nameInSelf)
+            public UiListItem(ULocale minimized, ULocale modified, string nameInDisplayLocale, string nameInSelf)
             {
                 this.minimized = minimized;
                 this.modified = modified;
@@ -395,7 +395,7 @@ namespace ICU4N.Text
              * Return a comparator that compares the locale names for the display locale or the in-self names,
              * depending on an input parameter.
              * @param inSelf if true, compares the nameInSelf, otherwise the nameInDisplayLocale
-             * @param comparator (meant for strings, but because Java Collator doesn't have &lt;String&gt;...)
+             * @param comparator (meant for strings, but because Java Collator doesn't have &lt;string&gt;...)
              * @return UiListItem comparator
              * @stable ICU 55
              */
@@ -439,7 +439,7 @@ namespace ICU4N.Text
         static LocaleDisplayNames()
         {
             // ICU4N TODO: Finish implementation
-            //String implClassName = ICUConfig.get("com.ibm.icu.text.LocaleDisplayNames.impl", "com.ibm.icu.impl.LocaleDisplayNamesImpl");
+            //string implClassName = ICUConfig.get("com.ibm.icu.text.LocaleDisplayNames.impl", "com.ibm.icu.impl.LocaleDisplayNamesImpl");
 
             //MethodInfo factoryDialectHandling = null;
             //MethodInfo factoryDisplayContext = null;

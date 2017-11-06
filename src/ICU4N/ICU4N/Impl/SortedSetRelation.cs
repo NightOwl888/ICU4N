@@ -1,7 +1,6 @@
 ﻿using ICU4N.Support.Collections;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Impl
 {

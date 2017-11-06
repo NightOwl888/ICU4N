@@ -33,7 +33,7 @@ namespace ICU4N.Impl
 
         private int[] valueMaps;
         private byte[] bytesTries;
-        private String nameGroups;
+        private string nameGroups;
 
         private sealed class IsAcceptable : IAuthenticate
         {
@@ -76,7 +76,7 @@ namespace ICU4N.Impl
             bytesTries = new byte[numBytes];
             bytes.Get(bytesTries);
 
-            // Read the nameGroups and turn them from ASCII bytes into a Java String.
+            // Read the nameGroups and turn them from ASCII bytes into a .NET string.
             offset = nextOffset;
             nextOffset = inIndexes[IX_RESERVED3_OFFSET];
             numBytes = nextOffset - offset;
@@ -165,12 +165,14 @@ namespace ICU4N.Impl
             return 0;
         }
 
-        private string GetName(int nameGroupsIndex, int nameIndex)
+        // ICU4N specific method for getting property name without throwing exceptions
+        private bool TryGetName(int nameGroupsIndex, int nameIndex, out string result)
         {
+            result = null;
             int numNames = nameGroups[nameGroupsIndex++];
             if (nameIndex < 0 || numNames <= nameIndex)
             {
-                throw new IcuArgumentException("Invalid property (value) name choice");
+                return false;
             }
             // Skip nameIndex names.
             for (; nameIndex > 0; --nameIndex)
@@ -185,9 +187,21 @@ namespace ICU4N.Impl
             }
             if (nameStart == nameGroupsIndex)
             {
-                return null;  // no name (Property[Value]Aliases.txt has "n/a")
+                result = null;  // no name (Property[Value]Aliases.txt has "n/a")
+                return false;
             }
-            return nameGroups.Substring(nameStart, nameGroupsIndex - nameStart);
+            result = nameGroups.Substring(nameStart, nameGroupsIndex - nameStart);
+            return true;
+        }
+
+        private string GetName(int nameGroupsIndex, int nameIndex)
+        {
+            string result;
+            if (TryGetName(nameGroupsIndex, nameIndex, out result))
+            {
+                return result;
+            }
+            throw new IcuArgumentException("Invalid property (value) name choice");
         }
 
         private static int AsciiToLowercase(int c)
@@ -237,28 +251,46 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Returns a property name given a property enum.
-         * Multiple names may be available for each property;
-         * the nameChoice selects among them.
-         */
-        public string GetPropertyName(int property, int nameChoice)
+        /// <summary>
+        /// Returns a property name given a property enum.
+        /// Multiple names may be available for each property;
+        /// the nameChoice selects among them.
+        /// </summary>
+        public string GetPropertyName(UProperty property, NameChoice nameChoice)
         {
-            int valueMapIndex = FindProperty(property);
+            int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
             {
                 throw new ArgumentException(
-                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", property) + ")");
+                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", (int)property) + ")");
             }
-            return GetName(valueMaps[valueMapIndex], nameChoice);
+            return GetName(valueMaps[valueMapIndex], (int)nameChoice);
         }
 
-        /**
-         * Returns a value name given a property enum and a value enum.
-         * Multiple names may be available for each value;
-         * the nameChoice selects among them.
-         */
-        public string GetPropertyValueName(UnicodeProperty property, int value, NameChoice nameChoice)
+        /// <summary>
+        /// Returns a property name given a property enum.
+        /// Multiple names may be available for each property;
+        /// the nameChoice selects among them.
+        /// </summary>
+        /// <stable>ICU4N 60.1.0</stable>
+        public bool TryGetPropertyName(UProperty property, NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+        {
+            result = null;
+            int valueMapIndex = FindProperty((int)property);
+            if (valueMapIndex == 0)
+            {
+                return false;
+            }
+            return TryGetName(valueMaps[valueMapIndex], (int)nameChoice, out result);
+        }
+
+        /// <summary>
+        /// Returns a value name given a property enum and a value enum.
+        /// Multiple names may be available for each value;
+        /// the <paramref name="nameChoice"/> selects among them.
+        /// </summary>
+        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out string)"/>
+        public string GetPropertyValueName(UProperty property, int value, NameChoice nameChoice)
         {
             int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
@@ -270,10 +302,43 @@ namespace ICU4N.Impl
             if (nameGroupOffset == 0)
             {
                 throw new ArgumentException(
-                        "Property " + property + " (0x" + string.Format("{0:x2}", property) +
+                        "Property " + property + " (0x" + string.Format("{0:x2}", (int)property) +
                         ") does not have named values");
             }
             return GetName(nameGroupOffset, (int)nameChoice);
+        }
+
+        // ICU4N specific method for getting the property name without throwing any exceptions
+        /// <summary>
+        /// Gets a value name given a property enum and a value enum.
+        /// Multiple names may be available for each value;
+        /// the <paramref name="nameChoice"/> selects among them.
+        /// <para/>
+        /// This method is equivalent to <see cref="GetPropertyValueName(UnicodeProperty, int, NameChoice)"/>
+        /// but will return a true/false result rather than throwing exceptions.
+        /// </summary>
+        /// <seealso cref="GetPropertyValueName(UnicodeProperty, int, NameChoice)"/>
+        public bool TryGetPropertyValueName(UProperty property, int value, NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+        {
+            result = null;
+            int valueMapIndex = FindProperty((int)property);
+            if (valueMapIndex == 0)
+            {
+                return false;
+            }
+            int nameGroupOffset = FindPropertyValueNameGroup(valueMaps[valueMapIndex + 1], value);
+            if (nameGroupOffset == 0)
+            {
+                return false;
+            }
+            // Duplicates logic from the GetName() method to ensure the parameters are correct.
+            int numNames = nameGroups[nameGroupOffset];
+            if ((int)nameChoice < 0 || numNames <= (int)nameChoice)
+            {
+                return false;
+            }
+            result = GetName(nameGroupOffset, (int)nameChoice);
+            return true;
         }
 
         private int GetPropertyOrValueEnum(int bytesTrieOffset, ICharSequence alias)
@@ -285,14 +350,14 @@ namespace ICU4N.Impl
             }
             else
             {
-                return (int)UnicodeProperty.UNDEFINED;
+                return (int)UProperty.UNDEFINED;
             }
         }
 
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
-        /// <see cref="UnicodeProperty.UNDEFINED"/>.
+        /// <see cref="UProperty.UNDEFINED"/>.
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
@@ -304,7 +369,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
-        /// <see cref="UnicodeProperty.UNDEFINED"/>.
+        /// <see cref="UProperty.UNDEFINED"/>.
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
@@ -316,7 +381,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
-        /// <see cref="UnicodeProperty.UNDEFINED"/>.
+        /// <see cref="UProperty.UNDEFINED"/>.
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
@@ -328,7 +393,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
-        /// <see cref="UnicodeProperty.UNDEFINED"/>.
+        /// <see cref="UProperty.UNDEFINED"/>.
         /// </summary>
         /// <param name="alias"></param>
         /// <returns></returns>
@@ -414,7 +479,7 @@ namespace ICU4N.Impl
         internal bool TryGetPropertyValueEnum(int property, ICharSequence alias, out int result)
         {
             result = GetPropertyValueEnumNoThrow(property, alias);
-            if (result == (int)UnicodeProperty.UNDEFINED)
+            if (result == (int)UProperty.UNDEFINED)
                 return false;
             return true;
         }
@@ -423,17 +488,17 @@ namespace ICU4N.Impl
         /// Returns a value enum given a property enum and one of its value names. Does not throw.
         /// </summary>
         /// <returns>value enum, or UProperty.UNDEFINED if not defined for that property</returns>
-        internal int GetPropertyValueEnumNoThrow(int property, ICharSequence alias)
+        internal int GetPropertyValueEnumNoThrow(int property, ICharSequence alias) // ICU4N TODO: Deprecate and replace with Try version...
         {
             int valueMapIndex = FindProperty(property);
             if (valueMapIndex == 0)
             {
-                return (int)UnicodeProperty.UNDEFINED;
+                return (int)UProperty.UNDEFINED;
             }
             valueMapIndex = valueMaps[valueMapIndex + 1];
             if (valueMapIndex == 0)
             {
-                return (int)UnicodeProperty.UNDEFINED;
+                return (int)UProperty.UNDEFINED;
             }
             // valueMapIndex is the start of the property's valueMap,
             // where the first word is the BytesTrie offset.

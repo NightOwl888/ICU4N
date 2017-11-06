@@ -197,9 +197,21 @@ namespace ICU4N.Impl
                         b == null ? false : a.Equals(b);
         }
 
-        /**
-         * Convenience utility. Does null checks on objects, then calls compare.
-         */
+        // ICU4N specific - overload to ensure culture insensitive comparison when comparing strings
+        /// <summary>
+        /// Convenience utility. Does null checks on objects, then calls compare.
+        /// </summary>
+        public static int CheckCompare(string a, string b)
+        {
+            return a == null ?
+                    b == null ? 0 : -1 :
+                        b == null ? 1 : a.CompareToOrdinal(b);
+        }
+
+
+        /// <summary>
+        /// Convenience utility. Does null checks on objects, then calls compare.
+        /// </summary>
         public static int CheckCompare<T>(T a, T b) where T : IComparable<T>
         {
             return a == null ?
@@ -244,7 +256,7 @@ namespace ICU4N.Impl
         {
             StringBuilder buffer = new StringBuilder();
 
-            AppendInt(buffer, a.Length);
+            AppendInt32(buffer, a.Length);
             int runValue = a[0];
             int runLength = 1;
             for (int i = 1; i < a.Length; ++i)
@@ -390,9 +402,9 @@ namespace ICU4N.Impl
                 {
                     if (value == ESCAPE)
                     {
-                        AppendInt(buffer, value);
+                        AppendInt32(buffer, value);
                     }
-                    AppendInt(buffer, value);
+                    AppendInt32(buffer, value);
                 }
             }
             else
@@ -401,22 +413,22 @@ namespace ICU4N.Impl
                 {
                     if (value == ESCAPE)
                     {
-                        AppendInt(buffer, ESCAPE);
+                        AppendInt32(buffer, ESCAPE);
                     }
-                    AppendInt(buffer, value);
+                    AppendInt32(buffer, value);
                     --length;
                 }
-                AppendInt(buffer, ESCAPE);
-                AppendInt(buffer, length);
-                AppendInt(buffer, value); // Don't need to escape this value
+                AppendInt32(buffer, ESCAPE);
+                AppendInt32(buffer, length);
+                AppendInt32(buffer, value); // Don't need to escape this value
             }
         }
 
-        private static void AppendInt(StringBuilder buffer, int value)
+        private static void AppendInt32(StringBuilder buffer, int value)
         {
             try
             {
-                buffer.Append((char)((int)((uint)value >> 16)));
+                buffer.Append((char)(value.TripleShift(16)));
                 buffer.Append((char)(value & 0xFFFF));
             }
             catch (IOException e)
@@ -426,8 +438,8 @@ namespace ICU4N.Impl
         }
 
         /**
-         * Encode a run, possibly a degenerate run (of < 4 values).
-         * @param length The length of the run; must be > 0 && <= 0xFFFF.
+         * Encode a run, possibly a degenerate run (of &lt; 4 values).
+         * @param length The length of the run; must be > 0 && &lt;= 0xFFFF.
          */
         private static void EncodeRun(StringBuilder buffer, short value, int length)
         {
@@ -468,8 +480,8 @@ namespace ICU4N.Impl
         }
 
         /**
-         * Encode a run, possibly a degenerate run (of < 4 values).
-         * @param length The length of the run; must be > 0 && <= 0xFF.
+         * Encode a run, possibly a degenerate run (of &lt; 4 values).
+         * @param length The length of the run; must be > 0 && &lt;= 0xFF.
          */
         private static void EncodeRun(StringBuilder buffer, byte value, int length,
                byte[] state)
@@ -530,7 +542,7 @@ namespace ICU4N.Impl
         /**
          * Construct an array of ints from a run-length encoded string.
          */
-        static public int[] RLEStringToIntArray(String s)
+        static public int[] RLEStringToIntArray(string s)
         {
             int length = GetInt(s, 0);
             int[] array = new int[length];
@@ -735,7 +747,7 @@ namespace ICU4N.Impl
         static public string LINE_SEPARATOR = Environment.NewLine;
 
         /**
-         * Format a String for representation in a source file.  This includes
+         * Format a string for representation in a source file.  This includes
          * breaking it into lines and escaping characters using octal notation
          * when necessary (control characters and double quotes).
          */
@@ -804,7 +816,7 @@ namespace ICU4N.Impl
         '8','9','A','B','C','D','E','F'};
 
         /**
-         * Format a String for representation in a source file.  Like
+         * Format a string for representation in a source file.  Like
          * formatForSource but does not do line breaking.
          */
         static public string Format1ForSource(string s)
@@ -1059,7 +1071,7 @@ namespace ICU4N.Impl
          * @exception IllegalArgumentException if an invalid escape is
          * seen.
          */
-        public static String unescape(String s)
+        public static string Unescape(string s)
         {
             StringBuilder buf = new StringBuilder();
             int[] pos = new int[1];
@@ -1073,7 +1085,7 @@ namespace ICU4N.Impl
                     if (e < 0)
                     {
                         throw new ArgumentException("Invalid escape sequence " +
-                                s.Substring(i - 1, Math.Min(i + 8, s.Length)));
+                                s.Substring(i - 1, Math.Min(i + 8, s.Length) - (i - 1)));
                     }
                     buf.AppendCodePoint(e);
                     i = pos[0];
@@ -1090,7 +1102,7 @@ namespace ICU4N.Impl
          * Convert all escapes in a given string using unescapeAt().
          * Leave invalid escape sequences unchanged.
          */
-        public static String unescapeLeniently(String s)
+        public static string unescapeLeniently(string s)
         {
             StringBuilder buf = new StringBuilder();
             int[] pos = new int[1];
@@ -1139,7 +1151,7 @@ namespace ICU4N.Impl
             {
                 i = -i;
             }
-            //String result = Long.toString(i, 16).toUpperCase(Locale.ENGLISH);
+            //string result = Long.toString(i, 16).toUpperCase(Locale.ENGLISH);
             string result = i.ToString("X", CultureInfo.InvariantCulture);
             if (result.Length < places)
             {
@@ -1349,7 +1361,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static String hex(byte[] o, int start, int end, String separator)
+        public static string Hex(byte[] o, int start, int end, string separator)
         {
             StringBuilder result = new StringBuilder();
             //int ch;
@@ -1930,7 +1942,7 @@ namespace ICU4N.Impl
          * point to a valid digit on entry, or if the number to be parsed
          * does not fit into a 31-bit unsigned integer.
          */
-        public static int parseNumber(String text, int[] pos, int radix)
+        public static int ParseNumber(string text, int[] pos, int radix)
         {
             // assert(pos[0] >= 0);
             // assert(radix >= 2);
@@ -2015,7 +2027,7 @@ namespace ICU4N.Impl
         /**
          * Returns the index of the first character in a set, ignoring quoted text.
          * For example, in the string "abc'hide'h", the 'h' in "hide" will not be
-         * found by a search for "h".  Unlike String.indexOf(), this method searches
+         * found by a search for "h".  Unlike string.indexOf(), this method searches
          * not for a single character, but for any character of the string
          * <code>setOfChars</code>.
          * @param text text to be searched
@@ -2026,7 +2038,7 @@ namespace ICU4N.Impl
          * @param setOfChars string with one or more distinct characters
          * @return Offset of the first character in <code>setOfChars</code>
          * found, or -1 if not found.
-         * @see String#indexOf
+         * @see string#indexOf
          */
         public static int QuotedIndexOf(string text, int start, int limit,
                 string setOfChars)
@@ -2296,7 +2308,7 @@ namespace ICU4N.Impl
 
         /**
          * Utility to duplicate a string count times
-         * @param s String to be duplicated.
+         * @param s string to be duplicated.
          * @param count Number of times to duplicate a string.
          */
         public static string Repeat(string s, int count)
@@ -2326,7 +2338,7 @@ namespace ICU4N.Impl
 
         /**
          * Parse a list of hex numbers and return a string
-         * @param string String of hex numbers.
+         * @param string string of hex numbers.
          * @param minLength Minimal length.
          * @param separator Separator.
          * @return A string from hex numbers.
@@ -2338,7 +2350,7 @@ namespace ICU4N.Impl
 
         /**
          * Parse a list of hex numbers and return a string
-         * @param string String of hex numbers.
+         * @param string string of hex numbers.
          * @param minLength Minimal length.
          * @param separator Separator.
          * @return A string from hex numbers.

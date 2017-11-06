@@ -14,11 +14,11 @@ namespace ICU4N.Impl
      //* A helper function to convert a string of the form
      //* aa_BB_CC to a locale object.  Why isn't this in Locale?
      //*/
-     //   public static Locale getLocaleFromName(String name)
+     //   public static Locale getLocaleFromName(string name)
      //   {
-     //       String language = "";
-     //       String country = "";
-     //       String variant = "";
+     //       string language = "";
+     //       string country = "";
+     //       string variant = "";
 
      //       int i1 = name.indexOf('_');
      //       if (i1 < 0)
@@ -49,7 +49,7 @@ namespace ICU4N.Impl
      //    * return true if parent is a 'strict' fallback of child, that is,
      //    * if child =~ "^parent(_.+)*" (roughly).
      //    */
-     //   public static boolean isFallbackOf(String parent, String child)
+     //   public static boolean isFallbackOf(string parent, string child)
      //   {
      //       if (!child.startsWith(parent))
      //       {
@@ -72,10 +72,10 @@ namespace ICU4N.Impl
 
 
      //   /*
-     //    * Convenience method that calls canonicalLocaleString(String) with
+     //    * Convenience method that calls canonicalLocaleString(string) with
      //    * locale.toString();
      //    */
-     //   /*public static String canonicalLocaleString(Locale locale) {
+     //   /*public static string canonicalLocaleString(Locale locale) {
      //       return canonicalLocaleString(locale.toString());
      //   }*/
 
@@ -85,7 +85,7 @@ namespace ICU4N.Impl
      //    * to be upper case but doesn't do anything about the language or
      //    * variant.  Our canonical form is 'lower_UPPER_UPPER'.  
      //    */
-     //   /*public static String canonicalLocaleString(String id) {
+     //   /*public static string canonicalLocaleString(string id) {
      //       if (id != null) {
      //           int x = id.indexOf("_");
      //           if (x == -1) {
@@ -119,11 +119,11 @@ namespace ICU4N.Impl
         public static CultureInfo Fallback(CultureInfo loc)
         {
             // ICU4N TODO: Not sure if this is correct
-            //return loc;
-            return loc.GetConsoleFallbackUICulture();
+            return loc;
+            //return loc.GetConsoleFallbackUICulture();
 
             //// Split the locale into parts and remove the rightmost part
-            //String[] parts = new String[]
+            //string[] parts = new string[]
             //    { loc.getLanguage(), loc.getCountry(), loc.getVariant() };
             //int i;
             //for (i = 2; i >= 0; --i)

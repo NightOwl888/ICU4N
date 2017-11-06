@@ -145,13 +145,27 @@ namespace ICU4N.Support.IO
         /// buffer's change of content will be visible to the other. The two buffer's
         /// position, limit and mark are independent.
         /// </remarks>
-        /// </summary>
-        /// <returns></returns>
+        /// <returns>A <see cref="char"/> buffer which is based on the content of this byte buffer.</returns>
         internal abstract CharBuffer AsCharBuffer(); // ICU4N TODO: API - Mark this public instead of internal when ICharSequence is marked public
 
         //public abstract DoubleBuffer AsDoubleBuffer();
         //public abstract FloatBuffer AsSingleBuffer();
-        //public abstract IntBuffer AsInt32Buffer();
+
+        /// <summary>
+        /// Returns a <see cref="int"/> buffer which is based on the remaining content of this byte
+        /// buffer.
+        /// <para/>
+        /// The new buffer's position is zero, its limit and capacity is the number
+        /// of remaining bytes divided by four, and its mark is not set. The new
+        /// buffer's read-only property and byte order are the same as this buffer's.
+        /// The new buffer is direct if this byte buffer is direct.
+        /// <para/>
+        /// The new buffer shares its content with this buffer, which means either
+        /// buffer's change of content will be visible to the other. The two buffer's
+        /// position, limit and mark are independent.
+        /// </summary>
+        /// <returns>A <see cref="int"/> buffer which is based on the content of this byte buffer.</returns>
+        public abstract Int32Buffer AsInt32Buffer();
 
         /// <summary>
         /// Returns a long buffer which is based on the remaining content of this

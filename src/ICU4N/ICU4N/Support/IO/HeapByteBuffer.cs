@@ -320,10 +320,10 @@ namespace ICU4N.Support.IO
         //    }
 
 
-        //public override sealed Int32Buffer AsInt32Buffer()
-        //    {
-        //        return Int32ToByteBufferAdapter.Wrap(this);
-        //    }
+        public override sealed Int32Buffer AsInt32Buffer()
+        {
+            return Int32ToByteBufferAdapter.Wrap(this);
+        }
 
 
         public override sealed Int64Buffer AsInt64Buffer()

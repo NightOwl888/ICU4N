@@ -12,7 +12,7 @@ namespace ICU4N.Text
 {
     /// <summary>
     /// Result values for <see cref="Normalizer.QuickCheck(string, Normalizer.Mode)"/> and
-    /// <see cref="Normalizer2.QuickCheck(String)"/>.
+    /// <see cref="Normalizer2.QuickCheck(string)"/>.
     /// For details see Unicode Technical Report 15.
     /// </summary>
     public enum NormalizerQuickCheckResult
@@ -275,7 +275,7 @@ namespace ICU4N.Text
          * Null operation for use with the {@link com.ibm.icu.text.Normalizer constructors}
          * and the static {@link #normalize normalize} method.  This value tells
          * the <tt>Normalizer</tt> to do nothing but return unprocessed characters
-         * from the underlying String or CharacterIterator.  If you have code which
+         * from the underlying string or CharacterIterator.  If you have code which
          * requires raw text at some times and normalized text at others, you can
          * use <tt>NO_OP</tt> for the cases where you want raw text, rather
          * than having a separate code path that bypasses <tt>Normalizer</tt>
@@ -399,24 +399,24 @@ namespace ICU4N.Text
         //        //resultValue=value;
         //    }
         //}
-        ///**
-        // * Indicates that string is not in the normalized format
-        // * @stable ICU 2.8
-        // */
-        //public static readonly QuickCheckResult NO = new QuickCheckResult(0);
+        /**
+         * Indicates that string is not in the normalized format
+         * @stable ICU 2.8
+         */
+        internal static readonly NormalizerQuickCheckResult NO = NormalizerQuickCheckResult.No; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
-        ///**
-        // * Indicates that string is in the normalized format
-        // * @stable ICU 2.8
-        // */
-        //public static readonly QuickCheckResult YES = new QuickCheckResult(1);
+        /**
+         * Indicates that string is in the normalized format
+         * @stable ICU 2.8
+         */
+        internal static readonly NormalizerQuickCheckResult YES = NormalizerQuickCheckResult.Yes; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
-        ///**
-        // * Indicates it cannot be determined if string is in the normalized
-        // * format without further thorough checks.
-        // * @stable ICU 2.8
-        // */
-        //public static readonly QuickCheckResult MAYBE = new QuickCheckResult(2);
+        /**
+         * Indicates it cannot be determined if string is in the normalized
+         * format without further thorough checks.
+         * @stable ICU 2.8
+         */
+        internal static readonly NormalizerQuickCheckResult MAYBE = NormalizerQuickCheckResult.Maybe; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
         /**
          * Option bit for compare:
@@ -611,7 +611,7 @@ namespace ICU4N.Text
          * @param compat     If true the string will be composed according to
          *                    NFKC rules and if false will be composed according to
          *                    NFC rules.
-         * @return String    The composed string
+         * @return string    The composed string
          * @deprecated ICU 56 Use {@link Normalizer2} instead.
          */
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
@@ -628,7 +628,7 @@ namespace ICU4N.Text
          *                    NFKC rules and if false will be composed according to
          *                    NFC rules.
          * @param options    The only recognized option is UNICODE_3_2
-         * @return String    The composed string
+         * @return string    The composed string
          * @deprecated ICU 56 Use {@link Normalizer2} instead.
          */
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
@@ -695,7 +695,7 @@ namespace ICU4N.Text
          * @param compat    If true the string will be decomposed according to NFKD
          *                   rules and if false will be decomposed according to NFD
          *                   rules.
-         * @return String   The decomposed string
+         * @return string   The decomposed string
          * @deprecated ICU 56 Use {@link Normalizer2} instead.
          */
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
@@ -712,7 +712,7 @@ namespace ICU4N.Text
          *                 rules and if false will be decomposed according to NFD
          *                 rules.
          * @param options The normalization options, ORed together (0 for no options).
-         * @return String The decomposed string
+         * @return string The decomposed string
          * @deprecated ICU 56 Use {@link Normalizer2} instead.
          */
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
@@ -773,7 +773,7 @@ namespace ICU4N.Text
         }
 
         /**
-         * Normalizes a <tt>String</tt> using the given normalization operation.
+         * Normalizes a <tt>string</tt> using the given normalization operation.
          * <p>
          * The <tt>options</tt> parameter specifies which optional
          * <tt>Normalizer</tt> features are to be enabled for this operation.
@@ -784,7 +784,7 @@ namespace ICU4N.Text
          * @param str       the input string to be normalized.
          * @param mode      the normalization mode
          * @param options   the optional features to be enabled.
-         * @return String   the normalized string
+         * @return string   the normalized string
          * @deprecated ICU 56 Use {@link Normalizer2} instead.
          */
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
@@ -826,7 +826,7 @@ namespace ICU4N.Text
          * @deprecated ICU 56 Use {@link Normalizer2} instead.
          */
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static int normalize(char[] source, char[] target, Mode mode, int options)
+        public static int Normalize(char[] source, char[] target, Mode mode, int options)
         {
             return Normalize(source, 0, source.Length, target, 0, target.Length, mode, options);
         }
@@ -868,7 +868,7 @@ namespace ICU4N.Text
          * @param mode      The normalization mode
          * @param options   Options for use with exclusion set and tailored Normalization
          *                                   The only option that is currently recognized is UNICODE_3_2
-         * @return String   The normalized string
+         * @return string   The normalized string
          * @see #UNICODE_3_2
          * @deprecated ICU 56 Use {@link Normalizer2} instead.
          */
@@ -877,7 +877,7 @@ namespace ICU4N.Text
         {
             if (mode == NFD && options == 0)
             {
-                String decomposition = Normalizer2.GetNFCInstance().GetDecomposition(char32);
+                string decomposition = Normalizer2.GetNFCInstance().GetDecomposition(char32);
                 if (decomposition == null)
                 {
                     decomposition = UTF16.ValueOf(char32);
@@ -891,7 +891,7 @@ namespace ICU4N.Text
          * Convenience method to normalize a codepoint according to the given mode
          * @param char32    The input string to be normalized.
          * @param mode      The normalization mode
-         * @return String   The normalized string
+         * @return string   The normalized string
          * @deprecated ICU 56 Use {@link Normalizer2} instead.
          */
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
@@ -1309,7 +1309,7 @@ namespace ICU4N.Text
 
             /* allow left==dest */
             StringBuilder destBuilder = new StringBuilder(leftLimit - leftStart + rightLimit - rightStart + 16);
-            destBuilder.Append(left, leftStart, leftLimit - leftStart);
+            destBuilder.Append(left, leftStart, (leftLimit - leftStart) - leftStart); // ICU4N: Fixed 3rd parameter math
             CharBuffer rightBuffer = CharBuffer.Wrap(right, rightStart, rightLimit - rightStart);
             mode.GetNormalizer2(options).Append(destBuilder, rightBuffer);
             int destLength = destBuilder.Length;
@@ -1419,7 +1419,7 @@ namespace ICU4N.Text
         /**
          * Gets the FC_NFKC closure value.
          * @param c The code point whose closure value is to be retrieved
-         * @return String representation of the closure value; "" if there is none
+         * @return string representation of the closure value; "" if there is none
          * @deprecated ICU 56
          */
         [Obsolete("ICU 56")]
@@ -1476,15 +1476,18 @@ namespace ICU4N.Text
          * @deprecated ICU 56
          */
         [Obsolete("ICU 56")]
-        public int Current()
+        public int Current
         {
-            if (bufferPos < buffer.Length || NextNormalize())
+            get
             {
-                return buffer.CodePointAt(bufferPos);
-            }
-            else
-            {
-                return DONE;
+                if (bufferPos < buffer.Length || NextNormalize())
+                {
+                    return buffer.CodePointAt(bufferPos);
+                }
+                else
+                {
+                    return DONE;
+                }
             }
         }
 
@@ -1589,13 +1592,13 @@ namespace ICU4N.Text
         public int SetIndex(int index)
         {
             SetIndexOnly(index);
-            return Current();
+            return Current;
         }
         ///CLOVER:ON
         /**
          * Retrieve the index of the start of the input text. This is the begin
          * index of the <tt>CharacterIterator</tt> or the start (i.e. 0) of the
-         * <tt>String</tt> over which this <tt>Normalizer</tt> is iterating
+         * <tt>string</tt> over which this <tt>Normalizer</tt> is iterating
          * @deprecated ICU 2.2. Use startIndex() instead.
          * @return The codepoint as an int
          * @see #startIndex
@@ -1608,7 +1611,7 @@ namespace ICU4N.Text
 
         /**
          * Retrieve the index of the end of the input text.  This is the end index
-         * of the <tt>CharacterIterator</tt> or the length of the <tt>String</tt>
+         * of the <tt>CharacterIterator</tt> or the length of the <tt>string</tt>
          * over which this <tt>Normalizer</tt> is iterating
          * @deprecated ICU 2.2. Use endIndex() instead.
          * @return The codepoint as an int
@@ -1682,7 +1685,7 @@ namespace ICU4N.Text
         /**
          * Retrieve the index of the start of the input text. This is the begin
          * index of the <tt>CharacterIterator</tt> or the start (i.e. 0) of the
-         * <tt>String</tt> over which this <tt>Normalizer</tt> is iterating
+         * <tt>string</tt> over which this <tt>Normalizer</tt> is iterating
          * @return The current iteration position
          * @deprecated ICU 56
          */
@@ -1694,7 +1697,7 @@ namespace ICU4N.Text
 
         /**
          * Retrieve the index of the end of the input text.  This is the end index
-         * of the <tt>CharacterIterator</tt> or the length of the <tt>String</tt>
+         * of the <tt>CharacterIterator</tt> or the length of the <tt>string</tt>
          * over which this <tt>Normalizer</tt> is iterating
          * @return The current iteration position
          * @deprecated ICU 56
@@ -1882,7 +1885,7 @@ namespace ICU4N.Text
          * @deprecated ICU 56
          */
         [Obsolete("ICU 56")]
-        public void SetText(String newText)
+        public void SetText(string newText)
         {
             UCharacterIterator newIter = UCharacterIterator.GetInstance(newText);
             if (newIter == null)
@@ -1998,10 +2001,10 @@ namespace ICU4N.Text
 
         /* compare canonically equivalent ------------------------------------------- */
 
-        // TODO: Broaden the public compare(String, String, options) API like this. Ticket #7407
+        // TODO: Broaden the public compare(string, string, options) API like this. Ticket #7407
         private static int InternalCompare(ICharSequence s1, ICharSequence s2, int options)
         {
-            int normOptions = (int)((uint)options >> COMPARE_NORM_OPTIONS_SHIFT);
+            int normOptions = options.TripleShift(COMPARE_NORM_OPTIONS_SHIFT);
             options |= COMPARE_EQUIV;
 
             /*
@@ -2052,12 +2055,12 @@ namespace ICU4N.Text
 
                 if (spanQCYes1 < s1.Length)
                 {
-                    StringBuilder fcd1 = new StringBuilder(s1.Length + 16).Append(s1, 0, spanQCYes1);
+                    StringBuilder fcd1 = new StringBuilder(s1.Length + 16).Append(s1, 0, spanQCYes1 - 0); // ICU4N: Checked 3rd parameter math
                     s1 = n2.NormalizeSecondAndAppend(fcd1, s1.SubSequence(spanQCYes1, s1.Length)).ToCharSequence();
                 }
                 if (spanQCYes2 < s2.Length)
                 {
-                    StringBuilder fcd2 = new StringBuilder(s2.Length + 16).Append(s2, 0, spanQCYes2);
+                    StringBuilder fcd2 = new StringBuilder(s2.Length + 16).Append(s2, 0, spanQCYes2 - 0); // ICU4N: Checked 3rd parameter math
                     s2 = n2.NormalizeSecondAndAppend(fcd2, s2.SubSequence(spanQCYes2, s2.Length)).ToCharSequence();
                 }
             }
@@ -2078,7 +2081,7 @@ namespace ICU4N.Text
          *   strcmp[CodePointOrder](NFD(foldCase(s1)), NFD(foldCase(s2)))
          * where code point order, NFD and foldCase are all optional.
          *
-         * String comparisons almost always yield results before processing both strings
+         * string comparisons almost always yield results before processing both strings
          * completely.
          * They are generally more efficient working incrementally instead of
          * performing the sub-processing (strlen, normalization, case-folding)
@@ -2174,6 +2177,7 @@ namespace ICU4N.Text
          */
         private static readonly int COMPARE_EQUIV = 0x80000;
 
+        // ICU4N TODO: API Overload this for string, StringBuilder, and char[]
         /* internal function; package visibility for use by UTF16.StringComparator */
         /*package*/
         internal static int CmpEquivFold(ICharSequence cs1, ICharSequence cs2, int options)

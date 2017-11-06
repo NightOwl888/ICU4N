@@ -67,8 +67,13 @@ namespace ICU4N.Support.Text
 
         IAppendable IAppendable.Append(ICharSequence csq, int start, int end)
         {
-            stringBuilder.Append(csq, start, end - start);
+            stringBuilder.Append(csq.ToString(), start, end - start);
             return this;
+        }
+
+        public override string ToString()
+        {
+            return stringBuilder.ToString();
         }
     }
 }

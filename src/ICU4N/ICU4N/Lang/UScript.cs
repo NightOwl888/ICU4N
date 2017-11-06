@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;
@@ -9,7 +10,7 @@ using System.Text;
 
 namespace ICU4N.Lang
 {
-    public sealed class UScript
+    public sealed class UScript // ICU4N TODO: API Make this into an enum?
     {
         /**
      * Invalid code
@@ -1081,8 +1082,8 @@ namespace ICU4N.Lang
             bool triedCode = false;
             if (nameOrAbbrOrLocale.IndexOf('_') < 0 && nameOrAbbrOrLocale.IndexOf('-') < 0)
             {
-                int propNum = UCharacter.GetPropertyValueEnumNoThrow(UnicodeProperty.SCRIPT, nameOrAbbrOrLocale.ToCharSequence());
-                if (propNum != (int)UnicodeProperty.UNDEFINED)
+                int propNum = UCharacter.GetPropertyValueEnumNoThrow(UProperty.SCRIPT, nameOrAbbrOrLocale.ToCharSequence());
+                if (propNum != (int)UProperty.UNDEFINED)
                 {
                     return new int[] { propNum };
                 }
@@ -1095,8 +1096,8 @@ namespace ICU4N.Lang
             }
             if (!triedCode)
             {
-                int propNum = UCharacter.GetPropertyValueEnumNoThrow(UnicodeProperty.SCRIPT, nameOrAbbrOrLocale.ToCharSequence());
-                if (propNum != (int)UnicodeProperty.UNDEFINED)
+                int propNum = UCharacter.GetPropertyValueEnumNoThrow(UProperty.SCRIPT, nameOrAbbrOrLocale.ToCharSequence());
+                if (propNum != (int)UProperty.UNDEFINED)
                 {
                     return new int[] { propNum };
                 }
@@ -1116,8 +1117,8 @@ namespace ICU4N.Lang
          */
         public static int GetCodeFromName(string nameOrAbbr)
         {
-            int propNum = UCharacter.GetPropertyValueEnumNoThrow(UnicodeProperty.SCRIPT, nameOrAbbr.ToCharSequence());
-            return propNum == (int)UnicodeProperty.UNDEFINED ? INVALID_CODE : propNum;
+            int propNum = UCharacter.GetPropertyValueEnumNoThrow(UProperty.SCRIPT, nameOrAbbr.ToCharSequence());
+            return propNum == (int)UProperty.UNDEFINED ? INVALID_CODE : propNum;
         }
 
         /**
@@ -1195,62 +1196,6 @@ namespace ICU4N.Lang
             return sc == (scriptExtensions[scx] & 0x7fff);
         }
 
-        // ICU4N TODO: Evaluate whether to port BitSet
-
-        ///**
-        // * Sets code point c's Script_Extensions as script code integers into the output BitSet.
-        // * <ul>
-        // * <li>If c does have Script_Extensions, then the return value is
-        // * the negative number of Script_Extensions codes (= -set.cardinality());
-        // * in this case, the Script property value
-        // * (normally Common or Inherited) is not included in the set.
-        // * <li>If c does not have Script_Extensions, then the one Script code is put into the set
-        // * and also returned.
-        // * <li>If c is not a valid code point, then the one {@link #UNKNOWN} code is put into the set
-        // * and also returned.
-        // * </ul>
-        // * In other words, if the return value is non-negative, it is c's single Script code
-        // * and the set contains exactly this Script code.
-        // * If the return value is -n, then the set contains c's n&gt;=2 Script_Extensions script codes.
-        // *
-        // * <p>Some characters are commonly used in multiple scripts.
-        // * For more information, see UAX #24: http://www.unicode.org/reports/tr24/.
-        // *
-        // * @param c code point
-        // * @param set set of script code integers; will be cleared, then bits are set
-        // *            corresponding to c's Script_Extensions
-        // * @return negative number of script codes in c's Script_Extensions,
-        // *         or the non-negative single Script value
-        // * @stable ICU 49
-        // */
-        //public static int GetScriptExtensions(int c, BitSet set)
-        //{
-        //    set.clear();
-        //    int scriptX = UCharacterProperty.INSTANCE.GetAdditional(c, 0) & UCharacterProperty.SCRIPT_X_MASK;
-        //    if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)
-        //    {
-        //        set.set(scriptX);
-        //        return scriptX;
-        //    }
-
-        //    char[] scriptExtensions = UCharacterProperty.INSTANCE.m_scriptExtensions_;
-        //    int scx = scriptX & UCharacterProperty.SCRIPT_MASK_;  // index into scriptExtensions
-        //    if (scriptX >= UCharacterProperty.SCRIPT_X_WITH_OTHER)
-        //    {
-        //        scx = scriptExtensions[scx + 1];
-        //    }
-        //    int length = 0;
-        //    int sx;
-        //    do
-        //    {
-        //        sx = scriptExtensions[scx++];
-        //        set.set(sx & 0x7fff);
-        //        ++length;
-        //    } while (sx < 0x8000);
-        //    // length==set.cardinality()
-        //    return -length;
-        //}
-
         /**
         * Sets code point c's Script_Extensions as script code integers into the output BitSet.
         * <ul>
@@ -1277,13 +1222,13 @@ namespace ICU4N.Lang
         *         or the non-negative single Script value
         * @stable ICU 49
         */
-        public static int GetScriptExtensions(int c, BitArray set)
+        public static int GetScriptExtensions(int c, BitSet set)
         {
-            set.SetAll(false);
+            set.Clear();
             int scriptX = UCharacterProperty.INSTANCE.GetAdditional(c, 0) & UCharacterProperty.SCRIPT_X_MASK;
             if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)
             {
-                set.Set(scriptX, true);
+                set.Set(scriptX);
                 return scriptX;
             }
 
@@ -1298,45 +1243,80 @@ namespace ICU4N.Lang
             do
             {
                 sx = scriptExtensions[scx++];
-                set.Set(sx & 0x7fff, true);
+                set.Set(sx & 0x7fff);
                 ++length;
             } while (sx < 0x8000);
             // length==set.cardinality()
             return -length;
         }
 
-        /**
-         * Returns the long Unicode script name, if there is one.
-         * Otherwise returns the 4-letter ISO 15924 script code.
-         * Returns "Malayam" given MALAYALAM.
-         *
-         * @param scriptCode int script code
-         * @return long script name as given in PropertyValueAliases.txt, or the 4-letter code
-         * @throws IllegalArgumentException if the script code is not valid
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns the long Unicode script name, if there is one.
+        /// Otherwise returns the 4-letter ISO 15924 script code.
+        /// Returns "Malayam" given <see cref="MALAYALAM"/>.
+        /// </summary>
+        /// <param name="scriptCode">int script code.</param>
+        /// <returns>Long script name as given in PropertyValueAliases.txt, or the 4-letter code.</returns>
+        /// <exception cref="ArgumentException">If the script code is not valid.</exception>
+        /// <seealso cref="TryGetName(int, out string)"/>
+        /// <stable>ICU 2.4</stable>
         public static string GetName(int scriptCode)
         {
-            return UCharacter.GetPropertyValueName(UnicodeProperty.SCRIPT,
+            return UCharacter.GetPropertyValueName(UProperty.SCRIPT,
                     scriptCode,
                     NameChoice.Long);
         }
 
-        /**
-         * Returns the 4-letter ISO 15924 script code,
-         * which is the same as the short Unicode script name if Unicode has names for the script.
-         * Returns "Mlym" given MALAYALAM.
-         *
-         * @param scriptCode int script code
-         * @return short script name (4-letter code)
-         * @throws IllegalArgumentException if the script code is not valid
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Gets the long Unicode script name, if there is one.
+        /// Otherwise returns the 4-letter ISO 15924 script code.
+        /// Returns "Malayam" given <see cref="MALAYALAM"/>.
+        /// </summary>
+        /// <param name="scriptCode">int script code.</param>
+        /// <param name="result">Long script name as given in PropertyValueAliases.txt, or the 4-letter code.</param>
+        /// <returns>true if the script code is valid, otherwise false.</returns>
+        /// <seealso cref="GetName(int)"/>
+        /// <stable>ICU4N 60.1.0</stable>
+        public static bool TryGetName(int scriptCode, out string result) // ICU4N TODO: Tests
+        {
+            return UCharacter.TryGetPropertyValueName(UProperty.SCRIPT,
+                    scriptCode,
+                    NameChoice.Long, out result);
+        }
+
+        /// <summary>
+        /// Returns the 4-letter ISO 15924 script code,
+        /// which is the same as the short Unicode script name if Unicode has names for the script.
+        /// Returns "Mlym" given <see cref="MALAYALAM"/>.
+        /// </summary>
+        /// <param name="scriptCode">int script code</param>
+        /// <returns>Short script name (4-letter code).</returns>
+        /// <exception cref="ArgumentException">If the script code is not valid.</exception>
+        /// <seealso cref="TryGetShortName(int, out string)"/>
+        /// <stable>ICU 2.4</stable>
         public static string GetShortName(int scriptCode)
         {
-            return UCharacter.GetPropertyValueName(UnicodeProperty.SCRIPT,
+            return UCharacter.GetPropertyValueName(UProperty.SCRIPT,
                     scriptCode,
                     NameChoice.Short);
+        }
+
+        /// <summary>
+        /// Gets the 4-letter ISO 15924 script code,
+        /// which is the same as the short Unicode script name if Unicode has names for the script.
+        /// Returns "Mlym" given <see cref="MALAYALAM"/>.
+        /// </summary>
+        /// <param name="scriptCode">int script code</param>
+        /// <param name="result">Short script name (4-letter code).</param>
+        /// <returns>true if the name was retrieved, otherwise false.</returns>
+        /// <exception cref="ArgumentException">If the script code is not valid.</exception>
+        /// <seealso cref="GetShortName(int)"/>
+        /// <stable>ICU4N 60.1.0</stable>
+        public static bool TryGetShortName(int scriptCode, out string result) // ICU4N TODO: Tests
+        {
+            return UCharacter.TryGetPropertyValueName(UProperty.SCRIPT,
+                    scriptCode,
+                    NameChoice.Short, out result);
         }
 
         /**

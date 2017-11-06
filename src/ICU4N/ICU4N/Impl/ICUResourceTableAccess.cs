@@ -13,7 +13,7 @@ namespace ICU4N.Impl
     {
         /**
      * Utility to fetch locale display data from resource bundle tables.  Convenience
-     * wrapper for {@link #getTableString(ICUResourceBundle, String, String, String, String)}.
+     * wrapper for {@link #getTableString(ICUResourceBundle, string, string, string, string)}.
      */
         public static string GetTableString(string path, ULocale locale, string tableName,
                 string itemName, string defaultValue)

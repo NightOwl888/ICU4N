@@ -1,7 +1,11 @@
-﻿using ICU4N.Util;
+﻿using ICU4N.Logging;
+using ICU4N.Support;
+using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
+using System.Resources;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -14,7 +18,7 @@ namespace ICU4N.Impl
         /**
      * The data path to be used with getBundleInstance API
      */
-        internal static readonly string ICU_DATA_PATH = "com/ibm/icu/impl/";
+        internal static readonly string ICU_DATA_PATH = "ICU4N.Impl.";
         /**
          * The ICU data package name.
          * This is normally the name of the .dat package, and the prefix (plus '/')
@@ -24,7 +28,7 @@ namespace ICU4N.Impl
         /**
          * The data path to be used with Class.getResourceAsStream().
          */
-        public static readonly string ICU_BUNDLE = "data/" + PACKAGE_NAME;
+        public static readonly string ICU_BUNDLE = "Data"; //"Data." + PACKAGE_NAME;
 
         /**
          * The base name of ICU data to be used with ClassLoader.getResourceAsStream(),
@@ -71,118 +75,76 @@ namespace ICU4N.Impl
          * to read the properties file, so we would get a circular dependency
          * in the class initialization.
          */
-        private static readonly bool logBinaryDataFromInputStream = false;
-        //private static readonly Logger logger = logBinaryDataFromInputStream?
-        //        Logger.getLogger(ICUData.class.getName()) : null;
+        private static readonly bool logBinaryDataFromInputStream = SystemProperties.GetPropertyAsBoolean("ICU4N.LogBinaryDataFromInputStream", false);
+        private static readonly ILog logger = logBinaryDataFromInputStream ? LogProvider.For<ICUData>() : null;
 
         public static bool Exists(string resourceName)
         {
-            // ICU4N TODO: finish
-            //            URL i = null;
-            //            if (System.getSecurityManager() != null)
-            //            {
-            ////                i = AccessController.doPrivileged(new PrivilegedAction<URL>() {
-            ////                    @Override
-            ////                    public URL run()
-            ////                {
-            ////                    return ICUData.class.getResource(resourceName);
-            ////    }
-            ////});
-            //        } else {
-            //            i = ICUData.class.getResource(resourceName);
-            //        }
-            //        return i != null;
-            return false;
+            return typeof(ICUData).GetTypeInfo().Assembly.GetManifestResourceStream(resourceName) != null;
         }
 
         private static Stream GetStream(Type root, string resourceName, bool required)
         {
-            throw new NotImplementedException();
-            // ICU4N TODO: Finish
-            //    Stream i = null;
-            //    if (System.getSecurityManager() != null)
-            //    {
-            //        i = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-            //                    @Override
-            //                    public InputStream run()
-            //        {
-            //            return root.getResourceAsStream(resourceName);
-            //        }
-            //    });
-            //} else {
-            //            i = root.getResourceAsStream(resourceName);
-            //        }
-
-            //        if (i == null && required) {
-            //            throw new MissingResourceException("could not locate data " +resourceName, root.getPackage().getName(), resourceName);
-            //        }
-            //        checkStreamForBinaryData(i, resourceName);
-            //        return i;
+            Stream i;
+            i = root.GetTypeInfo().Assembly.GetManifestResourceStream(resourceName);
+            if (i == null && required)
+            {
+                throw new MissingManifestResourceException("could not locate data " + resourceName +
+                    " Assembly: " + root.GetTypeInfo().Assembly.FullName + " Resource: " + resourceName);
+            }
+            CheckStreamForBinaryData(i, resourceName);
+            return i;
         }
 
         /**
          * Should be called only from ICUBinary.getData() or from convenience overloads here.
          */
-        internal static Stream GetStream(/*ClassLoader*/ object loader, string resourceName, bool required)
+        internal static Stream GetStream(Assembly loader, string resourceName, bool required)
         {
-            throw new NotImplementedException();
-            // ICU4N TODO: Finish
-            //    InputStream i = null;
-            //    if (System.getSecurityManager() != null)
-            //    {
-            //        i = AccessController.doPrivileged(new PrivilegedAction<InputStream>() {
-            //                    @Override
-            //                    public InputStream run()
-            //        {
-            //            return loader.getResourceAsStream(resourceName);
-            //        }
-            //    });
-            //} else {
-            //            i = loader.getResourceAsStream(resourceName);
-            //        }
-            //        if (i == null && required) {
-            //            throw new MissingResourceException("could not locate data", loader.toString(), resourceName);
-            //        }
-            //        checkStreamForBinaryData(i, resourceName);
-            //        return i;
+            Stream i = null;
+            i = loader.GetManifestResourceStream(resourceName);
+            if (i == null && required)
+            {
+                throw new MissingManifestResourceException("could not locate data " + loader.ToString() + " Resource: " + resourceName);
+            }
+            CheckStreamForBinaryData(i, resourceName);
+            return i;
         }
 
-        //@SuppressWarnings("unused")  // used if logBinaryDataFromInputStream == true
-        private static void CheckStreamForBinaryData(Stream input, String resourceName)
+        private static void CheckStreamForBinaryData(Stream input, string resourceName)
         {
-            throw new NotImplementedException();
-            // ICU4N TODO: Finish
-            //if (logBinaryDataFromInputStream && is != null && resourceName.indexOf(PACKAGE_NAME) >= 0)
-            //{
-            //    try
-            //    {
-            //            is.mark(32);
-            //        byte[] b = new byte[32];
-            //        int len = is.read(b);
-            //        if (len == 32 && b[2] == (byte)0xda && b[3] == 0x27)
-            //        {
-            //            String msg = String.format(
-            //                    "ICU binary data file loaded from Class/ClassLoader as InputStream " +
-            //                    "from %s: MappedData %02x%02x%02x%02x  dataFormat %02x%02x%02x%02x",
-            //                    resourceName,
-            //                    b[0], b[1], b[2], b[3],
-            //                    b[12], b[13], b[14], b[15]);
-            //            logger.info(msg);
-            //        }
-            //            is.reset();
-            //    }
-            //    catch (IOException ignored)
-            //    {
-            //    }
-            //}
+            // ICU4N specific - only check the data if the stream is seekable
+            if (logBinaryDataFromInputStream && input != null && input.CanSeek && resourceName.IndexOf(PACKAGE_NAME) >= 0)
+            {
+                try
+                {
+                    byte[] b = new byte[32];
+                    int len = input.Read(b, 0, b.Length);
+                    if (len == 32 && b[2] == (byte)0xda && b[3] == 0x27)
+                    {
+                        string msg = string.Format(
+                                "ICU binary data file loaded from Assembly as Stream " +
+                                "from {0}: MappedData {1:x2}{2:x2}{3:x2}{4:x2}  dataFormat {5:x2}{6:x2}{7:x2}{8:x2}",
+                                resourceName,
+                                b[0], b[1], b[2], b[3],
+                                b[12], b[13], b[14], b[15]);
+                        logger.Info(msg);
+                    }
+                    input.Seek(b.Length, SeekOrigin.Current);
+                }
+                catch (IOException)
+                {
+                    // ignored
+                }
+            }
         }
 
-        public static Stream GetStream(/*ClassLoader*/object loader, String resourceName)
+        public static Stream GetStream(Assembly loader, string resourceName)
         {
             return GetStream(loader, resourceName, false);
         }
 
-        public static Stream GetRequiredStream(/*ClassLoader*/object loader, string resourceName)
+        public static Stream GetRequiredStream(Assembly loader, string resourceName)
         {
             return GetStream(loader, resourceName, true);
         }

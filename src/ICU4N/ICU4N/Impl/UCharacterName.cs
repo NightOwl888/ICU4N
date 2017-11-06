@@ -69,7 +69,7 @@ namespace ICU4N.Impl
                 return null;
             }
 
-            String result = null;
+            string result = null;
 
             result = GetAlgName(ch, choice);
 
@@ -106,13 +106,13 @@ namespace ICU4N.Impl
             }
 
             // try extended names first
-            int result = GetExtendedChar(name.ToLower(CultureInfo.InvariantCulture), choice);
+            int result = GetExtendedChar(name.ToLowerInvariant(), choice);
             if (result >= -1)
             {
                 return result;
             }
 
-            String upperCaseName = name.ToUpper(CultureInfo.InvariantCulture);
+            string upperCaseName = name.ToUpperInvariant();
             // try algorithmic names first, if fails then try group names
             // int result = getAlgorithmChar(choice, uppercasename);
 
@@ -971,7 +971,7 @@ namespace ICU4N.Impl
             * @param offset of str to start comparison
             * @return true if string matches
             */
-            private bool CompareFactorString(int[] index, int length, String str,
+            private bool CompareFactorString(int[] index, int length, string str,
                                                 int offset)
             {
                 int size = m_factor_.Length;
@@ -1457,7 +1457,7 @@ namespace ICU4N.Impl
                             }
                             // Now validate the category name. We could use a
                             // binary search, or a trie, if we really wanted to.
-                            string type = name.Substring(1, startIndex - 1); // ICU4N TODO: Check logic
+                            string type = name.Substring(1, (startIndex - 1) - 1);
                             int length = TYPE_NAMES_.Length;
                             for (int i = 0; i < length; ++i)
                             {
@@ -1488,7 +1488,7 @@ namespace ICU4N.Impl
          */
         private static void Add(int[] set, char ch)
         {
-            set[(int)((uint)ch >> 5)] |= 1 << (ch & 0x1f);
+            set[ch.TripleShift(5)] |= 1 << (ch & 0x1f);
         }
 
         /**
@@ -1500,7 +1500,7 @@ namespace ICU4N.Impl
          */
         private static bool Contains(int[] set, char ch)
         {
-            return (set[(int)((uint)ch >> 5)] & (1 << (ch & 0x1f))) != 0;
+            return (set[ch.TripleShift(5)] & (1 << (ch & 0x1f))) != 0;
         }
 
         /**

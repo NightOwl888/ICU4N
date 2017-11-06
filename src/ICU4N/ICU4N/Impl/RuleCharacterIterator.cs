@@ -132,7 +132,7 @@ namespace ICU4N.Impl
                 if (c == SymbolTable.SYMBOL_REF && buf == null &&
                     (options & PARSE_VARIABLES) != 0 && sym != null)
                 {
-                    String name = sym.ParseReference(text, pos, text.Length);
+                    string name = sym.ParseReference(text, pos, text.Length);
                     // If name == null there was an isolated SYMBOL_REF;
                     // return it.  Caller must be prepared for this.
                     if (name == null)

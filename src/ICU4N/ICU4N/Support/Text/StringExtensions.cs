@@ -196,6 +196,53 @@ namespace ICU4N.Support.Text
             throw new ArgumentNullException();
         }
 
+        /// <summary>
+        /// Compares a <see cref="ICharSequence"/> to this <see cref="string"/> to determine if
+        /// their contents are equal.
+        /// </summary>
+        /// <param name="text">This <see cref="string"/>.</param>
+        /// <param name="cs">The character sequence to compare to.</param>
+        /// <returns></returns>
+        public static bool ContentEquals(this string text, StringBuilder cs)
+        {
+            int len = cs.Length;
+
+            if (len != text.Length)
+            {
+                return false;
+            }
+
+            if (len == 0 && text.Length == 0)
+            {
+                return true; // since both are empty strings
+            }
+
+            return RegionMatches(text, 0, cs.ToString(), 0, len);
+        }
+
+        /// <summary>
+        /// Compares a <see cref="ICharSequence"/> to this <see cref="string"/> to determine if
+        /// their contents are equal.
+        /// </summary>
+        /// <param name="text">This <see cref="string"/>.</param>
+        /// <param name="cs">The character sequence to compare to.</param>
+        /// <returns></returns>
+        public static bool ContentEquals(this string text, ICharSequence cs)
+        {
+            int len = cs.Length;
+
+            if (len != text.Length)
+            {
+                return false;
+            }
+
+            if (len == 0 && text.Length == 0)
+            {
+                return true; // since both are empty strings
+            }
+
+            return RegionMatches(text, 0, cs.ToString(), 0, len);
+        }
 
         /// <summary> Expert:
         /// A string interner cache.

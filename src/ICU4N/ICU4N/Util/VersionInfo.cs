@@ -294,17 +294,24 @@ namespace ICU4N.Util
             }
             int key = GetInt32(major, minor, milli, micro);
             int version = key;
-            VersionInfo result = MAP_[key];
+            VersionInfo result;
+            lock (MAP_)
+                MAP_.TryGetValue(key, out result);
             if (result == null)
             {
                 result = new VersionInfo(version);
                 VersionInfo tmpvi;
                 lock (MAP_)
                 {
-                    bool got = MAP_.TryGetValue(key, out tmpvi);
-                    MAP_[key] = result;
-                    if (got)
-                        result = tmpvi;
+                    if (!MAP_.TryGetValue(key, out tmpvi) || tmpvi == null)
+                    {
+                        // Put if absent
+                        MAP_[key] = result;
+                    }   
+                }
+                if (tmpvi != null)
+                {
+                    result = tmpvi;
                 }
 
                 //VersionInfo tmpvi = MAP_.putIfAbsent(key, result);
@@ -539,7 +546,8 @@ namespace ICU4N.Util
         /**
          * Map of singletons
          */
-        private static readonly ConcurrentDictionary<int, VersionInfo> MAP_ = new ConcurrentDictionary<int, VersionInfo>();
+        // ICU4N specific - we need to lock the dictionary externally anyway, so there is no need for ConcurrentDictionary
+        private static readonly IDictionary<int, VersionInfo> MAP_ = new Dictionary<int, VersionInfo>();
         /**
          * Last byte mask
          */

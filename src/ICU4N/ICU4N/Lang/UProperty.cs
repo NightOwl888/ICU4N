@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ICU4N.Lang
 {
-    public enum UnicodeProperty
+    public enum UProperty
     {
         /**
          * Special value indicating undefined property.
@@ -908,7 +908,7 @@ namespace ICU4N.Lang
         OTHER_PROPERTY_LIMIT = 0x7001,
     }
 
-    public enum NameChoice
+    public enum NameChoice // ICU4N TODO: API Re-nest so this is the same as the Java documentation?
     {
         /**
          * Selector for the abbreviated name of a property or value.

@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.Linq;
+using ICU4N.Support;
 
 namespace ICU4N.Util
 {
@@ -204,18 +205,21 @@ namespace ICU4N.Util
          * @return The match/value Result.
          * @stable ICU 4.8
          */
-        public BytesTrieResult Current() /*const*/
+        public BytesTrieResult Current /*const*/
         {
-            int pos = pos_;
-            if (pos < 0)
+            get
             {
-                return BytesTrieResult.NO_MATCH;
-            }
-            else
-            {
-                int node;
-                return (remainingMatchLength_ < 0 && (node = bytes_[pos] & 0xff) >= kMinValueLead) ?
-                        valueResults_[node & kValueIsFinal] : BytesTrieResult.NO_VALUE;
+                int pos = pos_;
+                if (pos < 0)
+                {
+                    return BytesTrieResult.NO_MATCH;
+                }
+                else
+                {
+                    int node;
+                    return (remainingMatchLength_ < 0 && (node = bytes_[pos] & 0xff) >= kMinValueLead) ?
+                            valueResults_[node & kValueIsFinal] : BytesTrieResult.NO_VALUE;
+                }
             }
         }
 
@@ -297,7 +301,7 @@ namespace ICU4N.Util
             if (sIndex >= sLimit)
             {
                 // Empty input.
-                return Current();
+                return Current;
             }
             int pos = pos_;
             if (pos < 0)
@@ -488,7 +492,12 @@ namespace ICU4N.Util
         //    return new Iterator(bytes_, pos_, remainingMatchLength_, 0);
         //}
 
-        public IEnumerator<Entry> GetEnumerator()
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(bytes_, pos_, remainingMatchLength_, 0);
+        }
+
+        IEnumerator<Entry> IEnumerable<Entry>.GetEnumerator()
         {
             return new Enumerator(bytes_, pos_, remainingMatchLength_, 0);
         }
@@ -606,7 +615,7 @@ namespace ICU4N.Util
          * Iterator for all of the (byte sequence, value) pairs in a BytesTrie.
          * @stable ICU 4.8
          */
-        public sealed class Enumerator : IEnumerator<Entry>
+        public sealed class Enumerator : IEnumerator<Entry> // ICU4N TODO: API de-nest ?
         {
             private Entry current = null;
 
@@ -637,7 +646,7 @@ namespace ICU4N.Util
              * @return this
              * @stable ICU 4.8
              */
-            public void Reset() // ICU4N specific - removed return parameter for .NET compatibility
+            public Enumerator Reset()
             {
                 pos_ = initialPos_;
                 remainingMatchLength_ = initialRemainingMatchLength_;
@@ -650,6 +659,12 @@ namespace ICU4N.Util
                 pos_ += length;
                 remainingMatchLength_ -= length;
                 stack_.Clear();
+                return this;
+            }
+
+            void IEnumerator.Reset() // ICU4N specific - expicit interface declaration for .NET compatibility
+            {
+                Reset();
             }
 
             /**
@@ -680,13 +695,12 @@ namespace ICU4N.Util
                     //}
                     // Pop the state off the stack and continue with the next outbound edge of
                     // the branch node.
-                    //long top = stack_.remove(stack_.size() - 1);
-                    long top = stack_.Pop();
+                    long top = stack_[stack_.Count - 1];
+                    stack_.Remove(top);
                     int length = (int)top;
                     pos = (int)(top >> 32);
                     entry_.TruncateString(length & 0xffff);
-                    //length >>>= 16;
-                    length = (int)((uint)length >> 16);
+                    length = length.TripleShift(16);
                     if (length > 1)
                     {
                         pos = BranchNext(pos, length);
@@ -778,7 +792,8 @@ namespace ICU4N.Util
                 {
                     ++pos;  // ignore the comparison byte
                             // Push state for the greater-or-equal edge.
-                    stack_.Push((SkipDelta(bytes_, pos) << 32) | ((length - (length >> 1)) << 16) | entry_.Length);
+                    // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
+                    stack_.Add(((long)SkipDelta(bytes_, pos) << 32) | (uint)((length - (length >> 1)) << 16) | (uint)entry_.Length);
                     // Follow the less-than edge.
                     length >>= 1;
                     pos = JumpByDelta(bytes_, pos);
@@ -790,7 +805,8 @@ namespace ICU4N.Util
                 bool isFinal = (node & kValueIsFinal) != 0;
                 int value = ReadValue(bytes_, pos, node >> 1);
                 pos = SkipValue(pos, node);
-                stack_.Push((pos << 32) | ((length - 1) << 16) | entry_.Length);
+                // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
+                stack_.Add(((long)pos << 32) | (uint)((length - 1) << 16) | (uint)entry_.Length);
                 entry_.Append(trieByte);
                 if (isFinal)
                 {
@@ -843,7 +859,7 @@ namespace ICU4N.Util
             // and the remaining branch length in bits 24..16. (Bits 31..25 are unused.)
             // (We could store the remaining branch length minus 1 in bits 23..16 and not use bits 31..24,
             // but the code looks more confusing that way.)
-            private Stack<long> stack_ = new Stack<long>();
+            private List<long> stack_ = new List<long>();
         }
 
         private void Stop()
@@ -1167,7 +1183,7 @@ namespace ICU4N.Util
                     {
                         return 0;
                     }
-                    pos = (int)((uint)uniqueValue >> 33);
+                    pos = (int)uniqueValue.TripleShift(33);
                 }
                 else if (node < kMinValueLead)
                 {

@@ -50,7 +50,7 @@ namespace ICU4N.Impl
         public LocaleIDParser(string localeID)
             : this(localeID, false)
         {
-            
+
         }
 
         public LocaleIDParser(string localeID, bool canonicalize)
@@ -83,7 +83,7 @@ namespace ICU4N.Impl
         }
 
         /**
-         * Returns the text in the buffer from start to blen as a String.
+         * Returns the text in the buffer from start to blen as a string.
          */
         private string GetString(int start)
         {
@@ -688,189 +688,189 @@ namespace ICU4N.Impl
         private IComparer<string> GetKeyComparator()
         {
             return new KeyComparer();
-    }
+        }
 
-    /**
-     * Returns a map of the keywords and values, or null if there are none.
-     */
-    public IDictionary<string, string> GetKeywordMap()
-    {
-        if (keywords == null)
+        /**
+         * Returns a map of the keywords and values, or null if there are none.
+         */
+        public IDictionary<string, string> GetKeywordMap()
         {
-            IDictionary<string, string> m = null;
-            if (SetToKeywordStart())
+            if (keywords == null)
             {
-                // trim spaces and convert to lower case, both keywords and values.
-                do
+                IDictionary<string, string> m = null;
+                if (SetToKeywordStart())
                 {
-                    string key = GetKeyword();
-                    if (key.Length == 0)
+                    // trim spaces and convert to lower case, both keywords and values.
+                    do
                     {
-                        break;
-                    }
-                    char c = Next();
-                    if (c != KEYWORD_ASSIGN)
-                    {
-                        // throw new IllegalArgumentException("key '" + key + "' missing a value.");
-                        if (c == DONE)
+                        string key = GetKeyword();
+                        if (key.Length == 0)
                         {
                             break;
                         }
-                        else
+                        char c = Next();
+                        if (c != KEYWORD_ASSIGN)
                         {
+                            // throw new IllegalArgumentException("key '" + key + "' missing a value.");
+                            if (c == DONE)
+                            {
+                                break;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                        string value = GetValue();
+                        if (value.Length == 0)
+                        {
+                            // throw new IllegalArgumentException("key '" + key + "' missing a value.");
                             continue;
                         }
-                    }
-                    string value = GetValue();
-                    if (value.Length == 0)
-                    {
-                        // throw new IllegalArgumentException("key '" + key + "' missing a value.");
-                        continue;
-                    }
-                    if (m == null)
-                    {
-                        m = new SortedDictionary<string, string>(GetKeyComparator());
-                    }
-                    else if (m.ContainsKey(key))
-                    {
-                        // throw new IllegalArgumentException("key '" + key + "' already has a value.");
-                        continue;
-                    }
-                    m[key]= value;
-                } while (Next() == ITEM_SEPARATOR);
+                        if (m == null)
+                        {
+                            m = new SortedDictionary<string, string>(GetKeyComparator());
+                        }
+                        else if (m.ContainsKey(key))
+                        {
+                            // throw new IllegalArgumentException("key '" + key + "' already has a value.");
+                            continue;
+                        }
+                        m[key] = value;
+                    } while (Next() == ITEM_SEPARATOR);
+                }
+                keywords = m != null ? m : new Dictionary<string, string>();
             }
-                keywords = m != null ? m : new Dictionary<string, string>(); //Collections.< String, String > emptyMap();
+
+            return keywords;
         }
 
-        return keywords;
-    }
 
-
-    /**
-     * Parse the keywords and return start of the string in the buffer.
-     */
-    private int ParseKeywords()
-    {
-        int oldBlen = buffer.Length;
-        var m = GetKeywordMap();
-        if (m.Any())
+        /**
+         * Parse the keywords and return start of the string in the buffer.
+         */
+        private int ParseKeywords()
         {
-            bool first = true;
-            foreach (var e in m)
+            int oldBlen = buffer.Length;
+            var m = GetKeywordMap();
+            if (m.Any())
             {
+                bool first = true;
+                foreach (var e in m)
+                {
                     Append(first ? KEYWORD_SEPARATOR : ITEM_SEPARATOR);
-                first = false;
+                    first = false;
                     Append(e.Key);
                     Append(KEYWORD_ASSIGN);
-                Append(e.Value);
-            }
-            if (first == false)
-            {
-                ++oldBlen;
-            }
-        }
-        return oldBlen;
-    }
-
-    /**
-     * Returns an iterator over the keywords, or null if we have an empty map.
-     */
-    public IEnumerator<string> GetKeywords()
-    {
-        IDictionary<String, String> m = GetKeywordMap();
-        return !m.Any() ? null : m.Keys.GetEnumerator();
-    }
-
-    /**
-     * Returns the value for the named keyword, or null if the keyword is not
-     * present.
-     */
-    public string GetKeywordValue(string keywordName)
-    {
-        var m = GetKeywordMap();
-        return !m.Any() ? null : m.Get(AsciiUtil.ToLowerString(keywordName.Trim()));
-    }
-
-    /**
-     * Set the keyword value only if it is not already set to something else.
-     */
-    public void DefaultKeywordValue(String keywordName, String value)
-    {
-        SetKeywordValue(keywordName, value, false);
-    }
-
-    /**
-     * Set the value for the named keyword, or unset it if value is null.  If
-     * keywordName itself is null, unset all keywords.  If keywordName is not null,
-     * value must not be null.
-     */
-    public void SetKeywordValue(String keywordName, String value)
-    {
-        SetKeywordValue(keywordName, value, true);
-    }
-
-    /**
-     * Set the value for the named keyword, or unset it if value is null.  If
-     * keywordName itself is null, unset all keywords.  If keywordName is not null,
-     * value must not be null.  If reset is true, ignore any previous value for
-     * the keyword, otherwise do not change the keyword (including removal of
-     * one or all keywords).
-     */
-    private void SetKeywordValue(String keywordName, String value, bool reset)
-    {
-        if (keywordName == null)
-        {
-            if (reset)
-            {
-                    // force new map, ignore value
-                    keywords = new Dictionary<string, string>(); //Collections.< String, String > emptyMap();
-            }
-        }
-        else
-        {
-            keywordName = AsciiUtil.ToLowerString(keywordName.Trim());
-            if (keywordName.Length == 0)
-            {
-                throw new ArgumentException("keyword must not be empty");
-            }
-            if (value != null)
-            {
-                value = value.Trim();
-                if (value.Length == 0)
+                    Append(e.Value);
+                }
+                if (first == false)
                 {
-                    throw new ArgumentException("value must not be empty");
+                    ++oldBlen;
                 }
             }
+            return oldBlen;
+        }
+
+        /**
+         * Returns an iterator over the keywords, or null if we have an empty map.
+         */
+        public IEnumerator<string> GetKeywords()
+        {
+            IDictionary<string, string> m = GetKeywordMap();
+            return !m.Any() ? null : m.Keys.GetEnumerator();
+        }
+
+        /**
+         * Returns the value for the named keyword, or null if the keyword is not
+         * present.
+         */
+        public string GetKeywordValue(string keywordName)
+        {
             var m = GetKeywordMap();
-            if (!m.Any())
-            { // it is EMPTY_MAP
-                if (value != null)
+            return !m.Any() ? null : m.Get(AsciiUtil.ToLowerString(keywordName.Trim()));
+        }
+
+        /**
+         * Set the keyword value only if it is not already set to something else.
+         */
+        public void DefaultKeywordValue(string keywordName, string value)
+        {
+            SetKeywordValue(keywordName, value, false);
+        }
+
+        /**
+         * Set the value for the named keyword, or unset it if value is null.  If
+         * keywordName itself is null, unset all keywords.  If keywordName is not null,
+         * value must not be null.
+         */
+        public void SetKeywordValue(string keywordName, string value)
+        {
+            SetKeywordValue(keywordName, value, true);
+        }
+
+        /**
+         * Set the value for the named keyword, or unset it if value is null.  If
+         * keywordName itself is null, unset all keywords.  If keywordName is not null,
+         * value must not be null.  If reset is true, ignore any previous value for
+         * the keyword, otherwise do not change the keyword (including removal of
+         * one or all keywords).
+         */
+        private void SetKeywordValue(string keywordName, string value, bool reset)
+        {
+            if (keywordName == null)
+            {
+                if (reset)
                 {
-                    // force new map
-                    keywords = new SortedDictionary<string, string>(GetKeyComparator());
-                    keywords[keywordName]= value.Trim();
+                    // force new map, ignore value
+                    keywords = new Dictionary<string, string>();
                 }
             }
             else
             {
-                if (reset || !m.ContainsKey(keywordName))
+                keywordName = AsciiUtil.ToLowerString(keywordName.Trim());
+                if (keywordName.Length == 0)
                 {
+                    throw new ArgumentException("keyword must not be empty");
+                }
+                if (value != null)
+                {
+                    value = value.Trim();
+                    if (value.Length == 0)
+                    {
+                        throw new ArgumentException("value must not be empty");
+                    }
+                }
+                var m = GetKeywordMap();
+                if (!m.Any())
+                { // it is EMPTY_MAP
                     if (value != null)
                     {
-                        m[keywordName]= value;
+                        // force new map
+                        keywords = new SortedDictionary<string, string>(GetKeyComparator());
+                        keywords[keywordName] = value.Trim();
                     }
-                    else
+                }
+                else
+                {
+                    if (reset || !m.ContainsKey(keywordName))
                     {
-                        m.Remove(keywordName);
-                        if (!m.Any())
+                        if (value != null)
                         {
+                            m[keywordName] = value;
+                        }
+                        else
+                        {
+                            m.Remove(keywordName);
+                            if (!m.Any())
+                            {
                                 // force new map
-                                keywords = new Dictionary<string, string>(); //Collections.< String, String > emptyMap();
+                                keywords = new Dictionary<string, string>();
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
 }

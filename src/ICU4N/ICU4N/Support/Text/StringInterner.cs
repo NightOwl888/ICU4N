@@ -16,7 +16,7 @@ namespace ICU4N.Support.Text
         /// <summary>Returns a single object instance for each equal string. </summary>
         public virtual string Intern(string s)
         {
-#if !NETSTANDARD1_6
+#if !NETSTANDARD1_3
             return string.Intern(s);
 #else
             throw new PlatformNotSupportedException("string.Intern not supported.  Use SimpleStringInterner.");

@@ -369,7 +369,7 @@ public void AddCaseClosure(int c, UnicodeSet set)
             length = fullLength & 0xf;
             if (length != 0)
             {
-                set.Add(exceptions.Substring(excOffset, length)); // excOffset + length - excOffset = length
+                set.Add(exceptions.Substring(excOffset, length)); // excOffset + length - excOffset == length
                         excOffset += length;
             }
 
@@ -1096,10 +1096,10 @@ private static readonly string
                 try
                 {
                         // append the lowercase mapping
-                        output.Append(exceptions, excOffset, excOffset + full);
+                        output.Append(exceptions, excOffset, full); // ICU4N: (excOffset + full) - excOffset == full
 
-                    /* return the string length */
-                    return full;
+                            /* return the string length */
+                            return full;
                 }
                 catch (IOException e)
                 {
@@ -1209,10 +1209,10 @@ private int ToUpperOrTitle(int c, IContextIterator iter,
                 try
                 {
                         // append the result string
-                        output.Append(exceptions, excOffset, excOffset + full);
+                        output.Append(exceptions, excOffset, full); // ICU4N: (excOffset + full) - excOffset == full
 
-                    /* return the string length */
-                    return full;
+                            /* return the string length */
+                            return full;
                 }
                 catch (IOException e)
                 {
@@ -1467,10 +1467,10 @@ public int ToFullFolding(int c, StringBuilder output, int options)
                 try
                 {
                         // append the result string
-                        output.Append(exceptions, excOffset, excOffset + full);
+                        output.Append(exceptions, excOffset, full); // ICU4N: (excOffset + full) - excOffset == full
 
-                    /* return the string length */
-                    return full;
+                            /* return the string length */
+                            return full;
                 }
                 catch (IOException e)
                 {
@@ -1515,17 +1515,17 @@ private static StringBuilder dummyStringBuilder = new StringBuilder();
 {
     switch (which)
     {
-        case (int)UnicodeProperty.LOWERCASE:
+        case (int)UProperty.LOWERCASE:
             return LOWER == GetType(c);
-        case (int)UnicodeProperty.UPPERCASE:
+        case (int)UProperty.UPPERCASE:
             return UPPER == GetType(c);
-        case (int)UnicodeProperty.SOFT_DOTTED:
+        case (int)UProperty.SOFT_DOTTED:
             return IsSoftDotted(c);
-        case (int)UnicodeProperty.CASE_SENSITIVE:
+        case (int)UProperty.CASE_SENSITIVE:
             return IsCaseSensitive(c);
-        case (int)UnicodeProperty.CASED:
+        case (int)UProperty.CASED:
             return NONE != GetType(c);
-        case (int)UnicodeProperty.CASE_IGNORABLE:
+        case (int)UProperty.CASE_IGNORABLE:
             return (GetTypeOrIgnorable(c) >> 2) != 0;
         /*
          * Note: The following Changes_When_Xyz are defined as testing whether
@@ -1539,17 +1539,17 @@ private static StringBuilder dummyStringBuilder = new StringBuilder();
          * and the property starts set needs to be the union of the
          * start sets for normalization and case mappings.
          */
-        case (int)UnicodeProperty.CHANGES_WHEN_LOWERCASED:
+        case (int)UProperty.CHANGES_WHEN_LOWERCASED:
             dummyStringBuilder.Length=0;
             return ToFullLower(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
-        case (int)UnicodeProperty.CHANGES_WHEN_UPPERCASED:
+        case (int)UProperty.CHANGES_WHEN_UPPERCASED:
             dummyStringBuilder.Length = 0;
                     return ToFullUpper(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
-        case (int)UnicodeProperty.CHANGES_WHEN_TITLECASED:
+        case (int)UProperty.CHANGES_WHEN_TITLECASED:
             dummyStringBuilder.Length = 0;
                     return ToFullTitle(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
         /* case UProperty.CHANGES_WHEN_CASEFOLDED: -- in UCharacterProperty.java */
-        case (int)UnicodeProperty.CHANGES_WHEN_CASEMAPPED:
+        case (int)UProperty.CHANGES_WHEN_CASEMAPPED:
             dummyStringBuilder.Length = 0;
                     return
                 ToFullLower(c, null, dummyStringBuilder, LOC_ROOT) >= 0 ||

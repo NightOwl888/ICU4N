@@ -308,9 +308,17 @@ namespace ICU4N.Support.Text
         /// <summary>
         /// Appends the give <see cref="ICharSequence"/> to this <see cref="StringBuilder"/>.
         /// </summary>
-        internal static StringBuilder Append(this StringBuilder text, ICharSequence csq, int start, int end)
+        internal static StringBuilder Append(this StringBuilder text, ICharSequence csq, int start, int end) // ICU4N TODO: Weird to have end vs length, but using length means we need a conversion everywhere. Probably be best to use length anyway for consistency with .NET.
         {
-            text.Append(csq.SubSequence(start, end));
+            if (csq == null)
+                csq = "null".ToCharSequence();
+            if ((start < 0) || (start > end) || (end > csq.Length))
+                throw new IndexOutOfRangeException(
+                    "start " + start + ", end " + end + ", s.length() "
+                    + csq.Length);
+            int len = end - start;
+            for (int i = start, j = text.Length; i < end; i++, j++)
+                text.Append(csq[i]);
             return text;
         }
 
@@ -319,7 +327,16 @@ namespace ICU4N.Support.Text
             if (start < 0)
                 throw new IndexOutOfRangeException(nameof(start));
 
-            text.Remove(start, end - start);
+            int length = end - start;
+            if (start + length > text.Length)
+            {
+                length = text.Length - start;
+            }
+            if (length > 0)
+            {
+                text.Remove(start, length);
+            }
+
             return text;
         }
 

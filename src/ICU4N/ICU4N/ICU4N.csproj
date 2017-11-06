@@ -1,7 +1,74 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <!--<TargetFramework>net45</TargetFramework>-->
+    <DefineConstants>$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
   </PropertyGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
+    <PackageReference Include="System.IO.MemoryMappedFiles" Version="4.3.0" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="System.Reflection.TypeExtensions" Version="4.4.0" />
+    <PackageReference Include="System.Runtime" Version="4.3.0" />
+    <PackageReference Include="System.Threading.Thread" Version="4.3.0" />
+  </ItemGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
+    <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Impl\Data\nfc.nrm" />
+    <None Remove="Impl\Data\nfkc.nrm" />
+    <None Remove="Impl\Data\nfkc_cf.nrm" />
+    <None Remove="Impl\Data\pnames.icu" />
+    <None Remove="Impl\Data\ubidi.icu" />
+    <None Remove="Impl\Data\ucase.icu" />
+    <None Remove="Impl\Data\unames.icu" />
+    <None Remove="Impl\Data\uprops.icu" />
+    <None Remove="Impl\Data\uts46.nrm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Impl\Data\nfc.nrm" />
+    <EmbeddedResource Include="Impl\Data\nfkc.nrm" />
+    <EmbeddedResource Include="Impl\Data\nfkc_cf.nrm" />
+    <EmbeddedResource Include="Impl\Data\pnames.icu" />
+    <EmbeddedResource Include="Impl\Data\ubidi.icu" />
+    <EmbeddedResource Include="Impl\Data\ucase.icu" />
+    <EmbeddedResource Include="Impl\Data\unames.icu" />
+    <EmbeddedResource Include="Impl\Data\uprops.icu" />
+    <EmbeddedResource Include="Impl\Data\uts46.nrm" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ICUConfig.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ICUConfig.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="ICUConfig.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ICUConfig.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 
 </Project>

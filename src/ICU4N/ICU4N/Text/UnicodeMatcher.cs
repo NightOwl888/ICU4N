@@ -93,7 +93,7 @@ namespace ICU4N.Text
         void AddMatchSetTo(UnicodeSet toUnionTo);
     }
 
-    public static class UnicodeMatcher
+    public class UnicodeMatcher
     {
         /**
          * Constant returned by <code>matches()</code> indicating a

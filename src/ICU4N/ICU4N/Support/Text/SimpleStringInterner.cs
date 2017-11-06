@@ -80,7 +80,7 @@ namespace ICU4N.Support.Text
 
             // insertion-order cache: add new entry at head
 
-#if !NETSTANDARD1_6
+#if !NETSTANDARD1_3
             s = string.Intern(s);
 #endif
 

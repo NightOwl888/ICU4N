@@ -224,7 +224,9 @@ namespace ICU4N.Impl
                 {
                     throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
                 }
-                Normalize(src, new Normalizer2Impl.ReorderingBuffer(impl, dest, src.Length));
+                Normalizer2Impl.ReorderingBuffer buffer = new Normalizer2Impl.ReorderingBuffer(impl, dest, src.Length);
+                Normalize(src, buffer);
+                buffer.Flush();
                 return dest;
             }
 
@@ -585,7 +587,7 @@ namespace ICU4N.Impl
                 {
                     return NormalizerQuickCheckResult.Maybe;
                 }
-                else if (((int)((uint)spanLengthAndMaybe >> 1)) == s.Length)
+                else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
                 {
                     return NormalizerQuickCheckResult.Yes;
                 }
@@ -602,7 +604,7 @@ namespace ICU4N.Impl
                 {
                     return NormalizerQuickCheckResult.Maybe;
                 }
-                else if (((int)((uint)spanLengthAndMaybe >> 1)) == s.Length)
+                else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
                 {
                     return NormalizerQuickCheckResult.Yes;
                 }
@@ -619,7 +621,7 @@ namespace ICU4N.Impl
                 {
                     return NormalizerQuickCheckResult.Maybe;
                 }
-                else if (((int)((uint)spanLengthAndMaybe >> 1)) == s.Length)
+                else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
                 {
                     return NormalizerQuickCheckResult.Yes;
                 }
@@ -636,7 +638,7 @@ namespace ICU4N.Impl
                 {
                     return NormalizerQuickCheckResult.Maybe;
                 }
-                else if (((int)((uint)spanLengthAndMaybe >> 1)) == s.Length)
+                else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
                 {
                     return NormalizerQuickCheckResult.Yes;
                 }
@@ -648,22 +650,22 @@ namespace ICU4N.Impl
 
             public override int SpanQuickCheckYes(string s)
             {
-                return (int)((uint)impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true) >> 1);
+                return impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
             }
 
             public override int SpanQuickCheckYes(StringBuilder s)
             {
-                return (int)((uint)impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true) >> 1);
+                return impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
             }
 
             public override int SpanQuickCheckYes(char[] s)
             {
-                return (int)((uint)impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true) >> 1);
+                return impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
             }
 
             internal override int SpanQuickCheckYes(ICharSequence s)
             {
-                return (int)((uint)impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true) >> 1);
+                return impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
             }
 
             public override int GetQuickCheck(int c)

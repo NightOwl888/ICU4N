@@ -1,7 +1,4 @@
 ﻿using ICU4N.Support.Text;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Text
 {

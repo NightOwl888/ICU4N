@@ -2,6 +2,7 @@
 using ICU4N.Impl.Locale;
 using ICU4N.Lang;
 using ICU4N.Support.Globalization;
+using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
 using System.Collections.Generic;
@@ -190,7 +191,7 @@ namespace ICU4N.Util
         private static readonly CultureInfo EMPTY_LOCALE = CultureInfo.InvariantCulture;
 
         // special keyword key for Unicode locale attributes
-        private static readonly String LOCALE_ATTRIBUTE_KEY = "attribute";
+        private static readonly string LOCALE_ATTRIBUTE_KEY = "attribute";
 
         /**
          * The root ULocale.
@@ -235,7 +236,7 @@ namespace ICU4N.Util
         /**
          * The raw localeID that we were passed in.
          */
-        private String localeID;
+        private string localeID;
 
         /**
          * Cache the locale data container fields.
@@ -374,9 +375,9 @@ namespace ICU4N.Util
         }
 
         /**
-         * Convenience overload of ULocale(String, String, String) for
+         * Convenience overload of ULocale(string, string, string) for
          * compatibility with java.util.Locale.
-         * @see #ULocale(String, String, String)
+         * @see #ULocale(string, string, string)
          * @stable ICU 3.4
          */
         public ULocale(string a, string b)
@@ -387,7 +388,7 @@ namespace ICU4N.Util
         /**
          * Constructs a ULocale from a localeID constructed from the three 'fields' a, b, and
          * c.  These fields are concatenated using underscores to form a localeID of the form
-         * a_b_c, which is then handled like the localeID passed to <code>ULocale(String
+         * a_b_c, which is then handled like the localeID passed to <code>ULocale(string
          * localeID)</code>.
          *
          * <p>Java locale strings consisting of language, country, and
@@ -401,7 +402,7 @@ namespace ICU4N.Util
          * @param a first component of the locale id
          * @param b second component of the locale id
          * @param c third component of the locale id
-         * @see #ULocale(String)
+         * @see #ULocale(string)
          * @stable ICU 3.0
          */
         public ULocale(string a, string b, string c)
@@ -504,7 +505,7 @@ namespace ICU4N.Util
                 if (JDKLocaleHelper.IsOriginalDefaultLocale(defaultLocale))
                 {
                     // Use "user.script" if available
-                    String userScript = JDKLocaleHelper.GetSystemProperty("user.script");
+                    string userScript = JDKLocaleHelper.GetSystemProperty("user.script");
                     if (userScript != null && LanguageTag.IsScript(userScript))
                     {
                         // Note: Builder or forLanguageTag cannot be used here
@@ -613,7 +614,12 @@ namespace ICU4N.Util
             {
                 defaultLocale = newLocale.ToLocale();
                 //Locale.setDefault(defaultLocale);
+#if NETSTANDARD
                 CultureInfo.CurrentCulture = defaultLocale;
+#else
+                System.Threading.Thread.CurrentThread.CurrentCulture = defaultLocale;
+#endif
+
                 defaultULocale = newLocale;
                 // This method also updates all category default locales
                 foreach (Category cat in Enum.GetValues(typeof(Category)))
@@ -830,7 +836,7 @@ namespace ICU4N.Util
                                             }
                                             else
                                             {
-                                                cmp = thisVal.CompareTo(otherVal);
+                                                cmp = thisVal.CompareToOrdinal(otherVal);
                                             }
                                         }
                                     }
@@ -846,7 +852,7 @@ namespace ICU4N.Util
             }
 
             // Normalize the result value:
-            // Note: String.compareTo() may return value other than -1, 0, 1.
+            // Note: string.compareTo() may return value other than -1, 0, 1.
             // A value other than those are OK by the definition, but we don't want
             // associate any semantics other than negative/zero/positive.
             return (cmp < 0) ? -1 : ((cmp > 0) ? 1 : 0);
@@ -976,7 +982,7 @@ namespace ICU4N.Util
          *     If TRUE, will try to infer region from other
          *     locale elements if not found any other way.
          * @return
-         *     String with region to use ("" if none found).
+         *     string with region to use ("" if none found).
          * @internal ICU 57
          * @deprecated This API is ICU internal only.
          */
@@ -1082,7 +1088,7 @@ namespace ICU4N.Util
          * {@icu} Returns the (normalized) base name for this locale,
          * like {@link #getName()}, but without keywords.
          *
-         * @return the base name as a String.
+         * @return the base name as a string.
          * @stable ICU 3.0
          */
         public string GetBaseName()
@@ -1092,10 +1098,10 @@ namespace ICU4N.Util
 
         /**
          * {@icu} Returns the (normalized) base name for the specified locale,
-         * like {@link #getName(String)}, but without keywords.
+         * like {@link #getName(string)}, but without keywords.
          *
          * @param localeID the locale ID as a string
-         * @return the base name as a String.
+         * @return the base name as a string.
          * @stable ICU 3.0
          */
         public static string GetBaseName(string localeID)
@@ -1110,7 +1116,7 @@ namespace ICU4N.Util
         /**
          * {@icu} Returns the (normalized) full name for this locale.
          *
-         * @return String the full name of the localeID
+         * @return string the full name of the localeID
          * @stable ICU 3.0
          */
         public string GetName()
@@ -1159,7 +1165,7 @@ namespace ICU4N.Util
          * {@icu} Returns the (normalized) full name for the specified locale.
          *
          * @param localeID the localeID as a string
-         * @return String the full name of the localeID
+         * @return string the full name of the localeID
          * @stable ICU 3.0
          */
         public static string GetName(string localeID)
@@ -1229,7 +1235,7 @@ namespace ICU4N.Util
          * {@icu} Returns the value for a keyword in the specified locale. If the keyword is
          * not defined, returns null.  The locale name does not need to be normalized.
          * @param keywordName name of the keyword whose value is desired. Case insensitive.
-         * @return String the value of the keyword as a string
+         * @return string the value of the keyword as a string
          * @stable ICU 3.0
          */
         public static string GetKeywordValue(string localeID, string keywordName)
@@ -1265,7 +1271,7 @@ namespace ICU4N.Util
             /* convert the variants to appropriate ID */
             for (int i = 0; i < variantsToKeywords.Length; i++)
             {
-                String[] vals = variantsToKeywords[i];
+                string[] vals = variantsToKeywords[i];
                 int idx = baseName.LastIndexOf("_" + vals[0]);
                 if (idx > -1)
                 {
@@ -1274,7 +1280,7 @@ namespace ICU4N.Util
                     baseName = baseName.Substring(0, idx - 0);
                     if (baseName.EndsWith("_", StringComparison.Ordinal))
                     {
-                        baseName = baseName.Substring(0, --idx);
+                        baseName = baseName.Substring(0, (--idx - 0));
                     }
                     parser.SetBaseName(baseName);
                     parser.DefaultKeywordValue(vals[1], vals[2]);
@@ -1337,7 +1343,7 @@ namespace ICU4N.Util
          * locale id.  Otherwise, this adds/replaces the value for this keyword in the locale id.
          * The keyword and value must not be empty.
          *
-         * <p>Related: {@link #getBaseName(String)} returns the locale ID string with all keywords removed.
+         * <p>Related: {@link #getBaseName(string)} returns the locale ID string with all keywords removed.
          *
          * @param localeID the locale id to modify
          * @param keyword the keyword to add/remove, or null to remove all keywords.
@@ -1361,7 +1367,7 @@ namespace ICU4N.Util
          * @param value the value to add, if not already present
          * @return the updated locale id
          */
-        /*    private static String defaultKeywordValue(String localeID, String keyword, String value) {
+        /*    private static string defaultKeywordValue(string localeID, string keyword, string value) {
             LocaleIDParser parser = new LocaleIDParser(localeID);
             parser.defaultKeywordValue(keyword, value);
             return parser.getName();
@@ -1836,7 +1842,7 @@ namespace ICU4N.Util
          * @param keyword the keyword to be displayed.
          * @param displayLocaleID the id of the locale in which to display the keyword.
          * @return the localized keyword name.
-         * @see #getKeywords(String)
+         * @see #getKeywords(string)
          * @stable ICU 3.0
          */
         public static string GetDisplayKeyword(string keyword, string displayLocaleID)
@@ -1849,7 +1855,7 @@ namespace ICU4N.Util
          * @param keyword the keyword to be displayed.
          * @param displayLocale the locale in which to display the keyword.
          * @return the localized keyword name.
-         * @see #getKeywords(String)
+         * @see #getKeywords(string)
          * @stable ICU 3.0
          */
         public static string GetDisplayKeyword(string keyword, ULocale displayLocale)
@@ -2583,14 +2589,14 @@ namespace ICU4N.Util
                 if (state == -1)
                 {
                     // error state
-                    throw new FormatException("Invalid Accept-Language" /*, n*/);
+                    throw new FormatException("Invalid Accept-Language" /*, n*/); // ICU4N TODO: Make a Try... version of this
                 }
                 if (gotLanguageQ)
                 {
                     double q = 1.0;
                     if (qvalBuf.Length != 0)
                     {
-                        try
+                        try // ICU4N TODO: Use TryParse
                         {
                             q = Double.Parse(qvalBuf.ToString(), CultureInfo.InvariantCulture);
                         }
@@ -2787,7 +2793,7 @@ namespace ICU4N.Util
             if (trailingIndex < loc.localeID.Length)
             {
                 /*
-                 * Create a String that contains everything
+                 * Create a string that contains everything
                  * after the language, script, and region.
                  */
                 originalTrailing = loc.localeID.Substring(trailingIndex);
@@ -2935,11 +2941,11 @@ namespace ICU4N.Util
 
         ///**
         // * A trivial utility function that checks for a null
-        // * reference or checks the length of the supplied String.
+        // * reference or checks the length of the supplied string.
         // *
         // *   @param string The string to check
         // *
-        // *   @return true if the String is empty, or if the reference is null.
+        // *   @return true if the string is empty, or if the reference is null.
         // */
         //private static bool IsEmptyString(string str)
         //{
@@ -3035,7 +3041,7 @@ namespace ICU4N.Util
                     parser = new LocaleIDParser(alternateTags);
                 }
 
-                String alternateScript = parser.GetScript();
+                string alternateScript = parser.GetScript();
 
                 if (!string.IsNullOrEmpty(alternateScript))
                 {
@@ -3137,7 +3143,7 @@ namespace ICU4N.Util
          * @param script The script tag to use.
          * @param region The region tag to use.
          * @param trailing Any trailing data to append to the new tag.
-         * @return The new String.
+         * @return The new string.
          **/
         internal static string CreateTagString(string lang, string script, string region, string trailing)
         {
@@ -3150,7 +3156,7 @@ namespace ICU4N.Util
          * This function does not return the canonical strings for the unknown script and region.
          *
          * @param localeID The locale ID to parse.
-         * @param tags An array of three String references to return the subtag strings.
+         * @param tags An array of three string references to return the subtag strings.
          * @return The number of chars of the localeID parameter consumed.
          **/
         private static int ParseTagString(string localeID, string[] tags)
@@ -3376,7 +3382,7 @@ namespace ICU4N.Util
          * The key for the private use locale extension ('x').
          *
          * @see #getExtension(char)
-         * @see Builder#setExtension(char, String)
+         * @see Builder#setExtension(char, string)
          *
          * @stable ICU 4.2
          */
@@ -3386,7 +3392,7 @@ namespace ICU4N.Util
          * The key for Unicode locale extension ('u').
          *
          * @see #getExtension(char)
-         * @see Builder#setExtension(char, String)
+         * @see Builder#setExtension(char, string)
          *
          * @stable ICU 4.2
          */
@@ -3533,7 +3539,7 @@ namespace ICU4N.Util
          * in the IANA Language Subtag Registry.
          *
          * @return a BCP47 language tag representing the locale
-         * @see #forLanguageTag(String)
+         * @see #forLanguageTag(string)
          *
          * @stable ICU 4.2
          */
@@ -3567,7 +3573,7 @@ namespace ICU4N.Util
             LanguageTag tag = LanguageTag.ParseLocale(@base, exts);
 
             StringBuilder buf = new StringBuilder();
-            String subtag = tag.GetLanguage();
+            string subtag = tag.GetLanguage();
             if (subtag.Length > 0)
             {
                 buf.Append(LanguageTag.CanonicalizeLanguage(subtag));
@@ -3587,7 +3593,7 @@ namespace ICU4N.Util
                 buf.Append(LanguageTag.CanonicalizeRegion(subtag));
             }
 
-            IList<String> subtags = tag.GetVariants();
+            IList<string> subtags = tag.GetVariants();
             foreach (string s in subtags)
             {
                 buf.Append(LanguageTag.SEP);
@@ -3719,7 +3725,7 @@ namespace ICU4N.Util
          * @return The locale that best represents the language tag.
          * @throws NullPointerException if <code>languageTag</code> is <code>null</code>
          * @see #toLanguageTag()
-         * @see ULocale.Builder#setLanguageTag(String)
+         * @see ULocale.Builder#setLanguageTag(string)
          *
          * @stable ICU 4.2
          */
@@ -3748,7 +3754,7 @@ namespace ICU4N.Util
          * @return              the well-formed BCP 47 Unicode locale extension key,
          *                      or null if the specified locale keyword cannot be mapped
          *                      to a well-formed BCP 47 Unicode locale extension key.
-         * @see #toLegacyKey(String)
+         * @see #toLegacyKey(string)
          * @stable ICU 54
          */
         public static string ToUnicodeLocaleKey(string keyword)
@@ -3786,7 +3792,7 @@ namespace ICU4N.Util
          * @return              the well-formed BCP47 Unicode locale extension type,
          *                      or null if the locale keyword value cannot be mapped to
          *                      a well-formed BCP 47 Unicode locale extension type.
-         * @see #toLegacyType(String, String)
+         * @see #toLegacyType(string, string)
          * @stable ICU 54
          */
         public static string ToUnicodeLocaleType(string keyword, string value)
@@ -3809,7 +3815,7 @@ namespace ICU4N.Util
          *                      extension key or legacy key).
          * @return              the well-formed legacy key, or null if the specified
          *                      keyword cannot be mapped to a well-formed legacy key.
-         * @see #toUnicodeLocaleKey(String)
+         * @see #toUnicodeLocaleKey(string)
          * @stable ICU 54
          */
         public static string ToLegacyKey(string keyword)
@@ -3857,7 +3863,7 @@ namespace ICU4N.Util
          * @return              the well-formed legacy type, or null if the specified
          *                      keyword value cannot be mapped to a well-formed legacy
          *                      type.
-         * @see #toUnicodeLocaleType(String, String)
+         * @see #toUnicodeLocaleType(string, string)
          * @stable ICU 54
          */
         public static string ToLegacyType(string keyword, string value)
@@ -3979,7 +3985,7 @@ namespace ICU4N.Util
              * @param languageTag the language tag
              * @return This builder.
              * @throws IllformedLocaleException if <code>languageTag</code> is ill-formed
-             * @see ULocale#forLanguageTag(String)
+             * @see ULocale#forLanguageTag(string)
              *
              * @stable ICU 4.2
              */
@@ -4132,7 +4138,7 @@ namespace ICU4N.Util
              * @return This builder.
              * @throws IllformedLocaleException if <code>key</code> is illegal
              * or <code>value</code> is ill-formed
-             * @see #setUnicodeLocaleKeyword(String, String)
+             * @see #setUnicodeLocaleKeyword(string, string)
              *
              * @stable ICU 4.2
              */
@@ -4167,7 +4173,7 @@ namespace ICU4N.Util
              * @throws IllformedLocaleException if <code>key</code> or <code>type</code>
              * is ill-formed
              * @throws NullPointerException if <code>key</code> is null
-             * @see #setExtension(char, String)
+             * @see #setExtension(char, string)
              *
              * @stable ICU 4.4
              */
@@ -4193,7 +4199,7 @@ namespace ICU4N.Util
              * @return This builder.
              * @throws NullPointerException if <code>attribute</code> is null
              * @throws IllformedLocaleException if <code>attribute</code> is ill-formed
-             * @see #setExtension(char, String)
+             * @see #setExtension(char, string)
              *
              * @stable ICU 4.6
              */
@@ -4221,7 +4227,7 @@ namespace ICU4N.Util
              * @return This builder.
              * @throws NullPointerException if <code>attribute</code> is null
              * @throws IllformedLocaleException if <code>attribute</code> is ill-formed
-             * @see #setExtension(char, String)
+             * @see #setExtension(char, string)
              *
              * @stable ICU 4.6
              */
@@ -4256,7 +4262,7 @@ namespace ICU4N.Util
              * Language, script, region and variant are unchanged.
              *
              * @return this builder
-             * @see #setExtension(char, String)
+             * @see #setExtension(char, string)
              *
              * @stable ICU 4.2
              */
@@ -4497,8 +4503,8 @@ namespace ICU4N.Util
                 //    mGetExtension = Locale.class.getMethod("getExtension", char.class);
                 //                    mGetUnicodeLocaleKeys = Locale.class.getMethod("getUnicodeLocaleKeys", (Class[]) null);
                 //    mGetUnicodeLocaleAttributes = Locale.class.getMethod("getUnicodeLocaleAttributes", (Class[]) null);
-                //    mGetUnicodeLocaleType = Locale.class.getMethod("getUnicodeLocaleType", String.class);
-                //                    mForLanguageTag = Locale.class.getMethod("forLanguageTag", String.class);
+                //    mGetUnicodeLocaleType = Locale.class.getMethod("getUnicodeLocaleType", string.class);
+                //                    mForLanguageTag = Locale.class.getMethod("forLanguageTag", string.class);
 
                 //                    hasScriptsAndUnicodeExtensions = true;
                 //                } catch (NoSuchMethodException e) {
@@ -4525,7 +4531,7 @@ namespace ICU4N.Util
                 //                    Method mName = cCategory.getMethod("name", (Class[])null);
                 //Object[] enumConstants = cCategory.getEnumConstants();
                 //                    for (Object e : enumConstants) {
-                //                        String catVal = (String)mName.invoke(e, (Object[])null);
+                //                        string catVal = (string)mName.invoke(e, (Object[])null);
                 //                        if (catVal.equals("DISPLAY")) {
                 //                            eDISPLAY = e;
                 //                        } else if (catVal.equals("FORMAT")) {
@@ -4923,26 +4929,28 @@ namespace ICU4N.Util
             // this method returns false.
             public static bool IsOriginalDefaultLocale(CultureInfo loc)
             {
-                if (hasScriptsAndUnicodeExtensions)
-                {
-                    string script = "";
-                    try
-                    {
-                        script = (string)mGetScript.Invoke(loc, (Object[])null);
-                    }
-                    catch (Exception e)
-                    {
-                        return false;
-                    }
+                return loc.Equals(CultureInfo.DefaultThreadCurrentCulture);
 
-                    return loc.GetLanguage().Equals(GetSystemProperty("user.language"))
-                            && loc.GetCountry().Equals(GetSystemProperty("user.country"))
-                            && loc.GetVariant().Equals(GetSystemProperty("user.variant"))
-                            && script.Equals(GetSystemProperty("user.script"));
-                }
-                return loc.GetLanguage().Equals(GetSystemProperty("user.language"))
-                        && loc.GetCountry().Equals(GetSystemProperty("user.country"))
-                        && loc.GetVariant().Equals(GetSystemProperty("user.variant"));
+                //if (hasScriptsAndUnicodeExtensions)
+                //{
+                //    string script = "";
+                //    try
+                //    {
+                //        script = (string)mGetScript.Invoke(loc, (Object[])null);
+                //    }
+                //    catch (Exception e)
+                //    {
+                //        return false;
+                //    }
+
+                //    return loc.GetLanguage().Equals(GetSystemProperty("user.language"))
+                //            && loc.GetCountry().Equals(GetSystemProperty("user.country"))
+                //            && loc.GetVariant().Equals(GetSystemProperty("user.variant"))
+                //            && script.Equals(GetSystemProperty("user.script"));
+                //}
+                //return loc.GetLanguage().Equals(GetSystemProperty("user.language"))
+                //        && loc.GetCountry().Equals(GetSystemProperty("user.country"))
+                //        && loc.GetVariant().Equals(GetSystemProperty("user.variant"));
             }
 
             public static string GetSystemProperty(string key)
@@ -4954,9 +4962,9 @@ namespace ICU4N.Util
                              //    {
                              //        try
                              //        {
-                             //            val = AccessController.doPrivileged(new PrivilegedAction<String>() {
+                             //            val = AccessController.doPrivileged(new PrivilegedAction<string>() {
                              //                        @Override
-                             //                        public String run()
+                             //                        public string run()
                              //            {
                              //                return System.getProperty(fkey);
                              //            }

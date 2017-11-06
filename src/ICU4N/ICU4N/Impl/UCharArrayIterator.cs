@@ -65,6 +65,13 @@ namespace ICU4N.Impl
         public override int GetText(char[] fillIn, int offset)
         {
             int len = limit - start;
+            if (offset + len > fillIn.Length)
+            {
+                // ICU4N specific - IndexOutOfRangeException expected
+                // when the array length is exceeded, but Array.Copy throws
+                // ArgumentException in this case.
+                throw new IndexOutOfRangeException();
+            }
             System.Array.Copy(text, start, fillIn, offset, len);
             return len;
         }

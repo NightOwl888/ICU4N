@@ -2376,13 +2376,13 @@ namespace ICU4N.Lang
                 }
 
                 return UnicodeBlock.GetInstance(
-                        UCharacterProperty.INSTANCE.GetIntPropertyValue(ch, (int)UnicodeProperty.BLOCK));
+                        UCharacterProperty.INSTANCE.GetIntPropertyValue(ch, (int)UProperty.BLOCK));
             }
 
             /**
-             * Alternative to the {@link java.lang.Character.UnicodeBlock#forName(String)} method.
+             * Alternative to the {@link java.lang.Character.UnicodeBlock#forName(string)} method.
              * Returns the Unicode block with the given name. {@icunote} Unlike
-             * {@link java.lang.Character.UnicodeBlock#forName(String)}, this only matches
+             * {@link java.lang.Character.UnicodeBlock#forName(string)}, this only matches
              * against the official UCD name and the Java block name
              * (ignoring case).
              * @param blockName the name of the block to match
@@ -2405,7 +2405,7 @@ namespace ICU4N.Lang
                     {
                         UnicodeBlock b2 = BLOCKS_[i];
                         string name = TrimBlockName(
-                                GetPropertyValueName(UnicodeProperty.BLOCK, b2.ID,
+                                GetPropertyValueName(UProperty.BLOCK, b2.ID,
                                         NameChoice.Long));
                         m[name] = b2;
                     }
@@ -3931,7 +3931,7 @@ namespace ICU4N.Lang
          * @return true if the specified code point is a white space character
          * @stable ICU 2.1
          */
-        public static bool IsWhitespace(int ch)
+        public static bool IsWhitespace(int ch) // ICU4N TODO: Rename IsWhiteSpace (for consistency with .NET)
         {
             // exclude no-break spaces
             // if props == 0, it will just fall through and return false
@@ -4121,7 +4121,7 @@ namespace ICU4N.Lang
          * They take into account the string context and the language and can map
          * to a result string with a different length as appropriate.
          * Full case mappings are applied by the case mapping functions
-         * that take String parameters rather than code points (int).
+         * that take string parameters rather than code points (int).
          * See also the User Guide chapter on C/POSIX migration:
          * http://www.icu-project.org/userguide/posix.html#case_mappings
          *
@@ -4135,7 +4135,7 @@ namespace ICU4N.Lang
         }
 
         /**
-         * Converts argument code point and returns a String object representing
+         * Converts argument code point and returns a string object representing
          * the code point's value in UTF-16 format.
          * The result is a string whose length is 1 for BMP code points, 2 for supplementary ones.
          *
@@ -4173,7 +4173,7 @@ namespace ICU4N.Lang
          * They take into account the string context and the language and can map
          * to a result string with a different length as appropriate.
          * Full case mappings are applied by the case mapping functions
-         * that take String parameters rather than code points (int).
+         * that take string parameters rather than code points (int).
          * See also the User Guide chapter on C/POSIX migration:
          * http://www.icu-project.org/userguide/posix.html#case_mappings
          *
@@ -4197,7 +4197,7 @@ namespace ICU4N.Lang
          * They take into account the string context and the language and can map
          * to a result string with a different length as appropriate.
          * Full case mappings are applied by the case mapping functions
-         * that take String parameters rather than code points (int).
+         * that take string parameters rather than code points (int).
          * See also the User Guide chapter on C/POSIX migration:
          * http://www.icu-project.org/userguide/posix.html#case_mappings
          *
@@ -4612,47 +4612,88 @@ namespace ICU4N.Lang
             return UCharacterName.INSTANCE.GetCharFromName(UCharacterNameChoice.CHAR_NAME_ALIAS, name);
         }
 
-        /**
-         * {@icu} Return the Unicode name for a given property, as given in the
-         * Unicode database file PropertyAliases.txt.  Most properties
-         * have more than one name.  The nameChoice determines which one
-         * is returned.
-         *
-         * In addition, this function maps the property
-         * UProperty.GENERAL_CATEGORY_MASK to the synthetic names "gcm" /
-         * "General_Category_Mask".  These names are not in
-         * PropertyAliases.txt.
-         *
-         * @param property UProperty selector.
-         *
-         * @param nameChoice UProperty.NameChoice selector for which name
-         * to get.  All properties have a long name.  Most have a short
-         * name, but some do not.  Unicode allows for additional names; if
-         * present these will be returned by UProperty.NameChoice.LONG + i,
-         * where i=1, 2,...
-         *
-         * @return a name, or null if Unicode explicitly defines no name
-         * ("n/a") for a given property/nameChoice.  If a given nameChoice
-         * throws an exception, then all larger values of nameChoice will
-         * throw an exception.  If null is returned for a given
-         * nameChoice, then other nameChoice values may return non-null
-         * results.
-         *
-         * @exception IllegalArgumentException thrown if property or
-         * nameChoice are invalid.
-         *
-         * @see UProperty
-         * @see UProperty.NameChoice
-         * @stable ICU 2.4
-         */
-        public static string GetPropertyName(int property,
-                int nameChoice)
+        /// <summary>
+        /// Return the Unicode name for a given property, as given in the
+        /// Unicode database file PropertyAliases.txt.  Most properties
+        /// have more than one name.  The <paramref name="nameChoice"/> determines which one
+        /// is returned.
+        /// </summary>
+        /// <remarks>
+        /// In addition, this function maps the property
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/> to the synthetic names "gcm" /
+        /// "General_Category_Mask".  These names are not in
+        /// PropertyAliases.txt.
+        /// </remarks>
+        /// <param name="property"><see cref="UProperty"/> selector.</param>
+        /// <param name="nameChoice">
+        /// <see cref="NameChoice"/> selector for which name
+        /// to get.  All properties have a long name.  Most have a short
+        /// name, but some do not.  Unicode allows for additional names; if
+        /// present these will be returned by <see cref="NameChoice.Long"/> + i,
+        /// where i=1, 2,...
+        /// </param>
+        /// <returns>
+        /// A name, or null if Unicode explicitly defines no name
+        /// ("n/a") for a given <paramref name="property"/>/<paramref name="nameChoice"/>.  
+        /// If a given <paramref name="nameChoice"/> throws an exception, then all larger 
+        /// values of <paramref name="nameChoice"/> will throw an exception.  If null is 
+        /// returned for a given <paramref name="nameChoice"/>, then other 
+        /// <paramref name="nameChoice"/> values may return non-null results.
+        /// </returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="property"/> or 
+        /// <paramref name="nameChoice"/> are invalid.</exception>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="NameChoice"/>
+        /// <stable>ICU 2.4</stable>
+        public static string GetPropertyName(UProperty property,
+                NameChoice nameChoice)
         {
             return UPropertyAliases.INSTANCE.GetPropertyName(property, nameChoice);
         }
 
         /// <summary>
-        /// Return the UProperty selector for a given property name, as
+        /// Return the Unicode name for a given property, as given in the
+        /// Unicode database file PropertyAliases.txt.  Most properties
+        /// have more than one name.  The <paramref name="nameChoice"/> determines which one
+        /// is returned.
+        /// </summary>
+        /// <remarks>
+        /// In addition, this function maps the property
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/> to the synthetic names "gcm" /
+        /// "General_Category_Mask".  These names are not in
+        /// PropertyAliases.txt.
+        /// </remarks>
+        /// <param name="property"><see cref="UProperty"/> selector.</param>
+        /// <param name="nameChoice">
+        /// <see cref="NameChoice"/> selector for which name
+        /// to get.  All properties have a long name.  Most have a short
+        /// name, but some do not.  Unicode allows for additional names; if
+        /// present these will be returned by <see cref="NameChoice.Long"/> + i,
+        /// where i=1, 2,...
+        /// </param>
+        /// <param name="result">
+        /// A name, or null if Unicode explicitly defines no name
+        /// ("n/a") for a given <paramref name="property"/>/<paramref name="nameChoice"/>.
+        /// If a given <paramref name="nameChoice"/> returns false, then all larger 
+        /// values of <paramref name="nameChoice"/> will return false.  If null is
+        /// returned for a given <paramref name="nameChoice"/>, then other
+        /// <paramref name="nameChoice"/> values may return non-null results.
+        /// </param>
+        /// <returns>
+        /// true if both <paramref name="property"/> or 
+        /// <paramref name="nameChoice"/> are valid, othewise false.
+        /// </returns>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="NameChoice"/>
+        /// <stable>ICU4N 60.1.0</stable>
+        public static bool TryGetPropertyName(UProperty property,
+                NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+        {
+            return UPropertyAliases.INSTANCE.TryGetPropertyName(property, nameChoice, out result);
+        }
+
+        /// <summary>
+        /// Return the <see cref="UProperty"/> selector for a given property name, as
         /// specified in the Unicode database file PropertyAliases.txt.
         /// Short, long, and any other variants are recognized.
         /// </summary>
@@ -4674,7 +4715,7 @@ namespace ICU4N.Lang
         }
 
         /// <summary>
-        /// Return the UProperty selector for a given property name, as
+        /// Return the <see cref="UProperty"/> selector for a given property name, as
         /// specified in the Unicode database file PropertyAliases.txt.
         /// Short, long, and any other variants are recognized.
         /// </summary>
@@ -4696,7 +4737,7 @@ namespace ICU4N.Lang
         }
 
         /// <summary>
-        /// Return the UProperty selector for a given property name, as
+        /// Return the <see cref="UProperty"/> selector for a given property name, as
         /// specified in the Unicode database file PropertyAliases.txt.
         /// Short, long, and any other variants are recognized.
         /// </summary>
@@ -4718,91 +4759,105 @@ namespace ICU4N.Lang
         }
 
         /// <summary>
-        /// Return the UProperty selector for a given property name, as
+        /// Return the <see cref="UProperty"/> selector for a given property name, as
         /// specified in the Unicode database file PropertyAliases.txt.
         /// Short, long, and any other variants are recognized.
         /// </summary>
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// UProperty.GENERAL_CATEGORY_MASK.  These names are not in
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
-        /// <param name="propertyAlias">the property name to be matched.  The name
+        /// <param name="propertyAlias">The property name to be matched.  The name
         /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
-        /// <returns>a UProperty enum.</returns>
-        /// <exception cref="ArgumentException">thrown if propertyAlias is not recognized.</exception>
+        /// <returns>a <see cref="UProperty"/> enum.</returns>
+        /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
         /// <seealso cref="UProperty"/>
         /// <stable>ICU 2.4</stable>
         internal static int GetPropertyEnum(ICharSequence propertyAlias)
         {
             int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
-            if (propEnum == (int)UnicodeProperty.UNDEFINED)
+            if (propEnum == (int)UProperty.UNDEFINED)
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
             }
             return propEnum;
         }
 
-        /**
-         * {@icu} Return the Unicode name for a given property value, as given in
-         * the Unicode database file PropertyValueAliases.txt.  Most
-         * values have more than one name.  The nameChoice determines
-         * which one is returned.
-         *
-         * Note: Some of the names in PropertyValueAliases.txt can only be
-         * retrieved using UProperty.GENERAL_CATEGORY_MASK, not
-         * UProperty.GENERAL_CATEGORY.  These include: "C" / "Other", "L" /
-         * "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
-         * / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
-         *
-         * @param property UProperty selector constant.
-         * UProperty.INT_START &lt;= property &lt; UProperty.INT_LIMIT or
-         * UProperty.BINARY_START &lt;= property &lt; UProperty.BINARY_LIMIT or
-         * UProperty.MASK_START &lt; = property &lt; UProperty.MASK_LIMIT.
-         * If out of range, null is returned.
-         *
-         * @param value selector for a value for the given property.  In
-         * general, valid values range from 0 up to some maximum.  There
-         * are a few exceptions: (1.) UProperty.BLOCK values begin at the
-         * non-zero value BASIC_LATIN.getID().  (2.)
-         * UProperty.CANONICAL_COMBINING_CLASS values are not contiguous
-         * and range from 0..240.  (3.)  UProperty.GENERAL_CATEGORY_MASK values
-         * are mask values produced by left-shifting 1 by
-         * UCharacter.getType().  This allows grouped categories such as
-         * [:L:] to be represented.  Mask values are non-contiguous.
-         *
-         * @param nameChoice UProperty.NameChoice selector for which name
-         * to get.  All values have a long name.  Most have a short name,
-         * but some do not.  Unicode allows for additional names; if
-         * present these will be returned by UProperty.NameChoice.LONG + i,
-         * where i=1, 2,...
-         *
-         * @return a name, or null if Unicode explicitly defines no name
-         * ("n/a") for a given property/value/nameChoice.  If a given
-         * nameChoice throws an exception, then all larger values of
-         * nameChoice will throw an exception.  If null is returned for a
-         * given nameChoice, then other nameChoice values may return
-         * non-null results.
-         *
-         * @exception IllegalArgumentException thrown if property, value,
-         * or nameChoice are invalid.
-         *
-         * @see UProperty
-         * @see UProperty.NameChoice
-         * @stable ICU 2.4
-         */
-        public static string GetPropertyValueName(UnicodeProperty property,
+        /// <summary>
+        /// Return the Unicode name for a given property value, as given in
+        /// the Unicode database file PropertyValueAliases.txt.  Most
+        /// values have more than one name.  The <paramref name="nameChoice"/> determines
+        /// which one is returned.
+        /// </summary>
+        /// <remarks>
+        /// Note: Some of the names in PropertyValueAliases.txt can only be
+        /// retrieved using <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
+        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
+        /// </remarks>
+        /// <param name="property">
+        /// <see cref="UProperty"/> selector constant.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// If out of range, null is returned.
+        /// </param>
+        /// <param name="value">
+        /// Selector for a value for the given property.  In
+        /// general, valid values range from 0 up to some maximum.  There
+        /// are a few exceptions:
+        /// <list type="number">
+        ///     <item><desription>
+        ///         <see cref="UProperty.BLOCK"/> values begin at the
+        ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN.ID"/>.
+        ///     </desription></item>
+        ///     <item><desription>
+        ///         <see cref="UProperty.CANONICAL_COMBINING_CLASS"/> values are not contiguous
+        ///         and range from 0..240.
+        ///     </desription></item>
+        ///     <item><desription>
+        ///         UProperty.GENERAL_CATEGORY_MASK values
+        ///         are mask values produced by left-shifting 1 by
+        ///         <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
+        ///         [:L:] to be represented.  Mask values are non-contiguous.
+        ///     </desription></item>
+        /// </list>
+        /// </param>
+        /// <param name="nameChoice">
+        /// <see cref="NameChoice"/> selector for which name
+        /// to get.  All values have a long name.  Most have a short name,
+        /// but some do not.  Unicode allows for additional names; if
+        /// present these will be returned by <see cref="NameChoice.Long"/> + i,
+        /// where i=1, 2,...
+        /// </param>
+        /// <returns>
+        /// A name, or null if Unicode explicitly defines no name
+        /// ("n/a") for a given property/value/nameChoice.  If a given
+        /// <paramref name="nameChoice"/> throws an exception, then all larger values of
+        /// <paramref name="nameChoice"/> will throw an exception.  If null is returned for a
+        /// given <paramref name="nameChoice"/>, then other <paramref name="nameChoice"/> values may return
+        /// non-null results.
+        /// </returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="property"/>, 
+        /// <paramref name="value"/>, or <paramref name="nameChoice"/> are invalid.</exception>
+        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out string)"/>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="NameChoice"/>
+        /// <stable>ICU 2.4</stable>
+        public static string GetPropertyValueName(UProperty property,
                 int value,
                 NameChoice nameChoice)
         {
-            if ((property == UnicodeProperty.CANONICAL_COMBINING_CLASS
-                    || property == UnicodeProperty.LEAD_CANONICAL_COMBINING_CLASS
-                    || property == UnicodeProperty.TRAIL_CANONICAL_COMBINING_CLASS)
+            if ((property == UProperty.CANONICAL_COMBINING_CLASS
+                    || property == UProperty.LEAD_CANONICAL_COMBINING_CLASS
+                    || property == UProperty.TRAIL_CANONICAL_COMBINING_CLASS)
                     && value >= UCharacter.GetIntPropertyMinValue(
-                            UnicodeProperty.CANONICAL_COMBINING_CLASS)
+                            UProperty.CANONICAL_COMBINING_CLASS)
                             && value <= UCharacter.GetIntPropertyMaxValue(
-                                    (int)UnicodeProperty.CANONICAL_COMBINING_CLASS)
+                                    UProperty.CANONICAL_COMBINING_CLASS)
                                     && nameChoice >= 0 && nameChoice < NameChoice.Count)
             {
                 // this is hard coded for the valid cc
@@ -4821,6 +4876,99 @@ namespace ICU4N.Lang
         }
 
         /// <summary>
+        /// Get the Unicode name for a given property value, as given in
+        /// the Unicode database file PropertyValueAliases.txt.  Most
+        /// values have more than one name.  The <paramref name="nameChoice"/> determines
+        /// which one is returned.
+        /// <para/>
+        /// This is similar to <see cref="GetPropertyValueName(UProperty, int, NameChoice)"/>,
+        /// but returns a true/false result if a name or value cannot be found rather
+        /// than throwing exceptions.
+        /// </summary>
+        /// <remarks>
+        /// Note: Some of the names in PropertyValueAliases.txt can only be
+        /// retrieved using <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
+        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
+        /// </remarks>
+        /// <param name="property">
+        /// <see cref="UProperty"/> selector constant.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// If out of range, null is returned.
+        /// </param>
+        /// <param name="value">
+        /// Selector for a value for the given property.  In
+        /// general, valid values range from 0 up to some maximum.  There
+        /// are a few exceptions:
+        /// <list type="number">
+        ///     <item><desription>
+        ///         <see cref="UProperty.BLOCK"/> values begin at the
+        ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN.ID"/>.
+        ///     </desription></item>
+        ///     <item><desription>
+        ///         <see cref="UProperty.CANONICAL_COMBINING_CLASS"/> values are not contiguous
+        ///         and range from 0..240.
+        ///     </desription></item>
+        ///     <item><desription>
+        ///         UProperty.GENERAL_CATEGORY_MASK values
+        ///         are mask values produced by left-shifting 1 by
+        ///         <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
+        ///         [:L:] to be represented.  Mask values are non-contiguous.
+        ///     </desription></item>
+        /// </list>
+        /// </param>
+        /// <param name="nameChoice">
+        /// <see cref="NameChoice"/> selector for which name
+        /// to get.  All values have a long name.  Most have a short name,
+        /// but some do not.  Unicode allows for additional names; if
+        /// present these will be returned by <see cref="NameChoice.Long"/> + i,
+        /// where i=1, 2,...
+        /// </param>
+        /// <param name="result">
+        /// The Unicode name for a given property value, as given in
+        /// the Unicode database file PropertyValueAliases.txt, or null
+        /// if the lookup failed.
+        /// </param>
+        /// <returns>
+        /// true if the operation succeeded, or false if Unicode explicitly
+        /// defines no name ("n/a") for a given property/value/nameChoice.
+        /// If a given <paramref name="nameChoice"/> returns false,
+        /// then all larger values of <paramref name="nameChoice"/> will return false.
+        /// If null is returned for a given <paramref name="nameChoice"/>, then 
+        /// other <paramref name="nameChoice"/> values may return non-null results.
+        /// </returns>
+        /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out string)"/>
+        /// <seealso cref="UProperty"/>
+        /// <seealso cref="NameChoice"/>
+        /// <stable>ICU 2.4</stable>
+        public static bool TryGetPropertyValueName(UProperty property,
+               int value,
+               NameChoice nameChoice, out string result) // ICU4N TODO: Tests
+        {
+            if ((property == UProperty.CANONICAL_COMBINING_CLASS
+                    || property == UProperty.LEAD_CANONICAL_COMBINING_CLASS
+                    || property == UProperty.TRAIL_CANONICAL_COMBINING_CLASS)
+                    && value >= UCharacter.GetIntPropertyMinValue(
+                            UProperty.CANONICAL_COMBINING_CLASS)
+                            && value <= UCharacter.GetIntPropertyMaxValue(
+                                    UProperty.CANONICAL_COMBINING_CLASS)
+                                    && nameChoice >= 0 && nameChoice < NameChoice.Count)
+            {
+                // this is hard coded for the valid cc
+                // because PropertyValueAliases.txt does not contain all of them
+                if (!UPropertyAliases.INSTANCE.TryGetPropertyValueName(property, value, nameChoice, out result))
+                {
+                    result = null;
+                }
+                return true;
+            }
+            return UPropertyAliases.INSTANCE.TryGetPropertyValueName(property, value, nameChoice, out result);
+        }
+
+        /// <summary>
         /// Return the property value integer for a given value name, as
         /// specified in the Unicode database file PropertyValueAliases.txt.
         /// Short, long, and any other variants are recognized.
@@ -4853,7 +5001,7 @@ namespace ICU4N.Lang
         /// </exception>
         /// <see cref="UProperty"/>
         /// <stable>ICU 2.4</stable>
-        public static int GetPropertyValueEnum(UnicodeProperty property, string valueAlias)
+        public static int GetPropertyValueEnum(UProperty property, string valueAlias)
         {
             return GetPropertyValueEnum(property, valueAlias.ToCharSequence());
         }
@@ -4891,7 +5039,7 @@ namespace ICU4N.Lang
         /// </exception>
         /// <see cref="UProperty"/>
         /// <stable>ICU 2.4</stable>
-        public static int GetPropertyValueEnum(UnicodeProperty property, StringBuilder valueAlias)
+        public static int GetPropertyValueEnum(UProperty property, StringBuilder valueAlias)
         {
             return GetPropertyValueEnum(property, valueAlias.ToCharSequence());
         }
@@ -4929,7 +5077,7 @@ namespace ICU4N.Lang
         /// </exception>
         /// <see cref="UProperty"/>
         /// <stable>ICU 2.4</stable>
-        public static int GetPropertyValueEnum(UnicodeProperty property, char[] valueAlias)
+        public static int GetPropertyValueEnum(UProperty property, char[] valueAlias)
         {
             return GetPropertyValueEnum(property, valueAlias.ToCharSequence());
         }
@@ -4967,10 +5115,12 @@ namespace ICU4N.Lang
         /// </exception>
         /// <see cref="UProperty"/>
         /// <stable>ICU 2.4</stable>
-        internal static int GetPropertyValueEnum(UnicodeProperty property, ICharSequence valueAlias)
+        // ICU4N TODO: Make a TryGetPropertyValueEnum version (for all overloads) so consuming code doesn't need to catch an exception and replace the "NoThrow" version below
+        // Note that the UPropertyAliases class has one already
+        internal static int GetPropertyValueEnum(UProperty property, ICharSequence valueAlias)
         {
             int propEnum = UPropertyAliases.INSTANCE.GetPropertyValueEnum((int)property, valueAlias);
-            if (propEnum == (int)UnicodeProperty.UNDEFINED)
+            if (propEnum == (int)UProperty.UNDEFINED)
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
             }
@@ -4984,7 +5134,7 @@ namespace ICU4N.Lang
         /// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(int, ICharSequence)"/>.</param>
         /// <returns>Returns UProperty.UNDEFINED if the value is not valid, otherwise the value.</returns>
         //[Obsolete("This API is ICU internal only.")]
-        internal static int GetPropertyValueEnumNoThrow(UnicodeProperty property, ICharSequence valueAlias)
+        internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias)
         {
             return UPropertyAliases.INSTANCE.GetPropertyValueEnumNoThrow((int)property, valueAlias);
         }
@@ -5310,7 +5460,7 @@ namespace ICU4N.Lang
          * better results by working on whole strings.
          * They can map to a result string with a different length as appropriate.
          * Full case mappings are applied by the case mapping functions
-         * that take String parameters rather than code points (int).
+         * that take string parameters rather than code points (int).
          * See also the User Guide chapter on C/POSIX migration:
          * http://www.icu-project.org/userguide/posix.html#case_mappings
          *
@@ -5321,7 +5471,7 @@ namespace ICU4N.Lang
          *                       'T' in CaseFolding.txt are included.
          * @return               the case folding equivalent of the character, if
          *                       any; otherwise the character itself.
-         * @see                  #foldCase(String, boolean)
+         * @see                  #foldCase(string, boolean)
          * @stable ICU 2.1
          */
         public static int FoldCase(int ch, bool defaultmapping)
@@ -5336,7 +5486,7 @@ namespace ICU4N.Lang
          * "Full", multiple-code point case folding mappings are returned here.
          * For "simple" single-code point mappings use the API
          * foldCase(int ch, boolean defaultmapping).
-         * @param str            the String to be converted
+         * @param str            the string to be converted
          * @param defaultmapping Indicates whether the default mappings defined in
          *                       CaseFolding.txt are to be used, otherwise the
          *                       mappings for dotted I and dotless i marked with
@@ -5384,7 +5534,7 @@ namespace ICU4N.Lang
          * better results by working on whole strings.
          * They can map to a result string with a different length as appropriate.
          * Full case mappings are applied by the case mapping functions
-         * that take String parameters rather than code points (int).
+         * that take string parameters rather than code points (int).
          * See also the User Guide chapter on C/POSIX migration:
          * http://www.icu-project.org/userguide/posix.html#case_mappings
          *
@@ -5393,7 +5543,7 @@ namespace ICU4N.Lang
          * are FOLD_CASE_EXCLUDE_SPECIAL_I and FOLD_CASE_DEFAULT
          * @return the case folding equivalent of the character, if any; otherwise the
          * character itself.
-         * @see #foldCase(String, boolean)
+         * @see #foldCase(string, boolean)
          * @stable ICU 2.6
          */
         public static int FoldCase(int ch, int options)
@@ -5408,7 +5558,7 @@ namespace ICU4N.Lang
          * "Full", multiple-code point case folding mappings are returned here.
          * For "simple" single-code point mappings use the API
          * foldCase(int ch, boolean defaultmapping).
-         * @param str the String to be converted
+         * @param str the string to be converted
          * @param options A bit set for special processing. Currently the recognised options
          *                are FOLD_CASE_EXCLUDE_SPECIAL_I and FOLD_CASE_DEFAULT
          * @return the case folding equivalent of the character, if any; otherwise the
@@ -5572,7 +5722,7 @@ namespace ICU4N.Lang
          * while (iterator.next(element)) {
          *     System.out.println("Codepoint \\u" +
          *                        Integer.toHexString(element.codepoint) +
-         *                        " has the name " + (String)element.value);
+         *                        " has the name " + (string)element.value);
          * }
          * </pre>
          * <p>The maximal range which the name iterator iterates is from
@@ -5621,7 +5771,7 @@ namespace ICU4N.Lang
          * while (iterator.next(element)) {
          *     System.out.println("Codepoint \\u" +
          *                        Integer.toHexString(element.codepoint) +
-         *                        " has the name " + (String)element.value);
+         *                        " has the name " + (string)element.value);
          * }
          * </pre>
          * <p>The maximal range which the name iterator iterates is from
@@ -5680,7 +5830,7 @@ namespace ICU4N.Lang
          * @see com.ibm.icu.lang.UProperty
          * @stable ICU 2.6
          */
-        public static bool HasBinaryProperty(int ch, UnicodeProperty property)
+        public static bool HasBinaryProperty(int ch, UProperty property)
         {
             return UCharacterProperty.INSTANCE.HasBinaryProperty(ch, (int)property);
         }
@@ -5694,7 +5844,7 @@ namespace ICU4N.Lang
          */
         public static bool IsUAlphabetic(int ch)
         {
-            return HasBinaryProperty(ch, UnicodeProperty.ALPHABETIC);
+            return HasBinaryProperty(ch, UProperty.ALPHABETIC);
         }
 
         /**
@@ -5706,7 +5856,7 @@ namespace ICU4N.Lang
          */
         public static bool IsULowercase(int ch)
         {
-            return HasBinaryProperty(ch, UnicodeProperty.LOWERCASE);
+            return HasBinaryProperty(ch, UProperty.LOWERCASE);
         }
 
         /**
@@ -5718,7 +5868,7 @@ namespace ICU4N.Lang
          */
         public static bool IsUUppercase(int ch)
         {
-            return HasBinaryProperty(ch, UnicodeProperty.UPPERCASE);
+            return HasBinaryProperty(ch, UProperty.UPPERCASE);
         }
 
         /**
@@ -5731,7 +5881,7 @@ namespace ICU4N.Lang
          */
         public static bool IsUWhiteSpace(int ch)
         {
-            return HasBinaryProperty(ch, UnicodeProperty.WHITE_SPACE);
+            return HasBinaryProperty(ch, UProperty.WHITE_SPACE);
         }
 
         /**
@@ -5773,7 +5923,7 @@ namespace ICU4N.Lang
          * @see #getUnicodeVersion
          * @stable ICU 2.4
          */
-        public static int GetIntPropertyValue(int ch, UnicodeProperty type)
+        public static int GetIntPropertyValue(int ch, UProperty type)
         {
             return UCharacterProperty.INSTANCE.GetIntPropertyValue(ch, (int)type);
         }
@@ -5788,34 +5938,34 @@ namespace ICU4N.Lang
          */
         [Obsolete("This API is ICU internal only.")]
         ///CLOVER:OFF
-        public static string GetStringPropertyValue(UnicodeProperty propertyEnum, int codepoint, NameChoice nameChoice)
+        public static string GetStringPropertyValue(UProperty propertyEnum, int codepoint, NameChoice nameChoice)
         {
-            if ((propertyEnum >= UnicodeProperty.BINARY_START && propertyEnum < UnicodeProperty.BINARY_LIMIT) ||
-                    (propertyEnum >= UnicodeProperty.INT_START && propertyEnum < UnicodeProperty.INT_LIMIT))
+            if ((propertyEnum >= UProperty.BINARY_START && propertyEnum < UProperty.BINARY_LIMIT) ||
+                    (propertyEnum >= UProperty.INT_START && propertyEnum < UProperty.INT_LIMIT))
             {
                 return GetPropertyValueName(propertyEnum, GetIntPropertyValue(codepoint, propertyEnum),
                         nameChoice);
             }
-            if (propertyEnum == UnicodeProperty.NUMERIC_VALUE)
+            if (propertyEnum == UProperty.NUMERIC_VALUE)
             {
                 return GetUnicodeNumericValue(codepoint).ToString(CultureInfo.InvariantCulture);
             }
             // otherwise must be string property
             switch (propertyEnum)
             {
-                case UnicodeProperty.AGE: return GetAge(codepoint).ToString();
-                case UnicodeProperty.ISO_COMMENT: return GetISOComment(codepoint);
-                case UnicodeProperty.BIDI_MIRRORING_GLYPH: return ToString(GetMirror(codepoint));
-                case UnicodeProperty.CASE_FOLDING: return ToString(FoldCase(codepoint, true));
-                case UnicodeProperty.LOWERCASE_MAPPING: return ToString(ToLower(codepoint));
-                case UnicodeProperty.NAME: return GetName(codepoint);
-                case UnicodeProperty.SIMPLE_CASE_FOLDING: return ToString(FoldCase(codepoint, true));
-                case UnicodeProperty.SIMPLE_LOWERCASE_MAPPING: return ToString(ToLower(codepoint));
-                case UnicodeProperty.SIMPLE_TITLECASE_MAPPING: return ToString(ToTitleCase(codepoint));
-                case UnicodeProperty.SIMPLE_UPPERCASE_MAPPING: return ToString(ToUpper(codepoint));
-                case UnicodeProperty.TITLECASE_MAPPING: return ToString(ToTitleCase(codepoint));
-                case UnicodeProperty.UNICODE_1_NAME: return GetName1_0(codepoint);
-                case UnicodeProperty.UPPERCASE_MAPPING: return ToString(ToUpper(codepoint));
+                case UProperty.AGE: return GetAge(codepoint).ToString();
+                case UProperty.ISO_COMMENT: return GetISOComment(codepoint);
+                case UProperty.BIDI_MIRRORING_GLYPH: return ToString(GetMirror(codepoint));
+                case UProperty.CASE_FOLDING: return ToString(FoldCase(codepoint, true));
+                case UProperty.LOWERCASE_MAPPING: return ToString(ToLower(codepoint));
+                case UProperty.NAME: return GetName(codepoint);
+                case UProperty.SIMPLE_CASE_FOLDING: return ToString(FoldCase(codepoint, true));
+                case UProperty.SIMPLE_LOWERCASE_MAPPING: return ToString(ToLower(codepoint));
+                case UProperty.SIMPLE_TITLECASE_MAPPING: return ToString(ToTitleCase(codepoint));
+                case UProperty.SIMPLE_UPPERCASE_MAPPING: return ToString(ToUpper(codepoint));
+                case UProperty.TITLECASE_MAPPING: return ToString(ToTitleCase(codepoint));
+                case UProperty.UNICODE_1_NAME: return GetName1_0(codepoint);
+                case UProperty.UPPERCASE_MAPPING: return ToString(ToUpper(codepoint));
             }
             throw new ArgumentException("Illegal Property Enum");
         }
@@ -5839,7 +5989,7 @@ namespace ICU4N.Lang
          * @see #getIntPropertyValue
          * @stable ICU 2.4
          */
-        public static int GetIntPropertyMinValue(UnicodeProperty type)
+        public static int GetIntPropertyMinValue(UProperty type)
         {
 
             return 0; // undefined; and: all other properties have a minimum value of 0
@@ -5871,9 +6021,9 @@ namespace ICU4N.Lang
          * @see #getIntPropertyValue
          * @stable ICU 2.4
          */
-        public static int GetIntPropertyMaxValue(int type)
+        public static int GetIntPropertyMaxValue(UProperty type)
         {
-            return UCharacterProperty.INSTANCE.GetIntPropertyMaxValue(type);
+            return UCharacterProperty.INSTANCE.GetIntPropertyMaxValue((int)type);
         }
 
         /**
@@ -6735,28 +6885,3 @@ namespace ICU4N.Lang
         ///CLOVER:ON
     }
 }
-
-///// <summary>
-///// Han digit characters
-///// </summary>
-//public enum CjkIdeograph
-//{
-//    ComplexZero = 0x96f6,
-//    ComplexOne = 0x58f9,
-//    ComplexTwo = 0x8cb3,
-//    ComplexThree = 0x53c3,
-//    ComplexFour = 0x8086,
-//    ComplexFive = 0x4f0d,
-//    ComplexSix = 0x9678,
-//    ComplexSeven = 0x67d2,
-//    ComplexEight = 0x634c,
-//    ComplexNine = 0x7396,
-//    Ten = 0x5341,
-//    ComplexTen = 0x62fe,
-//    Hundred = 0x767e,
-//    ComplexHundred = 0x4f70,
-//    Thousand = 0x5343,
-//    ComplexThousand = 0x4edf,
-//    TenThousand = 0x824c,
-//    HundredMillion = 0x5104
-//}

@@ -156,13 +156,13 @@ namespace ICU4N.Impl
             max = indexes[IX_MAX_VALUES];
             switch (which)
             {
-                case (int)UnicodeProperty.BIDI_CLASS:
+                case (int)UProperty.BIDI_CLASS:
                     return (max & CLASS_MASK);
-                case (int)UnicodeProperty.JOINING_GROUP:
+                case (int)UProperty.JOINING_GROUP:
                     return (max & MAX_JG_MASK) >> MAX_JG_SHIFT;
-                case (int)UnicodeProperty.JOINING_TYPE:
+                case (int)UProperty.JOINING_TYPE:
                     return (max & JT_MASK) >> JT_SHIFT;
-                case (int)UnicodeProperty.BIDI_PAIRED_BRACKET_TYPE:
+                case (int)UProperty.BIDI_PAIRED_BRACKET_TYPE:
                     return (max & BPT_MASK) >> BPT_SHIFT;
                 default:
                     return -1; /* undefined */
@@ -354,7 +354,7 @@ namespace ICU4N.Impl
         }
         private static int GetMirrorIndex(int m)
         {
-            return (int)((uint)m >> MIRROR_INDEX_SHIFT);
+            return m.TripleShift(MIRROR_INDEX_SHIFT);
         }
 
 
