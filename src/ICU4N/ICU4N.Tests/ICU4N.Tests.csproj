@@ -7,10 +7,30 @@
 
   <ItemGroup>
     <None Remove="Dev\Data\TestData\testnorm.nrm" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRanges1.16.tri2" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRanges1.32.tri2" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRanges2.16.tri2" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRanges2.32.tri2" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRanges3.16.tri2" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRanges3.32.tri2" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRangesEmpty.16.tri2" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRangesEmpty.32.tri2" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRangesSingleValue.16.tri2" />
+    <None Remove="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Dev\Data\TestData\testnorm.nrm" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.16.tri2" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.32.tri2" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges2.16.tri2" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges2.32.tri2" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges3.16.tri2" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges3.32.tri2" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesEmpty.16.tri2" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesEmpty.32.tri2" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.16.tri2" />
+    <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
   </ItemGroup>
 
   <ItemGroup>
