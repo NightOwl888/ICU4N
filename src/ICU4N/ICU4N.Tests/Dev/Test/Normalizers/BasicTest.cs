@@ -2285,7 +2285,7 @@ namespace ICU4N.Dev.Test.Normalizers
             // test cases with i and I to make sure Turkic works
             char[] iI = { (char)0x49, (char)0x69, (char)0x130, (char)0x131 };
             UnicodeSet set = new UnicodeSet(), iSet = new UnicodeSet();
-            Normalizer2Impl nfcImpl = Norm2AllModes.GetNFCInstance().impl;
+            Normalizer2Impl nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
             nfcImpl.EnsureCanonIterData();
 
             string s1, s2;
@@ -2995,7 +2995,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestCanonIterData()
         {
             // For now, just a regression test.
-            Normalizer2Impl impl = Norm2AllModes.GetNFCInstance().impl.EnsureCanonIterData();
+            Normalizer2Impl impl = Norm2AllModes.GetNFCInstance().Impl.EnsureCanonIterData();
             // U+0FB5 TIBETAN SUBJOINED LETTER SSA is the trailing character
             // in some decomposition mappings where there is a composition exclusion.
             // In fact, U+0FB5 is normalization-inert (NFC_QC=Yes, NFD_QC=Yes, ccc=0)

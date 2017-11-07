@@ -269,7 +269,7 @@ namespace ICU4N.Impl
                 new AnonymousBinaryProperty(this, SRC_NFC, contains: (c) =>
                     {// UCHAR_FULL_COMPOSITION_EXCLUSION
                         // By definition, Full_Composition_Exclusion is the same as NFC_QC=No.
-                        Normalizer2Impl impl = Norm2AllModes.GetNFCInstance().impl;
+                        Normalizer2Impl impl = Norm2AllModes.GetNFCInstance().Impl;
                         return impl.IsCompNo(impl.GetNorm16(c));
                     }),
                 new BinaryProperty(this,1, (1<<GRAPHEME_BASE_PROPERTY_)),
@@ -308,7 +308,7 @@ namespace ICU4N.Impl
                 new NormInertBinaryProperty(this,SRC_NFKC, (int)UProperty.NFKC_INERT),
                 new AnonymousBinaryProperty(this, SRC_NFC_CANON_ITER, contains: (c) =>
                     {  // UCHAR_SEGMENT_STARTER
-                        return Norm2AllModes.GetNFCInstance().impl.
+                        return Norm2AllModes.GetNFCInstance().Impl.
                             EnsureCanonIterData().IsCanonSegmentStarter(c);
                     }),
                 new BinaryProperty(this, 1, (1<<PATTERN_SYNTAX)),
@@ -363,7 +363,7 @@ namespace ICU4N.Impl
                 new CaseBinaryProperty(this, (int)UProperty.CHANGES_WHEN_TITLECASED),
                 new AnonymousBinaryProperty(this, SRC_CASE_AND_NORM, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_CASEFOLDED
-                        string nfd = Norm2AllModes.GetNFCInstance().impl.GetDecomposition(c);
+                        string nfd = Norm2AllModes.GetNFCInstance().Impl.GetDecomposition(c);
                         if (nfd != null)
                         {
                             /* c has a decomposition */
@@ -395,7 +395,7 @@ namespace ICU4N.Impl
                 new CaseBinaryProperty(this, (int)UProperty.CHANGES_WHEN_CASEMAPPED),
                 new AnonymousBinaryProperty(this, SRC_NFKC_CF, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_NFKC_CASEFOLDED
-                        Normalizer2Impl kcf = Norm2AllModes.GetNFKC_CFInstance().impl;
+                        Normalizer2Impl kcf = Norm2AllModes.GetNFKC_CFInstance().Impl;
                         string src = UTF16.ValueOf(c);
                         StringBuilder dest = new StringBuilder();
                         // Small destCapacity for NFKC_CF(c).
@@ -480,11 +480,11 @@ namespace ICU4N.Impl
                 new NormQuickCheckIntProperty(this, SRC_NFKC, (int)UProperty.NFKC_QUICK_CHECK, 2),
                 new CombiningClassIntProperty(this, SRC_NFC, getValue: (c) =>
                     {  // LEAD_CANONICAL_COMBINING_CLASS
-                        return Norm2AllModes.GetNFCInstance().impl.GetFCD16(c) >> 8;
+                        return Norm2AllModes.GetNFCInstance().Impl.GetFCD16(c) >> 8;
                     }),
                 new CombiningClassIntProperty(this, SRC_NFC, getValue: (c) =>
                     {  // TRAIL_CANONICAL_COMBINING_CLASS
-                        return Norm2AllModes.GetNFCInstance().impl.GetFCD16(c) & 0xff;
+                        return Norm2AllModes.GetNFCInstance().Impl.GetFCD16(c) & 0xff;
                     }),
                 new IntProperty(this, 2, GCB_MASK, GCB_SHIFT),  // GRAPHEME_CLUSTER_BREAK
                 new IntProperty(this, 2, SB_MASK, SB_SHIFT),  // SENTENCE_BREAK

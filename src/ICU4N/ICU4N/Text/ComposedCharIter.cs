@@ -81,11 +81,11 @@ namespace ICU4N.Text
         {
             if (compat)
             {
-                n2impl = Norm2AllModes.GetNFKCInstance().impl;
+                n2impl = Norm2AllModes.GetNFKCInstance().Impl;
             }
             else
             {
-                n2impl = Norm2AllModes.GetNFCInstance().impl;
+                n2impl = Norm2AllModes.GetNFCInstance().Impl;
             }
         }
 

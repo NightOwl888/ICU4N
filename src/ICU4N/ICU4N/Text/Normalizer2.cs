@@ -130,7 +130,7 @@ namespace ICU4N.Text
         /// <returns>The requested Normalizer2, if successful.</returns>
         public static Normalizer2 GetNFCInstance()
         {
-            return Norm2AllModes.GetNFCInstance().comp;
+            return Norm2AllModes.GetNFCInstance().Comp;
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace ICU4N.Text
         /// <returns>The requested Normalizer2, if successful.</returns>
         public static Normalizer2 GetNFDInstance()
         {
-            return Norm2AllModes.GetNFCInstance().decomp;
+            return Norm2AllModes.GetNFCInstance().Decomp;
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace ICU4N.Text
         /// <returns>The requested Normalizer2, if successful.</returns>
         public static Normalizer2 GetNFKCInstance()
         {
-            return Norm2AllModes.GetNFKCInstance().comp;
+            return Norm2AllModes.GetNFKCInstance().Comp;
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace ICU4N.Text
         /// <returns>The requested Normalizer2, if successful.</returns>
         public static Normalizer2 GetNFKDInstance()
         {
-            return Norm2AllModes.GetNFKCInstance().decomp;
+            return Norm2AllModes.GetNFKCInstance().Decomp;
         }
 
         /// <summary>
@@ -174,7 +174,7 @@ namespace ICU4N.Text
         /// <returns>The requested Normalizer2, if successful.</returns>
         public static Normalizer2 GetNFKCCasefoldInstance()
         {
-            return Norm2AllModes.GetNFKC_CFInstance().comp;
+            return Norm2AllModes.GetNFKC_CFInstance().Comp;
         }
 
         /// <summary>
@@ -215,10 +215,10 @@ namespace ICU4N.Text
             Norm2AllModes all2Modes = Norm2AllModes.GetInstance(bytes, name);
             switch (mode)
             {
-                case Normalizer2Mode.Compose: return all2Modes.comp;
-                case Normalizer2Mode.Decompose: return all2Modes.decomp;
-                case Normalizer2Mode.FCD: return all2Modes.fcd;
-                case Normalizer2Mode.ComposeContiguous: return all2Modes.fcc;
+                case Normalizer2Mode.Compose: return all2Modes.Comp;
+                case Normalizer2Mode.Decompose: return all2Modes.Decomp;
+                case Normalizer2Mode.FCD: return all2Modes.Fcd;
+                case Normalizer2Mode.ComposeContiguous: return all2Modes.Fcc;
                 default: return null;  // will not occur
             }
         }

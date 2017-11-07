@@ -18,8 +18,8 @@ namespace ICU4N.Text
         public CanonicalIterator(string source)
         {
             Norm2AllModes allModes = Norm2AllModes.GetNFCInstance();
-            nfd = allModes.decomp;
-            nfcImpl = allModes.impl.EnsureCanonIterData();
+            nfd = allModes.Decomp;
+            nfcImpl = allModes.Impl.EnsureCanonIterData();
             SetSource(source);
         }
 

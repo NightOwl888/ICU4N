@@ -2217,7 +2217,7 @@ namespace ICU4N.Text
             /* normalization/properties data loaded? */
             if ((options & COMPARE_EQUIV) != 0)
             {
-                nfcImpl = Norm2AllModes.GetNFCInstance().impl;
+                nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
             }
             else
             {

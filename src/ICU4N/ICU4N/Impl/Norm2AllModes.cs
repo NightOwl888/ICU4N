@@ -776,18 +776,18 @@ namespace ICU4N.Impl
 
         private Norm2AllModes(Normalizer2Impl ni)
         {
-            impl = ni;
-            comp = new ComposeNormalizer2(ni, false);
-            decomp = new DecomposeNormalizer2(ni);
-            fcd = new FCDNormalizer2(ni);
-            fcc = new ComposeNormalizer2(ni, true);
+            Impl = ni;
+            Comp = new ComposeNormalizer2(ni, false);
+            Decomp = new DecomposeNormalizer2(ni);
+            Fcd = new FCDNormalizer2(ni);
+            Fcc = new ComposeNormalizer2(ni, true);
         }
 
-        public readonly Normalizer2Impl impl;
-        public readonly ComposeNormalizer2 comp;
-        public readonly DecomposeNormalizer2 decomp;
-        public readonly FCDNormalizer2 fcd;
-        public readonly ComposeNormalizer2 fcc;
+        public Normalizer2Impl Impl { get; private set; }
+        public ComposeNormalizer2 Comp { get; private set; }
+        public DecomposeNormalizer2 Decomp { get; private set; }
+        public FCDNormalizer2 Fcd { get; private set; }
+        public ComposeNormalizer2 Fcc { get; private set; }
 
         private static Norm2AllModes GetInstanceFromSingleton(Norm2AllModesSingleton singleton)
         {
@@ -814,10 +814,10 @@ namespace ICU4N.Impl
         {
             switch (index)
             {
-                case 0: return GetNFCInstance().decomp;  // NFD
-                case 1: return GetNFKCInstance().decomp; // NFKD
-                case 2: return GetNFCInstance().comp;    // NFC
-                case 3: return GetNFKCInstance().comp;   // NFKC
+                case 0: return GetNFCInstance().Decomp;  // NFD
+                case 1: return GetNFKCInstance().Decomp; // NFKD
+                case 2: return GetNFCInstance().Comp;    // NFC
+                case 3: return GetNFKCInstance().Comp;   // NFKC
                 default: return null;
             }
         }
@@ -880,7 +880,7 @@ namespace ICU4N.Impl
          */
         public static Normalizer2 GetFCDNormalizer2()
         {
-            return GetNFCInstance().fcd;
+            return GetNFCInstance().Fcd;
         }
 
         internal sealed class Norm2AllModesSingleton
