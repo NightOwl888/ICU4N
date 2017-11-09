@@ -322,7 +322,9 @@ namespace ICU4N.Impl
             // valueMapIndex is the start of the property's valueMap,
             // where the first word is the BytesTrie offset.
             result = GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
-            return true;
+#pragma warning disable 612, 618
+            return result != (int)UProperty.UNDEFINED;
+#pragma warning restore 612, 618
         }
 
         /// <summary>
