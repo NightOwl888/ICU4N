@@ -3797,7 +3797,8 @@ namespace ICU4N.Util
          */
         public static string ToUnicodeLocaleType(string keyword, string value)
         {
-            string bcpType = KeyTypeData.ToBcpType(keyword, value, null, null);
+            bool isKnownKey, isSpecialType;
+            string bcpType = KeyTypeData.ToBcpType(keyword, value, out isKnownKey, out isSpecialType);
             if (bcpType == null && UnicodeLocaleExtension.IsType(value))
             {
                 // unknown keyword, but syntax is fine..
@@ -3868,7 +3869,8 @@ namespace ICU4N.Util
          */
         public static string ToLegacyType(string keyword, string value)
         {
-            string legacyType = KeyTypeData.ToLegacyType(keyword, value, null, null);
+            bool isKnownKey, isSpecialType;
+            string legacyType = KeyTypeData.ToLegacyType(keyword, value, out isKnownKey, out isSpecialType);
             if (legacyType == null)
             {
                 // Checks if the specified locale type is well-formed with the legacy locale syntax.

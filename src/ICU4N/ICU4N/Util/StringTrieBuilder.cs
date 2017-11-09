@@ -949,7 +949,7 @@ namespace ICU4N.Util
             if (start < s.Length)
             {
                 int offset = strings.Length;
-                strings.Append(s, start, s.Length);
+                strings.Append(s, start, s.Length - start); // ICU4N: Corrected 3rd parameter
                 node = new LinearMatchNode(strings.ToCharSequence(), offset, s.Length - start, node);
             }
             return node;

@@ -556,25 +556,59 @@ namespace ICU4N.Impl
         public class CharSequenceValues // ICU4N TODO: API De-nest
         {
             /** string index of the current code point. */
-            public int index;
+            public int Index { get; set; }
             /** The code point at index.  */
-            public int codePoint;
+            public int CodePoint { get; set; }
             /** The Trie2 value for the current code point */
-            public int value;
+            public int Value { get; set; }
         }
 
-
-        /**
-         *  Create an iterator that will produce the values from the Trie2 for
-         *  the sequence of code points in an input text.
-         *
-         * @param text A text string to be iterated over.
-         * @param index The starting iteration position within the input text.
-         * @return the CharSequenceIterator
-         */
-        internal CharSequenceIterator GetCharSequenceIterator(ICharSequence text, int index)
+        /// <summary>
+        /// Create an iterator that will produce the values from the Trie2 for
+        /// the sequence of code points in an input text.
+        /// </summary>
+        /// <param name="text">A text string to be iterated over.</param>
+        /// <param name="index">The starting iteration position within the input text.</param>
+        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
+        public virtual CharSequenceEnumerator GetCharSequenceEnumerator(string text, int index) // ICU4N specific
         {
-            return new CharSequenceIterator(this, text, index);
+            return new CharSequenceEnumerator(this, text.ToCharSequence(), index);
+        }
+
+        /// <summary>
+        /// Create an iterator that will produce the values from the Trie2 for
+        /// the sequence of code points in an input text.
+        /// </summary>
+        /// <param name="text">A text string to be iterated over.</param>
+        /// <param name="index">The starting iteration position within the input text.</param>
+        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
+        public virtual CharSequenceEnumerator GetCharSequenceEnumerator(StringBuilder text, int index) // ICU4N specific
+        {
+            return new CharSequenceEnumerator(this, text.ToCharSequence(), index);
+        }
+
+        /// <summary>
+        /// Create an iterator that will produce the values from the Trie2 for
+        /// the sequence of code points in an input text.
+        /// </summary>
+        /// <param name="text">A text string to be iterated over.</param>
+        /// <param name="index">The starting iteration position within the input text.</param>
+        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
+        public virtual CharSequenceEnumerator GetCharSequenceEnumerator(char[] text, int index) // ICU4N specific
+        {
+            return new CharSequenceEnumerator(this, text.ToCharSequence(), index);
+        }
+
+        /// <summary>
+        /// Create an iterator that will produce the values from the Trie2 for
+        /// the sequence of code points in an input text.
+        /// </summary>
+        /// <param name="text">A text string to be iterated over.</param>
+        /// <param name="index">The starting iteration position within the input text.</param>
+        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
+        internal virtual CharSequenceEnumerator GetCharSequenceEnumerator(ICharSequence text, int index)
+        {
+            return new CharSequenceEnumerator(this, text, index);
         }
 
         // TODO:  Survey usage of the equivalent of CharSequenceIterator in ICU4C
@@ -591,12 +625,12 @@ namespace ICU4N.Impl
          * only for performance reasons.  It does require that any changes made here be propagated
          * into the corresponding code in the subclasses.
          */
-        public class CharSequenceIterator : IEnumerator<CharSequenceValues> //: Iterator<CharSequenceValues> 
+        public class CharSequenceEnumerator : IEnumerator<CharSequenceValues> //: Iterator<CharSequenceValues> 
         {
-            /**
-             * Internal constructor.
-             */
-            internal CharSequenceIterator(Trie2 outerInstance, ICharSequence t, int index)
+            /// <summary>
+            /// Internal constructor.
+            /// </summary>
+            internal CharSequenceEnumerator(Trie2 outerInstance, ICharSequence t, int index)
             {
                 this.outerInstance = outerInstance;
                 text = t;
@@ -647,9 +681,9 @@ namespace ICU4N.Impl
                 int c = Character.CodePointAt(text, index);
                 int val = outerInstance.Get(c);
 
-                fResults.index = index;
-                fResults.codePoint = c;
-                fResults.value = val;
+                fResults.Index = index;
+                fResults.CodePoint = c;
+                fResults.Value = val;
                 index++;
                 if (c >= 0x10000)
                 {
@@ -668,9 +702,9 @@ namespace ICU4N.Impl
                 {
                     index--;
                 }
-                fResults.index = index;
-                fResults.codePoint = c;
-                fResults.value = val;
+                fResults.Index = index;
+                fResults.CodePoint = c;
+                fResults.Value = val;
                 return fResults;
             }
 

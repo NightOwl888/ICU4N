@@ -2557,23 +2557,21 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestFCNFKCClosure()
         {
-
-
             TestStruct[] tests = new TestStruct[]{
-            new TestStruct( 0x00C4, "" ),
-            new TestStruct( 0x00E4, "" ),
-            new TestStruct( 0x037A, "\u0020\u03B9" ),
-            new TestStruct( 0x03D2, "\u03C5" ),
-            new TestStruct( 0x20A8, "\u0072\u0073" ) ,
-            new TestStruct( 0x210B, "\u0068" ),
-            new TestStruct( 0x210C, "\u0068" ),
-            new TestStruct( 0x2121, "\u0074\u0065\u006C" ),
-            new TestStruct( 0x2122, "\u0074\u006D" ),
-            new TestStruct( 0x2128, "\u007A" ),
-            new TestStruct( 0x1D5DB,"\u0068" ),
-            new TestStruct( 0x1D5ED,"\u007A" ),
-            new TestStruct( 0x0061, "" )
-        };
+                new TestStruct( 0x00C4, "" ),
+                new TestStruct( 0x00E4, "" ),
+                new TestStruct( 0x037A, "\u0020\u03B9" ),
+                new TestStruct( 0x03D2, "\u03C5" ),
+                new TestStruct( 0x20A8, "\u0072\u0073" ) ,
+                new TestStruct( 0x210B, "\u0068" ),
+                new TestStruct( 0x210C, "\u0068" ),
+                new TestStruct( 0x2121, "\u0074\u0065\u006C" ),
+                new TestStruct( 0x2122, "\u0074\u006D" ),
+                new TestStruct( 0x2128, "\u007A" ),
+                new TestStruct( 0x1D5DB,"\u0068" ),
+                new TestStruct( 0x1D5ED,"\u007A" ),
+                new TestStruct( 0x0061, "" )
+            };
 
 
             for (int i = 0; i < tests.Length; ++i)
@@ -3046,7 +3044,7 @@ namespace ICU4N.Dev.Test.Normalizers
             // More coverage.
             StringBuilder sb = new StringBuilder();
             assertEquals("filtered normalize()", "ää\u0304",
-                    fn2.Normalize("a\u0308ä\u0304".ToCharSequence(), sb.ToAppendable()).ToString());
+                    fn2.Normalize("a\u0308ä\u0304", sb).ToString());
             assertTrue("filtered hasBoundaryAfter()", fn2.HasBoundaryAfter('ä'));
             assertTrue("filtered isInert()", fn2.IsInert(0x0313));
         }

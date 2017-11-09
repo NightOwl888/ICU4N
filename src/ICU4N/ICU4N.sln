@@ -5,9 +5,14 @@ VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N", "ICU4N\ICU4N.csproj", "{28F55B04-F1C4-4EC9-B089-A8A7444C5D46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.TestFramework", "ICU4N.TestFramework\ICU4N.TestFramework.csproj", "{2458D88C-429E-43D4-8527-B6C91466AA4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.TestFramework", "ICU4N.TestFramework\ICU4N.TestFramework.csproj", "{2458D88C-429E-43D4-8527-B6C91466AA4F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Tests", "ICU4N.Tests\ICU4N.Tests.csproj", "{079487E0-B365-4CC9-9EC0-AC253828D747}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Tests", "ICU4N.Tests\ICU4N.Tests.csproj", "{079487E0-B365-4CC9-9EC0-AC253828D747}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{57271E32-0E88-4696-A477-D00D99DF06F7}"
+	ProjectSection(SolutionItems) = preProject
+		CodeGenerationSettings.xml = CodeGenerationSettings.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

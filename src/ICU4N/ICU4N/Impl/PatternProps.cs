@@ -1,8 +1,4 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.Text;
-using System.Text;
-
-namespace ICU4N.Impl
+﻿namespace ICU4N.Impl
 {
     /// <summary>
     /// Implements the immutable Unicode properties Pattern_Syntax and Pattern_White_Space.
@@ -23,7 +19,7 @@ namespace ICU4N.Impl
     ///     \u2190-\u245F\u2500-\u2775\u2794-\u2BFF\u2E00-\u2E7F
     ///     \u3001-\u3003\u3008-\u3020\u3030\uFD3E\uFD3F\uFE45\uFE46]
     /// </remarks>
-    public sealed class PatternProps
+    public sealed partial class PatternProps
     {
         /// <summary>
         /// Returns true if c is a Pattern_Syntax code point.
@@ -112,45 +108,7 @@ namespace ICU4N.Impl
             }
         }
 
-        /// <summary>
-        /// Skips over Pattern_White_Space starting at index i of the string.
-        /// </summary>
-        /// <returns>The smallest index at or after i with a non-white space character.</returns>
-        public static int SkipWhiteSpace(string s, int i)
-        {
-            return SkipWhiteSpace(s.ToCharSequence(), i);
-        }
-
-        /// <summary>
-        /// Skips over Pattern_White_Space starting at index i of the string.
-        /// </summary>
-        /// <returns>The smallest index at or after i with a non-white space character.</returns>
-        public static int SkipWhiteSpace(StringBuilder s, int i)
-        {
-            return SkipWhiteSpace(s.ToCharSequence(), i);
-        }
-
-        /// <summary>
-        /// Skips over Pattern_White_Space starting at index i of the string.
-        /// </summary>
-        /// <returns>The smallest index at or after i with a non-white space character.</returns>
-        public static int SkipWhiteSpace(char[] s, int i)
-        {
-            return SkipWhiteSpace(s.ToCharSequence(), i);
-        }
-
-        /// <summary>
-        /// Skips over Pattern_White_Space starting at index i of the string.
-        /// </summary>
-        /// <returns>The smallest index at or after i with a non-white space character.</returns>
-        internal static int SkipWhiteSpace(ICharSequence s, int i)
-        {
-            while (i < s.Length && IsWhiteSpace(s[i]))
-            {
-                ++i;
-            }
-            return i;
-        }
+        // ICU4N specific - SkipWhiteSpace(ICharSequence s, int i) moved to PatternPropsExtension.tt
 
         /**
          * @return s except with leading and trailing Pattern_White_Space removed.
@@ -179,177 +137,13 @@ namespace ICU4N.Impl
             return s.Substring(start, limit - start);
         }
 
-        /// <summary>
-        /// Tests whether the string contains a "pattern identifier", that is,
-        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns>true if there are no Pattern_White_Space or Pattern_Syntax characters in s.</returns>
-        public static bool IsIdentifier(string s)
-        {
-            return IsIdentifier(s.ToCharSequence());
-        }
 
-        /// <summary>
-        /// Tests whether the string contains a "pattern identifier", that is,
-        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns>true if there are no Pattern_White_Space or Pattern_Syntax characters in s.</returns>
-        public static bool IsIdentifier(StringBuilder s)
-        {
-            return IsIdentifier(s.ToCharSequence());
-        }
+        // ICU4N specific - IsIdentifier(ICharSequence s) moved to PatternPropsExtension.tt
 
-        /// <summary>
-        /// Tests whether the string contains a "pattern identifier", that is,
-        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns>true if there are no Pattern_White_Space or Pattern_Syntax characters in s.</returns>
-        public static bool IsIdentifier(char[] s)
-        {
-            return IsIdentifier(s.ToCharSequence());
-        }
+        // ICU4N specific - IsIdentifier(ICharSequence s, int start, int limit) moved to PatternPropsExtension.tt
 
-        /// <summary>
-        /// Tests whether the string contains a "pattern identifier", that is,
-        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
-        /// </summary>
-        /// <param name="s"></param>
-        /// <returns>true if there are no Pattern_White_Space or Pattern_Syntax characters in s.</returns>
-        internal static bool IsIdentifier(ICharSequence s)
-        {
-            int limit = s.Length;
-            if (limit == 0)
-            {
-                return false;
-            }
-            int start = 0;
-            do
-            {
-                if (IsSyntaxOrWhiteSpace(s[start++]))
-                {
-                    return false;
-                }
-            } while (start < limit);
-            return true;
-        }
+        // ICU4N specific - SkipIdentifier(ICharSequence s, int i) moved to PatternPropsExtension.tt
 
-        /// <summary>
-        /// Tests whether the string contains a "pattern identifier", that is,
-        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
-        /// </summary>
-        /// <returns>
-        /// true if there are no Pattern_White_Space or Pattern_Syntax characters
-        /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
-        /// </returns>
-        public static bool IsIdentifier(string s, int start, int limit)
-        {
-            return IsIdentifier(s.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Tests whether the string contains a "pattern identifier", that is,
-        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
-        /// </summary>
-        /// <returns>
-        /// true if there are no Pattern_White_Space or Pattern_Syntax characters
-        /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
-        /// </returns>
-        public static bool IsIdentifier(StringBuilder s, int start, int limit)
-        {
-            return IsIdentifier(s.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Tests whether the string contains a "pattern identifier", that is,
-        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
-        /// </summary>
-        /// <returns>
-        /// true if there are no Pattern_White_Space or Pattern_Syntax characters
-        /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
-        /// </returns>
-        public static bool IsIdentifier(char[] s, int start, int limit)
-        {
-            return IsIdentifier(s.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Tests whether the string contains a "pattern identifier", that is,
-        /// whether it contains only non-Pattern_White_Space, non-Pattern_Syntax characters.
-        /// </summary>
-        /// <returns>
-        /// true if there are no Pattern_White_Space or Pattern_Syntax characters
-        /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
-        /// </returns>
-        internal static bool IsIdentifier(ICharSequence s, int start, int limit)
-        {
-            if (start >= limit)
-            {
-                return false;
-            }
-            do
-            {
-                if (IsSyntaxOrWhiteSpace(s[start++]))
-                {
-                    return false;
-                }
-            } while (start < limit);
-            return true;
-        }
-
-        /// <summary>
-        /// Skips over a "pattern identifier" starting at index <paramref name="i"/> of the string.
-        /// </summary>
-        /// <returns>
-        /// The smallest index at or after <paramref name="i"/> with
-        /// a Pattern_White_Space or Pattern_Syntax character.
-        /// </returns>
-        public static int SkipIdentifier(string s, int i)
-        {
-            return SkipIdentifier(s.ToCharSequence(), i);
-        }
-
-        /// <summary>
-        /// Skips over a "pattern identifier" starting at index <paramref name="i"/> of the string.
-        /// </summary>
-        /// <returns>
-        /// The smallest index at or after <paramref name="i"/> with
-        /// a Pattern_White_Space or Pattern_Syntax character.
-        /// </returns>
-        public static int SkipIdentifier(StringBuilder s, int i)
-        {
-            return SkipIdentifier(s.ToCharSequence(), i);
-        }
-
-        /// <summary>
-        /// Skips over a "pattern identifier" starting at index <paramref name="i"/> of the string.
-        /// </summary>
-        /// <returns>
-        /// The smallest index at or after <paramref name="i"/> with
-        /// a Pattern_White_Space or Pattern_Syntax character.
-        /// </returns>
-        public static int SkipIdentifier(char[] s, int i)
-        {
-            return SkipIdentifier(s.ToCharSequence(), i);
-        }
-
-        /// <summary>
-        /// Skips over a "pattern identifier" starting at index <paramref name="i"/> of the string.
-        /// </summary>
-        /// <returns>
-        /// The smallest index at or after <paramref name="i"/> with
-        /// a Pattern_White_Space or Pattern_Syntax character.
-        /// </returns>
-        internal static int SkipIdentifier(ICharSequence s, int i)
-        {
-            while (i < s.Length && !IsSyntaxOrWhiteSpace(s[i]))
-            {
-                ++i;
-            }
-            return i;
-        }
 
         /// <summary>
         /// One byte per Latin-1 character.

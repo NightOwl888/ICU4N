@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<codeGen>
+  <charSequences>
+    <charSequence>string</charSequence>
+    <charSequence>StringBuilder</charSequence>
+    <charSequence>char[]</charSequence>
+    <charSequence>ICharSequence</charSequence>
+  </charSequences>
+  <!-- Accessibility of ICharSequence interface -->
+  <charSequenceAccessibility>internal</charSequenceAccessibility>
+  <appendables>
+    <appendable>StringBuilder</appendable>
+    <appendable>IAppendable</appendable>
+  </appendables>
+</codeGen>

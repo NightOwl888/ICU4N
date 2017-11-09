@@ -192,7 +192,7 @@ namespace ICU4N.Impl
             private readonly Range[] ranges;
             public Ranges(string s)
             {
-                int[] array = CharSequences.CodePoints(s.ToCharSequence());
+                int[] array = CharSequences.CodePoints(s);
                 ranges = new Range[array.Length];
                 for (int i = 0; i < array.Length; ++i)
                 {
@@ -296,8 +296,8 @@ namespace ICU4N.Impl
             {
                 throw new ICUException("Range must have 2 valid strings");
             }
-            int[] startCps = CharSequences.CodePoints(start.ToCharSequence());
-            int[] endCps = CharSequences.CodePoints(end.ToCharSequence());
+            int[] startCps = CharSequences.CodePoints(start);
+            int[] endCps = CharSequences.CodePoints(end);
             int startOffset = startCps.Length - endCps.Length;
 
             if (requireSameLength && startOffset != 0)

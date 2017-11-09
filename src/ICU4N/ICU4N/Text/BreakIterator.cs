@@ -316,6 +316,18 @@ namespace ICU4N.Text
             SetText(new StringCharacterIterator(newText));
         }
 
+        // ICU4N specific
+        public virtual void SetText(StringBuilder newText)
+        {
+            SetText(new StringCharacterIterator(newText.ToString())); // ICU4N TODO: make a StringBuilderCharacterIterator
+        }
+
+        // ICU4N specific
+        public virtual void SetText(char[] newText)
+        {
+            SetText(new StringCharacterIterator(new string(newText))); // ICU4N TODO: make a CharArrayCharacterIterator
+        }
+
         /**
          * Sets the iterator to analyze a new piece of text.  The new
          * piece of text is passed in as a CharSequence, and the current

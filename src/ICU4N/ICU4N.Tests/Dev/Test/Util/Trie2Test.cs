@@ -402,7 +402,7 @@ namespace ICU4N.Tests.Dev.Test.Util
             tw.Set(' ', 'S');
             tw.Set(0x10001, 'X');
 
-            using (Trie2.CharSequenceIterator it = tw.GetCharSequenceIterator(text.ToCharSequence(), 0))
+            using (Trie2.CharSequenceEnumerator it = tw.GetCharSequenceEnumerator(text, 0))
             {
 
                 // Check forwards iteration.

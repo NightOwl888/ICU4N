@@ -306,18 +306,90 @@ namespace ICU4N.Support.Text
         }
 
         /// <summary>
-        /// Appends the give <see cref="ICharSequence"/> to this <see cref="StringBuilder"/>.
+        /// Appends the given <see cref="ICharSequence"/> to this <see cref="StringBuilder"/>.
         /// </summary>
-        internal static StringBuilder Append(this StringBuilder text, ICharSequence csq, int start, int end) // ICU4N TODO: Weird to have end vs length, but using length means we need a conversion everywhere. Probably be best to use length anyway for consistency with .NET.
+        // .NET Port note: This uses the .NET style length as the 3rd parameter. All callers need to account for this by subtracting (end - start).
+        internal static StringBuilder Append(this StringBuilder text, ICharSequence csq, int start, int count)
         {
             if (csq == null)
-                csq = "null".ToCharSequence();
-            if ((start < 0) || (start > end) || (end > csq.Length))
+            {
+                text.Append("null");
+                return text;
+            }
+
+            if ((start < 0) || (start + count > csq.Length))
                 throw new IndexOutOfRangeException(
-                    "start " + start + ", end " + end + ", s.length() "
+                    "start " + start + ", length " + count + ", csq.Length "
                     + csq.Length);
-            int len = end - start;
-            for (int i = start, j = text.Length; i < end; i++, j++)
+            int end = start + count;
+            for (int i = start; i < end; i++)
+                text.Append(csq[i]);
+            return text;
+        }
+
+        ///// <summary>
+        ///// Appends the given <see cref="ICharSequence"/> to this <see cref="StringBuilder"/>.
+        ///// </summary>
+        //internal static StringBuilder Append(this StringBuilder text, ICharSequence csq, int start, int end) // ICU4N TODO: Weird to have end vs length, but using length means we need a conversion everywhere. Probably be best to use length anyway for consistency with .NET.
+        //{
+        //    if (csq == null)
+        //        csq = "null".ToCharSequence();
+        //    if ((start < 0) || (start > end) || (end > csq.Length))
+        //        throw new IndexOutOfRangeException(
+        //            "start " + start + ", end " + end + ", s.length() "
+        //            + csq.Length);
+        //    int len = end - start;
+        //    for (int i = start, j = text.Length; i < end; i++, j++)
+        //        text.Append(csq[i]);
+        //    return text;
+        //}
+
+        /// <summary>
+        /// Appends the given <see cref="StringBuilder"/> to this <see cref="StringBuilder"/>.
+        /// </summary>
+        internal static StringBuilder Append(this StringBuilder text, StringBuilder csq)
+        {
+            if (csq == null)
+                text.Append("null");
+            else
+                text.Append(csq.ToString());
+            return text;
+        }
+
+        ///// <summary>
+        ///// Appends the given <see cref="StringBuilder"/> to this <see cref="StringBuilder"/>.
+        ///// </summary>
+        //internal static StringBuilder Append(this StringBuilder text, StringBuilder csq, int start, int end) 
+        //{
+        //    if (csq == null)
+        //        csq = new StringBuilder("null");
+        //    if ((start < 0) || (start > end) || (end > csq.Length))
+        //        throw new IndexOutOfRangeException(
+        //            "start " + start + ", end " + end + ", s.Length "
+        //            + csq.Length);
+        //    int len = end - start;
+        //    for (int i = start, j = text.Length; i < end; i++, j++)
+        //        text.Append(csq[i]);
+        //    return text;
+        //}
+
+        /// <summary>
+        /// Appends the given <see cref="StringBuilder"/> to this <see cref="StringBuilder"/>.
+        /// </summary>
+        internal static StringBuilder Append(this StringBuilder text, StringBuilder csq, int start, int count)
+        {
+            if (csq == null)
+            {
+                text.Append("null");
+                return text;
+            }
+
+            if ((start < 0) || (start + count > csq.Length))
+                throw new IndexOutOfRangeException(
+                    "start " + start + ", length " + count + ", csq.Length "
+                    + csq.Length);
+            int end = start + count;
+            for (int i = start; i < end; i++)
                 text.Append(csq[i]);
             return text;
         }
@@ -338,6 +410,29 @@ namespace ICU4N.Support.Text
             }
 
             return text;
+        }
+
+        internal static ICharSequence SubSequence(this StringBuilder text, int start, int end)
+        {
+            // From Apache Harmony String class
+            if (start == 0 && end == text.Length)
+            {
+                return text.ToCharSequence();
+            }
+            if (start < 0)
+            {
+                throw new IndexOutOfRangeException(nameof(start));
+            }
+            else if (start > end)
+            {
+                throw new IndexOutOfRangeException("end - start");
+            }
+            else if (end > text.Length)
+            {
+                throw new IndexOutOfRangeException(nameof(end));
+            }
+
+            return text.ToString(start, end - start).ToCharSequence();
         }
 
         /// <summary>

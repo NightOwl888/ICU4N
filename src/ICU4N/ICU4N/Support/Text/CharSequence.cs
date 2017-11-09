@@ -14,4 +14,12 @@ namespace ICU4N.Support.Text
 
         string ToString();
     }
+
+    internal static class CharSequenceExtensions
+    {
+        public static ICharSequence ToCharSequence(this ICharSequence csq)
+        {
+            return csq;
+        }
+    }
 }

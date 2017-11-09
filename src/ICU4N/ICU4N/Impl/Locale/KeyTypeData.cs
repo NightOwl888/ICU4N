@@ -93,7 +93,7 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-            internal enum SpecialType
+        internal enum SpecialType
         {
             CODEPOINTS,
             REORDER_CODE,
@@ -154,17 +154,10 @@ namespace ICU4N.Impl.Locale
         }
 
         public static string ToBcpType(string key, string type,
-                Output<bool> isKnownKey, Output<bool> isSpecialType)
+            out bool isKnownKey, out bool isSpecialType)
         {
-
-            if (isKnownKey != null)
-            {
-                isKnownKey.Value = false;
-            }
-            if (isSpecialType != null)
-            {
-                isSpecialType.Value = false;
-            }
+            isKnownKey = false;
+            isSpecialType = false;
 
             key = AsciiUtil.ToLowerString(key);
             type = AsciiUtil.ToLowerString(type);
@@ -172,10 +165,7 @@ namespace ICU4N.Impl.Locale
             KeyData keyData = KEYMAP.Get(key);
             if (keyData != null)
             {
-                if (isKnownKey != null)
-                {
-                    isKnownKey.Value = true;
-                }
+                isKnownKey = true;
                 Type t = keyData.TypeMap.Get(type);
                 if (t != null)
                 {
@@ -187,10 +177,7 @@ namespace ICU4N.Impl.Locale
                     {
                         if (st.GetHandler().IsWellFormed(type))
                         {
-                            if (isSpecialType != null)
-                            {
-                                isSpecialType.Value = true;
-                            }
+                            isSpecialType = true;
                             return st.GetHandler().Canonicalize(type);
                         }
                     }
@@ -201,17 +188,10 @@ namespace ICU4N.Impl.Locale
 
 
         public static string ToLegacyType(string key, string type,
-                Output<bool> isKnownKey, Output<bool> isSpecialType)
+            out bool isKnownKey, out bool isSpecialType)
         {
-
-            if (isKnownKey != null)
-            {
-                isKnownKey.Value = false;
-            }
-            if (isSpecialType != null)
-            {
-                isSpecialType.Value = false;
-            }
+            isKnownKey = false;
+            isSpecialType = false;
 
             key = AsciiUtil.ToLowerString(key);
             type = AsciiUtil.ToLowerString(type);
@@ -219,10 +199,7 @@ namespace ICU4N.Impl.Locale
             KeyData keyData = KEYMAP.Get(key);
             if (keyData != null)
             {
-                if (isKnownKey != null)
-                {
-                    isKnownKey.Value = true;
-                }
+                isKnownKey = true;
                 Type t = keyData.TypeMap.Get(type);
                 if (t != null)
                 {
@@ -234,10 +211,7 @@ namespace ICU4N.Impl.Locale
                     {
                         if (st.GetHandler().IsWellFormed(type))
                         {
-                            if (isSpecialType != null)
-                            {
-                                isSpecialType.Value = true;
-                            }
+                            isSpecialType = true;
                             return st.GetHandler().Canonicalize(type);
                         }
                     }

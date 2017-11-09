@@ -1,18 +1,14 @@
 ﻿using ICU4N.Lang;
-using ICU4N.Support;
 using ICU4N.Support.IO;
 using ICU4N.Support.Text;
-using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Resources;
 using System.Text;
 
-
 namespace ICU4N.Impl
 {
-    public sealed class UPropertyAliases
+    public sealed partial class UPropertyAliases
     {
         // Byte offsets from the start of the data, after the generic header.
         private const int IX_VALUE_MAPS_OFFSET = 0;
@@ -209,26 +205,7 @@ namespace ICU4N.Impl
             return 'A' <= c && c <= 'Z' ? c + 0x20 : c;
         }
 
-        private bool ContainsName(BytesTrie trie, ICharSequence name)
-        {
-            BytesTrieResult result = BytesTrieResult.NO_VALUE;
-            for (int i = 0; i < name.Length; ++i)
-            {
-                int c = name[i];
-                // Ignore delimiters '-', '_', and ASCII White_Space.
-                if (c == '-' || c == '_' || c == ' ' || (0x09 <= c && c <= 0x0d))
-                {
-                    continue;
-                }
-                if (!result.HasNext())
-                {
-                    return false;
-                }
-                c = AsciiToLowercase(c);
-                result = trie.Next(c);
-            }
-            return result.HasValue();
-        }
+        // ICU4N specific - ContainsName(BytesTrie trie, ICharSequence name) moved to UPropertyAliasesExtension.tt
 
         //----------------------------------------------------------------
         // Public API
@@ -331,164 +308,21 @@ namespace ICU4N.Impl
             {
                 return false;
             }
-            // Duplicates logic from the GetName() method to ensure the parameters are correct.
-            int numNames = nameGroups[nameGroupOffset];
-            if ((int)nameChoice < 0 || numNames <= (int)nameChoice)
-            {
-                return false;
-            }
-            result = GetName(nameGroupOffset, (int)nameChoice);
-            return true;
+            return TryGetName(nameGroupOffset, (int)nameChoice, out result);
         }
 
-        private int GetPropertyOrValueEnum(int bytesTrieOffset, ICharSequence alias)
-        {
-            BytesTrie trie = new BytesTrie(bytesTries, bytesTrieOffset);
-            if (ContainsName(trie, alias))
-            {
-                return trie.GetValue();
-            }
-            else
-            {
-                return (int)UProperty.UNDEFINED;
-            }
-        }
+        // ICU4N specific - GetPropertyOrValueEnum(int bytesTrieOffset, ICharSequence alias) moved to UPropertyAliasesExtension.tt
 
-        /// <summary>
-        /// Returns a property enum given one of its property names.
-        /// If the property name is not known, this method returns
-        /// <see cref="UProperty.UNDEFINED"/>.
-        /// </summary>
-        /// <param name="alias"></param>
-        /// <returns></returns>
-        public int GetPropertyEnum(string alias)
-        {
-            return GetPropertyEnum(alias.ToCharSequence());
-        }
+        // ICU4N specific - GetPropertyEnum(ICharSequence alias) moved to UPropertyAliasesExtension.tt
 
-        /// <summary>
-        /// Returns a property enum given one of its property names.
-        /// If the property name is not known, this method returns
-        /// <see cref="UProperty.UNDEFINED"/>.
-        /// </summary>
-        /// <param name="alias"></param>
-        /// <returns></returns>
-        public int GetPropertyEnum(StringBuilder alias)
-        {
-            return GetPropertyEnum(alias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Returns a property enum given one of its property names.
-        /// If the property name is not known, this method returns
-        /// <see cref="UProperty.UNDEFINED"/>.
-        /// </summary>
-        /// <param name="alias"></param>
-        /// <returns></returns>
-        public int GetPropertyEnum(char[] alias)
-        {
-            return GetPropertyEnum(alias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Returns a property enum given one of its property names.
-        /// If the property name is not known, this method returns
-        /// <see cref="UProperty.UNDEFINED"/>.
-        /// </summary>
-        /// <param name="alias"></param>
-        /// <returns></returns>
-        internal int GetPropertyEnum(ICharSequence alias)
-        {
-            return GetPropertyOrValueEnum(0, alias);
-        }
-
-        /// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-        public int GetPropertyValueEnum(int property, string alias)
-        {
-            return GetPropertyValueEnum(property, alias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-        public int GetPropertyValueEnum(int property, StringBuilder alias)
-        {
-            return GetPropertyValueEnum(property, alias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-        public int GetPropertyValueEnum(int property, char[] alias)
-        {
-            return GetPropertyValueEnum(property, alias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-        internal int GetPropertyValueEnum(int property, ICharSequence alias)
-        {
-            int valueMapIndex = FindProperty(property);
-            if (valueMapIndex == 0)
-            {
-                throw new ArgumentException(
-                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", property) + ")");
-            }
-            valueMapIndex = valueMaps[valueMapIndex + 1];
-            if (valueMapIndex == 0)
-            {
-                throw new ArgumentException(
-                        "Property " + property + " (0x" + string.Format("{0:x2}", property) +
-                        ") does not have named values");
-            }
-            // valueMapIndex is the start of the property's valueMap,
-            // where the first word is the BytesTrie offset.
-            return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
-        }
-
-        /// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-        public bool TryGetPropertyValueEnum(int property, string alias, out int result)
-        {
-            return TryGetPropertyValueEnum(property, alias.ToCharSequence(), out result);
-        }
-
-        /// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-        public bool TryGetPropertyValueEnum(int property, StringBuilder alias, out int result)
-        {
-            return TryGetPropertyValueEnum(property, alias.ToCharSequence(), out result);
-        }
-
-        /// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-        public bool TryGetPropertyValueEnum(int property, char[] alias, out int result)
-        {
-            return TryGetPropertyValueEnum(property, alias.ToCharSequence(), out result);
-        }
-
-        /// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-        internal bool TryGetPropertyValueEnum(int property, ICharSequence alias, out int result)
-        {
-            result = GetPropertyValueEnumNoThrow(property, alias);
-            if (result == (int)UProperty.UNDEFINED)
-                return false;
-            return true;
-        }
+        // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence alias) moved to UPropertyAliasesExtension.tt
 
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names. Does not throw.
         /// </summary>
-        /// <returns>value enum, or UProperty.UNDEFINED if not defined for that property</returns>
-        internal int GetPropertyValueEnumNoThrow(int property, ICharSequence alias) // ICU4N TODO: Deprecate and replace with Try version...
+        /// <returns>value enum, or <see cref="UProperty.UNDEFINED"/> if not defined for that property</returns>
+        [Obsolete("ICU4N 60.1.0 - Use TryGetPropertyValueEnum instead.")]
+        internal int GetPropertyValueEnumNoThrow(int property, ICharSequence alias)
         {
             int valueMapIndex = FindProperty(property);
             if (valueMapIndex == 0)
@@ -505,11 +339,14 @@ namespace ICU4N.Impl
             return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
         }
 
-        /**
-         * Compare two property names, returning <0, 0, or >0.  The
-         * comparison is that described as "loose" matching in the
-         * Property*Aliases.txt files.
-         */
+        /// <summary>
+        /// Compare two property names, returning &lt;0, 0, or >0.  The
+        /// comparison is that described as "loose" matching in the
+        /// Property*Aliases.txt files.
+        /// </summary>
+        /// <param name="stra"></param>
+        /// <param name="strb"></param>
+        /// <returns></returns>
         public static int Compare(string stra, string strb)
         {
             // Note: This implementation is a literal copy of

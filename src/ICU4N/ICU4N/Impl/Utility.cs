@@ -12,7 +12,7 @@ using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Impl
 {
-    public sealed class Utility
+    public sealed partial class Utility
     {
         private static readonly char APOSTROPHE = '\'';
         private static readonly char BACKSLASH = '\\';
@@ -390,158 +390,24 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
-        /**
-         * Encode a run, possibly a degenerate run (of < 4 values).
-         * @param length The length of the run; must be > 0 && <= 0xFFFF.
-         */
-        private static void EncodeRun(StringBuilder buffer, int value, int length)
-        {
-            if (length < 4)
-            {
-                for (int j = 0; j < length; ++j)
-                {
-                    if (value == ESCAPE)
-                    {
-                        AppendInt32(buffer, value);
-                    }
-                    AppendInt32(buffer, value);
-                }
-            }
-            else
-            {
-                if (length == ESCAPE)
-                {
-                    if (value == ESCAPE)
-                    {
-                        AppendInt32(buffer, ESCAPE);
-                    }
-                    AppendInt32(buffer, value);
-                    --length;
-                }
-                AppendInt32(buffer, ESCAPE);
-                AppendInt32(buffer, length);
-                AppendInt32(buffer, value); // Don't need to escape this value
-            }
-        }
+        // ICU4N specific - EncodeRun(IAppendable buffer, int value, int length)
+        //    moved to UtilityExtension.tt
 
-        private static void AppendInt32(StringBuilder buffer, int value)
-        {
-            try
-            {
-                buffer.Append((char)(value.TripleShift(16)));
-                buffer.Append((char)(value & 0xFFFF));
-            }
-            catch (IOException e)
-            {
-                throw new IcuArgumentException(e);
-            }
-        }
+        // ICU4N specific - AppendInt32(IAppendable buffer, int value)
+        //    moved to UtilityExtension.tt
 
-        /**
-         * Encode a run, possibly a degenerate run (of &lt; 4 values).
-         * @param length The length of the run; must be > 0 && &lt;= 0xFFFF.
-         */
-        private static void EncodeRun(StringBuilder buffer, short value, int length)
-        {
-            try
-            {
-                char valueChar = (char)value;
-                if (length < 4)
-                {
-                    for (int j = 0; j < length; ++j)
-                    {
-                        if (valueChar == ESCAPE)
-                        {
-                            buffer.Append(ESCAPE);
-                        }
-                        buffer.Append(valueChar);
-                    }
-                }
-                else
-                {
-                    if (length == ESCAPE)
-                    {
-                        if (valueChar == ESCAPE)
-                        {
-                            buffer.Append(ESCAPE);
-                        }
-                        buffer.Append(valueChar);
-                        --length;
-                    }
-                    buffer.Append(ESCAPE);
-                    buffer.Append((char)length);
-                    buffer.Append(valueChar); // Don't need to escape this value
-                }
-            }
-            catch (IOException e)
-            {
-                throw new IcuArgumentException(e);
-            }
-        }
+        // ICU4N specific - EncodeRun(IAppendable buffer, short value, int length)
+        //    moved to UtilityExtension.tt
 
-        /**
-         * Encode a run, possibly a degenerate run (of &lt; 4 values).
-         * @param length The length of the run; must be > 0 && &lt;= 0xFF.
-         */
-        private static void EncodeRun(StringBuilder buffer, byte value, int length,
-               byte[] state)
-        {
-            if (length < 4)
-            {
-                for (int j = 0; j < length; ++j)
-                {
-                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, state);
-                    AppendEncodedByte(buffer, value, state);
-                }
-            }
-            else
-            {
-                if ((byte)length == ESCAPE_BYTE)
-                {
-                    if (value == ESCAPE_BYTE) AppendEncodedByte(buffer, ESCAPE_BYTE, state);
-                    AppendEncodedByte(buffer, value, state);
-                    --length;
-                }
-                AppendEncodedByte(buffer, ESCAPE_BYTE, state);
-                AppendEncodedByte(buffer, (byte)length, state);
-                AppendEncodedByte(buffer, value, state); // Don't need to escape this value
-            }
-        }
+        // ICU4N specific - EncodeRun(IAppendable buffer, byte value, int length,
+        //    byte[] state) moved to UtilityExtension.tt
 
-        /**
-         * Append a byte to the given Appendable, packing two bytes into each
-         * character.  The state parameter maintains intermediary data between
-         * calls.
-         * @param state A two-element array, with state[0] == 0 if this is the
-         * first byte of a pair, or state[0] != 0 if this is the second byte
-         * of a pair, in which case state[1] is the first byte.
-         */
-        private static void AppendEncodedByte(StringBuilder buffer, byte value,
-               byte[] state)
-        {
-            try
-            {
-                if (state[0] != 0)
-                {
-                    char c = (char)((state[1] << 8) | ((value) & 0xFF));
-                    buffer.Append(c);
-                    state[0] = 0;
-                }
-                else
-                {
-                    state[0] = 1;
-                    state[1] = value;
-                }
-            }
-            catch (IOException e)
-            {
-                throw new IcuArgumentException(e);
-            }
-        }
+        // ICU4N specific - AppendEncodedByte(IAppendable buffer, byte value,
+        //    byte[] state) moved to UtilityExtension.tt
 
-        /**
-         * Construct an array of ints from a run-length encoded string.
-         */
+        /// <summary>
+        /// Construct an array of <see cref="int"/>s from a run-length encoded <see cref="string"/>.
+        /// </summary>
         static public int[] RLEStringToIntArray(string s)
         {
             int length = GetInt(s, 0);
@@ -583,14 +449,14 @@ namespace ICU4N.Impl
 
             return array;
         }
-        static int GetInt(string s, int i)
+        internal static int GetInt(string s, int i)
         {
             return ((s[2 * i]) << 16) | s[2 * i + 1];
         }
 
-        /**
-         * Construct an array of shorts from a run-length encoded string.
-         */
+        /// <summary>
+        /// Construct an array of <see cref="short"/>s from a run-length encoded <see cref="string"/>.
+        /// </summary>
         static public short[] RLEStringToShortArray(string s)
         {
             int length = ((s[0]) << 16) | (s[1]);
@@ -625,9 +491,9 @@ namespace ICU4N.Impl
             return array;
         }
 
-        /**
-         * Construct an array of shorts from a run-length encoded string.
-         */
+        /// <summary>
+        /// Construct an array of <see cref="char"/>s from a run-length encoded <see cref="string"/>.
+        /// </summary>
         static public char[] RLEStringToCharArray(string s)
         {
             int length = ((s[0]) << 16) | (s[1]);
@@ -662,9 +528,9 @@ namespace ICU4N.Impl
             return array;
         }
 
-        /**
-         * Construct an array of bytes from a run-length encoded string.
-         */
+        /// <summary>
+        /// Construct an array of <see cref="byte"/>s from a run-length encoded <see cref="string"/>.
+        /// </summary>
         static public byte[] RLEStringToByteArray(string s)
         {
             int length = ((s[0]) << 16) | (s[1]);
@@ -1102,7 +968,7 @@ namespace ICU4N.Impl
          * Convert all escapes in a given string using unescapeAt().
          * Leave invalid escape sequences unchanged.
          */
-        public static string unescapeLeniently(string s)
+        public static string UnescapeLeniently(string s)
         {
             StringBuilder buf = new StringBuilder();
             int[] pos = new int[1];
@@ -1164,331 +1030,12 @@ namespace ICU4N.Impl
             return result;
         }
 
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(string s)
-        {
-            return Hex(s.ToCharSequence());
-        }
+        // ICU4N specific - Hex(ICharSequence s) moved to UtilityExtension.tt
 
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(StringBuilder s)
-        {
-            return Hex(s.ToCharSequence());
-        }
+        // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, 
+        //      StringBuilder result) moved to UtilityExtension.tt
 
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(char[] s)
-        {
-            return Hex(s.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        internal static string Hex(ICharSequence s)
-        {
-            return Hex(s, 4, ",".ToCharSequence(), true, new StringBuilder()).ToString();
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(string s, int width, string separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(string s, int width, StringBuilder separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(string s, int width, char[] separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(string s, int width, char separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, new char[] { separator }.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(StringBuilder s, int width, string separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(StringBuilder s, int width, StringBuilder separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(StringBuilder s, int width, char[] separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(StringBuilder s, int width, char separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, new char[] { separator }.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(char[] s, int width, string separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(char[] s, int width, StringBuilder separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(char[] s, int width, char[] separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        public static StringBuilder Hex(char[] s, int width, char separator, bool useCodePoints, StringBuilder result)
-        {
-            return Hex(s.ToCharSequence(), width, new char[] { separator }.ToCharSequence(), useCodePoints, result);
-        }
-
-        /// <summary>
-        /// Convert a string to separated groups of hex uppercase
-        /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
-        /// to the given StringBuilder.
-        /// </summary>
-        internal static StringBuilder Hex(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
-        {
-            try
-            {
-                if (useCodePoints)
-                {
-                    int cp;
-                    for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
-                    {
-                        cp = Character.CodePointAt(s, i);
-                        if (i != 0)
-                        {
-                            result.Append(separator);
-                        }
-                        result.Append(Hex(cp, width));
-                    }
-                }
-                else
-                {
-                    for (int i = 0; i < s.Length; ++i)
-                    {
-                        if (i != 0)
-                        {
-                            result.Append(separator);
-                        }
-                        result.Append(Hex(s[i], width));
-                    }
-                }
-                return result;
-            }
-            catch (IOException e)
-            {
-                throw new IcuArgumentException(e);
-            }
-        }
-
-        public static string Hex(byte[] o, int start, int end, string separator)
-        {
-            StringBuilder result = new StringBuilder();
-            //int ch;
-            for (int i = start; i < end; ++i)
-            {
-                if (i != 0) result.Append(separator);
-                result.Append(Hex(o[i]));
-            }
-            return result.ToString();
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(string s, int width, string separator)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(string s, int width, StringBuilder separator)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(string s, int width, char[] separator)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(string s, int width, char separator)
-        {
-            return Hex(s.ToCharSequence(), width, new char[] { separator }.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(StringBuilder s, int width, string separator)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(StringBuilder s, int width, StringBuilder separator)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(StringBuilder s, int width, char[] separator)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(StringBuilder s, int width, char separator)
-        {
-            return Hex(s.ToCharSequence(), width, new char[] { separator }.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(char[] s, int width, string separator)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(char[] s, int width, StringBuilder separator)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(char[] s, int width, char[] separator)
-        {
-            return Hex(s.ToCharSequence(), width, separator.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        public static string Hex(char[] s, int width, char separator)
-        {
-            return Hex(s.ToCharSequence(), width, new char[] { separator }.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Convert a string to comma-separated groups of 4 hex uppercase
-        /// digits.  E.g., hex('ab') => "0041,0042".
-        /// </summary>
-        internal static string Hex(ICharSequence s, int width, ICharSequence separator)
-        {
-            return Hex(s, width, separator, true, new StringBuilder()).ToString();
-        }
+        // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator) moved to UtilityExtension.tt
 
         /**
          * Split a string into pieces based on the given divider character
@@ -1805,7 +1352,7 @@ namespace ICU4N.Impl
          * @param pos INPUT-OUPUT parameter.  On INPUT, pos[0] is the
          * first character to examine.  It must be less than str.length(),
          * and it must not point to a whitespace character.  That is, must
-         * have pos[0] < str.length().  On
+         * have pos[0] &lt; str.length().  On
          * OUTPUT, the position after the last parsed character.
          * @return the Unicode identifier, or null if there is no valid
          * identifier at pos[0].
@@ -1846,85 +1393,18 @@ namespace ICU4N.Impl
             return buf.ToString();
         }
 
-        static readonly char[] DIGITS = {
-        '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-        'U', 'V', 'W', 'X', 'Y', 'Z'
-    };
+        internal static readonly char[] DIGITS = {
+            '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+            'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+            'U', 'V', 'W', 'X', 'Y', 'Z'
+        };
 
-        /**
-         * Append the digits of a positive integer to the given
-         * <code>Appendable</code> in the given radix. This is
-         * done recursively since it is easiest to generate the low-
-         * order digit first, but it must be appended last.
-         *
-         * @param result is the <code>Appendable</code> to append to
-         * @param n is the positive integer
-         * @param radix is the radix, from 2 to 36 inclusive
-         * @param minDigits is the minimum number of digits to append.
-         */
-        private static void RecursiveAppendNumber(StringBuilder result, int n,
-                int radix, int minDigits)
-        {
-            try
-            {
-                int digit = n % radix;
+        // ICU4N specific - RecursiveAppendNumber(IAppendable result, int n,
+        //    int radix, int minDigits) moved to UtilityExtension.tt
 
-                if (n >= radix || minDigits > 1)
-                {
-                    RecursiveAppendNumber(result, n / radix, radix, minDigits - 1);
-                }
-                result.Append(DIGITS[digit]);
-            }
-            catch (IOException e)
-            {
-                throw new IcuArgumentException(e);
-            }
-        }
-
-        /**
-         * Append a number to the given Appendable in the given radix.
-         * Standard digits '0'-'9' are used and letters 'A'-'Z' for
-         * radices 11 through 36.
-         * @param result the digits of the number are appended here
-         * @param n the number to be converted to digits; may be negative.
-         * If negative, a '-' is prepended to the digits.
-         * @param radix a radix from 2 to 36 inclusive.
-         * @param minDigits the minimum number of digits, not including
-         * any '-', to produce.  Values less than 2 have no effect.  One
-         * digit is always emitted regardless of this parameter.
-         * @return a reference to result
-         */
-        public static StringBuilder AppendNumber(StringBuilder result, int n,
-                int radix, int minDigits)
-        {
-            try
-            {
-                if (radix < 2 || radix > 36)
-                {
-                    throw new ArgumentException("Illegal radix " + radix);
-                }
-
-
-                int abs = n;
-
-                if (n < 0)
-                {
-                    abs = -n;
-                    result.Append("-");
-                }
-
-                RecursiveAppendNumber(result, abs, radix, minDigits);
-
-                return result;
-            }
-            catch (IOException e)
-            {
-                throw new IcuArgumentException(e);
-            }
-
-        }
+        // ICU4N specific - AppendNumber(T result, int n,
+        //    int radix, int minDigits) where T : IAppendable moved to UtilityExtension.tt
 
         /**
          * Parse an unsigned 31-bit integer at the given offset.  Use
@@ -1935,7 +1415,7 @@ namespace ICU4N.Impl
          * to a valid digit.  On exit, pos[0] is the offset after the last
          * parsed character.  If the parse failed, it will be unchanged on
          * exit.  Must be >= 0 on entry.
-         * @param radix the radix in which to parse; must be >= 2 and <=
+         * @param radix the radix in which to parse; must be >= 2 and &lt;=
          * 36.
          * @return a non-negative parsed number, or -1 upon parse failure.
          * Parse fails if there are no digits, that is, if pos[0] does not
@@ -1984,45 +1464,9 @@ namespace ICU4N.Impl
             return !(c >= 0x20 && c <= 0x7E);
         }
 
-        /**
-         * Escape unprintable characters using <backslash>uxxxx notation
-         * for U+0000 to U+FFFF and <backslash>Uxxxxxxxx for U+10000 and
-         * above.  If the character is printable ASCII, then do nothing
-         * and return FALSE.  Otherwise, append the escaped notation and
-         * return TRUE.
-         */
-        public static bool EscapeUnprintable(StringBuilder result, int c)
-        {
-            try
-            {
-                if (IsUnprintable(c))
-                {
-                    result.Append('\\');
-                    if ((c & ~0xFFFF) != 0)
-                    {
-                        result.Append('U');
-                        result.Append(DIGITS[0xF & (c >> 28)]);
-                        result.Append(DIGITS[0xF & (c >> 24)]);
-                        result.Append(DIGITS[0xF & (c >> 20)]);
-                        result.Append(DIGITS[0xF & (c >> 16)]);
-                    }
-                    else
-                    {
-                        result.Append('u');
-                    }
-                    result.Append(DIGITS[0xF & (c >> 12)]);
-                    result.Append(DIGITS[0xF & (c >> 8)]);
-                    result.Append(DIGITS[0xF & (c >> 4)]);
-                    result.Append(DIGITS[0xF & c]);
-                    return true;
-                }
-                return false;
-            }
-            catch (IOException e)
-            {
-                throw new IcuArgumentException(e);
-            }
-        }
+        // ICU4N specific - EscapeUnprintable(IAppendable result, int c)
+        //    moved to UtilityExtension.tt
+
 
         /**
          * Returns the index of the first character in a set, ignoring quoted text.

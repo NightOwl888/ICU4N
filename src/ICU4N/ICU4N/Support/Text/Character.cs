@@ -248,7 +248,57 @@ namespace ICU4N.Support.Text
         /// </exception>
         public static int CodePointCount(string seq, int beginIndex, int endIndex)
         {
-            return CodePointCount(seq.ToCharSequence(), beginIndex, endIndex);
+            int length = seq.Length;
+            if (beginIndex < 0 || endIndex > length || beginIndex > endIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            int n = endIndex - beginIndex;
+            for (int i = beginIndex; i < endIndex;)
+            {
+                if (char.IsHighSurrogate(seq[i++]) && i < endIndex &&
+                    char.IsLowSurrogate(seq[i]))
+                {
+                    n--;
+                    i++;
+                }
+            }
+            return n;
+        }
+
+        /// <summary>
+        /// Returns the number of Unicode code points in the text range of the specified char sequence. 
+        /// The text range begins at the specified <paramref name="beginIndex"/> and extends to the char at index <c>endIndex - 1</c>. 
+        /// Thus the length (in <see cref="char"/>s) of the text range is <c>endIndex-beginIndex</c>. 
+        /// Unpaired surrogates within the text range count as one code point each.
+        /// </summary>
+        /// <param name="seq">the char sequence</param>
+        /// <param name="beginIndex">the index to the first char of the text range.</param>
+        /// <param name="endIndex">the index after the last char of the text range.</param>
+        /// <returns>the number of Unicode code points in the specified text range</returns>
+        /// <exception cref="IndexOutOfRangeException">
+        /// if the <paramref name="beginIndex"/> is negative, or <paramref name="endIndex"/> 
+        /// is larger than the length of the given sequence, or <paramref name="beginIndex"/> 
+        /// is larger than <paramref name="endIndex"/>.
+        /// </exception>
+        public static int CodePointCount(StringBuilder seq, int beginIndex, int endIndex)
+        {
+            int length = seq.Length;
+            if (beginIndex < 0 || endIndex > length || beginIndex > endIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            int n = endIndex - beginIndex;
+            for (int i = beginIndex; i < endIndex;)
+            {
+                if (char.IsHighSurrogate(seq[i++]) && i < endIndex &&
+                    char.IsLowSurrogate(seq[i]))
+                {
+                    n--;
+                    i++;
+                }
+            }
+            return n;
         }
 
         /// <summary>
@@ -351,6 +401,13 @@ namespace ICU4N.Support.Text
             return low;
         }
 
+        public static int CodePointAt(char high, char low)
+        {
+            return ((high << 10) + low) + (MIN_SUPPLEMENTARY_CODE_POINT
+                                       - (MIN_HIGH_SURROGATE << 10)
+                                       - MIN_LOW_SURROGATE);
+        }
+
         public static int CodePointAt(string seq, int index)
         {
             char c1 = seq[index++];
@@ -368,11 +425,38 @@ namespace ICU4N.Support.Text
             return c1;
         }
 
-        public static int CodePointAt(char high, char low)
+        public static int CodePointAt(StringBuilder seq, int index)
         {
-            return ((high << 10) + low) + (MIN_SUPPLEMENTARY_CODE_POINT
-                                       - (MIN_HIGH_SURROGATE << 10)
-                                       - MIN_LOW_SURROGATE);
+            char c1 = seq[index++];
+            if (char.IsHighSurrogate(c1))
+            {
+                if (index < seq.Length)
+                {
+                    char c2 = seq[index];
+                    if (char.IsLowSurrogate(c2))
+                    {
+                        return ToCodePoint(c1, c2);
+                    }
+                }
+            }
+            return c1;
+        }
+
+        public static int CodePointAt(char[] seq, int index)
+        {
+            char c1 = seq[index++];
+            if (char.IsHighSurrogate(c1))
+            {
+                if (index < seq.Length)
+                {
+                    char c2 = seq[index];
+                    if (char.IsLowSurrogate(c2))
+                    {
+                        return ToCodePoint(c1, c2);
+                    }
+                }
+            }
+            return c1;
         }
 
         internal static int CodePointAt(ICharSequence seq, int index)

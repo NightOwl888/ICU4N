@@ -14,7 +14,7 @@ namespace ICU4N.Impl
     /// Avoid recursion because of its exponential complexity.
     /// Instead, try multiple paths at once and track them with an IndexList.
     /// </summary>
-    public class UnicodeSetStringSpan
+    public partial class UnicodeSetStringSpan
     {
         /*
          * Which span() variant will be used? The object is either built for one variant and used once,
@@ -108,7 +108,7 @@ namespace ICU4N.Impl
             {
                 string str = strings[i];
                 int length16 = str.Length;
-                spanLength = spanSet.Span(str.ToCharSequence(), SpanCondition.CONTAINED);
+                spanLength = spanSet.Span(str, SpanCondition.CONTAINED);
                 if (spanLength < length16)
                 { // Relevant string.
                     someRelevant = true;
@@ -163,7 +163,7 @@ namespace ICU4N.Impl
             {
                 string str = strings[i];
                 int length16 = str.Length;
-                spanLength = spanSet.Span(str.ToCharSequence(), SpanCondition.CONTAINED);
+                spanLength = spanSet.Span(str, SpanCondition.CONTAINED);
                 if (spanLength < length16)
                 { // Relevant string.
                     if (true /* 0 != (which & UTF16) */)
@@ -177,7 +177,7 @@ namespace ICU4N.Impl
                             if (0 != (which & BACK))
                             {
                                 spanLength = length16
-                                        - spanSet.SpanBack(str.ToCharSequence(), length16, SpanCondition.CONTAINED);
+                                        - spanSet.SpanBack(str, length16, SpanCondition.CONTAINED);
                                 spanLengths[spanBackLengthsOffset + i] = MakeSpanLengthByte(spanLength);
                             }
                         }
@@ -388,838 +388,23 @@ namespace ICU4N.Impl
          *     Stop if spanLength==0, otherwise continue the loop.
          */
 
-        /// <summary>
-        /// Spans a string.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        public int Span(string s, int start, SpanCondition spanCondition)
-        {
-            return Span(s.ToCharSequence(), start, spanCondition);
-        }
+        // ICU4N specific - Span(ICharSequence s, int start, SpanCondition spanCondition) moved to UnicodeSetStringSpanExtension.tt
 
-        /// <summary>
-        /// Spans a string.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        public int Span(StringBuilder s, int start, SpanCondition spanCondition)
-        {
-            return Span(s.ToCharSequence(), start, spanCondition);
-        }
+        // ICU4N specific - SpanWithStrings(ICharSequence s, int start, int spanLimit, 
+        //    SpanCondition spanCondition) moved to UnicodeSetStringSpanExtension.tt
 
-        /// <summary>
-        /// Spans a string.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        public int Span(char[] s, int start, SpanCondition spanCondition)
-        {
-            return Span(s.ToCharSequence(), start, spanCondition);
-        }
+        // ICU4N specific - SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition,
+        //    out int outCount) moved to UnicodeSetStringSpanExtension.tt
 
-        /// <summary>
-        /// Spans a string.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        internal int Span(ICharSequence s, int start, SpanCondition spanCondition)
-        {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
-            {
-                return SpanNot(s, start, null);
-            }
-            int spanLimit = spanSet.Span(s, start, SpanCondition.CONTAINED);
-            if (spanLimit == s.Length)
-            {
-                return spanLimit;
-            }
-            return SpanWithStrings(s, start, spanLimit, spanCondition);
-        }
+        // ICU4N specific - SpanContainedAndCount(ICharSequence s, int start, out int outCount) moved to UnicodeSetStringSpanExtension.tt
 
-        /**
-         * Synchronized method for complicated spans using the offsets.
-         * Avoids synchronization for simple cases.
-         *
-         * @param spanLimit = spanSet.span(s, start, CONTAINED)
-         */
-        private int SpanWithStrings(ICharSequence s, int start, int spanLimit,
-                SpanCondition spanCondition)
-        {
-            lock (this)
-            {
-                // Consider strings; they may overlap with the span.
-                int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
-                {
-                    // Use offset list to try all possibilities.
-                    initSize = maxLength16;
-                }
-                offsets.SetMaxLength(initSize);
-                int length = s.Length;
-                int pos = spanLimit, rest = length - spanLimit;
-                int spanLength = spanLimit - start;
-                int i, stringsLength = strings.Count;
-                for (; ; )
-                {
-                    if (spanCondition == SpanCondition.CONTAINED)
-                    {
-                        for (i = 0; i < stringsLength; ++i)
-                        {
-                            int overlap = spanLengths[i];
-                            if (overlap == ALL_CP_CONTAINED)
-                            {
-                                continue; // Irrelevant string.
-                            }
-                            string str = strings[i];
+        // ICU4N specific - SpanBack(ICharSequence s, int length, SpanCondition spanCondition) moved to UnicodeSetStringSpanExtension.tt
 
-                            int length16 = str.Length;
+        // ICU4N specific - SpanNot(ICharSequence s, int start, bool includeCount, out int outCount) moved to UnicodeSetStringSpanExtension.tt
 
-                            // Try to match this string at pos-overlap..pos.
-                            if (overlap >= LONG_SPAN)
-                            {
-                                overlap = length16;
-                                // While contained: No point matching fully inside the code point span.
-                                overlap = str.OffsetByCodePoints(overlap, -1); // Length of the string minus the last code
-                                                                                  // point.
-                            }
-                            if (overlap > spanLength)
-                            {
-                                overlap = spanLength;
-                            }
-                            int inc = length16 - overlap; // Keep overlap+inc==length16.
-                            for (; ; )
-                            {
-                                if (inc > rest)
-                                {
-                                    break;
-                                }
-                                // Try to match if the increment is not listed already.
-                                if (!offsets.ContainsOffset(inc) && Matches16CPB(s, pos - overlap, length, str, length16))
-                                {
-                                    if (inc == rest)
-                                    {
-                                        return length; // Reached the end of the string.
-                                    }
-                                    offsets.AddOffset(inc);
-                                }
-                                if (overlap == 0)
-                                {
-                                    break;
-                                }
-                                --overlap;
-                                ++inc;
-                            }
-                        }
-                    }
-                    else /* SIMPLE */
-                    {
-                        int maxInc = 0, maxOverlap = 0;
-                        for (i = 0; i < stringsLength; ++i)
-                        {
-                            int overlap = spanLengths[i];
-                            // For longest match, we do need to try to match even an all-contained string
-                            // to find the match from the earliest start.
-
-                            string str = strings[i];
-
-                            int length16 = str.Length;
-
-                            // Try to match this string at pos-overlap..pos.
-                            if (overlap >= LONG_SPAN)
-                            {
-                                overlap = length16;
-                                // Longest match: Need to match fully inside the code point span
-                                // to find the match from the earliest start.
-                            }
-                            if (overlap > spanLength)
-                            {
-                                overlap = spanLength;
-                            }
-                            int inc = length16 - overlap; // Keep overlap+inc==length16.
-                            for (; ; )
-                            {
-                                if (inc > rest || overlap < maxOverlap)
-                                {
-                                    break;
-                                }
-                                // Try to match if the string is longer or starts earlier.
-                                if ((overlap > maxOverlap || /* redundant overlap==maxOverlap && */inc > maxInc)
-                                        && Matches16CPB(s, pos - overlap, length, str, length16))
-                                {
-                                    maxInc = inc; // Longest match from earliest start.
-                                    maxOverlap = overlap;
-                                    break;
-                                }
-                                --overlap;
-                                ++inc;
-                            }
-                        }
-
-                        if (maxInc != 0 || maxOverlap != 0)
-                        {
-                            // Longest-match algorithm, and there was a string match.
-                            // Simply continue after it.
-                            pos += maxInc;
-                            rest -= maxInc;
-                            if (rest == 0)
-                            {
-                                return length; // Reached the end of the string.
-                            }
-                            spanLength = 0; // Match strings from after a string match.
-                            continue;
-                        }
-                    }
-                    // Finished trying to match all strings at pos.
-
-                    if (spanLength != 0 || pos == 0)
-                    {
-                        // The position is after an unlimited code point span (spanLength!=0),
-                        // not after a string match.
-                        // The only position where spanLength==0 after a span is pos==0.
-                        // Otherwise, an unlimited code point span is only tried again when no
-                        // strings match, and if such a non-initial span fails we stop.
-                        if (offsets.IsEmpty)
-                        {
-                            return pos; // No strings matched after a span.
-                        }
-                        // Match strings from after the next string match.
-                    }
-                    else
-                    {
-                        // The position is after a string match (or a single code point).
-                        if (offsets.IsEmpty)
-                        {
-                            // No more strings matched after a previous string match.
-                            // Try another code point span from after the last string match.
-                            spanLimit = spanSet.Span(s, pos, SpanCondition.CONTAINED);
-                            spanLength = spanLimit - pos;
-                            if (spanLength == rest || // Reached the end of the string, or
-                                    spanLength == 0 // neither strings nor span progressed.
-                            )
-                            {
-                                return spanLimit;
-                            }
-                            pos += spanLength;
-                            rest -= spanLength;
-                            continue; // spanLength>0: Match strings from after a span.
-                        }
-                        else
-                        {
-                            // Try to match only one code point from after a string match if some
-                            // string matched beyond it, so that we try all possible positions
-                            // and don't overshoot.
-                            spanLength = SpanOne(spanSet, s, pos, rest);
-                            if (spanLength > 0)
-                            {
-                                if (spanLength == rest)
-                                {
-                                    return length; // Reached the end of the string.
-                                }
-                                // Match strings after this code point.
-                                // There cannot be any increments below it because UnicodeSet strings
-                                // contain multiple code points.
-                                pos += spanLength;
-                                rest -= spanLength;
-                                offsets.Shift(spanLength);
-                                spanLength = 0;
-                                continue; // Match strings from after a single code point.
-                            }
-                            // Match strings from after the next string match.
-                        }
-                    }
-                    int minOffset = offsets.PopMinimum(null);
-                    pos += minOffset;
-                    rest -= minOffset;
-                    spanLength = 0; // Match strings from after a string match.
-                }
-            }
-        }
-        /**
-         * 
-         *
-         * <p>
-         *
-         * <p>
-         * 
-         *
-         * @param s 
-         * @param start 
-         * @param spanCondition 
-         * @param outCount 
-         * @return 
-         */
+        // ICU4N specific - SpanNotBack(ICharSequence s, int length) moved to UnicodeSetStringSpanExtension.tt
 
 
-        /// <summary>
-        /// Spans a string and counts the smallest number of set elements on any path across the span.
-        /// </summary>
-        /// <remarks>
-        /// For proper counting, we cannot ignore strings that are fully contained in code point spans.
-        /// <para/>
-        /// If the set does not have any fully-contained strings, then we could optimize this
-        /// like Span(), but such sets are likely rare, and this is at least still linear.
-        /// </remarks>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <param name="outCount">The count.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        public int SpanAndCount(string s, int start, SpanCondition spanCondition,
-            OutputInt outCount)
-        {
-            return SpanAndCount(s.ToCharSequence(), start, spanCondition, outCount);
-        }
-
-        /// <summary>
-        /// Spans a string and counts the smallest number of set elements on any path across the span.
-        /// </summary>
-        /// <remarks>
-        /// For proper counting, we cannot ignore strings that are fully contained in code point spans.
-        /// <para/>
-        /// If the set does not have any fully-contained strings, then we could optimize this
-        /// like Span(), but such sets are likely rare, and this is at least still linear.
-        /// </remarks>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <param name="outCount">The count.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        public int SpanAndCount(StringBuilder s, int start, SpanCondition spanCondition,
-            OutputInt outCount)
-        {
-            return SpanAndCount(s.ToCharSequence(), start, spanCondition, outCount);
-        }
-
-        /// <summary>
-        /// Spans a string and counts the smallest number of set elements on any path across the span.
-        /// </summary>
-        /// <remarks>
-        /// For proper counting, we cannot ignore strings that are fully contained in code point spans.
-        /// <para/>
-        /// If the set does not have any fully-contained strings, then we could optimize this
-        /// like Span(), but such sets are likely rare, and this is at least still linear.
-        /// </remarks>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <param name="outCount">The count.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        public int SpanAndCount(char[] s, int start, SpanCondition spanCondition,
-            OutputInt outCount)
-        {
-            return SpanAndCount(s.ToCharSequence(), start, spanCondition, outCount);
-        }
-
-        /// <summary>
-        /// Spans a string and counts the smallest number of set elements on any path across the span.
-        /// </summary>
-        /// <remarks>
-        /// For proper counting, we cannot ignore strings that are fully contained in code point spans.
-        /// <para/>
-        /// If the set does not have any fully-contained strings, then we could optimize this
-        /// like Span(), but such sets are likely rare, and this is at least still linear.
-        /// </remarks>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="start">The start index that the span begins.</param>
-        /// <param name="spanCondition">The span condition.</param>
-        /// <param name="outCount">The count.</param>
-        /// <returns>The limit (exclusive end) of the span.</returns>
-        internal int SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition,
-        OutputInt outCount)
-        {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
-            {
-                return SpanNot(s, start, outCount);
-            }
-            // Consider strings; they may overlap with the span,
-            // and they may result in a smaller count that with just code points.
-            if (spanCondition == SpanCondition.CONTAINED)
-            {
-                return SpanContainedAndCount(s, start, outCount);
-            }
-            // SIMPLE (not synchronized, does not use offsets)
-            int stringsLength = strings.Count;
-            int length = s.Length;
-            int pos = start;
-            int rest = length - start;
-            int count = 0;
-            while (rest != 0)
-            {
-                // Try to match the next code point.
-                int cpLength = SpanOne(spanSet, s, pos, rest);
-                int maxInc = (cpLength > 0) ? cpLength : 0;
-                // Try to match all of the strings.
-                for (int i = 0; i < stringsLength; ++i)
-                {
-                    string str = strings[i];
-                    int length16 = str.Length;
-                    if (maxInc < length16 && length16 <= rest &&
-                            Matches16CPB(s, pos, length, str, length16))
-                    {
-                        maxInc = length16;
-                    }
-                }
-                // We are done if there is no match beyond pos.
-                if (maxInc == 0)
-                {
-                    outCount.Value = count;
-                    return pos;
-                }
-                // Continue from the longest match.
-                ++count;
-                pos += maxInc;
-                rest -= maxInc;
-            }
-            outCount.Value = count;
-            return pos;
-        }
-
-        private int SpanContainedAndCount(ICharSequence s, int start, OutputInt outCount)
-        {
-            lock (this)
-            {
-                // Use offset list to try all possibilities.
-                offsets.SetMaxLength(maxLength16);
-                int stringsLength = strings.Count;
-                int length = s.Length;
-                int pos = start;
-                int rest = length - start;
-                int count = 0;
-                while (rest != 0)
-                {
-                    // Try to match the next code point.
-                    int cpLength = SpanOne(spanSet, s, pos, rest);
-                    if (cpLength > 0)
-                    {
-                        offsets.AddOffsetAndCount(cpLength, count + 1);
-                    }
-                    // Try to match all of the strings.
-                    for (int i = 0; i < stringsLength; ++i)
-                    {
-                        string str = strings[i];
-                        int length16 = str.Length;
-                        // Note: If the strings were sorted by length, then we could also
-                        // avoid trying to match if there is already a match of the same length.
-                        if (length16 <= rest && !offsets.HasCountAtOffset(length16, count + 1) &&
-                                Matches16CPB(s, pos, length, str, length16))
-                        {
-                            offsets.AddOffsetAndCount(length16, count + 1);
-                        }
-                    }
-                    // We are done if there is no match beyond pos.
-                    if (offsets.IsEmpty)
-                    {
-                        outCount.Value = count;
-                        return pos;
-                    }
-                    // Continue from the nearest match.
-                    int minOffset = offsets.PopMinimum(outCount);
-                    count = outCount.Value;
-                    pos += minOffset;
-                    rest -= minOffset;
-                }
-                outCount.Value = count;
-                return pos;
-            }
-        }
-
-        /// <summary>
-        /// Span a string backwards.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="length"></param>
-        /// <param name="spanCondition">The span condition</param>
-        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        public int SpanBack(string s, int length, SpanCondition spanCondition)
-        {
-            return SpanBack(s.ToCharSequence(), length, spanCondition);
-        }
-
-        /// <summary>
-        /// Span a string backwards.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="length"></param>
-        /// <param name="spanCondition">The span condition</param>
-        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        public int SpanBack(StringBuilder s, int length, SpanCondition spanCondition)
-        {
-            return SpanBack(s.ToCharSequence(), length, spanCondition);
-        }
-
-        /// <summary>
-        /// Span a string backwards.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="length"></param>
-        /// <param name="spanCondition">The span condition</param>
-        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        public int SpanBack(char[] s, int length, SpanCondition spanCondition)
-        {
-            return SpanBack(s.ToCharSequence(), length, spanCondition);
-        }
-
-        /// <summary>
-        /// Span a string backwards.
-        /// </summary>
-        /// <param name="s">The string to be spanned.</param>
-        /// <param name="length"></param>
-        /// <param name="spanCondition">The span condition</param>
-        /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        internal int SpanBack(ICharSequence s, int length, SpanCondition spanCondition)
-        {
-            lock (this)
-            {
-                if (spanCondition == SpanCondition.NOT_CONTAINED)
-                {
-                    return SpanNotBack(s, length);
-                }
-                int pos = spanSet.SpanBack(s, length, SpanCondition.CONTAINED);
-                if (pos == 0)
-                {
-                    return 0;
-                }
-                int spanLength = length - pos;
-
-                // Consider strings; they may overlap with the span.
-                int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
-                {
-                    // Use offset list to try all possibilities.
-                    initSize = maxLength16;
-                }
-                offsets.SetMaxLength(initSize);
-                int i, stringsLength = strings.Count;
-                int spanBackLengthsOffset = 0;
-                if (all)
-                {
-                    spanBackLengthsOffset = stringsLength;
-                }
-                for (; ; )
-                {
-                    if (spanCondition == SpanCondition.CONTAINED)
-                    {
-                        for (i = 0; i < stringsLength; ++i)
-                        {
-                            int overlap = spanLengths[spanBackLengthsOffset + i];
-                            if (overlap == ALL_CP_CONTAINED)
-                            {
-                                continue; // Irrelevant string.
-                            }
-                            string str = strings[i];
-
-                            int length16 = str.Length;
-
-                            // Try to match this string at pos-(length16-overlap)..pos-length16.
-                            if (overlap >= LONG_SPAN)
-                            {
-                                overlap = length16;
-                                // While contained: No point matching fully inside the code point span.
-                                int len1 = 0;
-                                len1 = str.OffsetByCodePoints(0, 1);
-                                overlap -= len1; // Length of the string minus the first code point.
-                            }
-                            if (overlap > spanLength)
-                            {
-                                overlap = spanLength;
-                            }
-                            int dec = length16 - overlap; // Keep dec+overlap==length16.
-                            for (; ; )
-                            {
-                                if (dec > pos)
-                                {
-                                    break;
-                                }
-                                // Try to match if the decrement is not listed already.
-                                if (!offsets.ContainsOffset(dec) && Matches16CPB(s, pos - dec, length, str, length16))
-                                {
-                                    if (dec == pos)
-                                    {
-                                        return 0; // Reached the start of the string.
-                                    }
-                                    offsets.AddOffset(dec);
-                                }
-                                if (overlap == 0)
-                                {
-                                    break;
-                                }
-                                --overlap;
-                                ++dec;
-                            }
-                        }
-                    }
-                    else /* SIMPLE */
-                    {
-                        int maxDec = 0, maxOverlap = 0;
-                        for (i = 0; i < stringsLength; ++i)
-                        {
-                            int overlap = spanLengths[spanBackLengthsOffset + i];
-                            // For longest match, we do need to try to match even an all-contained string
-                            // to find the match from the latest end.
-
-                            string str = strings[i];
-
-                            int length16 = str.Length;
-
-                            // Try to match this string at pos-(length16-overlap)..pos-length16.
-                            if (overlap >= LONG_SPAN)
-                            {
-                                overlap = length16;
-                                // Longest match: Need to match fully inside the code point span
-                                // to find the match from the latest end.
-                            }
-                            if (overlap > spanLength)
-                            {
-                                overlap = spanLength;
-                            }
-                            int dec = length16 - overlap; // Keep dec+overlap==length16.
-                            for (; ; )
-                            {
-                                if (dec > pos || overlap < maxOverlap)
-                                {
-                                    break;
-                                }
-                                // Try to match if the string is longer or ends later.
-                                if ((overlap > maxOverlap || /* redundant overlap==maxOverlap && */dec > maxDec)
-                                        && Matches16CPB(s, pos - dec, length, str, length16))
-                                {
-                                    maxDec = dec; // Longest match from latest end.
-                                    maxOverlap = overlap;
-                                    break;
-                                }
-                                --overlap;
-                                ++dec;
-                            }
-                        }
-
-                        if (maxDec != 0 || maxOverlap != 0)
-                        {
-                            // Longest-match algorithm, and there was a string match.
-                            // Simply continue before it.
-                            pos -= maxDec;
-                            if (pos == 0)
-                            {
-                                return 0; // Reached the start of the string.
-                            }
-                            spanLength = 0; // Match strings from before a string match.
-                            continue;
-                        }
-                    }
-                    // Finished trying to match all strings at pos.
-
-                    if (spanLength != 0 || pos == length)
-                    {
-                        // The position is before an unlimited code point span (spanLength!=0),
-                        // not before a string match.
-                        // The only position where spanLength==0 before a span is pos==length.
-                        // Otherwise, an unlimited code point span is only tried again when no
-                        // strings match, and if such a non-initial span fails we stop.
-                        if (offsets.IsEmpty)
-                        {
-                            return pos; // No strings matched before a span.
-                        }
-                        // Match strings from before the next string match.
-                    }
-                    else
-                    {
-                        // The position is before a string match (or a single code point).
-                        if (offsets.IsEmpty)
-                        {
-                            // No more strings matched before a previous string match.
-                            // Try another code point span from before the last string match.
-                            int oldPos = pos;
-                            pos = spanSet.SpanBack(s, oldPos, SpanCondition.CONTAINED);
-                            spanLength = oldPos - pos;
-                            if (pos == 0 || // Reached the start of the string, or
-                                    spanLength == 0 // neither strings nor span progressed.
-                            )
-                            {
-                                return pos;
-                            }
-                            continue; // spanLength>0: Match strings from before a span.
-                        }
-                        else
-                        {
-                            // Try to match only one code point from before a string match if some
-                            // string matched beyond it, so that we try all possible positions
-                            // and don't overshoot.
-                            spanLength = SpanOneBack(spanSet, s, pos);
-                            if (spanLength > 0)
-                            {
-                                if (spanLength == pos)
-                                {
-                                    return 0; // Reached the start of the string.
-                                }
-                                // Match strings before this code point.
-                                // There cannot be any decrements below it because UnicodeSet strings
-                                // contain multiple code points.
-                                pos -= spanLength;
-                                offsets.Shift(spanLength);
-                                spanLength = 0;
-                                continue; // Match strings from before a single code point.
-                            }
-                            // Match strings from before the next string match.
-                        }
-                    }
-                    pos -= offsets.PopMinimum(null);
-                    spanLength = 0; // Match strings from before a string match.
-                }
-            }
-        }
-
-        /**
-         * Algorithm for spanNot()==span(SpanCondition.NOT_CONTAINED)
-         *
-         * Theoretical algorithm:
-         * - Iterate through the string, and at each code point boundary:
-         *   + If the code point there is in the set, then return with the current position.
-         *   + If a set string matches at the current position, then return with the current position.
-         *
-         * Optimized implementation:
-         *
-         * (Same assumption as for span() above.)
-         *
-         * Create and cache a spanNotSet which contains
-         * all of the single code points of the original set but none of its strings.
-         * For each set string add its initial code point to the spanNotSet.
-         * (Also add its final code point for spanNotBack().)
-         *
-         * - Loop:
-         *   + Do spanLength=spanNotSet.span(SpanCondition.NOT_CONTAINED).
-         *   + If the current code point is in the original set, then return the current position.
-         *   + If any set string matches at the current position, then return the current position.
-         *   + If there is no match at the current position, neither for the code point
-         *     there nor for any set string, then skip this code point and continue the loop.
-         *     This happens for set-string-initial code points that were added to spanNotSet
-         *     when there is not actually a match for such a set string.
-         *
-         * @param s The string to be spanned
-         * @param start The start index that the span begins
-         * @param outCount If not null: Receives the number of code points across the span.
-         * @return the limit (exclusive end) of the span
-         */
-        private int SpanNot(ICharSequence s, int start, OutputInt outCount)
-        {
-            int length = s.Length;
-            int pos = start, rest = length - start;
-            int stringsLength = strings.Count;
-            int count = 0;
-            do
-            {
-                // Span until we find a code point from the set,
-                // or a code point that starts or ends some string.
-                int spanLimit;
-                if (outCount == null)
-                {
-                    spanLimit = spanNotSet.Span(s, pos, SpanCondition.NOT_CONTAINED);
-                }
-                else
-                {
-                    spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NOT_CONTAINED, outCount);
-                    outCount.Value = count = count + outCount.Value;
-                }
-                if (spanLimit == length)
-                {
-                    return length; // Reached the end of the string.
-                }
-                pos = spanLimit;
-                rest = length - spanLimit;
-
-                // Check whether the current code point is in the original set,
-                // without the string starts and ends.
-                int cpLength = SpanOne(spanSet, s, pos, rest);
-                if (cpLength > 0)
-                {
-                    return pos; // There is a set element at pos.
-                }
-
-                // Try to match the strings at pos.
-                for (int i = 0; i < stringsLength; ++i)
-                {
-                    if (spanLengths[i] == ALL_CP_CONTAINED)
-                    {
-                        continue; // Irrelevant string.
-                    }
-                    string str = strings[i];
-
-                    int length16 = str.Length;
-                    if (length16 <= rest && Matches16CPB(s, pos, length, str, length16))
-                    {
-                        return pos; // There is a set element at pos.
-                    }
-                }
-
-                // The span(while not contained) ended on a string start/end which is
-                // not in the original set. Skip this code point and continue.
-                // cpLength<0
-                pos -= cpLength;
-                rest += cpLength;
-                ++count;
-            } while (rest != 0);
-            if (outCount != null)
-            {
-                outCount.Value = count;
-            }
-            return length; // Reached the end of the string.
-        }
-
-        private int SpanNotBack(ICharSequence s, int length)
-        {
-            int pos = length;
-            int i, stringsLength = strings.Count;
-            do
-            {
-                // Span until we find a code point from the set,
-                // or a code point that starts or ends some string.
-                pos = spanNotSet.SpanBack(s, pos, SpanCondition.NOT_CONTAINED);
-                if (pos == 0)
-                {
-                    return 0; // Reached the start of the string.
-                }
-
-                // Check whether the current code point is in the original set,
-                // without the string starts and ends.
-                int cpLength = SpanOneBack(spanSet, s, pos);
-                if (cpLength > 0)
-                {
-                    return pos; // There is a set element at pos.
-                }
-
-                // Try to match the strings at pos.
-                for (i = 0; i < stringsLength; ++i)
-                {
-                    // Use spanLengths rather than a spanLengths pointer because
-                    // it is easier and we only need to know whether the string is irrelevant
-                    // which is the same in either array.
-                    if (spanLengths[i] == ALL_CP_CONTAINED)
-                    {
-                        continue; // Irrelevant string.
-                    }
-                    string str = strings[i];
-
-                    int length16 = str.Length;
-                    if (length16 <= pos && Matches16CPB(s, pos - length16, length, str, length16))
-                    {
-                        return pos; // There is a set element at pos.
-                    }
-                }
-
-                // The span(while not contained) ended on a string start/end which is
-                // not in the original set. Skip this code point and continue.
-                // cpLength<0
-                pos += cpLength;
-            } while (pos != 0);
-            return 0; // Reached the start of the string.
-        }
 
         internal static short MakeSpanLengthByte(int spanLength)
         {
@@ -1227,105 +412,53 @@ namespace ICU4N.Impl
             return spanLength < LONG_SPAN ? (short)spanLength : LONG_SPAN;
         }
 
-        // Compare strings without any argument checks. Requires length>0.
-        private static bool Matches16(ICharSequence s, int start, string t, int length)
-        {
-            int end = start + length;
-            while (length-- > 0)
-            {
-                if (s[--end] != t[length])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
+        // ICU4N specific - Matches16(ICharSequence s, int start, string t, int length) moved to UnicodeSetStringSpanExtension.tt
+
+        // ICU4N specific - Matches16CPB(ICharSequence s, int start, int limit, string t, int tlength) moved to UnicodeSetStringSpanExtension.tt
+
+        // ICU4N specific - SpanOne(UnicodeSet set, ICharSequence s, int start, int length) moved to UnicodeSetStringSpanExtension.tt
+
+        // ICU4N specific - SpanOneBack(UnicodeSet set, ICharSequence s, int length) moved to UnicodeSetStringSpanExtension.tt
 
         /**
-         * Compare 16-bit Unicode strings (which may be malformed UTF-16)
-         * at code point boundaries.
-         * That is, each edge of a match must not be in the middle of a surrogate pair.
-         * @param s       The string to match in.
-         * @param start   The start index of s.
-         * @param limit   The limit of the subsequence of s being spanned.
-         * @param t       The substring to be matched in s.
-         * @param tlength The length of t.
-         */
-        internal static bool Matches16CPB(ICharSequence s, int start, int limit, string t, int tlength)
-        {
-            return Matches16(s, start, t, tlength)
-                    && !(0 < start && char.IsHighSurrogate(s[start - 1]) &&
-                            char.IsLowSurrogate(s[start]))
-                    && !((start + tlength) < limit && char.IsHighSurrogate(s[start + tlength - 1]) &&
-                            char.IsLowSurrogate(s[start + tlength]));
-        }
+         /// 
+         /// 
+         /// <p>
+     */
 
-        /**
-         * Does the set contain the next code point?
-         * If so, return its length; otherwise return its negative length.
-         */
-        internal static int SpanOne(UnicodeSet set, ICharSequence s, int start, int length)
-        {
-            char c = s[start];
-            if (c >= 0xd800 && c <= 0xdbff && length >= 2)
-            {
-                char c2 = s[start + 1];
-                if (UTF16.IsTrailSurrogate(c2))
-                {
-                    int supplementary = Character.ToCodePoint(c, c2);
-                    return set.Contains(supplementary) ? 2 : -2;
-                }
-            }
-            return set.Contains(c) ? 1 : -1;
-        }
-
-        internal static int SpanOneBack(UnicodeSet set, ICharSequence s, int length)
-        {
-            char c = s[length - 1];
-            if (c >= 0xdc00 && c <= 0xdfff && length >= 2)
-            {
-                char c2 = s[length - 2];
-                if (UTF16.IsLeadSurrogate(c2))
-                {
-                    int supplementary = Character.ToCodePoint(c2, c);
-                    return set.Contains(supplementary) ? 2 : -2;
-                }
-            }
-            return set.Contains(c) ? 1 : -1;
-        }
-
-        /**
-         * Helper class for UnicodeSetStringSpan.
-         *
-         * <p>List of offsets from the current position from where to try matching
-         * a code point or a string.
-         * Stores offsets rather than indexes to simplify the code and use the same list
-         * for both increments (in span()) and decrements (in spanBack()).
-         *
-         * <p>Assumption: The maximum offset is limited, and the offsets that are stored at any one time
-         * are relatively dense, that is,
-         * there are normally no gaps of hundreds or thousands of offset values.
-         *
-         * <p>This class optionally also tracks the minimum non-negative count for each position,
-         * intended to count the smallest number of elements of any path leading to that position.
-         *
-         * <p>The implementation uses a circular buffer of count integers,
-         * each indicating whether the corresponding offset is in the list,
-         * and its path element count.
-         * This avoids inserting into a sorted list of offsets (or absolute indexes)
-         * and physically moving part of the list.
-         *
-         * <p>Note: In principle, the caller should setMaxLength() to
-         * the maximum of the max string length and U16_LENGTH/U8_LENGTH
-         * to account for "long" single code points.
-         *
-         * <p>Note: An earlier version did not track counts and stored only byte flags.
-         * With boolean flags, if maxLength were guaranteed to be no more than 32 or 64,
-         * the list could be stored as bit flags in a single integer.
-         * Rather than handling a circular buffer with a start list index,
-         * the integer would simply be shifted when lower offsets are removed.
-         * UnicodeSet does not have a limit on the lengths of strings.
-         */
+        /// <summary>
+        /// Helper class for UnicodeSetStringSpan.
+        /// </summary>
+        /// <remarks>
+        /// List of offsets from the current position from where to try matching
+        /// a code point or a string.
+        /// Stores offsets rather than indexes to simplify the code and use the same list
+        /// for both increments (in Span()) and decrements (in SpanBack()).
+        /// 
+        /// <para/>Assumption: The maximum offset is limited, and the offsets that are stored at any one time
+        /// are relatively dense, that is,
+        /// there are normally no gaps of hundreds or thousands of offset values.
+        /// 
+        /// <para/>This class optionally also tracks the minimum non-negative count for each position,
+        /// intended to count the smallest number of elements of any path leading to that position.
+        /// 
+        /// <para/>The implementation uses a circular buffer of count integers,
+        /// each indicating whether the corresponding offset is in the list,
+        /// and its path element count.
+        /// This avoids inserting into a sorted list of offsets (or absolute indexes)
+        /// and physically moving part of the list.
+        /// 
+        /// <para/>Note: In principle, the caller should SetMaxLength() to
+        /// the maximum of the max string length and U16_LENGTH/U8_LENGTH
+        /// to account for "long" single code points.
+        /// 
+        /// <para/>Note: An earlier version did not track counts and stored only byte flags.
+        /// With boolean flags, if maxLength were guaranteed to be no more than 32 or 64,
+        /// the list could be stored as bit flags in a single integer.
+        /// Rather than handling a circular buffer with a start list index,
+        /// the integer would simply be shifted when lower offsets are removed.
+        /// UnicodeSet does not have a limit on the lengths of strings.
+        /// </remarks>
         private sealed class OffsetList
         {
             private int[] list;
@@ -1360,13 +493,12 @@ namespace ICU4N.Impl
                 get { return (length == 0); }
             }
 
-            /**
-             * Reduces all stored offsets by delta, used when the current position moves by delta.
-             * There must not be any offsets lower than delta.
-             * If there is an offset equal to delta, it is removed.
-             *
-             * @param delta [1..maxLength]
-             */
+            /// <summary>
+            /// Reduces all stored offsets by delta, used when the current position moves by delta.
+            /// There must not be any offsets lower than delta.
+            /// If there is an offset equal to delta, it is removed.
+            /// </summary>
+            /// <param name="delta">[1..maxLength]</param>
             public void Shift(int delta)
             {
                 int i = start + delta;
@@ -1382,10 +514,10 @@ namespace ICU4N.Impl
                 start = i;
             }
 
-            /**
-             * Adds an offset. The list must not contain it yet.
-             * @param offset [1..maxLength]
-             */
+            /// <summary>
+            /// Adds an offset. The list must not contain it yet.
+            /// </summary>
+            /// <param name="offset">[1..maxLength]</param>
             public void AddOffset(int offset)
             {
                 int i = start + offset;
@@ -1398,11 +530,12 @@ namespace ICU4N.Impl
                 ++length;
             }
 
-            /**
-             * Adds an offset and updates its count.
-             * The list may already contain the offset.
-             * @param offset [1..maxLength]
-             */
+            /// <summary>
+            /// Adds an offset and updates its count.
+            /// The list may already contain the offset.
+            /// </summary>
+            /// <param name="offset">[1..maxLength]</param>
+            /// <param name="count"></param>
             public void AddOffsetAndCount(int offset, int count)
             {
                 Debug.Assert(count > 0);
@@ -1422,9 +555,7 @@ namespace ICU4N.Impl
                 }
             }
 
-            /**
-             * @param offset [1..maxLength]
-             */
+            /// <param name="offset">[1..maxLength]</param>
             public bool ContainsOffset(int offset)
             {
                 int i = start + offset;
@@ -1435,9 +566,8 @@ namespace ICU4N.Impl
                 return list[i] != 0;
             }
 
-            /**
-             * @param offset [1..maxLength]
-             */
+            /// <param name="offset">[1..maxLength]</param>
+            /// <param name="count"></param>
             public bool HasCountAtOffset(int offset, int count)
             {
                 int i = start + offset;
@@ -1449,12 +579,13 @@ namespace ICU4N.Impl
                 return oldCount != 0 && oldCount <= count;
             }
 
-            /**
-             * Finds the lowest stored offset from a non-empty list, removes it,
-             * and reduces all other offsets by this minimum.
-             * @return min=[1..maxLength]
-             */
-            public int PopMinimum(OutputInt outCount)
+            /// <summary>
+            /// Finds the lowest stored offset from a non-empty list, removes it,
+            /// and reduces all other offsets by this minimum.
+            /// </summary>
+            /// <param name="outCount"></param>
+            /// <returns>min=[1..maxLength]</returns>
+            public int PopMinimum(out int outCount)
             {
                 // Look for the next offset in list[start+1..list.length-1].
                 int i = start, result;
@@ -1467,7 +598,7 @@ namespace ICU4N.Impl
                         --length;
                         result = i - start;
                         start = i;
-                        if (outCount != null) { outCount.Value = count2; }
+                        outCount = count2;
                         return result;
                     }
                 }
@@ -1485,7 +616,7 @@ namespace ICU4N.Impl
                 list[i] = 0;
                 --length;
                 start = i;
-                if (outCount != null) { outCount.Value = count; }
+                outCount = count;
                 return result + i;
             }
         }

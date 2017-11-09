@@ -1,10 +1,8 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support;
 using ICU4N.Support.IO;
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 

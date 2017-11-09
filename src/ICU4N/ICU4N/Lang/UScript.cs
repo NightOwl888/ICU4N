@@ -1082,8 +1082,9 @@ namespace ICU4N.Lang
             bool triedCode = false;
             if (nameOrAbbrOrLocale.IndexOf('_') < 0 && nameOrAbbrOrLocale.IndexOf('-') < 0)
             {
-                int propNum = UCharacter.GetPropertyValueEnumNoThrow(UProperty.SCRIPT, nameOrAbbrOrLocale.ToCharSequence());
-                if (propNum != (int)UProperty.UNDEFINED)
+                int propNum;
+                // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
+                if (UCharacter.TryGetPropertyValueEnum(UProperty.SCRIPT, nameOrAbbrOrLocale, out propNum))
                 {
                     return new int[] { propNum };
                 }
@@ -1096,8 +1097,9 @@ namespace ICU4N.Lang
             }
             if (!triedCode)
             {
-                int propNum = UCharacter.GetPropertyValueEnumNoThrow(UProperty.SCRIPT, nameOrAbbrOrLocale.ToCharSequence());
-                if (propNum != (int)UProperty.UNDEFINED)
+                int propNum;
+                // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
+                if (UCharacter.TryGetPropertyValueEnum(UProperty.SCRIPT, nameOrAbbrOrLocale, out propNum))
                 {
                     return new int[] { propNum };
                 }
@@ -1117,8 +1119,13 @@ namespace ICU4N.Lang
          */
         public static int GetCodeFromName(string nameOrAbbr)
         {
-            int propNum = UCharacter.GetPropertyValueEnumNoThrow(UProperty.SCRIPT, nameOrAbbr.ToCharSequence());
-            return propNum == (int)UProperty.UNDEFINED ? INVALID_CODE : propNum;
+            int propNum;
+            // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
+            if (UCharacter.TryGetPropertyValueEnum(UProperty.SCRIPT, nameOrAbbr, out propNum))
+            {
+                return propNum;
+            }
+            return INVALID_CODE;
         }
 
         /**

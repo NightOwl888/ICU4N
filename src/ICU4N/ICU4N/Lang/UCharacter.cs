@@ -10,7 +10,7 @@ using System.Text;
 
 namespace ICU4N.Lang
 {
-    public sealed class UCharacter
+    public sealed partial class UCharacter
     {
         // ICU4N specific - copy UNASSIGNED from UCharacterEnums.ECharacterCategory (since we cannot inherit via interface)
         /**
@@ -4686,104 +4686,14 @@ namespace ICU4N.Lang
         /// <seealso cref="UProperty"/>
         /// <seealso cref="NameChoice"/>
         /// <stable>ICU4N 60.1.0</stable>
+        // ICU4N specific
         public static bool TryGetPropertyName(UProperty property,
                 NameChoice nameChoice, out string result) // ICU4N TODO: Tests
         {
             return UPropertyAliases.INSTANCE.TryGetPropertyName(property, nameChoice, out result);
         }
 
-        /// <summary>
-        /// Return the <see cref="UProperty"/> selector for a given property name, as
-        /// specified in the Unicode database file PropertyAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// In addition, this function maps the synthetic names "gcm" /
-        /// "General_Category_Mask" to the property
-        /// UProperty.GENERAL_CATEGORY_MASK.  These names are not in
-        /// PropertyAliases.txt.
-        /// </remarks>
-        /// <param name="propertyAlias">the property name to be matched.  The name
-        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
-        /// <returns>a UProperty enum.</returns>
-        /// <exception cref="ArgumentException">thrown if propertyAlias is not recognized.</exception>
-        /// <seealso cref="UProperty"/>
-        /// <stable>ICU 2.4</stable>
-        public static int GetPropertyEnum(string propertyAlias)
-        {
-            return GetPropertyEnum(propertyAlias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Return the <see cref="UProperty"/> selector for a given property name, as
-        /// specified in the Unicode database file PropertyAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// In addition, this function maps the synthetic names "gcm" /
-        /// "General_Category_Mask" to the property
-        /// UProperty.GENERAL_CATEGORY_MASK.  These names are not in
-        /// PropertyAliases.txt.
-        /// </remarks>
-        /// <param name="propertyAlias">the property name to be matched.  The name
-        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
-        /// <returns>a UProperty enum.</returns>
-        /// <exception cref="ArgumentException">thrown if propertyAlias is not recognized.</exception>
-        /// <seealso cref="UProperty"/>
-        /// <stable>ICU 2.4</stable>
-        public static int GetPropertyEnum(StringBuilder propertyAlias)
-        {
-            return GetPropertyEnum(propertyAlias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Return the <see cref="UProperty"/> selector for a given property name, as
-        /// specified in the Unicode database file PropertyAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// In addition, this function maps the synthetic names "gcm" /
-        /// "General_Category_Mask" to the property
-        /// UProperty.GENERAL_CATEGORY_MASK.  These names are not in
-        /// PropertyAliases.txt.
-        /// </remarks>
-        /// <param name="propertyAlias">the property name to be matched.  The name
-        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
-        /// <returns>a UProperty enum.</returns>
-        /// <exception cref="ArgumentException">thrown if propertyAlias is not recognized.</exception>
-        /// <seealso cref="UProperty"/>
-        /// <stable>ICU 2.4</stable>
-        public static int GetPropertyEnum(char[] propertyAlias)
-        {
-            return GetPropertyEnum(propertyAlias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Return the <see cref="UProperty"/> selector for a given property name, as
-        /// specified in the Unicode database file PropertyAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// In addition, this function maps the synthetic names "gcm" /
-        /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
-        /// PropertyAliases.txt.
-        /// </remarks>
-        /// <param name="propertyAlias">The property name to be matched.  The name
-        /// is compared using "loose matching" as described in PropertyAliases.txt.</param>
-        /// <returns>a <see cref="UProperty"/> enum.</returns>
-        /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
-        /// <seealso cref="UProperty"/>
-        /// <stable>ICU 2.4</stable>
-        internal static int GetPropertyEnum(ICharSequence propertyAlias)
-        {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
-            if (propEnum == (int)UProperty.UNDEFINED)
-            {
-                throw new IcuArgumentException("Invalid name: " + propertyAlias);
-            }
-            return propEnum;
-        }
+        // ICU4N specific - GetPropertyEnum(ICharSequence propertyAlias) moved to UCharacterExtension.tt
 
         /// <summary>
         /// Return the Unicode name for a given property value, as given in
@@ -4848,8 +4758,8 @@ namespace ICU4N.Lang
         /// <seealso cref="NameChoice"/>
         /// <stable>ICU 2.4</stable>
         public static string GetPropertyValueName(UProperty property,
-                int value,
-                NameChoice nameChoice)
+                    int value,
+                    NameChoice nameChoice)
         {
             if ((property == UProperty.CANONICAL_COMBINING_CLASS
                     || property == UProperty.LEAD_CANONICAL_COMBINING_CLASS
@@ -4968,172 +4878,15 @@ namespace ICU4N.Lang
             return UPropertyAliases.INSTANCE.TryGetPropertyValueName(property, value, nameChoice, out result);
         }
 
-        /// <summary>
-        /// Return the property value integer for a given value name, as
-        /// specified in the Unicode database file PropertyValueAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with UProperty.GENERAL_CATEGORY_MASK, not
-        /// UProperty.GENERAL_CATEGORY.  These include: "C" / "Other", "L" /
-        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
-        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
-        /// </remarks>
-        /// <param name="property">UProperty selector constant.
-        /// UProperty.INT_START &lt;= property &lt; UProperty.INT_LIMIT or
-        /// UProperty.BINARY_START &lt;= property &lt; UProperty.BINARY_LIMIT or
-        /// UProperty.MASK_START &lt; = property &lt; UProperty.MASK_LIMIT.
-        /// Only these properties can be enumerated.
-        /// </param>
-        /// <param name="valueAlias">the value name to be matched.  The name is
-        /// compared using "loose matching" as described in
-        /// PropertyValueAliases.txt.
-        /// </param>
-        /// <returns>
-        /// A value integer.  Note: UProperty.GENERAL_CATEGORY
-        /// values are mask values produced by left-shifting 1 by
-        /// UCharacter.GetType().  This allows grouped categories such as
-        /// [:L:] to be represented.
-        /// </returns>
-        /// <exception cref="ArgumentException">if property is not a valid UProperty
-        /// selector or valueAlias is not a value of this property
-        /// </exception>
-        /// <see cref="UProperty"/>
-        /// <stable>ICU 2.4</stable>
-        public static int GetPropertyValueEnum(UProperty property, string valueAlias)
-        {
-            return GetPropertyValueEnum(property, valueAlias.ToCharSequence());
-        }
+        // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence valueAlias) moved to UCharacterExtension.tt
 
         /// <summary>
-        /// Return the property value integer for a given value name, as
-        /// specified in the Unicode database file PropertyValueAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with UProperty.GENERAL_CATEGORY_MASK, not
-        /// UProperty.GENERAL_CATEGORY.  These include: "C" / "Other", "L" /
-        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
-        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
-        /// </remarks>
-        /// <param name="property">UProperty selector constant.
-        /// UProperty.INT_START &lt;= property &lt; UProperty.INT_LIMIT or
-        /// UProperty.BINARY_START &lt;= property &lt; UProperty.BINARY_LIMIT or
-        /// UProperty.MASK_START &lt; = property &lt; UProperty.MASK_LIMIT.
-        /// Only these properties can be enumerated.
-        /// </param>
-        /// <param name="valueAlias">the value name to be matched.  The name is
-        /// compared using "loose matching" as described in
-        /// PropertyValueAliases.txt.
-        /// </param>
-        /// <returns>
-        /// A value integer.  Note: UProperty.GENERAL_CATEGORY
-        /// values are mask values produced by left-shifting 1 by
-        /// UCharacter.GetType().  This allows grouped categories such as
-        /// [:L:] to be represented.
-        /// </returns>
-        /// <exception cref="ArgumentException">if property is not a valid UProperty
-        /// selector or valueAlias is not a value of this property
-        /// </exception>
-        /// <see cref="UProperty"/>
-        /// <stable>ICU 2.4</stable>
-        public static int GetPropertyValueEnum(UProperty property, StringBuilder valueAlias)
-        {
-            return GetPropertyValueEnum(property, valueAlias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Return the property value integer for a given value name, as
-        /// specified in the Unicode database file PropertyValueAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with UProperty.GENERAL_CATEGORY_MASK, not
-        /// UProperty.GENERAL_CATEGORY.  These include: "C" / "Other", "L" /
-        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
-        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
-        /// </remarks>
-        /// <param name="property">UProperty selector constant.
-        /// UProperty.INT_START &lt;= property &lt; UProperty.INT_LIMIT or
-        /// UProperty.BINARY_START &lt;= property &lt; UProperty.BINARY_LIMIT or
-        /// UProperty.MASK_START &lt; = property &lt; UProperty.MASK_LIMIT.
-        /// Only these properties can be enumerated.
-        /// </param>
-        /// <param name="valueAlias">the value name to be matched.  The name is
-        /// compared using "loose matching" as described in
-        /// PropertyValueAliases.txt.
-        /// </param>
-        /// <returns>
-        /// A value integer.  Note: UProperty.GENERAL_CATEGORY
-        /// values are mask values produced by left-shifting 1 by
-        /// UCharacter.GetType().  This allows grouped categories such as
-        /// [:L:] to be represented.
-        /// </returns>
-        /// <exception cref="ArgumentException">if property is not a valid UProperty
-        /// selector or valueAlias is not a value of this property
-        /// </exception>
-        /// <see cref="UProperty"/>
-        /// <stable>ICU 2.4</stable>
-        public static int GetPropertyValueEnum(UProperty property, char[] valueAlias)
-        {
-            return GetPropertyValueEnum(property, valueAlias.ToCharSequence());
-        }
-
-        /// <summary>
-        /// Return the property value integer for a given value name, as
-        /// specified in the Unicode database file PropertyValueAliases.txt.
-        /// Short, long, and any other variants are recognized.
-        /// </summary>
-        /// <remarks>
-        /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with UProperty.GENERAL_CATEGORY_MASK, not
-        /// UProperty.GENERAL_CATEGORY.  These include: "C" / "Other", "L" /
-        /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
-        /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
-        /// </remarks>
-        /// <param name="property">UProperty selector constant.
-        /// UProperty.INT_START &lt;= property &lt; UProperty.INT_LIMIT or
-        /// UProperty.BINARY_START &lt;= property &lt; UProperty.BINARY_LIMIT or
-        /// UProperty.MASK_START &lt; = property &lt; UProperty.MASK_LIMIT.
-        /// Only these properties can be enumerated.
-        /// </param>
-        /// <param name="valueAlias">the value name to be matched.  The name is
-        /// compared using "loose matching" as described in
-        /// PropertyValueAliases.txt.
-        /// </param>
-        /// <returns>
-        /// A value integer.  Note: UProperty.GENERAL_CATEGORY
-        /// values are mask values produced by left-shifting 1 by
-        /// UCharacter.GetType().  This allows grouped categories such as
-        /// [:L:] to be represented.
-        /// </returns>
-        /// <exception cref="ArgumentException">if property is not a valid UProperty
-        /// selector or valueAlias is not a value of this property
-        /// </exception>
-        /// <see cref="UProperty"/>
-        /// <stable>ICU 2.4</stable>
-        // ICU4N TODO: Make a TryGetPropertyValueEnum version (for all overloads) so consuming code doesn't need to catch an exception and replace the "NoThrow" version below
-        // Note that the UPropertyAliases class has one already
-        internal static int GetPropertyValueEnum(UProperty property, ICharSequence valueAlias)
-        {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyValueEnum((int)property, valueAlias);
-            if (propEnum == (int)UProperty.UNDEFINED)
-            {
-                throw new IcuArgumentException("Invalid name: " + valueAlias);
-            }
-            return propEnum;
-        }
-
-        /// <summary>
-        /// Same as <see cref="GetPropertyValueEnum(int, ICharSequence)"/>, except doesn't throw exception. Instead, returns UProperty.UNDEFINED.
+        /// Same as <see cref="GetPropertyValueEnum(int, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UProperty.UNDEFINED"/>.
         /// </summary>
         /// <param name="property">Same as <see cref="GetPropertyValueEnum(int, ICharSequence)"/>.</param>
         /// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(int, ICharSequence)"/>.</param>
-        /// <returns>Returns UProperty.UNDEFINED if the value is not valid, otherwise the value.</returns>
-        //[Obsolete("This API is ICU internal only.")]
+        /// <returns>Returns <see cref="UProperty.UNDEFINED"/> if the value is not valid, otherwise the value.</returns>
+        [Obsolete("ICU4N 60.1.0 Use TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias) instead.")]
         internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias)
         {
             return UPropertyAliases.INSTANCE.GetPropertyValueEnumNoThrow((int)property, valueAlias);
@@ -6190,86 +5943,10 @@ namespace ICU4N.Lang
             return Character.ToCodePoint(high, low);
         }
 
-        /// <summary>
-        /// Same as <see cref="Character.CodePointAt(string, int)"/>.
-        /// Returns the code point at index.
-        /// This examines only the characters at index and index+1.
-        /// </summary>
-        /// <param name="seq">the characters to check</param>
-        /// <param name="index">the index of the first or only char forming the code point</param>
-        /// <returns>the code point at the index</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int CodePointAt(string seq, int index)
-        {
-            return CodePointAt(seq.ToCharSequence(), index);
-        }
 
-        /// <summary>
-        /// Same as <see cref="Character.CodePointAt(StringBuilder, int)"/>.
-        /// Returns the code point at index.
-        /// This examines only the characters at index and index+1.
-        /// </summary>
-        /// <param name="seq">the characters to check</param>
-        /// <param name="index">the index of the first or only char forming the code point</param>
-        /// <returns>the code point at the index</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int CodePointAt(StringBuilder seq, int index)
-        {
-            return CodePointAt(seq.ToCharSequence(), index);
-        }
+        // ICU4N specific - CodePointAt(ICharSequence seq, int index) moved to UCharacterExtension.tt
 
-        /// <summary>
-        /// Same as <see cref="Character.CodePointAt(ICharSequence, int)"/>.
-        /// Returns the code point at index.
-        /// This examines only the characters at index and index+1.
-        /// </summary>
-        /// <param name="seq">the characters to check</param>
-        /// <param name="index">the index of the first or only char forming the code point</param>
-        /// <returns>the code point at the index</returns>
-        /// <stable>ICU 3.0</stable>
-        internal static int CodePointAt(ICharSequence seq, int index)
-        {
-            char c1 = seq[index++];
-            if (IsHighSurrogate(c1))
-            {
-                if (index < seq.Length)
-                {
-                    char c2 = seq[index];
-                    if (IsLowSurrogate(c2))
-                    {
-                        return ToCodePoint(c1, c2);
-                    }
-                }
-            }
-            return c1;
-        }
-
-        /**
-         * Same as {@link Character#codePointAt(char[], int)}.
-         * Returns the code point at index.
-         * This examines only the characters at index and index+1.
-         *
-         * @param text the characters to check
-         * @param index the index of the first or only char forming the code point
-         * @return the code point at the index
-         * @stable ICU 3.0
-         */
-        public static int CodePointAt(char[] text, int index)
-        {
-            char c1 = text[index++];
-            if (IsHighSurrogate(c1))
-            {
-                if (index < text.Length)
-                {
-                    char c2 = text[index];
-                    if (IsLowSurrogate(c2))
-                    {
-                        return ToCodePoint(c1, c2);
-                    }
-                }
-            }
-            return c1;
-        }
+        // ICU4N specific - CodePointAt(char[] seq, int index) moved to UCharacterExtension.tt
 
         /**
          * Same as {@link Character#codePointAt(char[], int, int)}.
@@ -6303,86 +5980,9 @@ namespace ICU4N.Lang
             return c1;
         }
 
-        /// <summary>
-        /// Same as <see cref="Character.CodePointBefore(string, int)"/>.
-        /// Return the code point before index.
-        /// This examines only the characters at index-1 and index-2.
-        /// </summary>
-        /// <param name="seq">The characters to check.</param>
-        /// <param name="index">The index after the last or only char forming the code point.</param>
-        /// <returns>The code point before the index.</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int CodePointBefore(string seq, int index)
-        {
-            return CodePointBefore(seq.ToCharSequence(), index);
-        }
+        // ICU4N specific - CodePointBefore(ICharSequence seq, int index) moved to UCharacterExtension.tt
 
-        /// <summary>
-        /// Same as <see cref="Character.CodePointBefore(StringBuilder, int)"/>.
-        /// Return the code point before index.
-        /// This examines only the characters at index-1 and index-2.
-        /// </summary>
-        /// <param name="seq">The characters to check.</param>
-        /// <param name="index">The index after the last or only char forming the code point.</param>
-        /// <returns>The code point before the index.</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int CodePointBefore(StringBuilder seq, int index)
-        {
-            return CodePointBefore(seq.ToCharSequence(), index);
-        }
-
-        /// <summary>
-        /// Same as <see cref="Character.CodePointBefore(ICharSequence, int)"/>.
-        /// Return the code point before index.
-        /// This examines only the characters at index-1 and index-2.
-        /// </summary>
-        /// <param name="seq">The characters to check.</param>
-        /// <param name="index">The index after the last or only char forming the code point.</param>
-        /// <returns>The code point before the index.</returns>
-        /// <stable>ICU 3.0</stable>
-        internal static int CodePointBefore(ICharSequence seq, int index)
-        {
-            char c2 = seq[--index];
-            if (IsLowSurrogate(c2))
-            {
-                if (index > 0)
-                {
-                    char c1 = seq[--index];
-                    if (IsHighSurrogate(c1))
-                    {
-                        return ToCodePoint(c1, c2);
-                    }
-                }
-            }
-            return c2;
-        }
-
-        /**
-         * Same as {@link Character#codePointBefore(char[], int)}.
-         * Returns the code point before index.
-         * This examines only the characters at index-1 and index-2.
-         *
-         * @param text the characters to check
-         * @param index the index after the last or only char forming the code point
-         * @return the code point before the index
-         * @stable ICU 3.0
-         */
-        public static int CodePointBefore(char[] text, int index)
-        {
-            char c2 = text[--index];
-            if (IsLowSurrogate(c2))
-            {
-                if (index > 0)
-                {
-                    char c1 = text[--index];
-                    if (IsHighSurrogate(c1))
-                    {
-                        return ToCodePoint(c1, c2);
-                    }
-                }
-            }
-            return c2;
-        }
+        // ICU4N specific - CodePointBefore(char[] seq, int index) moved to UCharacterExtension.tt
 
         /**
          * Same as {@link Character#codePointBefore(char[], int, int)}.
@@ -6468,206 +6068,12 @@ namespace ICU4N.Lang
         {
             return (byte)GetDirection(cp);
         }
-        /// <summary>
-        /// Equivalent to the <see cref="Character.CodePointCount(string, int, int)"/>
-        /// method, for convenience.  Counts the number of code points in the range
-        /// of text.
-        /// </summary>
-        /// <param name="text">the characters to check</param>
-        /// <param name="start">the start of the range</param>
-        /// <param name="limit">the limit of the range</param>
-        /// <returns>the number of code points in the range</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int CodePointCount(string text, int start, int limit)
-        {
-            return CodePointCount(text.ToCharSequence(), start, limit);
-        }
 
-        /// <summary>
-        /// Equivalent to the <see cref="Character.CodePointCount(StringBuilder, int, int)"/>
-        /// method, for convenience.  Counts the number of code points in the range
-        /// of text.
-        /// </summary>
-        /// <param name="text">the characters to check</param>
-        /// <param name="start">the start of the range</param>
-        /// <param name="limit">the limit of the range</param>
-        /// <returns>the number of code points in the range</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int CodePointCount(StringBuilder text, int start, int limit)
-        {
-            return CodePointCount(text.ToCharSequence(), start, limit);
-        }
+        // ICU4N specific - CodePointCount(ICharSequence text, int start, int limit) moved to UCharacterExtension.tt
 
-        /// <summary>
-        /// Equivalent to the <see cref="Character.CodePointCount(string, int, int)"/>
-        /// method, for convenience.  Counts the number of code points in the range
-        /// of text.
-        /// </summary>
-        /// <param name="text">the characters to check</param>
-        /// <param name="start">the start of the range</param>
-        /// <param name="limit">the limit of the range</param>
-        /// <returns>the number of code points in the range</returns>
-        /// <stable>ICU 3.0</stable>
-        internal static int CodePointCount(ICharSequence text, int start, int limit)
-        {
-            if (start < 0 || limit < start || limit > text.Length)
-            {
-                throw new IndexOutOfRangeException("start (" + start +
-                        ") or limit (" + limit +
-                        ") invalid or out of range 0, " + text.Length);
-            }
+        // ICU4N specific - CodePointCount(char[] text, int start, int limit) moved to UCharacterExtension.tt
 
-            int len = limit - start;
-            while (limit > start)
-            {
-                char ch = text[--limit];
-                while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && limit > start)
-                {
-                    ch = text[--limit];
-                    if (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE)
-                    {
-                        --len;
-                        break;
-                    }
-                }
-            }
-            return len;
-        }
-
-        /**
-         * Equivalent to the {@link Character#codePointCount(char[], int, int)} method, for
-         * convenience. Counts the number of code points in the range of text.
-         * @param text the characters to check
-         * @param start the start of the range
-         * @param limit the limit of the range
-         * @return the number of code points in the range
-         * @stable ICU 3.0
-         */
-        public static int CodePointCount(char[] text, int start, int limit)
-        {
-            if (start < 0 || limit < start || limit > text.Length)
-            {
-                throw new IndexOutOfRangeException("start (" + start +
-                        ") or limit (" + limit +
-                        ") invalid or out of range 0, " + text.Length);
-            }
-
-            int len = limit - start;
-            while (limit > start)
-            {
-                char ch = text[--limit];
-                while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && limit > start)
-                {
-                    ch = text[--limit];
-                    if (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE)
-                    {
-                        --len;
-                        break;
-                    }
-                }
-            }
-            return len;
-        }
-
-        /// <summary>
-        /// Equivalent to the <see cref="Character.OffsetByCodePoints(string, int, int)"/>
-        /// method, for convenience.  Adjusts the char index by a code point offset.
-        /// </summary>
-        /// <param name="text">the characters to check</param>
-        /// <param name="index">the index to adjust</param>
-        /// <param name="codePointOffset">the number of code points by which to offset the index</param>
-        /// <returns>the adjusted index</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int OffsetByCodePoints(string text, int index, int codePointOffset)
-        {
-            return OffsetByCodePoints(text.ToCharSequence(), index, codePointOffset);
-        }
-
-        /// <summary>
-        /// Equivalent to the <see cref="Character.OffsetByCodePoints(StringBuilder, int, int)"/>
-        /// method, for convenience.  Adjusts the char index by a code point offset.
-        /// </summary>
-        /// <param name="text">the characters to check</param>
-        /// <param name="index">the index to adjust</param>
-        /// <param name="codePointOffset">the number of code points by which to offset the index</param>
-        /// <returns>the adjusted index</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int OffsetByCodePoints(StringBuilder text, int index, int codePointOffset)
-        {
-            return OffsetByCodePoints(text.ToCharSequence(), index, codePointOffset);
-        }
-
-        /// <summary>
-        /// Equivalent to the <see cref="Character.OffsetByCodePoints(char[], int, int)"/>
-        /// method, for convenience.  Adjusts the char index by a code point offset.
-        /// </summary>
-        /// <param name="text">the characters to check</param>
-        /// <param name="index">the index to adjust</param>
-        /// <param name="codePointOffset">the number of code points by which to offset the index</param>
-        /// <returns>the adjusted index</returns>
-        /// <stable>ICU 3.0</stable>
-        public static int OffsetByCodePoints(char[] text, int index, int codePointOffset)
-        {
-            return OffsetByCodePoints(text.ToCharSequence(), index, codePointOffset);
-        }
-
-        /// <summary>
-        /// Equivalent to the <see cref="Character.OffsetByCodePoints(string, int, int)"/>
-        /// method, for convenience.  Adjusts the char index by a code point offset.
-        /// </summary>
-        /// <param name="text">the characters to check</param>
-        /// <param name="index">the index to adjust</param>
-        /// <param name="codePointOffset">the number of code points by which to offset the index</param>
-        /// <returns>the adjusted index</returns>
-        /// <stable>ICU 3.0</stable>
-        internal static int OffsetByCodePoints(ICharSequence text, int index, int codePointOffset)
-        {
-            if (index < 0 || index > text.Length)
-            {
-                throw new IndexOutOfRangeException("index ( " + index +
-                        ") out of range 0, " + text.Length);
-            }
-
-            if (codePointOffset < 0)
-            {
-                while (++codePointOffset <= 0)
-                {
-                    char ch = text[--index];
-                    while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && index > 0)
-                    {
-                        ch = text[--index];
-                        if (ch < MIN_HIGH_SURROGATE || ch > MAX_HIGH_SURROGATE)
-                        {
-                            if (++codePointOffset > 0)
-                            {
-                                return index + 1;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                int limit = text.Length;
-                while (--codePointOffset >= 0)
-                {
-                    char ch = text[index++];
-                    while (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE && index < limit)
-                    {
-                        ch = text[index++];
-                        if (ch < MIN_LOW_SURROGATE || ch > MAX_LOW_SURROGATE)
-                        {
-                            if (--codePointOffset < 0)
-                            {
-                                return index - 1;
-                            }
-                        }
-                    }
-                }
-            }
-
-            return index;
-        }
+        // ICU4N specific - OffsetByCodePoints(ICharSequence text, int index, int codePointOffset) moved to UCharacterExtension.tt
 
         /**
          * Equivalent to the

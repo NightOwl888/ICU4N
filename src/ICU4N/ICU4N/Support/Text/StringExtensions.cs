@@ -196,6 +196,29 @@ namespace ICU4N.Support.Text
             throw new ArgumentNullException();
         }
 
+        internal static ICharSequence SubSequence(this string text, int start, int end)
+        {
+            // From Apache Harmony String class
+            if (start == 0 && end == text.Length)
+            {
+                return text.ToCharSequence();
+            }
+            if (start < 0)
+            {
+                throw new IndexOutOfRangeException(nameof(start));
+            }
+            else if (start > end)
+            {
+                throw new IndexOutOfRangeException("end - start");
+            }
+            else if (end > text.Length)
+            {
+                throw new IndexOutOfRangeException(nameof(end));
+            }
+
+            return text.Substring(start, end - start).ToCharSequence();
+        }
+
         /// <summary>
         /// Compares a <see cref="ICharSequence"/> to this <see cref="string"/> to determine if
         /// their contents are equal.

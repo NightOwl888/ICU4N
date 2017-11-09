@@ -35,7 +35,7 @@ namespace ICU4N.Text
     }
 
 
-    public sealed class Normalizer
+    public sealed partial class Normalizer
 #if FEATURE_CLONEABLE
         : ICloneable
 #endif
@@ -2177,9 +2177,9 @@ namespace ICU4N.Text
          */
         private static readonly int COMPARE_EQUIV = 0x80000;
 
-        // ICU4N TODO: API Overload this for string, StringBuilder, and char[]
-        /* internal function; package visibility for use by UTF16.StringComparator */
-        /*package*/
+        /// <summary>
+        /// internal function; package visibility for use by <see cref="UTF16.StringComparer"/>
+        /// </summary>
         internal static int CmpEquivFold(ICharSequence cs1, ICharSequence cs2, int options)
         {
             Normalizer2Impl nfcImpl;
@@ -2652,15 +2652,15 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * An Appendable that writes into a char array with a capacity that may be
-         * less than array.length.
-         * (By contrast, CharBuffer will write beyond destLimit all the way up to array.length.)
-         * <p>
-         * An overflow is only reported at the end, for the old Normalizer API functions that write
-         * to char arrays.
-         */
-        private sealed class CharsAppendable : IAppendable
+        /// <summary>
+        /// An <see cref="IAppendable"/> that writes into a char array with a capacity that may be
+        /// less than array.Length.
+        /// (By contrast, <see cref="CharBuffer"/> will write beyond destLimit all the way up to array.Length.)
+        /// <para/>
+        /// An overflow is only reported at the end, for the old Normalizer API functions that write
+        /// to char arrays.
+        /// </summary>
+        private sealed partial class CharsAppendable : IAppendable
         {
             public CharsAppendable(char[] dest, int destStart, int destLimit)
             {
@@ -2693,57 +2693,9 @@ namespace ICU4N.Text
                 return this;
             }
 
-            public IAppendable Append(string csq)
-            {
-                return Append(csq.ToCharSequence());
-            }
+            // ICU4N specific - Append(ICharSequence s) moved to NormalizerExtension.tt
 
-            public IAppendable Append(string csq, int start, int end)
-            {
-                return Append(csq.ToCharSequence(), start, end);
-            }
-
-            public IAppendable Append(StringBuilder csq)
-            {
-                return Append(csq.ToCharSequence());
-            }
-
-            public IAppendable Append(StringBuilder csq, int start, int end)
-            {
-                return Append(csq.ToCharSequence(), start, end);
-            }
-
-            public IAppendable Append(char[] csq)
-            {
-                return Append(csq.ToCharSequence());
-            }
-
-            public IAppendable Append(char[] csq, int start, int end)
-            {
-                return Append(csq.ToCharSequence(), start, end);
-            }
-
-            public IAppendable Append(ICharSequence s)
-            {
-                return Append(s, 0, s.Length);
-            }
-
-            public IAppendable Append(ICharSequence s, int sStart, int sLimit)
-            {
-                int len = sLimit - sStart;
-                if (len <= (limit - offset))
-                {
-                    while (sStart < sLimit)
-                    {  // TODO: Is there a better way to copy the characters?
-                        chars[offset++] = s[sStart++];
-                    }
-                }
-                else
-                {
-                    offset += len;
-                }
-                return this;
-            }
+            // ICU4N specific - Append(ICharSequence s, int sStart, int sLimit) moved to NormalizerExtension.tt
 
             private readonly char[] chars;
             private readonly int start, limit;
