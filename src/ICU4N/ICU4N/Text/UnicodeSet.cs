@@ -3243,35 +3243,36 @@ namespace ICU4N.Text
                         (p >= UProperty.MASK_START && p < UProperty.MASK_LIMIT))
 #pragma warning restore 612, 618
                 {
-                    try
+                    // ICU4N specific - use safe methods that don't throw exceptions -
+                    // we only throw if absolutely necessary.
+                    int v2;
+                    if (UCharacter.TryGetPropertyValueEnum(p, valueAlias, out v2))
                     {
-                        v = (UProperty)UCharacter.GetPropertyValueEnum(p, valueAlias);
+                        v = (UProperty)v2;
                     }
-                    catch (ArgumentException e) // ICU4N TODO: Optimize this so it doesn't throw exceptions if not expected in the output
+                    else
                     {
                         // Handle numeric CCC
                         if (p == UProperty.CANONICAL_COMBINING_CLASS ||
                                 p == UProperty.LEAD_CANONICAL_COMBINING_CLASS ||
                                 p == UProperty.TRAIL_CANONICAL_COMBINING_CLASS)
                         {
-                            try
+                            if (int.TryParse(PatternProps.TrimWhiteSpace(valueAlias), NumberStyles.Integer, CultureInfo.InvariantCulture, out v2))
                             {
-                                // ICU4N TODO: Use TryParse
-                                v = (UProperty)int.Parse(PatternProps.TrimWhiteSpace(valueAlias), CultureInfo.InvariantCulture);
-                            }
-                            catch (FormatException fe)
-                            {
-                                // ICU4N specific. FormatException doesn't subclass ArgumentException in .NET, so we need
-                                // to wrap it in one for the expected exception to occur.
-                                throw new ArgumentException(fe.Message, fe);
-                            }
+                                // Anything between 0 and 255 is valid even if unused.
+                                if (v2 < 0 || v2 > 255)
+                                    throw new ArgumentException(string.Format("{0} is not a valid Property Value Enum.", valueAlias));
 
-                            // Anything between 0 and 255 is valid even if unused.
-                            if (v < 0 || (int)v > 255) throw e;
+                                v = (UProperty)v2;
                             }
+                            else
+                            {
+                                throw new ArgumentException(string.Format("{0} is not a valid Property Value Enum.", valueAlias));
+                            }
+                        }
                         else
                         {
-                            throw e;
+                            throw new ArgumentException(string.Format("{0} is not a valid Property Value Enum.", valueAlias));
                         }
                     }
                 }
@@ -3291,7 +3292,7 @@ namespace ICU4N.Text
                                 // Must munge name, since
                                 // UCharacter.charFromName() does not do
                                 // 'loose' matching.
-                                String buf = MungeCharName(valueAlias);
+                                string buf = MungeCharName(valueAlias);
                                 int ch = UCharacter.GetCharFromExtendedName(buf);
                                 if (ch == -1)
                                 {
