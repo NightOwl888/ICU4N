@@ -232,7 +232,7 @@ namespace ICU4N.Tests.Dev.Test.Lang
                             if (vname != null)
                             {
                                 /* test reverse mapping */
-                                rev = UCharacter.GetPropertyValueEnum(p, vname); // ICU4N TODO: Use TryGetPropertyValueEnum when implemented
+                                UCharacter.TryGetPropertyValueEnum(p, vname, out rev);
                                 if (rev != v)
                                 {
                                     Errln("Value round-trip failure (" + pname +
