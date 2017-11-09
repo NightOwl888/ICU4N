@@ -14,9 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{5727
 		CodeGenerationSettings.xml = CodeGenerationSettings.xml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.LanguageData", "ICU4N.LanguageData\ICU4N.LanguageData.csproj", "{3FDBCD39-4041-4EF3-9A13-F7641CAE23B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.LanguageData", "ICU4N.LanguageData\ICU4N.LanguageData.csproj", "{3FDBCD39-4041-4EF3-9A13-F7641CAE23B9}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

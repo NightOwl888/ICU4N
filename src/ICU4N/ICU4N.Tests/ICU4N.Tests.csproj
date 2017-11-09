@@ -11,7 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Dev\Data\IDNATestInput.txt" />
     <None Remove="Dev\Data\TestData\*" />
+    <None Remove="Dev\Data\TestData\unicode\*" />
     <None Remove="Dev\Test\Rbbi\rbbitst.txt" />
     <None Remove="Dev\Test\Util\Trie2Test.setRanges1.16.tri2" />
     <None Remove="Dev\Test\Util\Trie2Test.setRanges1.32.tri2" />
@@ -26,7 +28,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Dev\Data\IDNATestInput.txt" />
     <EmbeddedResource Include="Dev\Data\TestData\*" />
+    <EmbeddedResource Include="Dev\Data\TestData\unicode\*" />
     <EmbeddedResource Include="Dev\Test\Rbbi\rbbitst.txt" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.16.tri2" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.32.tri2" />
@@ -44,13 +48,12 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="NUnit" Version="3.8.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
-    <!-- Required by NUnit3TestAdapter on .NET Core -->
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
     <ProjectReference Include="..\ICU4N.LanguageData\ICU4N.LanguageData.csproj" />
     <ProjectReference Include="..\ICU4N.TestFramework\ICU4N.TestFramework.csproj" />
-    <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
   </ItemGroup>
 
 </Project>

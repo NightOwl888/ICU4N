@@ -894,7 +894,7 @@ namespace ICU4N.Impl
         /**
          * Returns a VersionInfo for the bytes in the compact version integer.
          */
-        public static VersionInfo GetVersionInfoFromCompactInt(int version)
+        public static VersionInfo GetVersionInfoFromCompactInt(int version) // ICU4N TODO: API - Rename GetVersionInfoFromCompactInt32
         {
             return VersionInfo.GetInstance(
                     (version.TripleShift(24)), (version >> 16) & 0xff, (version >> 8) & 0xff, version & 0xff);
@@ -903,7 +903,7 @@ namespace ICU4N.Impl
         /**
          * Returns an array of the bytes in the compact version integer.
          */
-        public static byte[] GetVersionByteArrayFromCompactInt(int version)
+        public static byte[] GetVersionByteArrayFromCompactInt(int version) // ICU4N TODO: API - Rename GetVersionByteArrayFromCompactInt32
         {
             return new byte[] {
                 (byte)(version >> 24),

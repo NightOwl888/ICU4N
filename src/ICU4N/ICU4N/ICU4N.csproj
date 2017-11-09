@@ -78,6 +78,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>PatternPropsExtension.tt</DependentUpon>
     </Compile>
+    <Compile Update="Impl\PunycodeExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PunycodeExtension.tt</DependentUpon>
+    </Compile>
     <Compile Update="Impl\SimpleFormatterImplExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -108,6 +113,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UtilityExtension.tt</DependentUpon>
     </Compile>
+    <Compile Update="Impl\UTS46Extension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UTS46Extension.tt</DependentUpon>
+    </Compile>
     <Compile Update="Lang\CharSequencesExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -127,6 +137,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>FilteredNormalizer2Extension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\IDNAExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>IDNAExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Text\NormalizerExtension.cs">
       <DesignTime>True</DesignTime>
@@ -184,6 +199,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PatternPropsExtension.cs</LastGenOutput>
     </None>
+    <None Update="Impl\PunycodeExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PunycodeExtension.cs</LastGenOutput>
+    </None>
     <None Update="Impl\SimpleFormatterImplExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SimpleFormatterImplExtension.cs</LastGenOutput>
@@ -208,6 +227,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UtilityExtension.cs</LastGenOutput>
     </None>
+    <None Update="Impl\UTS46Extension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>UTS46Extension.cs</LastGenOutput>
+    </None>
     <None Update="Lang\CharSequencesExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CharSequencesExtension.cs</LastGenOutput>
@@ -223,6 +246,10 @@
     <None Update="Text\FilteredNormalizer2Extension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FilteredNormalizer2Extension.cs</LastGenOutput>
+    </None>
+    <None Update="Text\IDNAExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>IDNAExtension.cs</LastGenOutput>
     </None>
     <None Update="Text\NormalizerExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
