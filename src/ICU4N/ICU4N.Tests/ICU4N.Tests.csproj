@@ -5,8 +5,14 @@
     <!--<TargetFramework>net45</TargetFramework>-->
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp1.0' ">
+    <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
+    <DebugType>portable</DebugType>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Dev\Data\TestData\testnorm.nrm" />
+    <None Remove="Dev\Test\Rbbi\rbbitst.txt" />
     <None Remove="Dev\Test\Util\Trie2Test.setRanges1.16.tri2" />
     <None Remove="Dev\Test\Util\Trie2Test.setRanges1.32.tri2" />
     <None Remove="Dev\Test\Util\Trie2Test.setRanges2.16.tri2" />
@@ -17,6 +23,10 @@
     <None Remove="Dev\Test\Util\Trie2Test.setRangesEmpty.32.tri2" />
     <None Remove="Dev\Test\Util\Trie2Test.setRangesSingleValue.16.tri2" />
     <None Remove="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Dev\Test\Rbbi\rbbitst.txt" />
   </ItemGroup>
 
   <ItemGroup>

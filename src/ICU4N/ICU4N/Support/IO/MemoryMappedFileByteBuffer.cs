@@ -320,6 +320,14 @@ namespace ICU4N.Support.IO
         }
 
         /// <summary>
+        /// NOTE: This was asShortBuffer() in the JDK
+        /// </summary>
+        public override Int16Buffer AsInt16Buffer()
+        {
+            throw new NotSupportedException();
+        }
+
+        /// <summary>
         /// NOTE: This was asIntBuffer() in the JDK
         /// </summary>
         public override Int32Buffer AsInt32Buffer()

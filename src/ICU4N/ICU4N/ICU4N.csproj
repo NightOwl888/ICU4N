@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.3</TargetFramework>
     <!--<TargetFramework>net45</TargetFramework>-->
-    <DefineConstants>$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
+    <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
@@ -29,6 +29,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Impl\Data\brkitr\burmesedict.dict" />
+    <None Remove="Impl\Data\brkitr\char.brk" />
+    <None Remove="Impl\Data\brkitr\cjdict.dict" />
+    <None Remove="Impl\Data\brkitr\khmerdict.dict" />
+    <None Remove="Impl\Data\brkitr\laodict.dict" />
+    <None Remove="Impl\Data\brkitr\line.brk" />
+    <None Remove="Impl\Data\brkitr\line_fi.brk" />
+    <None Remove="Impl\Data\brkitr\line_loose.brk" />
+    <None Remove="Impl\Data\brkitr\line_loose_cj.brk" />
+    <None Remove="Impl\Data\brkitr\line_loose_fi.brk" />
+    <None Remove="Impl\Data\brkitr\line_normal.brk" />
+    <None Remove="Impl\Data\brkitr\line_normal_cj.brk" />
+    <None Remove="Impl\Data\brkitr\line_normal_fi.brk" />
+    <None Remove="Impl\Data\brkitr\sent.brk" />
+    <None Remove="Impl\Data\brkitr\sent_el.brk" />
+    <None Remove="Impl\Data\brkitr\thaidict.dict" />
+    <None Remove="Impl\Data\brkitr\title.brk" />
+    <None Remove="Impl\Data\brkitr\word.brk" />
+    <None Remove="Impl\Data\brkitr\word_POSIX.brk" />
     <None Remove="Impl\Data\nfc.nrm" />
     <None Remove="Impl\Data\nfkc.nrm" />
     <None Remove="Impl\Data\nfkc_cf.nrm" />
@@ -41,6 +60,25 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Impl\Data\brkitr\burmesedict.dict" />
+    <EmbeddedResource Include="Impl\Data\brkitr\char.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\cjdict.dict" />
+    <EmbeddedResource Include="Impl\Data\brkitr\khmerdict.dict" />
+    <EmbeddedResource Include="Impl\Data\brkitr\laodict.dict" />
+    <EmbeddedResource Include="Impl\Data\brkitr\line.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\line_fi.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\line_loose.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\line_loose_cj.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\line_loose_fi.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\line_normal.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\line_normal_cj.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\line_normal_fi.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\sent.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\sent_el.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\thaidict.dict" />
+    <EmbeddedResource Include="Impl\Data\brkitr\title.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\word.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\word_POSIX.brk" />
     <EmbeddedResource Include="Impl\Data\nfc.nrm" />
     <EmbeddedResource Include="Impl\Data\nfkc.nrm" />
     <EmbeddedResource Include="Impl\Data\nfkc_cf.nrm" />
@@ -142,12 +180,43 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UTF16Extension.tt</DependentUpon>
     </Compile>
+    <Compile Update="Util\CharsTrieExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CharsTrieExtension.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Update="ICUConfig.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ICUConfig.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.de.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.el.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.en-US.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.en.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.es.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.fi.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.fr.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.it.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.ja.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.pt.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.ru.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.zh-Hant.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Update="Impl\Data\brkitr.zh.resx">
     </EmbeddedResource>
   </ItemGroup>
 
@@ -215,6 +284,10 @@
     <None Update="Text\UTF16Extension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UTF16Extension.cs</LastGenOutput>
+    </None>
+    <None Update="Util\CharsTrieExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>CharsTrieExtension.cs</LastGenOutput>
     </None>
   </ItemGroup>
 

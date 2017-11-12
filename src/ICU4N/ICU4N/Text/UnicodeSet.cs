@@ -442,9 +442,9 @@ namespace ICU4N.Text
          * @return <tt>true</tt> if this set contains no elements.
          * @stable ICU 2.0
          */
-        public bool IsEmpty() // ICU4N TODO: API - this is weird in .NET, but Count alone or LINQ Any() doesn't cut it.
+        public bool IsEmpty // ICU4N TODO: API - this is weird in .NET, but Count alone or LINQ Any() doesn't cut it.
         {
-            return len == 1 && strings.Count == 0;
+            get { return len == 1 && strings.Count == 0; }
         }
 
         /**
@@ -2926,22 +2926,22 @@ namespace ICU4N.Text
 
             public bool Contains(int ch)
             {
-                return ((1 << (int)UCharacter.GetType(ch)) & Mask) != 0;
+                return ((1 << UCharacter.GetType(ch).ToIcuValue()) & Mask) != 0;
             }
         }
 
-        private class IntPropertyFilter : IFilter
+        private class Int32PropertyFilter : IFilter
         {
             public int Prop { get; set; }
             public int Value { get; set; }
-            internal IntPropertyFilter(int prop, int value)
+            internal Int32PropertyFilter(int prop, int value)
             {
                 this.Prop = prop;
                 this.Value = value;
             }
             public bool Contains(int ch)
             {
-                return UCharacter.GetIntPropertyValue(ch, (UProperty)Prop) == Value;
+                return UCharacter.GetInt32PropertyValue(ch, (UProperty)Prop) == Value;
             }
         }
 
@@ -3154,7 +3154,7 @@ namespace ICU4N.Text
             }
             else
             {
-                ApplyFilter(new IntPropertyFilter(prop, value), UCharacterProperty.INSTANCE.GetSource(prop));
+                ApplyFilter(new Int32PropertyFilter(prop, value), UCharacterProperty.INSTANCE.GetSource(prop));
             }
             return this;
         }

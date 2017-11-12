@@ -2376,7 +2376,7 @@ namespace ICU4N.Lang
                 }
 
                 return UnicodeBlock.GetInstance(
-                        UCharacterProperty.INSTANCE.GetIntPropertyValue(ch, (int)UProperty.BLOCK));
+                        UCharacterProperty.INSTANCE.GetInt32PropertyValue(ch, (int)UProperty.BLOCK));
             }
 
             /**
@@ -3732,7 +3732,7 @@ namespace ICU4N.Lang
          */
         public static UnicodeCategory GetType(int ch)
         {
-            return (UnicodeCategory)UCharacterProperty.INSTANCE.GetType(ch);
+            return UnicodeCategoryConvert.FromIcuValue(UCharacterProperty.INSTANCE.GetType(ch));
         }
 
         /**
@@ -3793,14 +3793,13 @@ namespace ICU4N.Lang
          */
         public static bool IsLetter(int ch)
         {
-            // ICU4N TODO: Test this thoroughly - not sure if the bit shifting will work here
             // if props == 0, it will just fall through and return false
-            return ((1 << (int)GetType(ch))
-                    & ((1 << (int)UnicodeCategory.UppercaseLetter)
-                            | (1 << (int)UnicodeCategory.LowercaseLetter)
-                            | (1 << (int)UnicodeCategory.TitlecaseLetter)
-                            | (1 << (int)UnicodeCategory.ModifierLetter)
-                            | (1 << (int)UnicodeCategory.OtherLetter))) != 0;
+            return ((1 << GetType(ch).ToIcuValue())
+                    & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.LowercaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.ModifierLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.OtherLetter.ToIcuValue()))) != 0;
         }
 
         /**
@@ -3813,14 +3812,13 @@ namespace ICU4N.Lang
          */
         public static bool IsLetterOrDigit(int ch)
         {
-            // ICU4N TODO: Test this thoroughly - not sure if the bit shifting will work here
-            return ((1 << (int)GetType(ch))
-                    & ((1 << (int)UnicodeCategory.UppercaseLetter)
-                            | (1 << (int)UnicodeCategory.LowercaseLetter)
-                            | (1 << (int)UnicodeCategory.TitlecaseLetter)
-                            | (1 << (int)UnicodeCategory.ModifierLetter)
-                            | (1 << (int)UnicodeCategory.OtherLetter)
-                            | (1 << (int)UnicodeCategory.DecimalDigitNumber))) != 0;
+            return ((1 << GetType(ch).ToIcuValue())
+                    & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.LowercaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.ModifierLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.OtherLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.DecimalDigitNumber.ToIcuValue()))) != 0;
         }
 
         /**
@@ -3931,14 +3929,14 @@ namespace ICU4N.Lang
          * @return true if the specified code point is a white space character
          * @stable ICU 2.1
          */
-        public static bool IsWhitespace(int ch) // ICU4N TODO: Rename IsWhiteSpace (for consistency with .NET)
+        public static bool IsWhitespace(int ch) // ICU4N TODO: API Rename IsWhiteSpace (for consistency with .NET)
         {
             // exclude no-break spaces
             // if props == 0, it will just fall through and return false
-            return ((1 << (int)GetType(ch)) &
-                    ((1 << (int)UnicodeCategory.SpaceSeparator)
-                            | (1 << (int)UnicodeCategory.LineSeparator)
-                            | (1 << (int)UnicodeCategory.ParagraphSeparator))) != 0
+            return ((1 << GetType(ch).ToIcuValue()) &
+                    ((1 << UnicodeCategory.SpaceSeparator.ToIcuValue())
+                            | (1 << UnicodeCategory.LineSeparator.ToIcuValue())
+                            | (1 << UnicodeCategory.ParagraphSeparator.ToIcuValue()))) != 0
                             && (ch != NO_BREAK_SPACE_) && (ch != FIGURE_SPACE_) && (ch != NARROW_NO_BREAK_SPACE_)
                             // TAB VT LF FF CR FS GS RS US NL are all control characters
                             // that are white spaces.
@@ -3956,9 +3954,9 @@ namespace ICU4N.Lang
         public static bool IsSpaceChar(int ch)
         {
             // if props == 0, it will just fall through and return false
-            return ((1 << (int)GetType(ch)) & ((1 << (int)UnicodeCategory.SpaceSeparator)
-                    | (1 << (int)UnicodeCategory.LineSeparator)
-                    | (1 << (int)UnicodeCategory.ParagraphSeparator)))
+            return ((1 << GetType(ch).ToIcuValue()) & ((1 << UnicodeCategory.SpaceSeparator.ToIcuValue())
+                    | (1 << UnicodeCategory.LineSeparator.ToIcuValue())
+                    | (1 << UnicodeCategory.ParagraphSeparator.ToIcuValue())))
                     != 0;
         }
 
@@ -4012,17 +4010,17 @@ namespace ICU4N.Lang
         {
             // if props == 0, it will just fall through and return false
             // cat == format
-            return ((1 << (int)GetType(ch))
-                    & ((1 << (int)UnicodeCategory.UppercaseLetter)
-                            | (1 << (int)UnicodeCategory.LowercaseLetter)
-                            | (1 << (int)UnicodeCategory.TitlecaseLetter)
-                            | (1 << (int)UnicodeCategory.ModifierLetter)
-                            | (1 << (int)UnicodeCategory.OtherLetter)
-                            | (1 << (int)UnicodeCategory.LetterNumber)
-                            | (1 << (int)UnicodeCategory.ConnectorPunctuation)
-                            | (1 << (int)UnicodeCategory.DecimalDigitNumber)
-                            | (1 << (int)UnicodeCategory.SpacingCombiningMark)
-                            | (1 << (int)UnicodeCategory.NonSpacingMark))) != 0
+            return ((1 << GetType(ch).ToIcuValue())
+                    & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.LowercaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.ModifierLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.OtherLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.LetterNumber.ToIcuValue())
+                            | (1 << UnicodeCategory.ConnectorPunctuation.ToIcuValue())
+                            | (1 << UnicodeCategory.DecimalDigitNumber.ToIcuValue())
+                            | (1 << UnicodeCategory.SpacingCombiningMark.ToIcuValue())
+                            | (1 << UnicodeCategory.NonSpacingMark.ToIcuValue()))) != 0
                             || IsIdentifierIgnorable(ch);
         }
 
@@ -4050,13 +4048,13 @@ namespace ICU4N.Lang
         {
             /*int cat = getType(ch);*/
             // if props == 0, it will just fall through and return false
-            return ((1 << (int)GetType(ch))
-                    & ((1 << (int)UnicodeCategory.UppercaseLetter)
-                            | (1 << (int)UnicodeCategory.LowercaseLetter)
-                            | (1 << (int)UnicodeCategory.TitlecaseLetter)
-                            | (1 << (int)UnicodeCategory.ModifierLetter)
-                            | (1 << (int)UnicodeCategory.OtherLetter)
-                            | (1 << (int)UnicodeCategory.LetterNumber))) != 0;
+            return ((1 << GetType(ch).ToIcuValue())
+                    & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.LowercaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.ModifierLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.OtherLetter.ToIcuValue())
+                            | (1 << UnicodeCategory.LetterNumber.ToIcuValue()))) != 0;
         }
 
         /**
@@ -4729,9 +4727,9 @@ namespace ICU4N.Lang
         ///         and range from 0..240.
         ///     </desription></item>
         ///     <item><desription>
-        ///         UProperty.GENERAL_CATEGORY_MASK values
+        ///         <see cref="UProperty.GENERAL_CATEGORY_MASK"/> values
         ///         are mask values produced by left-shifting 1 by
-        ///         <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
+        ///         <see cref="UCharacter.GetType(int)"/>.GetIcuValue().  This allows grouped categories such as
         ///         [:L:] to be represented.  Mask values are non-contiguous.
         ///     </desription></item>
         /// </list>
@@ -5676,9 +5674,9 @@ namespace ICU4N.Lang
          * @see #getUnicodeVersion
          * @stable ICU 2.4
          */
-        public static int GetIntPropertyValue(int ch, UProperty type)
+        public static int GetInt32PropertyValue(int ch, UProperty type)
         {
-            return UCharacterProperty.INSTANCE.GetIntPropertyValue(ch, (int)type);
+            return UCharacterProperty.INSTANCE.GetInt32PropertyValue(ch, (int)type);
         }
         /**
          * {@icu} Returns a string version of the property value.
@@ -5696,7 +5694,7 @@ namespace ICU4N.Lang
             if ((propertyEnum >= UProperty.BINARY_START && propertyEnum < UProperty.BINARY_LIMIT) ||
                     (propertyEnum >= UProperty.INT_START && propertyEnum < UProperty.INT_LIMIT))
             {
-                return GetPropertyValueName(propertyEnum, GetIntPropertyValue(codepoint, propertyEnum),
+                return GetPropertyValueName(propertyEnum, GetInt32PropertyValue(codepoint, propertyEnum),
                         nameChoice);
             }
             if (propertyEnum == UProperty.NUMERIC_VALUE)
@@ -5742,7 +5740,7 @@ namespace ICU4N.Lang
          * @see #getIntPropertyValue
          * @stable ICU 2.4
          */
-        public static int GetIntPropertyMinValue(UProperty type)
+        public static int GetIntPropertyMinValue(UProperty type) // ICU4N TODO: API Rename GetInt32PropertyMinValue
         {
 
             return 0; // undefined; and: all other properties have a minimum value of 0
@@ -5774,7 +5772,7 @@ namespace ICU4N.Lang
          * @see #getIntPropertyValue
          * @stable ICU 2.4
          */
-        public static int GetIntPropertyMaxValue(UProperty type)
+        public static int GetIntPropertyMaxValue(UProperty type) // ICU4N TODO: API Rename GetInt32PropertyMaxValue
         {
             return UCharacterProperty.INSTANCE.GetIntPropertyMaxValue((int)type);
         }

@@ -194,10 +194,25 @@ namespace ICU4N.Support.IO
         /// buffer's change of content will be visible to the new buffer. The two
         /// buffer's position, limit and mark are independent.
         /// </summary>
-        /// <returns>a read-only version of this buffer.</returns>
+        /// <returns>A read-only version of this buffer.</returns>
         public abstract ByteBuffer AsReadOnlyBuffer();
 
-        //public abstract ShortBuffer AsInt16Buffer();
+        /// <summary>
+        /// Returns a short buffer which is based on the remaining content of this
+        /// byte buffer.
+        /// </summary>
+        /// <remarks>
+        /// The new buffer's position is zero, its limit and capacity is the number
+        /// of remaining bytes divided by two, and its mark is not set. The new
+        /// buffer's read-only property and byte order are the same as this buffer's.
+        /// The new buffer is direct if this byte buffer is direct.
+        /// <para/>
+        /// The new buffer shares its content with this buffer, which means either
+        /// buffer's change of content will be visible to the other. The two buffer's
+        /// position, limit and mark are independent.
+        /// </remarks>
+        /// <returns>A short buffer which is based on the content of this byte buffer.</returns>
+        public abstract Int16Buffer AsInt16Buffer();
 
         /// <summary>
         /// Compacts this byte buffer.

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Globalization;
+#if !NETSTANDARD
+using System.Threading;
+#endif
 
 namespace ICU4N.Support.Globalization
 {

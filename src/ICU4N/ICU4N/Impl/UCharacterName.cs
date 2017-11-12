@@ -1409,8 +1409,8 @@ namespace ICU4N.Impl
                 // not a character we return a invalid category count
                 return NON_CHARACTER_;
             }
-            int result = (int)UCharacter.GetType(ch);
-            if (result == (int)UnicodeCategory.Surrogate)
+            int result = UCharacter.GetType(ch).ToIcuValue();
+            if (result == UnicodeCategory.Surrogate.ToIcuValue())
             {
                 if (ch <= UTF16.LEAD_SURROGATE_MAX_VALUE)
                 {

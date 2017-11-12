@@ -790,17 +790,15 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        // ICU4N TODO: Finish IntBuffer and ShortBuffer implementation
-        public static short[] GetShorts(ByteBuffer bytes, int length, int additionalSkipLength)
+        public static short[] GetShorts(ByteBuffer bytes, int length, int additionalSkipLength) // ICU4N TODO: Rename GetInt16s
         {
-            throw new NotImplementedException();
-            //short[] dest = new short[length];
-            //bytes.AsInt16Buffer().Get(dest);
-            //SkipBytes(bytes, length * 2 + additionalSkipLength);
-            //return dest;
+            short[] dest = new short[length];
+            bytes.AsInt16Buffer().Get(dest);
+            SkipBytes(bytes, length * 2 + additionalSkipLength);
+            return dest;
         }
 
-        public static int[] GetInts(ByteBuffer bytes, int length, int additionalSkipLength)
+        public static int[] GetInts(ByteBuffer bytes, int length, int additionalSkipLength) // ICU4N TODO: Rename GetInt32s
         {
             int[] dest = new int[length];
             bytes.AsInt32Buffer().Get(dest);
@@ -808,7 +806,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public static long[] GetLongs(ByteBuffer bytes, int length, int additionalSkipLength)
+        public static long[] GetLongs(ByteBuffer bytes, int length, int additionalSkipLength) // ICU4N TODO: Rename GetInt64s
         {
             long[] dest = new long[length];
             bytes.AsInt64Buffer().Get(dest);

@@ -332,10 +332,10 @@ namespace ICU4N.Support.IO
         }
 
 
-        //public override sealed Int16Buffer AsInt16Buffer()
-        //    {
-        //        return Int16ToByteBufferAdapter.Wrap(this);
-        //    }
+        public override sealed Int16Buffer AsInt16Buffer()
+        {
+            return Int16ToByteBufferAdapter.Wrap(this);
+        }
 
 
         public override sealed char GetChar()

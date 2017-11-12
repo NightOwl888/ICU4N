@@ -16,971 +16,971 @@ namespace ICU4N.Lang
      * Invalid code
      * @stable ICU 2.4
      */
-        public static readonly int INVALID_CODE = -1;
+        public const int INVALID_CODE = -1;
         /**
          * Common
          * @stable ICU 2.4
          */
-        public static readonly int COMMON = 0;  /* Zyyy */
+        public const int COMMON = 0;  /* Zyyy */
                                              /**
                                               * Inherited
                                               * @stable ICU 2.4
                                               */
-        public static readonly int INHERITED = 1;  /* Zinh */ /* "Code for inherited script", for non-spacing combining marks; also Qaai */
+        public const int INHERITED = 1;  /* Zinh */ /* "Code for inherited script", for non-spacing combining marks; also Qaai */
                                                            /**
                                                             * Arabic
                                                             * @stable ICU 2.4
                                                             */
-        public static readonly int ARABIC = 2;  /* Arab */
+        public const int ARABIC = 2;  /* Arab */
                                              /**
                                               * Armenian
                                               * @stable ICU 2.4
                                               */
-        public static readonly int ARMENIAN = 3;  /* Armn */
+        public const int ARMENIAN = 3;  /* Armn */
                                                /**
                                                 * Bengali
                                                 * @stable ICU 2.4
                                                 */
-        public static readonly int BENGALI = 4;  /* Beng */
+        public const int BENGALI = 4;  /* Beng */
                                               /**
                                                * Bopomofo
                                                * @stable ICU 2.4
                                                */
-        public static readonly int BOPOMOFO = 5;  /* Bopo */
+        public const int BOPOMOFO = 5;  /* Bopo */
                                                /**
                                                 * Cherokee
                                                 * @stable ICU 2.4
                                                 */
-        public static readonly int CHEROKEE = 6;  /* Cher */
+        public const int CHEROKEE = 6;  /* Cher */
                                                /**
                                                 * Coptic
                                                 * @stable ICU 2.4
                                                 */
-        public static readonly int COPTIC = 7;  /* Qaac */
+        public const int COPTIC = 7;  /* Qaac */
                                              /**
                                               * Cyrillic
                                               * @stable ICU 2.4
                                               */
-        public static readonly int CYRILLIC = 8;  /* Cyrl (Cyrs) */
+        public const int CYRILLIC = 8;  /* Cyrl (Cyrs) */
                                                /**
                                                 * Deseret
                                                 * @stable ICU 2.4
                                                 */
-        public static readonly int DESERET = 9;  /* Dsrt */
+        public const int DESERET = 9;  /* Dsrt */
                                               /**
                                                * Devanagari
                                                * @stable ICU 2.4
                                                */
-        public static readonly int DEVANAGARI = 10;  /* Deva */
+        public const int DEVANAGARI = 10;  /* Deva */
                                                   /**
                                                    * Ethiopic
                                                    * @stable ICU 2.4
                                                    */
-        public static readonly int ETHIOPIC = 11;  /* Ethi */
+        public const int ETHIOPIC = 11;  /* Ethi */
                                                 /**
                                                  * Georgian
                                                  * @stable ICU 2.4
                                                  */
-        public static readonly int GEORGIAN = 12;  /* Geor (Geon; Geoa) */
+        public const int GEORGIAN = 12;  /* Geor (Geon; Geoa) */
                                                 /**
                                                  * Gothic
                                                  * @stable ICU 2.4
                                                  */
-        public static readonly int GOTHIC = 13;  /* Goth */
+        public const int GOTHIC = 13;  /* Goth */
                                               /**
                                                * Greek
                                                * @stable ICU 2.4
                                                */
-        public static readonly int GREEK = 14;  /* Grek */
+        public const int GREEK = 14;  /* Grek */
                                              /**
                                               * Gujarati
                                               * @stable ICU 2.4
                                               */
-        public static readonly int GUJARATI = 15;  /* Gujr */
+        public const int GUJARATI = 15;  /* Gujr */
                                                 /**
                                                  * Gurmukhi
                                                  * @stable ICU 2.4
                                                  */
-        public static readonly int GURMUKHI = 16;  /* Guru */
+        public const int GURMUKHI = 16;  /* Guru */
                                                 /**
                                                  * Han
                                                  * @stable ICU 2.4
                                                  */
-        public static readonly int HAN = 17;  /* Hani */
+        public const int HAN = 17;  /* Hani */
                                            /**
                                             * Hangul
                                             * @stable ICU 2.4
                                             */
-        public static readonly int HANGUL = 18;  /* Hang */
+        public const int HANGUL = 18;  /* Hang */
                                               /**
                                                * Hebrew
                                                * @stable ICU 2.4
                                                */
-        public static readonly int HEBREW = 19;  /* Hebr */
+        public const int HEBREW = 19;  /* Hebr */
                                               /**
                                                * Hiragana
                                                * @stable ICU 2.4
                                                */
-        public static readonly int HIRAGANA = 20;  /* Hira */
+        public const int HIRAGANA = 20;  /* Hira */
                                                 /**
                                                  * Kannada
                                                  * @stable ICU 2.4
                                                  */
-        public static readonly int KANNADA = 21;  /* Knda */
+        public const int KANNADA = 21;  /* Knda */
                                                /**
                                                 * Katakana
                                                 * @stable ICU 2.4
                                                 */
-        public static readonly int KATAKANA = 22;  /* Kana */
+        public const int KATAKANA = 22;  /* Kana */
                                                 /**
                                                  * Khmer
                                                  * @stable ICU 2.4
                                                  */
-        public static readonly int KHMER = 23;  /* Khmr */
+        public const int KHMER = 23;  /* Khmr */
                                              /**
                                               * Lao
                                               * @stable ICU 2.4
                                               */
-        public static readonly int LAO = 24;  /* Laoo */
+        public const int LAO = 24;  /* Laoo */
                                            /**
                                             * Latin
                                             * @stable ICU 2.4
                                             */
-        public static readonly int LATIN = 25;  /* Latn (Latf; Latg) */
+        public const int LATIN = 25;  /* Latn (Latf; Latg) */
                                              /**
                                               * Malayalam
                                               * @stable ICU 2.4
                                               */
-        public static readonly int MALAYALAM = 26;  /* Mlym */
+        public const int MALAYALAM = 26;  /* Mlym */
                                                  /**
                                                   * Mangolian
                                                   * @stable ICU 2.4
                                                   */
-        public static readonly int MONGOLIAN = 27;  /* Mong */
+        public const int MONGOLIAN = 27;  /* Mong */
                                                  /**
                                                   * Myammar
                                                   * @stable ICU 2.4
                                                   */
-        public static readonly int MYANMAR = 28;  /* Mymr */
+        public const int MYANMAR = 28;  /* Mymr */
                                                /**
                                                 * Ogham
                                                 * @stable ICU 2.4
                                                 */
-        public static readonly int OGHAM = 29;  /* Ogam */
+        public const int OGHAM = 29;  /* Ogam */
                                              /**
                                               * Old Itallic
                                               * @stable ICU 2.4
                                               */
-        public static readonly int OLD_ITALIC = 30;  /* Ital */
+        public const int OLD_ITALIC = 30;  /* Ital */
                                                   /**
                                                    * Oriya
                                                    * @stable ICU 2.4
                                                    */
-        public static readonly int ORIYA = 31;  /* Orya */
+        public const int ORIYA = 31;  /* Orya */
                                              /**
                                               * Runic
                                               * @stable ICU 2.4
                                               */
-        public static readonly int RUNIC = 32;  /* Runr */
+        public const int RUNIC = 32;  /* Runr */
                                              /**
                                               * Sinhala
                                               * @stable ICU 2.4
                                               */
-        public static readonly int SINHALA = 33;  /* Sinh */
+        public const int SINHALA = 33;  /* Sinh */
                                                /**
                                                 * Syriac
                                                 * @stable ICU 2.4
                                                 */
-        public static readonly int SYRIAC = 34;  /* Syrc (Syrj; Syrn; Syre) */
+        public const int SYRIAC = 34;  /* Syrc (Syrj; Syrn; Syre) */
                                               /**
                                                * Tamil
                                                * @stable ICU 2.4
                                                */
-        public static readonly int TAMIL = 35;  /* Taml */
+        public const int TAMIL = 35;  /* Taml */
                                              /**
                                               * Telugu
                                               * @stable ICU 2.4
                                               */
-        public static readonly int TELUGU = 36;  /* Telu */
+        public const int TELUGU = 36;  /* Telu */
                                               /**
                                                * Thana
                                                * @stable ICU 2.4
                                                */
-        public static readonly int THAANA = 37;  /* Thaa */
+        public const int THAANA = 37;  /* Thaa */
                                               /**
                                                * Thai
                                                * @stable ICU 2.4
                                                */
-        public static readonly int THAI = 38;  /* Thai */
+        public const int THAI = 38;  /* Thai */
                                             /**
                                              * Tibetan
                                              * @stable ICU 2.4
                                              */
-        public static readonly int TIBETAN = 39;  /* Tibt */
+        public const int TIBETAN = 39;  /* Tibt */
                                                /**
                                                 * Unified Canadian Aboriginal Symbols
                                                 * @stable ICU 2.6
                                                 */
-        public static readonly int CANADIAN_ABORIGINAL = 40;  /* Cans */
+        public const int CANADIAN_ABORIGINAL = 40;  /* Cans */
                                                            /**
                                                             * Unified Canadian Aboriginal Symbols (alias)
                                                             * @stable ICU 2.4
                                                             */
-        public static readonly int UCAS = CANADIAN_ABORIGINAL;  /* Cans */
+        public const int UCAS = CANADIAN_ABORIGINAL;  /* Cans */
                                                              /**
                                                               * Yi syllables
                                                               * @stable ICU 2.4
                                                               */
-        public static readonly int YI = 41;  /* Yiii */
+        public const int YI = 41;  /* Yiii */
                                           /**
                                            * Tagalog
                                            * @stable ICU 2.4
                                            */
-        public static readonly int TAGALOG = 42;  /* Tglg */
+        public const int TAGALOG = 42;  /* Tglg */
                                                /**
                                                 * Hanunooo
                                                 * @stable ICU 2.4
                                                 */
-        public static readonly int HANUNOO = 43;  /* Hano */
+        public const int HANUNOO = 43;  /* Hano */
                                                /**
                                                 * Buhid
                                                 * @stable ICU 2.4
                                                 */
-        public static readonly int BUHID = 44;  /* Buhd */
+        public const int BUHID = 44;  /* Buhd */
                                              /**
                                               * Tagbanwa
                                               * @stable ICU 2.4
                                               */
-        public static readonly int TAGBANWA = 45;  /* Tagb */
+        public const int TAGBANWA = 45;  /* Tagb */
                                                 /**
                                                  * Braille
                                                  * Script in Unicode 4
                                                  * @stable ICU 2.6
                                                  *
                                                  */
-        public static readonly int BRAILLE = 46;  /* Brai */
+        public const int BRAILLE = 46;  /* Brai */
                                                /**
                                                 * Cypriot
                                                 * Script in Unicode 4
                                                 * @stable ICU 2.6
                                                 *
                                                 */
-        public static readonly int CYPRIOT = 47;  /* Cprt */
+        public const int CYPRIOT = 47;  /* Cprt */
                                                /**
                                                 * Limbu
                                                 * Script in Unicode 4
                                                 * @stable ICU 2.6
                                                 *
                                                 */
-        public static readonly int LIMBU = 48;  /* Limb */
+        public const int LIMBU = 48;  /* Limb */
                                              /**
                                               * Linear B
                                               * Script in Unicode 4
                                               * @stable ICU 2.6
                                               *
                                               */
-        public static readonly int LINEAR_B = 49;  /* Linb */
+        public const int LINEAR_B = 49;  /* Linb */
                                                 /**
                                                  * Osmanya
                                                  * Script in Unicode 4
                                                  * @stable ICU 2.6
                                                  *
                                                  */
-        public static readonly int OSMANYA = 50;  /* Osma */
+        public const int OSMANYA = 50;  /* Osma */
                                                /**
                                                 * Shavian
                                                 * Script in Unicode 4
                                                 * @stable ICU 2.6
                                                 *
                                                 */
-        public static readonly int SHAVIAN = 51;  /* Shaw */
+        public const int SHAVIAN = 51;  /* Shaw */
                                                /**
                                                 * Tai Le
                                                 * Script in Unicode 4
                                                 * @stable ICU 2.6
                                                 *
                                                 */
-        public static readonly int TAI_LE = 52;  /* Tale */
+        public const int TAI_LE = 52;  /* Tale */
                                               /**
                                                * Ugaritic
                                                * Script in Unicode 4
                                                * @stable ICU 2.6
                                                *
                                                */
-        public static readonly int UGARITIC = 53;  /* Ugar */
+        public const int UGARITIC = 53;  /* Ugar */
                                                 /**
                                                  * Script in Unicode 4.0.1
                                                  * @stable ICU 3.0
                                                  */
-        public static readonly int KATAKANA_OR_HIRAGANA = 54;  /*Hrkt */
+        public const int KATAKANA_OR_HIRAGANA = 54;  /*Hrkt */
 
         /**
          * Script in Unicode 4.1
          * @stable ICU 3.4
          */
-        public static readonly int BUGINESE = 55;           /* Bugi */
+        public const int BUGINESE = 55;           /* Bugi */
                                                          /**
                                                           * Script in Unicode 4.1
                                                           * @stable ICU 3.4
                                                           */
-        public static readonly int GLAGOLITIC = 56;         /* Glag */
+        public const int GLAGOLITIC = 56;         /* Glag */
                                                          /**
                                                           * Script in Unicode 4.1
                                                           * @stable ICU 3.4
                                                           */
-        public static readonly int KHAROSHTHI = 57;         /* Khar */
+        public const int KHAROSHTHI = 57;         /* Khar */
                                                          /**
                                                           * Script in Unicode 4.1
                                                           * @stable ICU 3.4
                                                           */
-        public static readonly int SYLOTI_NAGRI = 58;       /* Sylo */
+        public const int SYLOTI_NAGRI = 58;       /* Sylo */
                                                          /**
                                                           * Script in Unicode 4.1
                                                           * @stable ICU 3.4
                                                           */
-        public static readonly int NEW_TAI_LUE = 59;        /* Talu */
+        public const int NEW_TAI_LUE = 59;        /* Talu */
                                                          /**
                                                           * Script in Unicode 4.1
                                                           * @stable ICU 3.4
                                                           */
-        public static readonly int TIFINAGH = 60;           /* Tfng */
+        public const int TIFINAGH = 60;           /* Tfng */
                                                          /**
                                                           * Script in Unicode 4.1
                                                           * @stable ICU 3.4
                                                           */
-        public static readonly int OLD_PERSIAN = 61;        /* Xpeo */
+        public const int OLD_PERSIAN = 61;        /* Xpeo */
 
 
         /**
          * ISO 15924 script code
          * @stable ICU 3.6
          */
-        public static readonly int BALINESE = 62; /* Bali */
+        public const int BALINESE = 62; /* Bali */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 3.6
                                                 */
-        public static readonly int BATAK = 63; /* Batk */
+        public const int BATAK = 63; /* Batk */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 3.6
                                              */
-        public static readonly int BLISSYMBOLS = 64; /* Blis */
+        public const int BLISSYMBOLS = 64; /* Blis */
                                                   /**
                                                    * ISO 15924 script code
                                                    * @stable ICU 3.6
                                                    */
-        public static readonly int BRAHMI = 65; /* Brah */
+        public const int BRAHMI = 65; /* Brah */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 3.6
                                               */
-        public static readonly int CHAM = 66; /* Cham */
+        public const int CHAM = 66; /* Cham */
                                            /**
                                             * ISO 15924 script code
                                             * @stable ICU 3.6
                                             */
-        public static readonly int CIRTH = 67; /* Cirt */
+        public const int CIRTH = 67; /* Cirt */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 3.6
                                              */
-        public static readonly int OLD_CHURCH_SLAVONIC_CYRILLIC = 68; /* Cyrs */
+        public const int OLD_CHURCH_SLAVONIC_CYRILLIC = 68; /* Cyrs */
                                                                    /**
                                                                     * ISO 15924 script code
                                                                     * @stable ICU 3.6
                                                                     */
-        public static readonly int DEMOTIC_EGYPTIAN = 69; /* Egyd */
+        public const int DEMOTIC_EGYPTIAN = 69; /* Egyd */
                                                        /**
                                                         * ISO 15924 script code
                                                         * @stable ICU 3.6
                                                         */
-        public static readonly int HIERATIC_EGYPTIAN = 70; /* Egyh */
+        public const int HIERATIC_EGYPTIAN = 70; /* Egyh */
                                                         /**
                                                          * ISO 15924 script code
                                                          * @stable ICU 3.6
                                                          */
-        public static readonly int EGYPTIAN_HIEROGLYPHS = 71; /* Egyp */
+        public const int EGYPTIAN_HIEROGLYPHS = 71; /* Egyp */
                                                            /**
                                                             * ISO 15924 script code
                                                             * @stable ICU 3.6
                                                             */
-        public static readonly int KHUTSURI = 72; /* Geok */
+        public const int KHUTSURI = 72; /* Geok */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 3.6
                                                 */
-        public static readonly int SIMPLIFIED_HAN = 73; /* Hans */
+        public const int SIMPLIFIED_HAN = 73; /* Hans */
                                                      /**
                                                       * ISO 15924 script code
                                                       * @stable ICU 3.6
                                                       */
-        public static readonly int TRADITIONAL_HAN = 74; /* Hant */
+        public const int TRADITIONAL_HAN = 74; /* Hant */
                                                       /**
                                                        * ISO 15924 script code
                                                        * @stable ICU 3.6
                                                        */
-        public static readonly int PAHAWH_HMONG = 75; /* Hmng */
+        public const int PAHAWH_HMONG = 75; /* Hmng */
                                                    /**
                                                     * ISO 15924 script code
                                                     * @stable ICU 3.6
                                                     */
-        public static readonly int OLD_HUNGARIAN = 76; /* Hung */
+        public const int OLD_HUNGARIAN = 76; /* Hung */
                                                     /**
                                                      * ISO 15924 script code
                                                      * @stable ICU 3.6
                                                      */
-        public static readonly int HARAPPAN_INDUS = 77; /* Inds */
+        public const int HARAPPAN_INDUS = 77; /* Inds */
                                                      /**
                                                       * ISO 15924 script code
                                                       * @stable ICU 3.6
                                                       */
-        public static readonly int JAVANESE = 78; /* Java */
+        public const int JAVANESE = 78; /* Java */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 3.6
                                                 */
-        public static readonly int KAYAH_LI = 79; /* Kali */
+        public const int KAYAH_LI = 79; /* Kali */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 3.6
                                                 */
-        public static readonly int LATIN_FRAKTUR = 80; /* Latf */
+        public const int LATIN_FRAKTUR = 80; /* Latf */
                                                     /**
                                                      * ISO 15924 script code
                                                      * @stable ICU 3.6
                                                      */
-        public static readonly int LATIN_GAELIC = 81; /* Latg */
+        public const int LATIN_GAELIC = 81; /* Latg */
                                                    /**
                                                     * ISO 15924 script code
                                                     * @stable ICU 3.6
                                                     */
-        public static readonly int LEPCHA = 82; /* Lepc */
+        public const int LEPCHA = 82; /* Lepc */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 3.6
                                               */
-        public static readonly int LINEAR_A = 83; /* Lina */
+        public const int LINEAR_A = 83; /* Lina */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 4.6
                                                 */
-        public static readonly int MANDAIC = 84; /* Mand */
+        public const int MANDAIC = 84; /* Mand */
                                               /**
                                                * ISO 15924 script code
                                                * @stable ICU 3.6
                                                */
-        public static readonly int MANDAEAN = MANDAIC;
+        public const int MANDAEAN = MANDAIC;
         /**
          * ISO 15924 script code
          * @stable ICU 3.6
          */
-        public static readonly int MAYAN_HIEROGLYPHS = 85; /* Maya */
+        public const int MAYAN_HIEROGLYPHS = 85; /* Maya */
                                                         /**
                                                          * ISO 15924 script code
                                                          * @stable ICU 4.6
                                                          */
-        public static readonly int MEROITIC_HIEROGLYPHS = 86; /* Mero */
+        public const int MEROITIC_HIEROGLYPHS = 86; /* Mero */
                                                            /**
                                                             * ISO 15924 script code
                                                             * @stable ICU 3.6
                                                             */
-        public static readonly int MEROITIC = MEROITIC_HIEROGLYPHS;
+        public const int MEROITIC = MEROITIC_HIEROGLYPHS;
         /**
          * ISO 15924 script code
          * @stable ICU 3.6
          */
-        public static readonly int NKO = 87; /* Nkoo */
+        public const int NKO = 87; /* Nkoo */
                                           /**
                                            * ISO 15924 script code
                                            * @stable ICU 3.6
                                            */
-        public static readonly int ORKHON = 88; /* Orkh */
+        public const int ORKHON = 88; /* Orkh */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 3.6
                                               */
-        public static readonly int OLD_PERMIC = 89; /* Perm */
+        public const int OLD_PERMIC = 89; /* Perm */
                                                  /**
                                                   * ISO 15924 script code
                                                   * @stable ICU 3.6
                                                   */
-        public static readonly int PHAGS_PA = 90; /* Phag */
+        public const int PHAGS_PA = 90; /* Phag */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 3.6
                                                 */
-        public static readonly int PHOENICIAN = 91; /* Phnx */
+        public const int PHOENICIAN = 91; /* Phnx */
                                                  /**
                                                   * ISO 15924 script code
                                                   * @stable ICU 52
                                                   */
-        public static readonly int MIAO = 92; /* Plrd */
+        public const int MIAO = 92; /* Plrd */
                                            /**
                                             * ISO 15924 script code
                                             * @stable ICU 3.6
                                             */
-        public static readonly int PHONETIC_POLLARD = MIAO;
+        public const int PHONETIC_POLLARD = MIAO;
         /**
          * ISO 15924 script code
          * @stable ICU 3.6
          */
-        public static readonly int RONGORONGO = 93; /* Roro */
+        public const int RONGORONGO = 93; /* Roro */
                                                  /**
                                                   * ISO 15924 script code
                                                   * @stable ICU 3.6
                                                   */
-        public static readonly int SARATI = 94; /* Sara */
+        public const int SARATI = 94; /* Sara */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 3.6
                                               */
-        public static readonly int ESTRANGELO_SYRIAC = 95; /* Syre */
+        public const int ESTRANGELO_SYRIAC = 95; /* Syre */
                                                         /**
                                                          * ISO 15924 script code
                                                          * @stable ICU 3.6
                                                          */
-        public static readonly int WESTERN_SYRIAC = 96; /* Syrj */
+        public const int WESTERN_SYRIAC = 96; /* Syrj */
                                                      /**
                                                       * ISO 15924 script code
                                                       * @stable ICU 3.6
                                                       */
-        public static readonly int EASTERN_SYRIAC = 97; /* Syrn */
+        public const int EASTERN_SYRIAC = 97; /* Syrn */
                                                      /**
                                                       * ISO 15924 script code
                                                       * @stable ICU 3.6
                                                       */
-        public static readonly int TENGWAR = 98; /* Teng */
+        public const int TENGWAR = 98; /* Teng */
                                               /**
                                                * ISO 15924 script code
                                                * @stable ICU 3.6
                                                */
-        public static readonly int VAI = 99; /* Vaii */
+        public const int VAI = 99; /* Vaii */
                                           /**
                                            * ISO 15924 script code
                                            * @stable ICU 3.6
                                            */
-        public static readonly int VISIBLE_SPEECH = 100;/* Visp */
+        public const int VISIBLE_SPEECH = 100;/* Visp */
                                                      /**
                                                       * ISO 15924 script code
                                                       * @stable ICU 3.6
                                                       */
-        public static readonly int CUNEIFORM = 101;/* Xsux */
+        public const int CUNEIFORM = 101;/* Xsux */
                                                 /**
                                                  * ISO 15924 script code
                                                  * @stable ICU 3.6
                                                  */
-        public static readonly int UNWRITTEN_LANGUAGES = 102;/* Zxxx */
+        public const int UNWRITTEN_LANGUAGES = 102;/* Zxxx */
                                                           /**
                                                            * ISO 15924 script code
                                                            * @stable ICU 3.6
                                                            */
-        public static readonly int UNKNOWN = 103;/* Zzzz */ /* Unknown="Code for uncoded script", for unassigned code points */
+        public const int UNKNOWN = 103;/* Zzzz */ /* Unknown="Code for uncoded script", for unassigned code points */
 
         /**
          * ISO 15924 script code
          * @stable ICU 3.8
          */
-        public static readonly int CARIAN = 104;/* Cari */
+        public const int CARIAN = 104;/* Cari */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 3.8
                                               */
-        public static readonly int JAPANESE = 105;/* Jpan */
+        public const int JAPANESE = 105;/* Jpan */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 3.8
                                                 */
-        public static readonly int LANNA = 106;/* Lana */
+        public const int LANNA = 106;/* Lana */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 3.8
                                              */
-        public static readonly int LYCIAN = 107;/* Lyci */
+        public const int LYCIAN = 107;/* Lyci */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 3.8
                                               */
-        public static readonly int LYDIAN = 108;/* Lydi */
+        public const int LYDIAN = 108;/* Lydi */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 3.8
                                               */
-        public static readonly int OL_CHIKI = 109;/* Olck */
+        public const int OL_CHIKI = 109;/* Olck */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 3.8
                                                 */
-        public static readonly int REJANG = 110;/* Rjng */
+        public const int REJANG = 110;/* Rjng */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 3.8
                                               */
-        public static readonly int SAURASHTRA = 111;/* Saur */
+        public const int SAURASHTRA = 111;/* Saur */
                                                  /**
                                                   * ISO 15924 script code for Sutton SignWriting
                                                   * @stable ICU 3.8
                                                   */
-        public static readonly int SIGN_WRITING = 112;/* Sgnw */
+        public const int SIGN_WRITING = 112;/* Sgnw */
                                                    /**
                                                     * ISO 15924 script code
                                                     * @stable ICU 3.8
                                                     */
-        public static readonly int SUNDANESE = 113;/* Sund */
+        public const int SUNDANESE = 113;/* Sund */
                                                 /**
                                                  * ISO 15924 script code
                                                  * @stable ICU 3.8
                                                  */
-        public static readonly int MOON = 114;/* Moon */
+        public const int MOON = 114;/* Moon */
                                            /**
                                             * ISO 15924 script code
                                             * @stable ICU 3.8
                                             */
-        public static readonly int MEITEI_MAYEK = 115;/* Mtei */
+        public const int MEITEI_MAYEK = 115;/* Mtei */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int IMPERIAL_ARAMAIC = 116;/* Armi */
+        public const int IMPERIAL_ARAMAIC = 116;/* Armi */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int AVESTAN = 117;/* Avst */
+        public const int AVESTAN = 117;/* Avst */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int CHAKMA = 118;/* Cakm */
+        public const int CHAKMA = 118;/* Cakm */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int KOREAN = 119;/* Kore */
+        public const int KOREAN = 119;/* Kore */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int KAITHI = 120;/* Kthi */
+        public const int KAITHI = 120;/* Kthi */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int MANICHAEAN = 121;/* Mani */
+        public const int MANICHAEAN = 121;/* Mani */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int INSCRIPTIONAL_PAHLAVI = 122;/* Phli */
+        public const int INSCRIPTIONAL_PAHLAVI = 122;/* Phli */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int PSALTER_PAHLAVI = 123;/* Phlp */
+        public const int PSALTER_PAHLAVI = 123;/* Phlp */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int BOOK_PAHLAVI = 124;/* Phlv */
+        public const int BOOK_PAHLAVI = 124;/* Phlv */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int INSCRIPTIONAL_PARTHIAN = 125;/* Prti */
+        public const int INSCRIPTIONAL_PARTHIAN = 125;/* Prti */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int SAMARITAN = 126;/* Samr */
+        public const int SAMARITAN = 126;/* Samr */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int TAI_VIET = 127;/* Tavt */
+        public const int TAI_VIET = 127;/* Tavt */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int MATHEMATICAL_NOTATION = 128;/* Zmth */
+        public const int MATHEMATICAL_NOTATION = 128;/* Zmth */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.0
          */
-        public static readonly int SYMBOLS = 129;/* Zsym */
+        public const int SYMBOLS = 129;/* Zsym */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.4
          */
-        public static readonly int BAMUM = 130;/* Bamu */
+        public const int BAMUM = 130;/* Bamu */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 4.4
                                              */
-        public static readonly int LISU = 131;/* Lisu */
+        public const int LISU = 131;/* Lisu */
                                            /**
                                             * ISO 15924 script code
                                             * @stable ICU 4.4
                                             */
-        public static readonly int NAKHI_GEBA = 132;/* Nkgb */
+        public const int NAKHI_GEBA = 132;/* Nkgb */
                                                  /**
                                                   * ISO 15924 script code
                                                   * @stable ICU 4.4
                                                   */
-        public static readonly int OLD_SOUTH_ARABIAN = 133;/* Sarb */
+        public const int OLD_SOUTH_ARABIAN = 133;/* Sarb */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.6
          */
-        public static readonly int BASSA_VAH = 134;/* Bass */
+        public const int BASSA_VAH = 134;/* Bass */
                                                 /**
                                                  * ISO 15924 script code
                                                  * @stable ICU 54
                                                  */
-        public static readonly int DUPLOYAN = 135;/* Dupl */
+        public const int DUPLOYAN = 135;/* Dupl */
                                                /**
                                                 * Typo, use DUPLOYAN
                                                 * @deprecated ICU 54
                                                 */
         [Obsolete("ICU 54")]
-    public static readonly int DUPLOYAN_SHORTAND = DUPLOYAN;
+    public const int DUPLOYAN_SHORTAND = DUPLOYAN;
         /**
          * ISO 15924 script code
          * @stable ICU 4.6
          */
-        public static readonly int ELBASAN = 136;/* Elba */
+        public const int ELBASAN = 136;/* Elba */
                                               /**
                                                * ISO 15924 script code
                                                * @stable ICU 4.6
                                                */
-        public static readonly int GRANTHA = 137;/* Gran */
+        public const int GRANTHA = 137;/* Gran */
                                               /**
                                                * ISO 15924 script code
                                                * @stable ICU 4.6
                                                */
-        public static readonly int KPELLE = 138;/* Kpel */
+        public const int KPELLE = 138;/* Kpel */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 4.6
                                               */
-        public static readonly int LOMA = 139;/* Loma */
+        public const int LOMA = 139;/* Loma */
                                            /**
                                             * Mende Kikakui
                                             * ISO 15924 script code
                                             * @stable ICU 4.6
                                             */
-        public static readonly int MENDE = 140;/* Mend */
+        public const int MENDE = 140;/* Mend */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 4.6
                                              */
-        public static readonly int MEROITIC_CURSIVE = 141;/* Merc */
+        public const int MEROITIC_CURSIVE = 141;/* Merc */
                                                        /**
                                                         * ISO 15924 script code
                                                         * @stable ICU 4.6
                                                         */
-        public static readonly int OLD_NORTH_ARABIAN = 142;/* Narb */
+        public const int OLD_NORTH_ARABIAN = 142;/* Narb */
                                                         /**
                                                          * ISO 15924 script code
                                                          * @stable ICU 4.6
                                                          */
-        public static readonly int NABATAEAN = 143;/* Nbat */
+        public const int NABATAEAN = 143;/* Nbat */
                                                 /**
                                                  * ISO 15924 script code
                                                  * @stable ICU 4.6
                                                  */
-        public static readonly int PALMYRENE = 144;/* Palm */
+        public const int PALMYRENE = 144;/* Palm */
                                                 /**
                                                  * ISO 15924 script code
                                                  * @stable ICU 54
                                                  */
-        public static readonly int KHUDAWADI = 145;/* Sind */
+        public const int KHUDAWADI = 145;/* Sind */
                                                 /**
                                                  * ISO 15924 script code
                                                  * @stable ICU 4.6
                                                  */
-        public static readonly int SINDHI = KHUDAWADI;
+        public const int SINDHI = KHUDAWADI;
         /**
          * ISO 15924 script code
          * @stable ICU 4.6
          */
-        public static readonly int WARANG_CITI = 146;/* Wara */
+        public const int WARANG_CITI = 146;/* Wara */
 
         /**
          * ISO 15924 script code
          * @stable ICU 4.8
          */
-        public static readonly int AFAKA = 147;/* Afak */
+        public const int AFAKA = 147;/* Afak */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 4.8
                                              */
-        public static readonly int JURCHEN = 148;/* Jurc */
+        public const int JURCHEN = 148;/* Jurc */
                                               /**
                                                * ISO 15924 script code
                                                * @stable ICU 4.8
                                                */
-        public static readonly int MRO = 149;/* Mroo */
+        public const int MRO = 149;/* Mroo */
                                           /**
                                            * ISO 15924 script code
                                            * @stable ICU 4.8
                                            */
-        public static readonly int NUSHU = 150;/* Nshu */
+        public const int NUSHU = 150;/* Nshu */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 4.8
                                              */
-        public static readonly int SHARADA = 151;/* Shrd */
+        public const int SHARADA = 151;/* Shrd */
                                               /**
                                                * ISO 15924 script code
                                                * @stable ICU 4.8
                                                */
-        public static readonly int SORA_SOMPENG = 152;/* Sora */
+        public const int SORA_SOMPENG = 152;/* Sora */
                                                    /**
                                                     * ISO 15924 script code
                                                     * @stable ICU 4.8
                                                     */
-        public static readonly int TAKRI = 153;/* Takr */
+        public const int TAKRI = 153;/* Takr */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 4.8
                                              */
-        public static readonly int TANGUT = 154;/* Tang */
+        public const int TANGUT = 154;/* Tang */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 4.8
                                               */
-        public static readonly int WOLEAI = 155;/* Wole */
+        public const int WOLEAI = 155;/* Wole */
 
         /**
          * ISO 15924 script code
          * @stable ICU 49
          */
-        public static readonly int ANATOLIAN_HIEROGLYPHS = 156;/* Hluw */
+        public const int ANATOLIAN_HIEROGLYPHS = 156;/* Hluw */
                                                             /**
                                                              * ISO 15924 script code
                                                              * @stable ICU 49
                                                              */
-        public static readonly int KHOJKI = 157;/* Khoj */
+        public const int KHOJKI = 157;/* Khoj */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 49
                                               */
-        public static readonly int TIRHUTA = 158;/* Tirh */
+        public const int TIRHUTA = 158;/* Tirh */
                                               /**
                                                * ISO 15924 script code
                                                * @stable ICU 52
                                                */
-        public static readonly int CAUCASIAN_ALBANIAN = 159; /* Aghb */
+        public const int CAUCASIAN_ALBANIAN = 159; /* Aghb */
                                                           /**
                                                            * ISO 15924 script code
                                                            * @stable ICU 52
                                                            */
-        public static readonly int MAHAJANI = 160; /* Mahj */
+        public const int MAHAJANI = 160; /* Mahj */
 
         /**
          * ISO 15924 script code
          * @stable ICU 54
          */
-        public static readonly int AHOM = 161; /* Ahom */
+        public const int AHOM = 161; /* Ahom */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 54
                                              */
-        public static readonly int HATRAN = 162; /* Hatr */
+        public const int HATRAN = 162; /* Hatr */
                                               /**
                                                * ISO 15924 script code
                                                * @stable ICU 54
                                                */
-        public static readonly int MODI = 163; /* Modi */
+        public const int MODI = 163; /* Modi */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 54
                                              */
-        public static readonly int MULTANI = 164; /* Mult */
+        public const int MULTANI = 164; /* Mult */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 54
                                                 */
-        public static readonly int PAU_CIN_HAU = 165; /* Pauc */
+        public const int PAU_CIN_HAU = 165; /* Pauc */
                                                    /**
                                                     * ISO 15924 script code
                                                     * @stable ICU 54
                                                     */
-        public static readonly int SIDDHAM = 166; /* Sidd */
+        public const int SIDDHAM = 166; /* Sidd */
 
         /**
          * ISO 15924 script code
          * @stable ICU 58
          */
-        public static readonly int ADLAM = 167; /* Adlm */
+        public const int ADLAM = 167; /* Adlm */
                                              /**
                                               * ISO 15924 script code
                                               * @stable ICU 58
                                               */
-        public static readonly int BHAIKSUKI = 168; /* Bhks */
+        public const int BHAIKSUKI = 168; /* Bhks */
                                                  /**
                                                   * ISO 15924 script code
                                                   * @stable ICU 58
                                                   */
-        public static readonly int MARCHEN = 169; /* Marc */
+        public const int MARCHEN = 169; /* Marc */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 58
                                                 */
-        public static readonly int NEWA = 170; /* Newa */
+        public const int NEWA = 170; /* Newa */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 58
                                              */
-        public static readonly int OSAGE = 171; /* Osge */
+        public const int OSAGE = 171; /* Osge */
 
         /**
          * ISO 15924 script code
          * @stable ICU 58
          */
-        public static readonly int HAN_WITH_BOPOMOFO = 172; /* Hanb */
+        public const int HAN_WITH_BOPOMOFO = 172; /* Hanb */
                                                          /**
                                                           * ISO 15924 script code
                                                           * @stable ICU 58
                                                           */
-        public static readonly int JAMO = 173; /* Jamo */
+        public const int JAMO = 173; /* Jamo */
                                             /**
                                              * ISO 15924 script code
                                              * @stable ICU 58
                                              */
-        public static readonly int SYMBOLS_EMOJI = 174; /* Zsye */
+        public const int SYMBOLS_EMOJI = 174; /* Zsye */
 
         /**
          * ISO 15924 script code
          * @stable ICU 60
          */
-        public static readonly int MASARAM_GONDI = 175; /* Gonm */
+        public const int MASARAM_GONDI = 175; /* Gonm */
                                                      /**
                                                       * ISO 15924 script code
                                                       * @stable ICU 60
                                                       */
-        public static readonly int SOYOMBO = 176; /* Soyo */
+        public const int SOYOMBO = 176; /* Soyo */
                                                /**
                                                 * ISO 15924 script code
                                                 * @stable ICU 60
                                                 */
-        public static readonly int ZANABAZAR_SQUARE = 177; /* Zanb */
+        public const int ZANABAZAR_SQUARE = 177; /* Zanb */
 
         /**
          * One more than the highest normal UScript code.
@@ -989,7 +989,7 @@ namespace ICU4N.Lang
          * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
          */
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-    public static readonly int CODE_LIMIT = 178;
+        public const int CODE_LIMIT = 178;
 
         private static int[] GetCodesFromLocale(ULocale locale)
         {
@@ -1004,7 +1004,7 @@ namespace ICU4N.Lang
             {
                 return new int[] { UScript.HANGUL, UScript.HAN };
             }
-            String script = locale.GetScript();
+            string script = locale.GetScript();
             if (lang.Equals("zh") && script.Equals("Hant"))
             {
                 return new int[] { UScript.HAN, UScript.BOPOMOFO };

@@ -15,7 +15,7 @@ using static ICU4N.Text.LocaleDisplayNames;
 
 namespace ICU4N.Util
 {
-    public sealed class ULocale : IComparable<ULocale>
+    public sealed class ULocale : IComparable<ULocale> // ICU4N TODO: API: Change to UCulture or UCultureInfo and fixup API members to match .NET
     {
         private static readonly object syncLock = new object();
 

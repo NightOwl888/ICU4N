@@ -5,10 +5,10 @@ using System.Text;
 namespace ICU4N.Support.IO
 {
     /// <summary>
-    /// HeapByteBuffer, ReadWriteHeapByteBuffer and ReadOnlyHeapByteBuffer compose
+    /// <see cref="HeapByteBuffer"/>, <see cref="ReadWriteHeapByteBuffer"/> and <see cref="ReadOnlyHeapByteBuffer"/> compose
     /// the implementation of array based byte buffers.
     /// <para/>
-    /// ReadOnlyHeapByteBuffer extends HeapByteBuffer with all the write methods
+    /// <see cref="ReadOnlyHeapByteBuffer"/> extends <see cref="HeapByteBuffer"/> with all the write methods
     /// throwing read only exception.
     /// <para/>
     /// This class is sealed final for runtime performance.

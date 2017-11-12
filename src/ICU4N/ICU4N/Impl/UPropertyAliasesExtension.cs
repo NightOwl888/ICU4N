@@ -18,7 +18,7 @@ namespace ICU4N.Impl
     {
         private bool ContainsName(BytesTrie trie, string name)
         {
-            BytesTrieResult result = BytesTrieResult.NO_VALUE;
+            Result result = Result.NO_VALUE;
             for (int i = 0; i < name.Length; ++i)
             {
                 int c = name[i];
@@ -39,7 +39,7 @@ namespace ICU4N.Impl
 
         private bool ContainsName(BytesTrie trie, StringBuilder name)
         {
-            BytesTrieResult result = BytesTrieResult.NO_VALUE;
+            Result result = Result.NO_VALUE;
             for (int i = 0; i < name.Length; ++i)
             {
                 int c = name[i];
@@ -60,7 +60,7 @@ namespace ICU4N.Impl
 
         private bool ContainsName(BytesTrie trie, char[] name)
         {
-            BytesTrieResult result = BytesTrieResult.NO_VALUE;
+            Result result = Result.NO_VALUE;
             for (int i = 0; i < name.Length; ++i)
             {
                 int c = name[i];
@@ -81,7 +81,7 @@ namespace ICU4N.Impl
 
         private bool ContainsName(BytesTrie trie, ICharSequence name)
         {
-            BytesTrieResult result = BytesTrieResult.NO_VALUE;
+            Result result = Result.NO_VALUE;
             for (int i = 0; i < name.Length; ++i)
             {
                 int c = name[i];

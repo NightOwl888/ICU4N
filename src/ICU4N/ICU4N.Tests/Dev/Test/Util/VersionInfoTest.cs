@@ -6,6 +6,9 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
+#if !NETCOREAPP1_0
+using System.Threading;
+#endif
 
 namespace ICU4N.Tests.Dev.Test.Util
 {
@@ -422,7 +425,7 @@ namespace ICU4N.Tests.Dev.Test.Util
                         }
                         catch (ThreadInterruptedException e)
                         {
-                            Errln("A problem in thread execution. " + e.getMessage());
+                            Errln("A problem in thread execution. " + e.ToString());
                         }
 #endif
             }

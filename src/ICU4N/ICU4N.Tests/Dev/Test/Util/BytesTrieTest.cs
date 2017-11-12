@@ -288,7 +288,7 @@ namespace ICU4N.Tests.Dev.Test.Util
             {
                 Errln("unique value after \"ju\"");
             }
-            if (trie.Next('n') != BytesTrieResult.INTERMEDIATE_VALUE || 6 != trie.GetValue())
+            if (trie.Next('n') != Result.INTERMEDIATE_VALUE || 6 != trie.GetValue())
             {
                 Errln("not normal value 6 after \"jun\"");
             }
@@ -621,10 +621,10 @@ namespace ICU4N.Tests.Dev.Test.Util
                     continue;  // skip empty string
                 }
                 int c = data[i].bytes[0];
-                BytesTrieResult firstResult = trie.First(c);
+                Result firstResult = trie.First(c);
                 int firstValue = firstResult.HasValue() ? trie.GetValue() : -1;
                 int nextC = data[i].s.Length > 1 ? data[i].bytes[1] : 0;
-                BytesTrieResult nextResult = trie.Next(nextC);
+                Result nextResult = trie.Next(nextC);
                 if (firstResult != trie.Reset().Next(c) ||
                    firstResult != trie.Current ||
                    firstValue != (firstResult.HasValue() ? trie.GetValue() : -1) ||
@@ -644,7 +644,7 @@ namespace ICU4N.Tests.Dev.Test.Util
             for (int i = 0; i < dataLength; ++i)
             {
                 int stringLength = data[i].s.Length;
-                BytesTrieResult result;
+                Result result;
                 if (!(result = trie.Next(data[i].bytes, 0, stringLength)).HasValue() ||
                     result != trie.Current
                 )
@@ -672,10 +672,10 @@ namespace ICU4N.Tests.Dev.Test.Util
                                             data[i].s, j));
                         break;
                     }
-                    if (result == BytesTrieResult.INTERMEDIATE_VALUE)
+                    if (result == Result.INTERMEDIATE_VALUE)
                     {
                         trie.GetValue();
-                        if (trie.Current != BytesTrieResult.INTERMEDIATE_VALUE)
+                        if (trie.Current != Result.INTERMEDIATE_VALUE)
                         {
                             Errln(String.Format("trie.GetValue().Current!=BytesTrieResult.INTERMEDIATE_VALUE " +
                                                 "before end of {0} (at index {1:d})", data[i].s, j));
@@ -718,7 +718,7 @@ namespace ICU4N.Tests.Dev.Test.Util
                         break;
                     }
                 }
-                if ((result == BytesTrieResult.INTERMEDIATE_VALUE) != nextContinues)
+                if ((result == Result.INTERMEDIATE_VALUE) != nextContinues)
                 {
                     Errln("(trie.Current==BytesTrieResult.INTERMEDIATE_VALUE) contradicts " +
                           "(trie.Next(some UChar)!=BytesTrieResult.NO_MATCH) after end of " + data[i].s);
@@ -756,15 +756,15 @@ namespace ICU4N.Tests.Dev.Test.Util
                     }
                 }
                 trie.SaveState(state);
-                BytesTrieResult resultAtState = trie.Current;
-                BytesTrieResult result;
+                Result resultAtState = trie.Current;
+                Result result;
                 int valueAtState = -99;
                 if (resultAtState.HasValue())
                 {
                     valueAtState = trie.GetValue();
                 }
                 result = trie.Next(0);  // mismatch
-                if (result != BytesTrieResult.NO_MATCH || result != trie.Current)
+                if (result != Result.NO_MATCH || result != trie.Current)
                 {
                     Errln("trie.Next(0) matched after part of " + data[i].s);
                 }

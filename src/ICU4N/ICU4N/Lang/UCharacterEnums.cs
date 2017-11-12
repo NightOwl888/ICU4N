@@ -1,9 +1,103 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Globalization;
 
 namespace ICU4N.Lang
 {
+    /// <summary>
+    /// Extension methods for <see cref="UnicodeCategory"/>.
+    /// </summary>
+    public static class UnicodeCategoryConvert
+    {
+        /// <summary>
+        /// Converts a <see cref="UnicodeCategory"/> to the integer value that is used by
+        /// ICU4N, which differs from the numeric value of the <see cref="UnicodeCategory"/> enum
+        /// that is defined in System.Globalization.
+        /// </summary>
+        /// <param name="unicodeCategory">A <see cref="UnicodeCategory"/> value.</param>
+        /// <returns>The integer associated with the <see cref="UnicodeCategory"/> for comparisions in ICU4N.</returns>
+        public static int ToIcuValue(this UnicodeCategory unicodeCategory)
+        {
+            switch (unicodeCategory)
+            {
+                case UnicodeCategory.OtherNotAssigned: return 0; // UNASSIGNED / GENERAL_OTHER_TYPES
+                case UnicodeCategory.UppercaseLetter: return 1;
+                case UnicodeCategory.LowercaseLetter: return 2;
+                case UnicodeCategory.TitlecaseLetter: return 3;
+                case UnicodeCategory.ModifierLetter: return 4;
+                case UnicodeCategory.OtherLetter: return 5;
+                case UnicodeCategory.NonSpacingMark: return 6;
+                case UnicodeCategory.EnclosingMark: return 7;
+                case UnicodeCategory.SpacingCombiningMark: return 8;
+                case UnicodeCategory.DecimalDigitNumber: return 9;
+                case UnicodeCategory.LetterNumber: return 10;
+                case UnicodeCategory.OtherNumber: return 11;
+                case UnicodeCategory.SpaceSeparator: return 12;
+                case UnicodeCategory.LineSeparator: return 13;
+                case UnicodeCategory.ParagraphSeparator: return 14;
+                case UnicodeCategory.Control: return 15;
+                case UnicodeCategory.Format: return 16;
+                case UnicodeCategory.PrivateUse: return 17;
+                case UnicodeCategory.Surrogate: return 18;
+                case UnicodeCategory.DashPunctuation: return 19;
+                case UnicodeCategory.OpenPunctuation: return 20;
+                case UnicodeCategory.ClosePunctuation: return 21;
+                case UnicodeCategory.ConnectorPunctuation: return 22;
+                case UnicodeCategory.OtherPunctuation: return 23;
+                case UnicodeCategory.MathSymbol: return 24;
+                case UnicodeCategory.CurrencySymbol: return 25;
+                case UnicodeCategory.ModifierSymbol: return 26;
+                case UnicodeCategory.OtherSymbol: return 27;
+                case UnicodeCategory.InitialQuotePunctuation: return 28;
+                case UnicodeCategory.FinalQuotePunctuation: return 29;
+                default: return 0; // UNASSIGNED / GENERAL_OTHER_TYPES
+            }
+        }
+
+        /// <summary>
+        /// Converts an integer value used by ICU4N to the corresponding <see cref="UnicodeCategory"/> value.
+        /// </summary>
+        /// <param name="value">An integer representing an ICU4J UCategory constant.</param>
+        /// <returns>The <see cref="UnicodeCategory"/> representing the passed in <paramref name="value"/>.</returns>
+        public static UnicodeCategory FromIcuValue(int value)
+        {
+            switch (value)
+            {
+                case 0: return UnicodeCategory.OtherNotAssigned; // UNASSIGNED / GENERAL_OTHER_TYPES
+                case 1: return UnicodeCategory.UppercaseLetter;
+                case 2: return UnicodeCategory.LowercaseLetter;
+                case 3: return UnicodeCategory.TitlecaseLetter;
+                case 4: return UnicodeCategory.ModifierLetter;
+                case 5: return UnicodeCategory.OtherLetter;
+                case 6: return UnicodeCategory.NonSpacingMark;
+                case 7: return UnicodeCategory.EnclosingMark;
+                case 8: return UnicodeCategory.SpacingCombiningMark;
+                case 9: return UnicodeCategory.DecimalDigitNumber;
+                case 10: return UnicodeCategory.LetterNumber;
+                case 11: return UnicodeCategory.OtherNumber;
+                case 12: return UnicodeCategory.SpaceSeparator;
+                case 13: return UnicodeCategory.LineSeparator;
+                case 14: return UnicodeCategory.ParagraphSeparator;
+                case 15: return UnicodeCategory.Control;
+                case 16: return UnicodeCategory.Format;
+                case 17: return UnicodeCategory.PrivateUse;
+                case 18: return UnicodeCategory.Surrogate;
+                case 19: return UnicodeCategory.DashPunctuation;
+                case 20: return UnicodeCategory.OpenPunctuation;
+                case 21: return UnicodeCategory.ClosePunctuation;
+                case 22: return UnicodeCategory.ConnectorPunctuation;
+                case 23: return UnicodeCategory.OtherPunctuation;
+                case 24: return UnicodeCategory.MathSymbol;
+                case 25: return UnicodeCategory.CurrencySymbol;
+                case 26: return UnicodeCategory.ModifierSymbol;
+                case 27: return UnicodeCategory.OtherSymbol;
+                case 28: return UnicodeCategory.InitialQuotePunctuation;
+                case 29: return UnicodeCategory.FinalQuotePunctuation;
+                default: return UnicodeCategory.OtherNotAssigned; // UNASSIGNED / GENERAL_OTHER_TYPES
+            }
+        }
+    }
+
+
     //public enum ECharacterCategory : byte
     //{
     //    /**
@@ -477,7 +571,7 @@ namespace ICU4N.Lang
          * Directional type BN
          * @stable ICU 2.1
          */
-         BoundaryNeutral = 18,
+        BoundaryNeutral = 18,
 
         /**
          * Equivalent to {@link

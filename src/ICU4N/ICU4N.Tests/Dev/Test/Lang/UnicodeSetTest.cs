@@ -16,6 +16,7 @@ using static ICU4N.Text.UnicodeSet; // ICU4N TODO: API De-nest?
 using StringBuffer = System.Text.StringBuilder;
 using UProperty = ICU4N.Lang.UProperty;
 using static ICU4N.Text.UnicodeSetSpanner; // ICU4N TODO: API De-nest?
+using System.Diagnostics;
 
 namespace ICU4N.Tests.Dev.Test.Lang
 {
@@ -143,7 +144,7 @@ namespace ICU4N.Tests.Dev.Test.Lang
                         UnicodeSet collectedErrors = new UnicodeSet();
                         for (UnicodeSetIterator it = new UnicodeSetIterator(testSet); it.Next();)
                         {
-                            int value = UCharacter.GetIntPropertyValue(it.Codepoint, propNum);
+                            int value = UCharacter.GetInt32PropertyValue(it.Codepoint, propNum);
                             if (value != valueNum)
                             {
                                 collectedErrors.Add(it.Codepoint);
@@ -584,7 +585,7 @@ namespace ICU4N.Tests.Dev.Test.Lang
         {
             // default ct
             UnicodeSet set = new UnicodeSet();
-            if (!set.IsEmpty() || set.GetRangeCount() != 0)
+            if (!set.IsEmpty || set.GetRangeCount() != 0)
             {
                 Errln("FAIL, set should be empty but isn't: " +
                         set);
@@ -592,13 +593,13 @@ namespace ICU4N.Tests.Dev.Test.Lang
 
             // clear(), isEmpty()
             set.Add('a');
-            if (set.IsEmpty())
+            if (set.IsEmpty)
             {
                 Errln("FAIL, set shouldn't be empty but is: " +
                         set);
             }
             set.Clear();
-            if (!set.IsEmpty())
+            if (!set.IsEmpty)
             {
                 Errln("FAIL, set should be empty but isn't: " +
                         set);
@@ -1967,20 +1968,27 @@ namespace ICU4N.Tests.Dev.Test.Lang
             UnicodeSet fromRange = new UnicodeSet(testSet);
             assertEquals("from range vs pattern", testSet, fromRange);
 
-            double start = Time.CurrentTimeMilliseconds();
+            // ICU4N specific - switched to Stopwatch because static timers do not have
+            // enough precision in .NET to run this test.
+            var sw = Stopwatch.StartNew();
+
             for (int i = 0; i < iterations; ++i)
             {
                 fromRange = new UnicodeSet(testSet);
             }
-            double middle = Time.CurrentTimeMilliseconds();
+
+            sw.Stop();
+            double rangeConstructorTime = sw.ElapsedMilliseconds;
+            sw.Restart();
+
             for (int i = 0; i < iterations; ++i)
             {
                 new UnicodeSet(testPattern);
             }
-            double end = Time.CurrentTimeMilliseconds();
 
-            double rangeConstructorTime = (middle - start) / iterations;
-            double patternConstructorTime = (end - middle) / iterations;
+            sw.Stop();
+            double patternConstructorTime = sw.ElapsedMilliseconds;
+
             String message = "Range constructor:\t" + rangeConstructorTime + ";\tPattern constructor:\t" + patternConstructorTime + "\t\t"
                     + string.Format("{0:p}", rangeConstructorTime / patternConstructorTime - 1);// percent.format(rangeConstructorTime / patternConstructorTime - 1);
             if (rangeConstructorTime < 2 * patternConstructorTime)
@@ -3125,10 +3133,10 @@ namespace ICU4N.Tests.Dev.Test.Lang
         {
             // All numeric ccc values 0..255 are valid, but many are unused.
             UnicodeSet ccc2 = new UnicodeSet("[:ccc=2:]");
-            assertTrue("[:ccc=2:] -> empty set", ccc2.IsEmpty());
+            assertTrue("[:ccc=2:] -> empty set", ccc2.IsEmpty);
 
             UnicodeSet ccc255 = new UnicodeSet("[:ccc=255:]");
-            assertTrue("[:ccc=255:] -> empty set", ccc255.IsEmpty());
+            assertTrue("[:ccc=255:] -> empty set", ccc255.IsEmpty);
 
             // Non-integer values and values outside 0..255 are invalid.
             try

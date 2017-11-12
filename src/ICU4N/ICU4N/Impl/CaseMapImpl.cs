@@ -221,22 +221,22 @@ namespace ICU4N.Impl
         }
 
         private static readonly int LNS =
-                (1 << (int)UnicodeCategory.UppercaseLetter) |
-                (1 << (int)UnicodeCategory.LowercaseLetter) |
-                (1 << (int)UnicodeCategory.TitlecaseLetter) |
+                (1 << UnicodeCategory.UppercaseLetter.ToIcuValue()) |
+                (1 << UnicodeCategory.LowercaseLetter.ToIcuValue()) |
+                (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue()) |
                 // Not MODIFIER_LETTER: We count only cased modifier letters.
-                (1 << (int)UnicodeCategory.OtherLetter) |
+                (1 << UnicodeCategory.OtherLetter.ToIcuValue()) |
 
-                (1 << (int)UnicodeCategory.DecimalDigitNumber) |
-                (1 << (int)UnicodeCategory.LetterNumber) |
-                (1 << (int)UnicodeCategory.OtherNumber) |
+                (1 << UnicodeCategory.DecimalDigitNumber.ToIcuValue()) |
+                (1 << UnicodeCategory.LetterNumber.ToIcuValue()) |
+                (1 << UnicodeCategory.OtherNumber.ToIcuValue()) |
 
-                (1 << (int)UnicodeCategory.MathSymbol) |
-                (1 << (int)UnicodeCategory.CurrencySymbol) |
-                (1 << (int)UnicodeCategory.ModifierSymbol) |
-                (1 << (int)UnicodeCategory.OtherSymbol) |
+                (1 << UnicodeCategory.MathSymbol.ToIcuValue()) |
+                (1 << UnicodeCategory.CurrencySymbol.ToIcuValue()) |
+                (1 << UnicodeCategory.ModifierSymbol.ToIcuValue()) |
+                (1 << UnicodeCategory.OtherSymbol.ToIcuValue()) |
 
-                (1 << (int)UnicodeCategory.PrivateUse);
+                (1 << UnicodeCategory.PrivateUse.ToIcuValue());
 
         private static bool IsLNS(int c)
         {
@@ -245,7 +245,7 @@ namespace ICU4N.Impl
             // Consider modifier letters only if they are cased.
             int gc = UCharacterProperty.INSTANCE.GetType(c);
             return ((1 << gc) & LNS) != 0 ||
-                    (gc == (int)UnicodeCategory.ModifierLetter &&
+                    (gc == UnicodeCategory.ModifierLetter.ToIcuValue() &&
                         UCaseProps.INSTANCE.GetType(c) != UCaseProps.NONE);
         }
 

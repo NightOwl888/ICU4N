@@ -3,6 +3,7 @@ using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
+using System.Globalization;
 
 namespace ICU4N.Tests.Dev.Test.Normalizers
 {
@@ -96,7 +97,7 @@ namespace ICU4N.Tests.Dev.Test.Normalizers
             {
                 int codepoint = random.Next(maxCodePoint);
                 //Elimate unassigned characters
-                while (UCharacter.GetType(codepoint) == System.Globalization.UnicodeCategory.OtherNotAssigned)
+                while (UCharacter.GetType(codepoint) == UnicodeCategory.OtherNotAssigned)
                 {
                     codepoint = random.Next(maxCodePoint);
                 }

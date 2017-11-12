@@ -624,7 +624,7 @@ namespace ICU4N.Support.Text
         }
 
         /// <summary>
-        /// LUCENENET safe way to get unicode category. The .NET <see cref="char.ConvertFromUtf32(int)"/>
+        /// A safe way to get unicode category. The .NET <see cref="char.ConvertFromUtf32(int)"/>
         /// method should be used first to be safe for surrogate pairs. However, if the value falls between
         /// 0x00d800 and 0x00dfff, that method throws an exception. So this is a wrapper that converts the
         /// codepoint to a char in those cases.

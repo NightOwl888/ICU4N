@@ -25,6 +25,20 @@ namespace ICU4N.Support.Collections
             return CollectionUtil.ToString((IList<T>)array, culture);
         }
 
+        /// <summary>
+        /// Assigns the specified value to each element of the specified array.
+        /// </summary>
+        /// <typeparam name="T">the type of the array</typeparam>
+        /// <param name="a">the array to be filled</param>
+        /// <param name="val">the value to be stored in all elements of the array</param>
+        public static void Fill<T>(T[] a, T val)
+        {
+            for (int i = 0; i < a.Length; i++)
+            {
+                a[i] = val;
+            }
+        }
+
         public static T[][] NewRectangularArray<T>(int size1, int size2)
         {
             T[][] array;

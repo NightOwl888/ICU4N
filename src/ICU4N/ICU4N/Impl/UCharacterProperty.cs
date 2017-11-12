@@ -115,13 +115,12 @@ namespace ICU4N.Impl
             return m_additionalVectors_[m_additionalTrie_.Get(codepoint) + column];
         }
 
-        // ICU4N TODO: This type mask probably won't work - need to adjust everywhere it is used
         static readonly int MY_MASK = UCharacterProperty.TYPE_MASK
-            & ((1 << (int)UnicodeCategory.UppercaseLetter) |
-                (1 << (int)UnicodeCategory.LowercaseLetter) |
-                (1 << (int)UnicodeCategory.TitlecaseLetter) |
-                (1 << (int)UnicodeCategory.ModifierLetter) |
-                (1 << (int)UnicodeCategory.OtherLetter));
+            & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue()) |
+                (1 << UnicodeCategory.LowercaseLetter.ToIcuValue()) |
+                (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue()) |
+                (1 << UnicodeCategory.ModifierLetter.ToIcuValue()) |
+                (1 << UnicodeCategory.OtherLetter.ToIcuValue()));
 
 
         /**
@@ -144,12 +143,12 @@ namespace ICU4N.Impl
                                version & LAST_NIBBLE_MASK_, 0, 0);
         }
 
-        private static readonly int GC_CN_MASK = GetMask(UnicodeCategory.OtherNotAssigned);
-        private static readonly int GC_CC_MASK = GetMask(UnicodeCategory.Control);
-        private static readonly int GC_CS_MASK = GetMask(UnicodeCategory.Surrogate);
-        private static readonly int GC_ZS_MASK = GetMask(UnicodeCategory.SpaceSeparator);
-        private static readonly int GC_ZL_MASK = GetMask(UnicodeCategory.LineSeparator);
-        private static readonly int GC_ZP_MASK = GetMask(UnicodeCategory.ParagraphSeparator);
+        private static readonly int GC_CN_MASK = GetMask(UnicodeCategory.OtherNotAssigned.ToIcuValue());
+        private static readonly int GC_CC_MASK = GetMask(UnicodeCategory.Control.ToIcuValue());
+        private static readonly int GC_CS_MASK = GetMask(UnicodeCategory.Surrogate.ToIcuValue());
+        private static readonly int GC_ZS_MASK = GetMask(UnicodeCategory.SpaceSeparator.ToIcuValue());
+        private static readonly int GC_ZL_MASK = GetMask(UnicodeCategory.LineSeparator.ToIcuValue());
+        private static readonly int GC_ZP_MASK = GetMask(UnicodeCategory.ParagraphSeparator.ToIcuValue());
         /** Mask constant for multiple UCharCategory bits (Z Separators). */
         private static readonly int GC_Z_MASK = GC_ZS_MASK | GC_ZL_MASK | GC_ZP_MASK;
 
@@ -164,7 +163,7 @@ namespace ICU4N.Impl
         {
             /* \p{space}\p{gc=Control} == \p{gc=Z}\p{Control} */
             /* comparing ==0 returns FALSE for the categories mentioned */
-            return (GetMask(UCharacter.GetType(c)) &
+            return (GetMask(UCharacter.GetType(c).ToIcuValue()) &
                     (GC_CC_MASK | GC_CS_MASK | GC_CN_MASK | GC_Z_MASK))
                    == 0;
         }
@@ -456,7 +455,7 @@ namespace ICU4N.Impl
                     {
                         return UScript.GetScript(c);
                     }, getMaxValue: null),
-                new AnonymousIntProperty(this, SRC_CHAR, getValue: (c) =>
+                new AnonymousIntProperty(this, SRC_PROPSVEC, getValue: (c) =>
                     {  // HANGUL_SYLLABLE_TYPE
                         /* see comments on gcbToHst[] above */
                         int gcb = (GetAdditional(c, 2) & GCB_MASK).TripleShift(GCB_SHIFT);
@@ -672,7 +671,7 @@ namespace ICU4N.Impl
 
         private IntProperty[] intProps;
 
-        public int GetIntPropertyValue(int c, int which)
+        public int GetInt32PropertyValue(int c, int which)
         {
             if (which < (int)UProperty.INT_START)
             {
@@ -687,7 +686,7 @@ namespace ICU4N.Impl
             }
             else if (which == (int)UProperty.GENERAL_CATEGORY_MASK)
             {
-                return GetMask((UnicodeCategory)GetType(c));
+                return GetMask(GetType(c));
             }
             return 0; // undefined
         }
@@ -876,9 +875,9 @@ namespace ICU4N.Impl
          * @param type character type
          * @return mask
          */
-        public static int GetMask(UnicodeCategory type)
+        public static int GetMask(int type)
         {
-            return 1 << (int)type;
+            return 1 << type;
         }
 
 

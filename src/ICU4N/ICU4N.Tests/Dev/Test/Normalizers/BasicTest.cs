@@ -6,13 +6,10 @@ using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
-using UProperty = ICU4N.Lang.UProperty;
 
 namespace ICU4N.Dev.Test.Normalizers
 {
@@ -724,28 +721,28 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 s = UTF16.ValueOf(c);
 
-                qc1 = UCharacter.GetIntPropertyValue(c, UProperty.NFC_QUICK_CHECK);
+                qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFC_QUICK_CHECK);
                 qc2 = qcToInt(Normalizer.QuickCheck(s, Normalizer.NFC));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFC)=" + qc1 + " != " + qc2 + "=quickCheck(NFC) for U+" + (c).ToHexString());
                 }
 
-                qc1 = UCharacter.GetIntPropertyValue(c, UProperty.NFD_QUICK_CHECK);
+                qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFD_QUICK_CHECK);
                 qc2 = qcToInt(Normalizer.QuickCheck(s, Normalizer.NFD));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFD)=" + qc1 + " != " + qc2 + "=quickCheck(NFD) for U+" + (c).ToHexString());
                 }
 
-                qc1 = UCharacter.GetIntPropertyValue(c, UProperty.NFKC_QUICK_CHECK);
+                qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFKC_QUICK_CHECK);
                 qc2 = qcToInt(Normalizer.QuickCheck(s, Normalizer.NFKC));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFKC)=" + qc1 + " != " + qc2 + "=quickCheck(NFKC) for U+" + (c).ToHexString());
                 }
 
-                qc1 = UCharacter.GetIntPropertyValue(c, UProperty.NFKD_QUICK_CHECK);
+                qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFKD_QUICK_CHECK);
                 qc2 = qcToInt(Normalizer.QuickCheck(s, Normalizer.NFKD));
                 if (qc1 != qc2)
                 {
@@ -756,9 +753,9 @@ namespace ICU4N.Dev.Test.Normalizers
                 lead = UTF16.CharAt(nfd, 0);
                 trail = UTF16.CharAt(nfd, nfd.Length - 1);
 
-                lccc1 = UCharacter.GetIntPropertyValue(c, UProperty.LEAD_CANONICAL_COMBINING_CLASS);
+                lccc1 = UCharacter.GetInt32PropertyValue(c, UProperty.LEAD_CANONICAL_COMBINING_CLASS);
                 lccc2 = UCharacter.GetCombiningClass(lead);
-                tccc1 = UCharacter.GetIntPropertyValue(c, UProperty.TRAIL_CANONICAL_COMBINING_CLASS);
+                tccc1 = UCharacter.GetInt32PropertyValue(c, UProperty.TRAIL_CANONICAL_COMBINING_CLASS);
                 tccc2 = UCharacter.GetCombiningClass(trail);
 
                 if (lccc1 != lccc2)
@@ -2403,7 +2400,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int count;
             int/*unsigned*/ cc, trailCC, foldCC, foldTrailCC;
             NormalizerQuickCheckResult qcResult;
-            int category;
+            UnicodeCategory category;
             bool isNFD;
 
 
@@ -2412,8 +2409,8 @@ namespace ICU4N.Dev.Test.Normalizers
             count = 0;
             for (c = 0; c <= 0x10ffff; ++c)
             {
-                category = (int)UCharacter.GetType(c);
-                if (category == (int)UnicodeCategory.OtherNotAssigned)
+                category = UCharacter.GetType(c);
+                if (category == UnicodeCategory.OtherNotAssigned)
                 {
                     continue; // skip unassigned code points
                 }
@@ -2660,7 +2657,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 int c = iter.Codepoint;
                 s.Delete(0, 0x7fffffff).AppendCodePoint(c);
                 int cLength = s.Length;
-                int tccc = UCharacter.GetIntPropertyValue(c, UProperty.TRAIL_CANONICAL_COMBINING_CLASS);
+                int tccc = UCharacter.GetInt32PropertyValue(c, UProperty.TRAIL_CANONICAL_COMBINING_CLASS);
                 for (int i = 0; i < numCombineBack; ++i)
                 {
                     // If c's decomposition ends with a character with non-zero combining class, then

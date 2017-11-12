@@ -17,14 +17,14 @@ namespace ICU4N.Text
         // ICU4N TODO: implement
         //private static readonly bool DEBUG = ICUDebug.Enabled("breakiterator");
 
-            private static readonly object syncLock = new object();
+        private static readonly object syncLock = new object();
 
-    /**
-     * Default constructor.  There is no state that is carried by this abstract
-     * base class.
-     * @stable ICU 2.0
-     */
-    protected BreakIterator()
+        /**
+         * Default constructor.  There is no state that is carried by this abstract
+         * base class.
+         * @stable ICU 2.0
+         */
+        protected BreakIterator()
         {
         }
 
@@ -34,7 +34,7 @@ namespace ICU4N.Text
          * @return The clone.
          * @stable ICU 2.0
          */
-    public virtual object Clone()
+        public virtual object Clone()
         {
             return base.MemberwiseClone();
         }
@@ -139,7 +139,7 @@ namespace ICU4N.Text
          * or DONE if "offset" is the starting offset of the iterator.
          * @stable ICU 2.0
          */
-        public int Preceding(int offset)
+        public virtual int Preceding(int offset)
         {
             // NOTE:  This implementation is here solely because we can't add new
             // abstract methods to an existing class.  There is almost ALWAYS a
@@ -159,7 +159,7 @@ namespace ICU4N.Text
          * @return True if "offset" is a boundary position.
          * @stable ICU 2.0
          */
-        public bool IsBoundary(int offset)
+        public virtual bool IsBoundary(int offset)
         {
             // Again, this is the default implementation, which is provided solely because
             // we couldn't add a new abstract method to an existing class.  The real
@@ -359,32 +359,32 @@ namespace ICU4N.Text
          * {@icu}
          * @stable ICU 2.4
          */
-        public static readonly int KIND_CHARACTER = 0;
+        public const int KIND_CHARACTER = 0;
         /**
          * {@icu}
          * @stable ICU 2.4
          */
-        public static readonly int KIND_WORD = 1;
+        public const int KIND_WORD = 1;
         /**
          * {@icu}
          * @stable ICU 2.4
          */
-        public static readonly int KIND_LINE = 2;
+        public const int KIND_LINE = 2;
         /**
          * {@icu}
          * @stable ICU 2.4
          */
-        public static readonly int KIND_SENTENCE = 3;
+        public const int KIND_SENTENCE = 3;
         /**
          * {@icu}
          * @stable ICU 2.4
          */
-        public static readonly int KIND_TITLE = 4;
+        public const int KIND_TITLE = 4;
 
         /**
          * @since ICU 2.8
          */
-        private static readonly int KIND_COUNT = 5;
+        private const int KIND_COUNT = 5;
 
         private static readonly CacheValue<BreakIteratorCache>[] iterCache = new CacheValue<BreakIteratorCache>[5];
 
@@ -689,7 +689,7 @@ s     */
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-    public static BreakIterator GetBreakInstance(ULocale where, int kind)
+        public static BreakIterator GetBreakInstance(ULocale where, int kind)
         {
             if (where == null)
             {
@@ -712,11 +712,11 @@ s     */
 
             BreakIteratorCache cache = new BreakIteratorCache(where, result);
             iterCache[kind] = CacheValue<BreakIteratorCache>.GetInstance(cache);
-            // ICU4N TODO: RuleBasedBreakIterator
-            //if (result is RuleBasedBreakIterator) {
-            //    RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator)result;
-            //    rbbi.SetBreakType(kind);
-            //}
+            if (result is RuleBasedBreakIterator)
+            {
+                RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator)result;
+                rbbi.BreakType = kind;
+            }
 
             return result;
         }

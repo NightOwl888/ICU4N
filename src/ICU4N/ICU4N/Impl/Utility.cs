@@ -75,13 +75,13 @@ namespace ICU4N.Impl
             // for some reason, the correct arrayEquals is not being called
             // so do it by hand for now.
             if (source is Object[])
-            return (ArrayEquals((Object[])source, target));
+                return (ArrayEquals((Object[])source, target));
             if (source is int[])
-            return (ArrayEquals((int[])source, target));
+                return (ArrayEquals((int[])source, target));
             if (source is double[])
-            return (ArrayEquals((double[])source, target));
+                return (ArrayEquals((double[])source, target));
             if (source is byte[])
-            return (ArrayEquals((byte[])source, target));
+                return (ArrayEquals((byte[])source, target));
             return source.Equals(target);
         }
 
@@ -651,10 +651,17 @@ namespace ICU4N.Impl
                             // using octal notation; otherwise the string we form
                             // won't compile, since Unicode escape sequences are
                             // processed before tokenization.
+                            //buffer.Append('\\');
+                            //buffer.Append(HEX_DIGIT[(c & 0700) >> 6]); // HEX_DIGIT works for octal
+                            //buffer.Append(HEX_DIGIT[(c & 0070) >> 3]);
+                            //buffer.Append(HEX_DIGIT[(c & 0007)]);
+
+                            // ICU4N specific - converted octal literals to decimal literals (.NET has no octal literals)
                             buffer.Append('\\');
-                            buffer.Append(HEX_DIGIT[(c & 0700) >> 6]); // HEX_DIGIT works for octal
-                            buffer.Append(HEX_DIGIT[(c & 0070) >> 3]);
+                            buffer.Append(HEX_DIGIT[(c & 0448) >> 6]); // HEX_DIGIT works for octal
+                            buffer.Append(HEX_DIGIT[(c & 0056) >> 3]);
                             buffer.Append(HEX_DIGIT[(c & 0007)]);
+
                             count += 4;
                         }
                     }
@@ -678,8 +685,8 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
-        static readonly char[] HEX_DIGIT = {'0','1','2','3','4','5','6','7',
-        '8','9','A','B','C','D','E','F'};
+        internal static readonly char[] HEX_DIGIT = {'0','1','2','3','4','5','6','7',
+            '8','9','A','B','C','D','E','F'};
 
         /**
          * Format a string for representation in a source file.  Like
@@ -712,9 +719,15 @@ namespace ICU4N.Impl
                         // using octal notation; otherwise the string we form
                         // won't compile, since Unicode escape sequences are
                         // processed before tokenization.
+                        //buffer.Append('\\');
+                        //buffer.Append(HEX_DIGIT[(c & 0700) >> 6]); // HEX_DIGIT works for octal
+                        //buffer.Append(HEX_DIGIT[(c & 0070) >> 3]);
+                        //buffer.Append(HEX_DIGIT[(c & 0007)]);
+
+                        // ICU4N specific - converted octal literals to decimal literals (.NET has no octal literals)
                         buffer.Append('\\');
-                        buffer.Append(HEX_DIGIT[(c & 0700) >> 6]); // HEX_DIGIT works for octal
-                        buffer.Append(HEX_DIGIT[(c & 0070) >> 3]);
+                        buffer.Append(HEX_DIGIT[(c & 0448) >> 6]); // HEX_DIGIT works for octal
+                        buffer.Append(HEX_DIGIT[(c & 0056) >> 3]);
                         buffer.Append(HEX_DIGIT[(c & 0007)]);
                     }
                 }
@@ -769,19 +782,19 @@ namespace ICU4N.Impl
 
         /* This map must be in ASCENDING ORDER OF THE ESCAPE CODE */
         static private readonly char[] UNESCAPE_MAP = {
-        /*"   (char)0x22, (char)0x22 */
-        /*'   (char)0x27, (char)0x27 */
-        /*?   (char)0x3F, (char)0x3F */
-        /*\   (char)0x5C, (char)0x5C */
-        /*a*/ (char)0x61, (char)0x07,
-        /*b*/ (char)0x62, (char)0x08,
-        /*e*/ (char)0x65, (char)0x1b,
-        /*f*/ (char)0x66, (char)0x0c,
-        /*n*/ (char)0x6E, (char)0x0a,
-        /*r*/ (char)0x72, (char)0x0d,
-        /*t*/ (char)0x74, (char)0x09,
-        /*v*/ (char)0x76, (char)0x0b
-    };
+            /*"   (char)0x22, (char)0x22 */
+            /*'   (char)0x27, (char)0x27 */
+            /*?   (char)0x3F, (char)0x3F */
+            /*\   (char)0x5C, (char)0x5C */
+            /*a*/ (char)0x61, (char)0x07,
+            /*b*/ (char)0x62, (char)0x08,
+            /*e*/ (char)0x65, (char)0x1b,
+            /*f*/ (char)0x66, (char)0x0c,
+            /*n*/ (char)0x6E, (char)0x0a,
+            /*r*/ (char)0x72, (char)0x0d,
+            /*t*/ (char)0x74, (char)0x09,
+            /*v*/ (char)0x76, (char)0x0b
+        };
 
         /**
          * Convert an escape to a 32-bit code point value.  We attempt
@@ -1021,7 +1034,7 @@ namespace ICU4N.Impl
             string result = i.ToString("X", CultureInfo.InvariantCulture);
             if (result.Length < places)
             {
-                result = "0000000000000000".Substring(result.Length, places) + result;
+                result = "0000000000000000".Substring(result.Length, places - result.Length) + result; // ICU4N: Corrected 2nd parameter
             }
             if (negative)
             {
@@ -1139,27 +1152,27 @@ namespace ICU4N.Impl
             return true;
         }
 
-    /**
-     * Parse a pattern string starting at offset pos.  Keywords are
-     * matched case-insensitively.  Spaces may be skipped and may be
-     * optional or required.  Integer values may be parsed, and if
-     * they are, they will be returned in the given array.  If
-     * successful, the offset of the next non-space character is
-     * returned.  On failure, -1 is returned.
-     * @param pattern must only contain lowercase characters, which
-     * will match their uppercase equivalents as well.  A space
-     * character matches one or more required spaces.  A '~' character
-     * matches zero or more optional spaces.  A '#' character matches
-     * an integer and stores it in parsedInts, which the caller must
-     * ensure has enough capacity.
-     * @param parsedInts array to receive parsed integers.  Caller
-     * must ensure that parsedInts.length is >= the number of '#'
-     * signs in 'pattern'.
-     * @return the position after the last character parsed, or -1 if
-     * the parse failed
-     */
-    public static int ParsePattern(string rule, int pos, int limit,
-            string pattern, int[] parsedInts)
+        /**
+         * Parse a pattern string starting at offset pos.  Keywords are
+         * matched case-insensitively.  Spaces may be skipped and may be
+         * optional or required.  Integer values may be parsed, and if
+         * they are, they will be returned in the given array.  If
+         * successful, the offset of the next non-space character is
+         * returned.  On failure, -1 is returned.
+         * @param pattern must only contain lowercase characters, which
+         * will match their uppercase equivalents as well.  A space
+         * character matches one or more required spaces.  A '~' character
+         * matches zero or more optional spaces.  A '#' character matches
+         * an integer and stores it in parsedInts, which the caller must
+         * ensure has enough capacity.
+         * @param parsedInts array to receive parsed integers.  Caller
+         * must ensure that parsedInts.length is >= the number of '#'
+         * signs in 'pattern'.
+         * @return the position after the last character parsed, or -1 if
+         * the parse failed
+         */
+        public static int ParsePattern(string rule, int pos, int limit,
+                string pattern, int[] parsedInts)
         {
             // TODO Update this to handle surrogates
             int[] p = new int[1];
@@ -1568,7 +1581,7 @@ namespace ICU4N.Impl
                         rule.Append(APOSTROPHE);
                         rule.Append(quoteBuf);
                         rule.Append(APOSTROPHE);
-                        quoteBuf.Length  = 0;
+                        quoteBuf.Length = 0;
                     }
                     while (trailingCount-- > 0)
                     {
@@ -1693,7 +1706,7 @@ namespace ICU4N.Impl
          * @return the bit number of the highest bit, with 0 being
          * the low order bit, or -1 if <code>n</code> is not positive
          */
-        public static byte HighBit(int n)
+        public static byte HighBit(int n) // ICU4N NOTE: Returning byte means no negative results. Be sure to cast to sbyte for usage.
         {
             if (n <= 0)
             {

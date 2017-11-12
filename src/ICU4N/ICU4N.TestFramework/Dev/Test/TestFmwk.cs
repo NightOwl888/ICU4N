@@ -134,7 +134,7 @@ namespace ICU4N.TestFramework.Dev.Test
          * Provided for compatibility with ICU4C.
          * Get & set of the seed allows for reproducible monkey tests.
          */
-        protected class ICU_Rand
+        public class ICU_Rand // ICU4N: made public because of accessiblity issues
         {
             private int fLast;
 
@@ -352,6 +352,11 @@ namespace ICU4N.TestFramework.Dev.Test
         }
 
         protected static string Prettify(string s)
+        {
+            return Prettify(s.ToCharSequence());
+        }
+
+        internal static string Prettify(ICharSequence s)
         {
             StringBuilder result = new StringBuilder();
             int ch;
@@ -874,56 +879,62 @@ namespace ICU4N.TestFramework.Dev.Test
             //return obj.GetType().Name + "<" + obj + ">";
         }
 
-        private static readonly Regex METHOD_NAME_REGEX = new Regex(@"at\s+(?<fullyQualifiedMethod>.*\.(?<method>[\w`]+))\(");
+        private static readonly Regex METHOD_NAME_REGEX = new Regex(@"at\s+(?<fullyQualifiedMethod>.*\.(?<method>[\w`]+))\(", RegexOptions.Compiled);
+        private static readonly Regex FILE_NAME_REGEX = new Regex(@"(?<=in)\s+(?<filename>.*)", RegexOptions.Compiled);
 
         // Return the source code location of the caller located callDepth frames up the stack.
         protected static string SourceLocation()
         {
 #if !FEATURE_STACKTRACE
-            var reverseLines =
+            var sourceLines =
                 Environment.StackTrace
-                    .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Reverse();
+                    .Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries).Reverse().ToList();
 
-            // Cut off all of the NUnit stacktrace garbage
-            var lines = new List<string>();
-
-            foreach (var line in reverseLines)
+            using (var iter = sourceLines.GetEnumerator())
             {
-                if (line.Contains("System.Environment.GetStackTrace") || line.Contains("get_StackTrace"))
-                    continue;
-
-                if (line.TrimStart().StartsWith("at NUnit."))
-                    continue;
-
-                if (line.Contains("TestFmwk.cs") || line.Contains("AbstractTestLog.cs"))
-                    continue;
-
-                var match = METHOD_NAME_REGEX.Match(line);
-
-                if (match.Success)
+                while (iter.MoveNext())
                 {
-                    var methodName = match.Groups["method"].Value;
-                    if (methodName.StartsWith("Test", StringComparison.Ordinal) || methodName.StartsWith("test", StringComparison.Ordinal) || methodName.Equals("main"))
+                    var line = iter.Current;
+
+                    if (line.Contains("System.Environment.GetStackTrace") || line.Contains("get_StackTrace"))
                         continue;
+
+                    if (line.TrimStart().StartsWith("at NUnit.") || line.TrimStart().StartsWith("at Microsoft.VisualStudio") || line.Contains("Invoke"))
+                        continue;
+
+                    if (line.Contains("TestFmwk.cs") || line.Contains("AbstractTestLog.cs"))
+                        continue;
+
+                    var match = METHOD_NAME_REGEX.Match(line);
+
+                    if (match.Success)
+                    {
+                        var methodName = match.Groups["method"].Value;
+                        if (methodName.StartsWith("Test", StringComparison.Ordinal) || methodName.StartsWith("test", StringComparison.Ordinal) || methodName.Equals("Main"))
+                        {
+                            var matchFileName = FILE_NAME_REGEX.Match(line);
+                            if (matchFileName.Success)
+                            {
+                                return matchFileName.Groups["filename"].Value;
+                            }
+
+                            // If the regex fails, just return the line as is.
+                            return line;
+                        }
+                    }
                 }
-
-                lines.Add(line);
             }
-
-            lines.Reverse();
-
-            return string.Join(Environment.NewLine, lines); // Line numbers are not available in .NET Standard 1.x without disabling optimizations, so return the entire stack.
 #else
             // Walk up the stack to the first call site outside this file
-            StackTrace trace = new StackTrace();
+            StackTrace trace = new StackTrace(true);
             foreach (var frame in trace.GetFrames())
             {
                 string source = frame.GetFileName();
-                if (source != null && !source.Equals("TestFmwk.cs") && !source.Equals("AbstractTestLog.cs"))
+                if (source != null && !source.EndsWith("TestFmwk.cs", StringComparison.Ordinal) && !source.EndsWith("AbstractTestLog.cs", StringComparison.Ordinal))
                 {
                     string methodName = frame.GetMethod().Name;
                     if (methodName != null &&
-                           (methodName.StartsWith("Test", StringComparison.Ordinal) || methodName.StartsWith("test", StringComparison.Ordinal) || methodName.Equals("main")))
+                           (methodName.StartsWith("Test", StringComparison.Ordinal) || methodName.StartsWith("test", StringComparison.Ordinal) || methodName.Equals("Main")))
                     {
                         return "(" + source + ":" + frame.GetFileLineNumber() + ") ";
                     }

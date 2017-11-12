@@ -11,10 +11,10 @@ using ICU4N.Support;
 namespace ICU4N.Util
 {
     /**
- * Return values for BytesTrie.next(), CharsTrie.next() and similar methods.
- * @stable ICU 4.8
- */
-    public enum BytesTrieResult
+     * Return values for BytesTrie.next(), CharsTrie.next() and similar methods.
+     * @stable ICU 4.8
+     */
+    public enum Result
     {
         /**
          * The input unit(s) did not continue a matching string.
@@ -53,14 +53,14 @@ namespace ICU4N.Util
         // Do not reorder the enum constants!   
     }
 
-    public static class BytesTrieResultExtensions
+    public static class ResultExtensions
     {
         /**
          * Same as (result!=NO_MATCH).
          * @return true if the input bytes/units so far are part of a matching string/byte sequence.
          * @stable ICU 4.8
          */
-        public static bool Matches(this BytesTrieResult result) { return result != BytesTrieResult.NO_MATCH; }
+        public static bool Matches(this Result result) { return result != Result.NO_MATCH; }
 
         /**
          * Equivalent to (result==INTERMEDIATE_VALUE || result==FINAL_VALUE).
@@ -68,14 +68,14 @@ namespace ICU4N.Util
          * @see #getValue
          * @stable ICU 4.8
          */
-        public static bool HasValue(this BytesTrieResult result) { return (int)result >= 2; }
+        public static bool HasValue(this Result result) { return (int)result >= 2; }
 
         /**
          * Equivalent to (result==NO_VALUE || result==INTERMEDIATE_VALUE).
          * @return true if another input byte/unit can continue a matching string.
          * @stable ICU 4.8
          */
-        public static bool HasNext(this BytesTrieResult result) { return ((int)result & 1) != 0; }
+        public static bool HasNext(this Result result) { return ((int)result & 1) != 0; }
     }
 
     /// <summary>
@@ -205,20 +205,20 @@ namespace ICU4N.Util
          * @return The match/value Result.
          * @stable ICU 4.8
          */
-        public BytesTrieResult Current /*const*/
+        public Result Current /*const*/
         {
             get
             {
                 int pos = pos_;
                 if (pos < 0)
                 {
-                    return BytesTrieResult.NO_MATCH;
+                    return Result.NO_MATCH;
                 }
                 else
                 {
                     int node;
                     return (remainingMatchLength_ < 0 && (node = bytes_[pos] & 0xff) >= kMinValueLead) ?
-                            valueResults_[node & kValueIsFinal] : BytesTrieResult.NO_VALUE;
+                            valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
                 }
             }
         }
@@ -231,7 +231,7 @@ namespace ICU4N.Util
          * @return The match/value Result.
          * @stable ICU 4.8
          */
-        public BytesTrieResult First(int inByte)
+        public Result First(int inByte)
         {
             remainingMatchLength_ = -1;
             if (inByte < 0)
@@ -248,12 +248,12 @@ namespace ICU4N.Util
          * @return The match/value Result.
          * @stable ICU 4.8
          */
-        public BytesTrieResult Next(int inByte)
+        public Result Next(int inByte)
         {
             int pos = pos_;
             if (pos < 0)
             {
-                return BytesTrieResult.NO_MATCH;
+                return Result.NO_MATCH;
             }
             if (inByte < 0)
             {
@@ -269,12 +269,12 @@ namespace ICU4N.Util
                     pos_ = pos;
                     int node;
                     return (length < 0 && (node = bytes_[pos] & 0xff) >= kMinValueLead) ?
-                            valueResults_[node & kValueIsFinal] : BytesTrieResult.NO_VALUE;
+                            valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
                 }
                 else
                 {
                     Stop();
-                    return BytesTrieResult.NO_MATCH;
+                    return Result.NO_MATCH;
                 }
             }
             return NextImpl(pos, inByte);
@@ -296,7 +296,7 @@ namespace ICU4N.Util
          * @return The match/value Result.
          * @stable ICU 4.8
          */
-        public BytesTrieResult Next(byte[] s, int sIndex, int sLimit)
+        public Result Next(byte[] s, int sIndex, int sLimit)
         {
             if (sIndex >= sLimit)
             {
@@ -306,7 +306,7 @@ namespace ICU4N.Util
             int pos = pos_;
             if (pos < 0)
             {
-                return BytesTrieResult.NO_MATCH;
+                return Result.NO_MATCH;
             }
             int length = remainingMatchLength_;  // Actual remaining match length minus 1.
             for (; ; )
@@ -322,7 +322,7 @@ namespace ICU4N.Util
                         pos_ = pos;
                         int node;
                         return (length < 0 && (node = (bytes_[pos] & 0xff)) >= kMinValueLead) ?
-                                valueResults_[node & kValueIsFinal] : BytesTrieResult.NO_VALUE;
+                                valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
                     }
                     inByte = s[sIndex++];
                     if (length < 0)
@@ -333,7 +333,7 @@ namespace ICU4N.Util
                     if (inByte != bytes_[pos])
                     {
                         Stop();
-                        return BytesTrieResult.NO_MATCH;
+                        return Result.NO_MATCH;
                     }
                     ++pos;
                     --length;
@@ -343,21 +343,21 @@ namespace ICU4N.Util
                     int node = bytes_[pos++] & 0xff;
                     if (node < kMinLinearMatch)
                     {
-                        BytesTrieResult result = BranchNext(pos, node, inByte & 0xff);
-                        if (result == BytesTrieResult.NO_MATCH)
+                        Result result = BranchNext(pos, node, inByte & 0xff);
+                        if (result == Result.NO_MATCH)
                         {
-                            return BytesTrieResult.NO_MATCH;
+                            return Result.NO_MATCH;
                         }
                         // Fetch the next input byte, if there is one.
                         if (sIndex == sLimit)
                         {
                             return result;
                         }
-                        if (result == BytesTrieResult.FINAL_VALUE)
+                        if (result == Result.FINAL_VALUE)
                         {
                             // No further matching bytes.
                             Stop();
-                            return BytesTrieResult.NO_MATCH;
+                            return Result.NO_MATCH;
                         }
                         inByte = s[sIndex++];
                         pos = pos_;  // branchNext() advanced pos and wrote it to pos_ .
@@ -369,7 +369,7 @@ namespace ICU4N.Util
                         if (inByte != bytes_[pos])
                         {
                             Stop();
-                            return BytesTrieResult.NO_MATCH;
+                            return Result.NO_MATCH;
                         }
                         ++pos;
                         --length;
@@ -379,7 +379,7 @@ namespace ICU4N.Util
                     {
                         // No further matching bytes.
                         Stop();
-                        return BytesTrieResult.NO_MATCH;
+                        return Result.NO_MATCH;
                     }
                     else
                     {
@@ -671,7 +671,7 @@ namespace ICU4N.Util
              * @return true if there are more elements.
              * @stable ICU 4.8
              */
-            private bool HasNext() /*const*/ { return pos_ >= 0 || stack_.Any(); }
+            private bool HasNext() /*const*/ { return pos_ >= 0 || stack_.Count > 0; }
 
             /**
              * Finds the next (byte sequence, value) pair if there is one.
@@ -760,10 +760,10 @@ namespace ICU4N.Util
                         int length = node - kMinLinearMatch + 1;
                         if (maxLength_ > 0 && entry_.Length + length > maxLength_)
                         {
-                            entry_.Append(bytes_, pos, maxLength_ - entry_.Length);
+                            entry_.Append(bytes_, pos, maxLength_ - entry_.Length); // ICU4N: (pos + maxLength_ - str_.Length) - pos == (maxLength_ - str_.Length)
                             return TruncateAndStop();
                         }
-                        entry_.Append(bytes_, pos, length);
+                        entry_.Append(bytes_, pos, length); // ICU4N: (pos + length) - pos == length
                         pos += length;
                     }
                 }
@@ -971,10 +971,10 @@ namespace ICU4N.Util
             return pos;
         }
 
-        private static BytesTrieResult[] valueResults_ = { BytesTrieResult.INTERMEDIATE_VALUE, BytesTrieResult.FINAL_VALUE };
+        private static Result[] valueResults_ = { Result.INTERMEDIATE_VALUE, Result.FINAL_VALUE };
 
         // Handles a branch node for both next(byte) and next(string).
-        private BytesTrieResult BranchNext(int pos, int length, int inByte)
+        private Result BranchNext(int pos, int length, int inByte)
         {
             // Branch according to the current byte.
             if (length == 0)
@@ -1004,13 +1004,13 @@ namespace ICU4N.Util
             {
                 if (inByte == (bytes_[pos++] & 0xff))
                 {
-                    BytesTrieResult result;
+                    Result result;
                     int node = bytes_[pos] & 0xff;
                     Debug.Assert(node >= kMinValueLead);
                     if ((node & kValueIsFinal) != 0)
                     {
                         // Leave the final value for getValue() to read.
-                        result = BytesTrieResult.FINAL_VALUE;
+                        result = Result.FINAL_VALUE;
                     }
                     else
                     {
@@ -1045,7 +1045,7 @@ namespace ICU4N.Util
                         // end readValue()
                         pos += delta;
                         node = bytes_[pos] & 0xff;
-                        result = node >= kMinValueLead ? valueResults_[node & kValueIsFinal] : BytesTrieResult.NO_VALUE;
+                        result = node >= kMinValueLead ? valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
                     }
                     pos_ = pos;
                     return result;
@@ -1057,17 +1057,17 @@ namespace ICU4N.Util
             {
                 pos_ = pos;
                 int node = bytes_[pos] & 0xff;
-                return node >= kMinValueLead ? valueResults_[node & kValueIsFinal] : BytesTrieResult.NO_VALUE;
+                return node >= kMinValueLead ? valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
             }
             else
             {
                 Stop();
-                return BytesTrieResult.NO_MATCH;
+                return Result.NO_MATCH;
             }
         }
 
         // Requires remainingLength_<0.
-        private BytesTrieResult NextImpl(int pos, int inByte)
+        private Result NextImpl(int pos, int inByte)
         {
             for (; ; )
             {
@@ -1085,7 +1085,7 @@ namespace ICU4N.Util
                         remainingMatchLength_ = --length;
                         pos_ = pos;
                         return (length < 0 && (node = bytes_[pos] & 0xff) >= kMinValueLead) ?
-                                valueResults_[node & kValueIsFinal] : BytesTrieResult.NO_VALUE;
+                                valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
                     }
                     else
                     {
@@ -1107,7 +1107,7 @@ namespace ICU4N.Util
                 }
             }
             Stop();
-            return BytesTrieResult.NO_MATCH;
+            return Result.NO_MATCH;
         }
 
         // Helper functions for getUniqueValue().

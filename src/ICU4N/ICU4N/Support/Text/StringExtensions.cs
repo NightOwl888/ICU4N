@@ -220,6 +220,20 @@ namespace ICU4N.Support.Text
         }
 
         /// <summary>
+        /// Compares the specified string to this string, starting at the specified
+        /// offset, to determine if the specified string is a prefix.
+        /// </summary>
+        /// <param name="text">This string.</param>
+        /// <param name="prefix">the string to look for.</param>
+        /// <param name="start">the starting offset.</param>
+        /// <returns><c>true</c> if the specified string occurs in this string at the specified offset, <c>false</c> otherwise.</returns>
+        /// <exception cref="ArgumentNullException">If <paramref name="prefix"/> is <c>null</c>.</exception>
+        public static bool StartsWith(this string text, string prefix, int start)
+        {
+            return RegionMatches(text, start, prefix, 0, prefix.Length);
+        }
+
+        /// <summary>
         /// Compares a <see cref="ICharSequence"/> to this <see cref="string"/> to determine if
         /// their contents are equal.
         /// </summary>
