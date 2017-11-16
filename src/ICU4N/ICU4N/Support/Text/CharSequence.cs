@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ICU4N.Support.Text
 {
-    internal interface ICharSequence
+    public interface ICharSequence
     {
         int Length { get; }
 

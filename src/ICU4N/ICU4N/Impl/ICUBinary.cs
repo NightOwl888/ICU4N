@@ -104,7 +104,7 @@ namespace ICU4N.Impl
                 return true;
             }
 
-            internal static ByteBuffer GetData(ByteBuffer bytes, ICharSequence key)
+            internal static ByteBuffer GetData(ByteBuffer bytes, string key) // ICU4N specific - changed key from ICharSequence to string
             {
                 int index = BinarySearch(bytes, key);
                 if (index >= 0)
@@ -123,7 +123,7 @@ namespace ICU4N.Impl
             internal static void AddBaseNamesInFolder(ByteBuffer bytes, string folder, string suffix, ISet<string> names)
             {
                 // Find the first data item name that starts with the folder name.
-                int index = BinarySearch(bytes, folder.ToCharSequence());
+                int index = BinarySearch(bytes, folder);
                 if (index < 0)
                 {
                     index = ~index;  // Normal: Otherwise the folder itself is the name of a data item.
@@ -138,7 +138,7 @@ namespace ICU4N.Impl
                 }
             }
 
-            private static int BinarySearch(ByteBuffer bytes, ICharSequence key)
+            private static int BinarySearch(ByteBuffer bytes, string key) // ICU4N specific - changed key from ICharSequence to string
             {
                 int @base = bytes.Position;
                 int count = bytes.GetInt32(@base);
@@ -323,7 +323,7 @@ namespace ICU4N.Impl
 
             internal override ByteBuffer GetData(string requestedPath)
             {
-                return DatPackageReader.GetData(pkgBytes, requestedPath.ToCharSequence());
+                return DatPackageReader.GetData(pkgBytes, requestedPath);
             }
 
             internal override void AddBaseNamesInFolder(string folder, string suffix, ISet<string> names)
@@ -434,7 +434,7 @@ namespace ICU4N.Impl
          * Compares the length-specified input key with the
          * NUL-terminated table key. (ASCII)
          */
-        internal static int CompareKeys(ICharSequence key, ByteBuffer bytes, int offset)
+        internal static int CompareKeys(string key, ByteBuffer bytes, int offset) // ICU4N specific: Changed key from ICharSequence to string
         {
             for (int i = 0; ; ++i, ++offset)
             {
@@ -462,7 +462,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal static int CompareKeys(ICharSequence key, byte[] bytes, int offset)
+        internal static int CompareKeys(string key, byte[] bytes, int offset) // ICU4N specific: Changed key from ICharSequence to string
         {
             for (int i = 0; ; ++i, ++offset)
             {

@@ -18,7 +18,7 @@ namespace ICU4N.Impl
         /**
      * The data path to be used with getBundleInstance API
      */
-        internal static readonly string ICU_DATA_PATH = "ICU4N.Impl.";
+        internal static readonly string ICU_DATA_PATH = "ICU4N.Impl."; // ICU4N TODO: Perhaps leave off the assembly name and make a more aggressive resource scan that matches the end of the path loosely?
         /**
          * The ICU data package name.
          * This is normally the name of the .dat package, and the prefix (plus '/')
@@ -39,7 +39,7 @@ namespace ICU4N.Impl
         /**
          * The base name of collation data to be used with getBundleInstance API
          */
-        public static readonly string ICU_COLLATION_BASE_NAME = ICU_BASE_NAME + "/coll";
+        public static readonly string ICU_COLLATION_BASE_NAME = ICU_BASE_NAME + ".coll";
 
         /**
          * The base name of rbbi data to be used with getData API
@@ -49,23 +49,23 @@ namespace ICU4N.Impl
         /**
          * The base name of rbbi data to be used with getBundleInstance API
          */
-        public static readonly string ICU_BRKITR_BASE_NAME = ICU_BASE_NAME + '/' + ICU_BRKITR_NAME;
+        public static readonly string ICU_BRKITR_BASE_NAME = ICU_BASE_NAME + '.' + ICU_BRKITR_NAME;
 
         /**
          * The base name of rbnf data to be used with getBundleInstance API
          */
-        public static readonly string ICU_RBNF_BASE_NAME = ICU_BASE_NAME + "/rbnf";
+        public static readonly string ICU_RBNF_BASE_NAME = ICU_BASE_NAME + ".rbnf";
 
         /**
          * The base name of transliterator data to be used with getBundleInstance API
          */
-        public static readonly string ICU_TRANSLIT_BASE_NAME = ICU_BASE_NAME + "/translit";
+        public static readonly string ICU_TRANSLIT_BASE_NAME = ICU_BASE_NAME + ".translit";
 
-        public static readonly string ICU_LANG_BASE_NAME = ICU_BASE_NAME + "/lang";
-        public static readonly string ICU_CURR_BASE_NAME = ICU_BASE_NAME + "/curr";
-        public static readonly string ICU_REGION_BASE_NAME = ICU_BASE_NAME + "/region";
-        public static readonly string ICU_ZONE_BASE_NAME = ICU_BASE_NAME + "/zone";
-        public static readonly string ICU_UNIT_BASE_NAME = ICU_BASE_NAME + "/unit";
+        public static readonly string ICU_LANG_BASE_NAME = ICU_BASE_NAME + ".lang";
+        public static readonly string ICU_CURR_BASE_NAME = ICU_BASE_NAME + ".curr";
+        public static readonly string ICU_REGION_BASE_NAME = ICU_BASE_NAME + ".region";
+        public static readonly string ICU_ZONE_BASE_NAME = ICU_BASE_NAME + ".zone";
+        public static readonly string ICU_UNIT_BASE_NAME = ICU_BASE_NAME + ".unit";
 
         /**
          * For testing (otherwise false): When reading an InputStream from a Class or ClassLoader

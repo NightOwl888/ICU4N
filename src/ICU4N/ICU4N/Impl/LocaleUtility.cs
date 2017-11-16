@@ -10,103 +10,106 @@ namespace ICU4N.Impl
     /// </summary>
     public class LocaleUtility
     {
-     //   /**
-     //* A helper function to convert a string of the form
-     //* aa_BB_CC to a locale object.  Why isn't this in Locale?
-     //*/
-     //   public static Locale getLocaleFromName(string name)
-     //   {
-     //       string language = "";
-     //       string country = "";
-     //       string variant = "";
+        /**
+         * A helper function to convert a string of the form
+         * aa_BB_CC to a locale object.  Why isn't this in Locale?
+         */
+        public static CultureInfo GetLocaleFromName(string name)
+        {
+            return new CultureInfo(name);
 
-     //       int i1 = name.indexOf('_');
-     //       if (i1 < 0)
-     //       {
-     //           language = name;
-     //       }
-     //       else
-     //       {
-     //           language = name.substring(0, i1);
-     //           ++i1;
-     //           int i2 = name.indexOf('_', i1);
-     //           if (i2 < 0)
-     //           {
-     //               country = name.substring(i1);
-     //           }
-     //           else
-     //           {
-     //               country = name.substring(i1, i2);
-     //               variant = name.substring(i2 + 1);
-     //           }
-     //       }
+            //string language = "";
+            //string country = "";
+            //string variant = "";
 
-     //       return new Locale(language, country, variant);
-     //   }
+            //int i1 = name.indexOf('_');
+            //if (i1 < 0)
+            //{
+            //    language = name;
+            //}
+            //else
+            //{
+            //    language = name.substring(0, i1);
+            //    ++i1;
+            //    int i2 = name.indexOf('_', i1);
+            //    if (i2 < 0)
+            //    {
+            //        country = name.substring(i1);
+            //    }
+            //    else
+            //    {
+            //        country = name.substring(i1, i2);
+            //        variant = name.substring(i2 + 1);
+            //    }
+            //}
 
-     //   /**
-     //    * Compare two locale strings of the form aa_BB_CC, and
-     //    * return true if parent is a 'strict' fallback of child, that is,
-     //    * if child =~ "^parent(_.+)*" (roughly).
-     //    */
-     //   public static boolean isFallbackOf(string parent, string child)
-     //   {
-     //       if (!child.startsWith(parent))
-     //       {
-     //           return false;
-     //       }
-     //       int i = parent.length();
-     //       return (i == child.length() ||
-     //               child.charAt(i) == '_');
-     //   }
+            //return new Locale(language, country, variant);
+        }
 
-     //   /**
-     //    * Compare two locales, and return true if the parent is a
-     //    * 'strict' fallback of the child (parent string is a fallback
-     //    * of child string).
-     //    */
-     //   public static boolean isFallbackOf(Locale parent, Locale child)
-     //   {
-     //       return isFallbackOf(parent.toString(), child.toString());
-     //   }
+        /**
+         * Compare two locale strings of the form aa_BB_CC, and
+         * return true if parent is a 'strict' fallback of child, that is,
+         * if child =~ "^parent(_.+)*" (roughly).
+         */
+        public static bool IsFallbackOf(string parent, string child)
+        {
+            if (!child.StartsWith(parent))
+            {
+                return false;
+            }
+            int i = parent.Length;
+            return (i == child.Length ||
+                    child[i] == '-');
+        }
+
+        /**
+         * Compare two locales, and return true if the parent is a
+         * 'strict' fallback of the child (parent string is a fallback
+         * of child string).
+         */
+        public static bool IsFallbackOf(CultureInfo parent, CultureInfo child)
+        {
+            //return child.Parent.Equals(parent); // ICU4N TODO: Note in .NET we can just do this
+            return IsFallbackOf(parent.ToString(), child.ToString());
+        }
 
 
-     //   /*
-     //    * Convenience method that calls canonicalLocaleString(string) with
-     //    * locale.toString();
-     //    */
-     //   /*public static string canonicalLocaleString(Locale locale) {
-     //       return canonicalLocaleString(locale.toString());
-     //   }*/
+        //   /*
+        //    * Convenience method that calls canonicalLocaleString(string) with
+        //    * locale.toString();
+        //    */
+        //   /*public static string canonicalLocaleString(Locale locale) {
+        //       return canonicalLocaleString(locale.toString());
+        //   }*/
 
-     //   /*
-     //    * You'd think that Locale canonicalizes, since it munges the
-     //    * renamed languages, but it doesn't quite.  It forces the region
-     //    * to be upper case but doesn't do anything about the language or
-     //    * variant.  Our canonical form is 'lower_UPPER_UPPER'.  
-     //    */
-     //   /*public static string canonicalLocaleString(string id) {
-     //       if (id != null) {
-     //           int x = id.indexOf("_");
-     //           if (x == -1) {
-     //               id = id.toLowerCase(Locale.ENGLISH);
-     //           } else {
-     //               StringBuffer buf = new StringBuffer();
-     //               buf.append(id.substring(0, x).toLowerCase(Locale.ENGLISH));
-     //               buf.append(id.substring(x).toUpperCase(Locale.ENGLISH));
+        //   /*
+        //    * You'd think that Locale canonicalizes, since it munges the
+        //    * renamed languages, but it doesn't quite.  It forces the region
+        //    * to be upper case but doesn't do anything about the language or
+        //    * variant.  Our canonical form is 'lower_UPPER_UPPER'.  
+        //    */
+        //   /*public static string canonicalLocaleString(string id) {
+        //       if (id != null) {
+        //           int x = id.indexOf("_");
+        //           if (x == -1) {
+        //               id = id.toLowerCase(Locale.ENGLISH);
+        //           } else {
+        //               StringBuffer buf = new StringBuffer();
+        //               buf.append(id.substring(0, x).toLowerCase(Locale.ENGLISH));
+        //               buf.append(id.substring(x).toUpperCase(Locale.ENGLISH));
 
-     //               int len = buf.length();
-     //               int n = len;
-     //               while (--n >= 0 && buf.charAt(n) == '_') {
-     //               }
-     //               if (++n != len) {
-     //                   buf.delete(n, len);
-     //               }
-     //               id = buf.toString();
-     //           }
-     //       }
-     //       return id;
-     //   }*/
+        //               int len = buf.length();
+        //               int n = len;
+        //               while (--n >= 0 && buf.charAt(n) == '_') {
+        //               }
+        //               if (++n != len) {
+        //                   buf.delete(n, len);
+        //               }
+        //               id = buf.toString();
+        //           }
+        //       }
+        //       return id;
+        //   }*/
 
         /**
          * Fallback from the given locale name by removing the rightmost _-delimited
@@ -119,7 +122,7 @@ namespace ICU4N.Impl
         public static CultureInfo Fallback(CultureInfo loc)
         {
             // ICU4N TODO: Not sure if this is correct
-            return loc;
+            return loc.Parent;
             //return loc.GetConsoleFallbackUICulture();
 
             //// Split the locale into parts and remove the rightmost part

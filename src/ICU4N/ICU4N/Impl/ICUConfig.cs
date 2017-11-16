@@ -59,19 +59,24 @@ namespace ICU4N.Impl
             if (string.IsNullOrEmpty(name))
                 return def;
 
+            string value = null;
+
             // Try to get an environment variable first
-            var value = SystemProperties.GetProperty(name, null);
+            value = SystemProperties.GetProperty(name, null);
             if (value != null)
                 return value;
 
             try
             {
-                return global::ICU4N.ICUConfig.ResourceManager.GetString(name.Replace(".", "_"));
+                value =  global::ICU4N.ICUConfig.ResourceManager.GetString(name.Replace(".", "_"));
+                if (value != null)
+                    return value;
             }
             catch (MissingManifestResourceException)
             {
-                return def;
             }
+
+            return def;
         }
     }
 }

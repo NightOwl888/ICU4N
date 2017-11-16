@@ -797,7 +797,7 @@ s     */
                 try
                 {
                     //Class <?> cls = Class.forName("com.ibm.icu.text.BreakIteratorFactory");
-                    Type cls = Type.GetType("ICU4N.Text.BreakIteratorFactory, ICU4N");
+                    Type cls = Type.GetType("ICU4N.Text.BreakIteratorFactory, ICU4N"); // ICU4N TODO: Set BreakIteratorFactory statically on BreakIterator abstract class.
                     shim = (BreakIteratorServiceShim)Activator.CreateInstance(cls);
                 }
                 catch (TypeInitializationException e) // ICU4N TODO: Check exception type

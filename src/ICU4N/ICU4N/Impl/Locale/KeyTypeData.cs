@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -107,10 +108,10 @@ namespace ICU4N.Impl.Locale
             public string LegacyId { get; private set; }
             public string BcpId { get; private set; }
             public IDictionary<string, Type> TypeMap { get; private set; }
-            public IList<SpecialType> SpecialTypes { get; private set; }
+            public ISet<SpecialType> SpecialTypes { get; private set; }
 
             internal KeyData(string legacyId, string bcpId, IDictionary<string, Type> typeMap,
-                    IList<SpecialType> specialTypes)
+                    ISet<SpecialType> specialTypes)
             {
                 this.LegacyId = legacyId;
                 this.BcpId = bcpId;
@@ -222,222 +223,235 @@ namespace ICU4N.Impl.Locale
 
         private static void InitFromResourceBundle()
         {
-            // ICU4N TODO: Finish implementation
+            UResourceBundle keyTypeDataRes = UResourceBundle.GetBundleInstance(
+                    ICUData.ICU_BASE_NAME,
+                    "keyTypeData",
+                    ICUResourceBundle.ICU_DATA_CLASS_LOADER);
 
-            //    UResourceBundle keyTypeDataRes = UResourceBundle.getBundleInstance(
-            //            ICUData.ICU_BASE_NAME,
-            //            "keyTypeData",
-            //            ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+            GetKeyInfo(keyTypeDataRes.Get("keyInfo"));
+            GetTypeInfo(keyTypeDataRes.Get("typeInfo"));
 
-            //    getKeyInfo(keyTypeDataRes.get("keyInfo"));
-            //    getTypeInfo(keyTypeDataRes.get("typeInfo"));
+            UResourceBundle keyMapRes = keyTypeDataRes.Get("keyMap");
+            UResourceBundle typeMapRes = keyTypeDataRes.Get("typeMap");
 
-            //    UResourceBundle keyMapRes = keyTypeDataRes.get("keyMap");
-            //    UResourceBundle typeMapRes = keyTypeDataRes.get("typeMap");
+            // alias data is optional
+            UResourceBundle typeAliasRes = null;
+            UResourceBundle bcpTypeAliasRes = null;
 
-            //    // alias data is optional
-            //    UResourceBundle typeAliasRes = null;
-            //    UResourceBundle bcpTypeAliasRes = null;
+            try
+            {
+                typeAliasRes = keyTypeDataRes.Get("typeAlias");
+            }
+            catch (MissingManifestResourceException e)
+            {
+                // fall through
+            }
 
-            //    try
-            //    {
-            //        typeAliasRes = keyTypeDataRes.get("typeAlias");
-            //    }
-            //    catch (MissingResourceException e)
-            //    {
-            //        // fall through
-            //    }
+            try
+            {
+                bcpTypeAliasRes = keyTypeDataRes.Get("bcpTypeAlias");
+            }
+            catch (MissingManifestResourceException e)
+            {
+                // fall through
+            }
 
-            //    try
-            //    {
-            //        bcpTypeAliasRes = keyTypeDataRes.get("bcpTypeAlias");
-            //    }
-            //    catch (MissingResourceException e)
-            //    {
-            //        // fall through
-            //    }
+            // iterate through keyMap resource
+            UResourceBundleEnumerator keyMapItr = keyMapRes.GetEnumerator();// ICU4N TODO: Using block
 
-            //    // iterate through keyMap resource
-            //    UResourceBundleIterator keyMapItr = keyMapRes.getIterator();
-            //    Map<String, Set<String>> _Bcp47Keys = new LinkedHashMap<String, Set<String>>();
+            IDictionary<string, ISet<string>> _Bcp47Keys = new Dictionary<string, ISet<string>>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
 
-            //    while (keyMapItr.hasNext())
-            //    {
-            //        UResourceBundle keyMapEntry = keyMapItr.next();
-            //        String legacyKeyId = keyMapEntry.getKey();
-            //        String bcpKeyId = keyMapEntry.getString();
+            while (keyMapItr.MoveNext())
+            {
+                UResourceBundle keyMapEntry = keyMapItr.Current;
+                string legacyKeyId = keyMapEntry.Key;
+                string bcpKeyId = keyMapEntry.GetString();
 
-            //        bool hasSameKey = false;
-            //        if (bcpKeyId.length() == 0)
-            //        {
-            //            // Empty value indicates that BCP key is same with the legacy key.
-            //            bcpKeyId = legacyKeyId;
-            //            hasSameKey = true;
-            //        }
-            //        final LinkedHashSet<String> _bcp47Types = new LinkedHashSet<String>();
-            //        _Bcp47Keys.put(bcpKeyId, Collections.unmodifiableSet(_bcp47Types));
+                bool hasSameKey = false;
+                if (bcpKeyId.Length == 0)
+                {
+                    // Empty value indicates that BCP key is same with the legacy key.
+                    bcpKeyId = legacyKeyId;
+                    hasSameKey = true;
+                }
+                ISet<string> _bcp47Types = new HashSet<string>(); // ICU4N TODO: LinkedHashSet...?
+                _Bcp47Keys[bcpKeyId] = _bcp47Types.ToUnmodifiableSet();
 
-            //        bool isTZ = legacyKeyId.equals("timezone");
+                bool isTZ = legacyKeyId.Equals("timezone");
 
-            //        // reverse type alias map
-            //        Map<String, Set<String>> typeAliasMap = null;
-            //        if (typeAliasRes != null)
-            //        {
-            //            UResourceBundle typeAliasResByKey = null;
-            //            try
-            //            {
-            //                typeAliasResByKey = typeAliasRes.get(legacyKeyId);
-            //            }
-            //            catch (MissingResourceException e)
-            //            {
-            //                // fall through
-            //            }
-            //            if (typeAliasResByKey != null)
-            //            {
-            //                typeAliasMap = new HashMap<String, Set<String>>();
-            //                UResourceBundleIterator typeAliasResItr = typeAliasResByKey.getIterator();
-            //                while (typeAliasResItr.hasNext())
-            //                {
-            //                    UResourceBundle typeAliasDataEntry = typeAliasResItr.next();
-            //                    String from = typeAliasDataEntry.getKey();
-            //                    String to = typeAliasDataEntry.getString();
-            //                    if (isTZ)
-            //                    {
-            //                        from = from.replace(':', '/');
-            //                    }
-            //                    Set<String> aliasSet = typeAliasMap.get(to);
-            //                    if (aliasSet == null)
-            //                    {
-            //                        aliasSet = new HashSet<String>();
-            //                        typeAliasMap.put(to, aliasSet);
-            //                    }
-            //                    aliasSet.add(from);
-            //                }
-            //            }
-            //        }
+                // reverse type alias map
+                IDictionary<string, ISet<string>> typeAliasMap = null;
+                if (typeAliasRes != null)
+                {
+                    UResourceBundle typeAliasResByKey = null;
+                    try
+                    {
+                        typeAliasResByKey = typeAliasRes.Get(legacyKeyId);
+                    }
+                    catch (MissingManifestResourceException e)
+                    {
+                        // fall through
+                    }
+                    if (typeAliasResByKey != null)
+                    {
+                        typeAliasMap = new Dictionary<string, ISet<string>>();
+                        using (UResourceBundleEnumerator typeAliasResItr = typeAliasResByKey.GetEnumerator())
+                        {
+                            while (typeAliasResItr.MoveNext())
+                            {
+                                UResourceBundle typeAliasDataEntry = typeAliasResItr.Current;
+                                string from = typeAliasDataEntry.Key;
+                                string to = typeAliasDataEntry.GetString();
+                                if (isTZ)
+                                {
+                                    from = from.Replace(':', '/');
+                                }
+                                ISet<string> aliasSet = typeAliasMap.Get(to);
+                                if (aliasSet == null)
+                                {
+                                    aliasSet = new HashSet<string>();
+                                    typeAliasMap[to] = aliasSet;
+                                }
+                                aliasSet.Add(from);
+                            }
+                        }
+                    }
+                }
 
-            //        // reverse bcp type alias map
-            //        Map<String, Set<String>> bcpTypeAliasMap = null;
-            //        if (bcpTypeAliasRes != null)
-            //        {
-            //            UResourceBundle bcpTypeAliasResByKey = null;
-            //            try
-            //            {
-            //                bcpTypeAliasResByKey = bcpTypeAliasRes.get(bcpKeyId);
-            //            }
-            //            catch (MissingResourceException e)
-            //            {
-            //                // fall through
-            //            }
-            //            if (bcpTypeAliasResByKey != null)
-            //            {
-            //                bcpTypeAliasMap = new HashMap<String, Set<String>>();
-            //                UResourceBundleIterator bcpTypeAliasResItr = bcpTypeAliasResByKey.getIterator();
-            //                while (bcpTypeAliasResItr.hasNext())
-            //                {
-            //                    UResourceBundle bcpTypeAliasDataEntry = bcpTypeAliasResItr.next();
-            //                    String from = bcpTypeAliasDataEntry.getKey();
-            //                    String to = bcpTypeAliasDataEntry.getString();
-            //                    Set<String> aliasSet = bcpTypeAliasMap.get(to);
-            //                    if (aliasSet == null)
-            //                    {
-            //                        aliasSet = new HashSet<String>();
-            //                        bcpTypeAliasMap.put(to, aliasSet);
-            //                    }
-            //                    aliasSet.add(from);
-            //                }
-            //            }
-            //        }
+                // reverse bcp type alias map
+                IDictionary<string, ISet<string>> bcpTypeAliasMap = null;
+                if (bcpTypeAliasRes != null)
+                {
+                    UResourceBundle bcpTypeAliasResByKey = null;
+                    try
+                    {
+                        bcpTypeAliasResByKey = bcpTypeAliasRes.Get(bcpKeyId);
+                    }
+                    catch (MissingManifestResourceException e)
+                    {
+                        // fall through
+                    }
+                    if (bcpTypeAliasResByKey != null)
+                    {
+                        bcpTypeAliasMap = new Dictionary<string, ISet<string>>();
+                        using (UResourceBundleEnumerator bcpTypeAliasResItr = bcpTypeAliasResByKey.GetEnumerator())
+                        {
+                            while (bcpTypeAliasResItr.MoveNext())
+                            {
+                                UResourceBundle bcpTypeAliasDataEntry = bcpTypeAliasResItr.Current;
+                                String from = bcpTypeAliasDataEntry.Key;
+                                String to = bcpTypeAliasDataEntry.GetString();
+                                ISet<string> aliasSet = bcpTypeAliasMap.Get(to);
+                                if (aliasSet == null)
+                                {
+                                    aliasSet = new HashSet<string>();
+                                    bcpTypeAliasMap[to] = aliasSet;
+                                }
+                                aliasSet.Add(from);
+                            }
+                        }
+                    }
+                }
 
-            //        Map<String, Type> typeDataMap = new HashMap<String, Type>();
-            //        EnumSet<SpecialType> specialTypeSet = null;
+                IDictionary<string, Type> typeDataMap = new Dictionary<string, Type>();
+                ISet<SpecialType> specialTypeSet = null;
 
-            //        // look up type map for the key, and walk through the mapping data
-            //        UResourceBundle typeMapResByKey = null;
-            //        try
-            //        {
-            //            typeMapResByKey = typeMapRes.get(legacyKeyId);
-            //        }
-            //        catch (MissingResourceException e)
-            //        {
-            //            // type map for each key must exist
-            //            assert false;
-            //        }
-            //        if (typeMapResByKey != null)
-            //        {
-            //            UResourceBundleIterator typeMapResByKeyItr = typeMapResByKey.getIterator();
-            //            while (typeMapResByKeyItr.hasNext())
-            //            {
-            //                UResourceBundle typeMapEntry = typeMapResByKeyItr.next();
-            //                String legacyTypeId = typeMapEntry.getKey();
-            //                String bcpTypeId = typeMapEntry.getString();
+                // look up type map for the key, and walk through the mapping data
+                UResourceBundle typeMapResByKey = null;
+                try
+                {
+                    typeMapResByKey = typeMapRes.Get(legacyKeyId);
+                }
+                catch (MissingManifestResourceException e)
+                {
+                    // type map for each key must exist
+                    Debug.Assert(false);
+                }
+                if (typeMapResByKey != null)
+                {
+                    using (UResourceBundleEnumerator typeMapResByKeyItr = typeMapResByKey.GetEnumerator())
+                        while (typeMapResByKeyItr.MoveNext())
+                        {
+                            UResourceBundle typeMapEntry = typeMapResByKeyItr.Current;
+                            string legacyTypeId = typeMapEntry.Key;
+                            string bcpTypeId = typeMapEntry.GetString();
 
-            //                // special types
-            //                final char first = legacyTypeId.charAt(0);
-            //                final bool isSpecialType = '9' < first && first < 'a' && bcpTypeId.length() == 0;
-            //                if (isSpecialType)
-            //                {
-            //                    if (specialTypeSet == null)
-            //                    {
-            //                        specialTypeSet = EnumSet.noneOf(SpecialType.class);
-            //                        }
-            //                        specialTypeSet.add(SpecialType.valueOf(legacyTypeId));
-            //                        _bcp47Types.add(legacyTypeId);
-            //                        continue;
-            //                    }
+                            // special types
+                            char first = legacyTypeId[0];
+                            bool isSpecialType = '9' < first && first < 'a' && bcpTypeId.Length == 0;
+                            if (isSpecialType)
+                            {
+                                if (specialTypeSet == null)
+                                {
+                                    specialTypeSet = new HashSet<SpecialType>();
+                                }
+                                specialTypeSet.Add((SpecialType)Enum.Parse(typeof(SpecialType), legacyTypeId, true));
+                                _bcp47Types.Add(legacyTypeId);
+                                continue;
+                            }
 
-            //                    if (isTZ) {
-            //                        // a timezone key uses a colon instead of a slash in the resource.
-            //                        // e.g. America:Los_Angeles
-            //                        legacyTypeId = legacyTypeId.replace(':', '/');
-            //                    }
+                            if (isTZ)
+                            {
+                                // a timezone key uses a colon instead of a slash in the resource.
+                                // e.g. America:Los_Angeles
+                                legacyTypeId = legacyTypeId.Replace(':', '/');
+                            }
 
-            //                    bool hasSameType = false;
-            //                    if (bcpTypeId.length() == 0) {
-            //                        // Empty value indicates that BCP type is same with the legacy type.
-            //                        bcpTypeId = legacyTypeId;
-            //                        hasSameType = true;
-            //                    }
-            //                    _bcp47Types.add(bcpTypeId);
+                            bool hasSameType = false;
+                            if (bcpTypeId.Length == 0)
+                            {
+                                // Empty value indicates that BCP type is same with the legacy type.
+                                bcpTypeId = legacyTypeId;
+                                hasSameType = true;
+                            }
+                            _bcp47Types.Add(bcpTypeId);
 
-            //                    // Note: legacy type value should never be
-            //                    // equivalent to bcp type value of a different
-            //                    // type under the same key. So we use a single
-            //                    // map for lookup.
-            //                    Type t = new Type(legacyTypeId, bcpTypeId);
-            //typeDataMap.put(AsciiUtil.toLowerString(legacyTypeId), t);
-            //                    if (!hasSameType) {
-            //                        typeDataMap.put(AsciiUtil.toLowerString(bcpTypeId), t);
-            //                    }
+                            // Note: legacy type value should never be
+                            // equivalent to bcp type value of a different
+                            // type under the same key. So we use a single
+                            // map for lookup.
+                            Type t = new Type(legacyTypeId, bcpTypeId);
+                            typeDataMap[AsciiUtil.ToLowerString(legacyTypeId)] = t;
+                            if (!hasSameType)
+                            {
+                                typeDataMap[AsciiUtil.ToLowerString(bcpTypeId)] = t;
+                            }
 
-            //                    // Also put aliases in the map
-            //                    if (typeAliasMap != null) {
-            //                        Set<String> typeAliasSet = typeAliasMap.get(legacyTypeId);
-            //                        if (typeAliasSet != null) {
-            //                            for (String alias : typeAliasSet) {
-            //                                typeDataMap.put(AsciiUtil.toLowerString(alias), t);
-            //                            }
-            //                        }
-            //                    }
-            //                    if (bcpTypeAliasMap != null) {
-            //                        Set<String> bcpTypeAliasSet = bcpTypeAliasMap.get(bcpTypeId);
-            //                        if (bcpTypeAliasSet != null) {
-            //                            for (String alias : bcpTypeAliasSet) {
-            //                                typeDataMap.put(AsciiUtil.toLowerString(alias), t);
-            //                            }
-            //                        }
-            //                    }
-            //                }
-            //            }
+                            // Also put aliases in the map
+                            if (typeAliasMap != null)
+                            {
+                                ISet<string> typeAliasSet = typeAliasMap.Get(legacyTypeId);
+                                if (typeAliasSet != null)
+                                {
+                                    foreach (string alias in typeAliasSet)
+                                    {
+                                        typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
+                                    }
+                                }
+                            }
+                            if (bcpTypeAliasMap != null)
+                            {
+                                ISet<string> bcpTypeAliasSet = bcpTypeAliasMap.Get(bcpTypeId);
+                                if (bcpTypeAliasSet != null)
+                                {
+                                    foreach (string alias in bcpTypeAliasSet)
+                                    {
+                                        typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
+                                    }
+                                }
+                            }
+                        }
+                }
 
-            //            KeyData keyData = new KeyData(legacyKeyId, bcpKeyId, typeDataMap, specialTypeSet);
+                KeyData keyData = new KeyData(legacyKeyId, bcpKeyId, typeDataMap, specialTypeSet);
 
-            //KEYMAP.put(AsciiUtil.toLowerString(legacyKeyId), keyData);
-            //            if (!hasSameKey) {
-            //                KEYMAP.put(AsciiUtil.toLowerString(bcpKeyId), keyData);
-            //            }
-            //        }
-            //        BCP47_KEYS = Collections.unmodifiableMap(_Bcp47Keys);
+                KEYMAP[AsciiUtil.ToLowerString(legacyKeyId)] = keyData;
+                if (!hasSameKey)
+                {
+                    KEYMAP[AsciiUtil.ToLowerString(bcpKeyId)] = keyData;
+                }
+            }
+            BCP47_KEYS = _Bcp47Keys.ToUnmodifiableDictionary();
         }
 
         internal static ISet<string> DEPRECATED_KEYS = new HashSet<string>(); // default for no resources
@@ -447,93 +461,97 @@ namespace ICU4N.Impl.Locale
         private enum KeyInfoType { deprecated, valueType }
         private enum TypeInfoType { deprecated }
 
-        // ICU4N TODO: Finish resource loading
+        /** Reads
+keyInfo{
+deprecated{
+            kh{"true"}
+            vt{"true"}
+}
+valueType{
+            ca{"incremental"}
+            h0{"single"}
+            kr{"multiple"}
+            vt{"multiple"}
+            x0{"any"}
+}
+}
+         */
+        private static void GetKeyInfo(UResourceBundle keyInfoRes)
+        {
+            ISet<string> _deprecatedKeys = new HashSet<string>();
+            IDictionary<string, ValueType> _valueTypes = new Dictionary<string, ValueType>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
+                                                                                              //for (UResourceBundleIterator keyInfoIt = keyInfoRes.GetEnumerator(); keyInfoIt.MoveNext();)
+            foreach (var keyInfoEntry in keyInfoRes)
+            {
+                //UResourceBundle keyInfoEntry = keyInfoIt.Current;
+                string key = keyInfoEntry.Key;
+                KeyInfoType keyInfo = (KeyInfoType)Enum.Parse(typeof(KeyInfoType), key, true);
+                //for (UResourceBundleIterator keyInfoIt2 = keyInfoEntry.getIterator(); keyInfoIt2.hasNext();)
+                foreach (var keyInfoEntry2 in keyInfoEntry)
+                {
+                    //UResourceBundle keyInfoEntry2 = keyInfoIt2.next();
+                    string key2 = keyInfoEntry2.Key;
+                    string value2 = keyInfoEntry2.GetString();
+                    switch (keyInfo)
+                    {
+                        case KeyInfoType.deprecated:
+                            _deprecatedKeys.Add(key2);
+                            break;
+                        case KeyInfoType.valueType:
+                            _valueTypes[key2] = (ValueType)Enum.Parse(typeof(ValueType), value2, true);
+                            break;
+                    }
+                }
+            }
+            DEPRECATED_KEYS = _deprecatedKeys.ToUnmodifiableSet();
+            VALUE_TYPES = _valueTypes.ToUnmodifiableDictionary();
+        }
 
-//        /** Reads
-//keyInfo{
-//deprecated{
-//            kh{"true"}
-//            vt{"true"}
-//}
-//valueType{
-//            ca{"incremental"}
-//            h0{"single"}
-//            kr{"multiple"}
-//            vt{"multiple"}
-//            x0{"any"}
-//}
-//}
-//         */
-//        private static void GetKeyInfo(UResourceBundle keyInfoRes)
-//        {
-//            Set<String> _deprecatedKeys = new LinkedHashSet<String>();
-//            Map<String, ValueType> _valueTypes = new LinkedHashMap<String, ValueType>();
-//            for (UResourceBundleIterator keyInfoIt = keyInfoRes.getIterator(); keyInfoIt.hasNext();)
-//            {
-//                UResourceBundle keyInfoEntry = keyInfoIt.next();
-//                String key = keyInfoEntry.getKey();
-//                KeyInfoType keyInfo = KeyInfoType.valueOf(key);
-//                for (UResourceBundleIterator keyInfoIt2 = keyInfoEntry.getIterator(); keyInfoIt2.hasNext();)
-//                {
-//                    UResourceBundle keyInfoEntry2 = keyInfoIt2.next();
-//                    String key2 = keyInfoEntry2.getKey();
-//                    String value2 = keyInfoEntry2.getString();
-//                    switch (keyInfo)
-//                    {
-//                        case deprecated:
-//                            _deprecatedKeys.add(key2);
-//                            break;
-//                        case valueType:
-//                            _valueTypes.put(key2, ValueType.valueOf(value2));
-//                            break;
-//                    }
-//                }
-//            }
-//            DEPRECATED_KEYS = Collections.unmodifiableSet(_deprecatedKeys);
-//            VALUE_TYPES = Collections.unmodifiableMap(_valueTypes);
-//        }
+        /** Reads:
+typeInfo{
+deprecated{
+            co{
+                direct{"true"}
+            }
+            tz{
+                camtr{"true"}
+            }
+}
+}
+         */
+        private static void GetTypeInfo(UResourceBundle typeInfoRes)
+        {
+            IDictionary<string, ISet<string>> _deprecatedKeyTypes = new Dictionary<string, ISet<string>>();  // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
+            //for (UResourceBundleIterator keyInfoIt = typeInfoRes.getIterator(); keyInfoIt.hasNext();)
+            foreach (var keyInfoEntry in typeInfoRes)
+            {
+                //UResourceBundle keyInfoEntry = keyInfoIt.next();
+                string key = keyInfoEntry.Key;
+                TypeInfoType typeInfo = (TypeInfoType)Enum.Parse(typeof(TypeInfoType), key, true);
+                //for (UResourceBundleIterator keyInfoIt2 = keyInfoEntry.getIterator(); keyInfoIt2.hasNext();)
+                foreach (var keyInfoEntry2 in keyInfoEntry)
+                {
+                    //UResourceBundle keyInfoEntry2 = keyInfoIt2.next();
+                    string key2 = keyInfoEntry2.Key;
+                    ISet<string> _deprecatedTypes = new HashSet<string>(); // ICU4N TODO: LinkedHashSet...?
+                    //for (UResourceBundleIterator keyInfoIt3 = keyInfoEntry2.getIterator(); keyInfoIt3.hasNext();)
+                    foreach (var keyInfoEntry3 in keyInfoEntry2)
+                    {
+                        //UResourceBundle keyInfoEntry3 = keyInfoIt3.next();
+                        string key3 = keyInfoEntry3.Key;
+                        switch (typeInfo)
+                        { // allow for expansion
+                            case TypeInfoType.deprecated:
+                                _deprecatedTypes.Add(key3);
+                                break;
+                        }
+                    }
+                    _deprecatedKeyTypes[key2] = _deprecatedTypes.ToUnmodifiableSet();
+                }
+            }
+            DEPRECATED_KEY_TYPES = _deprecatedKeyTypes.ToUnmodifiableDictionary();
+        }
 
-//        /** Reads:
-//typeInfo{
-//deprecated{
-//            co{
-//                direct{"true"}
-//            }
-//            tz{
-//                camtr{"true"}
-//            }
-//}
-//}
-//         */
-//        private static void getTypeInfo(UResourceBundle typeInfoRes)
-//        {
-//            Map<String, Set<String>> _deprecatedKeyTypes = new LinkedHashMap<String, Set<String>>();
-//            for (UResourceBundleIterator keyInfoIt = typeInfoRes.getIterator(); keyInfoIt.hasNext();)
-//            {
-//                UResourceBundle keyInfoEntry = keyInfoIt.next();
-//                String key = keyInfoEntry.getKey();
-//                TypeInfoType typeInfo = TypeInfoType.valueOf(key);
-//                for (UResourceBundleIterator keyInfoIt2 = keyInfoEntry.getIterator(); keyInfoIt2.hasNext();)
-//                {
-//                    UResourceBundle keyInfoEntry2 = keyInfoIt2.next();
-//                    String key2 = keyInfoEntry2.getKey();
-//                    Set<String> _deprecatedTypes = new LinkedHashSet<String>();
-//                    for (UResourceBundleIterator keyInfoIt3 = keyInfoEntry2.getIterator(); keyInfoIt3.hasNext();)
-//                    {
-//                        UResourceBundle keyInfoEntry3 = keyInfoIt3.next();
-//                        String key3 = keyInfoEntry3.getKey();
-//                        switch (typeInfo)
-//                        { // allow for expansion
-//                            case deprecated:
-//                                _deprecatedTypes.add(key3);
-//                                break;
-//                        }
-//                    }
-//                    _deprecatedKeyTypes.put(key2, Collections.unmodifiableSet(_deprecatedTypes));
-//                }
-//            }
-//            DEPRECATED_KEY_TYPES = Collections.unmodifiableMap(_deprecatedKeyTypes);
-//        }
 
         //
         // Note:    The key-type data is currently read from ICU resource bundle keyTypeData.res.
@@ -614,7 +632,7 @@ namespace ICU4N.Impl.Locale
                 if (typeAliasData != null)
                 {
                     typeAliasMap = new Dictionary<string, ISet<string>>();
-            foreach (string[] typeAliasDataEntry in typeAliasData)
+                    foreach (string[] typeAliasDataEntry in typeAliasData)
                     {
                         string from = typeAliasDataEntry[0];
                         string to = typeAliasDataEntry[1];
@@ -622,7 +640,7 @@ namespace ICU4N.Impl.Locale
                         if (!typeAliasMap.TryGetValue(to, out aliasSet) || aliasSet == null)
                         {
                             aliasSet = new HashSet<string>();
-                            typeAliasMap[to]= aliasSet;
+                            typeAliasMap[to] = aliasSet;
                         }
                         aliasSet.Add(from);
                     }
@@ -641,7 +659,7 @@ namespace ICU4N.Impl.Locale
                         if (!bcpTypeAliasMap.TryGetValue(to, out aliasSet) || aliasSet == null)
                         {
                             aliasSet = new HashSet<String>();
-                            bcpTypeAliasMap[to]= aliasSet;
+                            bcpTypeAliasMap[to] = aliasSet;
                         }
                         aliasSet.Add(from);
                     }
@@ -714,10 +732,10 @@ namespace ICU4N.Impl.Locale
                     }
                 }
 
-                IList<SpecialType> specialTypes = null;
+                ISet<SpecialType> specialTypes = null;
                 if (specialTypeSet != null)
                 {
-                    specialTypes = specialTypeSet.ToList();
+                    specialTypes = new HashSet<SpecialType>(specialTypeSet);
                 }
 
                 KeyData keyData = new KeyData(legacyKeyId, bcpKeyId, typeDataMap, specialTypes);
@@ -735,8 +753,8 @@ namespace ICU4N.Impl.Locale
 
         static KeyTypeData()
         {
-            InitFromTables();
-            //InitFromResourceBundle(); // ICU4N TODO: Finish resource bundle implementation and enable
+            // InitFromTables();
+            InitFromResourceBundle();
         }
 
         public static ICollection<string> GetBcp47Keys()

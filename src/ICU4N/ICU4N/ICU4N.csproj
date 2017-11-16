@@ -29,56 +29,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Impl\Data\brkitr\burmesedict.dict" />
-    <None Remove="Impl\Data\brkitr\char.brk" />
-    <None Remove="Impl\Data\brkitr\cjdict.dict" />
-    <None Remove="Impl\Data\brkitr\khmerdict.dict" />
-    <None Remove="Impl\Data\brkitr\laodict.dict" />
-    <None Remove="Impl\Data\brkitr\line.brk" />
-    <None Remove="Impl\Data\brkitr\line_fi.brk" />
-    <None Remove="Impl\Data\brkitr\line_loose.brk" />
-    <None Remove="Impl\Data\brkitr\line_loose_cj.brk" />
-    <None Remove="Impl\Data\brkitr\line_loose_fi.brk" />
-    <None Remove="Impl\Data\brkitr\line_normal.brk" />
-    <None Remove="Impl\Data\brkitr\line_normal_cj.brk" />
-    <None Remove="Impl\Data\brkitr\line_normal_fi.brk" />
-    <None Remove="Impl\Data\brkitr\sent.brk" />
-    <None Remove="Impl\Data\brkitr\sent_el.brk" />
-    <None Remove="Impl\Data\brkitr\thaidict.dict" />
-    <None Remove="Impl\Data\brkitr\title.brk" />
-    <None Remove="Impl\Data\brkitr\word.brk" />
-    <None Remove="Impl\Data\brkitr\word_POSIX.brk" />
-    <None Remove="Impl\Data\nfc.nrm" />
-    <None Remove="Impl\Data\nfkc.nrm" />
-    <None Remove="Impl\Data\nfkc_cf.nrm" />
-    <None Remove="Impl\Data\pnames.icu" />
-    <None Remove="Impl\Data\ubidi.icu" />
-    <None Remove="Impl\Data\ucase.icu" />
-    <None Remove="Impl\Data\unames.icu" />
-    <None Remove="Impl\Data\uprops.icu" />
-    <None Remove="Impl\Data\uts46.nrm" />
+    <None Remove="Impl\Data\brkitr\*" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Impl\Data\brkitr\burmesedict.dict" />
-    <EmbeddedResource Include="Impl\Data\brkitr\char.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\cjdict.dict" />
-    <EmbeddedResource Include="Impl\Data\brkitr\khmerdict.dict" />
-    <EmbeddedResource Include="Impl\Data\brkitr\laodict.dict" />
-    <EmbeddedResource Include="Impl\Data\brkitr\line.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\line_fi.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\line_loose.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\line_loose_cj.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\line_loose_fi.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\line_normal.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\line_normal_cj.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\line_normal_fi.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\sent.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\sent_el.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\thaidict.dict" />
-    <EmbeddedResource Include="Impl\Data\brkitr\title.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\word.brk" />
-    <EmbeddedResource Include="Impl\Data\brkitr\word_POSIX.brk" />
+    <EmbeddedResource Include="Impl\Data\brkitr\*" />
     <EmbeddedResource Include="Impl\Data\nfc.nrm" />
     <EmbeddedResource Include="Impl\Data\nfkc.nrm" />
     <EmbeddedResource Include="Impl\Data\nfkc_cf.nrm" />
@@ -120,6 +75,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>PatternPropsExtension.tt</DependentUpon>
     </Compile>
+    <Compile Update="Impl\SimpleFormatterImplExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SimpleFormatterImplExtension.tt</DependentUpon>
+    </Compile>
     <Compile Update="Impl\UCasePropsExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -134,6 +94,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>UPropertyAliasesExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\UResourceExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UResourceExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Impl\UtilityExtension.cs">
       <DesignTime>True</DesignTime>
@@ -164,6 +129,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>NormalizerExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\SimpleFormatterExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SimpleFormatterExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Text\UnicodeSetExtension.cs">
       <DesignTime>True</DesignTime>
@@ -237,6 +207,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PatternPropsExtension.cs</LastGenOutput>
     </None>
+    <None Update="Impl\SimpleFormatterImplExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SimpleFormatterImplExtension.cs</LastGenOutput>
+    </None>
     <None Update="Impl\UCasePropsExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UCasePropsExtension.cs</LastGenOutput>
@@ -248,6 +222,10 @@
     <None Update="Impl\UPropertyAliasesExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UPropertyAliasesExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Impl\UResourceExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>UResourceExtension.cs</LastGenOutput>
     </None>
     <None Update="Impl\UtilityExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -272,6 +250,10 @@
     <None Update="Text\NormalizerExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>NormalizerExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Text\SimpleFormatterExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>SimpleFormatterExtension.cs</LastGenOutput>
     </None>
     <None Update="Text\UnicodeSetExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

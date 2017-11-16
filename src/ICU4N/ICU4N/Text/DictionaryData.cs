@@ -1,5 +1,6 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.IO;
+using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -33,13 +34,13 @@ namespace ICU4N.Text
 
         public static DictionaryMatcher LoadDictionaryFor(string dictType)
         {
-            // ICU4N TODO: Make a UResourceManager and ICUResourceManger to handle loading resources
-            //ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BRKITR_BASE_NAME); // com/ibm/icu/impl/data/icudt60b/brkitr
-            //string dictFileName = rb.GetStringWithFallback("dictionaries/" + dictType);
+            ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BRKITR_BASE_NAME); // com/ibm/icu/impl/data/icudt60b/brkitr
+            string dictFileName = rb.GetStringWithFallback("dictionaries/" + dictType);
 
-            var rm = new ResourceManager(ICUData.ICU_BRKITR_BASE_NAME, typeof(DictionaryData).GetTypeInfo().Assembly);
-            string dictFileName = rm.GetString("dictionaries_" + dictType);
-            
+            // ICU4N TODO: Possibly rename the above and use this syntax instead...?
+            //var rm = new ResourceManager(ICUData.ICU_BRKITR_BASE_NAME, typeof(DictionaryData).GetTypeInfo().Assembly);
+            //string dictFileName = rm.GetString("dictionaries_" + dictType);
+
             dictFileName = ICUData.ICU_BRKITR_NAME + '/' + dictFileName;
             ByteBuffer bytes = ICUBinary.GetRequiredData(dictFileName);
             ICUBinary.ReadHeader(bytes, DATA_FORMAT_ID, null);

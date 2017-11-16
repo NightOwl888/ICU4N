@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using static ICU4N.Text.LocaleDisplayNames;
@@ -224,7 +225,7 @@ namespace ICU4N.Util
         {
             protected override ULocale CreateInstance(CultureInfo key, object unused)
             {
-                return JDKLocaleHelper.ToULocale(key);
+                return DotNetLocaleHelper.ToULocale(key);
             }
         }
 
@@ -457,11 +458,11 @@ namespace ICU4N.Util
          * or is the closest approximation.
          * @stable ICU 2.8
          */
-        public CultureInfo ToLocale()
+        public CultureInfo ToLocale() // ICU4N TODO: API - rename ToCultureInfo()
         {
             if (locale == null)
             {
-                locale = JDKLocaleHelper.ToLocale(this);
+                locale = DotNetLocaleHelper.ToLocale(this);
             }
             return locale;
         }
@@ -487,45 +488,45 @@ namespace ICU4N.Util
 
             // Note: The "user.script" property is only used by initialization.
             //
-            if (JDKLocaleHelper.HasLocaleCategories())
-            {
+            //if (DotNetLocaleHelper.HasLocaleCategories())
+            //{
                 foreach (Category cat in Enum.GetValues(typeof(Category)))
                 {
                     int idx = (int)cat;
-                    defaultCategoryLocales[idx] = JDKLocaleHelper.GetDefault(cat);
+                    defaultCategoryLocales[idx] = DotNetLocaleHelper.GetDefault(cat);
                     defaultCategoryULocales[idx] = ForLocale(defaultCategoryLocales[idx]);
                 }
-            }
-            else
-            {
-                // Make sure the current default Locale is original.
-                // If not, it means that someone updated the default Locale.
-                // In this case, user.XXX properties are already out of date
-                // and we should not use user.script.
-                if (JDKLocaleHelper.IsOriginalDefaultLocale(defaultLocale))
-                {
-                    // Use "user.script" if available
-                    string userScript = JDKLocaleHelper.GetSystemProperty("user.script");
-                    if (userScript != null && LanguageTag.IsScript(userScript))
-                    {
-                        // Note: Builder or forLanguageTag cannot be used here
-                        // when one of Locale fields is not well-formed.
-                        BaseLocale @base = defaultULocale.Base();
-                        BaseLocale newBase = BaseLocale.GetInstance(@base.GetLanguage(), userScript,
-                                @base.GetRegion(), @base.GetVariant());
-                        defaultULocale = GetInstance(newBase, defaultULocale.Extensions());
-                    }
-                }
+            //}
+            //else
+            //{
+            //    // Make sure the current default Locale is original.
+            //    // If not, it means that someone updated the default Locale.
+            //    // In this case, user.XXX properties are already out of date
+            //    // and we should not use user.script.
+            //    if (DotNetLocaleHelper.IsOriginalDefaultLocale(defaultLocale))
+            //    {
+            //        // Use "user.script" if available
+            //        string userScript = JDKLocaleHelper.GetSystemProperty("user.script");
+            //        if (userScript != null && LanguageTag.IsScript(userScript))
+            //        {
+            //            // Note: Builder or forLanguageTag cannot be used here
+            //            // when one of Locale fields is not well-formed.
+            //            BaseLocale @base = defaultULocale.Base();
+            //            BaseLocale newBase = BaseLocale.GetInstance(@base.GetLanguage(), userScript,
+            //                    @base.GetRegion(), @base.GetVariant());
+            //            defaultULocale = GetInstance(newBase, defaultULocale.Extensions());
+            //        }
+            //    }
 
-                // Java 6 or older does not have separated category locales,
-                // use the non-category default for all
-                foreach (Category cat in Enum.GetValues(typeof(Category)))
-                {
-                    int idx = (int)cat;
-                    defaultCategoryLocales[idx] = defaultLocale;
-                    defaultCategoryULocales[idx] = defaultULocale;
-                }
-            }
+            //    // Java 6 or older does not have separated category locales,
+            //    // use the non-category default for all
+            //    foreach (Category cat in Enum.GetValues(typeof(Category)))
+            //    {
+            //        int idx = (int)cat;
+            //        defaultCategoryLocales[idx] = defaultLocale;
+            //        defaultCategoryULocales[idx] = defaultULocale;
+            //    }
+            //}
         }
 
         /**
@@ -552,7 +553,7 @@ namespace ICU4N.Util
          * @return the default ULocale.
          * @stable ICU 2.8
          */
-        public static ULocale GetDefault()
+        public static ULocale GetDefault() // ICU4N TODO: API - rename CurrentCulture?
         {
             lock (syncLock)
             {
@@ -574,18 +575,20 @@ namespace ICU4N.Util
                     defaultLocale = currentDefault;
                     defaultULocale = ForLocale(currentDefault);
 
-                    if (!JDKLocaleHelper.HasLocaleCategories())
+                    //if (!JDKLocaleHelper.HasLocaleCategories())
+                    //{
+
+                    // Detected Java default Locale change.
+                    // We need to update category defaults to match the
+                    // Java 7's behavior on Java 6 or older environment.
+                    foreach (Category cat in Enum.GetValues(typeof(Category)))
                     {
-                        // Detected Java default Locale change.
-                        // We need to update category defaults to match the
-                        // Java 7's behavior on Java 6 or older environment.
-                        foreach (Category cat in Enum.GetValues(typeof(Category)))
-                        {
-                            int idx = (int)cat;
-                            defaultCategoryLocales[idx] = currentDefault;
-                            defaultCategoryULocales[idx] = ForLocale(currentDefault);
-                        }
+                        int idx = (int)cat;
+                        defaultCategoryLocales[idx] = currentDefault;
+                        defaultCategoryULocales[idx] = ForLocale(currentDefault);
                     }
+
+                    //}
                 }
                 return defaultULocale;
             }
@@ -648,46 +651,46 @@ namespace ICU4N.Util
                     // cyclic dependency for category default.
                     return ULocale.ROOT;
                 }
-                if (JDKLocaleHelper.HasLocaleCategories())
-                {
-                    CultureInfo currentCategoryDefault = JDKLocaleHelper.GetDefault(category);
+                //if (JDKLocaleHelper.HasLocaleCategories())
+                //{
+                    CultureInfo currentCategoryDefault = DotNetLocaleHelper.GetDefault(category);
                     if (!defaultCategoryLocales[idx].Equals(currentCategoryDefault))
                     {
                         defaultCategoryLocales[idx] = currentCategoryDefault;
                         defaultCategoryULocales[idx] = ForLocale(currentCategoryDefault);
                     }
-                }
-                else
-                {
-                    // java.util.Locale.setDefault(Locale) in Java 7 updates
-                    // category locale defaults. On Java 6 or older environment,
-                    // ICU4J checks if the default locale has changed and update
-                    // category ULocales here if necessary.
+                //}
+                //else
+                //{
+                //    // java.util.Locale.setDefault(Locale) in Java 7 updates
+                //    // category locale defaults. On Java 6 or older environment,
+                //    // ICU4J checks if the default locale has changed and update
+                //    // category ULocales here if necessary.
 
-                    // Note: When java.util.Locale.setDefault(Locale) is called
-                    // with a Locale same with the previous one, Java 7 still
-                    // updates category locale defaults. On Java 6 or older env,
-                    // there is no good way to detect the event, ICU4J simply
-                    // check if the default Java Locale has changed since last
-                    // time.
+                //    // Note: When java.util.Locale.setDefault(Locale) is called
+                //    // with a Locale same with the previous one, Java 7 still
+                //    // updates category locale defaults. On Java 6 or older env,
+                //    // there is no good way to detect the event, ICU4J simply
+                //    // check if the default Java Locale has changed since last
+                //    // time.
 
-                    CultureInfo currentDefault = CultureInfo.CurrentCulture;
-                    if (!defaultLocale.Equals(currentDefault))
-                    {
-                        defaultLocale = currentDefault;
-                        defaultULocale = ForLocale(currentDefault);
+                //    CultureInfo currentDefault = CultureInfo.CurrentCulture;
+                //    if (!defaultLocale.Equals(currentDefault))
+                //    {
+                //        defaultLocale = currentDefault;
+                //        defaultULocale = ForLocale(currentDefault);
 
-                        foreach (Category cat in Enum.GetValues(typeof(Category)))
-                        {
-                            int tmpIdx = (int)cat;
-                            defaultCategoryLocales[tmpIdx] = currentDefault;
-                            defaultCategoryULocales[tmpIdx] = ForLocale(currentDefault);
-                        }
-                    }
+                //        foreach (Category cat in Enum.GetValues(typeof(Category)))
+                //        {
+                //            int tmpIdx = (int)cat;
+                //            defaultCategoryLocales[tmpIdx] = currentDefault;
+                //            defaultCategoryULocales[tmpIdx] = ForLocale(currentDefault);
+                //        }
+                //    }
 
-                    // No synchronization with JDK Locale, because category default
-                    // is not supported in Java 6 or older versions
-                }
+                //    // No synchronization with JDK Locale, because category default
+                //    // is not supported in Java 6 or older versions
+                //}
                 return defaultCategoryULocales[idx];
             }
         }
@@ -713,7 +716,7 @@ namespace ICU4N.Util
                 int idx = (int)category;
                 defaultCategoryULocales[idx] = newLocale;
                 defaultCategoryLocales[idx] = newJavaDefault;
-                JDKLocaleHelper.SetDefault(category, newJavaDefault);
+                DotNetLocaleHelper.SetDefault(category, newJavaDefault);
             }
         }
 
@@ -865,9 +868,7 @@ namespace ICU4N.Util
          */
         public static ULocale[] GetAvailableLocales()
         {
-            // ICU4N TODO: Finish
-            throw new NotImplementedException();
-            //return ICUResourceBundle.GetAvailableULocales();
+            return ICUResourceBundle.GetAvailableULocales();
         }
 
         /**
@@ -1119,7 +1120,7 @@ namespace ICU4N.Util
          * @return string the full name of the localeID
          * @stable ICU 3.0
          */
-        public string GetName()
+        public string GetName() // ICU4N TODO: API - make into a property
         {
             return localeID; // always normalized
         }
@@ -3225,19 +3226,17 @@ namespace ICU4N.Util
 
         private static string LookupLikelySubtags(string localeId)
         {
-            // ICU4N TODO: finish
-            throw new NotImplementedException();
-            //UResourceBundle bundle =
-            //        UResourceBundle.getBundleInstance(
-            //                ICUData.ICU_BASE_NAME, "likelySubtags");
-            //try
-            //{
-            //    return bundle.GetString(localeId);
-            //}
-            //catch (MissingResourceException e)
-            //{
-            //    return null;
-            //}
+            UResourceBundle bundle =
+                    UResourceBundle.GetBundleInstance(
+                            ICUData.ICU_BASE_NAME, "likelySubtags");
+            try
+            {
+                return bundle.GetString(localeId);
+            }
+            catch (MissingManifestResourceException e)
+            {
+                return null;
+            }
         }
 
         private static string CreateLikelySubtagsString(string lang, string script, string region,
@@ -4457,471 +4456,80 @@ namespace ICU4N.Util
             return extensions;
         }
 
-        /*
-         * JDK Locale Helper
-         */
-        private sealed class JDKLocaleHelper
+        /// <summary>
+        /// .NET Locale Helper
+        /// </summary>
+        private sealed class DotNetLocaleHelper
         {
-            private static bool hasScriptsAndUnicodeExtensions = false;
-            private static bool hasLocaleCategories = false;
-
             /*
-             * New methods in Java 7 Locale class
-             */
-            private static MethodInfo mGetScript;
-            private static MethodInfo mGetExtensionKeys;
-            private static MethodInfo mGetExtension;
-            private static MethodInfo mGetUnicodeLocaleKeys;
-            private static MethodInfo mGetUnicodeLocaleAttributes;
-            private static MethodInfo mGetUnicodeLocaleType;
-            private static MethodInfo mForLanguageTag;
-
-            private static MethodInfo mGetDefault;
-            private static MethodInfo mSetDefault;
-            private static object eDISPLAY;
-            private static object eFORMAT;
-
-            /*
-             * This table is used for mapping between ICU and special Java
+             *  Java
              * 6 locales.  When an ICU locale matches <minumum base> with
              * <keyword>/<value>, the ICU locale is mapped to <Java> locale.
              * For example, both ja_JP@calendar=japanese and ja@calendar=japanese
              * are mapped to Java locale "ja_JP_JP".  ICU locale "nn" is mapped
              * to Java locale "no_NO_NY".
              */
-            private static readonly string[][] JAVA6_MAPDATA = {
-            //  { <Java>,       <ICU base>, <keyword>,  <value>,    <minimum base>
-            new string[] { "ja_JP_JP",   "ja_JP",    "calendar", "japanese", "ja"},
-            new string[] { "no_NO_NY",   "nn_NO",    null,       null,       "nn"},
-            new string[] { "th_TH_TH",   "th_TH",    "numbers",  "thai",     "th"},
-        };
 
-            static JDKLocaleHelper()
-            {
-                //            do {
-                //                try {
-                //                    mGetScript = Locale.class.getMethod("getScript", (Class[]) null);
-                //    mGetExtensionKeys = Locale.class.getMethod("getExtensionKeys", (Class[]) null);
-                //    mGetExtension = Locale.class.getMethod("getExtension", char.class);
-                //                    mGetUnicodeLocaleKeys = Locale.class.getMethod("getUnicodeLocaleKeys", (Class[]) null);
-                //    mGetUnicodeLocaleAttributes = Locale.class.getMethod("getUnicodeLocaleAttributes", (Class[]) null);
-                //    mGetUnicodeLocaleType = Locale.class.getMethod("getUnicodeLocaleType", string.class);
-                //                    mForLanguageTag = Locale.class.getMethod("forLanguageTag", string.class);
-
-                //                    hasScriptsAndUnicodeExtensions = true;
-                //                } catch (NoSuchMethodException e) {
-                //                } catch (IllegalArgumentException e) {
-                //                } catch (SecurityException e) {
-                //                    // TODO : report?
-                //                }
-
-                //                try {
-                //                    Class<?> cCategory = null;
-                //Class<?>[] classes = Locale.class.getDeclaredClasses();
-                //                    for (Class<?> c : classes) {
-                //                        if (c.getName().equals("java.util.Locale$Category")) {
-                //                            cCategory = c;
-                //                            break;
-                //                        }
-                //                    }
-                //                    if (cCategory == null) {
-                //                        break;
-                //                    }
-                //                    mGetDefault = Locale.class.getDeclaredMethod("getDefault", cCategory);
-                //mSetDefault = Locale.class.getDeclaredMethod("setDefault", cCategory, Locale.class);
-
-                //                    Method mName = cCategory.getMethod("name", (Class[])null);
-                //Object[] enumConstants = cCategory.getEnumConstants();
-                //                    for (Object e : enumConstants) {
-                //                        string catVal = (string)mName.invoke(e, (Object[])null);
-                //                        if (catVal.equals("DISPLAY")) {
-                //                            eDISPLAY = e;
-                //                        } else if (catVal.equals("FORMAT")) {
-                //                            eFORMAT = e;
-                //                        }
-                //                    }
-                //                    if (eDISPLAY == null || eFORMAT == null) {
-                //                        break;
-                //                    }
-
-                //                    hasLocaleCategories = true;
-                //                } catch (NoSuchMethodException e) {
-                //                } catch (IllegalArgumentException e) {
-                //                } catch (IllegalAccessException e) {
-                //                } catch (InvocationTargetException e) {
-                //                } catch (SecurityException e) {
-                //                    // TODO : report?
-                //                }
-                //            } while (false);
-            }
-
-            private JDKLocaleHelper()
-            {
-            }
-
-            public static bool HasLocaleCategories() // ICU4N TODO: Make property
-            {
-                return hasLocaleCategories;
-            }
+            ///// <summary>
+            ///// This table is used for mapping between ICU and special .NET locales.
+            ///// When an ICU locale matches &lt;minumum base&gt; with
+            ///// &lt;keyword>/&tl;value>, the ICU locale is mapped to &lt;.NET> locale.
+            ///// </summary>
+            //private static readonly string[][] NET_MAPDATA = { // ICU4N TODO: Do we need different values for .NET Framework/.NET Standard ?
+            //    //  { <Java>,       <ICU base>, <keyword>,  <value>,    <minimum base>
+            //    new string[] { "ja-JP",   "ja_JP",    "calendar", "japanese", "ja"},
+            //    new string[] { "nn-NO",   "nn_NO",    null,       null,       "nn"},
+            //    new string[] { "th-TH",   "th_TH",    "numbers",  "thai",     "th"},
+            //};
 
             public static ULocale ToULocale(CultureInfo loc)
             {
-                return hasScriptsAndUnicodeExtensions ? ToULocale7(loc) : ToULocale6(loc);
+                var name = loc.Name;
+
+                // Convert from RFC 4646, ISO 639, ISO 639-2, and ISO 15924 to ICU  format 
+
+
+                // ICU4N TODO: Need to append currency, number, and collation data
+                name = name.Replace('-', '_');
+
+                return new ULocale(name);
             }
 
             public static CultureInfo ToLocale(ULocale uloc)
             {
-                return hasScriptsAndUnicodeExtensions ? ToLocale7(uloc) : ToLocale6(uloc);
-            }
+                var name = uloc.GetName();
 
-            private static ULocale ToULocale7(CultureInfo loc)
-            {
-                string language = loc.GetLanguage();
-                string script = "";
-                string country = loc.GetCountry();
-                string variant = loc.GetVariant();
+                // ICU4N TODO: Need to convert
+                name = name.Replace('_', '-');
 
-                ISet<string> attributes = null;
-                IDictionary<string, string> keywords = null;
-
-                //try
-                //{
-                script = (string)mGetScript.Invoke(loc, (object[])null);
-                //@SuppressWarnings("unchecked")
-                ISet<char> extKeys = (ISet<char>)mGetExtensionKeys.Invoke(loc, (object[])null);
-                if (extKeys.Any())
-                {
-                    foreach (char extKey in extKeys)
-                    {
-                        if (extKey == 'u')
-                        {
-                            // Found Unicode locale extension
-
-                            // attributes
-                            //@SuppressWarnings("unchecked")
-                            ISet<string> uAttributes = (ISet<string>)mGetUnicodeLocaleAttributes.Invoke(loc, (object[])null);
-                            if (uAttributes.Any())
-                            {
-                                attributes = new SortedSet<string>(StringComparer.Ordinal);
-                                foreach (string attr in uAttributes)
-                                {
-                                    attributes.Add(attr);
-                                }
-                            }
-
-                            // keywords
-                            //@SuppressWarnings("unchecked")
-                            ISet<string> uKeys = (ISet<string>)mGetUnicodeLocaleKeys.Invoke(loc, (object[])null);
-                            foreach (string kwKey in uKeys)
-                            {
-                                string kwVal = (string)mGetUnicodeLocaleType.Invoke(loc, new object[] { kwKey });
-                                if (kwVal != null)
-                                {
-                                    if (kwKey.Equals("va"))
-                                    {
-                                        // va-* is interpreted as a variant
-                                        variant = (variant.Length == 0) ? kwVal : kwVal + "_" + variant;
-                                    }
-                                    else
-                                    {
-                                        if (keywords == null)
-                                        {
-                                            keywords = new SortedDictionary<string, string>();
-                                        }
-                                        keywords[kwKey] = kwVal;
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            string extVal = (string)mGetExtension.Invoke(loc, new object[] { extKey });
-                            if (extVal != null)
-                            {
-                                if (keywords == null)
-                                {
-                                    keywords = new SortedDictionary<string, string>();
-                                }
-                                keywords[new string(new char[] { extKey })] = extVal;
-                            }
-                        }
-                    }
-                }
-                //}
-                //catch (IllegalAccessException e)
-                //{
-                //    throw new RuntimeException(e);
-                //}
-                //catch (InvocationTargetException e)
-                //{
-                //    throw new RuntimeException(e);
-                //}
-
-                // JDK locale no_NO_NY is not interpreted as Nynorsk by ICU,
-                // and it should be transformed to nn_NO.
-
-                // Note: JDK7+ unerstand both no_NO_NY and nn_NO. When convert
-                // ICU locale to JDK, we do not need to map nn_NO back to no_NO_NY.
-
-                if (language.Equals("no") && country.Equals("NO") && variant.Equals("NY")) // ICU4N TODO: Norway no-NO doesn't work in .NET - need to adjust this
-                {
-                    language = "nn";
-                    variant = "";
-                }
-
-                // Constructing ID
-                StringBuilder buf = new StringBuilder(language);
-
-                if (script.Length > 0)
-                {
-                    buf.Append('_');
-                    buf.Append(script);
-                }
-
-                if (country.Length > 0)
-                {
-                    buf.Append('_');
-                    buf.Append(country);
-                }
-
-                if (variant.Length > 0)
-                {
-                    if (country.Length == 0)
-                    {
-                        buf.Append('_');
-                    }
-                    buf.Append('_');
-                    buf.Append(variant);
-                }
-
-                if (attributes != null)
-                {
-                    // transform Unicode attributes into a keyword
-                    StringBuilder attrBuf = new StringBuilder();
-                    foreach (string attr in attributes)
-                    {
-                        if (attrBuf.Length != 0)
-                        {
-                            attrBuf.Append('-');
-                        }
-                        attrBuf.Append(attr);
-                    }
-                    if (keywords == null)
-                    {
-                        keywords = new SortedDictionary<string, string>();
-                    }
-                    keywords[LOCALE_ATTRIBUTE_KEY] = attrBuf.ToString();
-                }
-
-                if (keywords != null)
-                {
-                    buf.Append('@');
-                    bool addSep = false;
-                    foreach (var kwEntry in keywords)
-                    {
-                        string kwKey = kwEntry.Key;
-                        string kwVal = kwEntry.Value;
-
-                        if (kwKey.Length != 1)
-                        {
-                            // Unicode locale key
-                            kwKey = ToLegacyKey(kwKey);
-                            // use "yes" as the value of typeless keywords
-                            kwVal = ToLegacyType(kwKey, ((kwVal.Length == 0) ? "yes" : kwVal));
-                        }
-
-                        if (addSep)
-                        {
-                            buf.Append(';');
-                        }
-                        else
-                        {
-                            addSep = true;
-                        }
-                        buf.Append(kwKey);
-                        buf.Append('=');
-                        buf.Append(kwVal);
-                    }
-                }
-
-                return new ULocale(GetName(buf.ToString()), loc);
-            }
-
-            private static ULocale ToULocale6(CultureInfo loc)
-            {
-                ULocale uloc = null;
-                string locStr = loc.ToString();
-                if (locStr.Length == 0)
-                {
-                    uloc = ULocale.ROOT;
-                }
-                else
-                {
-                    for (int i = 0; i < JAVA6_MAPDATA.Length; i++)
-                    {
-                        if (JAVA6_MAPDATA[i][0].Equals(locStr))
-                        {
-                            LocaleIDParser p = new LocaleIDParser(JAVA6_MAPDATA[i][1]);
-                            p.SetKeywordValue(JAVA6_MAPDATA[i][2], JAVA6_MAPDATA[i][3]);
-                            locStr = p.GetName();
-                            break;
-                        }
-                    }
-                    uloc = new ULocale(GetName(locStr), loc);
-                }
-                return uloc;
-            }
-
-            private static CultureInfo ToLocale7(ULocale uloc)
-            {
-                CultureInfo loc = null;
-                string ulocStr = uloc.GetName();
-                if (uloc.GetScript().Length > 0 || ulocStr.Contains("@"))
-                {
-                    // With script or keywords available, the best way
-                    // to get a mapped Locale is to go through a language tag.
-                    // A Locale with script or keywords can only have variants
-                    // that is 1 to 8 alphanum. If this ULocale has a variant
-                    // subtag not satisfying the criteria, the variant subtag
-                    // will be lost.
-                    string tag = uloc.ToLanguageTag();
-
-                    // Workaround for variant casing problem:
-                    //
-                    // The variant field in ICU is case insensitive and normalized
-                    // to upper case letters by getVariant(), while
-                    // the variant field in JDK Locale is case sensitive.
-                    // ULocale#toLanguageTag use lower case characters for
-                    // BCP 47 variant and private use x-lvariant.
-                    //
-                    // Locale#forLanguageTag in JDK preserves character casing
-                    // for variant. Because ICU always normalizes variant to
-                    // upper case, we convert language tag to upper case here.
-                    tag = AsciiUtil.ToUpperString(tag);
-
-                    //try
-                    //{
-                    loc = (CultureInfo)mForLanguageTag.Invoke(null, new object[] { tag });
-                    //}
-                    //catch (IllegalAccessException e)
-                    //{
-                    //    throw new RuntimeException(e);
-                    //}
-                    //catch (InvocationTargetException e)
-                    //{
-                    //    throw new RuntimeException(e);
-                    //}
-                }
-                if (loc == null)
-                {
-                    // Without script or keywords, use a Locale constructor,
-                    // so we can preserve any ill-formed variants.
-                    //loc = new Locale(uloc.getLanguage(), uloc.getCountry(), uloc.getVariant());
-                    loc = new CultureInfo(uloc.GetLanguage() + "-" + uloc.GetCountry()); // ICU4N TODO: Make this more robust
-                }
-                return loc;
-            }
-
-            private static CultureInfo ToLocale6(ULocale uloc)
-            {
-                string locstr = uloc.GetBaseName();
-                for (int i = 0; i < JAVA6_MAPDATA.Length; i++)
-                {
-                    if (locstr.Equals(JAVA6_MAPDATA[i][1]) || locstr.Equals(JAVA6_MAPDATA[i][4]))
-                    {
-                        if (JAVA6_MAPDATA[i][2] != null)
-                        {
-                            string val = uloc.GetKeywordValue(JAVA6_MAPDATA[i][2]);
-                            if (val != null && val.Equals(JAVA6_MAPDATA[i][3]))
-                            {
-                                locstr = JAVA6_MAPDATA[i][0];
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            locstr = JAVA6_MAPDATA[i][0];
-                            break;
-                        }
-                    }
-                }
-                LocaleIDParser p = new LocaleIDParser(locstr);
-                string[] names = p.GetLanguageScriptCountryVariant();
-                //return new Locale(names[0], names[2], names[3]);
-                return new CultureInfo(names[0] + "-" + names[2] + "-" + names[3]); // ICU4N TODO: Make this more robust
+                return new CultureInfo(name);
             }
 
             public static CultureInfo GetDefault(Category category)
             {
                 CultureInfo loc = CultureInfo.CurrentCulture;
-                if (hasLocaleCategories)
+                switch (category)
                 {
-                    object cat = null;
-                    switch (category)
-                    {
-                        case Category.DISPLAY:
-                            cat = eDISPLAY;
-                            break;
-                        case Category.FORMAT:
-                            cat = eFORMAT;
-                            break;
-                    }
-                    if (cat != null)
-                    {
-                        //try
-                        //{
-                        loc = (CultureInfo)mGetDefault.Invoke(null, new object[] { cat });
-                        //}
-                        //catch (InvocationTargetException e)
-                        //{
-                        //    // fall through - use the base default
-                        //}
-                        //catch (IllegalArgumentException e)
-                        //{
-                        //    // fall through - use the base default
-                        //}
-                        //catch (IllegalAccessException e)
-                        //{
-                        //    // fall through - use the base default
-                        //}
-                    }
+                    case Category.DISPLAY:
+                        loc = CultureInfo.CurrentUICulture;
+                        break;
+                    case Category.FORMAT:
+                        loc = CultureInfo.CurrentCulture;
+                        break;
                 }
                 return loc;
             }
 
             public static void SetDefault(Category category, CultureInfo newLocale)
             {
-                if (hasLocaleCategories)
+                switch (category)
                 {
-                    object cat = null;
-                    switch (category)
-                    {
-                        case Category.DISPLAY:
-                            cat = eDISPLAY;
-                            break;
-                        case Category.FORMAT:
-                            cat = eFORMAT;
-                            break;
-                    }
-                    if (cat != null)
-                    {
-                        //try
-                        //{
-                        mSetDefault.Invoke(null, new object[] { cat, newLocale }); // ICU4N TODO: Check this
-                        //}
-                        //catch (InvocationTargetException e)
-                        //{
-                        //    // fall through - no effects
-                        //}
-                        //catch (IllegalArgumentException e)
-                        //{
-                        //    // fall through - no effects
-                        //}
-                        //catch (IllegalAccessException e)
-                        //{
-                        //    // fall through - no effects
-                        //}
-                    }
+                    case Category.DISPLAY:
+                        CultureInfo.CurrentUICulture = newLocale;
+                        break;
+                    case Category.FORMAT:
+                        CultureInfo.CurrentCulture = newLocale;
+                        break;
                 }
             }
 
@@ -4932,54 +4540,534 @@ namespace ICU4N.Util
             public static bool IsOriginalDefaultLocale(CultureInfo loc)
             {
                 return loc.Equals(CultureInfo.DefaultThreadCurrentCulture);
-
-                //if (hasScriptsAndUnicodeExtensions)
-                //{
-                //    string script = "";
-                //    try
-                //    {
-                //        script = (string)mGetScript.Invoke(loc, (Object[])null);
-                //    }
-                //    catch (Exception e)
-                //    {
-                //        return false;
-                //    }
-
-                //    return loc.GetLanguage().Equals(GetSystemProperty("user.language"))
-                //            && loc.GetCountry().Equals(GetSystemProperty("user.country"))
-                //            && loc.GetVariant().Equals(GetSystemProperty("user.variant"))
-                //            && script.Equals(GetSystemProperty("user.script"));
-                //}
-                //return loc.GetLanguage().Equals(GetSystemProperty("user.language"))
-                //        && loc.GetCountry().Equals(GetSystemProperty("user.country"))
-                //        && loc.GetVariant().Equals(GetSystemProperty("user.variant"));
             }
 
-            public static string GetSystemProperty(string key)
-            {
-                return null; // ICU4N TODO: Complete implemenation
-                             //    string val = null;
-                             //    string fkey = key;
-                             //    if (System.getSecurityManager() != null)
-                             //    {
-                             //        try
-                             //        {
-                             //            val = AccessController.doPrivileged(new PrivilegedAction<string>() {
-                             //                        @Override
-                             //                        public string run()
-                             //            {
-                             //                return System.getProperty(fkey);
-                             //            }
-                             //        });
-                             //    } catch (AccessControlException e)
-                             //    {
-                             //        // ignore
-                             //    }
-                             //} else {
-                             //                val = System.getProperty(fkey);
-                             //            }
-                             //            return val;
-            }
         }
+
+        ///*
+        // * JDK Locale Helper
+        // */
+        //private sealed class JDKLocaleHelper
+        //{
+        //    private static bool hasScriptsAndUnicodeExtensions = false;
+        //    private static bool hasLocaleCategories = false;
+
+        //    /*
+        //     * New methods in Java 7 Locale class
+        //     */
+        //    private static MethodInfo mGetScript;
+        //    private static MethodInfo mGetExtensionKeys;
+        //    private static MethodInfo mGetExtension;
+        //    private static MethodInfo mGetUnicodeLocaleKeys;
+        //    private static MethodInfo mGetUnicodeLocaleAttributes;
+        //    private static MethodInfo mGetUnicodeLocaleType;
+        //    private static MethodInfo mForLanguageTag;
+
+        //    private static MethodInfo mGetDefault;
+        //    private static MethodInfo mSetDefault;
+        //    private static object eDISPLAY;
+        //    private static object eFORMAT;
+
+        //    /*
+        //     * This table is used for mapping between ICU and special Java
+        //     * 6 locales.  When an ICU locale matches <minumum base> with
+        //     * <keyword>/<value>, the ICU locale is mapped to <Java> locale.
+        //     * For example, both ja_JP@calendar=japanese and ja@calendar=japanese
+        //     * are mapped to Java locale "ja_JP_JP".  ICU locale "nn" is mapped
+        //     * to Java locale "no_NO_NY".
+        //     */
+        //    private static readonly string[][] JAVA6_MAPDATA = {
+        //    //  { <Java>,       <ICU base>, <keyword>,  <value>,    <minimum base>
+        //    new string[] { "ja_JP_JP",   "ja_JP",    "calendar", "japanese", "ja"},
+        //    new string[] { "no_NO_NY",   "nn_NO",    null,       null,       "nn"},
+        //    new string[] { "th_TH_TH",   "th_TH",    "numbers",  "thai",     "th"},
+        //};
+
+        //    static JDKLocaleHelper()
+        //    {
+        //        // ICU4N TODO: Finish implementation (replace with NETLocaleHelper ?)
+        //        //            do {
+        //        //                try {
+        //        //                    mGetScript = Locale.class.getMethod("getScript", (Class[]) null);
+        //        //    mGetExtensionKeys = Locale.class.getMethod("getExtensionKeys", (Class[]) null);
+        //        //    mGetExtension = Locale.class.getMethod("getExtension", char.class);
+        //        //                    mGetUnicodeLocaleKeys = Locale.class.getMethod("getUnicodeLocaleKeys", (Class[]) null);
+        //        //    mGetUnicodeLocaleAttributes = Locale.class.getMethod("getUnicodeLocaleAttributes", (Class[]) null);
+        //        //    mGetUnicodeLocaleType = Locale.class.getMethod("getUnicodeLocaleType", string.class);
+        //        //                    mForLanguageTag = Locale.class.getMethod("forLanguageTag", string.class);
+
+        //        //                    hasScriptsAndUnicodeExtensions = true;
+        //        //                } catch (NoSuchMethodException e) {
+        //        //                } catch (IllegalArgumentException e) {
+        //        //                } catch (SecurityException e) {
+        //        //                    // TODO : report?
+        //        //                }
+
+        //        //                try {
+        //        //                    Class<?> cCategory = null;
+        //        //Class<?>[] classes = Locale.class.getDeclaredClasses();
+        //        //                    for (Class<?> c : classes) {
+        //        //                        if (c.getName().equals("java.util.Locale$Category")) {
+        //        //                            cCategory = c;
+        //        //                            break;
+        //        //                        }
+        //        //                    }
+        //        //                    if (cCategory == null) {
+        //        //                        break;
+        //        //                    }
+        //        //                    mGetDefault = Locale.class.getDeclaredMethod("getDefault", cCategory);
+        //        //mSetDefault = Locale.class.getDeclaredMethod("setDefault", cCategory, Locale.class);
+
+        //        //                    Method mName = cCategory.getMethod("name", (Class[])null);
+        //        //Object[] enumConstants = cCategory.getEnumConstants();
+        //        //                    for (Object e : enumConstants) {
+        //        //                        string catVal = (string)mName.invoke(e, (Object[])null);
+        //        //                        if (catVal.equals("DISPLAY")) {
+        //        //                            eDISPLAY = e;
+        //        //                        } else if (catVal.equals("FORMAT")) {
+        //        //                            eFORMAT = e;
+        //        //                        }
+        //        //                    }
+        //        //                    if (eDISPLAY == null || eFORMAT == null) {
+        //        //                        break;
+        //        //                    }
+
+        //        //                    hasLocaleCategories = true;
+        //        //                } catch (NoSuchMethodException e) {
+        //        //                } catch (IllegalArgumentException e) {
+        //        //                } catch (IllegalAccessException e) {
+        //        //                } catch (InvocationTargetException e) {
+        //        //                } catch (SecurityException e) {
+        //        //                    // TODO : report?
+        //        //                }
+        //        //            } while (false);
+        //    }
+
+        //    private JDKLocaleHelper()
+        //    {
+        //    }
+
+        //    public static bool HasLocaleCategories() // ICU4N TODO: Make property
+        //    {
+        //        return hasLocaleCategories;
+        //    }
+
+        //    public static ULocale ToULocale(CultureInfo loc)
+        //    {
+        //        return hasScriptsAndUnicodeExtensions ? ToULocale7(loc) : ToULocale6(loc);
+        //    }
+
+        //    public static CultureInfo ToLocale(ULocale uloc)
+        //    {
+        //        return hasScriptsAndUnicodeExtensions ? ToLocale7(uloc) : ToLocale6(uloc);
+        //    }
+
+        //    private static ULocale ToULocale7(CultureInfo loc)
+        //    {
+        //        string language = loc.GetLanguage();
+        //        string script = "";
+        //        string country = loc.GetCountry();
+        //        string variant = loc.GetVariant();
+
+        //        ISet<string> attributes = null;
+        //        IDictionary<string, string> keywords = null;
+
+        //        //try
+        //        //{
+        //        script = (string)mGetScript.Invoke(loc, (object[])null);
+        //        //@SuppressWarnings("unchecked")
+        //        ISet<char> extKeys = (ISet<char>)mGetExtensionKeys.Invoke(loc, (object[])null);
+        //        if (extKeys.Any())
+        //        {
+        //            foreach (char extKey in extKeys)
+        //            {
+        //                if (extKey == 'u')
+        //                {
+        //                    // Found Unicode locale extension
+
+        //                    // attributes
+        //                    //@SuppressWarnings("unchecked")
+        //                    ISet<string> uAttributes = (ISet<string>)mGetUnicodeLocaleAttributes.Invoke(loc, (object[])null);
+        //                    if (uAttributes.Any())
+        //                    {
+        //                        attributes = new SortedSet<string>(StringComparer.Ordinal);
+        //                        foreach (string attr in uAttributes)
+        //                        {
+        //                            attributes.Add(attr);
+        //                        }
+        //                    }
+
+        //                    // keywords
+        //                    //@SuppressWarnings("unchecked")
+        //                    ISet<string> uKeys = (ISet<string>)mGetUnicodeLocaleKeys.Invoke(loc, (object[])null);
+        //                    foreach (string kwKey in uKeys)
+        //                    {
+        //                        string kwVal = (string)mGetUnicodeLocaleType.Invoke(loc, new object[] { kwKey });
+        //                        if (kwVal != null)
+        //                        {
+        //                            if (kwKey.Equals("va"))
+        //                            {
+        //                                // va-* is interpreted as a variant
+        //                                variant = (variant.Length == 0) ? kwVal : kwVal + "_" + variant;
+        //                            }
+        //                            else
+        //                            {
+        //                                if (keywords == null)
+        //                                {
+        //                                    keywords = new SortedDictionary<string, string>();
+        //                                }
+        //                                keywords[kwKey] = kwVal;
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    string extVal = (string)mGetExtension.Invoke(loc, new object[] { extKey });
+        //                    if (extVal != null)
+        //                    {
+        //                        if (keywords == null)
+        //                        {
+        //                            keywords = new SortedDictionary<string, string>();
+        //                        }
+        //                        keywords[new string(new char[] { extKey })] = extVal;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        //}
+        //        //catch (IllegalAccessException e)
+        //        //{
+        //        //    throw new RuntimeException(e);
+        //        //}
+        //        //catch (InvocationTargetException e)
+        //        //{
+        //        //    throw new RuntimeException(e);
+        //        //}
+
+        //        // JDK locale no_NO_NY is not interpreted as Nynorsk by ICU,
+        //        // and it should be transformed to nn_NO.
+
+        //        // Note: JDK7+ unerstand both no_NO_NY and nn_NO. When convert
+        //        // ICU locale to JDK, we do not need to map nn_NO back to no_NO_NY.
+
+        //        if (language.Equals("no") && country.Equals("NO") && variant.Equals("NY")) // ICU4N TODO: Norway no-NO doesn't work in .NET - need to adjust this
+        //        {
+        //            language = "nn";
+        //            variant = "";
+        //        }
+
+        //        // Constructing ID
+        //        StringBuilder buf = new StringBuilder(language);
+
+        //        if (script.Length > 0)
+        //        {
+        //            buf.Append('_');
+        //            buf.Append(script);
+        //        }
+
+        //        if (country.Length > 0)
+        //        {
+        //            buf.Append('_');
+        //            buf.Append(country);
+        //        }
+
+        //        if (variant.Length > 0)
+        //        {
+        //            if (country.Length == 0)
+        //            {
+        //                buf.Append('_');
+        //            }
+        //            buf.Append('_');
+        //            buf.Append(variant);
+        //        }
+
+        //        if (attributes != null)
+        //        {
+        //            // transform Unicode attributes into a keyword
+        //            StringBuilder attrBuf = new StringBuilder();
+        //            foreach (string attr in attributes)
+        //            {
+        //                if (attrBuf.Length != 0)
+        //                {
+        //                    attrBuf.Append('-');
+        //                }
+        //                attrBuf.Append(attr);
+        //            }
+        //            if (keywords == null)
+        //            {
+        //                keywords = new SortedDictionary<string, string>();
+        //            }
+        //            keywords[LOCALE_ATTRIBUTE_KEY] = attrBuf.ToString();
+        //        }
+
+        //        if (keywords != null)
+        //        {
+        //            buf.Append('@');
+        //            bool addSep = false;
+        //            foreach (var kwEntry in keywords)
+        //            {
+        //                string kwKey = kwEntry.Key;
+        //                string kwVal = kwEntry.Value;
+
+        //                if (kwKey.Length != 1)
+        //                {
+        //                    // Unicode locale key
+        //                    kwKey = ToLegacyKey(kwKey);
+        //                    // use "yes" as the value of typeless keywords
+        //                    kwVal = ToLegacyType(kwKey, ((kwVal.Length == 0) ? "yes" : kwVal));
+        //                }
+
+        //                if (addSep)
+        //                {
+        //                    buf.Append(';');
+        //                }
+        //                else
+        //                {
+        //                    addSep = true;
+        //                }
+        //                buf.Append(kwKey);
+        //                buf.Append('=');
+        //                buf.Append(kwVal);
+        //            }
+        //        }
+
+        //        return new ULocale(GetName(buf.ToString()), loc);
+        //    }
+
+        //    private static ULocale ToULocale6(CultureInfo loc)
+        //    {
+        //        ULocale uloc = null;
+        //        string locStr = loc.ToString();
+        //        if (locStr.Length == 0)
+        //        {
+        //            uloc = ULocale.ROOT;
+        //        }
+        //        else
+        //        {
+        //            for (int i = 0; i < JAVA6_MAPDATA.Length; i++)
+        //            {
+        //                if (JAVA6_MAPDATA[i][0].Equals(locStr))
+        //                {
+        //                    LocaleIDParser p = new LocaleIDParser(JAVA6_MAPDATA[i][1]);
+        //                    p.SetKeywordValue(JAVA6_MAPDATA[i][2], JAVA6_MAPDATA[i][3]);
+        //                    locStr = p.GetName();
+        //                    break;
+        //                }
+        //            }
+        //            uloc = new ULocale(GetName(locStr), loc);
+        //        }
+        //        return uloc;
+        //    }
+
+        //    private static CultureInfo ToLocale7(ULocale uloc)
+        //    {
+        //        CultureInfo loc = null;
+        //        string ulocStr = uloc.GetName();
+        //        if (uloc.GetScript().Length > 0 || ulocStr.Contains("@"))
+        //        {
+        //            // With script or keywords available, the best way
+        //            // to get a mapped Locale is to go through a language tag.
+        //            // A Locale with script or keywords can only have variants
+        //            // that is 1 to 8 alphanum. If this ULocale has a variant
+        //            // subtag not satisfying the criteria, the variant subtag
+        //            // will be lost.
+        //            string tag = uloc.ToLanguageTag();
+
+        //            // Workaround for variant casing problem:
+        //            //
+        //            // The variant field in ICU is case insensitive and normalized
+        //            // to upper case letters by getVariant(), while
+        //            // the variant field in JDK Locale is case sensitive.
+        //            // ULocale#toLanguageTag use lower case characters for
+        //            // BCP 47 variant and private use x-lvariant.
+        //            //
+        //            // Locale#forLanguageTag in JDK preserves character casing
+        //            // for variant. Because ICU always normalizes variant to
+        //            // upper case, we convert language tag to upper case here.
+        //            tag = AsciiUtil.ToUpperString(tag);
+
+        //            //try
+        //            //{
+        //            loc = (CultureInfo)mForLanguageTag.Invoke(null, new object[] { tag });
+        //            //}
+        //            //catch (IllegalAccessException e)
+        //            //{
+        //            //    throw new RuntimeException(e);
+        //            //}
+        //            //catch (InvocationTargetException e)
+        //            //{
+        //            //    throw new RuntimeException(e);
+        //            //}
+        //        }
+        //        if (loc == null)
+        //        {
+        //            // Without script or keywords, use a Locale constructor,
+        //            // so we can preserve any ill-formed variants.
+        //            //loc = new Locale(uloc.getLanguage(), uloc.getCountry(), uloc.getVariant());
+        //            loc = new CultureInfo(uloc.GetLanguage() + "-" + uloc.GetCountry()); // ICU4N TODO: Make this more robust
+        //        }
+        //        return loc;
+        //    }
+
+        //    private static CultureInfo ToLocale6(ULocale uloc)
+        //    {
+        //        string locstr = uloc.GetBaseName();
+        //        for (int i = 0; i < JAVA6_MAPDATA.Length; i++)
+        //        {
+        //            if (locstr.Equals(JAVA6_MAPDATA[i][1]) || locstr.Equals(JAVA6_MAPDATA[i][4]))
+        //            {
+        //                if (JAVA6_MAPDATA[i][2] != null)
+        //                {
+        //                    string val = uloc.GetKeywordValue(JAVA6_MAPDATA[i][2]);
+        //                    if (val != null && val.Equals(JAVA6_MAPDATA[i][3]))
+        //                    {
+        //                        locstr = JAVA6_MAPDATA[i][0];
+        //                        break;
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    locstr = JAVA6_MAPDATA[i][0];
+        //                    break;
+        //                }
+        //            }
+        //        }
+        //        LocaleIDParser p = new LocaleIDParser(locstr);
+        //        string[] names = p.GetLanguageScriptCountryVariant();
+        //        //return new Locale(names[0], names[2], names[3]);
+        //        return new CultureInfo(names[0] + "-" + names[2] + "-" + names[3]); // ICU4N TODO: Make this more robust
+        //    }
+
+        //    public static CultureInfo GetDefault(Category category)
+        //    {
+        //        CultureInfo loc = CultureInfo.CurrentCulture;
+        //        if (hasLocaleCategories)
+        //        {
+        //            object cat = null;
+        //            switch (category)
+        //            {
+        //                case Category.DISPLAY:
+        //                    cat = eDISPLAY;
+        //                    break;
+        //                case Category.FORMAT:
+        //                    cat = eFORMAT;
+        //                    break;
+        //            }
+        //            if (cat != null)
+        //            {
+        //                //try
+        //                //{
+        //                loc = (CultureInfo)mGetDefault.Invoke(null, new object[] { cat });
+        //                //}
+        //                //catch (InvocationTargetException e)
+        //                //{
+        //                //    // fall through - use the base default
+        //                //}
+        //                //catch (IllegalArgumentException e)
+        //                //{
+        //                //    // fall through - use the base default
+        //                //}
+        //                //catch (IllegalAccessException e)
+        //                //{
+        //                //    // fall through - use the base default
+        //                //}
+        //            }
+        //        }
+        //        return loc;
+        //    }
+
+        //    public static void SetDefault(Category category, CultureInfo newLocale)
+        //    {
+        //        if (hasLocaleCategories)
+        //        {
+        //            object cat = null;
+        //            switch (category)
+        //            {
+        //                case Category.DISPLAY:
+        //                    cat = eDISPLAY;
+        //                    break;
+        //                case Category.FORMAT:
+        //                    cat = eFORMAT;
+        //                    break;
+        //            }
+        //            if (cat != null)
+        //            {
+        //                //try
+        //                //{
+        //                mSetDefault.Invoke(null, new object[] { cat, newLocale }); // ICU4N TODO: Check this
+        //                //}
+        //                //catch (InvocationTargetException e)
+        //                //{
+        //                //    // fall through - no effects
+        //                //}
+        //                //catch (IllegalArgumentException e)
+        //                //{
+        //                //    // fall through - no effects
+        //                //}
+        //                //catch (IllegalAccessException e)
+        //                //{
+        //                //    // fall through - no effects
+        //                //}
+        //            }
+        //        }
+        //    }
+
+        //    // Returns true if the given Locale matches the original
+        //    // default locale initialized by JVM by checking user.XXX
+        //    // system properties. When the system properties are not accessible,
+        //    // this method returns false.
+        //    public static bool IsOriginalDefaultLocale(CultureInfo loc)
+        //    {
+        //        return loc.Equals(CultureInfo.DefaultThreadCurrentCulture);
+
+        //        //if (hasScriptsAndUnicodeExtensions)
+        //        //{
+        //        //    string script = "";
+        //        //    try
+        //        //    {
+        //        //        script = (string)mGetScript.Invoke(loc, (Object[])null);
+        //        //    }
+        //        //    catch (Exception e)
+        //        //    {
+        //        //        return false;
+        //        //    }
+
+        //        //    return loc.GetLanguage().Equals(GetSystemProperty("user.language"))
+        //        //            && loc.GetCountry().Equals(GetSystemProperty("user.country"))
+        //        //            && loc.GetVariant().Equals(GetSystemProperty("user.variant"))
+        //        //            && script.Equals(GetSystemProperty("user.script"));
+        //        //}
+        //        //return loc.GetLanguage().Equals(GetSystemProperty("user.language"))
+        //        //        && loc.GetCountry().Equals(GetSystemProperty("user.country"))
+        //        //        && loc.GetVariant().Equals(GetSystemProperty("user.variant"));
+        //    }
+
+        //    public static string GetSystemProperty(string key)
+        //    {
+        //        return null; // ICU4N TODO: Complete implemenation
+        //                     //    string val = null;
+        //                     //    string fkey = key;
+        //                     //    if (System.getSecurityManager() != null)
+        //                     //    {
+        //                     //        try
+        //                     //        {
+        //                     //            val = AccessController.doPrivileged(new PrivilegedAction<string>() {
+        //                     //                        @Override
+        //                     //                        public string run()
+        //                     //            {
+        //                     //                return System.getProperty(fkey);
+        //                     //            }
+        //                     //        });
+        //                     //    } catch (AccessControlException e)
+        //                     //    {
+        //                     //        // ignore
+        //                     //    }
+        //                     //} else {
+        //                     //                val = System.getProperty(fkey);
+        //                     //            }
+        //                     //            return val;
+        //    }
+        //}
     }
 }

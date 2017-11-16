@@ -74,15 +74,15 @@ namespace ICU4N.Text
             LocaleDisplayNames result = null;
             if (FACTORY_DIALECTHANDLING != null)
             {
-                //try
-                //{
-                result = (LocaleDisplayNames)FACTORY_DIALECTHANDLING.Invoke(null,
-                        new object[] { locale, dialectHandling }); // ICU4N TODO: Check this
-                //}
-                //catch (InvocationTargetException e)
-                //{
-                //    // fall through
-                //}
+                try
+                {
+                    result = (LocaleDisplayNames)FACTORY_DIALECTHANDLING.Invoke(null,
+                        new object[] { locale, dialectHandling });
+                }
+                catch (TargetInvocationException)
+                {
+                    // fall through
+                }
                 //catch (IllegalAccessException e)
                 //{
                 //    // fall through
@@ -109,15 +109,15 @@ namespace ICU4N.Text
             LocaleDisplayNames result = null;
             if (FACTORY_DISPLAYCONTEXT != null)
             {
-                //try
-                //{
-                result = (LocaleDisplayNames)FACTORY_DISPLAYCONTEXT.Invoke(null,
-                        new object[] { locale, contexts }); // ICU4N TODO: Check this
-                //}
-                //catch (InvocationTargetException e)
-                //{
-                //    // fall through
-                //}
+                try
+                {
+                    result = (LocaleDisplayNames)FACTORY_DISPLAYCONTEXT.Invoke(null,
+                        new object[] { locale, contexts });
+                }
+                catch (TargetInvocationException)
+                {
+                    // fall through
+                }
                 //catch (IllegalAccessException e)
                 //{
                 //    // fall through
@@ -231,7 +231,7 @@ namespace ICU4N.Text
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
-        public string ScriptDisplayNameInContext(string script)
+        public virtual string ScriptDisplayNameInContext(string script)
         {
             return ScriptDisplayName(script);
         }
@@ -290,7 +290,7 @@ namespace ICU4N.Text
          * @throws IllformedLocaleException if any of the locales in localeSet are malformed.
          * @stable ICU 55
          */
-        public IList<UiListItem> GetUiList(ISet<ULocale> localeSet, bool inSelf, IComparer<object> collator)
+        public virtual IList<UiListItem> GetUiList(ISet<ULocale> localeSet, bool inSelf, IComparer<object> collator)
         {
             return GetUiListCompareWholeItems(localeSet, UiListItem.GetComparer(collator, inSelf));
         }
@@ -312,6 +312,8 @@ namespace ICU4N.Text
          */
         public class UiListItem
         {
+            // ICU4N TODO: API - make into properties
+
             /**
              * Returns the minimized locale for an input locale, such as sr-Cyrl → sr
              * @stable ICU 55
@@ -438,43 +440,47 @@ namespace ICU4N.Text
 
         static LocaleDisplayNames()
         {
-            // ICU4N TODO: Finish implementation
-            //string implClassName = ICUConfig.get("com.ibm.icu.text.LocaleDisplayNames.impl", "com.ibm.icu.impl.LocaleDisplayNamesImpl");
+            string implClassName = Impl.ICUConfig.Get("ICU4N.LocaleDisplayNames.impl", "ICU4N.Impl.LocaleDisplayNamesImpl, ICU4N");
 
-            //MethodInfo factoryDialectHandling = null;
-            //MethodInfo factoryDisplayContext = null;
+            MethodInfo factoryDialectHandling = null;
+            MethodInfo factoryDisplayContext = null;
 
-            //try {
-            //    Class<?> implClass = Class.forName(implClassName);
-            //    try {
-            //        factoryDialectHandling = implClass.getMethod("getInstance",
-            //                ULocale.class, DialectHandling.class);
-            //    } catch (NoSuchMethodException e) {
-            //    }
-            //    try {
-            //        factoryDisplayContext = implClass.getMethod("getInstance",
-            //                ULocale.class, DisplayContext[].class);
-            //    } catch (NoSuchMethodException e) {
-            //    }
+            try
+            {
+                Type implClass = Type.GetType(implClassName);
 
-            //} catch (ClassNotFoundException e) {
-            //    // fallback to last resort impl
-            //}
+                if (implClass == null)
+                    return;
 
-            //FACTORY_DIALECTHANDLING = factoryDialectHandling;
-            //FACTORY_DISPLAYCONTEXT = factoryDisplayContext;
+                // ICU4N NOTE: GetMethod() doesn't throw an exception if the method
+                // is not found in .NET.
+                factoryDialectHandling = implClass.GetMethod("GetInstance", 
+                    new Type[] { typeof(ULocale), typeof(DialectHandling) });
+
+                factoryDisplayContext = implClass.GetMethod("GetInstance",
+                    new Type[] { typeof(ULocale), typeof(DialectHandling[]) });
+            }
+            catch (TypeLoadException)
+            {
+                // fallback to last resort impl
+            }
+
+            FACTORY_DIALECTHANDLING = factoryDialectHandling;
+            FACTORY_DISPLAYCONTEXT = factoryDisplayContext;
         }
 
-        /**
-         * Minimum implementation of LocaleDisplayNames
-         */
+        /// <summary>
+        /// Minimum implementation of <see cref="LocaleDisplayNames"/>
+        /// </summary>
         private class LastResortLocaleDisplayNames : LocaleDisplayNames
         {
-
             private ULocale locale;
             private DisplayContext[] contexts;
 
             internal LastResortLocaleDisplayNames(ULocale locale, DialectHandling dialectHandling)
+#pragma warning disable 612, 618
+                : base()
+#pragma warning restore 612, 618
             {
                 this.locale = locale;
                 DisplayContext context = (dialectHandling == DialectHandling.DIALECT_NAMES) ?
@@ -483,6 +489,9 @@ namespace ICU4N.Text
             }
 
             internal LastResortLocaleDisplayNames(ULocale locale, params DisplayContext[] contexts)
+#pragma warning disable 612, 618
+                : base()
+#pragma warning restore 612, 618
             {
                 this.locale = locale;
                 this.contexts = new DisplayContext[contexts.Length];

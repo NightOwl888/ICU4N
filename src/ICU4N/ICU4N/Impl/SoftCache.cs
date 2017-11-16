@@ -55,15 +55,19 @@ namespace ICU4N.Impl
                 object temp;
                 lock (map)
                 {
-                    if (!map.TryGetValue(key, out temp) || temp == null)
-                    {
-                        // Normal "put": Our new value is now cached.
-                        return value;
-                    }
-                    else
+                    if (!map.TryGetValue(key, out temp))
                     {
                         // put if absent
                         map[key] = mapValue;
+
+                        if (temp == null)
+                        {
+                            // Normal "put": Our new value is now cached.
+                            return value;
+                        }
+                    }
+                    else
+                    {
                         mapValue = temp;
                     }
                 }

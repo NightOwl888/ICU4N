@@ -234,13 +234,61 @@ namespace ICU4N.Support.Text
         }
 
         /// <summary>
-        /// Compares a <see cref="ICharSequence"/> to this <see cref="string"/> to determine if
+        /// Compares a <see cref="string"/> to this <see cref="string"/> to determine if
+        /// their contents are equal.
+        /// </summary>
+        /// <param name="text">This <see cref="string"/>.</param>
+        /// <param name="cs">The character sequence to compare to.</param>
+        /// <returns></returns>
+        public static bool ContentEquals(this string text, string cs)
+        {
+            int len = cs.Length;
+
+            if (len != text.Length)
+            {
+                return false;
+            }
+
+            if (len == 0 && text.Length == 0)
+            {
+                return true; // since both are empty strings
+            }
+
+            return RegionMatches(text, 0, cs.ToString(), 0, len);
+        }
+
+        /// <summary>
+        /// Compares a <see cref="StringBuilder"/> to this <see cref="string"/> to determine if
         /// their contents are equal.
         /// </summary>
         /// <param name="text">This <see cref="string"/>.</param>
         /// <param name="cs">The character sequence to compare to.</param>
         /// <returns></returns>
         public static bool ContentEquals(this string text, StringBuilder cs)
+        {
+            int len = cs.Length;
+
+            if (len != text.Length)
+            {
+                return false;
+            }
+
+            if (len == 0 && text.Length == 0)
+            {
+                return true; // since both are empty strings
+            }
+
+            return RegionMatches(text, 0, cs.ToString(), 0, len);
+        }
+
+        /// <summary>
+        /// Compares a <see cref="T:char[]"/> to this <see cref="string"/> to determine if
+        /// their contents are equal.
+        /// </summary>
+        /// <param name="text">This <see cref="string"/>.</param>
+        /// <param name="cs">The character sequence to compare to.</param>
+        /// <returns></returns>
+        public static bool ContentEquals(this string text, char[] cs)
         {
             int len = cs.Length;
 
@@ -286,7 +334,7 @@ namespace ICU4N.Support.Text
         /// This shouldn't be changed to an incompatible implementation after other APIs have been used.
         /// </summary>
         private static StringInterner interner =
-#if NETSTANDARD1_6
+#if NETSTANDARD1_3
             new SimpleStringInterner(1024, 8);
 #else
             new StringInterner();
