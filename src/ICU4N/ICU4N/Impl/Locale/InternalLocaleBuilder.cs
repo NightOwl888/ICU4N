@@ -101,7 +101,7 @@ namespace ICU4N.Impl.Locale
         {
             if (attribute == null || !UnicodeLocaleExtension.IsAttribute(attribute))
             {
-                throw new CultureNotFoundException("Ill-formed Unicode locale attribute: " + attribute);
+                throw new FormatException("Ill-formed Unicode locale attribute: " + attribute);
             }
             // Use case insensitive string to prevent duplication
             if (_uattributes == null)

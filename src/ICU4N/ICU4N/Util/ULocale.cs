@@ -252,68 +252,68 @@ namespace ICU4N.Util
          * canonicalized id. The 3rd is the keyword. The 4th is the keyword value.
          */
         private static string[][] CANONICALIZE_MAP = {
-        new string[] { "C",              "en_US_POSIX", null, null }, /* POSIX name */
-        new string[] { "art_LOJBAN",     "jbo", null, null }, /* registered name */
-        new string[] { "az_AZ_CYRL",     "az_Cyrl_AZ", null, null }, /* .NET name */
-        new string[] { "az_AZ_LATN",     "az_Latn_AZ", null, null }, /* .NET name */
-        new string[] { "ca_ES_PREEURO",  "ca_ES", "currency", "ESP" },
-        new string[] { "cel_GAULISH",    "cel__GAULISH", null, null }, /* registered name */
-        new string[] { "de_1901",        "de__1901", null, null }, /* registered name */
-        new string[] { "de_1906",        "de__1906", null, null }, /* registered name */
-        new string[] { "de__PHONEBOOK",  "de", "collation", "phonebook" }, /* Old ICU name */
-        new string[] { "de_AT_PREEURO",  "de_AT", "currency", "ATS" },
-        new string[] { "de_DE_PREEURO",  "de_DE", "currency", "DEM" },
-        new string[] { "de_LU_PREEURO",  "de_LU", "currency", "EUR" },
-        new string[] { "el_GR_PREEURO",  "el_GR", "currency", "GRD" },
-        new string[] { "en_BOONT",       "en__BOONT", null, null }, /* registered name */
-        new string[] { "en_SCOUSE",      "en__SCOUSE", null, null }, /* registered name */
-        new string[] { "en_BE_PREEURO",  "en_BE", "currency", "BEF" },
-        new string[] { "en_IE_PREEURO",  "en_IE", "currency", "IEP" },
-        new string[] { "es__TRADITIONAL", "es", "collation", "traditional" }, /* Old ICU name */
-        new string[] { "es_ES_PREEURO",  "es_ES", "currency", "ESP" },
-        new string[] { "eu_ES_PREEURO",  "eu_ES", "currency", "ESP" },
-        new string[] { "fi_FI_PREEURO",  "fi_FI", "currency", "FIM" },
-        new string[] { "fr_BE_PREEURO",  "fr_BE", "currency", "BEF" },
-        new string[] { "fr_FR_PREEURO",  "fr_FR", "currency", "FRF" },
-        new string[] { "fr_LU_PREEURO",  "fr_LU", "currency", "LUF" },
-        new string[] { "ga_IE_PREEURO",  "ga_IE", "currency", "IEP" },
-        new string[] { "gl_ES_PREEURO",  "gl_ES", "currency", "ESP" },
-        new string[] { "hi__DIRECT",     "hi", "collation", "direct" }, /* Old ICU name */
-        new string[] { "it_IT_PREEURO",  "it_IT", "currency", "ITL" },
-        new string[] { "ja_JP_TRADITIONAL", "ja_JP", "calendar", "japanese" },
-      // new string[] { "nb_NO_NY",       "nn_NO", null, null },
-        new string[] { "nl_BE_PREEURO",  "nl_BE", "currency", "BEF" },
-        new string[] { "nl_NL_PREEURO",  "nl_NL", "currency", "NLG" },
-        new string[] { "pt_PT_PREEURO",  "pt_PT", "currency", "PTE" },
-        new string[] { "sl_ROZAJ",       "sl__ROZAJ", null, null }, /* registered name */
-        new string[] { "sr_SP_CYRL",     "sr_Cyrl_RS", null, null }, /* .NET name */
-        new string[] { "sr_SP_LATN",     "sr_Latn_RS", null, null }, /* .NET name */
-        new string[] { "sr_YU_CYRILLIC", "sr_Cyrl_RS", null, null }, /* Linux name */
-        new string[] { "th_TH_TRADITIONAL", "th_TH", "calendar", "buddhist" }, /* Old ICU name */
-        new string[] { "uz_UZ_CYRILLIC", "uz_Cyrl_UZ", null, null }, /* Linux name */
-        new string[] { "uz_UZ_CYRL",     "uz_Cyrl_UZ", null, null }, /* .NET name */
-        new string[] { "uz_UZ_LATN",     "uz_Latn_UZ", null, null }, /* .NET name */
-        new string[] { "zh_CHS",         "zh_Hans", null, null }, /* .NET name */
-        new string[] { "zh_CHT",         "zh_Hant", null, null }, /* .NET name */
-        new string[] { "zh_GAN",         "zh__GAN", null, null }, /* registered name */
-        new string[] { "zh_GUOYU",       "zh", null, null }, /* registered name */
-        new string[] { "zh_HAKKA",       "zh__HAKKA", null, null }, /* registered name */
-        new string[] { "zh_MIN",         "zh__MIN", null, null }, /* registered name */
-        new string[] { "zh_MIN_NAN",     "zh__MINNAN", null, null }, /* registered name */
-        new string[] { "zh_WUU",         "zh__WUU", null, null }, /* registered name */
-        new string[] { "zh_XIANG",       "zh__XIANG", null, null }, /* registered name */
-        new string[] { "zh_YUE",         "zh__YUE", null, null } /* registered name */
-    };
+            new string[] { "C",              "en_US_POSIX", null, null }, /* POSIX name */
+            new string[] { "art_LOJBAN",     "jbo", null, null }, /* registered name */
+            new string[] { "az_AZ_CYRL",     "az_Cyrl_AZ", null, null }, /* .NET name */
+            new string[] { "az_AZ_LATN",     "az_Latn_AZ", null, null }, /* .NET name */
+            new string[] { "ca_ES_PREEURO",  "ca_ES", "currency", "ESP" },
+            new string[] { "cel_GAULISH",    "cel__GAULISH", null, null }, /* registered name */
+            new string[] { "de_1901",        "de__1901", null, null }, /* registered name */
+            new string[] { "de_1906",        "de__1906", null, null }, /* registered name */
+            new string[] { "de__PHONEBOOK",  "de", "collation", "phonebook" }, /* Old ICU name */
+            new string[] { "de_AT_PREEURO",  "de_AT", "currency", "ATS" },
+            new string[] { "de_DE_PREEURO",  "de_DE", "currency", "DEM" },
+            new string[] { "de_LU_PREEURO",  "de_LU", "currency", "EUR" },
+            new string[] { "el_GR_PREEURO",  "el_GR", "currency", "GRD" },
+            new string[] { "en_BOONT",       "en__BOONT", null, null }, /* registered name */
+            new string[] { "en_SCOUSE",      "en__SCOUSE", null, null }, /* registered name */
+            new string[] { "en_BE_PREEURO",  "en_BE", "currency", "BEF" },
+            new string[] { "en_IE_PREEURO",  "en_IE", "currency", "IEP" },
+            new string[] { "es__TRADITIONAL", "es", "collation", "traditional" }, /* Old ICU name */
+            new string[] { "es_ES_PREEURO",  "es_ES", "currency", "ESP" },
+            new string[] { "eu_ES_PREEURO",  "eu_ES", "currency", "ESP" },
+            new string[] { "fi_FI_PREEURO",  "fi_FI", "currency", "FIM" },
+            new string[] { "fr_BE_PREEURO",  "fr_BE", "currency", "BEF" },
+            new string[] { "fr_FR_PREEURO",  "fr_FR", "currency", "FRF" },
+            new string[] { "fr_LU_PREEURO",  "fr_LU", "currency", "LUF" },
+            new string[] { "ga_IE_PREEURO",  "ga_IE", "currency", "IEP" },
+            new string[] { "gl_ES_PREEURO",  "gl_ES", "currency", "ESP" },
+            new string[] { "hi__DIRECT",     "hi", "collation", "direct" }, /* Old ICU name */
+            new string[] { "it_IT_PREEURO",  "it_IT", "currency", "ITL" },
+            new string[] { "ja_JP_TRADITIONAL", "ja_JP", "calendar", "japanese" },
+          // new string[] { "nb_NO_NY",       "nn_NO", null, null },
+            new string[] { "nl_BE_PREEURO",  "nl_BE", "currency", "BEF" },
+            new string[] { "nl_NL_PREEURO",  "nl_NL", "currency", "NLG" },
+            new string[] { "pt_PT_PREEURO",  "pt_PT", "currency", "PTE" },
+            new string[] { "sl_ROZAJ",       "sl__ROZAJ", null, null }, /* registered name */
+            new string[] { "sr_SP_CYRL",     "sr_Cyrl_RS", null, null }, /* .NET name */
+            new string[] { "sr_SP_LATN",     "sr_Latn_RS", null, null }, /* .NET name */
+            new string[] { "sr_YU_CYRILLIC", "sr_Cyrl_RS", null, null }, /* Linux name */
+            new string[] { "th_TH_TRADITIONAL", "th_TH", "calendar", "buddhist" }, /* Old ICU name */
+            new string[] { "uz_UZ_CYRILLIC", "uz_Cyrl_UZ", null, null }, /* Linux name */
+            new string[] { "uz_UZ_CYRL",     "uz_Cyrl_UZ", null, null }, /* .NET name */
+            new string[] { "uz_UZ_LATN",     "uz_Latn_UZ", null, null }, /* .NET name */
+            new string[] { "zh_CHS",         "zh_Hans", null, null }, /* .NET name */
+            new string[] { "zh_CHT",         "zh_Hant", null, null }, /* .NET name */
+            new string[] { "zh_GAN",         "zh__GAN", null, null }, /* registered name */
+            new string[] { "zh_GUOYU",       "zh", null, null }, /* registered name */
+            new string[] { "zh_HAKKA",       "zh__HAKKA", null, null }, /* registered name */
+            new string[] { "zh_MIN",         "zh__MIN", null, null }, /* registered name */
+            new string[] { "zh_MIN_NAN",     "zh__MINNAN", null, null }, /* registered name */
+            new string[] { "zh_WUU",         "zh__WUU", null, null }, /* registered name */
+            new string[] { "zh_XIANG",       "zh__XIANG", null, null }, /* registered name */
+            new string[] { "zh_YUE",         "zh__YUE", null, null } /* registered name */
+        };
 
         /**
          * This table lists pairs of locale ids for canonicalization.
          * The first item is the normalized variant id.
          */
         private static string[][] variantsToKeywords = {
-        new string[] { "EURO",   "currency", "EUR" },
-        new string[] { "PINYIN", "collation", "pinyin" }, /* Solaris variant */
-        new string[] { "STROKE", "collation", "stroke" }  /* Solaris variant */
-    };
+            new string[] { "EURO",   "currency", "EUR" },
+            new string[] { "PINYIN", "collation", "pinyin" }, /* Solaris variant */
+            new string[] { "STROKE", "collation", "stroke" }  /* Solaris variant */
+        };
 
 
         /**
@@ -490,12 +490,12 @@ namespace ICU4N.Util
             //
             //if (DotNetLocaleHelper.HasLocaleCategories())
             //{
-                foreach (Category cat in Enum.GetValues(typeof(Category)))
-                {
-                    int idx = (int)cat;
-                    defaultCategoryLocales[idx] = DotNetLocaleHelper.GetDefault(cat);
-                    defaultCategoryULocales[idx] = ForLocale(defaultCategoryLocales[idx]);
-                }
+            foreach (Category cat in Enum.GetValues(typeof(Category)))
+            {
+                int idx = (int)cat;
+                defaultCategoryLocales[idx] = DotNetLocaleHelper.GetDefault(cat);
+                defaultCategoryULocales[idx] = ForLocale(defaultCategoryLocales[idx]);
+            }
             //}
             //else
             //{
@@ -653,12 +653,12 @@ namespace ICU4N.Util
                 }
                 //if (JDKLocaleHelper.HasLocaleCategories())
                 //{
-                    CultureInfo currentCategoryDefault = DotNetLocaleHelper.GetDefault(category);
-                    if (!defaultCategoryLocales[idx].Equals(currentCategoryDefault))
-                    {
-                        defaultCategoryLocales[idx] = currentCategoryDefault;
-                        defaultCategoryULocales[idx] = ForLocale(currentCategoryDefault);
-                    }
+                CultureInfo currentCategoryDefault = DotNetLocaleHelper.GetDefault(category);
+                if (!defaultCategoryLocales[idx].Equals(currentCategoryDefault))
+                {
+                    defaultCategoryLocales[idx] = currentCategoryDefault;
+                    defaultCategoryULocales[idx] = ForLocale(currentCategoryDefault);
+                }
                 //}
                 //else
                 //{
@@ -1065,7 +1065,7 @@ namespace ICU4N.Util
             {
                 extStart = fallback.Length;
             }
-            int last = fallback.LastIndexOf('_', extStart);
+            int last = fallback.LastIndexOf('_', Math.Min(extStart, fallback.Length - 1)); // ICU4N: Corrected 2nd parameter so it cannot be the same or greater than fallback.Length
             if (last == -1)
             {
                 last = 0;
@@ -2139,7 +2139,7 @@ namespace ICU4N.Util
             ULocale[] acceptList = null;
             try
             {
-                acceptList = ParseAcceptLanguage(acceptLanguageList, true);
+                acceptList = ParseAcceptLanguage(acceptLanguageList, true); // ICU4N TODO: TryParseAcceptLanguage
             }
             catch (FormatException pe)
             {
@@ -2212,8 +2212,29 @@ namespace ICU4N.Util
                             }
                         }
                     }
-                    CultureInfo loc = aLocale.ToLocale();
-                    CultureInfo parent = LocaleUtility.Fallback(loc);
+                    CultureInfo parent = null;
+                    try
+                    {
+                        CultureInfo loc = aLocale.ToLocale();
+#if NETSTANDARD1_3
+                        // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+                        // to be created, but will be "unknown" languages. We need to manually
+                        // ignore these.
+                        if (!loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+                        {
+#endif
+                            parent = LocaleUtility.Fallback(loc);
+#if NETSTANDARD1_3
+                        }
+#endif
+                    }
+                    // ICU4N: In .NET Framework and .NET Standard 2.x+, unknown cultures throw a 
+                    // CultureNotFoundException.
+                    catch (CultureNotFoundException)
+                    {
+                        parent = null;
+                    }
+
                     if (parent != null)
                     {
                         aLocale = new ULocale(parent);
@@ -2222,6 +2243,7 @@ namespace ICU4N.Util
                     {
                         aLocale = null;
                     }
+
                     setFallback = null; // Do not set fallback in later iterations
                 } while (aLocale != null);
             }
@@ -2597,15 +2619,20 @@ namespace ICU4N.Util
                     double q = 1.0;
                     if (qvalBuf.Length != 0)
                     {
-                        try // ICU4N TODO: Use TryParse
-                        {
-                            q = Double.Parse(qvalBuf.ToString(), CultureInfo.InvariantCulture);
-                        }
-                        catch (FormatException nfe)
+                        if (!double.TryParse(qvalBuf.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out q))
                         {
                             // Already validated, so it should never happen
                             q = 1.0;
                         }
+                        //try // ICU4N TODO: Use TryParse
+                        //{
+                        //    q = Double.Parse(qvalBuf.ToString(), CultureInfo.InvariantCulture);
+                        //}
+                        //catch (FormatException nfe)
+                        //{
+                        //    // Already validated, so it should never happen
+                        //    q = 1.0;
+                        //}
                         if (q > 1.0)
                         {
                             q = 1.0;
@@ -3806,6 +3833,9 @@ namespace ICU4N.Util
             return bcpType;
         }
 
+        private static readonly Regex legacyKeyCheck = new Regex("^[0-9a-zA-Z]+$", RegexOptions.Compiled);
+        private static readonly Regex legacyTypeCheck = new Regex("^[0-9a-zA-Z]+([_/\\-][0-9a-zA-Z]+)*$", RegexOptions.Compiled);
+
         /**
          * {@icu} Converts the specified keyword (BCP 47 Unicode locale extension key, or
          * legacy key) to the legacy key. For example, legacy key "collation" is
@@ -3831,8 +3861,7 @@ namespace ICU4N.Util
                 //  keys are using ASCII alphabetic letters only. We won't add any new key
                 //  that is not compatible with the BCP 47 syntax. Therefore, we assume
                 //  a valid key consist from [0-9a-zA-Z], no symbols.
-                //if (keyword.matches("[0-9a-zA-Z]+"))
-                if (Regex.IsMatch(keyword, "[0-9a-zA-Z]+"))
+                if (legacyKeyCheck.IsMatch(keyword))
                 {
                     legacyKey = AsciiUtil.ToLowerString(keyword);
                 }
@@ -3881,8 +3910,7 @@ namespace ICU4N.Util
                 //  add any new type that is not compatible with the BCP 47 syntax except timezone
                 //  IDs. For now, we assume a valid type start with [0-9a-zA-Z], but may contain
                 //  '-' '_' '/' in the middle.
-                //if (value.matches("[0-9a-zA-Z]+([_/\\-][0-9a-zA-Z]+)*"))
-                if (Regex.IsMatch(value, "[0-9a-zA-Z]+([_/\\-][0-9a-zA-Z]+)*"))
+                if (legacyTypeCheck.IsMatch(value))
                 {
                     legacyType = AsciiUtil.ToLowerString(value);
                 }
@@ -3960,14 +3988,14 @@ namespace ICU4N.Util
              */
             public Builder SetLocale(ULocale locale)
             {
-                //try
-                //{
-                _locbld.SetLocale(locale.Base(), locale.Extensions());
-                //}
-                //catch (CultureNotFoundException e)
-                //{
-                //    throw new IllformedLocaleException(e.ToString(), e.HResult);
-                //}
+                try
+                {
+                    _locbld.SetLocale(locale.Base(), locale.Extensions());
+                }
+                catch (FormatException e)
+                {
+                    throw new IllformedLocaleException(e.ToString(), e.HResult);
+                }
                 return this;
             }
 
@@ -3996,8 +4024,7 @@ namespace ICU4N.Util
                 LanguageTag tag = LanguageTag.Parse(languageTag, sts);
                 if (sts.IsError)
                 {
-                    //throw new IllformedLocaleException(sts.getErrorMessage(), sts.getErrorIndex());
-                    throw new CultureNotFoundException("languageTag", languageTag);
+                    throw new IllformedLocaleException(sts.ErrorMessage, sts.ErrorIndex);
                 }
                 _locbld.SetLanguageTag(tag);
 
@@ -4021,14 +4048,14 @@ namespace ICU4N.Util
              */
             public Builder SetLanguage(string language)
             {
-                //try
-                //{
-                _locbld.SetLanguage(language);
-                //}
-                //catch (LocaleSyntaxException e)
-                //{
-                //    throw new IllformedLocaleException(e.getMessage(), e.getErrorIndex());
-                //}
+                try
+                {
+                    _locbld.SetLanguage(language);
+                }
+                catch (FormatException e)
+                {
+                    throw new IllformedLocaleException(e.Message /*, e.getErrorIndex()*/, e);
+                }
                 return this;
             }
 
@@ -4047,14 +4074,14 @@ namespace ICU4N.Util
              */
             public Builder SetScript(string script)
             {
-                //try
-                //{
-                _locbld.SetScript(script);
-                //}
-                //catch (LocaleSyntaxException e)
-                //{
-                //    throw new IllformedLocaleException(e.getMessage(), e.getErrorIndex());
-                //}
+                try
+                {
+                    _locbld.SetScript(script);
+                }
+                catch (FormatException e)
+                {
+                    throw new IllformedLocaleException(e.Message /*, e.getErrorIndex()*/, e);
+                }
                 return this;
             }
 
@@ -4077,14 +4104,14 @@ namespace ICU4N.Util
              */
             public Builder SetRegion(string region)
             {
-                //try
-                //{
-                _locbld.SetRegion(region);
-                //}
-                //catch (LocaleSyntaxException e)
-                //{
-                //    throw new IllformedLocaleException(e.getMessage(), e.getErrorIndex());
-                //}
+                try
+                {
+                    _locbld.SetRegion(region);
+                }
+                catch (FormatException e)
+                {
+                    throw new IllformedLocaleException(e.Message /*, e.getErrorIndex()*/, e);
+                }
                 return this;
             }
 
@@ -4108,14 +4135,14 @@ namespace ICU4N.Util
              */
             public Builder SetVariant(string variant)
             {
-                //try
-                //{
-                _locbld.SetVariant(variant);
-                //}
-                //catch (LocaleSyntaxException e)
-                //{
-                //    throw new IllformedLocaleException(e.getMessage(), e.getErrorIndex());
-                //}
+                try
+                {
+                    _locbld.SetVariant(variant);
+                }
+                catch (FormatException e)
+                {
+                    throw new IllformedLocaleException(e.Message /*, e.getErrorIndex()*/, e);
+                }
                 return this;
             }
 
@@ -4145,14 +4172,14 @@ namespace ICU4N.Util
              */
             public Builder SetExtension(char key, string value)
             {
-                //try
-                //{
-                _locbld.SetExtension(key, value);
-                //}
-                //catch (LocaleSyntaxException e)
-                //{
-                //    throw new IllformedLocaleException(e.getMessage(), e.getErrorIndex());
-                //}
+                try
+                {
+                    _locbld.SetExtension(key, value);
+                }
+                catch (FormatException e)
+                {
+                    throw new IllformedLocaleException(e.Message /*, e.getErrorIndex()*/, e);
+                }
                 return this;
             }
 
@@ -4180,14 +4207,14 @@ namespace ICU4N.Util
              */
             public Builder SetUnicodeLocaleKeyword(string key, string type)
             {
-                //try
-                //{
-                _locbld.SetUnicodeLocaleKeyword(key, type);
-                //}
-                //catch (LocaleSyntaxException e)
-                //{
-                //    throw new IllformedLocaleException(e.getMessage(), e.getErrorIndex());
-                //}
+                try
+                {
+                    _locbld.SetUnicodeLocaleKeyword(key, type);
+                }
+                catch (FormatException e)
+                {
+                    throw new IllformedLocaleException(e.Message /*, e.getErrorIndex()*/, e);
+                }
                 return this;
             }
 
@@ -4206,14 +4233,14 @@ namespace ICU4N.Util
              */
             public Builder AddUnicodeLocaleAttribute(string attribute)
             {
-                //try
-                //{
-                _locbld.AddUnicodeLocaleAttribute(attribute);
-                //}
-                //catch (LocaleSyntaxException e)
-                //{
-                //    throw new IllformedLocaleException(e.getMessage(), e.getErrorIndex());
-                //}
+                try
+                {
+                    _locbld.AddUnicodeLocaleAttribute(attribute);
+                }
+                catch (FormatException e)
+                {
+                    throw new IllformedLocaleException(e.Message /*, e.getErrorIndex()*/, e);
+                }
                 return this;
             }
 
@@ -4234,14 +4261,14 @@ namespace ICU4N.Util
              */
             public Builder RemoveUnicodeLocaleAttribute(string attribute)
             {
-                //try
-                //{
-                _locbld.RemoveUnicodeLocaleAttribute(attribute);
-                //}
-                //catch (LocaleSyntaxException e)
-                //{
-                //    throw new IllformedLocaleException(e.getMessage(), e.getErrorIndex());
-                //}
+                try
+                {
+                    _locbld.RemoveUnicodeLocaleAttribute(attribute);
+                }
+                catch (FormatException e)
+                {
+                    throw new IllformedLocaleException(e.Message /*, e.getErrorIndex()*/, e);
+                }
                 return this;
             }
 
@@ -4411,14 +4438,20 @@ namespace ICU4N.Util
                             string[] uattributes = Regex.Split(GetKeywordValue(key), "[-_]");
                             foreach (string uattr in uattributes)
                             {
-                                try
+                                // ICU4N: Proactively check the parameter going in rather than responding to exceptions
+                                if (uattr != null || UnicodeLocaleExtension.IsAttribute(uattr))
                                 {
                                     intbld.AddUnicodeLocaleAttribute(uattr);
                                 }
-                                catch (CultureNotFoundException e)
-                                {
-                                    // ignore and fall through
-                                }
+
+                                //try
+                                //{
+                                //    intbld.AddUnicodeLocaleAttribute(uattr);
+                                //}
+                                //catch (FormatException e)
+                                //{
+                                //    // ignore and fall through
+                                //}
                             }
                         }
                         else if (key.Length >= 2)
@@ -4431,7 +4464,7 @@ namespace ICU4N.Util
                                 {
                                     intbld.SetUnicodeLocaleKeyword(bcpKey, bcpType);
                                 }
-                                catch (CultureNotFoundException e)
+                                catch (FormatException e) // ICU4N TODO: Make a TrySet version so we don't have an expensive try catch
                                 {
                                     // ignore and fall through
                                 }
@@ -4444,7 +4477,7 @@ namespace ICU4N.Util
                                 intbld.SetExtension(key[0], GetKeywordValue(key).Replace("_",
                                         LanguageTag.SEP));
                             }
-                            catch (CultureNotFoundException e)
+                            catch (FormatException e) // ICU4N TODO: Make a TrySet version so we don't have an expensive try catch
                             {
                                 // ignore and fall through
                             }
@@ -4484,6 +4517,11 @@ namespace ICU4N.Util
 
             public static ULocale ToULocale(CultureInfo loc)
             {
+                if (loc == CultureInfo.InvariantCulture)
+                {
+                    return new ULocale("root");
+                }
+
                 var name = loc.Name;
 
                 // Convert from RFC 4646, ISO 639, ISO 639-2, and ISO 15924 to ICU  format 
@@ -4499,8 +4537,22 @@ namespace ICU4N.Util
             {
                 var name = uloc.GetName();
 
+                if (name == "root")
+                {
+                    return CultureInfo.InvariantCulture;
+                }
+
                 // ICU4N TODO: Need to convert
                 name = name.Replace('_', '-');
+
+                int optionsIndex = name.IndexOf("@");
+                if (optionsIndex > -1)
+                {
+                    // ICU4N TODO: Need to convert calendar, currency, number, and collation options by
+                    // creating a custom CultureInfo subclass...where possible
+
+                    name = name.Substring(0, optionsIndex);
+                }
 
                 return new CultureInfo(name);
             }
@@ -4585,7 +4637,7 @@ namespace ICU4N.Util
 
         //    static JDKLocaleHelper()
         //    {
-        //        // ICU4N TODO: Finish implementation (replace with NETLocaleHelper ?)
+        //        // 
         //        //            do {
         //        //                try {
         //        //                    mGetScript = Locale.class.getMethod("getScript", (Class[]) null);
@@ -4751,7 +4803,7 @@ namespace ICU4N.Util
         //        // Note: JDK7+ unerstand both no_NO_NY and nn_NO. When convert
         //        // ICU locale to JDK, we do not need to map nn_NO back to no_NO_NY.
 
-        //        if (language.Equals("no") && country.Equals("NO") && variant.Equals("NY")) // ICU4N TODO: Norway no-NO doesn't work in .NET - need to adjust this
+        //        if (language.Equals("no") && country.Equals("NO") && variant.Equals("NY")) 
         //        {
         //            language = "nn";
         //            variant = "";
@@ -4905,7 +4957,7 @@ namespace ICU4N.Util
         //            // Without script or keywords, use a Locale constructor,
         //            // so we can preserve any ill-formed variants.
         //            //loc = new Locale(uloc.getLanguage(), uloc.getCountry(), uloc.getVariant());
-        //            loc = new CultureInfo(uloc.GetLanguage() + "-" + uloc.GetCountry()); // ICU4N TODO: Make this more robust
+        //            loc = new CultureInfo(uloc.GetLanguage() + "-" + uloc.GetCountry());
         //        }
         //        return loc;
         //    }
@@ -4936,7 +4988,7 @@ namespace ICU4N.Util
         //        LocaleIDParser p = new LocaleIDParser(locstr);
         //        string[] names = p.GetLanguageScriptCountryVariant();
         //        //return new Locale(names[0], names[2], names[3]);
-        //        return new CultureInfo(names[0] + "-" + names[2] + "-" + names[3]); // ICU4N TODO: Make this more robust
+        //        return new CultureInfo(names[0] + "-" + names[2] + "-" + names[3]);
         //    }
 
         //    public static CultureInfo GetDefault(Category category)
@@ -4995,7 +5047,7 @@ namespace ICU4N.Util
         //            {
         //                //try
         //                //{
-        //                mSetDefault.Invoke(null, new object[] { cat, newLocale }); // ICU4N TODO: Check this
+        //                mSetDefault.Invoke(null, new object[] { cat, newLocale });
         //                //}
         //                //catch (InvocationTargetException e)
         //                //{
@@ -5045,7 +5097,7 @@ namespace ICU4N.Util
 
         //    public static string GetSystemProperty(string key)
         //    {
-        //        return null; // ICU4N TODO: Complete implemenation
+        //        return null;
         //                     //    string val = null;
         //                     //    string fkey = key;
         //                     //    if (System.getSecurityManager() != null)

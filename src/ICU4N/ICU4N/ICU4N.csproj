@@ -30,19 +30,22 @@
 
   <ItemGroup>
     <None Remove="Impl\Data\brkitr\*" />
+    <None Remove="Impl\Data\*.cfu" />
+    <None Remove="Impl\Data\*.cnv" />
+    <None Remove="Impl\Data\*.icu" />
+    <None Remove="Impl\Data\*.nrm" />
+    <None Remove="Impl\Data\*.res" />
+    <None Remove="Impl\Data\*.spp" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Impl\Data\brkitr\*" />
-    <EmbeddedResource Include="Impl\Data\nfc.nrm" />
-    <EmbeddedResource Include="Impl\Data\nfkc.nrm" />
-    <EmbeddedResource Include="Impl\Data\nfkc_cf.nrm" />
-    <EmbeddedResource Include="Impl\Data\pnames.icu" />
-    <EmbeddedResource Include="Impl\Data\ubidi.icu" />
-    <EmbeddedResource Include="Impl\Data\ucase.icu" />
-    <EmbeddedResource Include="Impl\Data\unames.icu" />
-    <EmbeddedResource Include="Impl\Data\uprops.icu" />
-    <EmbeddedResource Include="Impl\Data\uts46.nrm" />
+    <EmbeddedResource Include="Impl\Data\*.cfu" />
+    <EmbeddedResource Include="Impl\Data\*.cnv" />
+    <EmbeddedResource Include="Impl\Data\*.res" />
+    <EmbeddedResource Include="Impl\Data\*.icu" />
+    <EmbeddedResource Include="Impl\Data\*.nrm" />
+    <EmbeddedResource Include="Impl\Data\*.spp" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
@@ -161,32 +164,6 @@
     <EmbeddedResource Update="ICUConfig.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ICUConfig.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.de.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.el.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.en-US.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.en.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.es.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.fi.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.fr.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.it.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.ja.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.pt.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.ru.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.zh-Hant.resx">
-    </EmbeddedResource>
-    <EmbeddedResource Update="Impl\Data\brkitr.zh.resx">
     </EmbeddedResource>
   </ItemGroup>
 

@@ -18,7 +18,7 @@ namespace ICU4N.Impl
         /**
      * The data path to be used with getBundleInstance API
      */
-        internal static readonly string ICU_DATA_PATH = "ICU4N.Impl."; // ICU4N TODO: Perhaps leave off the assembly name and make a more aggressive resource scan that matches the end of the path loosely?
+        internal static readonly string ICU_DATA_PATH = "Impl/";
         /**
          * The ICU data package name.
          * This is normally the name of the .dat package, and the prefix (plus '/')
@@ -28,7 +28,7 @@ namespace ICU4N.Impl
         /**
          * The data path to be used with Class.getResourceAsStream().
          */
-        public static readonly string ICU_BUNDLE = "Data"; //"Data." + PACKAGE_NAME;
+        public static readonly string ICU_BUNDLE = "Data/" + PACKAGE_NAME;
 
         /**
          * The base name of ICU data to be used with ClassLoader.getResourceAsStream(),
@@ -39,7 +39,7 @@ namespace ICU4N.Impl
         /**
          * The base name of collation data to be used with getBundleInstance API
          */
-        public static readonly string ICU_COLLATION_BASE_NAME = ICU_BASE_NAME + ".coll";
+        public static readonly string ICU_COLLATION_BASE_NAME = ICU_BASE_NAME + "/coll";
 
         /**
          * The base name of rbbi data to be used with getData API
@@ -49,23 +49,23 @@ namespace ICU4N.Impl
         /**
          * The base name of rbbi data to be used with getBundleInstance API
          */
-        public static readonly string ICU_BRKITR_BASE_NAME = ICU_BASE_NAME + '.' + ICU_BRKITR_NAME;
+        public static readonly string ICU_BRKITR_BASE_NAME = ICU_BASE_NAME + '/' + ICU_BRKITR_NAME;
 
         /**
          * The base name of rbnf data to be used with getBundleInstance API
          */
-        public static readonly string ICU_RBNF_BASE_NAME = ICU_BASE_NAME + ".rbnf";
+        public static readonly string ICU_RBNF_BASE_NAME = ICU_BASE_NAME + "/rbnf";
 
         /**
          * The base name of transliterator data to be used with getBundleInstance API
          */
-        public static readonly string ICU_TRANSLIT_BASE_NAME = ICU_BASE_NAME + ".translit";
+        public static readonly string ICU_TRANSLIT_BASE_NAME = ICU_BASE_NAME + "/translit";
 
-        public static readonly string ICU_LANG_BASE_NAME = ICU_BASE_NAME + ".lang";
-        public static readonly string ICU_CURR_BASE_NAME = ICU_BASE_NAME + ".curr";
-        public static readonly string ICU_REGION_BASE_NAME = ICU_BASE_NAME + ".region";
-        public static readonly string ICU_ZONE_BASE_NAME = ICU_BASE_NAME + ".zone";
-        public static readonly string ICU_UNIT_BASE_NAME = ICU_BASE_NAME + ".unit";
+        public static readonly string ICU_LANG_BASE_NAME = ICU_BASE_NAME + "/lang";
+        public static readonly string ICU_CURR_BASE_NAME = ICU_BASE_NAME + "/curr";
+        public static readonly string ICU_REGION_BASE_NAME = ICU_BASE_NAME + "/region";
+        public static readonly string ICU_ZONE_BASE_NAME = ICU_BASE_NAME + "/zone";
+        public static readonly string ICU_UNIT_BASE_NAME = ICU_BASE_NAME + "/unit";
 
         /**
          * For testing (otherwise false): When reading an InputStream from a Class or ClassLoader
@@ -80,13 +80,13 @@ namespace ICU4N.Impl
 
         public static bool Exists(string resourceName)
         {
-            return typeof(ICUData).GetTypeInfo().Assembly.GetManifestResourceStream(resourceName) != null;
+            return typeof(ICUData).FindAndGetManifestResourceStream(resourceName) != null;
         }
 
         private static Stream GetStream(Type root, string resourceName, bool required)
         {
             Stream i;
-            i = root.GetTypeInfo().Assembly.GetManifestResourceStream(resourceName);
+            i = root.FindAndGetManifestResourceStream(resourceName);
             if (i == null && required)
             {
                 throw new MissingManifestResourceException("could not locate data " + resourceName +
@@ -102,7 +102,7 @@ namespace ICU4N.Impl
         internal static Stream GetStream(Assembly loader, string resourceName, bool required)
         {
             Stream i = null;
-            i = loader.GetManifestResourceStream(resourceName);
+            i = loader.FindAndGetManifestResourceStream(resourceName);
             if (i == null && required)
             {
                 throw new MissingManifestResourceException("could not locate data " + loader.ToString() + " Resource: " + resourceName);

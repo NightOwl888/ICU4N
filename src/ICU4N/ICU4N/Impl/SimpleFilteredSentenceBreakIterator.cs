@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using OpenType = ICU4N.Impl.ICUResourceBundle.OpenType; // ICU4N TODO: API - de-nest ?
 
 namespace ICU4N.Impl
 {
@@ -303,28 +304,33 @@ namespace ICU4N.Impl
              * @param loc the locale to get filtered iterators
              */
             public Builder(ULocale loc)
+#pragma warning disable 612, 618
+            : base()
+#pragma warning restore 612, 618
             {
-                // ICU4N TODO: finish implementation
-                //ICUResourceBundle rb = ICUResourceBundle.getBundleInstance(
-                //        ICUData.ICU_BRKITR_BASE_NAME, loc, OpenType.LOCALE_ROOT);
+                ICUResourceBundle rb = ICUResourceBundle.GetBundleInstance(
+                        ICUData.ICU_BRKITR_BASE_NAME, loc, OpenType.LOCALE_ROOT);
 
-                //ICUResourceBundle breaks = rb.findWithFallback("exceptions/SentenceBreak");
+                ICUResourceBundle breaks = rb.FindWithFallback("exceptions/SentenceBreak");
 
-                //if (breaks != null)
-                //{
-                //    for (int index = 0, size = breaks.getSize(); index < size; ++index)
-                //    {
-                //        ICUResourceBundle b = (ICUResourceBundle)breaks.get(index);
-                //        String br = b.getString();
-                //        filterSet.add(br);
-                //    }
-                //}
+                if (breaks != null)
+                {
+                    for (int index = 0, size = breaks.Length; index < size; ++index)
+                    {
+                        ICUResourceBundle b = (ICUResourceBundle)breaks.Get(index);
+                        string br = b.GetString();
+                        filterSet.Add(br.ToCharSequence());
+                    }
+                }
             }
 
             /**
              * Create SimpleFilteredBreakIteratorBuilder with no exception
              */
             public Builder()
+#pragma warning disable 612, 618
+            : base()
+#pragma warning restore 612, 618
             {
             }
 

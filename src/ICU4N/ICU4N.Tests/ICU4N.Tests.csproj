@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Dev\Data\TestData\testnorm.nrm" />
+    <None Remove="Dev\Data\TestData\*" />
     <None Remove="Dev\Test\Rbbi\rbbitst.txt" />
     <None Remove="Dev\Test\Util\Trie2Test.setRanges1.16.tri2" />
     <None Remove="Dev\Test\Util\Trie2Test.setRanges1.32.tri2" />
@@ -26,11 +26,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Dev\Data\TestData\*" />
     <EmbeddedResource Include="Dev\Test\Rbbi\rbbitst.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Dev\Data\TestData\testnorm.nrm" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.16.tri2" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges1.32.tri2" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRanges2.16.tri2" />
@@ -51,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ICU4N.LanguageData\ICU4N.LanguageData.csproj" />
     <ProjectReference Include="..\ICU4N.TestFramework\ICU4N.TestFramework.csproj" />
     <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
   </ItemGroup>

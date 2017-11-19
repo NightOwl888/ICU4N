@@ -132,8 +132,8 @@ namespace ICU4N.Text
                 result.fBreakEngines = new List<ILanguageBreakEngine>(gAllBreakEngines);
             }
             result.fLookAheadMatches = new LookAheadResults();
-            result.fBreakCache = new BreakCache(fBreakCache);
-            result.fDictionaryCache = new DictionaryCache(this, fDictionaryCache);
+            result.fBreakCache = new BreakCache(result, fBreakCache);
+            result.fDictionaryCache = new DictionaryCache(result, fDictionaryCache);
             return result;
         }
 
@@ -2069,8 +2069,9 @@ namespace ICU4N.Text
              *
              * @param src
              */
-            internal BreakCache(BreakCache src)
+            internal BreakCache(RuleBasedBreakIterator outerInstance, BreakCache src)
             {
+                this.outerInstance = outerInstance;
                 fStartBufIdx = src.fStartBufIdx;
                 fEndBufIdx = src.fEndBufIdx;
                 fTextIdx = src.fTextIdx;

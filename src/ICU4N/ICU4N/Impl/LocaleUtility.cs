@@ -53,7 +53,7 @@ namespace ICU4N.Impl
          */
         public static bool IsFallbackOf(string parent, string child)
         {
-            if (!child.StartsWith(parent))
+            if (!child.StartsWith(parent, StringComparison.Ordinal))
             {
                 return false;
             }
@@ -69,7 +69,6 @@ namespace ICU4N.Impl
          */
         public static bool IsFallbackOf(CultureInfo parent, CultureInfo child)
         {
-            //return child.Parent.Equals(parent); // ICU4N TODO: Note in .NET we can just do this
             return IsFallbackOf(parent.ToString(), child.ToString());
         }
 
@@ -121,27 +120,35 @@ namespace ICU4N.Impl
          */
         public static CultureInfo Fallback(CultureInfo loc)
         {
-            // ICU4N TODO: Not sure if this is correct
-            return loc.Parent;
-            //return loc.GetConsoleFallbackUICulture();
+            if (loc.Equals(CultureInfo.InvariantCulture))
+            {
+                return null;
+            }
 
-            //// Split the locale into parts and remove the rightmost part
-            //string[] parts = new string[]
-            //    { loc.getLanguage(), loc.getCountry(), loc.getVariant() };
-            //int i;
-            //for (i = 2; i >= 0; --i)
-            //{
-            //    if (parts[i].length() != 0)
-            //    {
-            //        parts[i] = "";
-            //        break;
-            //    }
-            //}
-            //if (i < 0)
-            //{
-            //    return null; // All parts were empty
-            //}
-            //return new Locale(parts[0], parts[1], parts[2]);
+#if NETSTANDARD1_3
+            // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+            // to be created, but will be "unknown" languages. We need to manually
+            // ignore these.
+            if (loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+            {
+                return CultureInfo.InvariantCulture;
+            }
+#endif
+            // ICU4N: We use the original ICU fallback scheme rather than
+            // simply using loc.Parent.
+
+            // Split the locale into parts and remove the rightmost part
+            string[] parts = loc.Name.Split('-');
+            if (parts.Length == 1)
+            {
+                return null; // All parts were empty
+            }
+            string culture = parts[0];
+            for (int i = 1; i < parts.Length - 1; i++)
+            {
+                culture += '-' + parts[i];
+            }
+            return new CultureInfo(culture);
         }
     }
 }

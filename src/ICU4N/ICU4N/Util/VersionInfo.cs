@@ -673,9 +673,8 @@ namespace ICU4N.Util
             Console.Out.WriteLine("");
             Console.Out.WriteLine("Implementation Version: " + ICU_VERSION.GetVersionString(2, 4));
             Console.Out.WriteLine("Unicode Data Version:   " + UNICODE_VERSION.GetVersionString(2, 4));
-            // ICU4N TODO: implement
-            //Console.Out.WriteLine("CLDR Data Version:      " + LocaleData.GetCLDRVersion().GetVersionString(2, 4));
-            //Console.Out.WriteLine("Time Zone Data Version: " + getTZDataVersion());
+            Console.Out.WriteLine("CLDR Data Version:      " + LocaleData.GetCLDRVersion().GetVersionString(2, 4));
+            Console.Out.WriteLine("Time Zone Data Version: " + GetTZDataVersion());
         }
 
         /**
@@ -729,22 +728,21 @@ namespace ICU4N.Util
         // Moved from TimeZone class
         private static volatile String TZDATA_VERSION = null;
 
-        // ICU4N TODO: Finish implementation
-        //internal static string GetTZDataVersion()
-        //{
-        //    if (TZDATA_VERSION == null)
-        //    {
-        //        lock (syncLock)
-        //        {
-        //            if (TZDATA_VERSION == null)
-        //            {
-        //                UResourceBundle tzbundle = UResourceBundle.getBundleInstance("com/ibm/icu/impl/data/icudt"
-        //                        + VersionInfo.ICU_DATA_VERSION_PATH, "zoneinfo64");
-        //                TZDATA_VERSION = tzbundle.getString("TZVersion");
-        //            }
-        //        }
-        //    }
-        //    return TZDATA_VERSION;
-        //}
+        internal static string GetTZDataVersion()
+        {
+            if (TZDATA_VERSION == null)
+            {
+                lock (syncLock)
+                {
+                    if (TZDATA_VERSION == null)
+                    {
+                        UResourceBundle tzbundle = UResourceBundle.GetBundleInstance("Impl/Data/icudt"
+                                + VersionInfo.ICU_DATA_VERSION_PATH, "zoneinfo64");
+                        TZDATA_VERSION = tzbundle.GetString("TZVersion");
+                    }
+                }
+            }
+            return TZDATA_VERSION;
+        }
     }
 }

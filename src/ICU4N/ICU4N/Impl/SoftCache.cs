@@ -59,17 +59,13 @@ namespace ICU4N.Impl
                     {
                         // put if absent
                         map[key] = mapValue;
-
-                        if (temp == null)
-                        {
-                            // Normal "put": Our new value is now cached.
-                            return value;
-                        }
                     }
-                    else
-                    {
-                        mapValue = temp;
-                    }
+                    mapValue = temp;
+                }
+                if (mapValue == null)
+                {
+                    // Normal "put": Our new value is now cached.
+                    return value;
                 }
 
                 //mapValue = map.PutIfAbsent(key, mapValue);

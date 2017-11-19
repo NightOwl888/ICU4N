@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Collections;
+﻿using ICU4N.Support;
+using ICU4N.Support.Collections;
 using ICU4N.Util;
 using System;
 using System.Collections.Generic;
@@ -677,7 +678,16 @@ namespace ICU4N.Impl
         private static void AddBundleBaseNamesFromClassLoader(
                 string bn, Assembly root, ISet<string> names)
         {
-            throw new NotImplementedException();
+            foreach (var s in root.GetManifestResourceNames())
+            {
+                if (s.EndsWith(".res", StringComparison.Ordinal))
+                {
+                    string locstr = s.Substring(0, s.Length - 4);
+                    names.Add(locstr);
+                }
+            }
+
+            
             // ICU4N TODO: Finish implementation
             //    java.security.AccessController
             //        .doPrivileged(new java.security.PrivilegedAction<Void>() {
@@ -730,7 +740,7 @@ namespace ICU4N.Impl
         {
             try
             {
-                using (Stream s = root.GetManifestResourceStream(bn + FULL_LOCALE_NAMES_LIST))
+                using (Stream s = root.FindAndGetManifestResourceStream(bn + FULL_LOCALE_NAMES_LIST))
                 {
                     if (s != null)
                     {
@@ -970,7 +980,7 @@ namespace ICU4N.Impl
             {  // Iterate over the parent bundles.
                 for (; ; )
                 {  // Iterate over the keys on the requested path, within a bundle.
-                    String subKey = keys[depth++];
+                    string subKey = keys[depth++];
                     ICUResourceBundle sub = (ICUResourceBundle)@base.HandleGet(subKey, null, requested);
                     if (sub == null)
                     {
@@ -1327,7 +1337,7 @@ namespace ICU4N.Impl
             if (b == null)
             {
                 throw new MissingManifestResourceException(
-                        "Could not find the bundle " + baseName + "." + localeID + ".res");
+                        "Could not find the bundle " + baseName + "/" + localeID + ".res");
             }
             return b;
         }
@@ -1382,7 +1392,7 @@ namespace ICU4N.Impl
                 // com.mycompany.data.MyLocaleElements_en.res and
                 // com.mycompany.data.MyLocaleElements.res
                 //
-                string rootLocale = (baseName.IndexOf('.') == -1) ? "root" : ""; // ICU4N TODO: in .NET we have a conflict here because it uses . as the delimeter for embedded resources
+                string rootLocale = (baseName.IndexOf('.') == -1) ? "root" : "";
                 string localeName = string.IsNullOrEmpty(localeID) ? rootLocale : localeID;
                 ICUResourceBundle b = ICUResourceBundle.CreateBundle(baseName, localeName, root);
 

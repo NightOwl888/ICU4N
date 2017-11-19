@@ -257,201 +257,205 @@ namespace ICU4N.Impl.Locale
             }
 
             // iterate through keyMap resource
-            UResourceBundleEnumerator keyMapItr = keyMapRes.GetEnumerator();// ICU4N TODO: Using block
-
-            IDictionary<string, ISet<string>> _Bcp47Keys = new Dictionary<string, ISet<string>>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
-
-            while (keyMapItr.MoveNext())
+            using (UResourceBundleEnumerator keyMapItr = keyMapRes.GetEnumerator())
             {
-                UResourceBundle keyMapEntry = keyMapItr.Current;
-                string legacyKeyId = keyMapEntry.Key;
-                string bcpKeyId = keyMapEntry.GetString();
+                IDictionary<string, IList<string>> _Bcp47Keys = new Dictionary<string, IList<string>>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
 
-                bool hasSameKey = false;
-                if (bcpKeyId.Length == 0)
+                while (keyMapItr.MoveNext())
                 {
-                    // Empty value indicates that BCP key is same with the legacy key.
-                    bcpKeyId = legacyKeyId;
-                    hasSameKey = true;
-                }
-                ISet<string> _bcp47Types = new HashSet<string>(); // ICU4N TODO: LinkedHashSet...?
-                _Bcp47Keys[bcpKeyId] = _bcp47Types.ToUnmodifiableSet();
+                    UResourceBundle keyMapEntry = keyMapItr.Current;
+                    string legacyKeyId = keyMapEntry.Key;
+                    string bcpKeyId = keyMapEntry.GetString();
 
-                bool isTZ = legacyKeyId.Equals("timezone");
+                    bool hasSameKey = false;
+                    if (bcpKeyId.Length == 0)
+                    {
+                        // Empty value indicates that BCP key is same with the legacy key.
+                        bcpKeyId = legacyKeyId;
+                        hasSameKey = true;
+                    }
+                    IList<string> _bcp47Types = new List<string>(); // ICU4N TODO: LinkedHashSet...?
+                    _Bcp47Keys[bcpKeyId] = _bcp47Types.ToUnmodifiableList();
 
-                // reverse type alias map
-                IDictionary<string, ISet<string>> typeAliasMap = null;
-                if (typeAliasRes != null)
-                {
-                    UResourceBundle typeAliasResByKey = null;
+                    bool isTZ = legacyKeyId.Equals("timezone");
+
+                    // reverse type alias map
+                    IDictionary<string, ISet<string>> typeAliasMap = null;
+                    if (typeAliasRes != null)
+                    {
+                        UResourceBundle typeAliasResByKey = null;
+                        try
+                        {
+                            typeAliasResByKey = typeAliasRes.Get(legacyKeyId);
+                        }
+                        catch (MissingManifestResourceException e)
+                        {
+                            // fall through
+                        }
+                        if (typeAliasResByKey != null)
+                        {
+                            typeAliasMap = new Dictionary<string, ISet<string>>();
+                            using (UResourceBundleEnumerator typeAliasResItr = typeAliasResByKey.GetEnumerator())
+                            {
+                                while (typeAliasResItr.MoveNext())
+                                {
+                                    UResourceBundle typeAliasDataEntry = typeAliasResItr.Current;
+                                    string from = typeAliasDataEntry.Key;
+                                    string to = typeAliasDataEntry.GetString();
+                                    if (isTZ)
+                                    {
+                                        from = from.Replace(':', '/');
+                                    }
+                                    ISet<string> aliasSet = typeAliasMap.Get(to);
+                                    if (aliasSet == null)
+                                    {
+                                        aliasSet = new HashSet<string>();
+                                        typeAliasMap[to] = aliasSet;
+                                    }
+                                    aliasSet.Add(from);
+                                }
+                            }
+                        }
+                    }
+
+                    // reverse bcp type alias map
+                    IDictionary<string, ISet<string>> bcpTypeAliasMap = null;
+                    if (bcpTypeAliasRes != null)
+                    {
+                        UResourceBundle bcpTypeAliasResByKey = null;
+                        try
+                        {
+                            bcpTypeAliasResByKey = bcpTypeAliasRes.Get(bcpKeyId);
+                        }
+                        catch (MissingManifestResourceException e)
+                        {
+                            // fall through
+                        }
+                        if (bcpTypeAliasResByKey != null)
+                        {
+                            bcpTypeAliasMap = new Dictionary<string, ISet<string>>();
+                            using (UResourceBundleEnumerator bcpTypeAliasResItr = bcpTypeAliasResByKey.GetEnumerator())
+                            {
+                                while (bcpTypeAliasResItr.MoveNext())
+                                {
+                                    UResourceBundle bcpTypeAliasDataEntry = bcpTypeAliasResItr.Current;
+                                    String from = bcpTypeAliasDataEntry.Key;
+                                    String to = bcpTypeAliasDataEntry.GetString();
+                                    ISet<string> aliasSet = bcpTypeAliasMap.Get(to);
+                                    if (aliasSet == null)
+                                    {
+                                        aliasSet = new HashSet<string>();
+                                        bcpTypeAliasMap[to] = aliasSet;
+                                    }
+                                    aliasSet.Add(from);
+                                }
+                            }
+                        }
+                    }
+
+                    IDictionary<string, Type> typeDataMap = new Dictionary<string, Type>();
+                    ISet<SpecialType> specialTypeSet = null;
+
+                    // look up type map for the key, and walk through the mapping data
+                    UResourceBundle typeMapResByKey = null;
                     try
                     {
-                        typeAliasResByKey = typeAliasRes.Get(legacyKeyId);
+                        typeMapResByKey = typeMapRes.Get(legacyKeyId);
                     }
                     catch (MissingManifestResourceException e)
                     {
-                        // fall through
+                        // type map for each key must exist
+                        Debug.Assert(false);
                     }
-                    if (typeAliasResByKey != null)
+                    if (typeMapResByKey != null)
                     {
-                        typeAliasMap = new Dictionary<string, ISet<string>>();
-                        using (UResourceBundleEnumerator typeAliasResItr = typeAliasResByKey.GetEnumerator())
-                        {
-                            while (typeAliasResItr.MoveNext())
+                        using (UResourceBundleEnumerator typeMapResByKeyItr = typeMapResByKey.GetEnumerator())
+                            while (typeMapResByKeyItr.MoveNext())
                             {
-                                UResourceBundle typeAliasDataEntry = typeAliasResItr.Current;
-                                string from = typeAliasDataEntry.Key;
-                                string to = typeAliasDataEntry.GetString();
+                                UResourceBundle typeMapEntry = typeMapResByKeyItr.Current;
+                                string legacyTypeId = typeMapEntry.Key;
+                                string bcpTypeId = typeMapEntry.GetString();
+
+                                // special types
+                                char first = legacyTypeId[0];
+                                bool isSpecialType = '9' < first && first < 'a' && bcpTypeId.Length == 0;
+                                if (isSpecialType)
+                                {
+                                    if (specialTypeSet == null)
+                                    {
+                                        specialTypeSet = new HashSet<SpecialType>();
+                                    }
+                                    specialTypeSet.Add((SpecialType)Enum.Parse(typeof(SpecialType), legacyTypeId, true));
+                                    if (!_bcp47Types.Contains(legacyTypeId)) // ICU4N: Mimic LinkedHashSet with a List by not allowing duplicates
+                                        _bcp47Types.Add(legacyTypeId);
+                                    continue;
+                                }
+
                                 if (isTZ)
                                 {
-                                    from = from.Replace(':', '/');
+                                    // a timezone key uses a colon instead of a slash in the resource.
+                                    // e.g. America:Los_Angeles
+                                    legacyTypeId = legacyTypeId.Replace(':', '/');
                                 }
-                                ISet<string> aliasSet = typeAliasMap.Get(to);
-                                if (aliasSet == null)
+
+                                bool hasSameType = false;
+                                if (bcpTypeId.Length == 0)
                                 {
-                                    aliasSet = new HashSet<string>();
-                                    typeAliasMap[to] = aliasSet;
+                                    // Empty value indicates that BCP type is same with the legacy type.
+                                    bcpTypeId = legacyTypeId;
+                                    hasSameType = true;
                                 }
-                                aliasSet.Add(from);
-                            }
-                        }
-                    }
-                }
+                                if (!_bcp47Types.Contains(legacyTypeId)) // ICU4N: Mimic LinkedHashSet with a List by not allowing duplicates
+                                    _bcp47Types.Add(bcpTypeId);
 
-                // reverse bcp type alias map
-                IDictionary<string, ISet<string>> bcpTypeAliasMap = null;
-                if (bcpTypeAliasRes != null)
-                {
-                    UResourceBundle bcpTypeAliasResByKey = null;
-                    try
-                    {
-                        bcpTypeAliasResByKey = bcpTypeAliasRes.Get(bcpKeyId);
-                    }
-                    catch (MissingManifestResourceException e)
-                    {
-                        // fall through
-                    }
-                    if (bcpTypeAliasResByKey != null)
-                    {
-                        bcpTypeAliasMap = new Dictionary<string, ISet<string>>();
-                        using (UResourceBundleEnumerator bcpTypeAliasResItr = bcpTypeAliasResByKey.GetEnumerator())
-                        {
-                            while (bcpTypeAliasResItr.MoveNext())
-                            {
-                                UResourceBundle bcpTypeAliasDataEntry = bcpTypeAliasResItr.Current;
-                                String from = bcpTypeAliasDataEntry.Key;
-                                String to = bcpTypeAliasDataEntry.GetString();
-                                ISet<string> aliasSet = bcpTypeAliasMap.Get(to);
-                                if (aliasSet == null)
+                                // Note: legacy type value should never be
+                                // equivalent to bcp type value of a different
+                                // type under the same key. So we use a single
+                                // map for lookup.
+                                Type t = new Type(legacyTypeId, bcpTypeId);
+                                typeDataMap[AsciiUtil.ToLowerString(legacyTypeId)] = t;
+                                if (!hasSameType)
                                 {
-                                    aliasSet = new HashSet<string>();
-                                    bcpTypeAliasMap[to] = aliasSet;
+                                    typeDataMap[AsciiUtil.ToLowerString(bcpTypeId)] = t;
                                 }
-                                aliasSet.Add(from);
-                            }
-                        }
-                    }
-                }
 
-                IDictionary<string, Type> typeDataMap = new Dictionary<string, Type>();
-                ISet<SpecialType> specialTypeSet = null;
-
-                // look up type map for the key, and walk through the mapping data
-                UResourceBundle typeMapResByKey = null;
-                try
-                {
-                    typeMapResByKey = typeMapRes.Get(legacyKeyId);
-                }
-                catch (MissingManifestResourceException e)
-                {
-                    // type map for each key must exist
-                    Debug.Assert(false);
-                }
-                if (typeMapResByKey != null)
-                {
-                    using (UResourceBundleEnumerator typeMapResByKeyItr = typeMapResByKey.GetEnumerator())
-                        while (typeMapResByKeyItr.MoveNext())
-                        {
-                            UResourceBundle typeMapEntry = typeMapResByKeyItr.Current;
-                            string legacyTypeId = typeMapEntry.Key;
-                            string bcpTypeId = typeMapEntry.GetString();
-
-                            // special types
-                            char first = legacyTypeId[0];
-                            bool isSpecialType = '9' < first && first < 'a' && bcpTypeId.Length == 0;
-                            if (isSpecialType)
-                            {
-                                if (specialTypeSet == null)
+                                // Also put aliases in the map
+                                if (typeAliasMap != null)
                                 {
-                                    specialTypeSet = new HashSet<SpecialType>();
-                                }
-                                specialTypeSet.Add((SpecialType)Enum.Parse(typeof(SpecialType), legacyTypeId, true));
-                                _bcp47Types.Add(legacyTypeId);
-                                continue;
-                            }
-
-                            if (isTZ)
-                            {
-                                // a timezone key uses a colon instead of a slash in the resource.
-                                // e.g. America:Los_Angeles
-                                legacyTypeId = legacyTypeId.Replace(':', '/');
-                            }
-
-                            bool hasSameType = false;
-                            if (bcpTypeId.Length == 0)
-                            {
-                                // Empty value indicates that BCP type is same with the legacy type.
-                                bcpTypeId = legacyTypeId;
-                                hasSameType = true;
-                            }
-                            _bcp47Types.Add(bcpTypeId);
-
-                            // Note: legacy type value should never be
-                            // equivalent to bcp type value of a different
-                            // type under the same key. So we use a single
-                            // map for lookup.
-                            Type t = new Type(legacyTypeId, bcpTypeId);
-                            typeDataMap[AsciiUtil.ToLowerString(legacyTypeId)] = t;
-                            if (!hasSameType)
-                            {
-                                typeDataMap[AsciiUtil.ToLowerString(bcpTypeId)] = t;
-                            }
-
-                            // Also put aliases in the map
-                            if (typeAliasMap != null)
-                            {
-                                ISet<string> typeAliasSet = typeAliasMap.Get(legacyTypeId);
-                                if (typeAliasSet != null)
-                                {
-                                    foreach (string alias in typeAliasSet)
+                                    ISet<string> typeAliasSet = typeAliasMap.Get(legacyTypeId);
+                                    if (typeAliasSet != null)
                                     {
-                                        typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
+                                        foreach (string alias in typeAliasSet)
+                                        {
+                                            typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
+                                        }
+                                    }
+                                }
+                                if (bcpTypeAliasMap != null)
+                                {
+                                    ISet<string> bcpTypeAliasSet = bcpTypeAliasMap.Get(bcpTypeId);
+                                    if (bcpTypeAliasSet != null)
+                                    {
+                                        foreach (string alias in bcpTypeAliasSet)
+                                        {
+                                            typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
+                                        }
                                     }
                                 }
                             }
-                            if (bcpTypeAliasMap != null)
-                            {
-                                ISet<string> bcpTypeAliasSet = bcpTypeAliasMap.Get(bcpTypeId);
-                                if (bcpTypeAliasSet != null)
-                                {
-                                    foreach (string alias in bcpTypeAliasSet)
-                                    {
-                                        typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
-                                    }
-                                }
-                            }
-                        }
-                }
+                    }
 
-                KeyData keyData = new KeyData(legacyKeyId, bcpKeyId, typeDataMap, specialTypeSet);
+                    KeyData keyData = new KeyData(legacyKeyId, bcpKeyId, typeDataMap, specialTypeSet);
 
-                KEYMAP[AsciiUtil.ToLowerString(legacyKeyId)] = keyData;
-                if (!hasSameKey)
-                {
-                    KEYMAP[AsciiUtil.ToLowerString(bcpKeyId)] = keyData;
+                    KEYMAP[AsciiUtil.ToLowerString(legacyKeyId)] = keyData;
+                    if (!hasSameKey)
+                    {
+                        KEYMAP[AsciiUtil.ToLowerString(bcpKeyId)] = keyData;
+                    }
                 }
+            
+                BCP47_KEYS = _Bcp47Keys.ToUnmodifiableDictionary();
             }
-            BCP47_KEYS = _Bcp47Keys.ToUnmodifiableDictionary();
         }
 
         internal static ISet<string> DEPRECATED_KEYS = new HashSet<string>(); // default for no resources
@@ -749,7 +753,7 @@ deprecated{
         }
 
         private static readonly IDictionary<string, KeyData> KEYMAP = new Dictionary<string, KeyData>();
-        private static IDictionary<string, ISet<string>> BCP47_KEYS;
+        private static IDictionary<string, IList<string>> BCP47_KEYS;
 
         static KeyTypeData()
         {
@@ -762,7 +766,7 @@ deprecated{
             return BCP47_KEYS.Keys;
         }
 
-        public static ISet<string> GetBcp47KeyTypes(string key)
+        public static IList<string> GetBcp47KeyTypes(string key)
         {
             return BCP47_KEYS.Get(key);
         }

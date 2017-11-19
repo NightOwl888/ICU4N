@@ -771,7 +771,7 @@ namespace ICU4N.TestFramework.Dev.Test
         internal static bool assertNotEquals(string message, object expected,
             ICharSequence actual)
         {
-            bool result = !(expected == null ? actual == null : actual.Equals(expected));
+            bool result = !(expected == null ? actual == null : expected.Equals(actual));
             return handleAssert(result, message, stringFor(expected),
                     stringFor(actual), "not equal to", true);
         }

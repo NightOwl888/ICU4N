@@ -2503,6 +2503,7 @@ namespace ICU4N.Tests.Dev.Test.Rbbi
         [Test]
         public void TestRTLineMonkey()
         {
+            fail("TODO: Doesn't finish");
             int loopCount = 200;
             int seed = 1;
 
@@ -2514,7 +2515,7 @@ namespace ICU4N.Tests.Dev.Test.Rbbi
             Logln("Line Break Monkey Test");
             RBBILineMonkey m = new RBBILineMonkey();
             BreakIterator bi = BreakIterator.GetLineInstance(new CultureInfo("en-US"));
-            String rules = bi.ToString();
+            string rules = bi.ToString();
             BreakIterator rtbi = new RuleBasedBreakIterator(rules);
             RunMonkey(rtbi, m, "line", seed, loopCount);
         }

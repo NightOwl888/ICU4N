@@ -113,10 +113,6 @@ namespace ICU4N.Impl
                 UResource.ITable contextsTable = value.GetTable();
                 for (int i = 0; contextsTable.GetKeyAndValue(i, key, value); ++i)
                 {
-
-                    //CapitalizationContextUsage usage = contextUsageTypeMap.Get(key.ToString());
-                    //if (usage == null) { continue; };
-
                     CapitalizationContextUsage usage;
                     if (!contextUsageTypeMap.TryGetValue(key.ToString(), out usage))
                     {
@@ -231,19 +227,16 @@ namespace ICU4N.Impl
                     capitalization == DisplayContext.CAPITALIZATION_FOR_STANDALONE)
             {
                 capitalizationUsage = new bool[Enum.GetValues(typeof(CapitalizationContextUsage)).Length]; // initialized to all false
-                // ICU4N TODO: Finish implementation
-                //ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, locale);
+                ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, locale);
                 CapitalizationContextSink sink = new CapitalizationContextSink(this);
-
-                // ICU4N TODO: Finish implementation
-                //try
-                //{
-                //    rb.GetAllItemsWithFallback("contextTransforms", sink);
-                //}
-                //catch (MissingManifestResourceException e)
-                //{
-                //    // Silently ignore.  Not every locale has contextTransforms.
-                //}
+                try
+                {
+                    rb.GetAllItemsWithFallback("contextTransforms", sink);
+                }
+                catch (MissingManifestResourceException e)
+                {
+                    // Silently ignore.  Not every locale has contextTransforms.
+                }
                 needBrkIter = sink.hasCapitalizationUsage;
             }
             // Get a sentence break iterator if we will need it
@@ -740,34 +733,28 @@ namespace ICU4N.Impl
 
         internal class ICUDataTable : DataTable
         {
-            // ICU4N TODO: Finish implementation
-            //private readonly ICUResourceBundle bundle;
+            private readonly ICUResourceBundle bundle;
 
             public ICUDataTable(string path, ULocale locale, bool nullIfNotFound)
                     : base(nullIfNotFound)
             {
-                // ICU4N TODO: Finish implementation
-                //this.bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(
-                //        path, locale.GetBaseName());
+                this.bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(
+                        path, locale.GetBaseName());
             }
 
             public override ULocale GetLocale()
             {
-                // ICU4N TODO: Finish implementation
-                throw new NotImplementedException();
-                //return bundle.GetULocale();
+                return bundle.GetULocale();
             }
 
             public override string Get(string tableName, string subTableName, string code)
             {
-                // ICU4N TODO: Finish implementation
-                throw new NotImplementedException();
-                //return ICUResourceTableAccess.GetTableString(bundle, tableName, subTableName,
-                //        code, nullIfNotFound ? null : code);
+                return ICUResourceTableAccess.GetTableString(bundle, tableName, subTableName,
+                        code, nullIfNotFound ? null : code);
             }
         }
 
-        internal class DefaltDataTables : DataTables
+        internal class DefaultDataTables : DataTables
         {
             public override DataTable Get(ULocale locale, bool nullIfNotFound)
             {
@@ -775,7 +762,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal abstract class DataTables
+        public abstract class DataTables
         {
             public abstract DataTable Get(ULocale locale, bool nullIfNotFound);
             public static DataTables Load(string className)
@@ -788,7 +775,7 @@ namespace ICU4N.Impl
                 }
                 catch (Exception)
                 {
-                    return new DefaltDataTables();
+                    return new DefaultDataTables();
                     //    return new DataTables() {
                     //            @Override
                     //            public DataTable get(ULocale locale, boolean nullIfNotFound)
@@ -800,7 +787,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal abstract class ICUDataTables : DataTables
+        public abstract class ICUDataTables : DataTables
         {
             private readonly string path;
 
@@ -817,12 +804,16 @@ namespace ICU4N.Impl
 
         internal static class LangDataTables
         {
-            internal static readonly DataTables impl = DataTables.Load("ICU4N.Impl.ICULangDataTables, ICU4N");
+            // ICU4N TODO: API - create abstract factory so the type to load the tables can be customized. 
+            // In .NET, this doesn't work so well anyway because the name of the assembly must match, not just the namespace.
+            internal static readonly DataTables impl = DataTables.Load("ICU4N.Impl.ICULangDataTables, ICU4N.LanguageData");
         }
 
         internal static class RegionDataTables
         {
-            internal static readonly DataTables impl = DataTables.Load("ICU4N.Impl.ICURegionDataTables, ICU4N");
+            // ICU4N TODO: API - create abstract factory so the type to load the tables can be customized. 
+            // In .NET, this doesn't work so well anyway because the name of the assembly must match, not just the namespace.
+            internal static readonly DataTables impl = DataTables.Load("ICU4N.Impl.ICURegionDataTables, ICU4N.RegionData");
         }
 
         public enum DataTableType
@@ -849,7 +840,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                // ICU4N TODO: Does it make senset to call this twice, once for StringBuilder and once for String?
+                // ICU4N TODO: Does it make sense to call this twice, once for StringBuilder and once for String?
                 SimpleFormatterImpl.FormatAndReplace(separatorFormat, b, null, b.ToCharSequence(), s.ToCharSequence());
             }
             return b;

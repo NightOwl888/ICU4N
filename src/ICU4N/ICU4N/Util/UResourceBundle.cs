@@ -27,9 +27,22 @@ namespace ICU4N.Util
          */
         public static UResourceBundle GetBundleInstance(string baseName, string localeName)
         {
-            return GetBundleInstance(baseName, localeName, ICUResourceBundle.ICU_DATA_CLASS_LOADER,
+            return GetBundleInstance(baseName, localeName, GetAssembly(baseName),
                                      false);
         }
+
+        // ICU4N TODO: Our main assembly won't be able to load any LanguageData, RegionData, etc.
+        // Need to come up with a better way to retrieve these values
+        private static Assembly GetAssembly(string baseName)
+        {
+            if (baseName.EndsWith("/lang", StringComparison.Ordinal) || baseName.Contains("/lang/"))
+                return LocaleDisplayNamesImpl.LangDataTables.impl.GetType().GetTypeInfo().Assembly;
+            if (baseName.EndsWith("/region", StringComparison.Ordinal) || baseName.Contains("/region/"))
+                return LocaleDisplayNamesImpl.RegionDataTables.impl.GetType().GetTypeInfo().Assembly;
+
+            return ICUResourceBundle.ICU_DATA_CLASS_LOADER;
+        }
+
 
         /**
          * {@icu} Creates a resource bundle using the specified base name, locale, and class root.
@@ -585,7 +598,6 @@ namespace ICU4N.Util
             return null;
         }
 
-        // ICU4N TODO: Finish implemetation
         /**
          * Returns the keys in this bundle as an enumeration
          * @return an enumeration containing key strings,
@@ -843,7 +855,6 @@ namespace ICU4N.Util
             return null;
         }
 
-        // ICU4N TODO: Finish implementation
         /**
          * {@icu} Actual worker method for fetching the keys of resources contained in the resource.
          * Sub classes must override this method if they support keys and associated resources.
@@ -964,7 +975,20 @@ namespace ICU4N.Util
 
         public object GetObject(string key)
         {
-            throw new NotImplementedException();
+            object obj = HandleGetObject(key);
+            if (obj == null)
+            {
+                if (parent != null)
+                {
+                    obj = parent.GetObject(key);
+                }
+                if (obj == null)
+                {
+                    throw new MissingManifestResourceException("Can't find resource for bundle " +
+                        this.GetType().Name + ", key " + key);
+                }
+            }
+            return obj;
         }
 
         public string GetString(string key)

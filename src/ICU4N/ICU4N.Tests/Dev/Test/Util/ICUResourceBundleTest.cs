@@ -111,7 +111,7 @@ namespace ICU4N.Tests.Dev.Test.Util
             // for the default locale is requested
             try
             {
-                UResourceBundle bundle = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", ULocale.GetDefault(), testLoader);
+                UResourceBundle bundle = UResourceBundle.GetBundleInstance("Dev/Data/TestData", ULocale.GetDefault(), testLoader);
                 if (bundle == null)
                 {
                     Errln("could not create the resource bundle");
@@ -191,7 +191,7 @@ namespace ICU4N.Tests.Dev.Test.Util
             UResourceBundle bundle = null;
             try
             {
-                bundle = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "testtypes", testLoader);
+                bundle = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "testtypes", testLoader);
             }
             catch (MissingManifestResourceException e)
             {
@@ -398,21 +398,21 @@ namespace ICU4N.Tests.Dev.Test.Util
         public void TestTable32()
         {
             TestCase[] arr = new TestCase[]{
-          new TestCase  ( "ooooooooooooooooo", 0 ),
-          new TestCase  ( "oooooooooooooooo1", 1 ),
-          new TestCase  ( "ooooooooooooooo1o", 2 ),
-          new TestCase  ( "oo11ooo1ooo11111o", 25150 ),
-          new TestCase  ( "oo11ooo1ooo111111", 25151 ),
-          new TestCase  ( "o1111111111111111", 65535 ),
-          new TestCase  ( "1oooooooooooooooo", 65536 ),
-          new TestCase  ( "1ooooooo11o11ooo1", 65969 ),
-          new TestCase  ( "1ooooooo11o11oo1o", 65970 ),
-          new TestCase  ( "1ooooooo111oo1111", 65999 )
-        };
+                new TestCase  ( "ooooooooooooooooo", 0 ),
+                new TestCase  ( "oooooooooooooooo1", 1 ),
+                new TestCase  ( "ooooooooooooooo1o", 2 ),
+                new TestCase  ( "oo11ooo1ooo11111o", 25150 ),
+                new TestCase  ( "oo11ooo1ooo111111", 25151 ),
+                new TestCase  ( "o1111111111111111", 65535 ),
+                new TestCase  ( "1oooooooooooooooo", 65536 ),
+                new TestCase  ( "1ooooooo11o11ooo1", 65969 ),
+                new TestCase  ( "1ooooooo11o11oo1o", 65970 ),
+                new TestCase  ( "1ooooooo111oo1111", 65999 )
+            };
             UResourceBundle bundle = null;
             try
             {
-                bundle = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "testtable32", testLoader);
+                bundle = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "testtable32", testLoader);
             }
             catch (MissingManifestResourceException ex)
             {
@@ -508,7 +508,7 @@ namespace ICU4N.Tests.Dev.Test.Util
         {
             string simpleAlias = "Open";
 
-            UResourceBundle rb = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "testaliases", testLoader);
+            UResourceBundle rb = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "testaliases", testLoader);
             if (rb == null)
             {
                 Warnln("could not load testaliases data");
@@ -527,7 +527,7 @@ namespace ICU4N.Tests.Dev.Test.Util
             {
                 try
                 {
-                    rb = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "testaliases", testLoader);
+                    rb = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "testaliases", testLoader);
                     sub = rb.Get("nonexisting");
                     Errln("Did not get the expected exception for nonexisting");
                 }
@@ -537,7 +537,7 @@ namespace ICU4N.Tests.Dev.Test.Util
                 }
             }
             {
-                rb = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "testaliases", testLoader);
+                rb = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "testaliases", testLoader);
                 sub = rb.Get("referencingalias");
                 s1 = sub.GetString();
                 if (s1.Equals("H:mm:ss"))
@@ -550,7 +550,7 @@ namespace ICU4N.Tests.Dev.Test.Util
                 }
             }
             {
-                UResourceBundle rb1 = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "testaliases", testLoader);
+                UResourceBundle rb1 = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "testaliases", testLoader);
                 if (rb1 != rb)
                 {
                     Errln("Caching of the resource bundle failed");
@@ -665,7 +665,7 @@ namespace ICU4N.Tests.Dev.Test.Util
 
             // Test case for #7996
             {
-                UResourceBundle bundle = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "te", testLoader);
+                UResourceBundle bundle = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "te", testLoader);
                 UResourceBundle table = bundle.Get("tableT7996");
                 try
                 {
@@ -714,7 +714,7 @@ namespace ICU4N.Tests.Dev.Test.Util
         [Test]
         public void TestXPathAlias()
         {
-            UResourceBundle rb = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "te_IN", testLoader);
+            UResourceBundle rb = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "te_IN", testLoader);
             UResourceBundle b = rb.Get("aliasClient");
             string result = b.GetString();
             string expResult = "correct";
@@ -743,7 +743,7 @@ namespace ICU4N.Tests.Dev.Test.Util
         {
             try
             {
-                UResourceBundle rb = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "testaliases", testLoader);
+                UResourceBundle rb = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "testaliases", testLoader);
                 UResourceBundle sub = rb.Get("aaa");
                 string s1 = sub.GetString();
                 if (s1 != null)
@@ -765,7 +765,7 @@ namespace ICU4N.Tests.Dev.Test.Util
         public void TestPreventFallback()
         {
             string noFallbackResource = "string_in_te_no_te_IN_fallback";
-            ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "te_IN_NE", testLoader);
+            ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance("Dev/Data/TestData", "te_IN_NE", testLoader);
             try
             {
                 rb.GetStringWithFallback(noFallbackResource);
@@ -776,7 +776,7 @@ namespace ICU4N.Tests.Dev.Test.Util
                 // Expected
             }
             rb.GetStringWithFallback("string_only_in_te");
-            rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "te", testLoader);
+            rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance("Dev/Data/TestData", "te", testLoader);
             rb.GetStringWithFallback(noFallbackResource);
         }
 
@@ -784,7 +784,7 @@ namespace ICU4N.Tests.Dev.Test.Util
         public void TestGetWithFallback()
         {
             /*
-            UResourceBundle bundle =(UResourceBundle) UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata","te_IN");
+            UResourceBundle bundle =(UResourceBundle) UResourceBundle.GetBundleInstance("Dev/Data/TestData","te_IN");
             string key = bundle.getStringWithFallback("Keys/collation");
             if(!key.Equals("COLLATION")){
                 Errln("Did not get the expected result from getStringWithFallback method.");
@@ -1011,7 +1011,7 @@ namespace ICU4N.Tests.Dev.Test.Util
 
             Logln("Testing CLDR style aliases......\n");
 
-            UResourceBundle rb = UResourceBundle.GetBundleInstance("com/ibm/icu/dev/data/testdata", "te_IN_REVISED", testLoader);
+            UResourceBundle rb = UResourceBundle.GetBundleInstance("Dev/Data/TestData", "te_IN_REVISED", testLoader);
             ICUResourceBundle alias = (ICUResourceBundle)rb.Get("a");
 
             for (int i = 1; i < 5; i++)
@@ -1181,7 +1181,7 @@ namespace ICU4N.Tests.Dev.Test.Util
         [Test]
         public void TestICUGetKeysAtTopLevel()
         {
-            string baseName = "com/ibm/icu/dev/data/testdata";
+            string baseName = "Dev/Data/TestData";
             UResourceBundle te_IN = UResourceBundle.GetBundleInstance(baseName, "te_IN", testLoader);
             UResourceBundle te = UResourceBundle.GetBundleInstance(baseName, "te", testLoader);
             ISet<string> te_set = SetFromEnumeration(te.GetKeys());
@@ -1201,7 +1201,7 @@ namespace ICU4N.Tests.Dev.Test.Util
         [Test]
         public void TestICUGetKeysForResourceItem()
         {
-            string baseName = "com/ibm/icu/dev/data/testdata";
+            string baseName = "Dev/Data/TestData";
             UResourceBundle te = UResourceBundle.GetBundleInstance(baseName, "te", testLoader);
             UResourceBundle tagged_array_in_Root_te = te.Get("tagged_array_in_Root_te");
             ISet<string> keys = SetFromEnumeration(tagged_array_in_Root_te.GetKeys());

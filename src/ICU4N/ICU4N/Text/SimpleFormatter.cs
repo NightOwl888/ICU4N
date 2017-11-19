@@ -8,6 +8,9 @@ namespace ICU4N.Text
     // ICU4N TODO: Either phase this out or replace the values params with object (similar to string.Format() in .NET).
     // This basically does the same thing a string.Format(), but with different escape characters, so we can probably do without this.
 
+    // ICU4N TODO: If we do keep this, this and all other formatters should implement IFormatProvider so they can be used directly
+    // with string.Format()
+
     /// <summary>
     /// Formats simple patterns like "{1} was born in {0}".
     /// </summary>

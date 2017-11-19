@@ -79,7 +79,7 @@ namespace ICU4N.Text
                     result = (LocaleDisplayNames)FACTORY_DIALECTHANDLING.Invoke(null,
                         new object[] { locale, dialectHandling });
                 }
-                catch (TargetInvocationException)
+                catch (TargetInvocationException e)
                 {
                     // fall through
                 }

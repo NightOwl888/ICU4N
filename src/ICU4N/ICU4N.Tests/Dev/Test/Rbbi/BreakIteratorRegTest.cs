@@ -15,7 +15,8 @@ namespace ICU4N.Tests.Dev.Test.Rbbi
         public void TestRegUnreg()
         {
             CultureInfo thailand_locale = new CultureInfo("th-TH");
-            CultureInfo foo_locale = new CultureInfo("fu-FU");
+            // ICU4N: Arbitrary locales are not allowed in .NET
+            //CultureInfo foo_locale = new CultureInfo("fu-FU");
             BreakIterator jwbi = BreakIterator.GetWordInstance(new CultureInfo("ja"));
             BreakIterator uwbi = BreakIterator.GetWordInstance(new CultureInfo("en-US"));
             BreakIterator usbi = BreakIterator.GetSentenceInstance(new CultureInfo("en-US"));
@@ -29,22 +30,25 @@ namespace ICU4N.Tests.Dev.Test.Rbbi
 
             assertTrue(!BreakIterator.Unregister(""), "unregister before register"); // coverage
 
-            Object key0 = BreakIterator.RegisterInstance((BreakIterator)twbi.Clone(), foo_locale, BreakIterator.KIND_WORD);
-            Object key1 = BreakIterator.RegisterInstance(sbi, new CultureInfo("en-US"), BreakIterator.KIND_WORD);
-            Object key2 = BreakIterator.RegisterInstance((BreakIterator)twbi.Clone(), new CultureInfo("en-US"), BreakIterator.KIND_WORD);
+            // ICU4N: Arbitrary locales are not allowed in .NET
+            //object key0 = BreakIterator.RegisterInstance((BreakIterator)twbi.Clone(), foo_locale, BreakIterator.KIND_WORD);
+            object key1 = BreakIterator.RegisterInstance(sbi, new CultureInfo("en-US"), BreakIterator.KIND_WORD);
+            object key2 = BreakIterator.RegisterInstance((BreakIterator)twbi.Clone(), new CultureInfo("en-US"), BreakIterator.KIND_WORD);
 
             {
                 BreakIterator test0 = BreakIterator.GetWordInstance(new CultureInfo("ja"));
                 BreakIterator test1 = BreakIterator.GetWordInstance(new CultureInfo("en-US"));
                 BreakIterator test2 = BreakIterator.GetSentenceInstance(new CultureInfo("en-US"));
                 BreakIterator test3 = BreakIterator.GetWordInstance(thailand_locale);
-                BreakIterator test4 = BreakIterator.GetWordInstance(foo_locale);
+                // ICU4N: Arbitrary locales are not allowed in .NET
+                //BreakIterator test4 = BreakIterator.GetWordInstance(foo_locale);
 
                 assertEqual(test0, jwbi, "japan word == japan word");
                 assertEqual(test1, twbi, "us word == thai word");
                 assertEqual(test2, usbi, "us sentence == us sentence");
                 assertEqual(test3, twbi, "thai word == thai word");
-                assertEqual(test4, twbi, "foo word == thai word");
+                // ICU4N: Arbitrary locales are not allowed in .NET
+                //assertEqual(test4, twbi, "foo word == thai word");
             }
 
             //Locale[] locales = BreakIterator.getAvailableLocales();
@@ -69,9 +73,10 @@ namespace ICU4N.Tests.Dev.Test.Rbbi
                 assertEqual(len, 0, "us word text: " + getString(sci));
             }
 
-            assertTrue((BreakIterator.GetAvailableLocales().ToList()).Contains(foo_locale), "foo_locale");
-            assertTrue(BreakIterator.Unregister(key0), "unregister foo word (thai word)");
-            assertTrue(!(BreakIterator.GetAvailableLocales().ToList()).Contains(foo_locale), "no foo_locale");
+            // ICU4N: Arbitrary locales are not allowed in .NET
+            //assertTrue((BreakIterator.GetAvailableLocales().ToList()).Contains(foo_locale), "foo_locale");
+            //assertTrue(BreakIterator.Unregister(key0), "unregister foo word (thai word)");
+            //assertTrue(!(BreakIterator.GetAvailableLocales().ToList()).Contains(foo_locale), "no foo_locale");
             assertEqual(BreakIterator.GetWordInstance(new CultureInfo("en-US")), usbi, "us word == us sentence");
 
             assertTrue(BreakIterator.Unregister(key1), "unregister us word (us sentence)");
@@ -80,13 +85,15 @@ namespace ICU4N.Tests.Dev.Test.Rbbi
                 BreakIterator test1 = BreakIterator.GetWordInstance(new CultureInfo("en-US"));
                 BreakIterator test2 = BreakIterator.GetSentenceInstance(new CultureInfo("en-US"));
                 BreakIterator test3 = BreakIterator.GetWordInstance(thailand_locale);
-                BreakIterator test4 = BreakIterator.GetWordInstance(foo_locale);
+                // ICU4N: Arbitrary locales are not allowed in .NET
+                //BreakIterator test4 = BreakIterator.GetWordInstance(foo_locale);
 
                 assertEqual(test0, jwbi, "japanese word break");
                 assertEqual(test1, uwbi, "us sentence-word break");
                 assertEqual(test2, usbi, "us sentence break");
                 assertEqual(test3, twbi, "thai word break");
-                assertEqual(test4, rwbi, "root word break");
+                // ICU4N: Arbitrary locales are not allowed in .NET
+                //assertEqual(test4, rwbi, "root word break");
 
                 CharacterIterator sci = test1.GetText();
                 int len = sci.EndIndex - sci.BeginIndex;
