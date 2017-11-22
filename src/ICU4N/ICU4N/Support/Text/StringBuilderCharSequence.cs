@@ -15,6 +15,11 @@ namespace ICU4N.Support.Text
             this.value = value;
         }
 
+        public StringBuilderCharSequence()
+            : this(new StringBuilder())
+        {
+        }
+
         internal string Value { get { return value.ToString(); } } // ICU4N TODO: API - replace with StringBuilder property?
 
         public StringBuilder StringBuilder { get { return value; } }

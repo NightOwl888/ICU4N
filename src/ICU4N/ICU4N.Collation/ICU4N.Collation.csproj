@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.3</TargetFramework>
+    <RootNamespace>ICU4N</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Util\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
+  </ItemGroup>
+
+</Project>

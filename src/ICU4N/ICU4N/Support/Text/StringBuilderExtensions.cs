@@ -154,6 +154,37 @@ namespace ICU4N.Support.Text
         }
 
         /// <summary>
+        /// Inserts the string representation of the specified subsequence of the
+        /// <see cref="StringBuilder"/> at the specified <paramref name="index"/>.
+        /// If the <see cref="StringBuilder"/> is <c>null</c>, then the string "null"
+        /// is used to determine the subsequence.
+        /// </summary>
+        /// <param name="text">This <see cref="StringBuilder"/>.</param>
+        /// <param name="index">The index to insert at.</param>
+        /// <param name="value">The <see cref="StringBuilder"/> to insert.</param>
+        /// <param name="startIndex">The start of the subsequence of <paramref name="value"/>.</param>
+        /// <param name="length">The number of characters to insert from <paramref name="value"/>.</param>
+        /// <returns>This <see cref="StringBuilder"/>.</returns>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="index"/> is negative or greater than the current length,
+        /// or <paramref name="startIndex"/> and <paramref name="length"/> do not specify a valid subsequence.</exception>
+        public static StringBuilder Insert(this StringBuilder text, int index, StringBuilder value, int startIndex, int length)
+        {
+            if (value == null)
+            {
+                //value = "null"; //$NON-NLS-1$
+                text.Insert(index, "null".Substring(startIndex, length));
+                return text;
+            }
+            if (index < 0 || index > text.Length - 1 || startIndex < 0 || length < 0 || startIndex + length > value.Length)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            text.Insert(index, value.ToString(startIndex, length));
+            return text;
+        }
+
+
+        /// <summary>
         /// Searches for the first index of the specified character. The search for
         /// the character starts at the beginning and moves towards the end.
         /// </summary>

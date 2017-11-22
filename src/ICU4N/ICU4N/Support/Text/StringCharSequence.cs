@@ -6,7 +6,7 @@ namespace ICU4N.Support.Text
 {
     internal sealed class StringCharSequence : ICharSequence, IComparable<ICharSequence>, IComparable
     {
-        private readonly string value;
+        private string value;
 
         public StringCharSequence(string value)
         {
@@ -15,7 +15,11 @@ namespace ICU4N.Support.Text
 
         internal string Value { get { return value; } } // ICU4N TODO: API - replace with String property?
 
-        public string String { get { return value; } }
+        public string String
+        {
+            get { return value; }
+            set { this.value = value; } // setting allows the object to be reused multiple times
+        }
 
         public char this[int index]
         {
