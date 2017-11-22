@@ -1,9 +1,7 @@
 ﻿using ICU4N.Support.Collections;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace ICU4N.Tests.Dev.Test.Normalizers
+namespace ICU4N.Dev.Test.Normalizers
 {
     /// <summary>
     /// Hashtable storing ints addressed by longs. Used

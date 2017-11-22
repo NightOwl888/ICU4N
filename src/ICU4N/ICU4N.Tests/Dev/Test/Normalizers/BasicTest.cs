@@ -2,7 +2,6 @@
 using ICU4N.Lang;
 using ICU4N.Support;
 using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;

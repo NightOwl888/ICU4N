@@ -1,12 +1,10 @@
 ﻿using ICU4N.Lang;
 using ICU4N.Support;
-using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using NUnit.Framework;
 using System;
 using UProperty = ICU4N.Lang.UProperty;
 
-namespace ICU4N.Tests.Dev.Test.Lang
+namespace ICU4N.Dev.Test.Lang
 {
     public class UPropertyAliasesTest : TestFmwk
     {

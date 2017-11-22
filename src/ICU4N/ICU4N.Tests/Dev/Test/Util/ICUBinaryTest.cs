@@ -1,10 +1,9 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.IO;
-using ICU4N.TestFramework.Dev.Test;
 using NUnit.Framework;
 using System.IO;
 
-namespace ICU4N.Tests.Dev.Test.Util
+namespace ICU4N.Dev.Test.Util
 {
     /// <summary>
     /// Testing class for Trie. Tests here will be simple, since both CharTrie and

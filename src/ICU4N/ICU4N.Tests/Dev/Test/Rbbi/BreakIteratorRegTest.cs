@@ -1,5 +1,4 @@
 ﻿using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
@@ -7,7 +6,7 @@ using System.Globalization;
 using System.Linq;
 using StringBuffer = System.Text.StringBuilder;
 
-namespace ICU4N.Tests.Dev.Test.Rbbi
+namespace ICU4N.Dev.Test.Rbbi
 {
     public class BreakIteratorRegTest : TestFmwk
     {

@@ -2,7 +2,6 @@
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Support.Threading;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Util;
 using NUnit.Framework;
 using System;
@@ -15,7 +14,7 @@ using System.Threading;
 using IFactory = ICU4N.Impl.ICUService.IFactory; // ICU4N TODO: API - de-nest ?
 using SimpleFactory = ICU4N.Impl.ICUService.SimpleFactory; // ICU4N TODO: API - de-nest ?
 
-namespace ICU4N.Tests.Dev.Test.Util
+namespace ICU4N.Dev.Test.Util
 {
     public class ICUServiceThreadTest : TestFmwk
     {

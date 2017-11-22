@@ -1,5 +1,4 @@
 ﻿using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using ICU4N.Util;
 using NUnit.Framework;
@@ -9,7 +8,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
-namespace ICU4N.Tests.Dev.Test.Rbbi
+namespace ICU4N.Dev.Test.Rbbi
 {
     /// <summary>
     /// API Test the RuleBasedBreakIterator class

@@ -2,7 +2,6 @@
 using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
@@ -11,7 +10,7 @@ using System.Globalization;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
-namespace ICU4N.Tests.Dev.Test.Rbbi
+namespace ICU4N.Dev.Test.Rbbi
 {
     /// <summary>
     /// Monkey tests for RBBI.  These tests have independent implementations of

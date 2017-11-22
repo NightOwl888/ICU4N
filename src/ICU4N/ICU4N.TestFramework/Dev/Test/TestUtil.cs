@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using StringBuffer = System.Text.StringBuilder;
 
-namespace ICU4N.TestFramework.Dev.Test
+namespace ICU4N.Dev.Test
 {
     public sealed class TestUtil
     {

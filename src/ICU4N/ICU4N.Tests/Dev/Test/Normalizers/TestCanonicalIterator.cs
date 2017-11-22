@@ -1,7 +1,6 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Lang;
 using ICU4N.Support;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
@@ -9,7 +8,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using StringBuffer = System.Text.StringBuilder;
 
-namespace ICU4N.Tests.Dev.Test.Normalizers
+namespace ICU4N.Dev.Test.Normalizers
 {
     public class TestCanonicalIterator : TestFmwk
     {

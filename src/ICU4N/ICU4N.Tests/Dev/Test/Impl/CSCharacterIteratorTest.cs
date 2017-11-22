@@ -1,10 +1,9 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using NUnit.Framework;
 using System;
 
-namespace ICU4N.Tests.Dev.Test.Impl
+namespace ICU4N.Dev.Test.Impl
 {
     public class CSCharacterIteratorTest : TestFmwk
     {

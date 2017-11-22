@@ -1,7 +1,6 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
@@ -11,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using UTF16Plus = ICU4N.Impl.Normalizer2Impl.UTF16Plus; // ICU4N TODO: De-nest?
 
-namespace ICU4N.Tests.Dev.Test.Normalizers
+namespace ICU4N.Dev.Test.Normalizers
 {
     /// <summary>
     /// UTS #46 (IDNA2008) test.

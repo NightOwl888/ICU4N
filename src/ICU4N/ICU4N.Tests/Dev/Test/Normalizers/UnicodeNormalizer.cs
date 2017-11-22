@@ -1,10 +1,9 @@
-﻿using ICU4N.TestFramework.Dev.Test;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
-namespace ICU4N.Tests.Dev.Test.Normalizers
+namespace ICU4N.Dev.Test.Normalizers
 {
     /// <summary>
     /// 

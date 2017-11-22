@@ -1,6 +1,5 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Support.Threading;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using ICU4N.Util;
 using NUnit.Framework;
@@ -21,7 +20,7 @@ using StringBuffer = System.Text.StringBuilder;
 //            which is common between ICU4C and ICU4J.  The remaining test data should also be moved,
 //            or simply retired if it is no longer interesting.
 
-namespace ICU4N.Tests.Dev.Test.Rbbi
+namespace ICU4N.Dev.Test.Rbbi
 {
     public class RBBITest : TestFmwk
     {

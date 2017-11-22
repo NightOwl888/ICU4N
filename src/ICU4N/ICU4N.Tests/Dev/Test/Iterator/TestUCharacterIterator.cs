@@ -1,11 +1,10 @@
 ﻿using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
 using StringBuffer = System.Text.StringBuilder;
 
-namespace ICU4N.Tests.Dev.Test.Iterator
+namespace ICU4N.Dev.Test.Iterator
 {
     public class TestUCharacterIterator : TestFmwk
     {

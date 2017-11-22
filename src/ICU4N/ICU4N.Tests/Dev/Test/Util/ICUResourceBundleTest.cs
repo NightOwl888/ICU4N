@@ -1,6 +1,5 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.IO;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using ICU4N.Util;
 using NUnit.Framework;
@@ -11,7 +10,7 @@ using System.Reflection;
 using System.Resources;
 using System.Text;
 
-namespace ICU4N.Tests.Dev.Test.Util
+namespace ICU4N.Dev.Test.Util
 {
     public sealed class ICUResourceBundleTest : TestFmwk
     {

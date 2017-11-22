@@ -4,7 +4,6 @@
 //using ICU4N.Support.Collections;
 //using ICU4N.Support.Text;
 //using ICU4N.Support.Threading;
-//using ICU4N.TestFramework.Dev.Test;
 //using ICU4N.Text;
 //using ICU4N.Util;
 //using NUnit.Framework;
@@ -17,7 +16,7 @@
 //using System.Text.RegularExpressions;
 //using StringBuffer = System.Text.StringBuilder;
 
-//namespace ICU4N.Tests.Dev.Test.Rbbi
+//namespace ICU4N.Dev.Test.Rbbi
 //{
 //    /// <summary>
 //    /// RBBI Monkey Test. Ported from ICU4C test/intltest/rbbimonkeytest.cpp.

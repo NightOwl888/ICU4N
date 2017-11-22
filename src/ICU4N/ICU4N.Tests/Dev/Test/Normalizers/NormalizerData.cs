@@ -1,12 +1,11 @@
 ﻿using ICU4N.Support.Collections;
-using ICU4N.TestFramework.Dev.Test;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
-namespace ICU4N.Tests.Dev.Test.Normalizers
+namespace ICU4N.Dev.Test.Normalizers
 {
     /// <summary>
     /// Accesses the Normalization Data used for Forms C and D.

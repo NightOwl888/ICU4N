@@ -15,7 +15,7 @@ using StringBuffer = System.Text.StringBuilder;
 using System.Diagnostics;
 #endif
 
-namespace ICU4N.TestFramework.Dev.Test
+namespace ICU4N.Dev.Test
 {
     /// <summary>
     /// TestFmwk is a base class for tests that can be run conveniently from the

@@ -1,11 +1,10 @@
-﻿using ICU4N.TestFramework.Dev.Test;
-using ICU4N.Text;
+﻿using ICU4N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace ICU4N.Tests.Dev.Test.Normalizers
+namespace ICU4N.Dev.Test.Normalizers
 {
     public class NormalizerRegressionTests : TestFmwk
     {

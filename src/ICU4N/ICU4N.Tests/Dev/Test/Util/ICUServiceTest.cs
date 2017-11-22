@@ -1,8 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support;
 using ICU4N.Support.Collections;
-using ICU4N.TestFramework.Dev.Test;
-using ICU4N.Tests.Dev.Test.Normalizers;
+using ICU4N.Dev.Test.Normalizers;
 using ICU4N.Util;
 using NUnit.Framework;
 using System;
@@ -18,7 +17,7 @@ using ServiceListener = ICU4N.Impl.ICUService.ServiceListener; // ICU4N TODO: AP
 using SimpleFactory = ICU4N.Impl.ICUService.SimpleFactory; // ICU4N TODO: API - de-nest ?
 using StringBuffer = System.Text.StringBuilder;
 
-namespace ICU4N.Tests.Dev.Test.Util
+namespace ICU4N.Dev.Test.Util
 {
     public class ICUServiceTest : TestFmwk
     {

@@ -1,16 +1,13 @@
 ﻿using ICU4N.Support.Collections;
 using ICU4N.Support.Threading;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Util;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 #if !NETCOREAPP1_0
 using System.Threading;
 #endif
 
-namespace ICU4N.Tests.Dev.Test.Util
+namespace ICU4N.Dev.Test.Util
 {
     /// <summary>
     /// Testing class for VersionInfo

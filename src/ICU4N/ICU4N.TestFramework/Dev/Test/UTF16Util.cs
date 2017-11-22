@@ -1,7 +1,7 @@
 ﻿using System;
 using StringBuffer = System.Text.StringBuilder;
 
-namespace ICU4N.TestFramework.Dev.Test
+namespace ICU4N.Dev.Test
 {
     /// <summary>
     /// Utility class for supplementary code point 

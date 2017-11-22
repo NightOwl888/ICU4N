@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace ICU4N.TestFramework.Dev.Test
+namespace ICU4N.Dev.Test
 {
     public abstract class AbstractTestLog : TestLog
     {

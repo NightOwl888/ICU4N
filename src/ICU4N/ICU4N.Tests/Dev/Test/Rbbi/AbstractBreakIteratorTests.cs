@@ -1,9 +1,8 @@
 ﻿using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
 using NUnit.Framework;
 
-namespace ICU4N.Tests.Dev.Test.Rbbi
+namespace ICU4N.Dev.Test.Rbbi
 {
     /// <author>sgill</author>
     public class AbstractBreakIteratorTests : TestFmwk

@@ -3,9 +3,7 @@ using ICU4N.Lang;
 using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using ICU4N.TestFramework.Dev.Test;
 using ICU4N.Text;
-using ICU4N.Util;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -18,7 +16,7 @@ using UProperty = ICU4N.Lang.UProperty;
 using static ICU4N.Text.UnicodeSetSpanner; // ICU4N TODO: API De-nest?
 using System.Diagnostics;
 
-namespace ICU4N.Tests.Dev.Test.Lang
+namespace ICU4N.Dev.Test.Lang
 {
     /// <summary>
     /// General test of UnicodeSet

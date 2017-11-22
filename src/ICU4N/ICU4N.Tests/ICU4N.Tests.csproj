@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp1.0</TargetFramework>
+    <RootNamespace>ICU4N</RootNamespace>
     <!--<TargetFramework>net45</TargetFramework>-->
   </PropertyGroup>
 
