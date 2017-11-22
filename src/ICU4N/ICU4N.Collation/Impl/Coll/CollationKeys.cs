@@ -287,7 +287,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        private static SortKeyLevel getSortKeyLevel(int levels, int level)
+        private static SortKeyLevel GetSortKeyLevel(int levels, int level)
         {
             return (levels & level) != 0 ? new SortKeyLevel() : null;
         }
@@ -394,10 +394,10 @@ namespace ICU4N.Impl.Coll
             int tertiaryMask = CollationSettings.GetTertiaryMask(options);
 
             byte[] p234 = new byte[3];
-            SortKeyLevel cases = getSortKeyLevel(levels, Collation.CASE_LEVEL_FLAG);
-            SortKeyLevel secondaries = getSortKeyLevel(levels, Collation.SECONDARY_LEVEL_FLAG);
-            SortKeyLevel tertiaries = getSortKeyLevel(levels, Collation.TERTIARY_LEVEL_FLAG);
-            SortKeyLevel quaternaries = getSortKeyLevel(levels, Collation.QUATERNARY_LEVEL_FLAG);
+            SortKeyLevel cases = GetSortKeyLevel(levels, Collation.CASE_LEVEL_FLAG);
+            SortKeyLevel secondaries = GetSortKeyLevel(levels, Collation.SECONDARY_LEVEL_FLAG);
+            SortKeyLevel tertiaries = GetSortKeyLevel(levels, Collation.TERTIARY_LEVEL_FLAG);
+            SortKeyLevel quaternaries = GetSortKeyLevel(levels, Collation.QUATERNARY_LEVEL_FLAG);
 
             long prevReorderedPrimary = 0;  // 0==no compression
             int commonCases = 0;

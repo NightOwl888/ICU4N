@@ -13,7 +13,6 @@ using System.Reflection;
 using System.Text;
 using SortKeyByteSink = ICU4N.Impl.Coll.CollationKeys.SortKeyByteSink;
 using ReorderingBuffer = ICU4N.Impl.Normalizer2Impl.ReorderingBuffer;
-using ICU4N.Impl.Coll;
 using ICU4N.Support.Threading;
 
 namespace ICU4N.Text
@@ -1181,7 +1180,7 @@ namespace ICU4N.Text
          * @see #getRawCollationKey
          * @stable ICU 2.8
          */
-        public override SortKey GetSortKey(string source)
+        public override CollationKey GetCollationKey(string source)
         {
             if (source == null)
             {
@@ -1191,7 +1190,7 @@ namespace ICU4N.Text
             try
             {
                 buffer = GetCollationBuffer();
-                return GetSortKey(source, buffer);
+                return GetCollationKey(source, buffer);
             }
             finally
             {
@@ -1199,23 +1198,18 @@ namespace ICU4N.Text
             }
         }
 
-        private SortKey GetSortKey(string source, CollationBuffer buffer)
+        private CollationKey GetCollationKey(string source, CollationBuffer buffer)
         {
-            buffer.RawSortKey = GetRawSortKey(source.ToCharSequence(), buffer.RawSortKey, buffer);
-
-#if NETSTANDARD1_3
-            SortKey sortKey = new SortKey(CultureInfo.InvariantCulture.Name, source, CompareOptions.None, buffer.RawSortKey.bytes);
-#else
-            SortKey sortKey = CultureInfo.InvariantCulture.CompareInfo.GetSortKey(string.Empty);
-            // ICU4N TODO: Set the internal properties of SortKey using Reflection - note we may only need 1 of the 2 sortkeys...
-            // Note that the variable names differ between .NET framework and Core - in .NET framework they are prefixed with m_
-            // and in .NET core they are prefixed only with _.
-#endif
-
-            return sortKey;
-
-
-            //return new SortKey(source, buffer.RawSortKey);
+            // ICU4N Port Note: using the System.Globalization.SortKey was considered as an option, but
+            // since its constructor is internal and using Reflection to set the internal
+            // properties is an ugly solution (not to mention, there are differnt variable
+            // names depending on .NET Framework/Mono/.NET Standard and the class is missing 
+            // entirely from .NET Standard 1.x), this was not done.
+            // Although it could work, the ICU documentation clearly states that
+            // "collation keys cannot be compared with other collator implementations",
+            // so reusing SortKey would just be confusing.
+            buffer.RawCollationKey = GetRawCollationKey(source.ToCharSequence(), buffer.RawCollationKey, buffer);
+            return new CollationKey(source, buffer.RawCollationKey);
         }
 
         /**
@@ -1232,7 +1226,7 @@ namespace ICU4N.Text
          * @see RawCollationKey
          * @stable ICU 2.8
          */
-        public override RawSortKey GetRawSortKey(string source, RawSortKey key)
+        public override RawCollationKey GetRawCollationKey(string source, RawCollationKey key)
         {
             if (source == null)
             {
@@ -1242,7 +1236,7 @@ namespace ICU4N.Text
             try
             {
                 buffer = GetCollationBuffer();
-                return GetRawSortKey(source.ToCharSequence(), key, buffer);
+                return GetRawCollationKey(source.ToCharSequence(), key, buffer);
             }
             finally
             {
@@ -1252,7 +1246,7 @@ namespace ICU4N.Text
 
         private sealed class CollationKeyByteSink : SortKeyByteSink
         {
-            internal CollationKeyByteSink(RawSortKey key)
+            internal CollationKeyByteSink(RawCollationKey key)
                 : base(key.bytes)
             {
                 key_ = key;
@@ -1288,16 +1282,16 @@ namespace ICU4N.Text
                 return true;
             }
 
-            private RawSortKey key_;
+            private RawCollationKey key_;
 
-            public RawSortKey Key { get { return key_; } }
+            public RawCollationKey Key { get { return key_; } }
         }
 
-        private RawSortKey GetRawSortKey(ICharSequence source, RawSortKey key, CollationBuffer buffer)
+        private RawCollationKey GetRawCollationKey(ICharSequence source, RawCollationKey key, CollationBuffer buffer)
         {
             if (key == null)
             {
-                key = new RawSortKey(SimpleKeyLengthEstimate(source));
+                key = new RawCollationKey(SimpleKeyLengthEstimate(source));
             }
             else if (key.bytes == null)
             {
@@ -2031,7 +2025,7 @@ namespace ICU4N.Text
             public FCDUTF16NFDIterator LeftFCDUTF16NFDIter { get; private set; }
             public FCDUTF16NFDIterator RightFCDUTF16NFDIter { get; private set; }
 
-            public RawSortKey RawSortKey { get; internal set; }
+            public RawCollationKey RawCollationKey { get; internal set; }
 
 
         }

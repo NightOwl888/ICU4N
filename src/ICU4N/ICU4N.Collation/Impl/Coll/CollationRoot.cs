@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Resources;
 using System.Text;
 
@@ -51,7 +52,8 @@ namespace ICU4N.Impl.Coll
             Exception e2 = null;
             try
             {
-                ByteBuffer bytes = ICUBinary.GetRequiredData("coll/ucadata.icu"); // ICU4N TODO: Add overload so we can pass assembly ?
+                // ICU4N specific - passing in assembly name so we resolve to this assembly rather than ICU4N.dll
+                ByteBuffer bytes = ICUBinary.GetRequiredData(typeof(CollationRoot).GetTypeInfo().Assembly, null, "coll/ucadata.icu");
                 CollationTailoring t2 = new CollationTailoring(null);
                 CollationDataReader.Read(null, bytes, t2);
                 // Keep t=null until after the root data has been read completely.

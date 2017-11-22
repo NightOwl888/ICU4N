@@ -1378,7 +1378,7 @@ namespace ICU4N.Text
          * @see #getRawCollationKey
          * @stable ICU 2.8
          */
-        public abstract SortKey GetSortKey(string source);
+        public abstract CollationKey GetCollationKey(string source);
 
         /**
          * {@icu} Returns the simpler form of a CollationKey for the String source following
@@ -1398,8 +1398,8 @@ namespace ICU4N.Text
          * @see RawCollationKey
          * @stable ICU 2.8
          */
-        public abstract RawSortKey GetRawSortKey(string source,
-                                                           RawSortKey key);
+        public abstract RawCollationKey GetRawCollationKey(string source,
+                                                           RawCollationKey key);
 
         ///**
         // * {@icu} Sets the variable top to the top of the specified reordering group.

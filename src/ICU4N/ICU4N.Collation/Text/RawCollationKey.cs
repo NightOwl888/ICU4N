@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ICU4N.Text
 {
-    public sealed class RawSortKey : ByteArrayWrapper // ICU4N specific - renamed from RawCollationKey to RawSortKey
+    public sealed class RawCollationKey : ByteArrayWrapper
     {
         // public constructors --------------------------------------------------
 
@@ -13,7 +13,7 @@ namespace ICU4N.Text
          * Default constructor, internal byte array is null and its size set to 0.
          * @stable ICU 2.8
          */
-        public RawSortKey()
+        public RawCollationKey()
         {
         }
 
@@ -23,7 +23,7 @@ namespace ICU4N.Text
          * @param capacity length of internal byte array
          * @stable ICU 2.8
          */
-        public RawSortKey(int capacity)
+        public RawCollationKey(int capacity)
         {
             bytes = new byte[capacity];
         }
@@ -34,7 +34,7 @@ namespace ICU4N.Text
          * @param bytes byte array to be adopted by RawCollationKey
          * @stable ICU 2.8
          */
-        public RawSortKey(byte[] bytes)
+        public RawCollationKey(byte[] bytes)
         {
             this.bytes = bytes;
         }
@@ -47,7 +47,7 @@ namespace ICU4N.Text
          * size &lt; 0, or size &gt; bytesToAdopt.length.
          * @stable ICU 2.8
          */
-        public RawSortKey(byte[] bytesToAdopt, int size)
+        public RawCollationKey(byte[] bytesToAdopt, int size)
             : base(bytesToAdopt, size)
         {
         }
@@ -61,7 +61,7 @@ namespace ICU4N.Text
          * @throws ClassCastException if the other object is not a RawCollationKey.
          * @stable ICU 4.4
          */
-        public int CompareTo(RawSortKey rhs)
+        public int CompareTo(RawCollationKey rhs)
         {
             int result = base.CompareTo(rhs);
             return result < 0 ? -1 : result == 0 ? 0 : 1;

@@ -579,7 +579,7 @@ namespace ICU4N.Impl
             }
             if (resourceName == null)
             {
-                resourceName = ICUData.ICU_BASE_NAME + '.' + itemPath;
+                resourceName = ICUData.ICU_BASE_NAME + '/' + itemPath;
             }
             ByteBuffer buffer = null;
             try
