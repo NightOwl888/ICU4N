@@ -1122,7 +1122,7 @@ namespace ICU4N.Dev.Test.Collate
             // and the variable top is pinned to the end of that group.
             try
             {
-                coll.VariableTop = ('A');
+                coll.SetVariableTop("A");
                 Errln("setVariableTop(letter) did not detect illegal argument");
             }
             catch (ArgumentException expected)
@@ -1130,18 +1130,16 @@ namespace ICU4N.Dev.Test.Collate
             }
 
             // dollar sign (currency symbol)
-            int newVarTop = coll.VariableTop = ('$');
+            int newVarTop = coll.SetVariableTop("$");
 
             if (newVarTop != coll.VariableTop)
             {
                 Errln("setVariableTop(dollar sign) != following getVariableTop()");
             }
 
-            // ICU4N TODO: These were originally strings, but it is not possible to set
-            // a string to an int property. Need to work out how to conver this.
-            char dollar = '$';
-            char euro = '\u20AC';
-            int newVarTop2 = coll.VariableTop = (euro);
+            string dollar = "$";
+            string euro = "\u20AC";
+            int newVarTop2 = coll.SetVariableTop(euro);
             assertEquals("setVariableTop(Euro sign) == following getVariableTop()",
                          newVarTop2, coll.VariableTop);
             assertEquals("setVariableTop(Euro sign) == setVariableTop(dollar sign) (should pin to top of currency group)",
@@ -1154,7 +1152,7 @@ namespace ICU4N.Dev.Test.Collate
 
             coll.VariableTop = (oldVarTop);
 
-            int newerVarTop = coll.VariableTop = ('$');
+            int newerVarTop = coll.SetVariableTop("$");
 
             if (newVarTop != newerVarTop)
             {
@@ -1213,31 +1211,31 @@ namespace ICU4N.Dev.Test.Collate
             int i = 0;
 
             string[][] testStruct = {
-          // requestedLocale, validLocale, actualLocale
-          // Note: ULocale.ROOT.getName() == "" not "root".
-          new string[] { "de_DE", "de", "" },
-          new string[] { "sr_RS", "sr_Cyrl_RS", "sr" },
-          new string[] { "en_US_CALIFORNIA", "en_US", "" },
-          new string[] { "fr_FR_NONEXISTANT", "fr", "" },
-          // pinyin is the default, therefore suppressed.
-          new string[] { "zh_CN", "zh_Hans_CN", "zh" },
-          // zh_Hant has default=stroke but the data is in zh.
-          new string[] { "zh_TW", "zh_Hant_TW", "zh@collation=stroke" },
-          new string[] { "zh_TW@collation=pinyin", "zh_Hant_TW@collation=pinyin", "zh" },
-          new string[] { "zh_CN@collation=stroke", "zh_Hans_CN@collation=stroke", "zh@collation=stroke" },
-          // yue/yue_Hant aliased to zh_Hant, yue_Hans aliased to zh_Hans.
-          new string[] { "yue", "zh_Hant", "zh@collation=stroke" },
-          new string[] { "yue_HK", "zh_Hant", "zh@collation=stroke" },
-          new string[] { "yue_Hant", "zh_Hant", "zh@collation=stroke" },
-          new string[] { "yue_Hant_HK", "zh_Hant", "zh@collation=stroke" },
-          new string[] { "yue@collation=pinyin", "zh_Hant@collation=pinyin", "zh" },
-          new string[] { "yue_HK@collation=pinyin", "zh_Hant@collation=pinyin", "zh" },
-          new string[] { "yue_CN", "zh_Hans", "zh" },
-          new string[] { "yue_Hans", "zh_Hans", "zh" },
-          new string[] { "yue_Hans_CN", "zh_Hans", "zh" },
-          new string[] { "yue_Hans@collation=stroke", "zh_Hans@collation=stroke", "zh@collation=stroke" },
-          new string[] { "yue_CN@collation=stroke", "zh_Hans@collation=stroke", "zh@collation=stroke" }
-        };
+                // requestedLocale, validLocale, actualLocale
+                // Note: ULocale.ROOT.getName() == "" not "root".
+                new string[] { "de_DE", "de", "" },
+                new string[] { "sr_RS", "sr_Cyrl_RS", "sr" },
+                new string[] { "en_US_CALIFORNIA", "en_US", "" },
+                new string[] { "fr_FR_NONEXISTANT", "fr", "" },
+                // pinyin is the default, therefore suppressed.
+                new string[] { "zh_CN", "zh_Hans_CN", "zh" },
+                // zh_Hant has default=stroke but the data is in zh.
+                new string[] { "zh_TW", "zh_Hant_TW", "zh@collation=stroke" },
+                new string[] { "zh_TW@collation=pinyin", "zh_Hant_TW@collation=pinyin", "zh" },
+                new string[] { "zh_CN@collation=stroke", "zh_Hans_CN@collation=stroke", "zh@collation=stroke" },
+                // yue/yue_Hant aliased to zh_Hant, yue_Hans aliased to zh_Hans.
+                new string[] { "yue", "zh_Hant", "zh@collation=stroke" },
+                new string[] { "yue_HK", "zh_Hant", "zh@collation=stroke" },
+                new string[] { "yue_Hant", "zh_Hant", "zh@collation=stroke" },
+                new string[] { "yue_Hant_HK", "zh_Hant", "zh@collation=stroke" },
+                new string[] { "yue@collation=pinyin", "zh_Hant@collation=pinyin", "zh" },
+                new string[] { "yue_HK@collation=pinyin", "zh_Hant@collation=pinyin", "zh" },
+                new string[] { "yue_CN", "zh_Hans", "zh" },
+                new string[] { "yue_Hans", "zh_Hans", "zh" },
+                new string[] { "yue_Hans_CN", "zh_Hans", "zh" },
+                new string[] { "yue_Hans@collation=stroke", "zh_Hans@collation=stroke", "zh@collation=stroke" },
+                new string[] { "yue_CN@collation=stroke", "zh_Hans@collation=stroke", "zh@collation=stroke" }
+            };
 
             /* test opening collators for different locales */
             for (i = 0; i < testStruct.Length; i++)
