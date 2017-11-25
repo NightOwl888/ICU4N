@@ -40,6 +40,11 @@ namespace ICU4N.Support.Collections
                 }
             }
 
+            if (listA.Count != listB.Count)
+            {
+                return false;
+            }
+
             using (IEnumerator<T> eA = listA.GetEnumerator())
             {
                 using (IEnumerator<T> eB = listB.GetEnumerator())
