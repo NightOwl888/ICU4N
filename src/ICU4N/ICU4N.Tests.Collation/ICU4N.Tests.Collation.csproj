@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ICU4N.Collation\ICU4N.Collation.csproj" />
     <ProjectReference Include="..\ICU4N.LanguageData\ICU4N.LanguageData.csproj" />
+    <ProjectReference Include="..\ICU4N.RegionData\ICU4N.RegionData.csproj" />
     <ProjectReference Include="..\ICU4N.TestFramework\ICU4N.TestFramework.csproj" />
   </ItemGroup>
 
