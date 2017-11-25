@@ -32,7 +32,8 @@ namespace ICU4N.Impl.Coll
                 if (rootRules == null)
                 {
                     UResourceBundle rootBundle = UResourceBundle.GetBundleInstance(
-                            ICUData.ICU_COLLATION_BASE_NAME, ULocale.ROOT);
+                        // ICU4N specific - passing in the current assembly to load resources from.
+                        ICUData.ICU_COLLATION_BASE_NAME, ULocale.ROOT, CollationData.ICU_DATA_CLASS_LOADER);
                     rootRules = rootBundle.GetString("UCARules");
                 }
             }
