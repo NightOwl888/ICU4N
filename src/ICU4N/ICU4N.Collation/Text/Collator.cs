@@ -1045,7 +1045,7 @@ namespace ICU4N.Text
             {
                 throw new ArgumentException("Invalid keyword: " + keyword);
             }
-            return ICUResourceBundle.GetKeywordValues(BASE, RESOURCE);
+            return ICUResourceBundle.GetKeywordValues(BASE, RESOURCE, CollationData.ICU_DATA_CLASS_LOADER);
         }
 
         /**

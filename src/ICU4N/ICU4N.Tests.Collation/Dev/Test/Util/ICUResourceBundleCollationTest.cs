@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Impl.Coll;
 using ICU4N.Text;
 using ICU4N.Util;
 using NUnit.Framework;
@@ -121,7 +122,7 @@ namespace ICU4N.Dev.Test.Util
             int n;
 
             Logln("Testing getting collation values:");
-            kwVals = ICUResourceBundle.GetKeywordValues(ICUData.ICU_COLLATION_BASE_NAME, COLLATION_RESNAME);
+            kwVals = ICUResourceBundle.GetKeywordValues(ICUData.ICU_COLLATION_BASE_NAME, COLLATION_RESNAME, CollationData.ICU_DATA_CLASS_LOADER);
             for (n = 0; n < kwVals.Length; n++)
             {
                 Logln(n.ToString(CultureInfo.InvariantCulture) + ": " + kwVals[n]);

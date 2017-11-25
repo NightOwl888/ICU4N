@@ -258,24 +258,25 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Given a tree path and keyword, return a string enumeration of all possible values for that keyword.
-         * @param baseName resource specifier
-         * @param keyword a particular keyword to consider, must match a top level resource name
-         * within the tree. (i.e. "collations")
-         * @internal ICU 3.0
-         */
-        public static string[] GetKeywordValues(string baseName, string keyword)
+        /// <summary>
+        /// Given a tree path and keyword, return a string enumeration of all possible values for that keyword.
+        /// </summary>
+        /// <param name="baseName">Resource specifier.</param>
+        /// <param name="keyword">A particular keyword to consider, must match a top level resource name
+        /// within the tree. (i.e. "collations").</param>
+        /// <param name="assembly">The assembly to retrieve the resources from.</param>
+        /// <internal>ICU 3.0</internal>
+        public static string[] GetKeywordValues(string baseName, string keyword, Assembly assembly) // ICU4N specific - passing in assembly so submodules can override
         {
             ISet<string> keywords = new HashSet<string>();
-            ULocale[] locales = GetAvailEntry(baseName, ICU_DATA_CLASS_LOADER).GetULocaleList();
+            ULocale[] locales = GetAvailEntry(baseName, assembly).GetULocaleList(); // ICU4N specific - passing in assembly so submodules can override
             int i;
 
             for (i = 0; i < locales.Length; i++)
             {
                 try
                 {
-                    UResourceBundle b = UResourceBundle.GetBundleInstance(baseName, locales[i]); // ICU4N TODO: Pass assembly ?
+                    UResourceBundle b = UResourceBundle.GetBundleInstance(baseName, locales[i], assembly); // ICU4N specific - passing in assembly so submodules can override
                     // downcast to ICUResourceBundle?
                     ICUResourceBundle irb = (ICUResourceBundle)(b.GetObject(keyword));
                     using (var e = irb.GetKeys().GetEnumerator())

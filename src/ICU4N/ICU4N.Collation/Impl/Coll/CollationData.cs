@@ -21,7 +21,7 @@ namespace ICU4N.Impl.Coll
     public sealed class CollationData
     {
         // ICU4N specific - We need to pass this assembly in order for its resources to load.
-        internal static readonly Assembly ICU_DATA_CLASS_LOADER = typeof(CollationData).GetTypeInfo().Assembly;
+        public static readonly Assembly ICU_DATA_CLASS_LOADER = typeof(CollationData).GetTypeInfo().Assembly;
 
         // Note: The ucadata.icu loader could discover the reserved ranges by setting an array
         // parallel with the ranges, and resetting ranges that are indexed.
