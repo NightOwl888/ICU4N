@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using UiListItem = ICU4N.Text.LocaleDisplayNames.UiListItem;
@@ -370,7 +371,7 @@ namespace ICU4N.Dev.Test.Util
                     expected.Add(new UiListItem(new ULocale(rawRow[2]), new ULocale(rawRow[3]), rawRow[0], rawRow[1]));
                 }
                 IList<UiListItem> newList = names.GetUiList(list, false, collator);
-                if (!expected.Equals(newList))
+                if (!expected.SequenceEqual(newList))
                 {
                     if (expected.Count != newList.Count)
                     {
