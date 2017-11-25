@@ -431,13 +431,10 @@ namespace ICU4N.Support
 
         /// <summary>
         /// Replacement for Java triple shift (>>>) operator.
-        /// See http://stackoverflow.com/a/6625912
         /// </summary>
         public static long TripleShift(this long number, int shift)
         {
-            if (number >= 0)
-                return number >> shift;
-            return (number >> shift) + (2 << ~shift);
+            return (long)((ulong)number >> shift);
         }
 
         /// <summary>

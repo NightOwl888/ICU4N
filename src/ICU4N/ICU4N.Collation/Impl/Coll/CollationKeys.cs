@@ -413,10 +413,7 @@ namespace ICU4N.Impl.Coll
                 // No need to keep all CEs in the buffer when we write a sort key.
                 iter.ClearCEsIfNoneRemaining();
                 long ce = iter.NextCE();
-                //long p = ce.TripleShift(32);
-                // ICU4N TODO: We must not use the TripleShift function in this particular
-                // case. Need to determine if this is for all longs or if this is a special case.
-                long p = (long)((ulong)ce >> 32);
+                long p = ce.TripleShift(32);
                 if (p < variableTop && p > Collation.MERGE_SEPARATOR_PRIMARY)
                 {
                     // Variable CE, shift it to quaternary level.
