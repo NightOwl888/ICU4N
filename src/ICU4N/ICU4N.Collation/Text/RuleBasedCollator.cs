@@ -64,7 +64,7 @@ namespace ICU4N.Text
             CollationTailoring t;
             try
             {
-                Type builderClass = classLoader.GetType("Impl.Coll.CollationBuilder");
+                Type builderClass = classLoader.GetType("ICU4N.Impl.Coll.CollationBuilder");
                 object builder = builderClass.GetConstructor(new Type[] { typeof(CollationTailoring) }).Invoke(new object[] { @base });
                 // builder.parseAndBuild(rules);
                 //Method parseAndBuild = builderClass.getMethod("parseAndBuild", String.class);
@@ -97,7 +97,7 @@ namespace ICU4N.Text
             {
                 return this;
             }
-            return base.CloneAsThawed();
+            return CloneAsThawed();
         }
 
         private void InitMaxExpansions()
@@ -187,7 +187,7 @@ namespace ICU4N.Text
          * Provides for the clone operation. Any clone is initially unfrozen.
          * @stable ICU 4.8
          */
-    public override Collator CloneAsThawed()
+        public override Collator CloneAsThawed()
         {
             //try
             //{

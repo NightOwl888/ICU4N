@@ -37,12 +37,12 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestConformance()
         {
-            runConformance("Unicode.NormalizationTest.txt", 0);
+            runConformance("unicode.NormalizationTest.txt", 0);
         }
         [Test]
         public void TestConformance_3_2()
         {
-            runConformance("Unicode.NormalizationTest-3.2.0.txt", Normalizer.UNICODE_3_2);
+            runConformance("unicode.NormalizationTest-3.2.0.txt", Normalizer.UNICODE_3_2);
         }
 
         public void runConformance(String fileName, int options)

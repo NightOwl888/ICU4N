@@ -61,7 +61,7 @@ namespace ICU4N.Text
          * @throws ClassCastException if the other object is not a RawCollationKey.
          * @stable ICU 4.4
          */
-        public int CompareTo(RawCollationKey rhs)
+        public override int CompareTo(ByteArrayWrapper rhs)
         {
             int result = base.CompareTo(rhs);
             return result < 0 ? -1 : result == 0 ? 0 : 1;

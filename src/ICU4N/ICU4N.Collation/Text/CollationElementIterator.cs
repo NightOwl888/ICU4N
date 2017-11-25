@@ -2,11 +2,9 @@
 using ICU4N.Impl.Coll;
 using ICU4N.Support;
 using ICU4N.Support.Text;
-using ICU4N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICU4N.Text
 {
@@ -588,7 +586,7 @@ namespace ICU4N.Text
                     lastHalf |= 0xc0; // old-style continuation CE
                 }
                 int oldCount;
-                if (maxExpansions.TryGetValue(lastHalf, out oldCount) || count > oldCount)
+                if (!maxExpansions.TryGetValue(lastHalf, out oldCount) || count > oldCount)
                 {
                     maxExpansions[lastHalf] = count;
                 }

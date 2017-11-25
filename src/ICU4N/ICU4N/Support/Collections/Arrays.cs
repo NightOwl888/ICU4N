@@ -6,6 +6,22 @@ namespace ICU4N.Support.Collections
     internal static class Arrays
     {
         /// <summary>
+        /// The same implementation of Equals from Java's AbstractList
+        /// (the default implementation for all lists)
+        /// <para/>
+        /// This algorithm depends on the order of the items in the list. 
+        /// It is recursive and will determine equality based on the values of
+        /// all nested collections.
+        /// <para/>
+        /// Note this operation currently only supports <see cref="IList{T}"/>, <see cref="ISet{T}"/>, 
+        /// and <see cref="IDictionary{TKey, TValue}"/>.
+        /// </summary>
+        public static bool Equals<T>(IList<T> listA, IList<T> listB)
+        {
+            return CollectionUtil.Equals(listA, listB);
+        }
+
+        /// <summary>
         /// This is the same implementation of ToString from Java's AbstractCollection
         /// (the default implementation for all sets and lists)
         /// </summary>

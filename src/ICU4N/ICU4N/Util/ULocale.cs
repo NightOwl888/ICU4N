@@ -782,19 +782,19 @@ namespace ICU4N.Util
             int cmp = 0;
 
             // Language
-            cmp = GetLanguage().CompareTo(other.GetLanguage());
+            cmp = GetLanguage().CompareToOrdinal(other.GetLanguage());
             if (cmp == 0)
             {
                 // Script
-                cmp = GetScript().CompareTo(other.GetScript());
+                cmp = GetScript().CompareToOrdinal(other.GetScript());
                 if (cmp == 0)
                 {
                     // Region
-                    cmp = GetCountry().CompareTo(other.GetCountry());
+                    cmp = GetCountry().CompareToOrdinal(other.GetCountry());
                     if (cmp == 0)
                     {
                         // Variant
-                        cmp = GetVariant().CompareTo(other.GetVariant());
+                        cmp = GetVariant().CompareToOrdinal(other.GetVariant());
                         if (cmp == 0)
                         {
                             // Keywords
@@ -823,7 +823,7 @@ namespace ICU4N.Util
                                         // Compare keyword keys
                                         string thisKey = thisKwdItr.Current;
                                         string otherKey = otherKwdItr.Current;
-                                        cmp = thisKey.CompareTo(otherKey);
+                                        cmp = thisKey.CompareToOrdinal(otherKey);
                                         if (cmp == 0)
                                         {
                                             // Compare keyword values
@@ -4530,7 +4530,7 @@ namespace ICU4N.Util
                 // ICU4N TODO: Need to append currency, number, and collation data
                 name = name.Replace('-', '_');
 
-                return new ULocale(name);
+                return new ULocale(name, loc);
             }
 
             public static CultureInfo ToLocale(ULocale uloc)

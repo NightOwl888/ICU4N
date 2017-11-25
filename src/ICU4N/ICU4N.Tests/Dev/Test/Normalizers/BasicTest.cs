@@ -2934,7 +2934,7 @@ namespace ICU4N.Dev.Test.Normalizers
             customNorm2 =
                 Normalizer2.GetInstance(
                     //BasicTest.class.getResourceAsStream("/com/ibm/icu/dev/data/testdata/testnorm.nrm"),
-                    typeof(BasicTest).GetTypeInfo().Assembly.GetManifestResourceStream("ICU4N.Tests.Dev.Data.TestData.testnorm.nrm"),
+                    typeof(BasicTest).GetTypeInfo().Assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
                         "testnorm",
                         Normalizer2Mode.Compose);
             for (int i = 0; i < pairs.Length; ++i)
@@ -2969,7 +2969,7 @@ namespace ICU4N.Dev.Test.Normalizers
             customNorm2 =
                 Normalizer2.GetInstance(
                     //BasicTest.class.getResourceAsStream("/com/ibm/icu/dev/data/testdata/testnorm.nrm"),
-                    typeof(BasicTest).GetTypeInfo().Assembly.GetManifestResourceStream("ICU4N.Tests.Dev.Data.TestData.testnorm.nrm"),
+                    typeof(BasicTest).GetTypeInfo().Assembly.GetManifestResourceStream("ICU4N.Dev.Data.TestData.testnorm.nrm"),
                         "testnorm",
                         Normalizer2Mode.ComposeContiguous);
             for (int i = 0; i < pairs.Length; ++i)

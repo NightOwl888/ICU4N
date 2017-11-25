@@ -33,7 +33,7 @@ namespace ICU4N.Text
         UpperLong = 2,
     }
 
-    public sealed class CollationKey : IComparable<CollationKey>
+    public sealed class CollationKey : IComparable<CollationKey>, IComparable
     {
         // public inner classes -------------------------------------------------
 
@@ -186,26 +186,31 @@ namespace ICU4N.Text
 
         // public other methods -------------------------------------------------
 
-        /**
-         * Compare this CollationKey to another CollationKey.  The
-         * collation rules of the Collator that created this key are
-         * applied.
-         *
-         * <p><strong>Note:</strong> Comparison between CollationKeys
-         * created by different Collators might return incorrect
-         * results.  See class documentation.
-         *
-         * @param target target CollationKey
-         * @return an integer value.  If the value is less than zero this CollationKey
-         *         is less than than target, if the value is zero they are equal, and
-         *         if the value is greater than zero this CollationKey is greater
-         *         than target.
-         * @exception NullPointerException is thrown if argument is null.
-         * @see Collator#compare(String, String)
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Compare this CollationKey to another CollationKey.  The
+        /// collation rules of the Collator that created this key are
+        /// applied.
+        /// </summary>
+        /// <remarks>
+        /// <strong>Note:</strong> Comparison between CollationKeys
+        /// created by different Collators might return incorrect
+        /// results.  See class documentation.
+        /// </remarks>
+        /// <param name="target">Target <see cref="CollationKey"/>.</param>
+        /// <returns>
+        /// An integer value.  If the value is less than zero this CollationKey
+        /// is less than than target, if the value is zero they are equal, and
+        /// if the value is greater than zero this CollationKey is greater
+        /// than target.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">is thrown if argument is null.</exception>
+        /// <seealso cref="Collator.Compare(string, string)"/>
+        /// <stable>ICU 2.8</stable>
         public int CompareTo(CollationKey target)
         {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
             for (int i = 0; ; ++i)
             {
                 int l = m_key_[i] & 0xff;
@@ -223,6 +228,35 @@ namespace ICU4N.Text
                     return 0;
                 }
             }
+        }
+
+        /// <summary>
+        /// Compare this CollationKey to another CollationKey.  The
+        /// collation rules of the Collator that created this key are
+        /// applied.
+        /// </summary>
+        /// <remarks>
+        /// <strong>Note:</strong> Comparison between CollationKeys
+        /// created by different Collators might return incorrect
+        /// results.  See class documentation.
+        /// </remarks>
+        /// <param name="target">Target <see cref="CollationKey"/>.</param>
+        /// <returns>
+        /// An integer value.  If the value is less than zero this CollationKey
+        /// is less than than target, if the value is zero they are equal, and
+        /// if the value is greater than zero this CollationKey is greater
+        /// than target.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">is thrown if argument is null.</exception>
+        /// <exception cref="ArgumentException">If <paramref name="other"/> cannot be cast to <see cref="CollationKey"/>.</exception>
+        /// <seealso cref="Collator.Compare(string, string)"/>
+        /// <stable>ICU4N 60.1</stable>
+        // ICU4N specific overload to handle non-generic IComparable
+        public int CompareTo(object other)
+        {
+            if (other is CollationKey)
+                return CompareTo((CollationKey)other);
+            throw new ArgumentException("'other' must be a CollationKey.");
         }
 
         /**
@@ -379,14 +413,14 @@ namespace ICU4N.Text
          * @see Collator#IDENTICAL
          * @stable ICU 2.6
          */
-        public CollationKey GetBound(CollationKeyBoundMode boundType, int noOfLevels) // ICU4N TODO: Should noOfLevels be CollationStrength?
+        public CollationKey GetBound(CollationKeyBoundMode boundType, CollationStrength noOfLevels) 
         {
             // Scan the string until we skip enough of the key OR reach the end of
             // the key
             int offset = 0;
             CollationStrength keystrength = CollationStrength.Primary;
 
-            if (noOfLevels > (int)CollationStrength.Primary)
+            if (noOfLevels > CollationStrength.Primary)
             {
                 while (offset < m_key_.Length && m_key_[offset] != 0)
                 {
@@ -395,7 +429,7 @@ namespace ICU4N.Text
                     {
                         keystrength++;
                         noOfLevels--;
-                        if (noOfLevels == (int)CollationStrength.Primary
+                        if (noOfLevels == CollationStrength.Primary
                             || offset == m_key_.Length || m_key_[offset] == 0)
                         {
                             offset--;

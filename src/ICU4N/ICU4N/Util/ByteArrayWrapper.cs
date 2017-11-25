@@ -14,7 +14,7 @@ namespace ICU4N.Util
     /// </summary>
     /// <author>syn wee</author>
     /// <stable>ICU 2.8</stable>
-    public class ByteArrayWrapper : IComparable<ByteArrayWrapper>
+    public class ByteArrayWrapper : IComparable<ByteArrayWrapper>, IComparable
     {
         // public data member ------------------------------------------------
 
@@ -30,7 +30,7 @@ namespace ICU4N.Util
         /// Semantics of Count is similar to java.util.Vector.size().
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public int Count { get; set; }
+        public int Count { get; set; } // ICU4N TODO: API Change to Length (this is an array)
 
         // public constructor ------------------------------------------------
 
@@ -252,9 +252,13 @@ namespace ICU4N.Util
         /// <param name="other">the object to compare to.</param>
         /// <returns>a value &lt;0, 0, or &gt;0 as this compares less than, equal to, or
         /// greater than other.</returns>
+        /// <exception cref="ArgumentNullException">If <paramref name="other"/> is null.</exception>
         /// <stable>ICU 4.4</stable>
         public virtual int CompareTo(ByteArrayWrapper other)
         {
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
+
             if (this == other) return 0;
             int minSize = Count < other.Count ? Count : other.Count;
             for (int i = 0; i < minSize; ++i)
@@ -265,6 +269,23 @@ namespace ICU4N.Util
                 }
             }
             return Count - other.Count;
+        }
+
+        /// <summary>
+        /// Compare this object to another <see cref="ByteArrayWrapper"/>, which must not be null.
+        /// </summary>
+        /// <param name="other">the object to compare to.</param>
+        /// <returns>a value &lt;0, 0, or &gt;0 as this compares less than, equal to, or
+        /// greater than other.</returns>
+        /// <exception cref="ArgumentNullException">If <paramref name="other"/> is null.</exception>
+        /// <exception cref="ArgumentException">If <paramref name="other"/> cannot be cast to <see cref="ByteArrayWrapper"/>.</exception>
+        /// <stable>ICU4N 60.1</stable>
+        // ICU4N specific overload to handle non-generic IComparable
+        public virtual int CompareTo(object other)
+        {
+            if (other is ByteArrayWrapper)
+                return CompareTo((ByteArrayWrapper)other);
+            throw new ArgumentException("'other' must be a ByteArrayWrapper.");
         }
 
         // private methods -----------------------------------------------------

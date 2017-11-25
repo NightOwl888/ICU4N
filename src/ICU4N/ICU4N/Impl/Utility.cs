@@ -208,11 +208,21 @@ namespace ICU4N.Impl
                         b == null ? 1 : a.CompareToOrdinal(b);
         }
 
-
+        // ICU4N specific - generic overload for comparing objects of known type
         /// <summary>
         /// Convenience utility. Does null checks on objects, then calls compare.
         /// </summary>
         public static int CheckCompare<T>(T a, T b) where T : IComparable<T>
+        {
+            return a == null ?
+                    b == null ? 0 : -1 :
+                        b == null ? 1 : a.CompareTo(b);
+        }
+
+        /// <summary>
+        /// Convenience utility. Does null checks on objects, then calls compare.
+        /// </summary>
+        public static int CheckCompare(IComparable a, IComparable b)
         {
             return a == null ?
                     b == null ? 0 : -1 :

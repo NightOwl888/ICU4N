@@ -2,24 +2,23 @@
 using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using ICU4N.Text;
 using ICU4N.Util;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Collections;
 
 namespace ICU4N.Text
 {
     public sealed class AlphabeticIndex<T> : IEnumerable<AlphabeticIndex<T>.Bucket>
     {
-        /**
-     * Prefix string for Chinese index buckets.
-     * See http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Collation_Indexes
-     */
+        /// <summary>
+        /// Prefix string for Chinese index buckets.
+        /// See http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Collation_Indexes
+        /// </summary>
         private static readonly string BASE = "\uFDD0";
 
         private static readonly char CGJ = '\u034F';
@@ -46,7 +45,7 @@ namespace ICU4N.Text
         }
 
         // Comparator for records, so that the Record class can be static.
-        private readonly IComparer<Record> recordComparator;
+        private readonly IComparer<Record> recordComparer;
 
 
         private readonly List<string> firstCharsInScripts;
@@ -102,7 +101,7 @@ namespace ICU4N.Text
              * @return the bucket number for the name
              * @stable ICU 51
              */
-            public int GetBucketIndex(ICharSequence name)
+            public int GetBucketIndex(string name) // ICU4N specific - changed name from ICharSequence to string
             {
                 return buckets.GetBucketIndex(name, collatorPrimaryOnly);
             }
@@ -190,9 +189,10 @@ namespace ICU4N.Text
          */
         private AlphabeticIndex(ULocale locale, RuleBasedCollator collator)
         {
-            recordComparator = new RecordComparer(collatorOriginal);
-
-            collatorOriginal = collator != null ? collator : (RuleBasedCollator)Collator.GetInstance(locale);
+            collatorOriginal = collator != null ? collator : (RuleBasedCollator)Text.Collator.GetInstance(locale);
+            // ICU4N specific - we neeed to initialize RecordComparer in the constructor, since it 
+            // references a local variable that is initialized above.
+            recordComparer = new RecordComparer(collatorOriginal);
             try
             {
                 collatorPrimaryOnly = (RuleBasedCollator)collatorOriginal.CloneAsThawed();
@@ -675,36 +675,36 @@ namespace ICU4N.Text
          * @return a clone of the collator used internally
          * @stable ICU 4.8
          */
-        public RuleBasedCollator GetCollator()
+        public RuleBasedCollator Collator
         {
-            if (collatorExternal == null)
+            get
             {
-                try
+                if (collatorExternal == null)
                 {
-                    collatorExternal = (RuleBasedCollator)(collatorOriginal.Clone());
+                    try
+                    {
+                        collatorExternal = (RuleBasedCollator)(collatorOriginal.Clone());
+                    }
+                    catch (Exception e)
+                    {
+                        // should never happen
+                        throw new InvalidOperationException("Collator cannot be cloned", e);
+                    }
                 }
-                catch (Exception e)
-                {
-                    // should never happen
-                    throw new InvalidOperationException("Collator cannot be cloned", e);
-                }
+                return collatorExternal;
             }
-            return collatorExternal;
         }
 
-        /**
-         * Add a record (name and data) to the index. The name will be used to sort the items into buckets, and to sort
-         * within the bucket. Two records may have the same name. When they do, the sort order is according to the order added:
-         * the first added comes first.
-         *
-         * @param name
-         *            Name, such as a name
-         * @param data
-         *            Data, such as an address or link
-         * @return this, for chaining
-         * @stable ICU 4.8
-         */
-        public AlphabeticIndex<T> AddRecord(ICharSequence name, T data)
+        /// <summary>
+        /// Add a record (name and data) to the index. The name will be used to sort the items into buckets, and to sort
+        /// within the bucket. Two records may have the same name. When they do, the sort order is according to the order added:
+        /// the first added comes first.
+        /// </summary>
+        /// <param name="name">Name, such as a name.</param>
+        /// <param name="data">Data, such as an address or link.</param>
+        /// <returns>this, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
+        public AlphabeticIndex<T> AddRecord(string name, T data) // ICU4N specific - changed name from ICharSequence to string
         {
             // TODO instead of invalidating, just add to unprocessed list.
             buckets = null; // invalidate old bucketlist
@@ -731,7 +731,7 @@ namespace ICU4N.Text
          * @return the bucket index for the name
          * @stable ICU 4.8
          */
-        public int GetBucketIndex(ICharSequence name)
+        public int GetBucketIndex(string name) // ICU4N specific - changed name from ICharSequence to string
         {
             InitBuckets();
             return buckets.GetBucketIndex(name, collatorPrimaryOnly);
@@ -815,7 +815,7 @@ namespace ICU4N.Text
 
             // Sort the records by name.
             // Stable sort preserves input order of collation duplicates.
-            inputList.Sort(recordComparator);
+            inputList.Sort(recordComparer);
 
             // Now, we traverse all of the input, which is now sorted.
             // If the item doesn't go in the current bucket, we find the next bucket that contains it.
@@ -904,13 +904,10 @@ namespace ICU4N.Text
          */
         public class Record
         {
-            private readonly ICharSequence name;
+            private readonly string name;
             private readonly T data;
 
-
-
-
-            internal Record(ICharSequence name, T data)
+            internal Record(string name, T data) // ICU4N specific - changed name from ICharsequence to string
             {
                 this.name = name;
                 this.data = data;
@@ -922,7 +919,7 @@ namespace ICU4N.Text
              * @return the name
              * @stable ICU 4.8
              */
-            public virtual ICharSequence Name
+            public virtual string Name
             {
                 get { return name; }
             }
@@ -948,34 +945,7 @@ namespace ICU4N.Text
             }
         }
 
-        /**
- * Type of the label
- *
- * @stable ICU 4.8
- */
-        public enum BucketLabelType
-        {
-            /**
-             * Normal
-             * @stable ICU 4.8
-             */
-            NORMAL,
-            /**
-             * Underflow (before the first)
-             * @stable ICU 4.8
-             */
-            UNDERFLOW,
-            /**
-             * Inflow (between scripts)
-             * @stable ICU 4.8
-             */
-            INFLOW,
-            /**
-             * Overflow (after the last)
-             * @stable ICU 4.8
-             */
-            OVERFLOW
-        }
+        
 
         /**
          * An index "bucket" with a label string and type.
@@ -997,6 +967,8 @@ namespace ICU4N.Text
             private Bucket displayBucket;
             private int displayIndex;
             private IList<Record> records;
+
+            // ICU4N specific - de-nested LabelType enum and renamed BucketLabelType
 
             internal string LowerBoundary
             {
@@ -1078,7 +1050,7 @@ namespace ICU4N.Text
             {
                 if (records == null)
                 {
-                    return new List<Record>.Enumerator();
+                    return new List<Record>().GetEnumerator();
                 }
                 return records.GetEnumerator();
             }
@@ -1135,7 +1107,7 @@ namespace ICU4N.Text
             {
 
                 // underflow bucket
-                new Bucket(UnderflowLabel, "", BucketLabelType.UNDERFLOW)
+                new Bucket(UnderflowLabel, "", BucketLabelType.Underflow)
             };
 
             // fix up the list, adding underflow, additions, overflow
@@ -1163,11 +1135,11 @@ namespace ICU4N.Text
                         // We are skipping one or more scripts,
                         // and we are not just getting out of the underflow label.
                         bucketList.Add(new Bucket(InflowLabel, inflowBoundary,
-                                BucketLabelType.INFLOW));
+                                BucketLabelType.Inflow));
                     }
                 }
                 // Add a bucket with the current label.
-                Bucket bucket = new Bucket(FixLabel(current), current, BucketLabelType.NORMAL);
+                Bucket bucket = new Bucket(FixLabel(current), current, BucketLabelType.Normal);
                 bucketList.Add(bucket);
                 // Remember ASCII and Pinyin buckets for Pinyin redirects.
                 char c;
@@ -1190,7 +1162,7 @@ namespace ICU4N.Text
                     for (int i2 = bucketList.Count - 2; ; --i2)
                     {
                         Bucket singleBucket = bucketList[i2];
-                        if (singleBucket.LabelType != BucketLabelType.NORMAL)
+                        if (singleBucket.LabelType != BucketLabelType.Normal)
                         {
                             // There is no single-character bucket since the last
                             // underflow or inflow label.
@@ -1203,7 +1175,7 @@ namespace ICU4N.Text
                             // to the previous single-character bucket.
                             // For example, after ... Q R S Sch we add Sch\uFFFF->S
                             // and after ... Q R S Sch Sch\uFFFF St we add St\uFFFF->S.
-                            bucket = new Bucket("", current + "\uFFFF", BucketLabelType.NORMAL);
+                            bucket = new Bucket("", current + "\uFFFF", BucketLabelType.Normal);
                             bucket.DisplayBucket = singleBucket;
                             bucketList.Add(bucket);
                             hasInvisibleBuckets = true;
@@ -1218,7 +1190,7 @@ namespace ICU4N.Text
                 return new BucketList(bucketList, bucketList);
             }
             // overflow bucket
-            bucketList.Add(new Bucket(OverflowLabel, scriptUpperBoundary, BucketLabelType.OVERFLOW)); // final
+            bucketList.Add(new Bucket(OverflowLabel, scriptUpperBoundary, BucketLabelType.Overflow)); // final
 
             if (hasPinyin)
             {
@@ -1253,9 +1225,9 @@ namespace ICU4N.Text
                 {
                     continue;  // skip invisible buckets
                 }
-                if (bucket.LabelType == BucketLabelType.INFLOW)
+                if (bucket.LabelType == BucketLabelType.Inflow)
                 {
-                    if (nextBucket.LabelType != BucketLabelType.NORMAL)
+                    if (nextBucket.LabelType != BucketLabelType.Normal)
                     {
                         bucket.DisplayBucket = nextBucket;
                         continue;
@@ -1302,7 +1274,7 @@ namespace ICU4N.Text
                 get { return immutableVisibleList.Count; }
             }
 
-            internal int GetBucketIndex(ICharSequence name, Collator collatorPrimaryOnly)
+            internal int GetBucketIndex(string name, Collator collatorPrimaryOnly) // ICU4N specific - changed name from ICharSequence to string
             {
                 // binary search
                 int start = 0;
@@ -1419,5 +1391,33 @@ namespace ICU4N.Text
             }
             return dest;
         }
+    }
+
+    /// <summary>
+    /// Type of the label
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public enum BucketLabelType
+    {
+        /// <summary>
+        /// Normal
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        Normal,
+        /// <summary>
+        /// Underflow (before the first)
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        Underflow,
+        /// <summary>
+        /// Inflow (between scripts)
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        Inflow,
+        /// <summary>
+        /// Overflow (after the last)
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        Overflow
     }
 }

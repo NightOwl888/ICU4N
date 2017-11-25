@@ -8,12 +8,16 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Text;
 
 namespace ICU4N.Dev.Test.Collate
 {
+    /// <summary>
+    /// CollationTest.cs, ported from collationtest.cpp
+    /// C++ version created on: 2012apr27
+    /// created by: Markus W. Scherer
+    /// </summary>
     public class CollationTest : TestFmwk
     {
         public CollationTest()
@@ -1729,9 +1733,8 @@ namespace ICU4N.Dev.Test.Collate
          * Leaves key unchanged if s does not contain U+FFFE.
          * @return true if the key was successfully changed
          */
-        private bool GetMergedCollationKey(String s, out CollationKey key)
+        private bool GetMergedCollationKey(String s, ref CollationKey key)
         {
-            key = null;
             CollationKey mergedKey = null;
             int sLength = s.Length;
             int segmentStart = 0;
@@ -1885,9 +1888,9 @@ namespace ICU4N.Dev.Test.Collate
             // only that those two methods yield the same order.
             //
             // Use bit-wise OR so that getMergedCollationKey() is always called for both strings.
-            CollationKey outPrevKey;
-            CollationKey outKey;
-            if (GetMergedCollationKey(prevString, out outPrevKey) | GetMergedCollationKey(s, out outKey))
+            CollationKey outPrevKey = prevKey;
+            CollationKey outKey = key;
+            if (GetMergedCollationKey(prevString, ref outPrevKey) | GetMergedCollationKey(s, ref outKey))
             {
                 prevKey = outPrevKey;
                 key = outKey;

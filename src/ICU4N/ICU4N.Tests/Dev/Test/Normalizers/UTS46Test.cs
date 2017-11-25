@@ -809,7 +809,7 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void IdnaTest()
         {
-            TextReader idnaTestFile = TestUtil.GetDataReader("Unicode.IdnaTest.txt", "UTF-8");
+            TextReader idnaTestFile = TestUtil.GetDataReader("unicode.IdnaTest.txt", "UTF-8");
             Regex semi = new Regex(";", RegexOptions.Compiled);
             try
             {

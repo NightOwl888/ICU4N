@@ -1,8 +1,5 @@
 ﻿using ICU4N.Support;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICU4N.Impl.Coll
 {

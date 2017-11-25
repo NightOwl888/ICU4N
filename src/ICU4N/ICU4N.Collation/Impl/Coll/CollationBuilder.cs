@@ -38,13 +38,13 @@ namespace ICU4N.Impl.Coll
             dataBuilder = new CollationDataBuilder();
             fastLatinEnabled = true;
             cesLength = 0;
-            rootPrimaryIndexes = new List<int>();
-            nodes = new List<long>();
+            rootPrimaryIndexes = new List<int>(32);
+            nodes = new List<long>(32);
             nfcImpl.EnsureCanonIterData();
             dataBuilder.InitForTailoring(baseData);
         }
 
-        public CollationTailoring parseAndBuild(string ruleString)
+        public CollationTailoring ParseAndBuild(string ruleString)
         {
             if (baseData.rootElements == null)
             {
@@ -712,7 +712,7 @@ namespace ICU4N.Impl.Coll
                 // Start a new list of nodes with this primary.
                 int index = nodes.Count;
                 nodes.Add(NodeFromWeight32(p));
-                rootPrimaryIndexes.Insert(index, ~rootIndex);
+                rootPrimaryIndexes.Insert(~rootIndex, index);
                 return index;
             }
         }
@@ -747,7 +747,7 @@ namespace ICU4N.Impl.Coll
                         commonNode |= node & HAS_BEFORE3;
                         node &= ~(long)HAS_BEFORE3;
                     }
-                    nodes[(int)(node | hasThisLevelBefore)] = index;
+                    nodes[index] = (node | hasThisLevelBefore);
                     // Insert below-common-weight node.
                     int nextIndex2 = NextIndexFromNode(node);
                     node = NodeFromWeight16(weight16) | NodeFromStrength(level);
@@ -840,12 +840,12 @@ namespace ICU4N.Impl.Coll
             nodes.Add(node);
             // nodes[index].nextIndex = newIndex
             node = nodes[index];
-            nodes[(int)ChangeNodeNextIndex(node, newIndex)] = index;
+            nodes[index] = ChangeNodeNextIndex(node, newIndex);
             // nodes[nextIndex].previousIndex = newIndex
             if (nextIndex != 0)
             {
                 node = nodes[nextIndex];
-                nodes[(int)ChangeNodePreviousIndex(node, newIndex)] = nextIndex;
+                nodes[nextIndex] = ChangeNodePreviousIndex(node, newIndex);
             }
             return newIndex;
         }

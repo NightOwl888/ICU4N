@@ -102,7 +102,7 @@ namespace ICU4N.Impl.Coll
 
             public virtual int NumberOfBytesAppended
             {
-               get { return appended_; }
+                get { return appended_; }
             }
 
             public virtual int RemainingCapacity
@@ -173,7 +173,7 @@ namespace ICU4N.Impl.Coll
 
             internal int Length
             {
-               get { return len; }
+                get { return len; }
             }
 
             // Java porting note: Java uses this instead of C++ operator [] overload
@@ -199,7 +199,7 @@ namespace ICU4N.Impl.Coll
             internal void AppendWeight16(int w)
             {
                 Debug.Assert((w & 0xffff) != 0);
-                byte b0 = (byte)(w.TripleShift( 8));
+                byte b0 = (byte)(w.TripleShift(8));
                 byte b1 = (byte)w;
                 int appendLength = (b1 == 0) ? 1 : 2;
                 if ((len + appendLength) <= buffer.Length || EnsureCapacity(appendLength))
@@ -310,7 +310,7 @@ namespace ICU4N.Impl.Coll
 
         // Case level, upperFirst: Compress up to 13 common weights as 3..15.
         private static readonly int CASE_UPPER_FIRST_COMMON_LOW = 3;
-    private static readonly int CASE_UPPER_FIRST_COMMON_HIGH = 15;
+        private static readonly int CASE_UPPER_FIRST_COMMON_HIGH = 15;
         private static readonly int CASE_UPPER_FIRST_COMMON_MAX_COUNT = 13;
 
         // Tertiary level only (no case): Compress up to 97 common weights as 05..65 or 65..C5.
@@ -413,7 +413,10 @@ namespace ICU4N.Impl.Coll
                 // No need to keep all CEs in the buffer when we write a sort key.
                 iter.ClearCEsIfNoneRemaining();
                 long ce = iter.NextCE();
-                long p = ce.TripleShift(32);
+                //long p = ce.TripleShift(32);
+                // ICU4N TODO: We must not use the TripleShift function in this particular
+                // case. Need to determine if this is for all longs or if this is a special case.
+                long p = (long)((ulong)ce >> 32);
                 if (p < variableTop && p > Collation.MERGE_SEPARATOR_PRIMARY)
                 {
                     // Variable CE, shift it to quaternary level.
@@ -438,7 +441,7 @@ namespace ICU4N.Impl.Coll
                             {
                                 p = settings.Reorder(p);
                             }
-                            if (((int)p.TripleShift( 24)) >= QUAT_SHIFTED_LIMIT_BYTE)
+                            if (((int)p.TripleShift(24)) >= QUAT_SHIFTED_LIMIT_BYTE)
                             {
                                 // Prevent shifted primary lead bytes from
                                 // overlapping with the common compression range.
@@ -449,7 +452,7 @@ namespace ICU4N.Impl.Coll
                         do
                         {
                             ce = iter.NextCE();
-                            p = ce.TripleShift( 32);
+                            p = ce.TripleShift(32);
                         } while (p == 0);
                     } while (p < variableTop && p > Collation.MERGE_SEPARATOR_PRIMARY);
                 }
@@ -460,13 +463,13 @@ namespace ICU4N.Impl.Coll
                 if (p > Collation.NO_CE_PRIMARY && (levels & Collation.PRIMARY_LEVEL_FLAG) != 0)
                 {
                     // Test the un-reordered primary for compressibility.
-                    bool isCompressible = compressibleBytes[(int)p.TripleShift( 24)];
+                    bool isCompressible = compressibleBytes[(int)p.TripleShift(24)];
                     if (settings.HasReordering)
                     {
                         p = settings.Reorder(p);
                     }
-                    int p1 = (int)p.TripleShift( 24);
-                    if (!isCompressible || p1 != ((int)prevReorderedPrimary.TripleShift( 24)))
+                    int p1 = (int)p.TripleShift(24);
+                    if (!isCompressible || p1 != ((int)prevReorderedPrimary.TripleShift(24)))
                     {
                         if (prevReorderedPrimary != 0)
                         {
@@ -494,11 +497,11 @@ namespace ICU4N.Impl.Coll
                             prevReorderedPrimary = 0;
                         }
                     }
-                    byte p2 = (byte)(p.TripleShift( 16));
+                    byte p2 = (byte)(p.TripleShift(16));
                     if (p2 != 0)
                     {
                         p234[0] = p2;
-                        p234[1] = (byte)(p.TripleShift( 8));
+                        p234[1] = (byte)(p.TripleShift(8));
                         p234[2] = (byte)p;
                         sink.Append(p234, (p234[1] == 0) ? 1 : (p234[2] == 0) ? 2 : 3);
                     }
@@ -523,7 +526,7 @@ namespace ICU4N.Impl.Coll
 
                 if ((levels & Collation.SECONDARY_LEVEL_FLAG) != 0)
                 {
-                    int s = lower32.TripleShift( 16);  // 16 bits
+                    int s = lower32.TripleShift(16);  // 16 bits
                     if (s == 0)
                     {
                         // secondary ignorable
@@ -614,7 +617,7 @@ namespace ICU4N.Impl.Coll
                 if ((levels & Collation.CASE_LEVEL_FLAG) != 0)
                 {
                     if ((CollationSettings.GetStrength(options) == (int)CollationStrength.Primary) ? p == 0
-                            : (lower32.TripleShift( 16)) == 0)
+                            : (lower32.TripleShift(16)) == 0)
                     {
                         // Primary+caseLevel: Ignore case level weights of primary ignorables.
                         // Otherwise: Ignore case level weights of secondary ignorables.
@@ -622,7 +625,7 @@ namespace ICU4N.Impl.Coll
                     }
                     else
                     {
-                        int c = (lower32.TripleShift( 8)) & 0xff; // case bits & tertiary lead byte
+                        int c = (lower32.TripleShift(8)) & 0xff; // case bits & tertiary lead byte
                         Debug.Assert((c & 0xc0) != 0xc0);
                         if ((c & 0xc0) == 0 && c > Collation.LEVEL_SEPARATOR_BYTE)
                         {
@@ -660,7 +663,7 @@ namespace ICU4N.Impl.Coll
                                 }
                                 if (c > Collation.LEVEL_SEPARATOR_BYTE)
                                 {
-                                    c = (CASE_LOWER_FIRST_COMMON_HIGH + (c.TripleShift( 6))) << 4; // 14 or 15
+                                    c = (CASE_LOWER_FIRST_COMMON_HIGH + (c.TripleShift(6))) << 4; // 14 or 15
                                 }
                             }
                             else
@@ -682,7 +685,7 @@ namespace ICU4N.Impl.Coll
                                 }
                                 if (c > Collation.LEVEL_SEPARATOR_BYTE)
                                 {
-                                    c = (CASE_UPPER_FIRST_COMMON_LOW - (c.TripleShift( 6))) << 4; // 2 or 1
+                                    c = (CASE_UPPER_FIRST_COMMON_LOW - (c.TripleShift(6))) << 4; // 2 or 1
                                 }
                             }
                             // c is a separator byte 01,
@@ -779,7 +782,7 @@ namespace ICU4N.Impl.Coll
                         {
                             // Keep separators unchanged.
                         }
-                        else if ((lower32.TripleShift( 16)) != 0)
+                        else if ((lower32.TripleShift(16)) != 0)
                         {
                             // Invert case bits of primary & secondary CEs.
                             t ^= 0xc000;
@@ -848,7 +851,7 @@ namespace ICU4N.Impl.Coll
                         }
                         else
                         {
-                            q = 0xfc + ((q.TripleShift( 6)) & 3);
+                            q = 0xfc + ((q.TripleShift(6)) & 3);
                         }
                         if (commonQuaternaries != 0)
                         {
@@ -874,7 +877,7 @@ namespace ICU4N.Impl.Coll
                     }
                 }
 
-                if ((lower32.TripleShift( 24)) == Collation.LEVEL_SEPARATOR_BYTE)
+                if ((lower32.TripleShift(24)) == Collation.LEVEL_SEPARATOR_BYTE)
                 {
                     break;
                 } // ce == NO_CE

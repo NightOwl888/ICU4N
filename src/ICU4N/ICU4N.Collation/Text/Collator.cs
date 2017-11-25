@@ -58,7 +58,7 @@ namespace ICU4N.Text
 
     public enum NormalizationMode
     {
-        FullDecomposition = CollationStrength.Identical,
+        //FullDecomposition = CollationStrength.Identical, // NOT SUPPORTED by ICU (was only for compatibility with Java APIs)
         NoDecomposition = 16,
         CanonicalDecomposition = 17
     }
@@ -97,64 +97,64 @@ namespace ICU4N.Text
     {
         //// public data members ---------------------------------------------------
 
-        ///**
-        // * Strongest collator strength value. Typically used to denote differences
-        // * between base characters. See class documentation for more explanation.
-        // * @see #setStrength
-        // * @see #getStrength
-        // * @stable ICU 2.8
-        // */
-        //public const int PRIMARY = 0;
+        /**
+         * Strongest collator strength value. Typically used to denote differences
+         * between base characters. See class documentation for more explanation.
+         * @see #setStrength
+         * @see #getStrength
+         * @stable ICU 2.8
+         */
+        public const CollationStrength PRIMARY = CollationStrength.Primary;
 
-        ///**
-        // * Second level collator strength value.
-        // * Accents in the characters are considered secondary differences.
-        // * Other differences between letters can also be considered secondary
-        // * differences, depending on the language.
-        // * See class documentation for more explanation.
-        // * @see #setStrength
-        // * @see #getStrength
-        // * @stable ICU 2.8
-        // */
-        //public const int SECONDARY = 1;
+        /**
+         * Second level collator strength value.
+         * Accents in the characters are considered secondary differences.
+         * Other differences between letters can also be considered secondary
+         * differences, depending on the language.
+         * See class documentation for more explanation.
+         * @see #setStrength
+         * @see #getStrength
+         * @stable ICU 2.8
+         */
+        public const CollationStrength SECONDARY = CollationStrength.Secondary;
 
-        ///**
-        // * Third level collator strength value.
-        // * Upper and lower case differences in characters are distinguished at this
-        // * strength level. In addition, a variant of a letter differs from the base
-        // * form on the tertiary level.
-        // * See class documentation for more explanation.
-        // * @see #setStrength
-        // * @see #getStrength
-        // * @stable ICU 2.8
-        // */
-        //public const int TERTIARY = 2;
+        /**
+         * Third level collator strength value.
+         * Upper and lower case differences in characters are distinguished at this
+         * strength level. In addition, a variant of a letter differs from the base
+         * form on the tertiary level.
+         * See class documentation for more explanation.
+         * @see #setStrength
+         * @see #getStrength
+         * @stable ICU 2.8
+         */
+        public const CollationStrength TERTIARY = CollationStrength.Tertiary;
 
-        ///**
-        // * {@icu} Fourth level collator strength value.
-        // * When punctuation is ignored
-        // * (see <a href="http://userguide.icu-project.org/collation/concepts#TOC-Ignoring-Punctuation">
-        // * Ignoring Punctuation in the User Guide</a>) at PRIMARY to TERTIARY
-        // * strength, an additional strength level can
-        // * be used to distinguish words with and without punctuation.
-        // * See class documentation for more explanation.
-        // * @see #setStrength
-        // * @see #getStrength
-        // * @stable ICU 2.8
-        // */
-        //public const int QUATERNARY = 3;
+        /**
+         * {@icu} Fourth level collator strength value.
+         * When punctuation is ignored
+         * (see <a href="http://userguide.icu-project.org/collation/concepts#TOC-Ignoring-Punctuation">
+         * Ignoring Punctuation in the User Guide</a>) at PRIMARY to TERTIARY
+         * strength, an additional strength level can
+         * be used to distinguish words with and without punctuation.
+         * See class documentation for more explanation.
+         * @see #setStrength
+         * @see #getStrength
+         * @stable ICU 2.8
+         */
+        public const CollationStrength QUATERNARY = CollationStrength.Quaternary;
 
-        ///**
-        // * Smallest Collator strength value. When all other strengths are equal,
-        // * the IDENTICAL strength is used as a tiebreaker. The Unicode code point
-        // * values of the NFD form of each string are compared, just in case there
-        // * is no difference.
-        // * See class documentation for more explanation.
-        // * <p>
-        // * Note this value is different from JDK's
-        // * @stable ICU 2.8
-        // */
-        //public const int IDENTICAL = 15;
+        /**
+         * Smallest Collator strength value. When all other strengths are equal,
+         * the IDENTICAL strength is used as a tiebreaker. The Unicode code point
+         * values of the NFD form of each string are compared, just in case there
+         * is no difference.
+         * See class documentation for more explanation.
+         * <p>
+         * Note this value is different from JDK's
+         * @stable ICU 2.8
+         */
+        public const CollationStrength IDENTICAL = CollationStrength.Identical;
 
         ///**
         // * {@icunote} This is for backwards compatibility with Java APIs only.  It
@@ -162,37 +162,37 @@ namespace ICU4N.Text
         // * collation does not support Java's FULL_DECOMPOSITION mode.
         // * @stable ICU 3.4
         // */
-        //public const int FULL_DECOMPOSITION = IDENTICAL;
+        //public const NormalizationMode FULL_DECOMPOSITION = (NormalizationMode)IDENTICAL;
 
-        ///**
-        // * Decomposition mode value. With NO_DECOMPOSITION set, Strings
-        // * will not be decomposed for collation. This is the default
-        // * decomposition setting unless otherwise specified by the locale
-        // * used to create the Collator.
-        // *
-        // * <p><strong>Note</strong> this value is different from the JDK's.
-        // * @see #CANONICAL_DECOMPOSITION
-        // * @see #getDecomposition
-        // * @see #setDecomposition
-        // * @stable ICU 2.8
-        // */
-        //public const int NO_DECOMPOSITION = 16;
+        /**
+         * Decomposition mode value. With NO_DECOMPOSITION set, Strings
+         * will not be decomposed for collation. This is the default
+         * decomposition setting unless otherwise specified by the locale
+         * used to create the Collator.
+         *
+         * <p><strong>Note</strong> this value is different from the JDK's.
+         * @see #CANONICAL_DECOMPOSITION
+         * @see #getDecomposition
+         * @see #setDecomposition
+         * @stable ICU 2.8
+         */
+        public const NormalizationMode NO_DECOMPOSITION = NormalizationMode.NoDecomposition;
 
-        ///**
-        // * Decomposition mode value. With CANONICAL_DECOMPOSITION set,
-        // * characters that are canonical variants according to the Unicode standard
-        // * will be decomposed for collation.
-        // *
-        // * <p>CANONICAL_DECOMPOSITION corresponds to Normalization Form D as
-        // * described in <a href="http://www.unicode.org/unicode/reports/tr15/">
-        // * Unicode Technical Report #15</a>.
-        // *
-        // * @see #NO_DECOMPOSITION
-        // * @see #getDecomposition
-        // * @see #setDecomposition
-        // * @stable ICU 2.8
-        // */
-        //public const int CANONICAL_DECOMPOSITION = 17;
+        /**
+         * Decomposition mode value. With CANONICAL_DECOMPOSITION set,
+         * characters that are canonical variants according to the Unicode standard
+         * will be decomposed for collation.
+         *
+         * <p>CANONICAL_DECOMPOSITION corresponds to Normalization Form D as
+         * described in <a href="http://www.unicode.org/unicode/reports/tr15/">
+         * Unicode Technical Report #15</a>.
+         *
+         * @see #NO_DECOMPOSITION
+         * @see #getDecomposition
+         * @see #setDecomposition
+         * @stable ICU 2.8
+         */
+        public const NormalizationMode CANONICAL_DECOMPOSITION = NormalizationMode.CanonicalDecomposition;
 
         ///**
         // * Reordering codes for non-script groups that can be reordered under collation.
@@ -975,7 +975,7 @@ namespace ICU4N.Text
             if (shim == null)
             {
                 return ICUResourceBundle.GetAvailableLocales(
-                    ICUData.ICU_COLLATION_BASE_NAME, ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+                    ICUData.ICU_COLLATION_BASE_NAME, CollationData.ICU_DATA_CLASS_LOADER /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
             }
             return shim.GetAvailableLocales();
         }
@@ -993,7 +993,7 @@ namespace ICU4N.Text
             if (shim == null)
             {
                 return ICUResourceBundle.GetAvailableULocales(
-                    ICUData.ICU_COLLATION_BASE_NAME, ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+                    ICUData.ICU_COLLATION_BASE_NAME, CollationData.ICU_DATA_CLASS_LOADER /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
             }
             return shim.GetAvailableULocales();
         }
@@ -1073,7 +1073,7 @@ namespace ICU4N.Text
             // Read available collation values from collation bundles.
             ICUResourceBundle bundle = (ICUResourceBundle)
                     UResourceBundle.GetBundleInstance(
-                            ICUData.ICU_COLLATION_BASE_NAME, locale);
+                            ICUData.ICU_COLLATION_BASE_NAME, locale, CollationData.ICU_DATA_CLASS_LOADER);
             KeywordsSink sink = new KeywordsSink();
             bundle.GetAllItemsWithFallback("collations", sink);
             return sink.values.ToArray();
@@ -1144,7 +1144,7 @@ namespace ICU4N.Text
                                                             ULocale locID,
                                                             bool[] isAvailable)
         {
-            return ICUResourceBundle.GetFunctionalEquivalent(BASE, ICUResourceBundle.ICU_DATA_CLASS_LOADER, RESOURCE,
+            return ICUResourceBundle.GetFunctionalEquivalent(BASE, CollationData.ICU_DATA_CLASS_LOADER /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */, RESOURCE,
                                                              keyword, locID, isAvailable, true);
         }
 

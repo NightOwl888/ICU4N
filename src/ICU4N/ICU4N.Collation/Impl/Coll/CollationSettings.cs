@@ -12,8 +12,8 @@ namespace ICU4N.Impl.Coll
     public sealed class CollationSettings : SharedObject
     {
         /**
-     * Options bit 0: Perform the FCD check on the input text and deliver normalized text.
-     */
+         * Options bit 0: Perform the FCD check on the input text and deliver normalized text.
+         */
         public const int CHECK_FCD = 1;
         /**
          * Options bit 1: Numeric collation.
@@ -81,7 +81,7 @@ namespace ICU4N.Impl.Coll
 
         internal CollationSettings() { }
 
-    public override object Clone()
+        public override object Clone()
         {
             CollationSettings newSettings = (CollationSettings)base.Clone();
             // Note: The reorderTable, reorderRanges, and reorderCodes need not be cloned
@@ -90,7 +90,7 @@ namespace ICU4N.Impl.Coll
             return newSettings;
         }
 
-    public override bool Equals(object other)
+        public override bool Equals(object other)
         {
             if (other == null) { return false; }
             if (!this.GetType().Equals(other.GetType())) { return false; }
@@ -101,7 +101,7 @@ namespace ICU4N.Impl.Coll
             return true;
         }
 
-    public override int GetHashCode()
+        public override int GetHashCode()
         {
             int h = options << 8;
             if ((options & ALTERNATE_MASK) != 0) { h = (int)(h ^ variableTop); }
@@ -352,7 +352,7 @@ namespace ICU4N.Impl.Coll
         //    }
         //}
 
-            public CollationStrength Strength
+        public CollationStrength Strength
         {
             get { return GetStrength(options); }
             set

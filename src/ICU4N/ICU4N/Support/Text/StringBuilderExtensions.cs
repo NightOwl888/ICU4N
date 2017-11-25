@@ -175,7 +175,7 @@ namespace ICU4N.Support.Text
                 text.Insert(index, "null".Substring(startIndex, length));
                 return text;
             }
-            if (index < 0 || index > text.Length - 1 || startIndex < 0 || length < 0 || startIndex + length > value.Length)
+            if (index < 0 || index > text.Length || startIndex < 0 || length < 0 || startIndex + length > value.Length)
             {
                 throw new IndexOutOfRangeException();
             }

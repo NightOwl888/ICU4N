@@ -13,7 +13,7 @@ namespace ICU4N.Dev.Test
         /**
      * Path to test data in icu4jtest.jar
      */
-        public static readonly String DATA_PATH = "ICU4N.TestFramework.Dev.Data.";
+        public static readonly String DATA_PATH = "ICU4N.Dev.Data.";
 
         /**
          * Return an input stream on the data file at path 'name' rooted at the data path

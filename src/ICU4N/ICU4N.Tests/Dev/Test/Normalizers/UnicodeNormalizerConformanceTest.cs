@@ -50,7 +50,7 @@ namespace ICU4N.Dev.Test.Normalizers
             TextReader input = null;
             try
             {
-                input = TestUtil.GetDataReader("Unicode.NormalizationTest.txt");
+                input = TestUtil.GetDataReader("unicode.NormalizationTest.txt");
                 for (int count = 0; ; ++count)
                 {
                     line = input.ReadLine();

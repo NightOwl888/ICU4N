@@ -2,6 +2,7 @@
 using ICU4N.Util;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Resources;
 using System.Text;
 
@@ -110,6 +111,9 @@ namespace ICU4N.Impl.Coll
             {
                 bundle = ICUResourceBundle.GetBundleInstance(
                         ICUData.ICU_COLLATION_BASE_NAME, locale,
+                        // ICU4N specific - need to pass in this assembly
+                        // name for the resources to be resolved here.
+                        CollationData.ICU_DATA_CLASS_LOADER, 
                         ICUResourceBundle.OpenType.LOCALE_ROOT);
             }
             catch (MissingManifestResourceException e)

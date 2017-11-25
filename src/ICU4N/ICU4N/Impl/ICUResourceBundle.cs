@@ -275,7 +275,7 @@ namespace ICU4N.Impl
             {
                 try
                 {
-                    UResourceBundle b = UResourceBundle.GetBundleInstance(baseName, locales[i]);
+                    UResourceBundle b = UResourceBundle.GetBundleInstance(baseName, locales[i]); // ICU4N TODO: Pass assembly ?
                     // downcast to ICUResourceBundle?
                     ICUResourceBundle irb = (ICUResourceBundle)(b.GetObject(keyword));
                     using (var e = irb.GetKeys().GetEnumerator())
@@ -678,7 +678,12 @@ namespace ICU4N.Impl
         private static void AddBundleBaseNamesFromClassLoader(
                 string bn, Assembly root, ISet<string> names)
         {
-            foreach (var s in root.GetManifestResourceNames())
+            // ICU4N: Convert to .NET style base name
+            string suffix = bn.Replace('/', '.').Replace('.' + ICUData.PACKAGE_NAME, "");
+            string baseName = root.GetManifestResourceBaseName(suffix);
+            foreach (var s in root.GetManifestResourceNames()
+                .Where(name => name.StartsWith(baseName, StringComparison.Ordinal))
+                .Select(n => n.Replace(baseName, "")))
             {
                 if (s.EndsWith(".res", StringComparison.Ordinal))
                 {
@@ -686,54 +691,6 @@ namespace ICU4N.Impl
                     names.Add(locstr);
                 }
             }
-
-            
-            // ICU4N TODO: Finish implementation
-            //    java.security.AccessController
-            //        .doPrivileged(new java.security.PrivilegedAction<Void>() {
-            //                @Override
-            //                public Void run()
-            //    {
-            //        try
-            //        {
-            //            // bn has a trailing slash: The WebSphere class loader would return null
-            //            // for a raw directory name without it.
-            //            Enumeration<URL> urls = root.getResources(bn);
-            //            if (urls == null)
-            //            {
-            //                return null;
-            //            }
-            //            URLVisitor v = new URLVisitor() {
-            //                            @Override
-            //                            public void visit(String s)
-            //            {
-            //                if (s.endsWith(".res"))
-            //                {
-            //                    String locstr = s.substring(0, s.length() - 4);
-            //                    names.add(locstr);
-            //                }
-            //            }
-            //        };
-            //        while (urls.hasMoreElements())
-            //        {
-            //            URL url = urls.nextElement();
-            //            URLHandler handler = URLHandler.get(url);
-            //            if (handler != null)
-            //            {
-            //                handler.guide(v, false);
-            //            }
-            //            else
-            //            {
-            //                if (DEBUG) System.out.println("handler for " + url + " is null");
-            //            }
-            //        }
-            //    } catch (IOException e)
-            //    {
-            //        if (DEBUG) System.out.println("ouch: " + e.getMessage());
-            //    }
-            //    return null;
-            //}
-            //            });
         }
 
         private static void AddLocaleIDsFromListFile(string bn, Assembly root, ISet<string> locales)
@@ -1308,12 +1265,21 @@ namespace ICU4N.Impl
         public static ICUResourceBundle GetBundleInstance(
             string baseName, ULocale locale, OpenType openType)
         {
+            return GetBundleInstance(baseName, locale,
+                    ICUResourceBundle.ICU_DATA_CLASS_LOADER, openType);
+        }
+
+        // ICU4N specific overload so we can pass the Assembly from submodules (since 
+        // the main assembly won't see submodules by default).
+        public static ICUResourceBundle GetBundleInstance(
+            string baseName, ULocale locale, Assembly root, OpenType openType)
+        {
             if (locale == null)
             {
                 locale = ULocale.GetDefault();
             }
             return GetBundleInstance(baseName, locale.GetBaseName(),
-                    ICUResourceBundle.ICU_DATA_CLASS_LOADER, openType);
+                    root, openType);
         }
 
         public static ICUResourceBundle GetBundleInstance(string baseName, string localeID,

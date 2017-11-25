@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ICU4N.Collation\ICU4N.Collation.csproj" />
+    <ProjectReference Include="..\ICU4N.LanguageData\ICU4N.LanguageData.csproj" />
     <ProjectReference Include="..\ICU4N.TestFramework\ICU4N.TestFramework.csproj" />
   </ItemGroup>
 
@@ -19,6 +20,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
     <PackageReference Include="NUnit" Version="3.8.1" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.4.0" />
   </ItemGroup>
 
 </Project>

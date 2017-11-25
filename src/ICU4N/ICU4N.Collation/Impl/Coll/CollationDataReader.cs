@@ -290,8 +290,8 @@ namespace ICU4N.Impl.Coll
                     throw new ICUException("JamoCE32sStart index into non-existent ce32s[]");
                 }
                 data.jamoCE32s = new int[CollationData.JAMO_CE32S_LENGTH];
-                //System.Array.Copy(data.ce32s, jamoCE32sStart, data.jamoCE32s, 0, CollationData.JAMO_CE32S_LENGTH);
-                data.ce32s.CopyTo(data.jamoCE32s, 0);
+                // ICU4N specific - added extension method to IList<T> to handle "copy to"
+                data.ce32s.CopyTo(jamoCE32sStart, data.jamoCE32s, 0, CollationData.JAMO_CE32S_LENGTH);
             }
             else if (data == null)
             {

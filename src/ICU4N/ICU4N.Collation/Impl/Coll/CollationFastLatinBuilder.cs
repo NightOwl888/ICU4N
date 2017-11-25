@@ -79,8 +79,8 @@ namespace ICU4N.Impl.Coll
         {
             ce0 = 0;
             ce1 = 0;
-            contractionCEs = new List<long>();
-            uniqueCEs = new List<long>();
+            contractionCEs = new List<long>(32);
+            uniqueCEs = new List<long>(32);
             miniCEs = null;
             firstDigitPrimary = 0;
             firstLatinPrimary = 0;
@@ -270,7 +270,7 @@ namespace ICU4N.Impl.Coll
                     // Always map U+0000 to a contraction.
                     // Write a contraction list with only a default value if there is no real contraction.
                     Debug.Assert(contractionCEs.Count == 0);
-                    addContractionEntry(CollationFastLatin.CONTR_CHAR_MASK, ce0, ce1);
+                    AddContractionEntry(CollationFastLatin.CONTR_CHAR_MASK, ce0, ce1);
                     charCEs[0][0] = (Collation.NO_CE_PRIMARY << 32) | CONTRACTION_FLAG;
                     charCEs[0][1] = 0;
                 }
@@ -400,12 +400,12 @@ namespace ICU4N.Impl.Coll
             int contractionIndex = contractionCEs.Count;
             if (GetCEsFromCE32(data, Collation.SENTINEL_CP, ce32))
             {
-                addContractionEntry(CollationFastLatin.CONTR_CHAR_MASK, ce0, ce1);
+                AddContractionEntry(CollationFastLatin.CONTR_CHAR_MASK, ce0, ce1);
             }
             else
             {
                 // Bail out for c-without-contraction.
-                addContractionEntry(CollationFastLatin.CONTR_CHAR_MASK, Collation.NO_CE, 0);
+                AddContractionEntry(CollationFastLatin.CONTR_CHAR_MASK, Collation.NO_CE, 0);
             }
             // Handle an encodable contraction unless the next contraction is too long
             // and starts with the same character.
@@ -424,14 +424,14 @@ namespace ICU4N.Impl.Coll
                         if (addContraction)
                         {
                             // Bail out for all contractions starting with this character.
-                            addContractionEntry(x, Collation.NO_CE, 0);
+                            AddContractionEntry(x, Collation.NO_CE, 0);
                             addContraction = false;
                         }
                         continue;
                     }
                     if (addContraction)
                     {
-                        addContractionEntry(prevX, ce0, ce1);
+                        AddContractionEntry(prevX, ce0, ce1);
                     }
                     ce32 = entry.Value;
                     if (suffix.Length == 1 && GetCEsFromCE32(data, Collation.SENTINEL_CP, ce32))
@@ -440,7 +440,7 @@ namespace ICU4N.Impl.Coll
                     }
                     else
                     {
-                        addContractionEntry(x, Collation.NO_CE, 0);
+                        AddContractionEntry(x, Collation.NO_CE, 0);
                         addContraction = false;
                     }
                     prevX = x;
@@ -448,7 +448,7 @@ namespace ICU4N.Impl.Coll
             }
             if (addContraction)
             {
-                addContractionEntry(prevX, ce0, ce1);
+                AddContractionEntry(prevX, ce0, ce1);
             }
             // Note: There might not be any fast Latin contractions, but
             // we need to enter contraction handling anyway so that we can bail out
@@ -460,7 +460,7 @@ namespace ICU4N.Impl.Coll
             return true;
         }
 
-        private void addContractionEntry(int x, long cce0, long cce1)
+        private void AddContractionEntry(int x, long cce0, long cce1)
         {
             contractionCEs.Add(x);
             contractionCEs.Add(cce0);
@@ -476,7 +476,7 @@ namespace ICU4N.Impl.Coll
             int i = BinarySearch(uniqueCEs, uniqueCEs.Count, ce);
             if (i < 0)
             {
-                uniqueCEs.Insert((int)ce, ~i);
+                uniqueCEs.Insert(~i, ce);
             }
         }
 

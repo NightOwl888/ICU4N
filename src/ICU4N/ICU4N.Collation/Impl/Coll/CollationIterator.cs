@@ -94,7 +94,7 @@ namespace ICU4N.Impl.Coll
             internal SkippedState() { }
             internal void Clear()
             {
-                oldBuffer.Length=0;
+                oldBuffer.Length = 0;
                 pos = 0;
                 // The newBuffer is reset by setFirstSkipped().
             }
@@ -151,7 +151,7 @@ namespace ICU4N.Impl.Coll
             internal void SetFirstSkipped(int c)
             {
                 skipLengthAtMatch = 0;
-                newBuffer.Length=0;
+                newBuffer.Length = 0;
                 newBuffer.AppendCodePoint(c);
             }
 
@@ -168,7 +168,7 @@ namespace ICU4N.Impl.Coll
                 // Note: UnicodeString.replace() pins pos to at most length().
                 int oldLength = oldBuffer.Length;
                 if (pos > oldLength) { pos = oldLength; }
-                oldBuffer.Delete(0, pos).Insert(0, newBuffer, 0, skipLengthAtMatch - 0); // ICU4N: Checked 4th parameter
+                oldBuffer.Delete(0, pos).Insert(0, newBuffer, 0, Math.Max(Math.Min(skipLengthAtMatch, newBuffer.Length), 0)); // ICU4N: Corrected 4th parameter
                 pos = 0;
             }
 
@@ -220,7 +220,7 @@ namespace ICU4N.Impl.Coll
             ceBuffer = new CEBuffer();
         }
 
-    public override bool Equals(object other)
+        public override bool Equals(object other)
         {
             // Subclasses: Call this method and then add more specific checks.
             // Compare the iterator state but not the collation data (trie & data fields):
@@ -244,7 +244,7 @@ namespace ICU4N.Impl.Coll
             return true;
         }
 
-    public override int GetHashCode()
+        public override int GetHashCode()
         {
             // Dummy return to prevent compile warnings.
             return 0;
@@ -269,7 +269,7 @@ namespace ICU4N.Impl.Coll
                 // Return the next buffered CE.
                 return ceBuffer[cesIndex++];
             }
-            Debug.Assert( cesIndex == ceBuffer.Length);
+            Debug.Assert(cesIndex == ceBuffer.Length);
             ceBuffer.IncLength();
             long cAndCE32 = HandleNextCE32();
             int c = (int)(cAndCE32 >> 32);
@@ -279,7 +279,7 @@ namespace ICU4N.Impl.Coll
             {  // Forced-inline of isSpecialCE32(ce32).
                // Normal CE from the main data.
                // Forced-inline of ceFromSimpleCE32(ce32).
-                return ceBuffer[cesIndex++]=
+                return ceBuffer[cesIndex++] =
                         ((long)(ce32 & 0xffff0000) << 32) | ((long)(ce32 & 0xff00) << 16) | (t << 8);
             }
             CollationData d;
@@ -289,7 +289,7 @@ namespace ICU4N.Impl.Coll
             {
                 if (c < 0)
                 {
-                    return ceBuffer[cesIndex++]= Collation.NO_CE;
+                    return ceBuffer[cesIndex++] = Collation.NO_CE;
                 }
                 d = data.Base;
                 ce32 = d.GetCE32(c);
@@ -297,7 +297,7 @@ namespace ICU4N.Impl.Coll
                 if (t < Collation.SPECIAL_CE32_LOW_BYTE)
                 {
                     // Normal CE from the base data.
-                    return ceBuffer[cesIndex++]=
+                    return ceBuffer[cesIndex++] =
                             ((long)(ce32 & 0xffff0000) << 32) | ((long)(ce32 & 0xff00) << 16) | (t << 8);
                 }
             }
@@ -308,7 +308,7 @@ namespace ICU4N.Impl.Coll
             if (t == Collation.LONG_PRIMARY_CE32_LOW_BYTE)
             {
                 // Forced-inline of ceFromLongPrimaryCE32(ce32).
-                return ceBuffer[cesIndex++]=
+                return ceBuffer[cesIndex++] =
                         ((long)(ce32 - t) << 32) | Collation.COMMON_SEC_AND_TER_CE;
             }
             return NextCEFromCE32(d, c, ce32);
@@ -334,7 +334,7 @@ namespace ICU4N.Impl.Coll
         internal void SetCurrentCE(long ce)
         {
             Debug.Assert(cesIndex > 0);
-            ceBuffer[cesIndex - 1]= ce;
+            ceBuffer[cesIndex - 1] = ce;
         }
 
         /**
@@ -388,7 +388,7 @@ namespace ICU4N.Impl.Coll
 
         public int CEsLength
         {
-           get { return ceBuffer.Length; }
+            get { return ceBuffer.Length; }
         }
 
         public long GetCE(int i)
@@ -533,8 +533,8 @@ namespace ICU4N.Impl.Coll
                         return;
                     case Collation.LATIN_EXPANSION_TAG:
                         ceBuffer.EnsureAppendCapacity(2);
-                        ceBuffer[ceBuffer.Length]= Collation.LatinCE0FromCE32(ce32);
-                        ceBuffer[ceBuffer.Length + 1]= Collation.LatinCE1FromCE32(ce32);
+                        ceBuffer[ceBuffer.Length] = Collation.LatinCE0FromCE32(ce32);
+                        ceBuffer[ceBuffer.Length + 1] = Collation.LatinCE1FromCE32(ce32);
                         ceBuffer.Length += 2;
                         return;
                     case Collation.EXPANSION32_TAG:
@@ -664,8 +664,8 @@ namespace ICU4N.Impl.Coll
                                 // None of the Jamo CE32s are isSpecialCE32().
                                 // Avoid recursive function calls and per-Jamo tests.
                                 ceBuffer.EnsureAppendCapacity(t == 0 ? 2 : 3);
-                                ceBuffer[ceBuffer.Length]= Collation.CeFromCE32(jamoCE32s[c]);
-                                ceBuffer[ceBuffer.Length + 1]= Collation.CeFromCE32(jamoCE32s[19 + v]);
+                                ceBuffer[ceBuffer.Length] = Collation.CeFromCE32(jamoCE32s[c]);
+                                ceBuffer[ceBuffer.Length + 1] = Collation.CeFromCE32(jamoCE32s[19 + v]);
                                 ceBuffer.Length += 2;
                                 if (t != 0)
                                 {
@@ -758,9 +758,9 @@ namespace ICU4N.Impl.Coll
 
         // Main lookup trie of the data object.
         protected readonly Trie2_32 trie;
-    protected readonly CollationData data;
+        protected readonly CollationData data;
 
-    private long NextCEFromCE32(CollationData d, int c, int ce32)
+        private long NextCEFromCE32(CollationData d, int c, int ce32)
         {
             --ceBuffer.Length;  // Undo ceBuffer.incLength().
             AppendCEsFromCE32(d, c, ce32, true);
@@ -1179,7 +1179,7 @@ namespace ICU4N.Impl.Coll
         {
             int length = digits.Length;
             Debug.Assert(1 <= length && length <= 254);
-           Debug.Assert(length == 1 || digits[0] != 0);
+            Debug.Assert(length == 1 || digits[0] != 0);
             long numericPrimary = data.numericPrimary;
             // Note: We use primary byte values 2..255: digits are not compressible.
             if (length <= 7)

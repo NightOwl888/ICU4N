@@ -753,7 +753,7 @@ namespace ICU4N.Impl
         {
             int oldBlen = buffer.Length;
             var m = GetKeywordMap();
-            if (m.Any())
+            if (m.Count > 0)
             {
                 bool first = true;
                 foreach (var e in m)

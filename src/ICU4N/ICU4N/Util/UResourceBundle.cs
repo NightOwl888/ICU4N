@@ -127,7 +127,9 @@ namespace ICU4N.Util
                 baseName = ICUData.ICU_BASE_NAME;
             }
             ULocale uloc = ULocale.GetDefault();
-            return GetBundleInstance(baseName, uloc.GetBaseName(), ICUResourceBundle.ICU_DATA_CLASS_LOADER,
+            //return GetBundleInstance(baseName, uloc.GetBaseName(), ICUResourceBundle.ICU_DATA_CLASS_LOADER,
+            //                         false);
+            return GetBundleInstance(baseName, uloc.GetBaseName(), GetAssembly(baseName),
                                      false);
         }
 
@@ -150,8 +152,10 @@ namespace ICU4N.Util
             }
             ULocale uloc = locale == null ? ULocale.GetDefault() : ULocale.ForLocale(locale);
 
+            //return GetBundleInstance(baseName, uloc.GetBaseName(),
+            //                         ICUResourceBundle.ICU_DATA_CLASS_LOADER, false);
             return GetBundleInstance(baseName, uloc.GetBaseName(),
-                                     ICUResourceBundle.ICU_DATA_CLASS_LOADER, false);
+                GetAssembly(baseName), false);
         }
 
         /**
@@ -174,8 +178,10 @@ namespace ICU4N.Util
             {
                 locale = ULocale.GetDefault();
             }
+            //return GetBundleInstance(baseName, locale.GetBaseName(),
+            //                         ICUResourceBundle.ICU_DATA_CLASS_LOADER, false);
             return GetBundleInstance(baseName, locale.GetBaseName(),
-                                     ICUResourceBundle.ICU_DATA_CLASS_LOADER, false);
+                GetAssembly(baseName), false);
         }
 
         /**

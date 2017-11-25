@@ -312,7 +312,7 @@ namespace ICU4N.Util
         /**
          * Utility for getMeasurementSystem and getPaperSize
          */
-        private static UResourceBundle MeasurementTypeBundleForLocale(ULocale locale, String measurementType)
+        private static UResourceBundle MeasurementTypeBundleForLocale(ULocale locale, string measurementType)
         {
             // Much of this is taken from getCalendarType in impl/CalendarUtil.java
             UResourceBundle measTypeBundle = null;

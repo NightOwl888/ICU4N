@@ -38,8 +38,8 @@ namespace ICU4N.Impl.Coll
             base_ = null;
             baseSettings = null;
             trie = null;
-            ce32s = new List<int>();
-            ce64s = new List<long>();
+            ce32s = new List<int>(32);
+            ce64s = new List<long>(32);
             conditionalCE32s = new List<ConditionalCE32>();
             modified = false;
             fastLatinEnabled = false;
@@ -1142,7 +1142,7 @@ namespace ICU4N.Impl.Coll
             SetLeadSurrogates();
 
             // For U+0000, move its normal ce32 into CE32s[0] and set U0000_TAG.
-            ce32s[trie.Get(0)] = 0;
+            ce32s[0] = trie.Get(0);
             trie.Set(0, Collation.MakeCE32FromTagAndIndex(Collation.U0000_TAG, 0));
 
             data.trie = trie.ToTrie2_32();

@@ -13,6 +13,40 @@ namespace ICU4N.Support
         private static ConcurrentDictionary<TypeAndResource, string> resourceCache = new ConcurrentDictionary<TypeAndResource, string>();
 
         /// <summary>
+        /// Uses the assembly name + '.' + suffix to determine whether any resources begin with the concatenation.
+        /// If not, the assembly name will be truncated at the '.' beginning from the right side of the string
+        /// until a base name is found.
+        /// </summary>
+        /// <param name="assembly">This <see cref="Assembly"/>.</param>
+        /// <param name="suffix">A suffix to use on the assembly name to limit the possible resource names to match. 
+        /// This value can be null to match any resource name in the assembly.</param>
+        /// <returns>A base name if found, otherwise <see cref="string.Empty"/>.</returns>
+        public static string GetManifestResourceBaseName(this Assembly assembly, string suffix)
+        {
+            var resourceNames = assembly.GetManifestResourceNames();
+            string assemblyName = assembly.GetName().Name;
+            string baseName = string.IsNullOrEmpty(suffix) ? assemblyName : assemblyName + '.' + suffix;
+            int dotIndex = -1;
+            do
+            {
+                if (resourceNames.Any(resName => resName.StartsWith(baseName, StringComparison.Ordinal)))
+                {
+                    return baseName;
+                }
+
+                dotIndex = assemblyName.LastIndexOf('.');
+                if (dotIndex > -1 && dotIndex < assemblyName.Length - 1)
+                {
+                    assemblyName = assemblyName.Substring(0, dotIndex);
+                    baseName = string.IsNullOrEmpty(suffix) ? assemblyName : assemblyName + '.' + suffix;
+                }
+            } while (dotIndex > -1);
+
+            // No match
+            return string.Empty;
+        }
+
+        /// <summary>
         /// Aggressively searches for a resource and, if found, returns an open <see cref="Stream"/>
         /// where it can be read.
         /// </summary>

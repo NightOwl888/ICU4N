@@ -204,7 +204,7 @@ namespace ICU4N.Impl
             /**
              * Create a LocaleKey with canonical primary and fallback IDs.
              */
-            public static LocaleKey createWithCanonical(ULocale locale, string canonicalFallbackID, int kind)
+            public static LocaleKey CreateWithCanonical(ULocale locale, string canonicalFallbackID, int kind)
             {
                 if (locale == null)
                 {
@@ -709,7 +709,7 @@ namespace ICU4N.Impl
 
         public virtual Key CreateKey(ULocale l, int kind)
         {
-            return LocaleKey.createWithCanonical(l, ValidateFallbackLocale(), kind);
+            return LocaleKey.CreateWithCanonical(l, ValidateFallbackLocale(), kind);
         }
     }
 }
