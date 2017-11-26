@@ -13,6 +13,14 @@ namespace ICU4N.Support.Collections
             return result;
         }
 
+        public static void PutAll<TKey, TValue>(this IDictionary<TKey, TValue> dict, IEnumerable<KeyValuePair<TKey, TValue>> kvps)
+        {
+            foreach (var kvp in kvps)
+            {
+                dict[kvp.Key] = kvp.Value;
+            }
+        }
+
         public static IDictionary<TKey, TValue> ToUnmodifiableDictionary<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
         {
             return new UnmodifiableDictionary<TKey, TValue>(dictionary);

@@ -1670,17 +1670,17 @@ namespace ICU4N.Impl
         }
 
         /**
-         * Given a regex reference, which may be null, append its
+         * Given a matcher reference, which may be null, append its
          * pattern as a literal to the given rule.
          */
         public static void AppendToRule(StringBuffer rule,
-                Regex regex,
+                IUnicodeMatcher matcher,
                 bool escapeUnprintable,
                 StringBuffer quoteBuf)
         {
-            if (regex != null)
+            if (matcher != null)
             {
-                AppendToRule(rule, regex.ToString(),
+                AppendToRule(rule, matcher.ToString(),
                         true, escapeUnprintable, quoteBuf);
             }
         }

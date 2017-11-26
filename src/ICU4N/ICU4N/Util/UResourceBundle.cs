@@ -1002,6 +1002,11 @@ namespace ICU4N.Util
             return (string)GetObject(key);
         }
 
+        public string[] GetStringArray(string key)
+        {
+            return (string[])GetObject(key);
+        }
+
         public abstract IEnumerable<string> GetKeys();
 
         public virtual ISet<string> KeySet()

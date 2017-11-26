@@ -93,7 +93,7 @@ namespace ICU4N.Text
         void AddMatchSetTo(UnicodeSet toUnionTo);
     }
 
-    public class UnicodeMatcher
+    public static class UnicodeMatcher
     {
         /**
          * Constant returned by <code>matches()</code> indicating a
@@ -102,7 +102,7 @@ namespace ICU4N.Text
          * all desired characters for a non-incremental match.
          * @stable ICU 2.0
          */
-        public static readonly int U_MISMATCH = 0;
+        public const int U_MISMATCH = 0;
 
         /**
          * Constant returned by <code>matches()</code> indicating a
@@ -114,7 +114,7 @@ namespace ICU4N.Text
          * supplied at limit, they might also match.
          * @stable ICU 2.0
          */
-        public static readonly int U_PARTIAL_MATCH = 1;
+        public const int U_PARTIAL_MATCH = 1;
 
         /**
          * Constant returned by <code>matches()</code> indicating a
@@ -124,7 +124,7 @@ namespace ICU4N.Text
          * characters would not alter the extent of the match.
          * @stable ICU 2.0
          */
-        public static readonly int U_MATCH = 2;
+        public const int U_MATCH = 2;
 
         /**
          * The character at index i, where i &lt; contextStart || i &gt;= contextLimit,
@@ -133,6 +133,6 @@ namespace ICU4N.Text
          * at the start and/or end.
          * @stable ICU 2.0
          */
-        internal static readonly char ETHER = '\uFFFF';
+        internal const char ETHER = '\uFFFF';
     }
 }
