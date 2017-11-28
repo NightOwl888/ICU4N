@@ -29,7 +29,7 @@
         int Replace(IReplaceable text,
                                     int start,
                                     int limit,
-                                    out int[] cursor);
+                                    int[] cursor);
 
         /// <summary>
         /// Returns a string representation of this replacer.  If the

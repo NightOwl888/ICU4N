@@ -16,6 +16,13 @@ namespace ICU4N.Impl
          */
         public static CultureInfo GetLocaleFromName(string name)
         {
+            // ICU4N TODO: Not sure what to do with "any". It is in the
+            // IANA subtag registry, but not supported in .NET.
+            if (name.Equals("any", StringComparison.OrdinalIgnoreCase))
+            {
+                return CultureInfo.InvariantCulture;
+            }
+
             return new CultureInfo(name);
 
             //string language = "";

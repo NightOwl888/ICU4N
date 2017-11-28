@@ -974,7 +974,7 @@ namespace ICU4N.Impl
                     if (e < 0)
                     {
                         throw new ArgumentException("Invalid escape sequence " +
-                                s.Substring(i - 1, Math.Min(i + 8, s.Length) - (i - 1)));
+                                s.Substring(i - 1, Math.Min(i + 8, s.Length) - (i - 1))); // ICU4N: Corrected 2nd parameter
                     }
                     buf.AppendCodePoint(e);
                     i = pos[0];
@@ -1080,11 +1080,11 @@ namespace ICU4N.Impl
             {
                 if (s[i] == divider)
                 {
-                    output[current++] = s.Substring(last, i - last);
+                    output[current++] = s.Substring(last, i - last); // ICU4N: Corrected 2nd parameter
                     last = i + 1;
                 }
             }
-            output[current++] = s.Substring(last, i - last);
+            output[current++] = s.Substring(last, i - last); // ICU4N: Corrected 2nd parameter
             while (current < output.Length)
             {
                 output[current++] = "";
@@ -1109,11 +1109,11 @@ namespace ICU4N.Impl
             {
                 if (s[i] == divider)
                 {
-                    output.Add(s.Substring(last, i - last));
+                    output.Add(s.Substring(last, i - last)); // ICU4N: Corrected 2nd parameter
                     last = i + 1;
                 }
             }
-            output.Add(s.Substring(last, i - last));
+            output.Add(s.Substring(last, i - last)); // ICU4N: Corrected 2nd parameter
             return output.ToArray();
         }
 
@@ -1522,7 +1522,7 @@ namespace ICU4N.Impl
                     while (++i < limit
                             && text[i] != APOSTROPHE) { }
                 }
-                else if (setOfChars[c] >= 0)
+                else if (setOfChars.IndexOf(c) >= 0)
                 {
                     return i;
                 }
@@ -1680,7 +1680,7 @@ namespace ICU4N.Impl
         {
             if (matcher != null)
             {
-                AppendToRule(rule, matcher.ToString(),
+                AppendToRule(rule, matcher.ToPattern(escapeUnprintable),
                         true, escapeUnprintable, quoteBuf);
             }
         }

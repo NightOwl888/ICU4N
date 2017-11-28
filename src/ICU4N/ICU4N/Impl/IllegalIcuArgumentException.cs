@@ -12,7 +12,7 @@ namespace ICU4N.Impl
         }
 
         public IcuArgumentException(Exception innerException)
-            : base(string.Empty, innerException)
+            : base(innerException.Message, innerException)
         {
         }
 

@@ -105,9 +105,8 @@ namespace ICU4N.Text
         public virtual int Replace(IReplaceable text,
                            int start,
                            int limit,
-                           out int[] cursor)
+                           int[] cursor)
         {
-            cursor = null;
             int outLen;
             int newStart = 0;
 
@@ -207,7 +206,7 @@ namespace ICU4N.Text
                         }
 
                         // Delegate output generation to replacer object
-                        int len = r.Replace(text, destLimit, destLimit, out cursor);
+                        int len = r.Replace(text, destLimit, destLimit, cursor);
                         destLimit += len;
                     }
                     oOutput = nextIndex;
@@ -271,8 +270,6 @@ namespace ICU4N.Text
                     newStart += start;
                 }
 
-                if (cursor == null)
-                    cursor = new int[outLen];
                 cursor[0] = newStart;
             }
 

@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.RegionData", "ICU4N.R
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Transliterator", "ICU4N.Transliterator\ICU4N.Transliterator.csproj", "{BE86A1C2-0F58-4233-B3C8-476889214E2A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Tests.Transliterator", "ICU4N.Tests.Transliterator\ICU4N.Tests.Transliterator.csproj", "{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{BE86A1C2-0F58-4233-B3C8-476889214E2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE86A1C2-0F58-4233-B3C8-476889214E2A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE86A1C2-0F58-4233-B3C8-476889214E2A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

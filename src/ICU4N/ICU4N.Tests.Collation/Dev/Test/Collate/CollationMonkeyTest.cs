@@ -38,7 +38,7 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
 
-            Random rand = createRandom(); // use test framework's random seed
+            Random rand = CreateRandom(); // use test framework's random seed
             int s = rand.Next(0x7fff) % source.Length;
             int t = rand.Next(0x7fff) % source.Length;
             int slen = Math.Abs(rand.Next(0x7fff) % source.Length - source.Length) % source.Length;
@@ -123,7 +123,7 @@ namespace ICU4N.Dev.Test.Collate
              * the numbers will be different every time we run.
              */
 
-            Random rand = createRandom(); // use test framework's random seed
+            Random rand = CreateRandom(); // use test framework's random seed
             int s = rand.Next(0x7fff) % source.Length;
             int t = rand.Next(0x7fff) % source.Length;
             int slen = Math.Abs(rand.Next(0x7fff) % source.Length - source.Length) % source.Length;

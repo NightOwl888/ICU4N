@@ -72,7 +72,7 @@ namespace ICU4N.Dev.Test
         }
 
         [SetUp]
-        public virtual void testInitialize()
+        public virtual void TestInitialize()
         {
 #if NETSTANDARD
             CultureInfo.CurrentCulture = defaultLocale;
@@ -89,7 +89,7 @@ namespace ICU4N.Dev.Test
         }
 
         [TearDown]
-        public virtual void testTeardown()
+        public virtual void TestTeardown()
         {
             //if (getParams().testSecurityManager != null)
             //{
@@ -111,19 +111,19 @@ namespace ICU4N.Dev.Test
         /**
          * 0 = fewest tests, 5 is normal build, 10 is most tests
          */
-        protected static int GetExhaustiveness()
+        protected internal static int GetExhaustiveness()
         {
             return GetParams().inclusion;
         }
 
-        protected static bool isQuick()
+        protected internal static bool IsQuick()
         {
             return GetParams().GetInclusion() == 0;
         }
 
         // use this instead of new random so we get a consistent seed
         // for our tests
-        protected Random createRandom()
+        protected Random CreateRandom()
         {
             return new Random(GetParams().GetSeed());
         }

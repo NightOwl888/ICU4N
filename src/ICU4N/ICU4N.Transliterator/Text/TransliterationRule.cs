@@ -471,7 +471,7 @@ namespace ICU4N.Text
             // We have a full match.  The key is between pos.start and
             // keyLimit.
 
-            int newLength = output.Replace(text, pos.Start, keyLimit, out intRef);
+            int newLength = output.Replace(text, pos.Start, keyLimit, intRef);
             int lenDelta = newLength - (keyLimit - pos.Start);
             int newStart = intRef[0];
 

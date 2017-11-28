@@ -1,23 +1,21 @@
-﻿using System;
+﻿using ICU4N.Text;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace ICU4N.Text
+namespace ICU4N.Dev.Util
 {
-    public class UnicodeSetIterator
+    public class UnicodeMapIterator<T> where T : class
     {
         /**
          * Value of <tt>codepoint</tt> if the iterator points to a string.
          * If <tt>codepoint == IS_STRING</tt>, then examine
          * <tt>string</tt> for the current iteration result.
-         * @stable ICU 2.0
          */
         public static int IS_STRING = -1;
 
         /**
          * Current code point, or the special value <tt>IS_STRING</tt>, if
          * the iterator points to a string.
-         * @stable ICU 2.0
          */
         public int Codepoint { get; set; }
 
@@ -28,7 +26,6 @@ namespace ICU4N.Text
          * iterating over code points using <tt>next()</tt>, or if
          * <tt>codepoint == IS_STRING</tt>, then the value of
          * <tt>codepointEnd</tt> is undefined.
-         * @stable ICU 2.0
          */
         public int CodepointEnd { get; set; }
 
@@ -36,16 +33,19 @@ namespace ICU4N.Text
          * If <tt>codepoint == IS_STRING</tt>, then <tt>string</tt> points
          * to the current string.  If <tt>codepoint != IS_STRING</tt>, the
          * value of <tt>string</tt> is undefined.
-         * @stable ICU 2.0
          */
         public string String { get; set; }
 
         /**
+         * The value associated with this element or range.
+         */
+        public T Value { get; set; }
+
+        /**
          * Create an iterator over the given set.
          * @param set set to iterate over
-         * @stable ICU 2.0
          */
-        public UnicodeSetIterator(UnicodeSet set)
+        public UnicodeMapIterator(UnicodeMap<T> set)
         {
             Reset(set);
         }
@@ -54,11 +54,10 @@ namespace ICU4N.Text
          * Create an iterator over nothing.  <tt>next()</tt> and
          * <tt>nextRange()</tt> return false. This is a convenience
          * constructor allowing the target to be set later.
-         * @stable ICU 2.0
          */
-        public UnicodeSetIterator()
+        public UnicodeMapIterator()
         {
-            Reset(new UnicodeSet());
+            Reset(new UnicodeMap<T>());
         }
 
         /**
@@ -75,39 +74,40 @@ namespace ICU4N.Text
          * calls to <tt>next()</tt> and <tt>nextRange()</tt> without
          * calling <tt>reset()</tt> between them.  The results of doing so
          * are undefined.
-         * <p><b>Warning: </b>For speed, UnicodeSet iteration does not check for concurrent modification. 
-         * Do not alter the UnicodeSet while iterating.
+         *
          * @return true if there was another element in the set and this
          * object contains the element.
-         * @stable ICU 2.0
          */
-        public virtual bool Next()
+        public bool Next()
         {
             if (nextElement <= endElement)
             {
                 Codepoint = CodepointEnd = nextElement++;
                 return true;
             }
-            if (range < endRange)
+            while (range < endRange)
             {
-                LoadRange(++range);
+                if (LoadRange(++range) == null)
+                {
+                    continue;
+                }
                 Codepoint = CodepointEnd = nextElement++;
                 return true;
             }
 
             // stringIterator == null iff there are no string elements remaining
 
-            if (stringIterator == null)
-            {
-                return false;
-            }
+            if (stringIterator == null) return false;
             Codepoint = IS_STRING; // signal that value is actually a string
-            if (!stringIterator.MoveNext())
+            if (stringIterator.MoveNext())
+                String = stringIterator.Current;
+            else
             {
                 stringIterator = null;
                 return false;
             }
-            String = stringIterator.Current;
+            //string = (String)stringIterator.next();
+            //if (!stringIterator.hasNext()) stringIterator = null;
             return true;
         }
 
@@ -129,9 +129,8 @@ namespace ICU4N.Text
          *
          * @return true if there was another element in the set and this
          * object contains the element.
-         * @stable ICU 2.0
          */
-        public virtual bool NextRange()
+        public bool NextRange()
         {
             if (nextElement <= endElement)
             {
@@ -140,9 +139,12 @@ namespace ICU4N.Text
                 nextElement = endElement + 1;
                 return true;
             }
-            if (range < endRange)
+            while (range < endRange)
             {
-                LoadRange(++range);
+                if (LoadRange(++range) == null)
+                {
+                    continue;
+                }
                 CodepointEnd = endElement;
                 Codepoint = nextElement;
                 nextElement = endElement + 1;
@@ -151,17 +153,17 @@ namespace ICU4N.Text
 
             // stringIterator == null iff there are no string elements remaining
 
-            if (stringIterator == null)
-            {
-                return false;
-            }
+            if (stringIterator == null) return false;
             Codepoint = IS_STRING; // signal that value is actually a string
-            if (!stringIterator.MoveNext())
+            if (stringIterator.MoveNext())
+                String = stringIterator.Current;
+            else
             {
                 stringIterator = null;
                 return false;
             }
-            String = stringIterator.Current;
+            //String = (String)stringIterator.next();
+            //if (!stringIterator.hasNext()) stringIterator = null;
             return true;
         }
 
@@ -169,48 +171,42 @@ namespace ICU4N.Text
          * Sets this iterator to visit the elements of the given set and
          * resets it to the start of that set.  The iterator is valid only
          * so long as <tt>set</tt> is valid.
-         * @param uset the set to iterate over.
-         * @stable ICU 2.0
+         * @param set the set to iterate over.
          */
-        public virtual void Reset(UnicodeSet uset)
+        public void Reset(UnicodeMap<T> set)
         {
-            set = uset;
+            this.map = set;
             Reset();
         }
 
         /**
          * Resets this iterator to the start of the set.
-         * @stable ICU 2.0
+         * @return 
          */
-        public virtual void Reset()
+        public UnicodeMapIterator<T> Reset()
         {
-            endRange = set.GetRangeCount() - 1;
-            range = 0;
-            endElement = -1;
+            endRange = map.RangeCount - 1;
+            // both next*() methods will test: if (nextElement <= endElement)
+            // we set them to fail this test, which will cause them to load the first range
             nextElement = 0;
-            if (endRange >= 0)
-            {
-                LoadRange(range);
-            }
+            endElement = -1;
+            range = -1;
+
             stringIterator = null;
-            if (set.Strings != null)
+            ICollection<String> strings = map.GetNonRangeStrings();
+            if (strings != null)
             {
-                stringIterator = set.Strings.GetEnumerator();
-                // ICU4N: We can't peek whether there is another element
-                // so we can safely skip that step. It is repeated anyway
-                // in Next() and NextRange().
-                //if (!stringIterator.MoveNext())
-                //{
-                //    stringIterator = null;
-                //}
+                stringIterator = strings.GetEnumerator();
+                //if (!stringIterator.hasNext()) stringIterator = null;
             }
+            Value = null;
+            return this;
         }
 
         /**
          * Gets the current string from the iterator. Only use after calling next(), not nextRange().
-         * @stable ICU 4.0
          */
-        public virtual string GetString() // ICU4N TODO: String vs GetString() - confusing
+        public string GetString()
         {
             if (Codepoint != IS_STRING)
             {
@@ -221,47 +217,23 @@ namespace ICU4N.Text
 
         // ======================= PRIVATES ===========================
 
-        private UnicodeSet set;
+        private UnicodeMap<T> map;
         private int endRange = 0;
         private int range = 0;
-
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        [Obsolete("This API is ICU internal only.")]
-        public virtual UnicodeSet Set
-        {
-            get { return set; }
-        }
-
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        [Obsolete("This API is ICU internal only.")]
-        protected int endElement; // ICU4N specific - made internal because of comment
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        [Obsolete("This API is ICU internal only.")]
-        internal int nextElement; // ICU4N specific - made internal because of comment
         private IEnumerator<string> stringIterator = null;
+        protected int endElement;
+        protected int nextElement;
 
-        /**
+        /*
          * Invariant: stringIterator is null when there are no (more) strings remaining
          */
 
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        [Obsolete("This API is ICU internal only.")]
-        protected virtual void LoadRange(int aRange) // ICU4N specific - made internal because of comment
+        protected T LoadRange(int range)
         {
-            nextElement = set.GetRangeStart(aRange);
-            endElement = set.GetRangeEnd(aRange);
+            nextElement = map.GetRangeStart(range);
+            endElement = map.GetRangeEnd(range);
+            Value = map.GetRangeValue(range);
+            return Value;
         }
     }
 }

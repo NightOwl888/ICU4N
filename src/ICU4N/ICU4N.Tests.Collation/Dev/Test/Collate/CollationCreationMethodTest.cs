@@ -22,7 +22,7 @@ namespace ICU4N.Dev.Test.Collate
             //pulled from the locale collation file)
             //and then do crazy monkey testing on it to make sure they are the same.
             int x, y, z;
-            Random r = createRandom();
+            Random r = CreateRandom();
             String randString1;
             CollationKey key1;
             CollationKey key2;

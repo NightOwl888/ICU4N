@@ -265,9 +265,8 @@ namespace ICU4N.Text
         public virtual int Replace(IReplaceable text,
                            int start,
                            int limit,
-                           out int[] cursor)
+                           int[] cursor)
         {
-            cursor = null;
             int outLen = 0;
 
             // Copy segment with out-of-band data

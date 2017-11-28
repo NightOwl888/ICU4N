@@ -367,7 +367,7 @@ namespace ICU4N.Dev.Test.Lang
                     //c = UTF16.CharAt(s, offset);
                     //dig = UCharacter.Digit(c, (bitsPerDigit == 3) ? 8 : 16);
                     c = s[offset];
-                    dig = Character.Digit((char)c, (bitsPerDigit == 3) ? 8 : 16);
+                    dig = ICU4N.Support.Text.Character.Digit((char)c, (bitsPerDigit == 3) ? 8 : 16);
                     if (dig < 0)
                     {
                         break;
@@ -1841,8 +1841,8 @@ namespace ICU4N.Dev.Test.Lang
             {
                 foreach (String curr in target)
                 {
-                    int lastCount = Character.CodePointCount(last, 0, last.Length);
-                    int currCount = Character.CodePointCount(curr, 0, curr.Length);
+                    int lastCount = ICU4N.Support.Text.Character.CodePointCount(last, 0, last.Length);
+                    int currCount = ICU4N.Support.Text.Character.CodePointCount(curr, 0, curr.Length);
                     int comparison;
                     if (lastCount == 1)
                     {
@@ -2208,9 +2208,9 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 AbstractTestLog.Logln("TokenSymbolTable: parse \"" + text + "\" from " +
                 start + " to " + i +
-                " => \"" + text.Substring(start, i - start) + "\"");
+                " => \"" + text.Substring(start, i - start) + "\""); // ICU4N: Corrected 2nd parameter
                 pos.Index = (i);
-                return text.Substring(start, i - start);
+                return text.Substring(start, i - start); // ICU4N: Corrected 2nd parameter
             }
         }
 

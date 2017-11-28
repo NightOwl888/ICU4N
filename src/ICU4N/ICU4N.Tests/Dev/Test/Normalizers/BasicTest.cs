@@ -1859,7 +1859,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             /* random checks of long strings */
             //srand((unsigned)time( NULL ));
-            Random rand = createRandom(); // use test framework's random
+            Random rand = CreateRandom(); // use test framework's random
 
             for (count = 0; count < 50; count++)
             {

@@ -1146,7 +1146,7 @@ namespace ICU4N.Text
 
                 string pattern = bundle.GetString(RB_DISPLAY_NAME_PATTERN);
 
-                return (stv[2].Length > 0) ? string.Format(pattern, args) + '/' + stv[2] : string.Format(pattern, args);
+                return (stv[2].Length > 0) ? string.Format(CultureInfo.InvariantCulture, pattern, args) + '/' + stv[2] : string.Format(CultureInfo.InvariantCulture, pattern, args);
             }
             catch (MissingManifestResourceException e2) { }
 
@@ -1877,7 +1877,8 @@ namespace ICU4N.Text
              * The extra blank field on "alias" lines is to make the array square.
              */
             UResourceBundle bundle, transIDs, colBund;
-            bundle = UResourceBundle.GetBundleInstance(ICUData.ICU_TRANSLIT_BASE_NAME, ROOT);
+            // ICU4N specific - we must pass this assembly so the resources are loaded from here
+            bundle = UResourceBundle.GetBundleInstance(ICUData.ICU_TRANSLIT_BASE_NAME, ROOT, ICU_DATA_CLASS_LOADER);
             transIDs = bundle.Get(RB_RULE_BASED_IDS);
 
             int row, maxRows;

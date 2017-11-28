@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Collections;
+﻿using ICU4N.Support;
+using ICU4N.Support.Collections;
 using System.Collections.Generic;
 
 namespace ICU4N.Dev.Test.Normalizers
@@ -35,29 +36,5 @@ namespace ICU4N.Dev.Test.Normalizers
 
         private int defaultValue;
         private IDictionary<Integer, Integer> table = new Dictionary<Integer, Integer>();
-    }
-
-    internal class Integer
-    {
-        public Integer(int value)
-        {
-            this.Value = value;
-        }
-
-        public int Value { get; set; }
-
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is Integer)
-            {
-                return Value.Equals(((Integer)obj).Value);
-            }
-            return Value.Equals(obj);
-        }
     }
 }

@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <RootNamespace>ICU4N</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Dev\Test\Util\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ICU4N.LanguageData\ICU4N.LanguageData.csproj" />
+    <ProjectReference Include="..\ICU4N.TestFramework\ICU4N.TestFramework.csproj" />
+    <ProjectReference Include="..\ICU4N.Transliterator\ICU4N.Transliterator.csproj" />
+    <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.3.0" />
+    <PackageReference Include="NUnit" Version="3.8.1" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
+  </ItemGroup>
+
+</Project>

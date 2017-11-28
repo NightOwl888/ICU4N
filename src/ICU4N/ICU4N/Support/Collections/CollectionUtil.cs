@@ -254,6 +254,7 @@ namespace ICU4N.Support.Collections
         /// </summary>
         public static string ToString<T>(ICollection<T> collection)
         {
+            if (collection == null) return "null";
             if (collection.Count == 0)
             {
                 return "[]";
@@ -298,6 +299,7 @@ namespace ICU4N.Support.Collections
         /// </summary>
         public static string ToString<TKey, TValue>(IDictionary<TKey, TValue> dictionary)
         {
+            if (dictionary == null) return "null";
             if (dictionary.Count == 0)
             {
                 return "{}";
@@ -347,6 +349,7 @@ namespace ICU4N.Support.Collections
         /// </summary>
         public static string ToString(object obj)
         {
+            if (obj == null) return "null";
             Type t = obj.GetType();
             if (t.GetTypeInfo().IsGenericType
                 && (t.ImplementsGenericInterface(typeof(ICollection<>)))

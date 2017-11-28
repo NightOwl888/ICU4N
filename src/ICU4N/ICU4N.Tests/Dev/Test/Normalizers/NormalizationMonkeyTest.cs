@@ -88,7 +88,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             if (random == null)
             {
-                random = createRandom(); // use test framework's random seed
+                random = CreateRandom(); // use test framework's random seed
             }
             String source = "";
             int i = 0;
