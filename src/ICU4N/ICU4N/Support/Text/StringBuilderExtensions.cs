@@ -482,6 +482,10 @@ namespace ICU4N.Support.Text
         /// <exception cref="ArgumentNullException">if <paramref name="str"/> is <c>null</c>.</exception>
         public static StringBuilder Replace(this StringBuilder text, int start, int end, string str)
         {
+            if (str == null)
+            {
+                throw new ArgumentNullException(nameof(str));
+            }
             if (start >= 0)
             {
                 if (end > text.Length)
@@ -492,53 +496,25 @@ namespace ICU4N.Support.Text
                 {
                     int stringLength = str.Length;
                     int diff = end - start - stringLength;
-                    char[] value = new char[text.Length + str.Length];
-                    text.CopyTo(0, value, 0, text.Length);
                     if (diff > 0)
                     { // replacing with fewer characters
-                        //if (!shared)
-                        //{
-                            // index == count case is no-op
-                            System.Array.Copy(value, end, value, start
-                                    + stringLength, text.Length - end);
-                        //}
-                        //else
-                        //{
-                        //    char[] newData = new char[value.length];
-                        //    System.arraycopy(value, 0, newData, 0, start);
-                        //    // index == count case is no-op
-                        //    System.arraycopy(value, end, newData, start
-                        //            + stringLength, count - end);
-                        //    value = newData;
-                        //    shared = false;
-                        //}
+                        text.Remove(start, diff);
                     }
-                    //else if (diff < 0)
-                    //{
-                    //    // replacing with more characters...need some room
-                    //    text.Move(-diff, end);
-                    //}
-                    //else if (shared)
-                    //{
-                    //    value = value.clone();
-                    //    shared = false;
-                    //}
-                    //str.GetChars(0, stringLength, value, start);
-                    str.CopyTo(0, value, start, stringLength);
-                    text.Length -= diff;
-                    // copy the chars based on the new length
-                    for (int i = 0; i < text.Length; i++)
+                    else if (diff < 0)
                     {
-                        text[i] = value[i];
+                        // replacing with more characters...need some room
+                        text.Insert(start, new char[-diff]);
+                    }
+                    // copy the chars based on the new length
+                    for (int i = 0; i < stringLength; i++)
+                    {
+                        text[i + start] = str[i];
                     }
                     return text;
                 }
                 if (start == end)
                 {
-                    if (str == null)
-                    {
-                        throw new ArgumentNullException(nameof(str));
-                    }
+                    
                     text.Insert(start, str);
                     return text;
                 }
