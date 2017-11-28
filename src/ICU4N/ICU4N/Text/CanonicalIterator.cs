@@ -117,11 +117,11 @@ namespace ICU4N.Text
                 cp = source.CodePointAt(i);
                 if (nfcImpl.IsCanonSegmentStarter(cp))
                 {
-                    segmentList.Add(source.Substring(start, i - start)); // add up to i
+                    segmentList.Add(source.Substring(start, i - start)); // add up to i // ICU4N: Corrected 2nd substring parameter
                     start = i;
                 }
             }
-            segmentList.Add(source.Substring(start, i - start)); // add last one
+            segmentList.Add(source.Substring(start, i - start)); // add last one // ICU4N: Corrected 2nd substring parameter
 
             // allocate the arrays, and find the strings that are CE to each segment
             pieces = new String[segmentList.Count][];
@@ -175,8 +175,8 @@ namespace ICU4N.Text
 
                 // see what the permutations of the characters before and after this one are
                 subpermute.Clear();
-                Permute(source.Substring(0, i - 0)
-                    + source.Substring(i + UTF16.GetCharCount(cp)), skipZeros, subpermute);
+                Permute(source.Substring(0, i - 0) // ICU4N: Checked 2nd parameter
+                    + source.Substring(i + UTF16.GetCharCount(cp)), skipZeros, subpermute); // ICU4N: Substring only has 1 parameter
 
                 // prefix this character to all of them
                 string chStr = UTF16.ValueOf(source, i);
@@ -313,7 +313,7 @@ namespace ICU4N.Text
                     }
 
                     // there were some matches, so add all the possibilities to the set.
-                    string prefix = segment.Substring(0, i - 0);
+                    string prefix = segment.Substring(0, i - 0); // ICU4N: Checked 2nd parameter
                     prefix += UTF16.ValueOf(cp2);
                     foreach (string item in remainder)
                     {

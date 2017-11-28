@@ -374,7 +374,7 @@ namespace ICU4N.Impl
                     length = fullLength & 0xf;
                     if (length != 0)
                     {
-                        set.Add(exceptions.Substring(excOffset, length)); // excOffset + length - excOffset == length
+                        set.Add(exceptions.Substring(excOffset, length)); // ICU4N: excOffset + length - excOffset == length
                         excOffset += length;
                     }
 

@@ -72,7 +72,7 @@ namespace ICU4N.Impl
                         // We failed to find continuation. Add what we have and restart
                         adder.Add(start, end == null ? null
                             : !shorterPairs ? end
-                                : end.Substring(prefixLen, end.Length - prefixLen));
+                                : end.Substring(prefixLen, end.Length - prefixLen)); // ICU4N: Corrected 2nd parameter
                     }
                     // new possible range
                     start = s;
@@ -82,7 +82,7 @@ namespace ICU4N.Impl
                 }
                 adder.Add(start, end == null ? null
                     : !shorterPairs ? end
-                        : end.Substring(prefixLen, end.Length - prefixLen));
+                        : end.Substring(prefixLen, end.Length - prefixLen)); // ICU4N: Corrected 2nd parameter
             }
             else
             {

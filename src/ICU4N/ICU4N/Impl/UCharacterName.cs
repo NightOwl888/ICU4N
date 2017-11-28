@@ -773,7 +773,7 @@ namespace ICU4N.Impl
             {
                 int prefixlen = m_prefix_.Length;
                 if (name.Length < prefixlen ||
-                    !m_prefix_.Equals(name.Substring(0, prefixlen - 0)))
+                    !m_prefix_.Equals(name.Substring(0, prefixlen - 0))) // ICU4N: Checked 2nd parameter
                 {
                     return -1;
                 }
@@ -1448,7 +1448,7 @@ namespace ICU4N.Impl
                             try
                             {
                                 result = System.Convert.ToInt32(
-                                            name.Substring(startIndex, endIndex - startIndex),
+                                            name.Substring(startIndex, endIndex - startIndex), // ICU4N: Corrected 2nd parameter
                                             16);
                             }
                             catch (FormatException e)
@@ -1457,7 +1457,7 @@ namespace ICU4N.Impl
                             }
                             // Now validate the category name. We could use a
                             // binary search, or a trie, if we really wanted to.
-                            string type = name.Substring(1, (startIndex - 1) - 1);
+                            string type = name.Substring(1, (startIndex - 1) - 1); // ICU4N: Corrected 2nd parameter
                             int length = TYPE_NAMES_.Length;
                             for (int i = 0; i < length; ++i)
                             {

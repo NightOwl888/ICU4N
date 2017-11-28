@@ -3510,14 +3510,14 @@ namespace ICU4N.Text
             if (equals >= 0 && equals < close && !isName)
             {
                 // Equals seen; parse medium/long pattern
-                propName = pattern.Substring(pos, equals - pos);
-                valueName = pattern.Substring(equals + 1, close - (equals + 1));
+                propName = pattern.Substring(pos, equals - pos); // ICU4N: Corrected 2nd parameter
+                valueName = pattern.Substring(equals + 1, close - (equals + 1)); // ICU4N: Corrected 2nd parameter
             }
 
             else
             {
                 // Handle case where no '=' is seen, and \N{}
-                propName = pattern.Substring(pos, close - pos);
+                propName = pattern.Substring(pos, close - pos); // ICU4N: Corrected 2nd parameter
                 valueName = "";
 
                 // Handle \N{name}
@@ -3567,7 +3567,7 @@ namespace ICU4N.Text
                 SyntaxError(chars, "Invalid property pattern");
             }
             chars.Jumpahead(pos.Index);
-            Append(rebuiltPat, patStr.Substring(0, pos.Index - 0));
+            Append(rebuiltPat, patStr.Substring(0, pos.Index - 0)); // ICU4N: Checked 2nd substring parameter
         }
 
         //----------------------------------------------------------------

@@ -186,7 +186,7 @@ namespace ICU4N.Impl
                 result = null;  // no name (Property[Value]Aliases.txt has "n/a")
                 return true;
             }
-            result = nameGroups.Substring(nameStart, nameGroupsIndex - nameStart);
+            result = nameGroups.Substring(nameStart, nameGroupsIndex - nameStart); // ICU4N: Corrected 2nd parameter
             return true;
         }
 

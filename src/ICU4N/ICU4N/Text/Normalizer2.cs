@@ -234,7 +234,7 @@ namespace ICU4N.Text
                 return src;
             }
             StringBuilder sb = new StringBuilder(src.Length).Append(src, 0, spanLength - 0); // ICU4N: Checked 3rd parameter math
-            return NormalizeSecondAndAppend(sb, src.Substring(spanLength, src.Length - spanLength)).ToString();
+            return NormalizeSecondAndAppend(sb, src.Substring(spanLength, src.Length - spanLength)).ToString(); // ICU4N: Corrected 2nd substring parameter
         }
 
         /// <summary>

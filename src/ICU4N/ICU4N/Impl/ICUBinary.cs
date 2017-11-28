@@ -300,7 +300,7 @@ namespace ICU4N.Impl
                         itemPath.IndexOf('/', folder.Length + 1) < 0)
                 {
                     names.Add(itemPath.Substring(folder.Length + 1,
-                            (itemPath.Length - suffix.Length) - (folder.Length + 1)));
+                            (itemPath.Length - suffix.Length) - (folder.Length + 1))); // ICU4N: Corrected 2nd parameter
                 }
             }
         }
@@ -365,10 +365,10 @@ namespace ICU4N.Impl
                 {
                     pathLimit = dataPath.Length;
                 }
-                string path = dataPath.Substring(pathStart, pathLimit - pathStart).Trim();
+                string path = dataPath.Substring(pathStart, pathLimit - pathStart).Trim(); // ICU4N: Corrected 2nd parameter
                 if (path.EndsWith(Path.DirectorySeparatorChar.ToString(), StringComparison.Ordinal))
                 {
-                    path = path.Substring(0, (path.Length - 1) - 0);
+                    path = path.Substring(0, (path.Length - 1) - 0); // ICU4N: Checked 2nd parameter
                 }
                 if (path.Length != 0)
                 {

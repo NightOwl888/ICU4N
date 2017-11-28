@@ -688,7 +688,7 @@ namespace ICU4N.Impl
             {
                 if (s.EndsWith(".res", StringComparison.Ordinal))
                 {
-                    string locstr = s.Substring(0, s.Length - 4);
+                    string locstr = s.Substring(0, s.Length - 4); // ICU4N: Checked 2nd parameter
                     names.Add(locstr);
                 }
             }
@@ -1786,7 +1786,7 @@ namespace ICU4N.Impl
                     int idx = bundleName.IndexOf(HYPHEN);
                     if (idx > -1)
                     {
-                        bundleName = ICUData.ICU_BASE_NAME + RES_PATH_SEP_STR + bundleName.Substring(idx + 1, bundleName.Length - idx + 1); // ICU4N: Corrected 2nd parameter
+                        bundleName = ICUData.ICU_BASE_NAME + RES_PATH_SEP_STR + bundleName.Substring(idx + 1, bundleName.Length - (idx + 1)); // ICU4N: Corrected 2nd parameter
                         loaderToUse = ICU_DATA_CLASS_LOADER;
                     }
                 }

@@ -6,7 +6,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
+using Character = ICU4N.Support.Text.Character;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Rbbi
@@ -56,7 +56,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         Errln("next() failed to move forward: next() on position "
                                         + lastP + " yielded " + p);
 
-                    result.Add(text.Substring(lastP, p - lastP));
+                    result.Add(text.Substring(lastP, p - lastP)); // ICU4N: Corrected 2nd substring parameter
                 }
                 else
                 {
@@ -86,7 +86,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         Errln("previous() failed to move backward: previous() on position "
                                         + lastP + " yielded " + p);
 
-                    result.Insert(0, text.Substring(p, lastP - p));
+                    result.Insert(0, text.Substring(p, lastP - p)); // ICU4N: Corrected 2nd substring parameter
                 }
                 else
                 {
@@ -291,7 +291,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 {
                     @out.Append("\\u");
                     temp = (c).ToHexString();
-                    @out.Append(zeros.Substring(0, (4 - temp.Length) - 0));
+                    @out.Append(zeros.Substring(0, (4 - temp.Length) - 0)); // ICU4N: Checked 2nd substring parameter
                     @out.Append(temp);
                 }
             }

@@ -75,7 +75,7 @@ namespace ICU4N.Impl.Locale
             {
                 return s;
             }
-            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0));
+            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0)); // ICU4N: Checked 2nd parameter
             for (; idx < s.Length; idx++)
             {
                 buf.Append(ToLower(s[idx]));
@@ -98,7 +98,7 @@ namespace ICU4N.Impl.Locale
             {
                 return s;
             }
-            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0));
+            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0)); // ICU4N: Checked 2nd parameter
             for (; idx < s.Length; idx++)
             {
                 buf.Append(ToUpper(s[idx]));
@@ -128,7 +128,7 @@ namespace ICU4N.Impl.Locale
             {
                 return s;
             }
-            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0));
+            StringBuilder buf = new StringBuilder(s.Substring(0, idx - 0)); // ICU4N: Checked 2nd parameter
             if (idx == 0)
             {
                 buf.Append(ToUpper(s[idx]));

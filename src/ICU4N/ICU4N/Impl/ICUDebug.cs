@@ -110,7 +110,7 @@ namespace ICU4N.Impl
                     {
                         index += 1;
                         int limit = parameters.IndexOf(",", index);
-                        result = parameters.Substring(index, limit == -1 ? parameters.Length : limit);
+                        result = parameters.Substring(index, (limit == -1 ? parameters.Length : limit) - index); // ICU4N: Corrected 2nd parameter
                     }
                     else
                     {

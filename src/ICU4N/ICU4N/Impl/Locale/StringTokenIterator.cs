@@ -53,7 +53,7 @@ namespace ICU4N.Impl.Locale
             {
                 _start = _end + 1;
                 _end = NextDelimiter(_start);
-                _token = _text.Substring(_start, _end - _start);
+                _token = _text.Substring(_start, _end - _start); // ICU4N: Corrected 2nd parameter
             }
             else
             {
@@ -77,7 +77,7 @@ namespace ICU4N.Impl.Locale
             }
             _start = offset;
             _end = NextDelimiter(_start);
-            _token = _text.Substring(_start, _end - _start);
+            _token = _text.Substring(_start, _end - _start); // ICU4N: Corrected 2nd parameter
             _done = false;
             return this;
         }

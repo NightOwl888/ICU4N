@@ -522,7 +522,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 // Our field is from pos..delim-1.
                 buf.Length = (0);
 
-                String toHex = s.Substring(pos, delim - pos);
+                String toHex = s.Substring(pos, delim - pos); // ICU4N: Corrected 2nd parameter
                 pos = delim;
                 int index = 0;
                 int len = toHex.Length;
@@ -537,12 +537,12 @@ namespace ICU4N.Dev.Test.Normalizers
                         int spacePos = toHex.IndexOf(' ', index);
                         if (spacePos == -1)
                         {
-                            appendInt(buf, toHex.Substring(index, len - index), s);
+                            appendInt(buf, toHex.Substring(index, len - index), s); // ICU4N: Corrected 2nd substring parameter
                             spacePos = len;
                         }
                         else
                         {
-                            appendInt(buf, toHex.Substring(index, spacePos - index), s);
+                            appendInt(buf, toHex.Substring(index, spacePos - index), s); // ICU4N: Corrected 2nd substring parameter
                         }
                         index = spacePos + 1;
                     }

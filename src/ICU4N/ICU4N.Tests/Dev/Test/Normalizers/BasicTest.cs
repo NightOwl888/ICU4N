@@ -1445,7 +1445,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 if (c1 != c2)
                 {
                     // copy the moves until the current (m) move, and terminate
-                    string history = moves.Substring(0, movesIndex);
+                    string history = moves.Substring(0, movesIndex); // ICU4N: Checked 2nd parameter
                     Errln("error: mismatch in Normalizer iteration at " + history + ": "
                           + "got c1= " + Hex(c1) + " != expected c2= " + Hex(c2));
                     break;
@@ -1455,7 +1455,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 if (iter.Index != expectIndex[iter32.Index])
                 {
                     // copy the moves until the current (m) move, and terminate
-                    string history = moves.Substring(0, movesIndex);
+                    string history = moves.Substring(0, movesIndex); // ICU4N: Checked 2nd parameter
                     Errln("error: index mismatch in Normalizer iteration at "
                           + history + " : " + "Normalizer index " + iter.Index
                           + " expected " + expectIndex[iter32.Index]);
@@ -1539,7 +1539,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 if (c1 != c2)
                 {
                     // copy the moves until the current (m) move, and terminate
-                    string history = moves.Substring(0, movesIndex);
+                    string history = moves.Substring(0, movesIndex); // ICU4N: Checked 2nd parameter
                     Errln("error: mismatch in Normalizer iteration at " + history + ": "
                           + "got c1= " + Hex(c1) + " != expected c2= " + Hex(c2));
                     break;
@@ -1549,7 +1549,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 if (iter.Index != expectIndex[iter32.Index])
                 {
                     // copy the moves until the current (m) move, and terminate
-                    string history = moves.Substring(0, movesIndex);
+                    string history = moves.Substring(0, movesIndex); // ICU4N: Checked 2nd parameter
                     Errln("error: index mismatch in Normalizer iteration at "
                           + history + " : " + "Normalizer index " + iter.Index
                           + " expected " + expectIndex[iter32.Index]);

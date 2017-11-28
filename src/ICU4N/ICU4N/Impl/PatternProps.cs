@@ -134,7 +134,7 @@
                     --limit;
                 }
             }
-            return s.Substring(start, limit - start);
+            return s.Substring(start, limit - start); // ICU4N: Corrected 2nd parameter
         }
 
 

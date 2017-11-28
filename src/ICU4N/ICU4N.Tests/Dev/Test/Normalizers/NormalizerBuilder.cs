@@ -104,11 +104,11 @@ namespace ICU4N.Dev.Test.Normalizers
                 String line = @in.ReadLine();
                 if (line == null) break;
                 int comment = line.IndexOf('#');                    // strip comments
-                if (comment != -1) line = line.Substring(0, comment - 0);
+                if (comment != -1) line = line.Substring(0, comment - 0); // ICU4N: Checked 2nd parameter
                 if (line.Length == 0) continue;                   // ignore blanks
                 if (line.IndexOf(' ') != -1)
                 {
-                    line = line.Substring(0, line.IndexOf(' ') - 0);
+                    line = line.Substring(0, line.IndexOf(' ') - 0); // ICU4N: Checked 2nd substring parameter
                 }
                 // store -1 in the excluded table for each character hit
 
@@ -151,7 +151,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 String line = @in.ReadLine();
                 if (line == null) break;
                 int comment = line.IndexOf('#');                    // strip comments
-                if (comment != -1) line = line.Substring(0, comment - 0);
+                if (comment != -1) line = line.Substring(0, comment - 0); // ICU4N: Checked 2nd substring parameter
                 if (line.Length == 0) continue;
                 if (DEBUG)
                 {
@@ -164,7 +164,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 int start = 0;
                 int end = line.IndexOf(';'); // code
-                value = int.Parse(line.Substring(start, end - start), NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                value = int.Parse(line.Substring(start, end - start), NumberStyles.HexNumber, CultureInfo.InvariantCulture); // ICU4N: Corrected 2nd substring parameter
                 if (true && value == '\u00c0')
                 {
                     //Console.Out.WriteLine("debug: " + line);
@@ -176,7 +176,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 // check consistency: canonical classes must be from 0 to 255
 
-                int cc = int.Parse(line.Substring(start, end - start), CultureInfo.InvariantCulture);
+                int cc = int.Parse(line.Substring(start, end - start), CultureInfo.InvariantCulture); // ICU4N: Corrected 2nd substring parameter
                 if (cc != (cc & 0xFF)) Console.Error.WriteLine("Bad canonical class at: " + line);
                 canonicalClass.Put(value, cc);
                 end = line.IndexOf(';', start = end + 1); // BIDI
@@ -188,7 +188,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 if (start != end)
                 {
-                    String segment = line.Substring(start, end - start);
+                    String segment = line.Substring(start, end - start); // ICU4N: Corrected 2nd parameter
                     bool compat = segment[0] == '<';
                     if (compat) isCompatibility.Set(value);
                     String decomp = fromHex(segment);
@@ -515,7 +515,7 @@ namespace ICU4N.Dev.Test.Normalizers
                             {
                                 end = source.Length;
                             }
-                            value = int.Parse(source.Substring(i, end - i), NumberStyles.HexNumber);
+                            value = int.Parse(source.Substring(i, end - i), NumberStyles.HexNumber, CultureInfo.InvariantCulture); // ICU4N: Corrected 2nd substring parameter
                             UTF16Util.AppendCodePoint(result, value);
                         }
                         catch (Exception e)
@@ -548,7 +548,7 @@ namespace ICU4N.Dev.Test.Normalizers
         static public String hex(int i)
         {
             String result = Convert.ToString(i & 0xFFFFFFFFL, 16).ToUpperInvariant(); // ICU4N TODO: Check this conversion (16)
-            return "00000000".Substring(result.Length, 8 - result.Length) + result;
+            return "00000000".Substring(result.Length, 8 - result.Length) + result; // ICU4N: Corrected 2nd parameter
         }
 
         /**
@@ -557,7 +557,7 @@ namespace ICU4N.Dev.Test.Normalizers
         static public String hex(char i)
         {
             String result = Convert.ToString(i, 16).ToUpperInvariant(); // ICU4N TODO: Check this conversion (16)
-            return "0000".Substring(result.Length, 4 - result.Length) + result;
+            return "0000".Substring(result.Length, 4 - result.Length) + result; // ICU4N: Corrected 2nd parameter
         }
 
         /**

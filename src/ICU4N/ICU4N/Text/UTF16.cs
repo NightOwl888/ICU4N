@@ -524,11 +524,11 @@ namespace ICU4N.Text
             switch (Bounds(source, offset16))
             {
                 case LEAD_SURROGATE_BOUNDARY:
-                    return source.Substring(offset16, 2); // offset16 + 2 - offset16 = 2
+                    return source.Substring(offset16, 2); // ICU4N: offset16 + 2 - offset16 = 2
                 case TRAIL_SURROGATE_BOUNDARY:
-                    return source.Substring(offset16 - 1, 2); // (offset16 + 1) - (offset16 - 1) = 2
+                    return source.Substring(offset16 - 1, 2); // ICU4N: (offset16 + 1) - (offset16 - 1) = 2
                 default:
-                    return source.Substring(offset16, 1); // offset16 + 1 - offset16 = 1
+                    return source.Substring(offset16, 1); // ICU4N: offset16 + 1 - offset16 = 1
             }
         }
 

@@ -831,7 +831,7 @@ namespace ICU4N.Impl
             // c decomposes, get everything from the variable-length extra data
             int mapping = norm16 >> OFFSET_SHIFT;
             int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
-            return extraData.Substring(mapping, length); // mapping + length - mapping == length
+            return extraData.Substring(mapping, length); // ICU4N: (mapping + length) - mapping == length
         }
 
         /**
@@ -870,7 +870,7 @@ namespace ICU4N.Impl
                 char rm0 = extraData[rawMapping];
                 if (rm0 <= MAPPING_LENGTH_MASK)
                 {
-                    return extraData.Substring(rawMapping - rm0, rm0); // rawMapping - rm0 - rawMapping == rm0
+                    return extraData.Substring(rawMapping - rm0, rm0); // ICU4N: (rawMapping - rm0) - rawMapping == rm0
                 }
                 else
                 {
@@ -883,7 +883,7 @@ namespace ICU4N.Impl
             else
             {
                 mapping += 1;  // skip over the firstUnit
-                return extraData.Substring(mapping, mLength); // mapping + mLength - mapping == mLength
+                return extraData.Substring(mapping, mLength); // ICU4N: (mapping + mLength) - mapping == mLength
             }
         }
 

@@ -657,7 +657,7 @@ namespace ICU4N.Impl.Locale
             }
 
             Debug.Assert(prefixStart == 0 || prefixStart > 1);
-            return (prefixStart == 0) ? null : privuseVal.Substring(0, prefixStart - 1);
+            return (prefixStart == 0) ? null : privuseVal.Substring(0, prefixStart - 1); // ICU4N: Checked 2nd parameter
         }
 
         /*
@@ -726,7 +726,7 @@ namespace ICU4N.Impl.Locale
                     {
                         // next keyword - emit previous one
                         Debug.Assert(typeStart == -1 || typeEnd != -1);
-                        type = (typeStart == -1) ? "" : subtags.Substring(typeStart, typeEnd - typeStart);
+                        type = (typeStart == -1) ? "" : subtags.Substring(typeStart, typeEnd - typeStart); // ICU4N: Corrected 2nd parameter
                         if (_ukeywords == null)
                         {
                             _ukeywords = new Dictionary<CaseInsensitiveString, String>(4);
@@ -765,7 +765,7 @@ namespace ICU4N.Impl.Locale
                     {
                         // last keyword
                         Debug.Assert(typeStart == -1 || typeEnd != -1);
-                        type = (typeStart == -1) ? "" : subtags.Substring(typeStart, typeEnd - typeStart);
+                        type = (typeStart == -1) ? "" : subtags.Substring(typeStart, typeEnd - typeStart); // ICU4N: Corrected 2nd parameter
                         if (_ukeywords == null)
                         {
                             _ukeywords = new Dictionary<CaseInsensitiveString, String>(4);

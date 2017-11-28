@@ -997,7 +997,7 @@ namespace ICU4N.Util
                 string regionUpper = AsciiUtil.ToUpperString(region);
                 if (regionUpper.EndsWith("ZZZZ", StringComparison.Ordinal))
                 {
-                    return regionUpper.Substring(0, 2 - 0);
+                    return regionUpper.Substring(0, 2 - 0); // ICU4N: Checked 2nd parameter
                 }
             }
             region = locale.GetCountry();
@@ -1082,7 +1082,7 @@ namespace ICU4N.Util
                     last--;
                 }
             }
-            return fallback.Substring(0, last - 0) + fallback.Substring(extStart);
+            return fallback.Substring(0, last - 0) + fallback.Substring(extStart); // ICU4N: Checked 2nd parameter
         }
 
         /**
@@ -1278,10 +1278,10 @@ namespace ICU4N.Util
                 {
                     foundVariant = true;
 
-                    baseName = baseName.Substring(0, idx - 0);
+                    baseName = baseName.Substring(0, idx - 0); // ICU4N: Checked 2nd parameter
                     if (baseName.EndsWith("_", StringComparison.Ordinal))
                     {
-                        baseName = baseName.Substring(0, (--idx - 0));
+                        baseName = baseName.Substring(0, (--idx - 0)); // ICU4N: Checked 2nd parameter
                     }
                     parser.SetBaseName(baseName);
                     parser.DefaultKeywordValue(vals[1], vals[2]);
@@ -4551,7 +4551,7 @@ namespace ICU4N.Util
                     // ICU4N TODO: Need to convert calendar, currency, number, and collation options by
                     // creating a custom CultureInfo subclass...where possible
 
-                    name = name.Substring(0, optionsIndex);
+                    name = name.Substring(0, optionsIndex); // ICU4N: Checked 2nd parameter
                 }
 
                 return new CultureInfo(name);
