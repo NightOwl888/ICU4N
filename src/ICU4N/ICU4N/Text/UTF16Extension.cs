@@ -13,7 +13,7 @@ using System.Text;
 
 namespace ICU4N.Text
 {
-    public sealed partial class UTF16
+    public static partial class UTF16
     {
 
         /// <summary>

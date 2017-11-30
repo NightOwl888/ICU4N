@@ -44,6 +44,11 @@ namespace ICU4N.Support.Text
             return string.CompareOrdinal(str, value);
         }
 
+        public static int CompareToOrdinalIgnoreCase(this string str, string value)
+        {
+            return StringComparer.OrdinalIgnoreCase.Compare(str, value);
+        }
+
         public static int CodePointBefore(this string seq, int index)
         {
             return Character.CodePointBefore(seq, index);

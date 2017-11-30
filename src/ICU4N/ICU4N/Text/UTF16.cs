@@ -7,7 +7,7 @@ using System.Text;
 
 namespace ICU4N.Text
 {
-    public sealed partial class UTF16
+    public static partial class UTF16
     {
         // public variables ---------------------------------------------------
 
@@ -116,13 +116,14 @@ namespace ICU4N.Text
 
         // constructor --------------------------------------------------------
 
-        // /CLOVER:OFF
-        /**
-         * Prevent instance from being created.
-         */
-        private UTF16()
-        {
-        }
+            // ICU4N: Class made static
+        //// /CLOVER:OFF
+        ///**
+        // * Prevent instance from being created.
+        // */
+        //private UTF16()
+        //{
+        //}
 
         // /CLOVER:ON
         // public method ------------------------------------------------------
@@ -1471,29 +1472,26 @@ namespace ICU4N.Text
             return limit - count;
         }
 
-        /**
-         * Returns the index within the argument UTF16 format Unicode string of the first occurrence of
-         * the argument codepoint. I.e., the smallest index <code>i</code> such that
-         * <code>UTF16.charAt(source, i) ==
-         * char32</code> is true.
-         * <p>
-         * If no such character occurs in this string, then -1 is returned.
-         * </p>
-         * <p>
-         * Examples:<br>
-         * UTF16.indexOf("abc", 'a') returns 0<br>
-         * UTF16.indexOf("abc\ud800\udc00", 0x10000) returns 3<br>
-         * UTF16.indexOf("abc\ud800\udc00", 0xd800) returns -1<br>
-         * </p>
-         * Note this method is provided as support to jdk 1.3, which does not support supplementary
-         * characters to its fullest.
-         *
-         * @param source UTF16 format Unicode string that will be searched
-         * @param char32 Codepoint to search for
-         * @return the index of the first occurrence of the codepoint in the argument Unicode string, or
-         *         -1 if the codepoint does not occur.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the first occurrence of
+        /// the argument codepoint. I.e., the smallest index <c>i</c> such that
+        /// <c>UTF16.charAt(source, i) == char32</c> is true.
+        /// <para/>
+        /// If no such character occurs in this string, then -1 is returned.
+        /// </summary>
+        /// <remarks>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.IndexOf("abc", 'a') returns 0</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", 0x10000) returns 3</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", 0xd800) returns -1</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="char32">Codepoint to search for.</param>
+        /// <returns>The index of the first occurrence of the codepoint in the argument Unicode string, or
+        /// -1 if the codepoint does not occur.</returns>
+        /// <stable>ICU 2.6</stable>
         public static int IndexOf(string source, int char32)
         {
             if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
@@ -1527,44 +1525,71 @@ namespace ICU4N.Text
             }
             // supplementary
             string char32str = ToString(char32);
-            return source.IndexOf(char32str);
+            return source.IndexOf(char32str, StringComparison.Ordinal);
         }
 
-        /**
-         * Returns the index within the argument UTF16 format Unicode string of the first occurrence of
-         * the argument string str. This method is implemented based on codepoints, hence a "lead
-         * surrogate character + trail surrogate character" is treated as one entity.e Hence if the str
-         * starts with trail surrogate character at index 0, a source with a leading a surrogate
-         * character before str found at in source will not have a valid match. Vice versa for lead
-         * surrogates that ends str. See example below.
-         * <p>
-         * If no such string str occurs in this source, then -1 is returned.
-         * </p>
-         * <p>
-         * Examples:<br>
-         * UTF16.indexOf("abc", "ab") returns 0<br>
-         * UTF16.indexOf("abc\ud800\udc00", "\ud800\udc00") returns 3<br>
-         * UTF16.indexOf("abc\ud800\udc00", "\ud800") returns -1<br>
-         * </p>
-         * Note this method is provided as support to jdk 1.3, which does not support supplementary
-         * characters to its fullest.
-         *
-         * @param source UTF16 format Unicode string that will be searched
-         * @param str UTF16 format Unicode string to search for
-         * @return the index of the first occurrence of the codepoint in the argument Unicode string, or
-         *         -1 if the codepoint does not occur.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the first occurrence of
+        /// the argument string <paramref name="str"/>. This method is implemented based on codepoints, hence a "lead
+        /// surrogate character + trail surrogate character" is treated as one entity. Hence if the <paramref name="str"/>
+        /// starts with trail surrogate character at index 0, a source with a leading a surrogate
+        /// character before <paramref name="str"/> found at in source will not have a valid match. Vice versa for lead
+        /// surrogates that ends <paramref name="str"/>.
+        /// <para/>
+        /// If no such string <paramref name="str"/> occurs in this <paramref name="source"/>, then -1 is returned.
+        /// </summary>
+        /// <remarks>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.IndexOf("abc", "ab") returns 0</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800\udc00") returns 3</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800") returns -1</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="str">UTF16 format Unicode string to search for.</param>
+        /// <returns>the index of the first occurrence of the codepoint in the argument Unicode string, or
+        /// -1 if the codepoint does not occur.</returns>
+        /// <stable>ICU 2.6</stable>
         public static int IndexOf(string source, string str)
+        {
+            return IndexOf(source, str, StringComparison.CurrentCulture);
+        }
+
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the first occurrence of
+        /// the argument string <paramref name="str"/>. This method is implemented based on codepoints, hence a "lead
+        /// surrogate character + trail surrogate character" is treated as one entity. Hence if the <paramref name="str"/>
+        /// starts with trail surrogate character at index 0, a source with a leading a surrogate
+        /// character before <paramref name="str"/> found at in source will not have a valid match. Vice versa for lead
+        /// surrogates that ends <paramref name="str"/>.
+        /// <para/>
+        /// If no such string <paramref name="str"/> occurs in this <paramref name="source"/>, then -1 is returned.
+        /// </summary>
+        /// <remarks>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.IndexOf("abc", "ab") returns 0</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800\udc00") returns 3</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800") returns -1</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="str">UTF16 format Unicode string to search for.</param>
+        /// <returns>the index of the first occurrence of the codepoint in the argument Unicode string, or
+        /// -1 if the codepoint does not occur.</returns>
+        /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+        /// <stable>ICU4N 60.1</stable>
+        public static int IndexOf(string source, string str, StringComparison comparisonType)
         {
             int strLength = str.Length;
             // non-surrogate ends
             if (!IsTrailSurrogate(str[0]) && !IsLeadSurrogate(str[strLength - 1]))
             {
-                return source.IndexOf(str);
+                return source.IndexOf(str, comparisonType);
             }
 
-            int result = source.IndexOf(str);
+            int result = source.IndexOf(str, comparisonType);
             int resultEnd = result + strLength;
             if (result >= 0)
             {
@@ -1572,57 +1597,60 @@ namespace ICU4N.Text
                 if (IsLeadSurrogate(str[strLength - 1]) && (result < source.Length - 1)
                         && IsTrailSurrogate(source[resultEnd + 1]))
                 {
-                    return IndexOf(source, str, resultEnd + 1);
+                    return IndexOf(source, str, resultEnd + 1, comparisonType);
                 }
                 // check first character which is a trail surrogate
                 if (IsTrailSurrogate(str[0]) && result > 0
                         && IsLeadSurrogate(source[result - 1]))
                 {
-                    return IndexOf(source, str, resultEnd + 1);
+                    return IndexOf(source, str, resultEnd + 1, comparisonType);
                 }
             }
             return result;
         }
 
-        /**
-         * Returns the index within the argument UTF16 format Unicode string of the first occurrence of
-         * the argument codepoint. I.e., the smallest index i such that: <br>
-         * (UTF16.charAt(source, i) == char32 &amp;&amp; i &gt;= fromIndex) is true.
-         * <p>
-         * If no such character occurs in this string, then -1 is returned.
-         * </p>
-         * <p>
-         * Examples:<br>
-         * UTF16.indexOf("abc", 'a', 1) returns -1<br>
-         * UTF16.indexOf("abc\ud800\udc00", 0x10000, 1) returns 3<br>
-         * UTF16.indexOf("abc\ud800\udc00", 0xd800, 1) returns -1<br>
-         * </p>
-         * Note this method is provided as support to jdk 1.3, which does not support supplementary
-         * characters to its fullest.
-         *
-         * @param source UTF16 format Unicode string that will be searched
-         * @param char32 Codepoint to search for
-         * @param fromIndex The index to start the search from.
-         * @return the index of the first occurrence of the codepoint in the argument Unicode string at
-         *         or after fromIndex, or -1 if the codepoint does not occur.
-         * @stable ICU 2.6
-         */
-        public static int IndexOf(string source, int char32, int fromIndex)
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the first occurrence of
+        /// the argument codepoint. I.e., the smallest index i such that:
+        /// <para/>
+        /// (UTF16.CharAt(source, i) == char32 &amp;&amp; i &gt;= <paramref name="startIndex"/>) is true.
+        /// <para/>
+        /// If no such character occurs in this string, then -1 is returned.
+        /// </summary>
+        /// <remarks>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.IndexOf("abc", 'a', 1) returns -1</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", 0x10000, 1) returns 3</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", 0xd800, 1) returns -1</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="char32">Codepoint to search for.</param>
+        /// <param name="startIndex">The index to start the search from.</param>
+        /// <returns>The index of the first occurrence of the codepoint in the argument Unicode string at
+        /// or after <paramref name="startIndex"/>, or -1 if the codepoint does not occur.</returns>
+        /// <stable>ICU 2.6</stable>
+        public static int IndexOf(string source, int char32, int startIndex)
         {
             if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
             {
                 throw new ArgumentException("Argument char32 is not a valid codepoint");
             }
+            if ((startIndex < 0) || (startIndex > source.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(source));
+            }
             // non-surrogate bmp
             if (char32 < LEAD_SURROGATE_MIN_VALUE
                     || (char32 > TRAIL_SURROGATE_MAX_VALUE && char32 < SUPPLEMENTARY_MIN_VALUE))
             {
-                return source.IndexOf((char)char32, fromIndex);
+                return source.IndexOf((char)char32, startIndex);
             }
             // surrogate
             if (char32 < SUPPLEMENTARY_MIN_VALUE)
             {
-                int result = source.IndexOf((char)char32, fromIndex);
+                int result = source.IndexOf((char)char32, startIndex);
                 if (result >= 0)
                 {
                     if (IsLeadSurrogate((char)char32) && (result < source.Length - 1)
@@ -1640,46 +1668,79 @@ namespace ICU4N.Text
             }
             // supplementary
             string char32str = ToString(char32);
-            return source.IndexOf(char32str, fromIndex);
+            return source.IndexOf(char32str, startIndex, StringComparison.Ordinal);
         }
 
-        /**
-         * Returns the index within the argument UTF16 format Unicode string of the first occurrence of
-         * the argument string str. This method is implemented based on codepoints, hence a "lead
-         * surrogate character + trail surrogate character" is treated as one entity.e Hence if the str
-         * starts with trail surrogate character at index 0, a source with a leading a surrogate
-         * character before str found at in source will not have a valid match. Vice versa for lead
-         * surrogates that ends str. See example below.
-         * <p>
-         * If no such string str occurs in this source, then -1 is returned.
-         * </p>
-         * <p>
-         * Examples:<br>
-         * UTF16.indexOf("abc", "ab", 0) returns 0<br>
-         * UTF16.indexOf("abc\ud800\udc00", "\ud800\udc00", 0) returns 3<br>
-         * UTF16.indexOf("abc\ud800\udc00", "\ud800\udc00", 2) returns 3<br>
-         * UTF16.indexOf("abc\ud800\udc00", "\ud800", 0) returns -1<br>
-         * </p>
-         * Note this method is provided as support to jdk 1.3, which does not support supplementary
-         * characters to its fullest.
-         *
-         * @param source UTF16 format Unicode string that will be searched
-         * @param str UTF16 format Unicode string to search for
-         * @param fromIndex The index to start the search from.
-         * @return the index of the first occurrence of the codepoint in the argument Unicode string, or
-         *         -1 if the codepoint does not occur.
-         * @stable ICU 2.6
-         */
-        public static int IndexOf(string source, string str, int fromIndex)
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the first occurrence of
+        /// the argument string <paramref name="str"/>. This method is implemented based on codepoints, hence a "lead
+        /// surrogate character + trail surrogate character" is treated as one entity.e Hence if the <paramref name="str"/>
+        /// starts with trail surrogate character at index 0, a source with a leading a surrogate
+        /// character before <paramref name="str"/> found at in source will not have a valid match. Vice versa for lead
+        /// surrogates that ends <paramref name="str"/>.
+        /// <para/>
+        /// If no such string <paramref name="str"/> occurs in this <paramref name="source"/>, then -1 is returned.
+        /// </summary>
+        /// <remarks>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.IndexOf("abc", "ab", 0) returns 0</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800\udc00", 0) returns 3</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800\udc00", 2) returns 3</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800", 0) returns -1</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="str">UTF16 format Unicode string to search for.</param>
+        /// <param name="startIndex">The index to start the search from.</param>
+        /// <returns>The index of the first occurrence of the codepoint in the argument Unicode string, or
+        /// -1 if the codepoint does not occur.</returns>
+        /// <stable>ICU 2.6</stable>
+        public static int IndexOf(string source, string str, int startIndex)
         {
+            return IndexOf(source, str, startIndex, StringComparison.CurrentCulture);
+        }
+
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the first occurrence of
+        /// the argument string <paramref name="str"/>. This method is implemented based on codepoints, hence a "lead
+        /// surrogate character + trail surrogate character" is treated as one entity.e Hence if the <paramref name="str"/>
+        /// starts with trail surrogate character at index 0, a source with a leading a surrogate
+        /// character before <paramref name="str"/> found at in source will not have a valid match. Vice versa for lead
+        /// surrogates that ends <paramref name="str"/>.
+        /// <para/>
+        /// If no such string <paramref name="str"/> occurs in this <paramref name="source"/>, then -1 is returned.
+        /// </summary>
+        /// <remarks>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.IndexOf("abc", "ab", 0) returns 0</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800\udc00", 0) returns 3</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800\udc00", 2) returns 3</description></item>
+        ///     <item><description>UTF16.IndexOf("abc\ud800\udc00", "\ud800", 0) returns -1</description></item>
+        /// </list>
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="str">UTF16 format Unicode string to search for.</param>
+        /// <param name="startIndex">The index to start the search from.</param>
+        /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+        /// <returns>The index of the first occurrence of the codepoint in the argument Unicode string, or
+        /// -1 if the codepoint does not occur.</returns>
+        /// <stable>ICU4N 60.1</stable>
+        public static int IndexOf(string source, string str, int startIndex, StringComparison comparisonType)
+        {
+            if ((startIndex < 0) || (startIndex > source.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(source));
+            }
             int strLength = str.Length;
             // non-surrogate ends
             if (!IsTrailSurrogate(str[0]) && !IsLeadSurrogate(str[strLength - 1]))
             {
-                return source.IndexOf(str, fromIndex);
+                return source.IndexOf(str, startIndex, comparisonType);
             }
 
-            int result = source.IndexOf(str, fromIndex);
+            int result = source.IndexOf(str, startIndex, comparisonType);
             int resultEnd = result + strLength;
             if (result >= 0)
             {
@@ -1687,40 +1748,38 @@ namespace ICU4N.Text
                 if (IsLeadSurrogate(str[strLength - 1]) && (result < source.Length - 1)
                         && IsTrailSurrogate(source[resultEnd]))
                 {
-                    return IndexOf(source, str, resultEnd + 1);
+                    return IndexOf(source, str, resultEnd + 1, comparisonType);
                 }
                 // check first character which is a trail surrogate
                 if (IsTrailSurrogate(str[0]) && result > 0
                         && IsLeadSurrogate(source[result - 1]))
                 {
-                    return IndexOf(source, str, resultEnd + 1);
+                    return IndexOf(source, str, resultEnd + 1, comparisonType);
                 }
             }
             return result;
         }
 
-        /**
-         * Returns the index within the argument UTF16 format Unicode string of the last occurrence of
-         * the argument codepoint. I.e., the index returned is the largest value i such that:
-         * UTF16.charAt(source, i) == char32 is true.
-         * <p>
-         * Examples:<br>
-         * UTF16.lastIndexOf("abc", 'a') returns 0<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", 0x10000) returns 3<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", 0xd800) returns -1<br>
-         * </p>
-         * <p>
-         * source is searched backwards starting at the last character.
-         * </p>
-         * Note this method is provided as support to jdk 1.3, which does not support supplementary
-         * characters to its fullest.
-         *
-         * @param source UTF16 format Unicode string that will be searched
-         * @param char32 Codepoint to search for
-         * @return the index of the last occurrence of the codepoint in source, or -1 if the codepoint
-         *         does not occur.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the last occurrence of
+        /// the argument codepoint. I.e., the index returned is the largest value i such that:
+        /// UTF16.CharAt(source, i) == char32 is true.
+        /// </summary>
+        /// <remarks>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.LastIndexOf("abc", 'a') returns 0</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0x10000) returns 3</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0xd800) returns -1</description></item>
+        /// </list>
+        /// <para/>
+        /// <paramref name="source"/> is searched backwards starting at the last character.
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="char32">Codepoint to search for.</param>
+        /// <returns>The index of the last occurrence of the codepoint in source, or -1 if the codepoint
+        /// does not occur.</returns>
+        /// <stable>ICU 2.6</stable>
         public static int LastIndexOf(string source, int char32)
         {
             if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
@@ -1742,7 +1801,7 @@ namespace ICU4N.Text
                     if (IsLeadSurrogate((char)char32) && (result < source.Length - 1)
                             && IsTrailSurrogate(source[result + 1]))
                     {
-                        return LastIndexOf(source, char32, result - 1);
+                        return LastIndexOf(source, char32, Math.Max(result - 1, 0)); // ICU4N: Corrected 3rd parameter
                     }
                     // trail surrogate
                     if (result > 0 && IsLeadSurrogate(source[result - 1]))
@@ -1754,118 +1813,186 @@ namespace ICU4N.Text
             }
             // supplementary
             string char32str = ToString(char32);
-            return source.LastIndexOf(char32str);
+            return source.LastIndexOf(char32str, StringComparison.Ordinal);
         }
 
-        /**
-         * Returns the index within the argument UTF16 format Unicode string of the last occurrence of
-         * the argument string str. This method is implemented based on codepoints, hence a "lead
-         * surrogate character + trail surrogate character" is treated as one entity.e Hence if the str
-         * starts with trail surrogate character at index 0, a source with a leading a surrogate
-         * character before str found at in source will not have a valid match. Vice versa for lead
-         * surrogates that ends str. See example below.
-         * <p>
-         * Examples:<br>
-         * UTF16.lastIndexOf("abc", "a") returns 0<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", "\ud800\udc00") returns 3<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", "\ud800") returns -1<br>
-         * </p>
-         * <p>
-         * source is searched backwards starting at the last character.
-         * </p>
-         * Note this method is provided as support to jdk 1.3, which does not support supplementary
-         * characters to its fullest.
-         *
-         * @param source UTF16 format Unicode string that will be searched
-         * @param str UTF16 format Unicode string to search for
-         * @return the index of the last occurrence of the codepoint in source, or -1 if the codepoint
-         *         does not occur.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the last occurrence of
+        /// the argument string str. This method is implemented based on codepoints, hence a "lead
+        /// surrogate character + trail surrogate character" is treated as one entity.e Hence if the str
+        /// starts with trail surrogate character at index 0, a source with a leading a surrogate
+        /// character before str found at in source will not have a valid match. Vice versa for lead
+        /// surrogates that ends str.
+        /// </summary>
+        /// <remarks>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.LastIndexOf("abc", "a") returns 0</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0x10000) returns 3</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0xd800) returns -1</description></item>
+        /// </list>
+        /// <para/>
+        /// <paramref name="source"/> is searched backwards starting at the last character.
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="str">UTF16 format Unicode string to search for.</param>
+        /// <returns>The index of the last occurrence of the codepoint in source, or -1 if the codepoint
+        /// does not occur.</returns>
+        /// <stable>ICU 2.6</stable>
         public static int LastIndexOf(string source, string str)
+        {
+            return LastIndexOf(source, str, StringComparison.CurrentCulture);
+        }
+
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the last occurrence of
+        /// the argument string str. This method is implemented based on codepoints, hence a "lead
+        /// surrogate character + trail surrogate character" is treated as one entity.e Hence if the str
+        /// starts with trail surrogate character at index 0, a source with a leading a surrogate
+        /// character before str found at in source will not have a valid match. Vice versa for lead
+        /// surrogates that ends str.
+        /// </summary>
+        /// <remarks>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.LastIndexOf("abc", "a") returns 0</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0x10000) returns 3</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0xd800) returns -1</description></item>
+        /// </list>
+        /// <para/>
+        /// <paramref name="source"/> is searched backwards starting at the last character.
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="str">UTF16 format Unicode string to search for.</param>
+        /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+        /// <returns>The index of the last occurrence of the codepoint in source, or -1 if the codepoint
+        /// does not occur.</returns>
+        /// <stable>ICU4N 60.1</stable>
+        public static int LastIndexOf(string source, string str, StringComparison comparisonType)
         {
             int strLength = str.Length;
             // non-surrogate ends
             if (!IsTrailSurrogate(str[0]) && !IsLeadSurrogate(str[strLength - 1]))
             {
-                return source.LastIndexOf(str);
+                return source.LastIndexOf(str, comparisonType);
             }
 
-            int result = source.LastIndexOf(str);
+            int result = source.LastIndexOf(str, comparisonType);
             if (result >= 0)
             {
                 // check last character
                 if (IsLeadSurrogate(str[strLength - 1]) && (result < source.Length - 1)
                         && IsTrailSurrogate(source[result + strLength + 1]))
                 {
-                    return LastIndexOf(source, str, result - 1);
+                    return LastIndexOf(source, str, Math.Max(result - 1, 0), comparisonType); // ICU4N: Corrected 3rd parameter
                 }
                 // check first character which is a trail surrogate
                 if (IsTrailSurrogate(str[0]) && result > 0
                         && IsLeadSurrogate(source[result - 1]))
                 {
-                    return LastIndexOf(source, str, result - 1);
+                    return LastIndexOf(source, str, result - 1, comparisonType); 
                 }
             }
             return result;
         }
 
-        /**
-         * <p>
-         * Returns the index within the argument UTF16 format Unicode string of the last occurrence of
-         * the argument codepoint, where the result is less than or equals to fromIndex.
-         * </p>
-         * <p>
-         * This method is implemented based on codepoints, hence a single surrogate character will not
-         * match a supplementary character.
-         * </p>
-         * <p>
-         * source is searched backwards starting at the last character starting at the specified index.
-         * </p>
-         * <p>
-         * Examples:<br>
-         * UTF16.lastIndexOf("abc", 'c', 2) returns 2<br>
-         * UTF16.lastIndexOf("abc", 'c', 1) returns -1<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", 0x10000, 5) returns 3<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", 0x10000, 3) returns 3<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", 0xd800) returns -1<br>
-         * </p>
-         * Note this method is provided as support to jdk 1.3, which does not support supplementary
-         * characters to its fullest.
-         *
-         * @param source UTF16 format Unicode string that will be searched
-         * @param char32 Codepoint to search for
-         * @param fromIndex the index to start the search from. There is no restriction on the value of
-         *            fromIndex. If it is greater than or equal to the length of this string, it has the
-         *            same effect as if it were equal to one less than the length of this string: this
-         *            entire string may be searched. If it is negative, it has the same effect as if it
-         *            were -1: -1 is returned.
-         * @return the index of the last occurrence of the codepoint in source, or -1 if the codepoint
-         *         does not occur.
-         * @stable ICU 2.6
-         */
-        public static int LastIndexOf(string source, int char32, int fromIndex)
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the last occurrence of
+        /// the argument codepoint, where the result is less than or equals to <paramref name="startIndex"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method is implemented based on codepoints, hence a single surrogate character will not
+        /// match a supplementary character.
+        /// <para/>
+        /// <paramref name="source"/> is searched backwards starting at the last character starting at the specified index.
+        /// <para/>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.LastIndexOf("abc", 'c', 2) returns 2</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc", 'c', 1) returns -1</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0x10000, 5) returns 3.</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0x10000, 3) returns 3</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0xd800) returns -1</description></item>
+        /// </list>
+        /// <para/>
+        /// Note this method is similar to the ICU4J lastIndexOf() implementation in that it does not throw an <see cref="ArgumentOutOfRangeException"/>
+        /// if <paramref name="startIndex"/> is negative or >= the length of <paramref name="source"/>.
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="char32">Codepoint to search for.</param>
+        /// <param name="startIndex">The index to start the search from. There is no restriction on the value of
+        /// fromIndex. If it is greater than or equal to the length of this string, it has the
+        /// same effect as if it were equal to one less than the length of this string: this
+        /// entire string may be searched. If it is negative, it has the same effect as if it
+        /// were -1: -1 is returned.</param>
+        /// <returns>The index of the last occurrence of the codepoint in source, or -1 if the codepoint
+        /// does not occur.</returns>
+        /// <stable>ICU 2.6</stable>
+        internal static int SafeLastIndexOf(string source, int char32, int startIndex) // ICU4N TODO: API - make public ?
+        {
+            return LastIndexOf(source, char32, Math.Max(Math.Min(startIndex, source.Length - 1), 0));
+        }
+
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the last occurrence of
+        /// the argument codepoint, where the result is less than or equals to <paramref name="startIndex"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method is implemented based on codepoints, hence a single surrogate character will not
+        /// match a supplementary character.
+        /// <para/>
+        /// <paramref name="source"/> is searched backwards starting at the last character starting at the specified index.
+        /// <para/>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.LastIndexOf("abc", 'c', 2) returns 2</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc", 'c', 1) returns -1</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0x10000, 5) throws <see cref="ArgumentOutOfRangeException"/>.</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0x10000, 3) returns 3</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", 0xd800) returns -1</description></item>
+        /// </list>
+        /// <para/>
+        /// Note this method differs from the ICU4J implementation in that it throws an <see cref="ArgumentOutOfRangeException"/>
+        /// if <paramref name="startIndex"/> is negative or >= the length of <paramref name="source"/>.
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="char32">Codepoint to search for.</param>
+        /// <param name="startIndex">The index to start the search from. 
+        /// The search proceeds from startIndex toward the beginning of <paramref name="source"/>.</param>
+        /// <returns>The index of the last occurrence of the codepoint in source, or -1 if the codepoint
+        /// does not occur.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">If <paramref name="startIndex"/> is negative or greater than 
+        /// <paramref name="source"/>.Length - 1.</exception>
+        /// <stable>ICU4N 60.1</stable>
+        public static int LastIndexOf(string source, int char32, int startIndex)
         {
             if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
             {
                 throw new ArgumentException("Argument char32 is not a valid codepoint");
             }
+            if ((startIndex < 0) || (startIndex > source.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(source));
+            }
             // non-surrogate bmp
             if (char32 < LEAD_SURROGATE_MIN_VALUE
                     || (char32 > TRAIL_SURROGATE_MAX_VALUE && char32 < SUPPLEMENTARY_MIN_VALUE))
             {
-                return source.LastIndexOf((char)char32, fromIndex);
+                // ICU4N: There appears to be a bug in .NET - the overloads that accept char
+                // throw an ArgumentOutOfRangeException for source.Length, but the ones that
+                // accept string accept source.Length.
+                return source.LastIndexOf((char)char32, Math.Min(startIndex, source.Length - 1));
             }
             // surrogate
             if (char32 < SUPPLEMENTARY_MIN_VALUE)
             {
-                int result = source.LastIndexOf((char)char32, fromIndex);
+                int result = source.LastIndexOf((char)char32, Math.Min(startIndex, source.Length - 1));
                 if (result >= 0)
                 {
                     if (IsLeadSurrogate((char)char32) && (result < source.Length - 1)
                             && IsTrailSurrogate(source[result + 1]))
                     {
-                        return LastIndexOf(source, char32, result - 1);
+                        return LastIndexOf(source, char32, Math.Max(result - 1, 0)); // ICU4N: Corrected 3rd parameter
                     }
                     // trail surrogate
                     if (result > 0 && IsLeadSurrogate(source[result - 1]))
@@ -1877,69 +2004,147 @@ namespace ICU4N.Text
             }
             // supplementary
             string char32str = ToString(char32);
-            return source.LastIndexOf(char32str, fromIndex);
+            return source.LastIndexOf(char32str, startIndex, StringComparison.Ordinal);
         }
 
-        /**
-         * <p>
-         * Returns the index within the argument UTF16 format Unicode string of the last occurrence of
-         * the argument string str, where the result is less than or equals to fromIndex.
-         * </p>
-         * <p>
-         * This method is implemented based on codepoints, hence a "lead surrogate character + trail
-         * surrogate character" is treated as one entity. Hence if the str starts with trail surrogate
-         * character at index 0, a source with a leading a surrogate character before str found at in
-         * source will not have a valid match. Vice versa for lead surrogates that ends str.
-         * </p>
-         * See example below.
-         * <p>
-         * Examples:<br>
-         * UTF16.lastIndexOf("abc", "c", 2) returns 2<br>
-         * UTF16.lastIndexOf("abc", "c", 1) returns -1<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", "\ud800\udc00", 5) returns 3<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", "\ud800\udc00", 3) returns 3<br>
-         * UTF16.lastIndexOf("abc\ud800\udc00", "\ud800", 4) returns -1<br>
-         * </p>
-         * <p>
-         * source is searched backwards starting at the last character.
-         * </p>
-         * Note this method is provided as support to jdk 1.3, which does not support supplementary
-         * characters to its fullest.
-         *
-         * @param source UTF16 format Unicode string that will be searched
-         * @param str UTF16 format Unicode string to search for
-         * @param fromIndex the index to start the search from. There is no restriction on the value of
-         *            fromIndex. If it is greater than or equal to the length of this string, it has the
-         *            same effect as if it were equal to one less than the length of this string: this
-         *            entire string may be searched. If it is negative, it has the same effect as if it
-         *            were -1: -1 is returned.
-         * @return the index of the last occurrence of the codepoint in source, or -1 if the codepoint
-         *         does not occur.
-         * @stable ICU 2.6
-         */
-        public static int LastIndexOf(string source, string str, int fromIndex)
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the last occurrence of
+        /// the argument string <paramref name="str"/>, where the result is less than or equals to <paramref name="startIndex"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method is implemented based on codepoints, hence a "lead surrogate character + trail
+        /// surrogate character" is treated as one entity. Hence if the <paramref name="str"/> starts with trail surrogate
+        /// character at index 0, a source with a leading a surrogate character before <paramref name="str"/> found at in
+        /// source will not have a valid match. Vice versa for lead surrogates that ends <paramref name="str"/>.
+        /// <para/>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.LastIndexOf("abc", "c", 2) returns 2</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc", "c", 1) returns -1</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", "\ud800\udc00", 5) returns 3</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", "\ud800\udc00", 3) returns 3</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", "\ud800", 4) returns -1</description></item>
+        /// </list>
+        /// <para/>
+        /// <paramref name="source"/> is searched backwards starting at the last character.
+        /// <para/>
+        /// Note this method is similar to the ICU4J implementation in that it does not throw an <see cref="ArgumentOutOfRangeException"/>
+        /// if <paramref name="startIndex"/> is negative or >= the length of <paramref name="source"/>.
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="str">UTF16 format Unicode string to search for.</param>
+        /// <param name="startIndex">The index to start the search from.  There is no restriction on the value of
+        /// fromIndex. If it is greater than or equal to the length of this string, it has the
+        /// same effect as if it were equal to one less than the length of this string: this
+        /// entire string may be searched. If it is negative, it has the same effect as if it
+        /// were -1: -1 is returned.</param>
+        /// <returns>The index of the last occurrence of the codepoint in source, or -1 if the codepoint
+        /// does not occur.</returns>
+        /// <stable>ICU4N 60.1</stable>
+        internal static int SafeLastIndexOf(string source, string str, int startIndex) // ICU4N TODO: Make public ?
         {
+            return LastIndexOf(source, str, Math.Max(Math.Min(startIndex, source.Length - 1), 0), StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the last occurrence of
+        /// the argument string <paramref name="str"/>, where the result is less than or equals to <paramref name="startIndex"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method is implemented based on codepoints, hence a "lead surrogate character + trail
+        /// surrogate character" is treated as one entity. Hence if the <paramref name="str"/> starts with trail surrogate
+        /// character at index 0, a source with a leading a surrogate character before <paramref name="str"/> found at in
+        /// source will not have a valid match. Vice versa for lead surrogates that ends <paramref name="str"/>.
+        /// <para/>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.LastIndexOf("abc", "c", 2) returns 2</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc", "c", 1) returns -1</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", "\ud800\udc00", 5) throws <see cref="ArgumentOutOfRangeException"/>.</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", "\ud800\udc00", 3) returns 3</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", "\ud800", 4) returns -1</description></item>
+        /// </list>
+        /// <para/>
+        /// <paramref name="source"/> is searched backwards starting at the last character.
+        /// <para/>
+        /// Note this method differs from the ICU4J implementation in that it throws an <see cref="ArgumentOutOfRangeException"/>
+        /// if <paramref name="startIndex"/> is negative or >= the length of <paramref name="source"/>.
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="str">UTF16 format Unicode string to search for.</param>
+        /// <param name="startIndex">The index to start the search from. 
+        /// The search proceeds from <paramref name="startIndex"/> toward the beginning of <paramref name="source"/>.</param>
+        /// <returns>The index of the last occurrence of the codepoint in source, or -1 if the codepoint
+        /// does not occur.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">If <paramref name="startIndex"/> is negative or greater than 
+        /// <paramref name="source"/>.Length - 1.</exception>
+        /// <stable>ICU4N 60.1</stable>
+        public static int LastIndexOf(string source, string str, int startIndex)
+        {
+            return LastIndexOf(source, str, startIndex, StringComparison.CurrentCulture);
+        }
+
+        /// <summary>
+        /// Returns the index within the argument UTF16 format Unicode string of the last occurrence of
+        /// the argument string <paramref name="str"/>, where the result is less than or equals to <paramref name="startIndex"/>.
+        /// </summary>
+        /// <remarks>
+        /// This method is implemented based on codepoints, hence a "lead surrogate character + trail
+        /// surrogate character" is treated as one entity. Hence if the <paramref name="str"/> starts with trail surrogate
+        /// character at index 0, a source with a leading a surrogate character before <paramref name="str"/> found at in
+        /// source will not have a valid match. Vice versa for lead surrogates that ends <paramref name="str"/>.
+        /// <para/>
+        /// Examples:
+        /// <list type="table">
+        ///     <item><description>UTF16.LastIndexOf("abc", "c", 2) returns 2</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc", "c", 1) returns -1</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", "\ud800\udc00", 5) throws <see cref="ArgumentOutOfRangeException"/>.</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", "\ud800\udc00", 3) returns 3</description></item>
+        ///     <item><description>UTF16.LastIndexOf("abc\ud800\udc00", "\ud800", 4) returns -1</description></item>
+        /// </list>
+        /// <para/>
+        /// <paramref name="source"/> is searched backwards starting at the last character.
+        /// <para/>
+        /// Note this method differs from the ICU4J implementation in that it throws an <see cref="ArgumentOutOfRangeException"/>
+        /// if <paramref name="startIndex"/> is negative or >= the length of <paramref name="source"/>.
+        /// </remarks>
+        /// <param name="source">UTF16 format Unicode string that will be searched.</param>
+        /// <param name="str">UTF16 format Unicode string to search for.</param>
+        /// <param name="startIndex">The index to start the search from. 
+        /// The search proceeds from <paramref name="startIndex"/> toward the beginning of <paramref name="source"/>.</param>
+        /// <returns>The index of the last occurrence of the codepoint in source, or -1 if the codepoint
+        /// does not occur.</returns>
+        /// <param name="comparisonType">One of the enumeration values that specifies the rules for the search.</param>
+        /// <exception cref="ArgumentOutOfRangeException">If <paramref name="startIndex"/> is negative or greater than 
+        /// <paramref name="source"/>.Length - 1.</exception>
+        /// <stable>ICU4N 60.1</stable>
+        public static int LastIndexOf(string source, string str, int startIndex, StringComparison comparisonType)
+        {
+            if ((startIndex < 0) || (startIndex > source.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(source));
+            }
             int strLength = str.Length;
             // non-surrogate ends
             if (!IsTrailSurrogate(str[0]) && !IsLeadSurrogate(str[strLength - 1]))
             {
-                return source.LastIndexOf(str, fromIndex);
+                return source.LastIndexOf(str, startIndex, comparisonType);
             }
 
-            int result = source.LastIndexOf(str, fromIndex);
+            int result = source.LastIndexOf(str, startIndex, comparisonType);
             if (result >= 0)
             {
                 // check last character
                 if (IsLeadSurrogate(str[strLength - 1]) && (result < source.Length - 1)
                         && IsTrailSurrogate(source[result + strLength]))
                 {
-                    return LastIndexOf(source, str, result - 1);
+                    return LastIndexOf(source, str, Math.Max(result - 1, 0), comparisonType); // ICU4N: Corrected 3rd parameter
                 }
                 // check first character which is a trail surrogate
                 if (IsTrailSurrogate(str[0]) && result > 0
                         && IsLeadSurrogate(source[result - 1]))
                 {
-                    return LastIndexOf(source, str, result - 1);
+                    return LastIndexOf(source, str, result - 1, comparisonType);
                 }
             }
             return result;
@@ -2473,7 +2678,7 @@ namespace ICU4N.Text
              * @param flag True for code point compare, false for code unit compare
              * @stable ICU 2.4
              */
-            public void SetCodePointCompare(bool flag)
+            public void SetCodePointCompare(bool flag) // ICU4N TODO: API: Property?
             {
                 if (flag)
                 {
@@ -2497,7 +2702,7 @@ namespace ICU4N.Text
              * @see #FOLD_CASE_EXCLUDE_SPECIAL_I
              * @stable ICU 2.4
              */
-            public void SetIgnoreCase(bool ignorecase, int foldcaseoption)
+            public void SetIgnoreCase(bool ignorecase, int foldcaseoption) // ICU4N TODO: API: Property ?
             {
                 m_ignoreCase_ = ignorecase;
                 if (foldcaseoption < FOLD_CASE_DEFAULT || foldcaseoption > FOLD_CASE_EXCLUDE_SPECIAL_I)
@@ -2515,7 +2720,7 @@ namespace ICU4N.Text
              * @return true for code point compare, false for code unit compare
              * @stable ICU 2.4
              */
-            public bool GetCodePointCompare()
+            public bool GetCodePointCompare() // ICU4N TODO: API: Property
             {
                 return m_codePointCompare_ == Normalizer.COMPARE_CODE_POINT_ORDER;
             }
@@ -2526,7 +2731,7 @@ namespace ICU4N.Text
              * @return true if Comparator performs case insensitive comparison, false otherwise
              * @stable ICU 2.4
              */
-            public bool GetIgnoreCase()
+            public bool GetIgnoreCase() // ICU4N TODO: API: Property
             {
                 return m_ignoreCase_;
             }
@@ -2539,7 +2744,7 @@ namespace ICU4N.Text
              * @see #FOLD_CASE_EXCLUDE_SPECIAL_I
              * @stable ICU 2.4
              */
-            public int GetIgnoreCaseOption()
+            public int GetIgnoreCaseOption() // ICU4N TODO: API: Property
             {
                 return m_foldCase_;
             }
@@ -2750,8 +2955,13 @@ namespace ICU4N.Text
         {
             if (ch < SUPPLEMENTARY_MIN_VALUE)
             {
-                return new string((char)ch, 1);
+                return "" + (char)ch;
             }
+
+            // ICU4N: Both of the below alternatives were tried, but for some
+            // reason this caused perfomance to degrade considerably.
+            //return new string(GetLeadSurrogate(ch), GetTrailSurrogate(ch));
+            //return char.ConvertFromUtf32(ch);
 
             StringBuilder result = new StringBuilder();
             result.Append(GetLeadSurrogate(ch));

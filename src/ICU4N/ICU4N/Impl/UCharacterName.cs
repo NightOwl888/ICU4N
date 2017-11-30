@@ -1445,16 +1445,12 @@ namespace ICU4N.Impl
                         { // We've got a category.
                             startIndex++;
                             int result = -1;
-                            try
-                            {
-                                result = System.Convert.ToInt32(
-                                            name.Substring(startIndex, endIndex - startIndex), // ICU4N: Corrected 2nd parameter
-                                            16);
-                            }
-                            catch (FormatException e)
+                            if (!int.TryParse(name.Substring(startIndex, endIndex - startIndex), // ICU4N: Corrected 2nd parameter
+                                NumberStyles.HexNumber, CultureInfo.InvariantCulture, out result))
                             {
                                 return -1;
                             }
+
                             // Now validate the category name. We could use a
                             // binary search, or a trie, if we really wanted to.
                             string type = name.Substring(1, (startIndex - 1) - 1); // ICU4N: Corrected 2nd parameter

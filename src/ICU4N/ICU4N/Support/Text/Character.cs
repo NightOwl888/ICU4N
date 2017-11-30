@@ -184,6 +184,16 @@ namespace ICU4N.Support.Text
             return new char[] { (char)codePoint };
         }
 
+        public static bool IsSpace(char ch)
+        {
+            return (ch <= 0x0020) &&
+                (((((1L << 0x0009) |
+                (1L << 0x000A) |
+                (1L << 0x000C) |
+                (1L << 0x000D) |
+                (1L << 0x0020)) >> ch) & 1L) != 0);
+        }
+
         public static bool IsValidCodePoint(int codePoint)
         {
             return (MIN_CODE_POINT <= codePoint && MAX_CODE_POINT >= codePoint);

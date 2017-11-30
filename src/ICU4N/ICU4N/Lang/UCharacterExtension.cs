@@ -607,6 +607,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointAt(string seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c1 = seq[index++];
             if (IsHighSurrogate(c1))
             {
@@ -633,6 +637,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointAt(StringBuilder seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c1 = seq[index++];
             if (IsHighSurrogate(c1))
             {
@@ -659,6 +667,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointAt(char[] seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c1 = seq[index++];
             if (IsHighSurrogate(c1))
             {
@@ -685,6 +697,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         internal static int CodePointAt(ICharSequence seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c1 = seq[index++];
             if (IsHighSurrogate(c1))
             {
@@ -711,6 +727,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointBefore(string seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c2 = seq[--index];
             if (IsLowSurrogate(c2))
             {
@@ -737,6 +757,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointBefore(StringBuilder seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c2 = seq[--index];
             if (IsLowSurrogate(c2))
             {
@@ -763,6 +787,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointBefore(char[] seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c2 = seq[--index];
             if (IsLowSurrogate(c2))
             {
@@ -789,6 +817,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         internal static int CodePointBefore(ICharSequence seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c2 = seq[--index];
             if (IsLowSurrogate(c2))
             {
@@ -816,6 +848,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointCount(string text, int start, int limit)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (start < 0 || limit < start || limit > text.Length)
             {
                 throw new IndexOutOfRangeException("start (" + start +
@@ -852,6 +888,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointCount(StringBuilder text, int start, int limit)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (start < 0 || limit < start || limit > text.Length)
             {
                 throw new IndexOutOfRangeException("start (" + start +
@@ -888,6 +928,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointCount(char[] text, int start, int limit)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (start < 0 || limit < start || limit > text.Length)
             {
                 throw new IndexOutOfRangeException("start (" + start +
@@ -924,6 +968,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         internal static int CodePointCount(ICharSequence text, int start, int limit)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (start < 0 || limit < start || limit > text.Length)
             {
                 throw new IndexOutOfRangeException("start (" + start +
@@ -959,6 +1007,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int OffsetByCodePoints(string text, int index, int codePointOffset)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (index < 0 || index > text.Length)
             {
                 throw new IndexOutOfRangeException("index ( " + index +
@@ -1017,6 +1069,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int OffsetByCodePoints(StringBuilder text, int index, int codePointOffset)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (index < 0 || index > text.Length)
             {
                 throw new IndexOutOfRangeException("index ( " + index +
@@ -1075,6 +1131,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int OffsetByCodePoints(char[] text, int index, int codePointOffset)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (index < 0 || index > text.Length)
             {
                 throw new IndexOutOfRangeException("index ( " + index +
@@ -1133,6 +1193,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         internal static int OffsetByCodePoints(ICharSequence text, int index, int codePointOffset)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (index < 0 || index > text.Length)
             {
                 throw new IndexOutOfRangeException("index ( " + index +

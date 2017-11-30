@@ -176,11 +176,11 @@ namespace ICU4N.Impl
         * 0x10000-0xd800=0x2800
         * 0x2800 >> INDEX_STAGE_1_SHIFT_
         */
-        protected static readonly int LEAD_INDEX_OFFSET_ = 0x2800 >> 5;
+        protected internal static readonly int LEAD_INDEX_OFFSET_ = 0x2800 >> 5;
         /**
         * Shift size for shifting right the input index. 1..9
         */
-        protected static readonly int INDEX_STAGE_1_SHIFT_ = 5;
+        protected internal static readonly int INDEX_STAGE_1_SHIFT_ = 5;
         /**
         * Shift size for shifting left the index array values.
         * Increases possible data size with 16-bit index values at the cost
@@ -189,47 +189,47 @@ namespace ICU4N.Impl
         * DATA_GRANULARITY.
         * 0..INDEX_STAGE_1_SHIFT
         */
-        protected static readonly int INDEX_STAGE_2_SHIFT_ = 2;
+        protected internal static readonly int INDEX_STAGE_2_SHIFT_ = 2;
         /**
          * Number of data values in a stage 2 (data array) block.
          */
-        protected static readonly int DATA_BLOCK_LENGTH = 1 << INDEX_STAGE_1_SHIFT_;
+        protected internal static readonly int DATA_BLOCK_LENGTH = 1 << INDEX_STAGE_1_SHIFT_;
         /**
         * Mask for getting the lower bits from the input index.
         * DATA_BLOCK_LENGTH - 1.
         */
-        protected static readonly int INDEX_STAGE_3_MASK_ = DATA_BLOCK_LENGTH - 1;
+        protected internal static readonly int INDEX_STAGE_3_MASK_ = DATA_BLOCK_LENGTH - 1;
         /** Number of bits of a trail surrogate that are used in index table lookups. */
-        protected static readonly int SURROGATE_BLOCK_BITS = 10 - INDEX_STAGE_1_SHIFT_;
+        protected internal static readonly int SURROGATE_BLOCK_BITS = 10 - INDEX_STAGE_1_SHIFT_;
         /**
          * Number of index (stage 1) entries per lead surrogate.
          * Same as number of index entries for 1024 trail surrogates,
          * ==0x400>>INDEX_STAGE_1_SHIFT_
          */
-        protected static readonly int SURROGATE_BLOCK_COUNT = (1 << SURROGATE_BLOCK_BITS);
+        protected internal static readonly int SURROGATE_BLOCK_COUNT = (1 << SURROGATE_BLOCK_BITS);
         /** Length of the BMP portion of the index (stage 1) array. */
-        protected static readonly int BMP_INDEX_LENGTH = 0x10000 >> INDEX_STAGE_1_SHIFT_;
+        protected internal static readonly int BMP_INDEX_LENGTH = 0x10000 >> INDEX_STAGE_1_SHIFT_;
         /**
         * Surrogate mask to use when shifting offset to retrieve supplementary
         * values
         */
-        protected static readonly int SURROGATE_MASK_ = 0x3FF;
+        protected internal static readonly int SURROGATE_MASK_ = 0x3FF;
         /**
         * Index or UTF16 characters
         */
-        protected char[] m_index_;
+        protected internal char[] m_index_;
         /**
         * Internal TrieValue which handles the parsing of the data value.
         * This class is to be implemented by the user
         */
-        protected IDataManipulate m_dataManipulate_;
+        protected internal IDataManipulate m_dataManipulate_;
         /**
         * Start index of the data portion of the trie. CharTrie combines
         * index and data into a char array, so this is used to indicate the
         * initial offset to the data portion.
         * Note this index always points to the initial value.
         */
-        protected int m_dataOffset_;
+        protected internal int m_dataOffset_;
         /**
         * Length of the data array
         */
@@ -250,13 +250,13 @@ namespace ICU4N.Impl
         * @param index value at index will be retrieved
         * @return 32 bit value
         */
-        protected abstract int GetValue(int index);
+        protected internal abstract int this[int index] { get; } // ICU4N: Was GetValue(int) in ICU4J
 
         /**
         * Gets the default initial value
         * @return 32 bit value
         */
-        protected abstract int InitialValue { get; }
+        protected internal abstract int InitialValue { get; }
 
         /**
         * Gets the offset to the data which the index ch after variable offset
@@ -386,21 +386,21 @@ namespace ICU4N.Impl
         /**
         * Size of Trie header in bytes
         */
-        protected static readonly int HEADER_LENGTH_ = 4 * 4;
+        protected internal static readonly int HEADER_LENGTH_ = 4 * 4;
         /**
         * Latin 1 option mask
         */
-        protected static readonly int HEADER_OPTIONS_LATIN1_IS_LINEAR_MASK_ = 0x200;
+        protected internal static readonly int HEADER_OPTIONS_LATIN1_IS_LINEAR_MASK_ = 0x200;
         /**
         * Constant number to authenticate the byte block
         */
-        protected static readonly int HEADER_SIGNATURE_ = 0x54726965;
+        protected internal static readonly int HEADER_SIGNATURE_ = 0x54726965;
         /**
         * Header option formatting
         */
         private static readonly int HEADER_OPTIONS_SHIFT_MASK_ = 0xF;
-        protected static readonly int HEADER_OPTIONS_INDEX_SHIFT_ = 4;
-        protected static readonly int HEADER_OPTIONS_DATA_IS_32_BIT_ = 0x100;
+        protected internal static readonly int HEADER_OPTIONS_INDEX_SHIFT_ = 4;
+        protected internal static readonly int HEADER_OPTIONS_DATA_IS_32_BIT_ = 0x100;
 
         /**
         * Flag indicator for Latin quick access data block

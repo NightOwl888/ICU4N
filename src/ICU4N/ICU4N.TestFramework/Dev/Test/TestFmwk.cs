@@ -4,6 +4,7 @@ using ICU4N.Util;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -103,7 +104,7 @@ namespace ICU4N.Dev.Test
             return testParams;
         }
 
-        protected static bool IsVerbose()
+        protected internal static bool IsVerbose()
         {
             return GetParams().GetLoggingLevel() >= LOGGING_INFO;
         }
@@ -352,6 +353,11 @@ namespace ICU4N.Dev.Test
         }
 
         protected static string Prettify(string s)
+        {
+            return Prettify(s.ToCharSequence());
+        }
+
+        protected static string Prettify(StringBuffer s)
         {
             return Prettify(s.ToCharSequence());
         }
@@ -716,24 +722,24 @@ namespace ICU4N.Dev.Test
         protected static bool assertEquals<T>(string message, ICollection<T> expected, ICollection<T> actual)
         {
             bool result = expected == null ? actual == null : CollectionUtil.Equals(expected, actual);
-            return handleAssert(result, message, stringFor(expected),
-                    stringFor(actual));
+            return handleAssert(result, message, StringFor(expected),
+                    StringFor(actual));
         }
 
         // ICU4N specific overload for handling ICharSequence
         internal static bool assertEquals(string message, ICharSequence expected, object actual)
         {
             bool result = expected == null ? actual == null : expected.Equals(actual);
-            return handleAssert(result, message, stringFor(expected),
-                    stringFor(actual));
+            return handleAssert(result, message, StringFor(expected),
+                    StringFor(actual));
         }
 
         // ICU4N specific overload for handling ICharSequence
         internal static bool assertEquals(string message, object expected, ICharSequence actual)
         {
             bool result = expected == null ? actual == null : actual.Equals(expected);
-            return handleAssert(result, message, stringFor(expected),
-                    stringFor(actual));
+            return handleAssert(result, message, StringFor(expected),
+                    StringFor(actual));
         }
 
         protected static bool assertEquals(string message, object expected, object actual)
@@ -744,8 +750,8 @@ namespace ICU4N.Dev.Test
                 return assertEquals(message, expected, (ICharSequence)actual);
 
             bool result = expected == null ? actual == null : CollectionUtil.Equals(expected, actual);
-            return handleAssert(result, message, stringFor(expected),
-                    stringFor(actual));
+            return handleAssert(result, message, StringFor(expected),
+                    StringFor(actual));
         }
 
         // ICU4N specific overload for optimizing ICollection<T> comparisons
@@ -753,8 +759,8 @@ namespace ICU4N.Dev.Test
             ICollection<T> actual)
         {
             bool result = !(expected == null ? actual == null : CollectionUtil.Equals(expected, actual));
-            return handleAssert(result, message, stringFor(expected),
-                    stringFor(actual), "not equal to", true);
+            return handleAssert(result, message, StringFor(expected),
+                    StringFor(actual), "not equal to", true);
         }
 
         // ICU4N specific overload for handling ICharSequence
@@ -763,8 +769,8 @@ namespace ICU4N.Dev.Test
         {
             bool result = !(expected == null ? actual == null : expected
                     .Equals(actual));
-            return handleAssert(result, message, stringFor(expected),
-                    stringFor(actual), "not equal to", true);
+            return handleAssert(result, message, StringFor(expected),
+                    StringFor(actual), "not equal to", true);
         }
 
         // ICU4N specific overload for handling ICharSequence
@@ -772,40 +778,64 @@ namespace ICU4N.Dev.Test
             ICharSequence actual)
         {
             bool result = !(expected == null ? actual == null : expected.Equals(actual));
-            return handleAssert(result, message, stringFor(expected),
-                    stringFor(actual), "not equal to", true);
+            return handleAssert(result, message, StringFor(expected),
+                    StringFor(actual), "not equal to", true);
         }
 
         protected static bool assertNotEquals(string message, object expected,
                 object actual)
         {
             bool result = !(expected == null ? actual == null : CollectionUtil.Equals(expected, actual));
-            return handleAssert(result, message, stringFor(expected),
-                    stringFor(actual), "not equal to", true);
+            return handleAssert(result, message, StringFor(expected),
+                    StringFor(actual), "not equal to", true);
         }
 
         protected bool assertSame(string message, object expected, object actual)
         {
-            return handleAssert(expected == actual, message, stringFor(expected),
-                    stringFor(actual), "==", false);
+            return handleAssert(expected == actual, message, StringFor(expected),
+                    StringFor(actual), "==", false);
         }
 
         protected static bool assertNotSame(string message, object expected,
                 object actual)
         {
-            return handleAssert(expected != actual, message, stringFor(expected),
-                    stringFor(actual), "!=", true);
+            return handleAssert(expected != actual, message, StringFor(expected),
+                    StringFor(actual), "!=", true);
         }
 
         protected static bool assertNull(string message, object actual)
         {
-            return handleAssert(actual == null, message, null, stringFor(actual));
+            return handleAssert(actual == null, message, null, StringFor(actual));
         }
 
         protected static bool assertNotNull(string message, object actual)
         {
-            return handleAssert(actual != null, message, null, stringFor(actual),
+            return handleAssert(actual != null, message, null, StringFor(actual),
                     "!=", true);
+        }
+
+        [DebuggerStepThrough]
+        protected static T AssertThrows<T>(TestDelegate code) where T : Exception
+        {
+            return Assert.Throws<T>(code);
+        }
+
+        [DebuggerStepThrough]
+        protected static T AssertThrows<T>(TestDelegate code, string message, params object[] args) where T : Exception
+        {
+            return Assert.Throws<T>(code, message, args);
+        }
+
+        [DebuggerStepThrough]
+        protected static void AssertDoesNotThrow(TestDelegate code) 
+        {
+            Assert.DoesNotThrow(code);
+        }
+
+        [DebuggerStepThrough]
+        protected static void AssertDoesNotThrow(TestDelegate code, string message, params object[] args) 
+        {
+            Assert.DoesNotThrow(code, message, args);
         }
 
         protected static void fail()
@@ -864,7 +894,7 @@ namespace ICU4N.Dev.Test
             return result;
         }
 
-        private static string stringFor(object obj)
+        private static string StringFor(object obj)
         {
             if (obj == null)
             {

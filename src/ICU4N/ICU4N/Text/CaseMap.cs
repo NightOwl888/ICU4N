@@ -58,15 +58,15 @@ namespace ICU4N.Text
          */
         public static Fold ToFold() { return Fold.DEFAULT; } // ICU4N specific - renamed from Fold() because of naming collision
 
-        /**
-         * Returns an instance that behaves like this one but
-         * omits unchanged text when case-mapping with {@link Edits}.
-         *
-         * @return an options object with this option.
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
-        public abstract CaseMap OmitUnchangedText();
+        ///**
+        // * Returns an instance that behaves like this one but
+        // * omits unchanged text when case-mapping with {@link Edits}.
+        // *
+        // * @return an options object with this option.
+        // * @draft ICU 59
+        // * @provisional This API might change or be removed in a future release.
+        // */
+        //public abstract CaseMap OmitUnchangedText();
 
         /// <summary>
         /// Lowercasing options and methods. Immutable.
@@ -88,7 +88,7 @@ namespace ICU4N.Text
              * @draft ICU 59
              * @provisional This API might change or be removed in a future release.
              */
-            public override CaseMap OmitUnchangedText()
+            public Lower OmitUnchangedText()
             {
                 return OMIT_UNCHANGED;
             }
@@ -119,7 +119,7 @@ namespace ICU4N.Text
              * @draft ICU 59
              * @provisional This API might change or be removed in a future release.
              */
-            public override CaseMap OmitUnchangedText()
+            public Upper OmitUnchangedText()
             {
                 return OMIT_UNCHANGED;
             }
@@ -188,7 +188,7 @@ namespace ICU4N.Text
              * @draft ICU 59
              * @provisional This API might change or be removed in a future release.
              */
-            public override CaseMap OmitUnchangedText()
+            public Title OmitUnchangedText()
             {
                 if (internalOptions == 0 || internalOptions == CaseMapImpl.OMIT_UNCHANGED_TEXT)
                 {
@@ -294,7 +294,7 @@ namespace ICU4N.Text
              * @draft ICU 59
              * @provisional This API might change or be removed in a future release.
              */
-            public override CaseMap OmitUnchangedText()
+            public Fold OmitUnchangedText()
             {
                 return (internalOptions & UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I) == 0 ?
                         OMIT_UNCHANGED : TURKIC_OMIT_UNCHANGED;

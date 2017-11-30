@@ -518,7 +518,7 @@ namespace ICU4N.Text
          * @deprecated ICU 55 Use UTS 46 instead via {@link #getUTS46Instance(int)}.
          */
         [Obsolete("ICU 55 Use UTS 46 instead via GetUTS46Instance(int).")]
-        public static StringBuffer convertIDNToASCII(UCharacterIterator src, int options)
+        public static StringBuffer ConvertIDNToASCII(UCharacterIterator src, int options)
         {
             return ConvertIDNToASCII(src.GetText(), options);
         }

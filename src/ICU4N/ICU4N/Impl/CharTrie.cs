@@ -282,16 +282,16 @@ namespace ICU4N.Impl
         * @return 32 bit value
         * @see com.ibm.icu.impl.TrieIterator
         */
-        protected override sealed int GetValue(int index)
+        protected internal override sealed int this[int index]
         {
-            return m_data_[index];
+            get { return m_data_[index]; }
         }
 
         /**
         * Gets the default initial value
         * @return 32 bit value
         */
-        protected override sealed int InitialValue
+        protected internal override sealed int InitialValue
         {
             get { return m_initialValue_; }
         }

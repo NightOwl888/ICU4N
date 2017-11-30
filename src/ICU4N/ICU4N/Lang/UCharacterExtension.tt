@@ -200,6 +200,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int CodePointAt(<#=charSequence#> seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c1 = seq[index++];
             if (IsHighSurrogate(c1))
             {
@@ -228,6 +232,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int CodePointBefore(<#=charSequence#> seq, int index)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
+
             char c2 = seq[--index];
             if (IsLowSurrogate(c2))
             {
@@ -257,6 +265,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int CodePointCount(<#=charSequence#> text, int start, int limit)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (start < 0 || limit < start || limit > text.Length)
             {
                 throw new IndexOutOfRangeException("start (" + start +
@@ -294,6 +306,10 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int OffsetByCodePoints(<#=charSequence#> text, int index, int codePointOffset)
         {
+			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             if (index < 0 || index > text.Length)
             {
                 throw new IndexOutOfRangeException("index ( " + index +

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace ICU4N.Support.Collections
@@ -52,6 +53,42 @@ namespace ICU4N.Support.Collections
             for (int i = 0; i < a.Length; i++)
             {
                 a[i] = val;
+            }
+        }
+
+        /// <summary>
+        /// Assigns the specified value to each element of the specified array.
+        /// </summary>
+        /// <typeparam name="T">the type of the array</typeparam>
+        /// <param name="a">the array to be filled</param>
+        /// <param name="fromIndex">the index of the first element (inclusive) to be filled with the specified value</param>
+        /// <param name="toIndex">he index of the last element (exclusive) to be filled with the specified value</param>
+        /// <param name="val">the value to be stored in all elements of the array</param>
+        public static void Fill<T>(T[] a, int fromIndex, int toIndex, T val)
+        {
+            RangeCheck(a.Length, fromIndex, toIndex);
+            for (int i = fromIndex; i < toIndex; i++)
+                a[i] = val;
+        }
+
+        /// <summary>
+        /// Checks that <paramref name="fromIndex"/> and <paramref name="toIndex"/> are in
+        /// the range and throws an appropriate exception, if they aren't.
+        /// </summary>
+        private static void RangeCheck(int length, int fromIndex, int toIndex)
+        {
+            if (fromIndex > toIndex)
+            {
+                throw new ArgumentException(
+                    "fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
+            }
+            if (fromIndex < 0)
+            {
+                throw new IndexOutOfRangeException(nameof(fromIndex));
+            }
+            if (toIndex > length)
+            {
+                throw new IndexOutOfRangeException(nameof(toIndex));
             }
         }
 

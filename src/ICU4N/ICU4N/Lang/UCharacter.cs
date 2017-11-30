@@ -2445,12 +2445,27 @@ namespace ICU4N.Lang
                 get { return m_id_; }
             }
 
+            /// <summary>
+            /// Returns the name of this UnicodeBlock.
+            /// </summary>
+            // ICU4N specific - we don't have a Character.Subset base class, so
+            // this functionality was moved here.
+            public override string ToString()
+            {
+                return name;
+            }
+
             // private data members ---------------------------------------------
 
             /**
              * Identification code for this UnicodeBlock
              */
             private int m_id_;
+
+            /// <summary>
+            /// Name for this <see cref="UnicodeBlock"/>
+            /// </summary>
+            private string name;
 
             // private constructor ----------------------------------------------
 
@@ -2463,6 +2478,7 @@ namespace ICU4N.Lang
             private UnicodeBlock(string name, int id)
             //: base(name)
             {
+                this.name = name;
                 m_id_ = id;
                 if (id >= 0)
                 {
@@ -3748,7 +3764,8 @@ namespace ICU4N.Lang
          */
         public static bool IsDefined(int ch)
         {
-            return GetType(ch) != 0;
+            // ICU4N specific - need to check for the value, not 0
+            return GetType(ch) != UnicodeCategory.OtherNotAssigned;
         }
 
         /**
@@ -3821,65 +3838,65 @@ namespace ICU4N.Lang
                             | (1 << UnicodeCategory.DecimalDigitNumber.ToIcuValue()))) != 0;
         }
 
-        /**
-         * Compatibility override of Java deprecated method.  This
-         * method will always remain deprecated.  Delegates to
-         * java.lang.Character.isJavaIdentifierStart.
-         * @param cp the code point
-         * @return true if the code point can start a java identifier.
-         * @deprecated ICU 3.4 (Java)
-         */
-        [Obsolete]
-        public static bool IsJavaLetter(int cp)
-        {
-            return IsJavaIdentifierStart(cp);
-        }
+        // ICU4N: We definitely don't need any of the Java.. functions. 
+        // In .NET, it is not so straightforward
 
-        /**
-         * Compatibility override of Java deprecated method.  This
-         * method will always remain deprecated.  Delegates to
-         * java.lang.Character.isJavaIdentifierPart.
-         * @param cp the code point
-         * @return true if the code point can continue a java identifier.
-         * @deprecated ICU 3.4 (Java)
-         */
-        [Obsolete]
-        public static bool IsJavaLetterOrDigit(int cp)
-        {
-            // ICU4N TODO: Finish
-            throw new NotImplementedException();
-            //return isJavaIdentifierPart(cp);
-        }
+        ///**
+        // * Compatibility override of Java deprecated method.  This
+        // * method will always remain deprecated.  Delegates to
+        // * java.lang.Character.isJavaIdentifierStart.
+        // * @param cp the code point
+        // * @return true if the code point can start a java identifier.
+        // * @deprecated ICU 3.4 (Java)
+        // */
+        //[Obsolete]
+        //public static bool IsJavaLetter(int cp)
+        //{
+        //    return IsJavaIdentifierStart(cp);
+        //}
 
-        /**
-         * Compatibility override of Java method, delegates to
-         * java.lang.Character.isJavaIdentifierStart.
-         * @param cp the code point
-         * @return true if the code point can start a java identifier.
-         * @stable ICU 3.4
-         */
-        public static bool IsJavaIdentifierStart(int cp)
-        {
-            // ICU4N TODO: Finish
-            throw new NotImplementedException();
-            // note, downcast to char for jdk 1.4 compatibility
-            //return Character.IsJavaIdentifierStart((char)cp);
-        }
+        ///**
+        // * Compatibility override of Java deprecated method.  This
+        // * method will always remain deprecated.  Delegates to
+        // * java.lang.Character.isJavaIdentifierPart.
+        // * @param cp the code point
+        // * @return true if the code point can continue a java identifier.
+        // * @deprecated ICU 3.4 (Java)
+        // */
+        //[Obsolete]
+        //public static bool IsJavaLetterOrDigit(int cp)
+        //{
+        //    throw new NotImplementedException();
+        //    //return isJavaIdentifierPart(cp);
+        //}
 
-        /**
-         * Compatibility override of Java method, delegates to
-         * java.lang.Character.isJavaIdentifierPart.
-         * @param cp the code point
-         * @return true if the code point can continue a java identifier.
-         * @stable ICU 3.4
-         */
-        public static bool IsJavaIdentifierPart(int cp)
-        {
-            // ICU4N TODO: Finish
-            throw new NotImplementedException();
-            // note, downcast to char for jdk 1.4 compatibility
-            //return Character.IsJavaIdentifierPart((char)cp);
-        }
+        ///**
+        // * Compatibility override of Java method, delegates to
+        // * java.lang.Character.isJavaIdentifierStart.
+        // * @param cp the code point
+        // * @return true if the code point can start a java identifier.
+        // * @stable ICU 3.4
+        // */
+        //public static bool IsJavaIdentifierStart(int cp)
+        //{
+        //    throw new NotImplementedException();
+        //    // note, downcast to char for jdk 1.4 compatibility
+        //    //return Character.IsJavaIdentifierStart((char)cp);
+        //}
+
+        ///**
+        // * Compatibility override of Java method, delegates to
+        // * java.lang.Character.isJavaIdentifierPart.
+        // * @param cp the code point
+        // * @return true if the code point can continue a java identifier.
+        // * @stable ICU 3.4
+        // */
+        //public static bool IsJavaIdentifierPart(int cp)
+        //{
+        //    throw new NotImplementedException();
+        //    // note, downcast to char for jdk 1.4 compatibility
+        //    //return Character.IsJavaIdentifierPart((char)cp);
+        //}
 
         /**
          * Determines if the specified code point is a lowercase character.
@@ -4466,7 +4483,10 @@ namespace ICU4N.Lang
             {
                 cp = s.CodePointAt(i);
                 if (i != 0) sb.Append(separator);
-                sb.Append(UCharacter.GetName(cp));
+                // ICU4N: Need to manually put the string "null"
+                // here when name is null
+                var name = UCharacter.GetName(cp);
+                sb.Append(name == null ? "null" : name);
             }
             return sb.ToString();
         }
@@ -6088,6 +6108,10 @@ namespace ICU4N.Lang
         public static int OffsetByCodePoints(char[] text, int start, int count, int index,
                 int codePointOffset)
         {
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
             int limit = start + count;
             if (start < 0 || limit < start || limit > text.Length || index < start || index > limit)
             {
