@@ -1,4 +1,5 @@
 ﻿using ICU4N.Lang;
+using ICU4N.Support.Collections;
 using ICU4N.Util;
 using NUnit.Framework;
 using System;
@@ -245,7 +246,7 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 else if ((code[0] != expected))
                 {
-                    Errln("Error testing UScript.getCode(). Got: " + code + " Expected: " + expected + " for locale "
+                    Errln("Error testing UScript.getCode(). Got: " + code[0] + " Expected: " + expected + " for locale "
                             + testName);
                 }
             }

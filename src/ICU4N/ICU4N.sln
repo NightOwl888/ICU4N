@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N", "ICU4N\ICU4N.csproj", "{28F55B04-F1C4-4EC9-B089-A8A7444C5D46}"
 EndProject
@@ -20,11 +20,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Collation", "ICU4N.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Tests.Collation", "ICU4N.Tests.Collation\ICU4N.Tests.Collation.csproj", "{EB00F78E-C8DD-427D-ADBC-D23029EE5D35}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.RegionData", "ICU4N.RegionData\ICU4N.RegionData.csproj", "{7F2851D2-632D-4986-8969-781FA4875BB3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.RegionData", "ICU4N.RegionData\ICU4N.RegionData.csproj", "{7F2851D2-632D-4986-8969-781FA4875BB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Transliterator", "ICU4N.Transliterator\ICU4N.Transliterator.csproj", "{BE86A1C2-0F58-4233-B3C8-476889214E2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Transliterator", "ICU4N.Transliterator\ICU4N.Transliterator.csproj", "{BE86A1C2-0F58-4233-B3C8-476889214E2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.Tests.Transliterator", "ICU4N.Tests.Transliterator\ICU4N.Tests.Transliterator.csproj", "{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Tests.Transliterator", "ICU4N.Tests.Transliterator\ICU4N.Tests.Transliterator.csproj", "{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{F0008007-6BDA-4F66-A01E-F559AD954127}"
+	ProjectSection(SolutionItems) = preProject
+		TestTargetFramework.proj = TestTargetFramework.proj
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

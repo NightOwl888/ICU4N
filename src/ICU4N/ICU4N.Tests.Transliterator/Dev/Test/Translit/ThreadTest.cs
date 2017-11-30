@@ -54,7 +54,7 @@ namespace ICU4N.Dev.Test.Translit
                 }
                 catch (ThreadInterruptedException e)
                 {
-                    Errln(e.toString());
+                    Errln(e.ToString());
                 }
 #endif
             }

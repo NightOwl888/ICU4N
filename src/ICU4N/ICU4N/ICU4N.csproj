@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
-    <!--<TargetFramework>net45</TargetFramework>-->
+    <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
     <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
   </PropertyGroup>
 

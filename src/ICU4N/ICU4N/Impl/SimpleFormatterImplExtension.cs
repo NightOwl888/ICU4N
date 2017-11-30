@@ -684,7 +684,7 @@ namespace ICU4N.Impl
         /// <returns>The compiled-pattern string.</returns>
         /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
 		[CLSCompliant(false)]
-        public static string FormatRawPattern(string pattern, int min, int max, params char[][] values)
+		public static string FormatRawPattern(string pattern, int min, int max, params char[][] values)
         {
             StringBuilder sb = new StringBuilder();
             string compiledPattern = CompileToStringMinMaxArguments(pattern, sb, min, max);
@@ -873,7 +873,7 @@ namespace ICU4N.Impl
                     if (n >= ARG_NUM_LIMIT)
                     {
                         i += n - ARG_NUM_LIMIT;
-
+                        
                     }
                 }
             }
@@ -927,7 +927,7 @@ namespace ICU4N.Impl
                     if (n >= ARG_NUM_LIMIT)
                     {
                         i += n - ARG_NUM_LIMIT;
-
+                        
                     }
                     else if (values[n] == result)
                     {
@@ -969,7 +969,7 @@ namespace ICU4N.Impl
         /// </param>
         /// <returns><paramref name="result"/></returns>
 		[CLSCompliant(false)]
-        public static StringBuilder FormatAndReplace(
+		public static StringBuilder FormatAndReplace(
             string compiledPattern, StringBuilder result, int[] offsets, params char[][] values)
         {
             int valuesLength = values != null ? values.Length : 0;
@@ -993,7 +993,7 @@ namespace ICU4N.Impl
                     if (n >= ARG_NUM_LIMIT)
                     {
                         i += n - ARG_NUM_LIMIT;
-
+                        
                     }
                 }
             }
@@ -1047,7 +1047,7 @@ namespace ICU4N.Impl
                     if (n >= ARG_NUM_LIMIT)
                     {
                         i += n - ARG_NUM_LIMIT;
-
+                        
                     }
                     else if (values[n] is StringBuilderCharSequence && ((StringBuilderCharSequence)values[n]).StringBuilder == result)
                     {
@@ -1101,7 +1101,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    int limit = i + (n - ARG_NUM_LIMIT);
+                    int limit = i + (n - ARG_NUM_LIMIT); 
                     result.Append(compiledPattern, i, limit - i); // ICU4N: Corrected 3rd parameter logic
                     i = limit;
                 }
@@ -1167,7 +1167,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    int limit = i + (n - ARG_NUM_LIMIT);
+                    int limit = i + (n - ARG_NUM_LIMIT); 
                     result.Append(compiledPattern, i, limit - i); // ICU4N: Corrected 3rd parameter logic
                     i = limit;
                 }
@@ -1207,7 +1207,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    int limit = i + (n - ARG_NUM_LIMIT);
+                    int limit = i + (n - ARG_NUM_LIMIT); 
                     result.Append(compiledPattern, i, limit - i); // ICU4N: Corrected 3rd parameter logic
                     i = limit;
                 }
@@ -1273,7 +1273,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    int limit = i + (n - ARG_NUM_LIMIT);
+                    int limit = i + (n - ARG_NUM_LIMIT); 
                     result.Append(compiledPattern, i, limit - i); // ICU4N: Corrected 3rd parameter logic
                     i = limit;
                 }
@@ -1281,5 +1281,5 @@ namespace ICU4N.Impl
             return result;
         }
 
-    }
+	}
 }

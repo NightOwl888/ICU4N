@@ -4577,10 +4577,18 @@ namespace ICU4N.Util
                 switch (category)
                 {
                     case Category.DISPLAY:
+#if NETSTANDARD
                         CultureInfo.CurrentUICulture = newLocale;
+#else
+                        System.Threading.Thread.CurrentThread.CurrentUICulture = newLocale;
+#endif
                         break;
                     case Category.FORMAT:
+#if NETSTANDARD
                         CultureInfo.CurrentCulture = newLocale;
+#else
+                        System.Threading.Thread.CurrentThread.CurrentCulture = newLocale;
+#endif
                         break;
                 }
             }
