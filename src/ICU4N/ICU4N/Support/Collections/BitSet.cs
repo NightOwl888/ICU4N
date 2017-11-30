@@ -15,8 +15,6 @@ namespace ICU4N.Support.Collections
         : ICloneable
 #endif
     {
-        private static readonly long serialVersionUID = 7997698588986878753L;
-
         private static readonly int OFFSET = 6;
 
         private static readonly int ELM_SIZE = 1 << OFFSET;
@@ -606,7 +604,7 @@ namespace ICU4N.Support.Collections
          *             if {@code pos} is negative.
          * @see #flip(int, int)
          */
-        public void flip(int pos)
+        public void Flip(int pos)
         {
             if (pos < 0)
             {
@@ -640,7 +638,7 @@ namespace ICU4N.Support.Collections
          *             {@code pos2} is smaller than {@code pos1}.
          * @see #flip(int)
          */
-        public void flip(int pos1, int pos2)
+        public void Flip(int pos1, int pos2)
         {
             if (pos1 < 0 || pos2 < 0 || pos2 < pos1)
             {
