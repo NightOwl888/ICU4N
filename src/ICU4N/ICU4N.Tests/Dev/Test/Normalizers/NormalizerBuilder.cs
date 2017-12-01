@@ -95,7 +95,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             if (DEBUG) Console.Out.WriteLine("Reading Exclusions");
 
-            TextReader @in = TestUtil.GetDataReader("Unicode.CompositionExclusions.txt");
+            TextReader @in = TestUtil.GetDataReader("unicode.CompositionExclusions.txt");
 
             while (true)
             {
@@ -132,7 +132,7 @@ namespace ICU4N.Dev.Test.Normalizers
             TextReader @in = null;
             try
             {
-                @in = TestUtil.GetDataReader("Unicode.UnicodeData.txt");
+                @in = TestUtil.GetDataReader("unicode.UnicodeData.txt");
             }
             catch (Exception e)
             {
