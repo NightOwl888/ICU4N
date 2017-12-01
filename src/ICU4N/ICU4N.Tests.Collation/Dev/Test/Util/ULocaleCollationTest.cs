@@ -66,25 +66,6 @@ namespace ICU4N.Dev.Test.Util
             {
                 return Collator.Unregister(key);
             }));
-            //    checkService("ja_JP_YOKOHAMA", new IServiceFacade() {
-            //    @Override
-            //    public Object create(ULocale req)
-            //    {
-            //        return Collator.getInstance(req);
-            //    }
-            //}, null, new Registrar()
-            //    {
-            //    @Override
-            //    public Object register(ULocale loc, Object prototype)
-            //    {
-            //        return Collator.registerInstance((Collator)prototype, loc);
-            //    }
-            //    @Override
-            //    public bool unregister(Object key)
-            //    {
-            //        return Collator.unregister(key);
-            //    }
-            //});
         }
 
 
@@ -201,6 +182,9 @@ namespace ICU4N.Dev.Test.Util
                     ULocale.VALID_LOCALE });
                 ULocale actual = (ULocale)getLocale.Invoke(obj, new Object[] {
                     ULocale.ACTUAL_LOCALE });
+                // ICU4N TODO: If we subclass CultureInfo, we can just
+                // check valid vs actual rather than calling ToLocale() which
+                // changes the case and format of the requestedLocale
                 Checklocs(cls.Name, requestedLocale,
                         valid.ToLocale(), actual.ToLocale(),
                         expReqValid, expValidActual);
