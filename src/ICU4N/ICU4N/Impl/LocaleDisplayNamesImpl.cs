@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Linq;
 using System.Resources;
 using System.Text;
+using CurrencyDisplayInfo = ICU4N.Impl.CurrencyData.CurrencyDisplayInfo;
 
 namespace ICU4N.Impl
 {
@@ -30,14 +31,13 @@ namespace ICU4N.Impl
         private readonly char formatReplaceOpenParen;
         private readonly char formatCloseParen;
         private readonly char formatReplaceCloseParen;
-        // ICU4N TODO: Finish implementation
-        //private readonly CurrencyDisplayInfo currencyDisplayInfo;
+        private readonly CurrencyDisplayInfo currencyDisplayInfo;
 
         private static readonly Cache cache = new Cache();
 
-        /**
-         * Capitalization context usage types for locale display names
-         */
+        /// <summary>
+        /// Capitalization context usage types for locale display names
+        /// </summary>
         private enum CapitalizationContextUsage
         {
             LANGUAGE,
@@ -47,14 +47,15 @@ namespace ICU4N.Impl
             KEY,
             KEYVALUE
         }
-        /**
-         * Capitalization transforms. For each usage type, indicates whether to titlecase for
-         * the context specified in capitalization (which we know at construction time).
-         */
+
+        /// <summary>
+        /// Capitalization transforms. For each usage type, indicates whether to titlecase for
+        /// the context specified in capitalization (which we know at construction time).
+        /// </summary>
         private bool[] capitalizationUsage = null;
-        /**
-         * Map from resource key to CapitalizationContextUsage value
-         */
+        /// <summary>
+        /// Map from resource key to <see cref="CapitalizationContextUsage"/> value
+        /// </summary>
         private static readonly IDictionary<string, CapitalizationContextUsage> contextUsageTypeMap;
         static LocaleDisplayNamesImpl()
         {
@@ -68,9 +69,9 @@ namespace ICU4N.Impl
                 {"keyValue",  CapitalizationContextUsage.KEYVALUE},
             };
         }
-        /**
-         * BreakIterator to use for capitalization
-         */
+        /// <summary>
+        /// <see cref="BreakIterator"/> to use for capitalization
+        /// </summary>
         private /*transient*/ BreakIterator capitalizationBrkIter = null;
 
         private static readonly CaseMap.Title TO_TITLE_WHOLE_STRING_NO_LOWERCASE =
@@ -245,8 +246,7 @@ namespace ICU4N.Impl
                 capitalizationBrkIter = BreakIterator.GetSentenceInstance(locale);
             }
 
-            // ICU4N TODO: Finish implementation
-            //this.currencyDisplayInfo = CurrencyData.Provider.GetInstance(locale, false);
+            this.currencyDisplayInfo = CurrencyData.Provider.GetInstance(locale, false);
         }
 
         public override ULocale GetLocale()
@@ -354,7 +354,7 @@ namespace ICU4N.Impl
                     if (hasScript && hasCountry)
                     {
                         string langScriptCountry = lang + '_' + script + '_' + country;
-                        string result = localeIdName(langScriptCountry);
+                        string result = LocaleIdName(langScriptCountry);
                         if (result != null && !result.Equals(langScriptCountry))
                         {
                             resultName = result;
@@ -366,7 +366,7 @@ namespace ICU4N.Impl
                     if (hasScript)
                     {
                         string langScript = lang + '_' + script;
-                        string result = localeIdName(langScript);
+                        string result = LocaleIdName(langScript);
                         if (result != null && !result.Equals(langScript))
                         {
                             resultName = result;
@@ -377,7 +377,7 @@ namespace ICU4N.Impl
                     if (hasCountry)
                     {
                         string langCountry = lang + '_' + country;
-                        string result = localeIdName(langCountry);
+                        string result = LocaleIdName(langCountry);
                         if (result != null && !result.Equals(langCountry))
                         {
                             resultName = result;
@@ -390,7 +390,7 @@ namespace ICU4N.Impl
 
             if (resultName == null)
             {
-                string result = localeIdName(lang);
+                string result = LocaleIdName(lang);
                 if (result == null) { return null; }
                 resultName = result
                         .Replace(formatOpenParen, formatReplaceOpenParen)
@@ -409,7 +409,7 @@ namespace ICU4N.Impl
             }
             if (hasCountry)
             {
-                string result = regionDisplayName(country, true);
+                string result = RegionDisplayName(country, true);
                 if (result == null) { return null; }
                 AppendWithSep(result
                         .Replace(formatOpenParen, formatReplaceOpenParen)
@@ -476,7 +476,7 @@ namespace ICU4N.Impl
             return AdjustForUsageAndContext(CapitalizationContextUsage.LANGUAGE, resultName);
         }
 
-        private string localeIdName(string localeId)
+        private string LocaleIdName(string localeId)
         {
             if (nameLength == DisplayContext.LENGTH_SHORT)
             {
@@ -549,7 +549,7 @@ namespace ICU4N.Impl
             return ScriptDisplayName(UScript.GetShortName(scriptCode));
         }
 
-        private string regionDisplayName(string region, bool skipAdjust)
+        private string RegionDisplayName(string region, bool skipAdjust)
         {
             if (nameLength == DisplayContext.LENGTH_SHORT)
             {
@@ -565,7 +565,7 @@ namespace ICU4N.Impl
 
         public override string RegionDisplayName(string region)
         {
-            return regionDisplayName(region, false);
+            return RegionDisplayName(region, false);
         }
 
         private string VariantDisplayName(string variant, bool skipAdjust)
@@ -598,13 +598,11 @@ namespace ICU4N.Impl
 
             if (key.Equals("currency"))
             {
-                // ICU4N TODO: finish implementation
-                throw new NotImplementedException();
-                //keyValueName = currencyDisplayInfo.GetName(AsciiUtil.ToUpperString(value));
-                //if (keyValueName == null)
-                //{
-                //    keyValueName = value;
-                //}
+                keyValueName = currencyDisplayInfo.GetName(AsciiUtil.ToUpperString(value));
+                if (keyValueName == null)
+                {
+                    keyValueName = value;
+                }
             }
             else
             {
@@ -769,20 +767,12 @@ namespace ICU4N.Impl
             {
                 try
                 {
-                    //return (DataTables)Class.forName(className).newInstance();
                     Type type = Type.GetType(className);
                     return (DataTables)Activator.CreateInstance(type);
                 }
                 catch (Exception)
                 {
                     return new DefaultDataTables();
-                    //    return new DataTables() {
-                    //            @Override
-                    //            public DataTable get(ULocale locale, boolean nullIfNotFound)
-                    //    {
-                    //        return new DataTable(nullIfNotFound);
-                    //    }
-                    //};
                 }
             }
         }

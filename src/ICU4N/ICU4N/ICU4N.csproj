@@ -27,6 +27,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.3|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.3\ICU4N.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Impl\Data\brkitr\*" />
     <None Remove="Impl\Data\*.cfu" />
@@ -86,6 +90,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>SimpleFormatterImplExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\StandardPluralExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StandardPluralExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Impl\UCasePropsExtension.cs">
       <DesignTime>True</DesignTime>
@@ -205,6 +214,10 @@
     <None Update="Impl\SimpleFormatterImplExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SimpleFormatterImplExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Impl\StandardPluralExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>StandardPluralExtension.cs</LastGenOutput>
     </None>
     <None Update="Impl\UCasePropsExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

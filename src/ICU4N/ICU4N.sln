@@ -31,6 +31,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{F0008007
 		TestTargetFramework.proj = TestTargetFramework.proj
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICU4N.CurrencyData", "ICU4N.CurrencyData\ICU4N.CurrencyData.csproj", "{AC716D36-D523-4675-989C-22CA01B2FA89}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F290AD8-1F27-4B12-AFEB-E7BFB50EFFA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC716D36-D523-4675-989C-22CA01B2FA89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC716D36-D523-4675-989C-22CA01B2FA89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC716D36-D523-4675-989C-22CA01B2FA89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC716D36-D523-4675-989C-22CA01B2FA89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
