@@ -46,7 +46,7 @@ namespace ICU4N.Impl.Locale
 
         internal class CodepointsTypeHandler : SpecialTypeHandler
         {
-            private static readonly Regex pat = new Regex("[0-9a-fA-F]{4,6}(-[0-9a-fA-F]{4,6})*", RegexOptions.Compiled);
+            private static readonly Regex pat = new Regex("^[0-9a-fA-F]{4,6}(-[0-9a-fA-F]{4,6})*$", RegexOptions.Compiled);
 
             internal override bool IsWellFormed(string value)
             {
@@ -56,7 +56,7 @@ namespace ICU4N.Impl.Locale
 
         internal class ReorderCodeTypeHandler : SpecialTypeHandler
         {
-            private static readonly Regex pat = new Regex("[a-zA-Z]{3,8}(-[a-zA-Z]{3,8})*", RegexOptions.Compiled);
+            private static readonly Regex pat = new Regex("^[a-zA-Z]{3,8}(-[a-zA-Z]{3,8})*$", RegexOptions.Compiled);
 
             internal override bool IsWellFormed(string value)
             {
@@ -66,7 +66,7 @@ namespace ICU4N.Impl.Locale
 
         internal class RgKeyValueTypeHandler : SpecialTypeHandler
         {
-            private static readonly Regex pat = new Regex("([a-zA-Z]{2}|[0-9]{3})[zZ]{4}", RegexOptions.Compiled);
+            private static readonly Regex pat = new Regex("^([a-zA-Z]{2}|[0-9]{3})[zZ]{4}$", RegexOptions.Compiled);
 
             internal override bool IsWellFormed(string value)
             {
@@ -76,7 +76,7 @@ namespace ICU4N.Impl.Locale
 
         internal class SubdivisionKeyValueTypeHandler : SpecialTypeHandler
         {
-            private static readonly Regex pat = new Regex("([a-zA-Z]{2}|[0-9]{3})", RegexOptions.Compiled);
+            private static readonly Regex pat = new Regex("^([a-zA-Z]{2}|[0-9]{3})$", RegexOptions.Compiled);
 
             internal override bool IsWellFormed(string value)
             {
@@ -86,7 +86,7 @@ namespace ICU4N.Impl.Locale
 
         internal class PrivateUseKeyValueTypeHandler : SpecialTypeHandler
         {
-            private static readonly Regex pat = new Regex("[a-zA-Z0-9]{3,8}(-[a-zA-Z0-9]{3,8})*", RegexOptions.Compiled);
+            private static readonly Regex pat = new Regex("^[a-zA-Z0-9]{3,8}(-[a-zA-Z0-9]{3,8})*$", RegexOptions.Compiled);
 
             internal override bool IsWellFormed(string value)
             {
