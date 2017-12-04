@@ -26,6 +26,7 @@
     <None Remove="Dev\Test\Util\Trie2Test.setRangesEmpty.32.tri2" />
     <None Remove="Dev\Test\Util\Trie2Test.setRangesSingleValue.16.tri2" />
     <None Remove="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
+    <None Remove="Dev\Test\Rbbi\break_rules\*" />
   </ItemGroup>
 
   <ItemGroup>
@@ -43,6 +44,7 @@
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesEmpty.32.tri2" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.16.tri2" />
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
+    <EmbeddedResource Include="Dev\Test\Rbbi\break_rules\*" />
   </ItemGroup>
 
   <ItemGroup>
