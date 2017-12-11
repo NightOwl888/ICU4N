@@ -1,9 +1,7 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -14,8 +12,7 @@ namespace ICU4N.Text
         : ICloneable
 #endif
     {
-        // ICU4N TODO: implement
-        //private static readonly bool DEBUG = ICUDebug.Enabled("breakiterator");
+        private static readonly bool DEBUG = ICUDebug.Enabled("breakiterator");
 
         private static readonly object syncLock = new object();
 
@@ -185,62 +182,62 @@ namespace ICU4N.Text
          * Includes spaces and most punctuation.
          * @stable ICU 53
          */
-        public static readonly int WORD_NONE = 0;
+        public const int WORD_NONE = 0;
 
         /**
          * Upper bound for tags for uncategorized words.
          * @stable ICU 53
          */
-        public static readonly int WORD_NONE_LIMIT = 100;
+        public const int WORD_NONE_LIMIT = 100;
 
         /**
          * Tag value for words that appear to be numbers, lower limit.
          * @stable ICU 53
          */
-        public static readonly int WORD_NUMBER = 100;
+        public const int WORD_NUMBER = 100;
 
         /**
          * Tag value for words that appear to be numbers, upper limit.
          * @stable ICU 53
          */
-        public static readonly int WORD_NUMBER_LIMIT = 200;
+        public const int WORD_NUMBER_LIMIT = 200;
 
         /**
          * Tag value for words that contain letters, excluding
          * hiragana, katakana or ideographic characters, lower limit.
          * @stable ICU 53
          */
-        public static readonly int WORD_LETTER = 200;
+        public const int WORD_LETTER = 200;
 
         /**
          * Tag value for words containing letters, upper limit
          * @stable ICU 53
          */
-        public static readonly int WORD_LETTER_LIMIT = 300;
+        public const int WORD_LETTER_LIMIT = 300;
 
         /**
          * Tag value for words containing kana characters, lower limit
          * @stable ICU 53
          */
-        public static readonly int WORD_KANA = 300;
+        public const int WORD_KANA = 300;
 
         /**
          * Tag value for words containing kana characters, upper limit
          * @stable ICU 53
          */
-        public static readonly int WORD_KANA_LIMIT = 400;
+        public const int WORD_KANA_LIMIT = 400;
 
         /**
          * Tag value for words containing ideographic characters, lower limit
          * @stable ICU 53
          */
-        public static readonly int WORD_IDEO = 400;
+        public const int WORD_IDEO = 400;
 
         /**
          * Tag value for words containing ideographic characters, upper limit
          * @stable ICU 53
          */
-        public static readonly int WORD_IDEO_LIMIT = 500;
+        public const int WORD_IDEO_LIMIT = 500;
 
         /**
          * For RuleBasedBreakIterators, return the status tag from the
