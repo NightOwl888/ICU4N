@@ -230,10 +230,10 @@ namespace ICU4N.Text
         /**
          *  The iteration state - current position, rule status for the current position,
          *                        and whether the iterator ran off the end, yielding UBRK_DONE.
-         *                        Current position is pinned to be 0 < position <= text.length.
+         *                        Current position is pinned to be 0 &lt; position &lt;= text.length.
          *                        Current position is always set to a boundary.
          *
-         *  The current  position of the iterator. Pinned, 0 < fPosition <= text.length.
+         *  The current  position of the iterator. Pinned, 0 &lt; fPosition &lt;= text.length.
          *  Never has the value UBRK_DONE (-1).
          */
         private int fPosition;
@@ -763,7 +763,7 @@ namespace ICU4N.Text
                         case UScript.KHMER:
                             eng = new KhmerBreakEngine();
                             break;
-                        case (int)UScript.HAN:
+                        case UScript.HAN:
                             if (BreakType == KIND_WORD)
                             {
                                 eng = new CjkBreakEngine(false);
@@ -774,7 +774,7 @@ namespace ICU4N.Text
                                 eng = gUnhandledBreakEngine;
                             }
                             break;
-                        case (int)UScript.HANGUL:
+                        case UScript.HANGUL:
                             if (BreakType == KIND_WORD)
                             {
                                 eng = new CjkBreakEngine(true);
