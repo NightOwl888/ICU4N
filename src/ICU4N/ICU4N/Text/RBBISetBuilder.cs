@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Support.Collections;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -250,7 +251,7 @@ namespace ICU4N.Text
             {
                 for (rlSearchRange = fRangeList; rlSearchRange != rlRange; rlSearchRange = rlSearchRange.fNext)
                 {
-                    if (rlRange.fIncludesSets.Equals(rlSearchRange.fIncludesSets))
+                    if (CollectionUtil.Equals(rlRange.fIncludesSets, rlSearchRange.fIncludesSets))
                     {
                         rlRange.fNum = rlSearchRange.fNum;
                         break;

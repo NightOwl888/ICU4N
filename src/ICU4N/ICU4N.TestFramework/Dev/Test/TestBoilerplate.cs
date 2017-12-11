@@ -177,7 +177,7 @@ namespace ICU4N.Dev.Test
 
         public static bool VerifySetsIdentical(AbstractTestLog here, ISet<T> values1, ISet<T> values2)
         {
-            if (values1.SetEquals(values2)) return true;
+            if (CollectionUtil.Equals(values1, values2)) return true;
             ISet<T> temp;
             TestFmwk.Errln("Values differ:");
             TestFmwk.Errln("UnicodeMap - HashMap");

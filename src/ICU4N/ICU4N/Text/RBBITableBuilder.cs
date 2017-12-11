@@ -642,7 +642,7 @@ namespace ICU4N.Text
                         {
                             RBBIStateDescriptor temp2;
                             temp2 = fDStates[ix];
-                            if (U.SetEquals(temp2.fPositions))
+                            if (CollectionUtil.Equals(U, temp2.fPositions))
                             {
                                 U = temp2.fPositions;
                                 ux = ix;

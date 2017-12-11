@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.IO;
+﻿using ICU4N.Support.Collections;
+using ICU4N.Support.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -105,7 +106,7 @@ namespace ICU4N.Impl
         protected bool Authenticate(byte[] dataformatid,
                                        byte[] dataformatversion)
         {
-            return Array.Equals(
+            return Arrays.Equals(
                     ICUBinary.GetVersionByteArrayFromCompactInt(DATA_FORMAT_ID_),
                     dataformatid) &&
                    IsDataVersionAcceptable(dataformatversion);

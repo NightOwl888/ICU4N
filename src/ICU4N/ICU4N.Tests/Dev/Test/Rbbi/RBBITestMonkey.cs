@@ -2502,7 +2502,6 @@ namespace ICU4N.Dev.Test.Rbbi
         [Test]
         public void TestRTLineMonkey()
         {
-            fail("TODO: Doesn't finish");
             int loopCount = 200;
             int seed = 1;
 
