@@ -1,6 +1,5 @@
 ﻿using ICU4N.Support.Text;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ICU4N.Impl.Locale
@@ -328,7 +327,6 @@ namespace ICU4N.Impl.Locale
 
         private class Cache : LocaleObjectCache<Key, BaseLocale>
         {
-
             public Cache()
             {
             }
@@ -342,7 +340,6 @@ namespace ICU4N.Impl.Locale
             {
                 return new BaseLocale(key.Lang, key.Scrt, key.Regn, key.Vart);
             }
-
         }
     }
 }

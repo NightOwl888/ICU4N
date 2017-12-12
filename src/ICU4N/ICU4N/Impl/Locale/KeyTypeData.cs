@@ -3,9 +3,7 @@ using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Resources;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ICU4N.Impl.Locale
@@ -94,7 +92,7 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-        internal enum SpecialType
+        internal enum SpecialType // ICU4N TODO: API - rename values for .NET conventions
         {
             CODEPOINTS,
             REORDER_CODE,
@@ -122,7 +120,7 @@ namespace ICU4N.Impl.Locale
 
         private class Type
         {
-            internal string legacyId;
+            internal string legacyId; // ICU4N TODO: API - change to properties
             internal string bcpId;
 
             internal Type(string legacyId, string bcpId)
@@ -274,7 +272,7 @@ namespace ICU4N.Impl.Locale
                         bcpKeyId = legacyKeyId;
                         hasSameKey = true;
                     }
-                    IList<string> _bcp47Types = new List<string>(); // ICU4N TODO: LinkedHashSet...?
+                    IList<string> _bcp47Types = new List<string>(); // ICU4N: Mimic LinkedHashSet with List by ensuring no duplicates are added
                     _Bcp47Keys[bcpKeyId] = _bcp47Types.ToUnmodifiableList();
 
                     bool isTZ = legacyKeyId.Equals("timezone");
@@ -339,8 +337,8 @@ namespace ICU4N.Impl.Locale
                                 while (bcpTypeAliasResItr.MoveNext())
                                 {
                                     UResourceBundle bcpTypeAliasDataEntry = bcpTypeAliasResItr.Current;
-                                    String from = bcpTypeAliasDataEntry.Key;
-                                    String to = bcpTypeAliasDataEntry.GetString();
+                                    string from = bcpTypeAliasDataEntry.Key;
+                                    string to = bcpTypeAliasDataEntry.GetString();
                                     ISet<string> aliasSet = bcpTypeAliasMap.Get(to);
                                     if (aliasSet == null)
                                     {
@@ -466,34 +464,30 @@ namespace ICU4N.Impl.Locale
         private enum TypeInfoType { deprecated }
 
         /** Reads
-keyInfo{
-deprecated{
-            kh{"true"}
-            vt{"true"}
-}
-valueType{
-            ca{"incremental"}
-            h0{"single"}
-            kr{"multiple"}
-            vt{"multiple"}
-            x0{"any"}
-}
-}
+            keyInfo{
+                deprecated{
+                            kh{"true"}
+                            vt{"true"}
+                }
+                valueType{
+                            ca{"incremental"}
+                            h0{"single"}
+                            kr{"multiple"}
+                            vt{"multiple"}
+                            x0{"any"}
+                }
+            }
          */
         private static void GetKeyInfo(UResourceBundle keyInfoRes)
         {
             ISet<string> _deprecatedKeys = new HashSet<string>();
             IDictionary<string, ValueType> _valueTypes = new Dictionary<string, ValueType>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
-                                                                                              //for (UResourceBundleIterator keyInfoIt = keyInfoRes.GetEnumerator(); keyInfoIt.MoveNext();)
             foreach (var keyInfoEntry in keyInfoRes)
             {
-                //UResourceBundle keyInfoEntry = keyInfoIt.Current;
                 string key = keyInfoEntry.Key;
                 KeyInfoType keyInfo = (KeyInfoType)Enum.Parse(typeof(KeyInfoType), key, true);
-                //for (UResourceBundleIterator keyInfoIt2 = keyInfoEntry.getIterator(); keyInfoIt2.hasNext();)
                 foreach (var keyInfoEntry2 in keyInfoEntry)
                 {
-                    //UResourceBundle keyInfoEntry2 = keyInfoIt2.next();
                     string key2 = keyInfoEntry2.Key;
                     string value2 = keyInfoEntry2.GetString();
                     switch (keyInfo)
@@ -512,36 +506,30 @@ valueType{
         }
 
         /** Reads:
-typeInfo{
-deprecated{
-            co{
-                direct{"true"}
+            typeInfo{
+                deprecated{
+                            co{
+                                direct{"true"}
+                            }
+                            tz{
+                                camtr{"true"}
+                            }
+                }
             }
-            tz{
-                camtr{"true"}
-            }
-}
-}
          */
         private static void GetTypeInfo(UResourceBundle typeInfoRes)
         {
             IDictionary<string, ISet<string>> _deprecatedKeyTypes = new Dictionary<string, ISet<string>>();  // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
-            //for (UResourceBundleIterator keyInfoIt = typeInfoRes.getIterator(); keyInfoIt.hasNext();)
             foreach (var keyInfoEntry in typeInfoRes)
             {
-                //UResourceBundle keyInfoEntry = keyInfoIt.next();
                 string key = keyInfoEntry.Key;
                 TypeInfoType typeInfo = (TypeInfoType)Enum.Parse(typeof(TypeInfoType), key, true);
-                //for (UResourceBundleIterator keyInfoIt2 = keyInfoEntry.getIterator(); keyInfoIt2.hasNext();)
                 foreach (var keyInfoEntry2 in keyInfoEntry)
                 {
-                    //UResourceBundle keyInfoEntry2 = keyInfoIt2.next();
                     string key2 = keyInfoEntry2.Key;
                     ISet<string> _deprecatedTypes = new HashSet<string>(); // ICU4N TODO: LinkedHashSet...?
-                    //for (UResourceBundleIterator keyInfoIt3 = keyInfoEntry2.getIterator(); keyInfoIt3.hasNext();)
                     foreach (var keyInfoEntry3 in keyInfoEntry2)
                     {
-                        //UResourceBundle keyInfoEntry3 = keyInfoIt3.next();
                         string key3 = keyInfoEntry3.Key;
                         switch (typeInfo)
                         { // allow for expansion
@@ -564,7 +552,7 @@ deprecated{
         //          below is just for proof of concept, and commented out.
         //
 
-        //    private static final String[][] TYPE_DATA_CA = {
+        //    private static final string[][] TYPE_DATA_CA = {
         //     // {<legacy type>, <bcp type - if different>},
         //        {"buddhist", null},
         //        {"chinese", null},
@@ -586,7 +574,7 @@ deprecated{
         //        {"roc", null},
         //    };
         //
-        //    private static final String[][] TYPE_DATA_KS = {
+        //    private static final string[][] TYPE_DATA_KS = {
         //     // {<legacy type>, <bcp type - if different>},
         //        {"identical", "identic"},
         //        {"primary", "level1"},
@@ -595,12 +583,12 @@ deprecated{
         //        {"tertiary", "level3"},
         //    };
         //
-        //    private static final String[][] TYPE_ALIAS_KS = {
+        //    private static final string[][] TYPE_ALIAS_KS = {
         //     // {<legacy alias>, <legacy canonical>},
         //        {"quarternary", "quaternary"},
         //    };
         //
-        //    private static final String[][] BCP_TYPE_ALIAS_CA = {
+        //    private static final string[][] BCP_TYPE_ALIAS_CA = {
         //     // {<bcp deprecated>, <bcp preferred>
         //        {"islamicc", "islamic-civil"},
         //    };
@@ -662,7 +650,7 @@ deprecated{
                         ISet<string> aliasSet;
                         if (!bcpTypeAliasMap.TryGetValue(to, out aliasSet) || aliasSet == null)
                         {
-                            aliasSet = new HashSet<String>();
+                            aliasSet = new HashSet<string>();
                             bcpTypeAliasMap[to] = aliasSet;
                         }
                         aliasSet.Add(from);
@@ -788,9 +776,7 @@ deprecated{
 
         public static ValueType GetValueType(string key)
         {
-            ValueType type = VALUE_TYPES.Get(key);
-            return type; // Defaults to ValueType.Single
-            //return type == null ? ValueType.single : type;
+            return VALUE_TYPES.Get(key); // Defaults to ValueType.Single
         }
     }
 }

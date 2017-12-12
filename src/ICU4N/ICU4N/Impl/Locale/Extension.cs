@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ICU4N.Impl.Locale
+﻿namespace ICU4N.Impl.Locale
 {
     public class Extension
     {

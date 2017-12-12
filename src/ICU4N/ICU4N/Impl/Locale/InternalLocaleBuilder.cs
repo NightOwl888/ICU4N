@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Text;
 
 namespace ICU4N.Impl.Locale
@@ -242,9 +241,9 @@ namespace ICU4N.Impl.Locale
             return this;
         }
 
-        /*
-         * Set extension/private subtags in a single string representation
-         */
+        /// <summary>
+        /// Set extension/private subtags in a single string representation
+        /// </summary>
         public InternalLocaleBuilder SetExtensions(string subtags)
         {
             if (subtags == null || subtags.Length == 0)
@@ -294,7 +293,7 @@ namespace ICU4N.Impl.Locale
 
                     if (extensions == null)
                     {
-                        extensions = new List<String>(4);
+                        extensions = new List<string>(4);
                     }
                     extensions.Add(sb.ToString());
                 }
@@ -343,11 +342,11 @@ namespace ICU4N.Impl.Locale
             return SetExtensions(extensions, privateuse);
         }
 
-        /*
-         * Set a list of BCP47 extensions and private use subtags
-         * BCP47 extensions are already validated and well-formed, but may contain duplicates
-         */
-        private InternalLocaleBuilder SetExtensions(IList<String> bcpExtensions, string privateuse)
+        /// <summary>
+        /// Set a list of BCP47 extensions and private use subtags.
+        /// BCP47 extensions are already validated and well-formed, but may contain duplicates.
+        /// </summary>
+        private InternalLocaleBuilder SetExtensions(IList<string> bcpExtensions, string privateuse)
         {
             ClearExtensions();
 
@@ -369,7 +368,7 @@ namespace ICU4N.Impl.Locale
                         {
                             if (_extensions == null)
                             {
-                                _extensions = new Dictionary<CaseInsensitiveChar, String>(4);
+                                _extensions = new Dictionary<CaseInsensitiveChar, string>(4);
                             }
                             _extensions[key] = bcpExt.Substring(2);
                         }
@@ -389,9 +388,9 @@ namespace ICU4N.Impl.Locale
             return this;
         }
 
-        /*
-         * Reset Builder's internal state with the given language tag
-         */
+        /// <summary>
+        /// Reset Builder's internal state with the given language tag
+        /// </summary>
         public InternalLocaleBuilder SetLanguageTag(LanguageTag langtag)
         {
             Clear();
@@ -410,7 +409,7 @@ namespace ICU4N.Impl.Locale
             _script = langtag.GetScript();
             _region = langtag.GetRegion();
 
-            IList<String> bcpVariants = langtag.GetVariants();
+            IList<string> bcpVariants = langtag.GetVariants();
             if (bcpVariants.Count > 0)
             {
                 StringBuilder var = new StringBuilder(bcpVariants[0]);
@@ -433,6 +432,7 @@ namespace ICU4N.Impl.Locale
             string region = @base.GetRegion();
             string variant = @base.GetVariant();
 
+            // ICU4N TODO: Remove ?
             if (JDKIMPL)
             {
                 // Special backward compatibility support
@@ -478,7 +478,7 @@ namespace ICU4N.Impl.Locale
 
             if (region.Length > 0 && !LanguageTag.IsRegion(region))
             {
-                throw new FormatException("Ill-formed region: " + region);
+                throw new FormatException("Ill-formed region: " + region); // ICU4N TODO: Port LocaleSyntaxException (instead of FormatException)
             }
 
             if (variant.Length > 0)
@@ -623,10 +623,10 @@ namespace ICU4N.Impl.Locale
             return new LocaleExtensions(_extensions, _uattributes, _ukeywords);
         }
 
-        /*
-         * Remove special private use subtag sequence identified by "lvariant"
-         * and return the rest. Only used by LocaleExtensions
-         */
+        /// <summary>
+        /// Remove special private use subtag sequence identified by "lvariant"
+        /// and return the rest. Only used by LocaleExtensions.
+        /// </summary>
         internal static string RemovePrivateuseVariant(string privuseVal)
         {
             StringTokenIterator itr = new StringTokenIterator(privuseVal, LanguageTag.SEP);
@@ -660,11 +660,11 @@ namespace ICU4N.Impl.Locale
             return (prefixStart == 0) ? null : privuseVal.Substring(0, prefixStart - 1); // ICU4N: Checked 2nd parameter
         }
 
-        /*
-         * Check if the given variant subtags separated by the given
-         * separator(s) are valid
-         */
-        private int CheckVariants(String variants, String sep)
+        /// <summary>
+        /// Check if the given variant subtags separated by the given
+        /// separator(s) are valid.
+        /// </summary>
+        private int CheckVariants(string variants, string sep)
         {
             StringTokenIterator itr = new StringTokenIterator(variants, sep);
             while (!itr.IsDone)
@@ -679,11 +679,11 @@ namespace ICU4N.Impl.Locale
             return -1;
         }
 
-        /*
-         * Private methods parsing Unicode Locale Extension subtags.
-         * Duplicated attributes/keywords will be ignored.
-         * The input must be a valid extension subtags (excluding singleton).
-         */
+        /// <summary>
+        /// Private methods parsing Unicode Locale Extension subtags.
+        /// Duplicated attributes/keywords will be ignored.
+        /// The input must be a valid extension subtags (excluding singleton).
+        /// </summary>
         private void SetUnicodeLocaleExtension(string subtags)
         {
             // wipe out existing attributes/keywords
@@ -715,7 +715,7 @@ namespace ICU4N.Impl.Locale
 
             // parse keywords
             CaseInsensitiveString key = null;
-            String type;
+            string type;
             int typeStart = -1;
             int typeEnd = -1;
             while (!itr.IsDone)
@@ -729,7 +729,7 @@ namespace ICU4N.Impl.Locale
                         type = (typeStart == -1) ? "" : subtags.Substring(typeStart, typeEnd - typeStart); // ICU4N: Corrected 2nd parameter
                         if (_ukeywords == null)
                         {
-                            _ukeywords = new Dictionary<CaseInsensitiveString, String>(4);
+                            _ukeywords = new Dictionary<CaseInsensitiveString, string>(4);
                         }
                         _ukeywords[key] = type;
 
@@ -768,7 +768,7 @@ namespace ICU4N.Impl.Locale
                         type = (typeStart == -1) ? "" : subtags.Substring(typeStart, typeEnd - typeStart); // ICU4N: Corrected 2nd parameter
                         if (_ukeywords == null)
                         {
-                            _ukeywords = new Dictionary<CaseInsensitiveString, String>(4);
+                            _ukeywords = new Dictionary<CaseInsensitiveString, string>(4);
                         }
                         _ukeywords[key] = type;
                     }
@@ -788,7 +788,7 @@ namespace ICU4N.Impl.Locale
                 _s = s;
             }
 
-            public string Value
+            public virtual string Value
             {
                 get { return _s; }
             }
@@ -821,7 +821,7 @@ namespace ICU4N.Impl.Locale
                 _c = c;
             }
 
-            public char Value
+            public virtual char Value
             {
                 get { return _c; }
             }

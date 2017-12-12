@@ -56,7 +56,7 @@ namespace ICU4N.Impl.Locale
                     CleanStaleEntries();
                     lock (_map)
                     {
-                        if (!_map.TryGetValue(key, out entry))
+                        if (!_map.TryGetValue(key, out entry)) // ICU4N TODO: Fix PutIfAbsent functionality and ConcurrentDictionary
                         {
                             value = newVal;
                             break;
@@ -112,7 +112,7 @@ namespace ICU4N.Impl.Locale
                 _key = key;
             }
 
-            internal virtual K GetKey()
+            internal virtual K GetKey() // ICU4N TODO: API: make property
             {
                 return _key;
             }

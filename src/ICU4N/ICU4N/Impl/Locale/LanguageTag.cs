@@ -14,7 +14,7 @@ namespace ICU4N.Impl.Locale
         //
         // static fields
         //
-        public static readonly string SEP = "-";
+        public static readonly string SEP = "-"; // ICU4N TODO: API - rename to follow .NET Conventions
         public static readonly string PRIVATEUSE = "x";
         public static string UNDETERMINED = "und";
         public static readonly string PRIVUSE_VARIANT_PREFIX = "lvariant";
@@ -33,7 +33,7 @@ namespace ICU4N.Impl.Locale
 
         // Map contains grandfathered tags and its preferred mappings from
         // http://www.ietf.org/rfc/rfc5646.txt
-        private static readonly IDictionary<AsciiUtil.CaseInsensitiveKey, string[]> GRANDFATHERED =
+        private static readonly IDictionary<AsciiUtil.CaseInsensitiveKey, string[]> GRANDFATHERED = // ICU4N TODO: API - rename to follow .NET Conventions
             new Dictionary<AsciiUtil.CaseInsensitiveKey, string[]>();
 
         static LanguageTag()
@@ -70,34 +70,34 @@ namespace ICU4N.Impl.Locale
             //               / "zh-xiang"
 
             string[][] entries = {
-          // new string[] {"tag",         "preferred"},
-            new string[] {"art-lojban",  "jbo"},
-            new string[] {"cel-gaulish", "xtg-x-cel-gaulish"},   // fallback
-            new string[]  {"en-GB-oed",   "en-GB-x-oed"},         // fallback
-            new string[] {"i-ami",       "ami"},
-            new string[] {"i-bnn",       "bnn"},
-            new string[] {"i-default",   "en-x-i-default"},      // fallback
-            new string[] {"i-enochian",  "und-x-i-enochian"},    // fallback
-            new string[] {"i-hak",       "hak"},
-            new string[] {"i-klingon",   "tlh"},
-            new string[] {"i-lux",       "lb"},
-            new string[] {"i-mingo",     "see-x-i-mingo"},       // fallback
-            new string[] {"i-navajo",    "nv"},
-            new string[] {"i-pwn",       "pwn"},
-            new string[] {"i-tao",       "tao"},
-            new string[] {"i-tay",       "tay"},
-            new string[] {"i-tsu",       "tsu"},
-            new string[] {"no-bok",      "nb"},
-            new string[] {"no-nyn",      "nn"},
-            new string[] {"sgn-BE-FR",   "sfb"},
-            new string[] {"sgn-BE-NL",   "vgt"},
-            new string[] {"sgn-CH-DE",   "sgg"},
-            new string[] {"zh-guoyu",    "cmn"},
-            new string[] {"zh-hakka",    "hak"},
-            new string[] {"zh-min",      "nan-x-zh-min"},        // fallback
-            new string[] {"zh-min-nan",  "nan"},
-            new string[] {"zh-xiang",    "hsn"},
-        };
+                // new string[] {"tag",         "preferred"},
+                new string[] {"art-lojban",  "jbo"},
+                new string[] {"cel-gaulish", "xtg-x-cel-gaulish"},   // fallback
+                new string[]  {"en-GB-oed",   "en-GB-x-oed"},         // fallback
+                new string[] {"i-ami",       "ami"},
+                new string[] {"i-bnn",       "bnn"},
+                new string[] {"i-default",   "en-x-i-default"},      // fallback
+                new string[] {"i-enochian",  "und-x-i-enochian"},    // fallback
+                new string[] {"i-hak",       "hak"},
+                new string[] {"i-klingon",   "tlh"},
+                new string[] {"i-lux",       "lb"},
+                new string[] {"i-mingo",     "see-x-i-mingo"},       // fallback
+                new string[] {"i-navajo",    "nv"},
+                new string[] {"i-pwn",       "pwn"},
+                new string[] {"i-tao",       "tao"},
+                new string[] {"i-tay",       "tay"},
+                new string[] {"i-tsu",       "tsu"},
+                new string[] {"no-bok",      "nb"},
+                new string[] {"no-nyn",      "nn"},
+                new string[] {"sgn-BE-FR",   "sfb"},
+                new string[] {"sgn-BE-NL",   "vgt"},
+                new string[] {"sgn-CH-DE",   "sgg"},
+                new string[] {"zh-guoyu",    "cmn"},
+                new string[] {"zh-hakka",    "hak"},
+                new string[] {"zh-min",      "nan-x-zh-min"},        // fallback
+                new string[] {"zh-min-nan",  "nan"},
+                new string[] {"zh-xiang",    "hsn"},
+            };
             foreach (string[] e in entries)
             {
                 GRANDFATHERED[new AsciiUtil.CaseInsensitiveKey(e[0])] = e;
@@ -108,51 +108,51 @@ namespace ICU4N.Impl.Locale
         {
         }
 
-        /*
-         * BNF in RFC5464
-         *
-         * Language-Tag  = langtag             ; normal language tags
-         *               / privateuse          ; private use tag
-         *               / grandfathered       ; grandfathered tags
-         *
-         *
-         * langtag       = language
-         *                 ["-" script]
-         *                 ["-" region]
-         *                 *("-" variant)
-         *                 *("-" extension)
-         *                 ["-" privateuse]
-         *
-         * language      = 2*3ALPHA            ; shortest ISO 639 code
-         *                 ["-" extlang]       ; sometimes followed by
-         *                                     ; extended language subtags
-         *               / 4ALPHA              ; or reserved for future use
-         *               / 5*8ALPHA            ; or registered language subtag
-         *
-         * extlang       = 3ALPHA              ; selected ISO 639 codes
-         *                 *2("-" 3ALPHA)      ; permanently reserved
-         *
-         * script        = 4ALPHA              ; ISO 15924 code
-         *
-         * region        = 2ALPHA              ; ISO 3166-1 code
-         *               / 3DIGIT              ; UN M.49 code
-         *
-         * variant       = 5*8alphanum         ; registered variants
-         *               / (DIGIT 3alphanum)
-         *
-         * extension     = singleton 1*("-" (2*8alphanum))
-         *
-         *                                     ; Single alphanumerics
-         *                                     ; "x" reserved for private use
-         * singleton     = DIGIT               ; 0 - 9
-         *               / %x41-57             ; A - W
-         *               / %x59-5A             ; Y - Z
-         *               / %x61-77             ; a - w
-         *               / %x79-7A             ; y - z
-         *
-         * privateuse    = "x" 1*("-" (1*8alphanum))
-         *
-         */
+        /// <summary>
+        /// BNF in RFC5464
+        /// </summary>
+        /// <remarks>
+        /// Language-Tag  = langtag             ; normal language tags
+        ///               / privateuse          ; private use tag
+        ///               / grandfathered       ; grandfathered tags
+        ///
+        ///
+        /// langtag       = language
+        ///                 ["-" script]
+        ///                 ["-" region]
+        ///                 *("-" variant)
+        ///                 *("-" extension)
+        ///                 ["-" privateuse]
+        ///
+        /// language      = 2*3ALPHA            ; shortest ISO 639 code
+        ///                 ["-" extlang]       ; sometimes followed by
+        ///                                     ; extended language subtags
+        ///               / 4ALPHA              ; or reserved for future use
+        ///               / 5*8ALPHA            ; or registered language subtag
+        ///
+        /// extlang       = 3ALPHA              ; selected ISO 639 codes
+        ///                 *2("-" 3ALPHA)      ; permanently reserved
+        ///
+        /// script        = 4ALPHA              ; ISO 15924 code
+        ///
+        /// region        = 2ALPHA              ; ISO 3166-1 code
+        ///               / 3DIGIT              ; UN M.49 code
+        ///
+        /// variant       = 5*8alphanum         ; registered variants
+        ///               / (DIGIT 3alphanum)
+        ///
+        /// extension     = singleton 1*("-" (2*8alphanum))
+        ///
+        ///                                     ; Single alphanumerics
+        ///                                     ; "x" reserved for private use
+        /// singleton     = DIGIT               ; 0 - 9
+        ///               / %x41-57             ; A - W
+        ///               / %x59-5A             ; Y - Z
+        ///               / %x61-77             ; a - w
+        ///               / %x79-7A             ; y - z
+        ///
+        /// privateuse    = "x" 1*("-" (1*8alphanum))
+        /// </remarks>
         public static LanguageTag Parse(string languageTag, ParseStatus sts)
         {
             if (sts == null)
@@ -339,7 +339,7 @@ namespace ICU4N.Impl.Locale
                 found = true;
                 if (!_variants.Any())
                 {
-                    _variants = new List<String>(3);
+                    _variants = new List<string>(3);
                 }
                 _variants.Add(s);
                 sts.ParseLength = itr.CurrentEnd;
@@ -494,6 +494,7 @@ namespace ICU4N.Impl.Locale
                 hasSubtag = true;
             }
 
+            // ICU4N TODO: Remove ?
             if (JDKIMPL)
             {
                 // Special handling for no_NO_NY - use nn_NO for language tag
@@ -624,37 +625,37 @@ namespace ICU4N.Impl.Locale
         // Getter methods for language subtag fields
         //
 
-        public string GetLanguage()
+        public virtual string GetLanguage() // ICU4N TODO: API - make property
         {
             return _language;
         }
 
-        public IList<string> GetExtlangs()
+        public virtual IList<string> GetExtlangs() // ICU4N TODO: API - make property
         {
             return _extlangs.ToUnmodifiableList();
         }
 
-        public string GetScript()
+        public virtual string GetScript() // ICU4N TODO: API - make property
         {
             return _script;
         }
 
-        public string GetRegion()
+        public virtual string GetRegion() // ICU4N TODO: API - make property
         {
             return _region;
         }
 
-        public IList<string> GetVariants()
+        public virtual IList<string> GetVariants() // ICU4N TODO: API - make property
         {
             return _variants.ToUnmodifiableList();
         }
 
-        public IList<string> GetExtensions()
+        public virtual IList<string> GetExtensions() // ICU4N TODO: API - make property
         {
             return _extensions.ToUnmodifiableList();
         }
 
-        public string GetPrivateuse()
+        public virtual string GetPrivateuse() // ICU4N TODO: API - make property
         {
             return _privateuse;
         }

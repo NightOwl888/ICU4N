@@ -1,6 +1,5 @@
 ﻿using ICU4N.Support.Text;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ICU4N.Impl.Locale
@@ -60,7 +59,7 @@ namespace ICU4N.Impl.Locale
             return c;
         }
 
-        public static string ToLowerString(string s)
+        public static string ToLowerString(string s) // ICU4N TODO: API: Rename to ToLower
         {
             int idx = 0;
             for (; idx < s.Length; idx++)
@@ -83,7 +82,7 @@ namespace ICU4N.Impl.Locale
             return buf.ToString();
         }
 
-        public static string ToUpperString(string s)
+        public static string ToUpperString(string s) // ICU4N TODO: API: Rename to ToUpper
         {
             int idx = 0;
             for (; idx < s.Length; idx++)
@@ -106,7 +105,7 @@ namespace ICU4N.Impl.Locale
             return buf.ToString();
         }
 
-        public static string ToTitleString(string s)
+        public static string ToTitleString(string s) // ICU4N TODO: API: Rename to ToTitle
         {
             if (s.Length == 0)
             {
@@ -146,7 +145,7 @@ namespace ICU4N.Impl.Locale
             return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
         }
 
-        public static bool IsAlphaString(String s)
+        public static bool IsAlphaString(string s) // ICU4N TODO: API: Rename to IsAlpha
         {
             bool b = true;
             for (int i = 0; i < s.Length; i++)
@@ -165,7 +164,7 @@ namespace ICU4N.Impl.Locale
             return (c >= '0' && c <= '9');
         }
 
-        public static bool IsNumericString(string s)
+        public static bool IsNumericString(string s) // ICU4N TODO: API: Rename to IsNumeric
         {
             bool b = true;
             for (int i = 0; i < s.Length; i++)
@@ -184,7 +183,7 @@ namespace ICU4N.Impl.Locale
             return IsAlpha(c) || IsNumeric(c);
         }
 
-        public static bool IsAlphaNumericString(string s)
+        public static bool IsAlphaNumericString(string s) // ICU4N TODO: API: Rename to IsAlphaNumeric
         {
             bool b = true;
             for (int i = 0; i < s.Length; i++)

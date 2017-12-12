@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Impl.Locale
 {
-    public class StringTokenIterator
+    public class StringTokenIterator // ICU4N TODO: Rename StringTokenEnumerator
     {
         private string _text;
         private string _dlms;
@@ -47,6 +45,7 @@ namespace ICU4N.Impl.Locale
             get { return _done; }
         }
 
+        // ICU4N TODO: API Replace with MoveNext() (we already have Current, so this should be easy)
         public string Next()
         {
             if (HasNext())
@@ -64,7 +63,7 @@ namespace ICU4N.Impl.Locale
             return _token;
         }
 
-        public bool HasNext()
+        public bool HasNext() // ICU4N TODO: API - make property
         {
             return (_end < _text.Length);
         }

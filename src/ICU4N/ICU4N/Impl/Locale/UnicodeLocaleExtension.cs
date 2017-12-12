@@ -1,17 +1,16 @@
 ﻿using ICU4N.Support.Collections;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace ICU4N.Impl.Locale
 {
     public class UnicodeLocaleExtension : Extension
     {
-        public static readonly char SINGLETON = 'u';
+        public static readonly char SINGLETON = 'u'; // ICU4N TODO: Rename static members to follow .NET Conventions
 
         private static readonly SortedSet<string> EMPTY_SORTED_SET = new SortedSet<string>(StringComparer.Ordinal);
-        private static readonly SortedDictionary<string, string> EMPTY_SORTED_MAP = new SortedDictionary<string, string>();
+        private static readonly SortedDictionary<string, string> EMPTY_SORTED_MAP = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
         private SortedSet<string> _attributes = EMPTY_SORTED_SET;
         private SortedDictionary<string, string> _keywords = EMPTY_SORTED_MAP;
@@ -22,12 +21,12 @@ namespace ICU4N.Impl.Locale
         static UnicodeLocaleExtension()
         {
             CA_JAPANESE = new UnicodeLocaleExtension();
-            CA_JAPANESE._keywords = new SortedDictionary<String, String>();
+            CA_JAPANESE._keywords = new SortedDictionary<string, string>(StringComparer.Ordinal);
             CA_JAPANESE._keywords["ca"] = "japanese";
             CA_JAPANESE._value = "ca-japanese";
 
             NU_THAI = new UnicodeLocaleExtension();
-            NU_THAI._keywords = new SortedDictionary<String, String>();
+            NU_THAI._keywords = new SortedDictionary<string, string>(StringComparer.Ordinal);
             NU_THAI._keywords["nu"] = "thai";
             NU_THAI._value = "nu-thai";
         }
@@ -72,17 +71,17 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-        public ISet<string> GetUnicodeLocaleAttributes()
+        public virtual ISet<string> GetUnicodeLocaleAttributes() // ICU4N TODO: Make property
         {
             return _attributes.ToUnmodifiableSet();
         }
 
-        public ICollection<string> GetUnicodeLocaleKeys()
+        public virtual ICollection<string> GetUnicodeLocaleKeys() // ICU4N TODO: Make property
         {
             return _keywords.Keys.ToUnmodifiableCollection();
         }
 
-        public string GetUnicodeLocaleType(string unicodeLocaleKey)
+        public virtual string GetUnicodeLocaleType(string unicodeLocaleKey)
         {
             string result;
             _keywords.TryGetValue(unicodeLocaleKey, out result);

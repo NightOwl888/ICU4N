@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using CaseInsensitiveChar = ICU4N.Impl.Locale.InternalLocaleBuilder.CaseInsensitiveChar;
 using CaseInsensitiveString = ICU4N.Impl.Locale.InternalLocaleBuilder.CaseInsensitiveString;
@@ -17,7 +16,7 @@ namespace ICU4N.Impl.Locale
         private static readonly IDictionary<char, Extension> EMPTY_MAP =
             new SortedDictionary<char, Extension>().ToUnmodifiableDictionary();
 
-        public static readonly LocaleExtensions EMPTY_EXTENSIONS;
+        public static readonly LocaleExtensions EMPTY_EXTENSIONS; // ICU4N TODO: Rename to follow .NET Conventions
         public static readonly LocaleExtensions CALENDAR_JAPANESE;
         public static readonly LocaleExtensions NUMBER_THAI;
 
@@ -124,20 +123,19 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-        public ICollection<char> Keys
+        public virtual ICollection<char> Keys
         {
             get { return _map.Keys.ToUnmodifiableCollection(); }
         }
 
-        public Extension GetExtension(char key)
+        public virtual Extension GetExtension(char key)
         {
             Extension result;
             _map.TryGetValue(AsciiUtil.ToLower(key), out result);
             return result;
-            //return _map.get(Character.valueOf(AsciiUtil.toLower(key.charValue())));
         }
 
-        public string GetExtensionValue(char key)
+        public virtual string GetExtensionValue(char key)
         {
             Extension ext;
             if (!_map.TryGetValue(AsciiUtil.ToLower(key), out ext) || ext == null)
@@ -147,7 +145,7 @@ namespace ICU4N.Impl.Locale
             return ext.Value;
         }
 
-        public ISet<string> GetUnicodeLocaleAttributes()
+        public virtual ISet<string> GetUnicodeLocaleAttributes()
         {
             Extension ext;
             if (!_map.TryGetValue(UnicodeLocaleExtension.SINGLETON, out ext) || ext == null)
@@ -158,7 +156,7 @@ namespace ICU4N.Impl.Locale
             return ((UnicodeLocaleExtension)ext).GetUnicodeLocaleAttributes();
         }
 
-        public ICollection<string> GetUnicodeLocaleKeys()
+        public virtual ICollection<string> GetUnicodeLocaleKeys()
         {
             Extension ext;
             if (!_map.TryGetValue(UnicodeLocaleExtension.SINGLETON, out ext) || ext == null)
@@ -169,7 +167,7 @@ namespace ICU4N.Impl.Locale
             return ((UnicodeLocaleExtension)ext).GetUnicodeLocaleKeys();
         }
 
-        public string GetUnicodeLocaleType(string unicodeLocaleKey)
+        public virtual string GetUnicodeLocaleType(string unicodeLocaleKey)
         {
             Extension ext;
             if (!_map.TryGetValue(UnicodeLocaleExtension.SINGLETON, out ext) || ext == null)
@@ -180,9 +178,9 @@ namespace ICU4N.Impl.Locale
             return ((UnicodeLocaleExtension)ext).GetUnicodeLocaleType(AsciiUtil.ToLowerString(unicodeLocaleKey));
         }
 
-        public bool IsEmpty()
+        public virtual bool IsEmpty() // ICU4N TODO: API - make property
         {
-            return !_map.Any();
+            return _map.Count == 0;
         }
 
         public static bool IsValidKey(char c)
@@ -233,7 +231,7 @@ namespace ICU4N.Impl.Locale
             return _id;
         }
 
-        public String GetID()
+        public virtual string GetID() // ICU4N TODO: API - make property
         {
             return _id;
         }
