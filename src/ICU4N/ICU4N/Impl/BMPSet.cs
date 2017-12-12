@@ -4,7 +4,8 @@ using System.Diagnostics;
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Helper class for frozen UnicodeSets, implements contains() and span() optimized for BMP code points.
+    /// Helper class for frozen <see cref="Text.UnicodeSet"/>s, implements <see cref="Contains(int)"/> and 
+    /// <see cref="Span(string, int, Text.UnicodeSet.SpanCondition, out int)"/> optimized for BMP code points.
     /// <para/>
     /// Latin-1: Look up bytes.
     /// 2-byte characters: Bits organized vertically.
@@ -14,44 +15,44 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed partial class BMPSet
     {
-        public static int U16_SURROGATE_OFFSET = ((0xd800 << 10) + 0xdc00 - 0x10000);
+        public static int U16_SURROGATE_OFFSET = ((0xd800 << 10) + 0xdc00 - 0x10000); // ICU4N TODO: API - rename to follow .NET Coventions
 
-        /**
-         * One bool ('true' or 'false') per Latin-1 character.
-         */
+        /// <summary>
+        /// One bool ('true' or 'false') per Latin-1 character.
+        /// </summary>
         private bool[] latin1Contains;
 
-        /**
-         * One bit per code point from U+0000..U+07FF. The bits are organized vertically; consecutive code points
-         * correspond to the same bit positions in consecutive table words. With code point parts lead=c{10..6}
-         * trail=c{5..0} it is set.contains(c)==(table7FF[trail] bit lead)
-         *
-         * Bits for 0..FF are unused (0).
-         */
+        /// <summary>
+        /// One bit per code point from U+0000..U+07FF. The bits are organized vertically; consecutive code points
+        /// correspond to the same bit positions in consecutive table words. With code point parts lead=c{10..6}
+        /// trail=c{5..0} it is set.Contains(c)==(table7FF[trail] bit lead)
+        /// <para/>
+        /// Bits for 0..FF are unused (0).
+        /// </summary>
         private int[] table7FF;
 
-        /**
-         * One bit per 64 BMP code points. The bits are organized vertically; consecutive 64-code point blocks
-         * correspond to the same bit position in consecutive table words. With code point parts lead=c{15..12}
-         * t1=c{11..6} test bits (lead+16) and lead in bmpBlockBits[t1]. If the upper bit is 0, then the lower bit
-         * indicates if contains(c) for all code points in the 64-block. If the upper bit is 1, then the block is mixed
-         * and set.contains(c) must be called.
-         *
-         * Bits for 0..7FF are unused (0).
-         */
+        /// <summary>
+        /// One bit per 64 BMP code points. The bits are organized vertically; consecutive 64-code point blocks
+        /// correspond to the same bit position in consecutive table words. With code point parts lead=c{15..12}
+        /// t1=c{11..6} test bits (lead+16) and lead in bmpBlockBits[t1]. If the upper bit is 0, then the lower bit
+        /// indicates if Contains(c) for all code points in the 64-block. If the upper bit is 1, then the block is mixed
+        /// and set.Contains(c) must be called.
+        /// <para/>
+        /// Bits for 0..7FF are unused (0).
+        /// </summary>
         private int[] bmpBlockBits;
 
-        /**
-         * Inversion list indexes for restricted binary searches in findCodePoint(), from findCodePoint(U+0800, U+1000,
-         * U+2000, .., U+F000, U+10000). U+0800 is the first 3-byte-UTF-8 code point. Code points below U+0800 are
-         * always looked up in the bit tables. The last pair of indexes is for finding supplementary code points.
-         */
+        /// <summary>
+        /// Inversion list indexes for restricted binary searches in findCodePoint(), from FindCodePoint(U+0800, U+1000,
+        /// U+2000, .., U+F000, U+10000). U+0800 is the first 3-byte-UTF-8 code point. Code points below U+0800 are
+        /// always looked up in the bit tables. The last pair of indexes is for finding supplementary code points.
+        /// </summary>
         private int[] list4kStarts;
 
-        /**
-         * The inversion list of the parent set, for the slower contains() implementation for mixed BMP blocks and for
-         * supplementary code points. The list is terminated with list[listLength-1]=0x110000.
-         */
+        /// <summary>
+        /// The inversion list of the parent set, for the slower Contains() implementation for mixed BMP blocks and for
+        /// supplementary code points. The list is terminated with list[listLength-1]=0x110000.
+        /// </summary>
         private readonly int[] list;
         private readonly int listLength; // length used; list may be longer to minimize reallocs
 
@@ -129,9 +130,9 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Set bits in a bit rectangle in "vertical" bit organization. start<limit<=0x800
-         */
+        /// <summary>
+        /// Set bits in a bit rectangle in "vertical" bit organization. start&lt;limit&lt;=0x800
+        /// </summary>
         private static void Set32x64Bits(int[] table, int start, int limit)
         {
             Debug.Assert(64 == table.Length);
@@ -301,22 +302,17 @@ namespace ICU4N.Impl
             }
         }
 
-
-        /**
-         * Same as UnicodeSet.findCodePoint(int c) except that the binary search is restricted for finding code
-         * points in a certain range.
-         *
-         * For restricting the search for finding in the range start..end, pass in lo=findCodePoint(start) and
-         * hi=findCodePoint(end) with 0<=lo<=hi<len. findCodePoint(c) defaults to lo=0 and hi=len-1.
-         *
-         * @param c
-         *            a character in a subrange of MIN_VALUE..MAX_VALUE
-         * @param lo
-         *            The lowest index to be returned.
-         * @param hi
-         *            The highest index to be returned.
-         * @return the smallest integer i in the range lo..hi, inclusive, such that c < list[i]
-         */
+        /// <summary>
+        /// Same as <see cref="Text.UnicodeSet.FindCodePoint(int)"/> except that the binary search is restricted for finding code
+        /// points in a certain range.
+        /// <para/>
+        /// For restricting the search for finding in the range start..end, pass in lo=FindCodePoint(start) and
+        /// hi=FindCodePoint(end) with 0&lt;=lo&lt;=hi&lt;len. FindCodePoint(c) defaults to lo=0 and hi=len-1.
+        /// </summary>
+        /// <param name="c">A character in a subrange of MIN_VALUE..MAX_VALUE.</param>
+        /// <param name="lo">The lowest index to be returned.</param>
+        /// <param name="hi">The highest index to be returned.</param>
+        /// <returns>The smallest integer i in the range lo..hi, inclusive, such that c &lt; list[i].</returns>
         private int FindCodePoint(int c, int lo, int hi)
         {
             /* Examples:

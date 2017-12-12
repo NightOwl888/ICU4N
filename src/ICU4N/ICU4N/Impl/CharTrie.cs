@@ -1,9 +1,7 @@
 ﻿using ICU4N.Support.IO;
 using ICU4N.Text;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICU4N.Impl
 {
@@ -13,19 +11,21 @@ namespace ICU4N.Impl
     /// <author>synwee</author>
     /// <seealso cref="Trie"/>
     /// <since>release 2.1, Jan 01 2002</since>
+
+    // note that i need to handle the block calculations later, since chartrie
+    // in icu4c uses the same index array.
     public class CharTrie : Trie
     {
         // public constructors ---------------------------------------------
 
-        /**
-         * <p>Creates a new Trie with the settings for the trie data.</p>
-         * <p>Unserialize the 32-bit-aligned input buffer and use the data for the
-         * trie.</p>
-         * @param bytes data of an ICU data file, containing the trie
-         * @param dataManipulate object which provides methods to parse the char
-         *                        data
-         */
-        public CharTrie(ByteBuffer bytes, IDataManipulate dataManipulate)
+        /// <summary>
+        /// Creates a new Trie with the settings for the trie data.
+        /// <para/>
+        /// Unserialize the 32-bit-aligned input buffer and use the data for the trie.
+        /// </summary>
+        /// <param name="bytes">Data of an ICU data file, containing the trie.</param>
+        /// <param name="dataManipulate">Object which provides methods to parse the char data.</param>
+        public CharTrie(ByteBuffer bytes, IDataManipulate dataManipulate) // ICU4N TODO: API - make internal and make overload that accepts byte[]
             : base(bytes, dataManipulate)
         {
             if (!IsCharTrie)
@@ -35,21 +35,20 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Make a dummy CharTrie.
-         * A dummy trie is an empty runtime trie, used when a real data trie cannot
-         * be loaded.
-         *
-         * The trie always returns the initialValue,
-         * or the leadUnitValue for lead surrogate code points.
-         * The Latin-1 part is always set up to be linear.
-         *
-         * @param initialValue the initial value that is set for all code points
-         * @param leadUnitValue the value for lead surrogate code _units_ that do not
-         *                      have associated supplementary data
-         * @param dataManipulate object which provides methods to parse the char data
-         */
-        // No way to ignore dead code warning specifically - see eclipse bug#282770
+        /// <summary>
+        /// Make a dummy CharTrie.
+        /// </summary>
+        /// <remarks>
+        /// A dummy trie is an empty runtime trie, used when a real data trie cannot
+        /// be loaded.
+        /// <para/>
+        /// The trie always returns the initialValue,
+        /// or the leadUnitValue for lead surrogate code points.
+        /// The Latin-1 part is always set up to be linear.
+        /// </remarks>
+        /// <param name="initialValue">The initial value that is set for all code points.</param>
+        /// <param name="leadUnitValue">The value for lead surrogate code _units_ that do not have associated supplementary data.</param>
+        /// <param name="dataManipulate">Object which provides methods to parse the char data.</param>
         public CharTrie(int initialValue, int leadUnitValue, IDataManipulate dataManipulate)
                 : base(new char[BMP_INDEX_LENGTH + SURROGATE_BLOCK_COUNT], HEADER_OPTIONS_LATIN1_IS_LINEAR_MASK_, dataManipulate)
         {
@@ -101,13 +100,14 @@ namespace ICU4N.Impl
 
         // public methods --------------------------------------------------
 
-        /**
-        * Gets the value associated with the codepoint.
-        * If no value is associated with the codepoint, a default value will be
-        * returned.
-        * @param ch codepoint
-        * @return offset to data
-        */
+        /// <summary>
+        /// Gets the value associated with the codepoint.
+        /// <para/>
+        /// If no value is associated with the codepoint, a default value will be
+        /// returned.
+        /// </summary>
+        /// <param name="ch">Codepoint.</param>
+        /// <returns>Offset to data.</returns>
         public char GetCodePointValue(int ch)
         {
             int offset;
@@ -129,37 +129,39 @@ namespace ICU4N.Impl
             return (offset >= 0) ? m_data_[offset] : m_initialValue_;
         }
 
-        /**
-        * Gets the value to the data which this lead surrogate character points
-        * to.
-        * Returned data may contain folding offset information for the next
-        * trailing surrogate character.
-        * This method does not guarantee correct results for trail surrogates.
-        * @param ch lead surrogate character
-        * @return data value
-        */
+        /// <summary>
+        /// Gets the value to the data which this lead surrogate character points
+        /// to.
+        /// <para/>
+        /// Returned data may contain folding offset information for the next
+        /// trailing surrogate character.
+        /// <para/>
+        /// This method does not guarantee correct results for trail surrogates.
+        /// </summary>
+        /// <param name="ch">Lead surrogate character.</param>
+        /// <returns>Data value.</returns>
         public char GetLeadValue(char ch)
         {
             return m_data_[GetLeadOffset(ch)];
         }
 
-        /**
-        * Get the value associated with the BMP code point.
-        * Lead surrogate code points are treated as normal code points, with
-        * unfolded values that may differ from getLeadValue() results.
-        * @param ch the input BMP code point
-        * @return trie data value associated with the BMP codepoint
-        */
+        /// <summary>
+        /// Get the value associated with the BMP code point.
+        /// Lead surrogate code points are treated as normal code points, with
+        /// unfolded values that may differ from <see cref="GetLeadValue(char)"/> results.
+        /// </summary>
+        /// <param name="ch">The input BMP code point.</param>
+        /// <returns>Trie data value associated with the BMP codepoint.</returns>
         public char GetBMPValue(char ch)
         {
             return m_data_[GetBMPOffset(ch)];
         }
 
-        /**
-        * Get the value associated with a pair of surrogates.
-        * @param lead a lead surrogate
-        * @param trail a trail surrogate
-        */
+        /// <summary>
+        /// Get the value associated with a pair of surrogates.
+        /// </summary>
+        /// <param name="lead">A lead surrogate.</param>
+        /// <param name="trail">A trail surrogate.</param>
         public char GetSurrogateValue(char lead, char trail)
         {
             int offset = GetSurrogateOffset(lead, trail);
@@ -170,15 +172,13 @@ namespace ICU4N.Impl
             return m_initialValue_;
         }
 
-        /**
-        * <p>Get a value from a folding offset (from the value of a lead surrogate)
-        * and a trail surrogate.</p>
-        * <p>If the
-        * @param leadvalue value associated with the lead surrogate which contains
-        *        the folding offset
-        * @param trail surrogate
-        * @return trie data value associated with the trail character
-        */
+        /// <summary>
+        /// Get a value from a folding offset (from the value of a lead surrogate)
+        /// and a trail surrogate.
+        /// </summary>
+        /// <param name="leadvalue">Value associated with the lead surrogate which contains the folding offset.</param>
+        /// <param name="trail">Trail surrogate.</param>
+        /// <returns>Trie data value associated with the trail character.</returns>
         public char GetTrailValue(int leadvalue, char trail)
         {
             if (m_dataManipulate_ == null)
@@ -195,25 +195,24 @@ namespace ICU4N.Impl
             return m_initialValue_;
         }
 
-        /**
-         * <p>Gets the latin 1 fast path value.</p>
-         * <p>Note this only works if latin 1 characters have their own linear
-         * array.</p>
-         * @param ch latin 1 characters
-         * @return value associated with latin character
-         */
+        /// <summary>
+        /// Gets the latin 1 fast path value.
+        /// <para/>
+        /// Note this only works if latin 1 characters have their own linear array.
+        /// </summary>
+        /// <param name="ch">Latin 1 characters.</param>
+        /// <returns>Value associated with latin character.</returns>
         public char GetLatin1LinearValue(char ch)
         {
             return m_data_[INDEX_STAGE_3_MASK_ + 1 + m_dataOffset_ + ch];
         }
 
-        /**
-         * Checks if the argument Trie has the same data as this Trie
-         * @param other Trie to check
-         * @return true if the argument Trie has the same data as this Trie, false
-         *         otherwise
-         */
-        ///CLOVER:OFF
+        /// <summary>
+        /// Checks if the argument Trie has the same data as this Trie.
+        /// </summary>
+        /// <param name="other">Trie to check.</param>
+        /// <returns>true if the argument Trie has the same data as this Trie, false otherwise.</returns>
+        //CLOVER:OFF
         public override bool Equals(object other)
         {
             bool result = base.Equals(other);
@@ -230,16 +229,16 @@ namespace ICU4N.Impl
             Debug.Assert(false, "hashCode not designed");
             return 42;
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
         // protected methods -----------------------------------------------
 
-        /**
-         * <p>Parses the byte buffer and stores its trie content into a index and
-         * data array</p>
-         * @param bytes buffer containing trie data
-         */
-        protected override sealed void Unserialize(ByteBuffer bytes)
+        /// <summary>
+        /// Parses the byte buffer and stores its trie content into a index and
+        /// data array.
+        /// </summary>
+        /// <param name="bytes">Buffer containing trie data.</param>
+        protected override sealed void Unserialize(ByteBuffer bytes) // ICU4N TODO: API - make internal and add overload that accepts byte[]
         {
             int indexDataLength = m_dataOffset_ + m_dataLength_;
             m_index_ = ICUBinary.GetChars(bytes, indexDataLength, 0);
@@ -247,12 +246,12 @@ namespace ICU4N.Impl
             m_initialValue_ = m_data_[m_dataOffset_];
         }
 
-        /**
-        * Gets the offset to the data which the surrogate pair points to.
-        * @param lead lead surrogate
-        * @param trail trailing surrogate
-        * @return offset to data
-        */
+        /// <summary>
+        ///  Gets the offset to the data which the surrogate pair points to.
+        /// </summary>
+        /// <param name="lead">Lead surrogate.</param>
+        /// <param name="trail">Trailing surrogate.</param>
+        /// <returns>Offset to data.</returns>
         protected override sealed int GetSurrogateOffset(char lead, char trail)
         {
             if (m_dataManipulate_ == null)
@@ -275,22 +274,23 @@ namespace ICU4N.Impl
             return -1;
         }
 
-        /**
-        * Gets the value at the argument index.
-        * For use internally in TrieIterator.
-        * @param index value at index will be retrieved
-        * @return 32 bit value
-        * @see com.ibm.icu.impl.TrieIterator
-        */
+        /// <summary>
+        /// Gets the value at the argument index.
+        /// For use internally in <see cref="TrieIterator"/>.
+        /// <para/>
+        /// NOTE: This was named GetValue(int) in icu4j.
+        /// </summary>
+        /// <param name="index">Value at index will be retrieved.</param>
+        /// <returns>32 bit value.</returns>
+        /// <seealso cref="TrieIterator"/>
         protected internal override sealed int this[int index]
         {
             get { return m_data_[index]; }
         }
 
-        /**
-        * Gets the default initial value
-        * @return 32 bit value
-        */
+        /// <summary>
+        /// Gets the default initial (32 bit) value.
+        /// </summary>
         protected internal override sealed int InitialValue
         {
             get { return m_initialValue_; }
@@ -298,13 +298,13 @@ namespace ICU4N.Impl
 
         // private data members --------------------------------------------
 
-        /**
-        * Default value
-        */
+        /// <summary>
+        /// Default value
+        /// </summary>
         private char m_initialValue_;
-        /**
-        * Array of char data
-        */
+        /// <summary>
+        /// Array of char data
+        /// </summary>
         private char[] m_data_;
     }
 }

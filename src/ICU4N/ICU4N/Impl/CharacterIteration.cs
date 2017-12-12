@@ -3,23 +3,22 @@ using ICU4N.Text;
 
 namespace ICU4N.Impl
 {
-    public static class CharacterIteration
+    public static class CharacterIteration // ICU4N specific - made into static class rather than using a private constructor
     {
-        //// disallow instantiation
-        //private CharacterIteration() { }
+        /// <summary>
+        /// 32 bit Char value returned from when an iterator has run out of range.
+        ///     Positive value so fast case (not end, not surrogate) can be checked
+        ///     with a single test.
+        /// </summary>
+        public static readonly int DONE32 = 0x7fffffff; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        // 32 bit Char value returned from when an iterator has run out of range.
-        //     Positive value so fast case (not end, not surrogate) can be checked
-        //     with a single test.
-        public static readonly int DONE32 = 0x7fffffff;
-
-        /**
-         * Move the iterator forward to the next code point, and return that code point,
-         *   leaving the iterator positioned at char returned.
-         *   For Supplementary chars, the iterator is left positioned at the lead surrogate.
-         * @param ci  The character iterator
-         * @return    The next code point.
-         */
+        /// <summary>
+        /// Move the iterator forward to the next code point, and return that code point,
+        /// leaving the iterator positioned at char returned.
+        /// For Supplementary chars, the iterator is left positioned at the lead surrogate.
+        /// </summary>
+        /// <param name="ci">The character iterator.</param>
+        /// <returns>The next code point.</returns>
         public static int Next32(CharacterIterator ci)
         {
             // If the current position is at a surrogate pair, move to the trail surrogate
@@ -52,11 +51,12 @@ namespace ICU4N.Impl
             }
             return c;
         }
-
-
-        // Out-of-line portion of the in-line Next32 code.
-        // The call site does an initial ci.next() and calls this function
-        //    if the 16 bit value it gets is >= LEAD_SURROGATE_MIN_VALUE.
+   
+        /// <summary>
+        /// Out-of-line portion of the in-line <see cref="Next32(CharacterIterator)"/> code.
+        /// The call site does an initial ci.Next() and calls this function
+        /// if the 16 bit value it gets is >= <see cref="UTF16.LEAD_SURROGATE_MIN_VALUE"/>.
+        /// </summary>
         // NOTE:  we leave the underlying char iterator positioned in the
         //        middle of a surrogate pair.  ci.next() will work correctly
         //        from there, but the ci.getIndex() will be wrong, and needs

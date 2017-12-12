@@ -15,13 +15,13 @@ namespace ICU4N.Impl
 
         private CurrencyData() { }
 
-        public interface ICurrencyDisplayInfoProvider
+        public interface ICurrencyDisplayInfoProvider // ICU4N TODO: API de-nest
         {
             CurrencyDisplayInfo GetInstance(ULocale locale, bool withFallback);
             bool HasData { get; }
         }
 
-        public abstract class CurrencyDisplayInfo : CurrencyDisplayNames
+        public abstract class CurrencyDisplayInfo : CurrencyDisplayNames // ICU4N TODO: API de-nest
         {
             public CurrencyDisplayInfo()
                 : base()
@@ -34,7 +34,7 @@ namespace ICU4N.Impl
             public abstract string GetNarrowSymbol(string isoCode);
         }
 
-        public sealed class CurrencyFormatInfo
+        public sealed class CurrencyFormatInfo // ICU4N TODO: API de-nest
         {
             public string IsoCode { get; private set; }
             public string CurrencyPattern { get; private set; }
@@ -51,7 +51,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public sealed class CurrencySpacingInfo
+        public sealed class CurrencySpacingInfo // ICU4N TODO: API de-nest
         {
             private static readonly int SpacingTypeCount = Enum.GetNames(typeof(SpacingType)).Length;
             private static readonly int SpacingPatternCount = Enum.GetNames(typeof(SpacingPattern)).Length;
@@ -60,9 +60,9 @@ namespace ICU4N.Impl
             public bool hasBeforeCurrency = false;
             public bool hasAfterCurrency = false;
 
-            public enum SpacingType { Before, After };
+            public enum SpacingType { Before, After }; // ICU4N TODO: API de-nest
 
-            public enum SpacingPattern
+            public enum SpacingPattern // ICU4N TODO: API de-nest
             {
                 CurrencyMatch,
                 SurroundingMatch,
@@ -112,7 +112,7 @@ namespace ICU4N.Impl
 
             public static readonly CurrencySpacingInfo DEFAULT = new CurrencySpacingInfo(
                     DEFAULT_CUR_MATCH, DEFAULT_CTX_MATCH, DEFAULT_INSERT,
-                    DEFAULT_CUR_MATCH, DEFAULT_CTX_MATCH, DEFAULT_INSERT);
+                    DEFAULT_CUR_MATCH, DEFAULT_CTX_MATCH, DEFAULT_INSERT); // ICU4N TODO: API - rename to follow .NET Conventions
         }
 
         private class FallbackCurrencyDisplayInfoProvider : ICurrencyDisplayInfoProvider
@@ -140,7 +140,7 @@ namespace ICU4N.Impl
             provider = temp;
         }
 
-        public class DefaultInfo : CurrencyDisplayInfo
+        public class DefaultInfo : CurrencyDisplayInfo // ICU4N TODO: API de-nest
         {
             private readonly bool fallback;
 
@@ -184,7 +184,7 @@ namespace ICU4N.Impl
                 return new Dictionary<string, string>();
             }
 
-            public override ULocale ULocale
+            public override ULocale ULocale // ICU4N TODO: API - rename UCultureInfo
             {
                 get { return ULocale.ROOT; }
             }

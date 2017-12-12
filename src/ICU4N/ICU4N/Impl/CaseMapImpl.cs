@@ -1,23 +1,19 @@
 ﻿using ICU4N.Lang;
-using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.IO;
 using System.Text;
 
 namespace ICU4N.Impl
 {
     public sealed partial class CaseMapImpl
     {
-        /**
-         * Implementation of UCaseProps.ContextIterator, iterates over a String.
-         * See ustrcase.c/utf16_caseContextIterator().
-         */
+        /// <summary>
+        /// Implementation of <see cref="UCaseProps.IContextIterator"/>, iterates over a string.
+        /// See ustrcase.c/utf16_caseContextIterator().
+        /// </summary>
         public sealed class StringContextIterator : UCaseProps.IContextIterator
         {
             /// <summary>
@@ -59,16 +55,15 @@ namespace ICU4N.Impl
                 dir = 0;
             }
 
-            /**
-             * Set the iteration limit for nextCaseMapCP() to an index within the string.
-             * If the limit parameter is negative or past the string, then the
-             * string length is restored as the iteration limit.
-             *
-             * <p>This limit does not affect the next() function which always
-             * iterates to the very end of the string.
-             *
-             * @param lim The iteration limit.
-             */
+            /// <summary>
+            /// Set the iteration limit for <see cref="NextCaseMapCP()"/> to an index within the string.
+            /// If the limit parameter is negative or past the string, then the
+            /// string length is restored as the iteration limit.
+            /// <para/>
+            /// This limit does not affect the <see cref="Next()"/> function which always
+            /// iterates to the very end of the string.
+            /// </summary>
+            /// <param name="lim">The iteration limit.</param>
             public void SetLimit(int lim)
             {
                 if (0 <= lim && lim <= s.Length)
@@ -81,25 +76,25 @@ namespace ICU4N.Impl
                 }
             }
 
-            /**
-             * Move to the iteration limit without fetching code points up to there.
-             */
+            /// <summary>
+            /// Move to the iteration limit without fetching code points up to there.
+            /// </summary>
             public void MoveToLimit()
             {
                 cpStart = cpLimit = limit;
             }
 
-            /**
-             * Iterate forward through the string to fetch the next code point
-             * to be case-mapped, and set the context indexes for it.
-             *
-             * <p>When the iteration limit is reached (and -1 is returned),
-             * getCPStart() will be at the iteration limit.
-             *
-             * <p>Iteration with next() does not affect the position for nextCaseMapCP().
-             *
-             * @return The next code point to be case-mapped, or <0 when the iteration is done.
-             */
+            /// <summary>
+            /// Iterate forward through the string to fetch the next code point
+            /// to be case-mapped, and set the context indexes for it.
+            /// </summary>
+            /// <remarks>
+            /// When the iteration limit is reached (and -1 is returned),
+            /// <see cref="CPStart"/> will be at the iteration limit.
+            /// <para/>
+            /// Iteration with <see cref="Next()"/> does not affect the position for <see cref="NextCaseMapCP()"/>.
+            /// </remarks>
+            /// <returns>The next code point to be case-mapped, or &lt;0 when the iteration is done.</returns>
             public int NextCaseMapCP()
             {
                 cpStart = cpLimit;
@@ -115,24 +110,28 @@ namespace ICU4N.Impl
                 }
             }
 
-            /**
-             * Returns the start of the code point that was last returned
-             * by nextCaseMapCP().
-             */
+            /// <summary>
+            /// Gets the start of the code point that was last returned 
+            /// by <see cref="NextCaseMapCP()"/>.
+            /// </summary>
             public int CPStart
             {
                 get { return cpStart; }
             }
 
-            /**
-             * Returns the limit of the code point that was last returned
-             * by nextCaseMapCP().
-             */
+            /// <summary>
+            /// Gets the limit of the code point that was last returned
+            /// by <see cref="NextCaseMapCP()"/>.
+            /// </summary>
             public int CPLimit
             {
                 get { return cpLimit; }
             }
 
+            /// <summary>
+            /// Gets the length of the code point that was last returned
+            /// by <see cref="NextCaseMapCP()"/>.
+            /// </summary>
             public int CPLength
             {
                 get { return cpLimit - cpStart; }
@@ -187,28 +186,28 @@ namespace ICU4N.Impl
             private int dir; // 0=initial state  >0=forward  <0=backward
         }
 
-        public const int TITLECASE_WHOLE_STRING = 0x20;
-        public const int TITLECASE_SENTENCES = 0x40;
+        public const int TITLECASE_WHOLE_STRING = 0x20;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
+        public const int TITLECASE_SENTENCES = 0x40;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
 
-        /**
-         * Bit mask for the titlecasing iterator options bit field.
-         * Currently only 3 out of 8 values are used:
-         * 0 (words), TITLECASE_WHOLE_STRING, TITLECASE_SENTENCES.
-         * See stringoptions.h.
-         * @internal
-         */
-        private const int TITLECASE_ITERATOR_MASK = 0xe0;
+        /// <summary>
+        /// Bit mask for the titlecasing iterator options bit field.
+        /// Currently only 3 out of 8 values are used:
+        /// 0 (words), <see cref="TITLECASE_WHOLE_STRING"/>, <see cref="TITLECASE_SENTENCES"/>.
+        /// See stringoptions.h.
+        /// </summary>
+        /// <internal/>
+        private const int TITLECASE_ITERATOR_MASK = 0xe0;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
 
-        public const int TITLECASE_ADJUST_TO_CASED = 0x400;
+        public const int TITLECASE_ADJUST_TO_CASED = 0x400;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
 
-        /**
-         * Bit mask for the titlecasing index adjustment options bit set.
-         * Currently two bits are defined:
-         * TITLECASE_NO_BREAK_ADJUSTMENT, TITLECASE_ADJUST_TO_CASED.
-         * See stringoptions.h.
-         * @internal
-         */
-        private const int TITLECASE_ADJUSTMENT_MASK = 0x600;
+        /// <summary>
+        /// Bit mask for the titlecasing index adjustment options bit set.
+        /// Currently two bits are defined:
+        /// <see cref="TITLECASE_NO_BREAK_ADJUSTMENT"/>, <see cref="TITLECASE_ADJUST_TO_CASED"/>.
+        /// See stringoptions.h.
+        /// </summary>
+        /// <internal/>
+        private const int TITLECASE_ADJUSTMENT_MASK = 0x600; // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
 
         public static int AddTitleAdjustmentOption(int options, int newOption)
         {
@@ -317,10 +316,10 @@ namespace ICU4N.Impl
             return iter;
         }
 
-        /**
-         * Omit unchanged text when case-mapping with Edits.
-         */
-        public static readonly int OMIT_UNCHANGED_TEXT = 0x4000;
+        /// <summary>
+        /// Omit unchanged text when case-mapping with Edits.
+        /// </summary>
+        public static readonly int OMIT_UNCHANGED_TEXT = 0x4000; // ICU4N TODO: API - make into Flags enum
 
         private sealed class WholeStringBreakIterator : BreakIterator
         {
@@ -891,11 +890,11 @@ namespace ICU4N.Impl
                 }
             }
 
-            /**
-             * Returns a non-zero value for each of the Greek combining diacritics
-             * listed in The Unicode Standard, version 8, chapter 7.2 Greek,
-             * plus some perispomeni look-alikes.
-             */
+            /// <summary>
+            /// Returns a non-zero value for each of the Greek combining diacritics
+            /// listed in The Unicode Standard, version 8, chapter 7.2 Greek,
+            /// plus some perispomeni look-alikes.
+            /// </summary>
             private static int GetDiacriticData(int c)
             {
                 switch (c)

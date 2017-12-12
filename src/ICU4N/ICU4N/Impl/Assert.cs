@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Impl
 {
@@ -11,7 +9,7 @@ namespace ICU4N.Impl
         {
             Fail(e.ToString()); // can't wrap exceptions in jdk 1.3
         }
-        public static void Fail(String msg)
+        public static void Fail(string msg)
         {
             throw new InvalidOperationException("failure '" + msg + "'");
         }
@@ -19,7 +17,7 @@ namespace ICU4N.Impl
         {
             if (!val) throw new InvalidOperationException("assert failed");
         }
-        public static void Assrt(String msg, bool val)
+        public static void Assrt(string msg, bool val)
         {
             if (!val) throw new InvalidOperationException("assert '" + msg + "' failed");
         }

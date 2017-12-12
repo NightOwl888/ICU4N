@@ -1,8 +1,6 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Impl
 {
@@ -25,11 +23,8 @@ namespace ICU4N.Impl
             iterator = iter;
         }
 
-        /**
-         * @see UCharacterIterator#current()
-         */
-        
-    public override int Current
+        /// <seealso cref="UCharacterIterator.Current"/>
+        public override int Current
         {
             get
             {
@@ -42,20 +37,14 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * @see UCharacterIterator#getLength()
-         */
-        
-    public override int Length
+        /// <seealso cref="UCharacterIterator.Length"/>
+        public override int Length
         {
             get { return (iterator.EndIndex - iterator.BeginIndex); }
         }
 
-        /**
-         * @see UCharacterIterator#getIndex()
-         */
-        
-    public override int Index
+        /// <seealso cref="UCharacterIterator.Index"/>
+        public override int Index
         {
             get { return iterator.Index; }
             set
@@ -71,11 +60,8 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * @see UCharacterIterator#next()
-         */
-        
-    public override int Next()
+        /// <seealso cref="UCharacterIterator.Next()"/>
+        public override int Next()
         {
             int i = iterator.Current;
             iterator.Next();
@@ -86,11 +72,8 @@ namespace ICU4N.Impl
             return i;
         }
 
-        /**
-         * @see UCharacterIterator#previous()
-         */
-        
-    public override int Previous()
+        /// <seealso cref="UCharacterIterator.Previous()"/>
+        public override int Previous()
         {
             int i = iterator.Previous();
             if (i == CharacterIterator.DONE)
@@ -100,25 +83,14 @@ namespace ICU4N.Impl
             return i;
         }
 
-        /**
-         * @see UCharacterIterator#setIndex(int)
-         */
-        
-
-        /**
-         * @see UCharacterIterator#setToLimit()
-         */
-        
-    public override void SetToLimit()
+        /// <seealso cref="UCharacterIterator.SetToLimit()"/>
+        public override void SetToLimit()
         {
             iterator.SetIndex(iterator.EndIndex);
         }
 
-        /**
-         * @see UCharacterIterator#getText(char[])
-         */
-        
-    public override int GetText(char[] fillIn, int offset)
+        /// <seealso cref="UCharacterIterator.GetText(char[])"/>
+        public override int GetText(char[] fillIn, int offset)
         {
             int length = iterator.EndIndex - iterator.BeginIndex;
             int currentIndex = iterator.Index;
@@ -136,21 +108,18 @@ namespace ICU4N.Impl
             return length;
         }
 
-        /**
-         * Creates a clone of this iterator.  Clones the underlying character iterator.
-         * @see UCharacterIterator#clone()
-         */
-        
-    public override Object Clone()
+        /// <summary>
+        /// Creates a clone of this iterator.  Clones the underlying character iterator.
+        /// </summary>
+        /// <seealso cref="UCharacterIterator.Clone()"/>
+        public override Object Clone()
         {
-                CharacterIteratorWrapper result = (CharacterIteratorWrapper)base.Clone();
-                result.iterator = (CharacterIterator)this.iterator.Clone();
-                return result;
+            CharacterIteratorWrapper result = (CharacterIteratorWrapper)base.Clone();
+            result.iterator = (CharacterIterator)this.iterator.Clone();
+            return result;
         }
 
-
-        
-    public override int MoveIndex(int delta)
+        public override int MoveIndex(int delta)
         {
             int length = iterator.EndIndex - iterator.BeginIndex;
             int idx = iterator.Index + delta;
@@ -166,10 +135,8 @@ namespace ICU4N.Impl
             return iterator.SetIndex(idx);
         }
 
-        /**
-         * @see UCharacterIterator#getCharacterIterator()
-         */
-    public override CharacterIterator GetCharacterIterator()
+        /// <seealso cref="UCharacterIterator.GetCharacterIterator()"/>
+        public override CharacterIterator GetCharacterIterator()
         {
             return (CharacterIterator)iterator.Clone();
         }
