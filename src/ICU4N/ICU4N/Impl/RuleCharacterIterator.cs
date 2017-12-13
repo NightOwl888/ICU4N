@@ -5,6 +5,32 @@ using System;
 namespace ICU4N.Impl
 {
     /// <summary>
+    /// Options for the <see cref="RuleCharacterIterator"/>.
+    /// </summary>
+    [Flags]
+    public enum RuleCharacterIteratorOptions
+    {
+        /// <summary>
+        /// Bitmask option to enable parsing of variable names.  If (options &
+        /// <see cref="ParseVariables"/> != 0, then an embedded variable will be expanded to
+        /// its value.  Variables are parsed using the <see cref="SymbolTable"/> API.
+        /// </summary>
+        ParseVariables = 1,
+        /// <summary>
+        /// Bitmask option to enable parsing of escape sequences.  If (options &
+        /// <see cref="ParseEscapes"/> != 0, then an embedded escape sequence will be expanded
+        /// to its value.  Escapes are parsed using <see cref="Utility.UnescapeAt(string, int[])"/>.
+        /// </summary>
+        ParseEscapes = 2,
+        /// <summary>
+        /// Bitmask option to enable skipping of whitespace.  If (options &
+        /// <see cref="SkipWhitespace"/> != 0, then Unicode Pattern_White_Space characters will be silently
+        /// skipped, as if they were not present in the input.
+        /// </summary>
+        SkipWhitespace = 4
+    }
+
+    /// <summary>
     /// An iterator that returns 32-bit code points.  This class is deliberately
     /// <em>not</em> related to any of the .NET or ICU4N character iterator classes
     /// in order to minimize complexity.
@@ -56,26 +82,8 @@ namespace ICU4N.Impl
         /// </summary>
         public const int DONE = -1;
 
-        /**
-         * Bitmask option to enable parsing of variable names.  If (options &
-         * PARSE_VARIABLES) != 0, then an embedded variable will be expanded to
-         * its value.  Variables are parsed using the SymbolTable API.
-         */
-        public static readonly int PARSE_VARIABLES = 1; // ICU4N TODO: API - Make into [Flags] enum
-
-        /**
-         * Bitmask option to enable parsing of escape sequences.  If (options &
-         * PARSE_ESCAPES) != 0, then an embedded escape sequence will be expanded
-         * to its value.  Escapes are parsed using Utility.unescapeAt().
-         */
-        public static readonly int PARSE_ESCAPES = 2; // ICU4N TODO: API - Make into [Flags] enum
-
-        /**
-         * Bitmask option to enable skipping of whitespace.  If (options &
-         * SKIP_WHITESPACE) != 0, then Unicode Pattern_White_Space characters will be silently
-         * skipped, as if they were not present in the input.
-         */
-        public static readonly int SKIP_WHITESPACE = 4; // ICU4N TODO: API - Make into [Flags] enum
+        // ICU4N specific - PARSE_VARIABLES, PARSE_ESCAPES, and SKIP_WHITESPACE
+        // moved to [Flags] enum RuleCharacterIteratorOptions
 
         /// <summary>
         /// Constructs an iterator over the given text, starting at the given
@@ -117,7 +125,7 @@ namespace ICU4N.Impl
         /// <param name="options">One or more of the following options, bitwise-OR-ed
         /// together: <see cref="PARSE_VARIABLES"/>, <see cref="PARSE_ESCAPES"/>, <see cref="SKIP_WHITESPACE"/>.</param>
         /// <returns>The current 32-bit code point, or <see cref="DONE"/>.</returns>
-        public virtual int Next(int options)
+        public virtual int Next(RuleCharacterIteratorOptions options)
         {
             int c = DONE;
             isEscaped = false;
@@ -128,7 +136,7 @@ namespace ICU4N.Impl
                 Advance(UTF16.GetCharCount(c));
 
                 if (c == SymbolTable.SYMBOL_REF && buf == null &&
-                    (options & PARSE_VARIABLES) != 0 && sym != null)
+                    (options & RuleCharacterIteratorOptions.ParseVariables) != 0 && sym != null)
                 {
                     string name = sym.ParseReference(text, pos, text.Length);
                     // If name == null there was an isolated SYMBOL_REF;
@@ -152,13 +160,13 @@ namespace ICU4N.Impl
                     continue;
                 }
 
-                if ((options & SKIP_WHITESPACE) != 0 &&
+                if ((options & RuleCharacterIteratorOptions.SkipWhitespace) != 0 &&
                     PatternProps.IsWhiteSpace(c))
                 {
                     continue;
                 }
 
-                if (c == '\\' && (options & PARSE_ESCAPES) != 0)
+                if (c == '\\' && (options & RuleCharacterIteratorOptions.ParseEscapes) != 0)
                 {
                     int[] offset = new int[] { 0 };
                     c = Utility.UnescapeAt(Lookahead(), offset);
@@ -252,9 +260,9 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="options">One or more of the following options, bitwise-OR-ed
         /// together: <see cref="PARSE_VARIABLES"/>, <see cref="PARSE_ESCAPES"/>, <see cref="SKIP_WHITESPACE"/>.</param>
-        public virtual void SkipIgnored(int options)
+        public virtual void SkipIgnored(RuleCharacterIteratorOptions options)
         {
-            if ((options & SKIP_WHITESPACE) != 0)
+            if ((options & RuleCharacterIteratorOptions.SkipWhitespace) != 0)
             {
                 for (; ; )
                 {

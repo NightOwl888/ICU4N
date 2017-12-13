@@ -1998,18 +1998,18 @@ namespace ICU4N.Text
         /// IGNORE_SPACE, CASE.
         /// </param>
         private void ApplyPattern(RuleCharacterIterator chars, ISymbolTable symbols,
-            IAppendable rebuiltPat, int options)
+            IAppendable rebuiltPat, int options) // ICU4N TODO: API - Make [Flags] enum for options
         {
 
             // Syntax characters: [ ] ^ - & { }
 
             // Recognized special forms for chars, sets: c-c s-s s&s
 
-            int opts = RuleCharacterIterator.PARSE_VARIABLES |
-                    RuleCharacterIterator.PARSE_ESCAPES;
+            RuleCharacterIteratorOptions opts = RuleCharacterIteratorOptions.ParseVariables |
+                    RuleCharacterIteratorOptions.ParseEscapes;
             if ((options & IGNORE_SPACE) != 0)
             {
-                opts |= RuleCharacterIterator.SKIP_WHITESPACE;
+                opts |= RuleCharacterIteratorOptions.SkipWhitespace;
             }
 
             StringBuilder patBuf = new StringBuilder(), buf = null;
@@ -3401,10 +3401,13 @@ namespace ICU4N.Text
         // Property set patterns
         //----------------------------------------------------------------
 
-        /**
-         * Return true if the given position, in the given pattern, appears
-         * to be the start of a property set pattern.
-         */
+        /// <summary>
+        /// Return true if the given position, in the given pattern, appears
+        /// to be the start of a property set pattern.
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <param name="pos"></param>
+        /// <returns></returns>
         private static bool ResemblesPropertyPattern(string pattern, int pos)
         {
             // Patterns are at least 5 characters long
@@ -3419,24 +3422,25 @@ namespace ICU4N.Text
                     pattern.RegionMatches(pos, "\\N", 0, 2);
         }
 
-        /**
-         * Return true if the given iterator appears to point at a
-         * property pattern.  Regardless of the result, return with the
-         * iterator unchanged.
-         * @param chars iterator over the pattern characters.  Upon return
-         * it will be unchanged.
-         * @param iterOpts RuleCharacterIterator options
-         */
+        /// <summary>
+        /// Return true if the given iterator appears to point at a
+        /// property pattern.  Regardless of the result, return with the
+        /// iterator unchanged.
+        /// </summary>
+        /// <param name="chars">Iterator over the pattern characters.  Upon return
+        /// it will be unchanged.</param>
+        /// <param name="iterOpts"><see cref="RuleCharacterIteratorOptions"/> options.</param>
+        /// <returns></returns>
         private static bool ResemblesPropertyPattern(RuleCharacterIterator chars,
-                int iterOpts)
+                RuleCharacterIteratorOptions iterOpts)
         {
             bool result = false;
-            iterOpts &= ~RuleCharacterIterator.PARSE_ESCAPES;
+            iterOpts &= ~RuleCharacterIteratorOptions.ParseEscapes;
             Object pos = chars.GetPos(null);
             int c = chars.Next(iterOpts);
             if (c == '[' || c == '\\')
             {
-                int d = chars.Next(iterOpts & ~RuleCharacterIterator.SKIP_WHITESPACE);
+                int d = chars.Next(iterOpts & ~RuleCharacterIteratorOptions.SkipWhitespace);
                 result = (c == '[') ? (d == ':') :
                     (d == 'N' || d == 'p' || d == 'P');
             }
