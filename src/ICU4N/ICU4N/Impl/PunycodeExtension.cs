@@ -14,7 +14,7 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
-    public sealed partial class Punycode
+    public static partial class Punycode
     {
 
         /// <summary>

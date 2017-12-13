@@ -20,7 +20,7 @@ namespace ICU4N.Util
          * Build options for BytesTrieBuilder and CharsTrieBuilder.
          * @stable ICU 4.8
          */
-        public enum Option
+        public enum Option // ICU4N TODO: API - de-nest
         {
             /**
              * Builds a trie quickly.

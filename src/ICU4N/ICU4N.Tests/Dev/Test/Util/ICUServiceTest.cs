@@ -139,7 +139,7 @@ namespace ICU4N.Dev.Test.Util
                 this.serviceChanged = serviceChanged;
             }
 
-            public override void ServiceChanged(ICUService service)
+            public virtual void ServiceChanged(ICUService service)
             {
                 serviceChanged(service, n);
             }

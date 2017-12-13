@@ -1,16 +1,11 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.IO;
+﻿using ICU4N.Support.IO;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using Hangul = ICU4N.Impl.Normalizer2Impl.Hangul;
-using ReorderingBuffer = ICU4N.Impl.Normalizer2Impl.ReorderingBuffer;
-using UTF16Plus = ICU4N.Impl.Normalizer2Impl.UTF16Plus;
 
 namespace ICU4N.Impl
 {
@@ -22,30 +17,31 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed partial class Normalizer2Impl
     {
-        public sealed partial class Hangul
+        public sealed partial class Hangul // ICU4N TODO: API - de-nest?
         {
+            // ICU4N TODO: API - rename constants to follow .NET Conventions ?
             /* Korean Hangul and Jamo constants */
-            public static readonly int JAMO_L_BASE = 0x1100;     /* "lead" jamo */
-            public static readonly int JAMO_L_END = 0x1112;
-            public static readonly int JAMO_V_BASE = 0x1161;     /* "vowel" jamo */
-            public static readonly int JAMO_V_END = 0x1175;
-            public static readonly int JAMO_T_BASE = 0x11a7;     /* "trail" jamo */
-            public static readonly int JAMO_T_END = 0x11c2;
+            public const int JAMO_L_BASE = 0x1100;     /* "lead" jamo */
+            public const int JAMO_L_END = 0x1112;
+            public const int JAMO_V_BASE = 0x1161;     /* "vowel" jamo */
+            public const int JAMO_V_END = 0x1175;
+            public const int JAMO_T_BASE = 0x11a7;     /* "trail" jamo */
+            public const int JAMO_T_END = 0x11c2;
 
-            public static readonly int HANGUL_BASE = 0xac00;
-            public static readonly int HANGUL_END = 0xd7a3;
+            public const int HANGUL_BASE = 0xac00;
+            public const int HANGUL_END = 0xd7a3;
 
-            public static readonly int JAMO_L_COUNT = 19;
-            public static readonly int JAMO_V_COUNT = 21;
-            public static readonly int JAMO_T_COUNT = 28;
+            public const int JAMO_L_COUNT = 19;
+            public const int JAMO_V_COUNT = 21;
+            public const int JAMO_T_COUNT = 28;
 
-            public static readonly int JAMO_L_LIMIT = JAMO_L_BASE + JAMO_L_COUNT;
-            public static readonly int JAMO_V_LIMIT = JAMO_V_BASE + JAMO_V_COUNT;
+            public const int JAMO_L_LIMIT = JAMO_L_BASE + JAMO_L_COUNT;
+            public const int JAMO_V_LIMIT = JAMO_V_BASE + JAMO_V_COUNT;
 
-            public static readonly int JAMO_VT_COUNT = JAMO_V_COUNT * JAMO_T_COUNT;
+            public const int JAMO_VT_COUNT = JAMO_V_COUNT * JAMO_T_COUNT;
 
-            public static readonly int HANGUL_COUNT = JAMO_L_COUNT * JAMO_V_COUNT * JAMO_T_COUNT;
-            public static readonly int HANGUL_LIMIT = HANGUL_BASE + HANGUL_COUNT;
+            public const int HANGUL_COUNT = JAMO_L_COUNT * JAMO_V_COUNT * JAMO_T_COUNT;
+            public const int HANGUL_LIMIT = HANGUL_BASE + HANGUL_COUNT;
 
             public static bool IsHangul(int c)
             {
@@ -91,7 +87,7 @@ namespace ICU4N.Impl
         /// Append() methods that take combining-class values always write to the <see cref="System.Text.StringBuilder"/>.
         /// Other Append() methods flush and append to the <see cref="IAppendable"/>.
         /// </summary>
-        public sealed partial class ReorderingBuffer : IAppendable
+        public sealed partial class ReorderingBuffer : IAppendable // ICU4N TODO: API - de-nest?
         {
             public ReorderingBuffer(Normalizer2Impl ni, StringBuilder dest, int destCapacity)
                 : this(ni, dest.ToAppendable(), destCapacity)
@@ -349,7 +345,7 @@ namespace ICU4N.Impl
         // TODO: Propose as public API on the UTF16 class.
         // TODO: Propose widening UTF16 methods that take char to take int.
         // TODO: Propose widening UTF16 methods that take String to take CharSequence.
-        public sealed partial class UTF16Plus
+        public sealed partial class UTF16Plus // ICU4N TODO: API - de-nest?
         {
             /// <summary>
             /// Assuming <paramref name="c"/> is a surrogate code point (UTF16.IsSurrogate(c)),
@@ -553,13 +549,13 @@ namespace ICU4N.Impl
         // minDecompNoCP etc. and smallFCD[] are intended to help with any loss of performance,
         // at least for ASCII & CJK.
 
-        /**
-         * Builds the canonical-iterator data for this instance.
-         * This is required before any of {@link #isCanonSegmentStarter(int)} or
-         * {@link #getCanonStartSet(int, UnicodeSet)} are called,
-         * or else they crash.
-         * @return this
-         */
+        /// <summary>
+        /// Builds the canonical-iterator data for this instance.
+        /// This is required before any of <see cref="IsCanonSegmentStarter(int)"/> or
+        /// <see cref="GetCanonStartSet(int, UnicodeSet)"/> are called,
+        /// or else they crash.
+        /// </summary>
+        /// <returns>This.</returns>
         public Normalizer2Impl EnsureCanonIterData()
         {
             lock (this)
@@ -719,11 +715,11 @@ namespace ICU4N.Impl
             return GetCCFromYesOrMaybe(GetNorm16(c));
         }
 
-        /**
-         * Returns the FCD data for code point c.
-         * @param c A Unicode code point.
-         * @return The lccc(c) in bits 15..8 and tccc(c) in bits 7..0.
-         */
+        /// <summary>
+        /// Returns the FCD data for code point <paramref name="c"/>.
+        /// </summary>
+        /// <param name="c">A Unicode code point.</param>
+        /// <returns>The lccc(c) in bits 15..8 and tccc(c) in bits 7..0.</returns>
         public int GetFCD16(int c)
         {
             if (c < minDecompNoCP)
@@ -736,7 +732,7 @@ namespace ICU4N.Impl
             }
             return GetFCD16FromNormData(c);
         }
-        /** Returns true if the single-or-lead code unit c might have non-zero FCD data. */
+        /// <summary>Returns true if the single-or-lead code unit c might have non-zero FCD data.</summary>
         public bool SingleLeadMightHaveNonZeroFCD16(int lead)
         {
             // 0<=lead<=0xffff
@@ -745,7 +741,7 @@ namespace ICU4N.Impl
             return ((bits >> ((lead >> 5) & 7)) & 1) != 0;
         }
 
-        /** Gets the FCD value from the regular normalization data. */
+        /// <summary>Gets the FCD value from the regular normalization data.</summary>
         public int GetFCD16FromNormData(int c)
         {
             int norm16 = GetNorm16(c);
@@ -789,11 +785,11 @@ namespace ICU4N.Impl
             return fcd16;
         }
 
-        /**
-         * Gets the decomposition for one code point.
-         * @param c code point
-         * @return c's decomposition, if it has one; returns null if it does not have a decomposition
-         */
+        /// <summary>
+        /// Gets the decomposition for one code point.
+        /// </summary>
+        /// <param name="c">Code point.</param>
+        /// <returns><paramref name="c"/>'s decomposition, if it has one; returns null if it does not have a decomposition.</returns>
         public string GetDecomposition(int c)
         {
             int norm16;
@@ -834,11 +830,11 @@ namespace ICU4N.Impl
             return extraData.Substring(mapping, length); // ICU4N: (mapping + length) - mapping == length
         }
 
-        /**
-         * Gets the raw decomposition for one code point.
-         * @param c code point
-         * @return c's raw decomposition, if it has one; returns null if it does not have a decomposition
-         */
+        /// <summary>
+        /// Gets the raw decomposition for one code point.
+        /// </summary>
+        /// <param name="c">Code point.</param>
+        /// <returns><paramref name="c"/>'s raw decomposition, if it has one; returns null if it does not have a decomposition.</returns>
         public string GetRawDecomposition(int c)
         {
             int norm16;
@@ -887,27 +883,28 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Returns true if code point c starts a canonical-iterator string segment.
-         * <b>{@link #ensureCanonIterData()} must have been called before this method,
-         * or else this method will crash.</b>
-         * @param c A Unicode code point.
-         * @return true if c starts a canonical-iterator string segment.
-         */
+        /// <summary>
+        /// Returns true if code point <paramref name="c"/> starts a canonical-iterator string segment.
+        /// <b><see cref="EnsureCanonIterData()"/> must have been called before this method,
+        /// or else this method will crash.</b>
+        /// </summary>
+        /// <param name="c">A Unicode code point.</param>
+        /// <returns>true if <paramref name="c"/> starts a canonical-iterator string segment.</returns>
         public bool IsCanonSegmentStarter(int c)
         {
             return canonIterData.Get(c) >= 0;
         }
-        /**
-         * Returns true if there are characters whose decomposition starts with c.
-         * If so, then the set is cleared and then filled with those characters.
-         * <b>{@link #ensureCanonIterData()} must have been called before this method,
-         * or else this method will crash.</b>
-         * @param c A Unicode code point.
-         * @param set A UnicodeSet to receive the characters whose decompositions
-         *        start with c, if there are any.
-         * @return true if there are characters whose decomposition starts with c.
-         */
+
+        /// <summary>
+        /// Returns true if there are characters whose decomposition starts with <paramref name="c"/>.
+        /// If so, then the set is cleared and then filled with those characters.
+        /// <b><see cref="EnsureCanonIterData()"/> must have been called before this method,
+        /// or else this method will crash.</b>
+        /// </summary>
+        /// <param name="c">A Unicode code point.</param>
+        /// <param name="set">A UnicodeSet to receive the characters whose decompositions
+        /// start with <paramref name="c"/>, if there are any.</param>
+        /// <returns>true if there are characters whose decomposition starts with <paramref name="c"/>.</returns>
         public bool GetCanonStartSet(int c, UnicodeSet set)
         {
             int canonValue = canonIterData.Get(c) & ~CANON_NOT_SEGMENT_STARTER;
@@ -941,71 +938,73 @@ namespace ICU4N.Impl
             return true;
         }
 
+        // ICU4N TODO: API - rename constants to follow .NET Conventions ?
+
         // Fixed norm16 values.
-        public static readonly int MIN_YES_YES_WITH_CC = 0xfe02;
-        public static readonly int JAMO_VT = 0xfe00;
-        public static readonly int MIN_NORMAL_MAYBE_YES = 0xfc00;
-        public static readonly int JAMO_L = 2;  // offset=1 hasCompBoundaryAfter=FALSE
-        public static readonly int INERT = 1;  // offset=0 hasCompBoundaryAfter=TRUE
+        public const int MIN_YES_YES_WITH_CC = 0xfe02;
+        public const int JAMO_VT = 0xfe00;
+        public const int MIN_NORMAL_MAYBE_YES = 0xfc00;
+        public const int JAMO_L = 2;  // offset=1 hasCompBoundaryAfter=FALSE
+        public const int INERT = 1;  // offset=0 hasCompBoundaryAfter=TRUE
 
         // norm16 bit 0 is comp-boundary-after.
-        public static readonly int HAS_COMP_BOUNDARY_AFTER = 1;
-        public static readonly int OFFSET_SHIFT = 1;
+        public const int HAS_COMP_BOUNDARY_AFTER = 1;
+        public const int OFFSET_SHIFT = 1;
 
         // For algorithmic one-way mappings, norm16 bits 2..1 indicate the
         // tccc (0, 1, >1) for quick FCC boundary-after tests.
-        public static readonly int DELTA_TCCC_0 = 0;
-        public static readonly int DELTA_TCCC_1 = 2;
-        public static readonly int DELTA_TCCC_GT_1 = 4;
-        public static readonly int DELTA_TCCC_MASK = 6;
-        public static readonly int DELTA_SHIFT = 3;
+        public const int DELTA_TCCC_0 = 0;
+        public const int DELTA_TCCC_1 = 2;
+        public const int DELTA_TCCC_GT_1 = 4;
+        public const int DELTA_TCCC_MASK = 6;
+        public const int DELTA_SHIFT = 3;
 
-        public static readonly int MAX_DELTA = 0x40;
+        public const int MAX_DELTA = 0x40;
 
         // Byte offsets from the start of the data, after the generic header.
-        public static readonly int IX_NORM_TRIE_OFFSET = 0;
-        public static readonly int IX_EXTRA_DATA_OFFSET = 1;
-        public static readonly int IX_SMALL_FCD_OFFSET = 2;
-        public static readonly int IX_RESERVED3_OFFSET = 3;
-        public static readonly int IX_TOTAL_SIZE = 7;
+        public const int IX_NORM_TRIE_OFFSET = 0;
+        public const int IX_EXTRA_DATA_OFFSET = 1;
+        public const int IX_SMALL_FCD_OFFSET = 2;
+        public const int IX_RESERVED3_OFFSET = 3;
+        public const int IX_TOTAL_SIZE = 7;
 
         // Code point thresholds for quick check codes.
-        public static readonly int IX_MIN_DECOMP_NO_CP = 8;
-        public static readonly int IX_MIN_COMP_NO_MAYBE_CP = 9;
+        public const int IX_MIN_DECOMP_NO_CP = 8;
+        public const int IX_MIN_COMP_NO_MAYBE_CP = 9;
 
         // Norm16 value thresholds for quick check combinations and types of extra data.
 
-        /** Mappings & compositions in [minYesNo..minYesNoMappingsOnly[. */
-        public static readonly int IX_MIN_YES_NO = 10;
-        /** Mappings are comp-normalized. */
-        public static readonly int IX_MIN_NO_NO = 11;
-        public static readonly int IX_LIMIT_NO_NO = 12;
-        public static readonly int IX_MIN_MAYBE_YES = 13;
+        /// <summary>Mappings & compositions in [minYesNo..minYesNoMappingsOnly[.</summary>
+        public const int IX_MIN_YES_NO = 10;
+        /// <summary>Mappings are comp-normalized.</summary>
+        public const int IX_MIN_NO_NO = 11;
+        public const int IX_LIMIT_NO_NO = 12;
+        public const int IX_MIN_MAYBE_YES = 13;
 
-        /** Mappings only in [minYesNoMappingsOnly..minNoNo[. */
-        public static readonly int IX_MIN_YES_NO_MAPPINGS_ONLY = 14;
-        /** Mappings are not comp-normalized but have a comp boundary before. */
-        public static readonly int IX_MIN_NO_NO_COMP_BOUNDARY_BEFORE = 15;
-        /** Mappings do not have a comp boundary before. */
-        public static readonly int IX_MIN_NO_NO_COMP_NO_MAYBE_CC = 16;
-        /** Mappings to the empty string. */
-        public static readonly int IX_MIN_NO_NO_EMPTY = 17;
+        /// <summary>Mappings only in [minYesNoMappingsOnly..minNoNo[.</summary>
+        public const int IX_MIN_YES_NO_MAPPINGS_ONLY = 14;
+        /// <summary>Mappings are not comp-normalized but have a comp boundary before.</summary>
+        public const int IX_MIN_NO_NO_COMP_BOUNDARY_BEFORE = 15;
+        /// <summary>Mappings do not have a comp boundary before.</summary>
+        public const int IX_MIN_NO_NO_COMP_NO_MAYBE_CC = 16;
+        /// <summary>Mappings to the empty string.</summary>
+        public const int IX_MIN_NO_NO_EMPTY = 17;
 
-        public static readonly int IX_MIN_LCCC_CP = 18;
-        public static readonly int IX_COUNT = 20;
+        public const int IX_MIN_LCCC_CP = 18;
+        public const int IX_COUNT = 20;
 
-        public static readonly int MAPPING_HAS_CCC_LCCC_WORD = 0x80;
-        public static readonly int MAPPING_HAS_RAW_MAPPING = 0x40;
+        public const int MAPPING_HAS_CCC_LCCC_WORD = 0x80;
+        public const int MAPPING_HAS_RAW_MAPPING = 0x40;
         // unused bit 0x20;
-        public static readonly int MAPPING_LENGTH_MASK = 0x1f;
+        public const int MAPPING_LENGTH_MASK = 0x1f;
 
-        public static readonly int COMP_1_LAST_TUPLE = 0x8000;
-        public static readonly int COMP_1_TRIPLE = 1;
-        public static readonly int COMP_1_TRAIL_LIMIT = 0x3400;
-        public static readonly int COMP_1_TRAIL_MASK = 0x7ffe;
-        public static readonly int COMP_1_TRAIL_SHIFT = 9;  // 10-1 for the "triple" bit
-        public static readonly int COMP_2_TRAIL_SHIFT = 6;
-        public static readonly int COMP_2_TRAIL_MASK = 0xffc0;
+        public const int COMP_1_LAST_TUPLE = 0x8000;
+        public const int COMP_1_TRIPLE = 1;
+        public const int COMP_1_TRAIL_LIMIT = 0x3400;
+        public const int COMP_1_TRAIL_MASK = 0x7ffe;
+        public const int COMP_1_TRAIL_SHIFT = 9;  // 10-1 for the "triple" bit
+        public const int COMP_2_TRAIL_SHIFT = 6;
+        public const int COMP_2_TRAIL_MASK = 0xffc0;
 
         // higher-level functionality ------------------------------------------ ***
 
@@ -1147,11 +1146,11 @@ namespace ICU4N.Impl
                    norm16 == JAMO_VT ||
                    (minMaybeYes <= norm16 && norm16 <= MIN_NORMAL_MAYBE_YES);
         }
-        /**
-         * A little faster and simpler than isDecompYesAndZeroCC() but does not include
-         * the MaybeYes which combine-forward and have ccc=0.
-         * (Standard Unicode 10 normalization does not have such characters.)
-         */
+        /// <summary>
+        /// A little faster and simpler than <see cref="IsDecompYesAndZeroCC(int)"/> but does not include
+        /// the MaybeYes which combine-forward and have ccc=0.
+        /// (Standard Unicode 10 normalization does not have such characters.)
+        /// </summary>
         private bool IsMostDecompYesAndZeroCC(int norm16)
         {
             return norm16 < minYesNo || norm16 == MIN_NORMAL_MAYBE_YES || norm16 == JAMO_VT;
@@ -1197,9 +1196,7 @@ namespace ICU4N.Impl
         // Requires minYesNo<norm16<limitNoNo.
         // private int getMapping(int norm16) { return extraData+(norm16>>OFFSET_SHIFT); }
 
-        /**
-         * @return index into maybeYesCompositions, or -1
-         */
+        /// <returns>Index into maybeYesCompositions, or -1.</returns>
         private int GetCompositionsListForDecompYes(int norm16)
         {
             if (norm16 < JAMO_L || MIN_NORMAL_MAYBE_YES <= norm16)
@@ -1218,9 +1215,7 @@ namespace ICU4N.Impl
                 return norm16 >> OFFSET_SHIFT;
             }
         }
-        /**
-         * @return index into maybeYesCompositions
-         */
+        /// <returns>Index into maybeYesCompositions.</returns>
         private int GetCompositionsListForComposite(int norm16)
         {
             // A composite has both mapping & compositions list.
@@ -1235,10 +1230,9 @@ namespace ICU4N.Impl
             // minMaybeYes<=norm16<MIN_NORMAL_MAYBE_YES
             return (norm16 - minMaybeYes) >> OFFSET_SHIFT;
         }
-        /**
-         * @param c code point must have compositions
-         * @return index into maybeYesCompositions
-         */
+
+        /// <param name="norm16">Code point must have compositions.</param>
+        /// <returns>Index into maybeYesCompositions.</returns>
         private int GetCompositionsList(int norm16)
         {
             return IsDecompYes(norm16) ?
@@ -1295,30 +1289,31 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Finds the recomposition result for
-         * a forward-combining "lead" character,
-         * specified with a pointer to its compositions list,
-         * and a backward-combining "trail" character.
-         *
-         * <p>If the lead and trail characters combine, then this function returns
-         * the following "compositeAndFwd" value:
-         * <pre>
-         * Bits 21..1  composite character
-         * Bit      0  set if the composite is a forward-combining starter
-         * </pre>
-         * otherwise it returns -1.
-         *
-         * <p>The compositions list has (trail, compositeAndFwd) pair entries,
-         * encoded as either pairs or triples of 16-bit units.
-         * The last entry has the high bit of its first unit set.
-         *
-         * <p>The list is sorted by ascending trail characters (there are no duplicates).
-         * A linear search is used.
-         *
-         * <p>See normalizer2impl.h for a more detailed description
-         * of the compositions list format.
-         */
+        /// <summary>
+        /// Finds the recomposition result for
+        /// a forward-combining "lead" character,
+        /// specified with a pointer to its compositions list,
+        /// and a backward-combining "trail" character.
+        /// </summary>
+        /// <remarks>
+        /// If the lead and trail characters combine, then this function returns
+        /// the following "compositeAndFwd" value:
+        /// <code>
+        /// Bits 21..1  composite character
+        /// Bit      0  set if the composite is a forward-combining starter
+        /// </code>
+        /// otherwise it returns -1.
+        /// <para/>
+        /// The compositions list has (trail, compositeAndFwd) pair entries,
+        /// encoded as either pairs or triples of 16-bit units.
+        /// The last entry has the high bit of its first unit set.
+        /// <para/>
+        /// The list is sorted by ascending trail characters (there are no duplicates).
+        /// A linear search is used.
+        /// <para/>
+        /// See normalizer2impl.h for a more detailed description
+        /// of the compositions list format.
+        /// </remarks>
         private static int Combine(string compositions, int list, int trail)
         {
             int key1, firstUnit;
@@ -1386,10 +1381,8 @@ namespace ICU4N.Impl
             }
             return -1;
         }
-        /**
-         * @param list some character's compositions list
-         * @param set recursively receives the composites from these compositions
-         */
+        /// <param name="list">Some character's compositions list.</param>
+        /// <param name="set">Recursively receives the composites from these compositions.</param>
         private void AddComposites(int list, UnicodeSet set)
         {
             int firstUnit, compositeAndFwd;
@@ -1415,16 +1408,17 @@ namespace ICU4N.Impl
                 set.Add(composite);
             } while ((firstUnit & COMP_1_LAST_TUPLE) == 0);
         }
-        /*
-         * Recomposes the buffer text starting at recomposeStartIndex
-         * (which is in NFD - decomposed and canonically ordered),
-         * and truncates the buffer contents.
-         *
-         * Note that recomposition never lengthens the text:
-         * Any character consists of either one or two code units;
-         * a composition may contain at most one more code unit than the original starter,
-         * while the combining mark that is removed has at least one code unit.
-         */
+        /// <summary>
+        /// Recomposes the buffer text starting at <paramref name="recomposeStartIndex"/>
+        /// (which is in NFD - decomposed and canonically ordered),
+        /// and truncates the buffer contents.
+        /// </summary>
+        /// <remarks>
+        /// Note that recomposition never lengthens the text:
+        /// Any character consists of either one or two code units;
+        /// a composition may contain at most one more code unit than the original starter,
+        /// while the combining mark that is removed has at least one code unit.
+        /// </remarks>
         private void Recompose(ReorderingBuffer buffer, int recomposeStartIndex,
                                bool onlyContiguous)
         {
@@ -1669,14 +1663,13 @@ namespace ICU4N.Impl
             }
             return Combine(maybeYesCompositions, list, b) >> 1;
         }
-
-        /**
-         * Does c have a composition boundary before it?
-         * True if its decomposition begins with a character that has
-         * ccc=0 && NFC_QC=Yes (isCompYesAndZeroCC()).
-         * As a shortcut, this is true if c itself has ccc=0 && NFC_QC=Yes
-         * (isCompYesAndZeroCC()) so we need not decompose.
-         */
+        /// <summary>
+        /// Does <paramref name="c"/> have a composition boundary before it?
+        /// True if its decomposition begins with a character that has
+        /// ccc=0 && NFC_QC=Yes (<see cref="IsCompYesAndZeroCC(int)"/>).
+        /// As a shortcut, this is true if <paramref name="c"/> itself has ccc=0 && NFC_QC=Yes
+        /// (<see cref="IsCompYesAndZeroCC(int)"/>) so we need not decompose.
+        /// </summary>
         private bool HasCompBoundaryBefore(int c, int norm16)
         {
             return c < minCompNoMaybeCP || Norm16HasCompBoundaryBefore(norm16);
@@ -1696,7 +1689,7 @@ namespace ICU4N.Impl
 
         // ICU4N specific - HasCompBoundaryAfter(ICharSequence s, int start, int p, bool onlyContiguous) moved to Normalizer2ImplExtention.tt
 
-        /** For FCC: Given norm16 HAS_COMP_BOUNDARY_AFTER, does it have tccc<=1? */
+        /// <summary>For FCC: Given norm16 HAS_COMP_BOUNDARY_AFTER, does it have tccc&lt;=1?</summary>
         private bool IsTrailCC01ForCompBoundaryAfter(int norm16)
         {
             return IsInert(norm16) || (IsDecompNoAlgorithmic(norm16) ?

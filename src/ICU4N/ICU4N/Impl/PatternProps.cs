@@ -110,9 +110,7 @@
 
         // ICU4N specific - SkipWhiteSpace(ICharSequence s, int i) moved to PatternPropsExtension.tt
 
-        /**
-         * @return s except with leading and trailing Pattern_White_Space removed.
-         */
+        /// <returns><paramref name="s"/> except with leading and trailing Pattern_White_Space removed.</returns>
         public static string TrimWhiteSpace(string s)
         {
             if (s.Length == 0 || (!IsWhiteSpace(s[0]) && !IsWhiteSpace(s[s.Length - 1])))

@@ -4,7 +4,6 @@ using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -15,9 +14,9 @@ namespace ICU4N.Impl
         // Public API dispatch via Normalizer2 subclasses -------------------------- ***
 
         // Normalizer2 implementation for the old UNORM_NONE.
-        public sealed class NoopNormalizer2 : Normalizer2
+        public sealed class NoopNormalizer2 : Normalizer2 // ICU4N TODO: API - de-nest ?
         {
-            public override StringBuilder Normalize(string src, StringBuilder dest)
+            public override StringBuilder Normalize(string src, StringBuilder dest) // ICU4N TODO: API code generation for ICharSequence overloads
             {
                 dest.Length = 0;
                 return dest.Append(src);
@@ -133,7 +132,7 @@ namespace ICU4N.Impl
             {
                 return null;
             }
-            // No need to override the default getRawDecomposition().
+            // No need to override the default GetRawDecomposition().
 
             public override bool IsNormalized(string s) { return true; }
 
@@ -168,7 +167,7 @@ namespace ICU4N.Impl
 
         // Intermediate class:
         // Has Normalizer2Impl and does boilerplate argument checking and setup.
-        public abstract class Normalizer2WithImpl : Normalizer2
+        public abstract class Normalizer2WithImpl : Normalizer2 // ICU4N TODO: API - de-nest ?
         {
             public Normalizer2WithImpl(Normalizer2Impl ni)
             {
@@ -230,18 +229,6 @@ namespace ICU4N.Impl
                 return dest;
             }
 
-            //        public override Appendable Normalize(CharSequence src, Appendable dest)
-            //{
-            //    if (dest == src)
-            //    {
-            //        throw new ArgumentException("'src' cannot be the same instance as 'dest'");
-            //    }
-            //    Normalizer2Impl.ReorderingBuffer buffer =
-            //        new Normalizer2Impl.ReorderingBuffer(impl, dest, src.Length);
-            //    Normalize(src, buffer);
-            //    buffer.Flush();
-            //    return dest;
-            //}
             protected abstract void Normalize(string src, Normalizer2Impl.ReorderingBuffer buffer);
 
             protected abstract void Normalize(StringBuilder src, Normalizer2Impl.ReorderingBuffer buffer);
@@ -412,13 +399,12 @@ namespace ICU4N.Impl
             public readonly Normalizer2Impl impl;
         }
 
-        public sealed class DecomposeNormalizer2 : Normalizer2WithImpl
+        public sealed class DecomposeNormalizer2 : Normalizer2WithImpl // ICU4N TODO: API - de-nest ?
         {
             public DecomposeNormalizer2(Normalizer2Impl ni)
-                    : base(ni)
+                : base(ni)
             {
             }
-
 
             protected override void Normalize(string src, Normalizer2Impl.ReorderingBuffer buffer)
             {
@@ -495,14 +481,13 @@ namespace ICU4N.Impl
             public override bool IsInert(int c) { return impl.IsDecompInert(c); }
         }
 
-        public sealed class ComposeNormalizer2 : Normalizer2WithImpl
+        public sealed class ComposeNormalizer2 : Normalizer2WithImpl // ICU4N TODO: API - de-nest ?
         {
             public ComposeNormalizer2(Normalizer2Impl ni, bool fcc)
-                    : base(ni)
+                : base(ni)
             {
                 onlyContiguous = fcc;
             }
-
 
             protected override void Normalize(string src, Normalizer2Impl.ReorderingBuffer buffer)
             {
@@ -688,13 +673,12 @@ namespace ICU4N.Impl
             private readonly bool onlyContiguous;
         }
 
-        public sealed class FCDNormalizer2 : Normalizer2WithImpl
+        public sealed class FCDNormalizer2 : Normalizer2WithImpl // ICU4N TODO: API - de-nest ?
         {
             public FCDNormalizer2(Normalizer2Impl ni)
-                    : base(ni)
+                : base(ni)
             {
             }
-
 
             protected override void Normalize(string src, Normalizer2Impl.ReorderingBuffer buffer)
             {
@@ -874,10 +858,11 @@ namespace ICU4N.Impl
         }
 
         public static readonly NoopNormalizer2 NOOP_NORMALIZER2 = new NoopNormalizer2();
-        /**
-         * Gets the FCD normalizer, with the FCD data initialized.
-         * @return FCD normalizer
-         */
+
+        /// <summary>
+        /// Gets the FCD normalizer, with the FCD data initialized.
+        /// </summary>
+        /// <returns>FCD normalizer.</returns>
         public static Normalizer2 GetFCDNormalizer2()
         {
             return GetNFCInstance().Fcd;

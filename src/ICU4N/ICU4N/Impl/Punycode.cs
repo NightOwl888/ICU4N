@@ -1,38 +1,32 @@
-﻿using ICU4N.Lang;
-using ICU4N.Support.Text;
-using ICU4N.Text;
-using System;
-using System.Text;
-
-namespace ICU4N.Impl
+﻿namespace ICU4N.Impl
 {
     /// <summary>
     /// Ported code from ICU punycode.c 
     /// </summary>
     /// <author>ram</author>
-    public sealed partial class Punycode
+    public static partial class Punycode // ICU4N specific - made class static since it only has static members
     {
         /* Punycode parameters for Bootstring */
-        private static readonly int BASE = 36;
-        private static readonly int TMIN = 1;
-        private static readonly int TMAX = 26;
-        private static readonly int SKEW = 38;
-        private static readonly int DAMP = 700;
-        private static readonly int INITIAL_BIAS = 72;
-        private static readonly int INITIAL_N = 0x80;
+        private const int BASE = 36;
+        private const int TMIN = 1;
+        private const int TMAX = 26;
+        private const int SKEW = 38;
+        private const int DAMP = 700;
+        private const int INITIAL_BIAS = 72;
+        private const int INITIAL_N = 0x80;
 
         /* "Basic" Unicode/ASCII code points */
-        private static readonly char HYPHEN = (char)0x2d;
-        private static readonly char DELIMITER = HYPHEN;
+        private const char HYPHEN = (char)0x2d;
+        private const char DELIMITER = HYPHEN;
 
-        private static readonly int ZERO = 0x30;
-        //private static readonly int NINE           = 0x39;
+        private const int ZERO = 0x30;
+        //private const int NINE           = 0x39;
 
-        private static readonly int SMALL_A = 0x61;
-        private static readonly int SMALL_Z = 0x7a;
+        private const int SMALL_A = 0x61;
+        private const int SMALL_Z = 0x7a;
 
-        private static readonly int CAPITAL_A = 0x41;
-        private static readonly int CAPITAL_Z = 0x5a;
+        private const int CAPITAL_A = 0x41;
+        private const int CAPITAL_Z = 0x5a;
 
         private static int AdaptBias(int delta, int length, bool firstTime)
         {
@@ -55,11 +49,11 @@ namespace ICU4N.Impl
             return count + (((BASE - TMIN + 1) * delta) / (delta + SKEW));
         }
 
-        /**
-         * basicToDigit[] contains the numeric value of a basic code
-         * point (for use in representing integers) in the range 0 to
-         * BASE-1, or -1 if b is does not represent a value.
-         */
+        /// <summary>
+        /// basicToDigit[] contains the numeric value of a basic code
+        /// point (for use in representing integers) in the range 0 to
+        /// BASE-1, or -1 if b is does not represent a value.
+        /// </summary>
         internal static readonly int[] basicToDigit = new int[]{
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -86,7 +80,7 @@ namespace ICU4N.Impl
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
             };
 
-        ///CLOVER:OFF
+        //CLOVER:OFF
         private static char AsciiCaseMap(char b, bool uppercase)
         {
             if (uppercase)
@@ -105,13 +99,13 @@ namespace ICU4N.Impl
             }
             return b;
         }
-        ///CLOVER:ON
-        /**
-         * digitToBasic() returns the basic code point whose value
-         * (when used for representing integers) is d, which must be in the
-         * range 0 to BASE-1. The lowercase form is used unless the uppercase flag is
-         * nonzero, in which case the uppercase form is used.
-         */
+        //CLOVER:ON
+        /// <summary>
+        /// <see cref="DigitToBasic(int, bool)"/> returns the basic code point whose value
+        /// (when used for representing integers) is d, which must be in the
+        /// range 0 to BASE-1. The lowercase form is used unless the uppercase flag is
+        /// nonzero, in which case the uppercase form is used.
+        /// </summary>
         private static char DigitToBasic(int digit, bool uppercase)
         {
             /*  0..25 map to ASCII a..z or A..Z */
@@ -139,12 +133,12 @@ namespace ICU4N.Impl
         {
             return (ch < INITIAL_N);
         }
-        ///CLOVER:OFF
+        //CLOVER:OFF
         private static bool IsBasicUpperCase(int ch)
         {
             return (CAPITAL_A <= ch && ch >= CAPITAL_Z);
         }
-        ///CLOVER:ON
+        //CLOVER:ON
         private static bool IsSurrogate(int ch)
         {
             return (((ch) & 0xfffff800) == 0xd800);

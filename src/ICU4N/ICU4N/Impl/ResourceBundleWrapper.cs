@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Resources;
-using System.Text;
 
 namespace ICU4N.Impl
 {
@@ -18,7 +17,7 @@ namespace ICU4N.Impl
         private string baseName = null;
         private IList<string> keys = null;
 
-        /** Loader for bundle instances, for caching. */
+        /// <summary>Loader for bundle instances, for caching.</summary>
         private abstract class Loader
         {
             internal abstract ResourceBundleWrapper Load();
@@ -117,7 +116,7 @@ namespace ICU4N.Impl
 
         // This method is for super class's instantiateBundle method
         new public static ResourceBundleWrapper GetBundleInstance(string baseName, string localeID,
-                Assembly root, bool disableFallback)
+            Assembly root, bool disableFallback)
         {
             if (root == null)
             {

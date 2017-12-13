@@ -1,8 +1,6 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Impl
@@ -19,10 +17,10 @@ namespace ICU4N.Impl
     {
         // public constructor ------------------------------------------------------
 
-        /**
-         * Public constructor
-         * @param replaceable text which the iterator will be based on
-         */
+        /// <summary>
+        /// Public constructor.
+        /// </summary>
+        /// <param name="replaceable">Text which the iterator will be based on.</param>
         public ReplaceableUCharacterIterator(IReplaceable replaceable)
         {
             if (replaceable == null)
@@ -33,10 +31,10 @@ namespace ICU4N.Impl
             this.currentIndex = 0;
         }
 
-        /**
-         * Public constructor
-         * @param str text which the iterator will be based on
-         */
+        /// <summary>
+        /// Public constructor.
+        /// </summary>
+        /// <param name="str">Text which the iterator will be based on.</param>
         public ReplaceableUCharacterIterator(string str)
         {
             if (str == null)
@@ -47,10 +45,10 @@ namespace ICU4N.Impl
             this.currentIndex = 0;
         }
 
-        /**
-         * Public constructor
-         * @param buf buffer of text on which the iterator will be based
-         */
+        /// <summary>
+        /// Public constructor.
+        /// </summary>
+        /// <param name="buf">Buffer of text on which the iterator will be based.</param>
         public ReplaceableUCharacterIterator(StringBuffer buf)
         {
             if (buf == null)
@@ -63,20 +61,19 @@ namespace ICU4N.Impl
 
         // public methods ----------------------------------------------------------
 
-        /**
-         * Creates a copy of this iterator, does not clone the underlying
-         * <code>Replaceable</code>object
-         * @return copy of this iterator
-         */
+        /// <summary>
+        /// Creates a copy of this iterator, does not clone the underlying
+        /// <see cref="IReplaceable"/> object.
+        /// </summary>
+        /// <returns>Copy of this iterator.</returns>
         public override object Clone()
         {
             return base.MemberwiseClone();
         }
 
-        /**
-         * Returns the current UTF16 character.
-         * @return current UTF16 character
-         */
+        /// <summary>
+        /// Gets the current <see cref="UTF16"/> character.
+        /// </summary>
         public override int Current
         {
             get
@@ -89,10 +86,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Returns the current codepoint
-         * @return current codepoint
-         */
+        /// <summary>
+        /// Returns the current codepoint.
+        /// </summary>
+        /// <returns>Current codepoint.</returns>
         public override int CurrentCodePoint()
         {
             // cannot use charAt due to it different
@@ -119,19 +116,20 @@ namespace ICU4N.Impl
             return ch;
         }
 
-        /**
-         * Returns the length of the text
-         * @return length of the text
-         */
+        /// <summary>
+        /// Gets the length of the text.
+        /// </summary>
         public override int Length
         {
             get { return replaceable.Length; }
         }
 
-        /**
-         * Gets the current currentIndex in text.
-         * @return current currentIndex in text.
-         */
+        /// <summary>
+        /// Gets or Sets the current <see cref="currentIndex"/> in text.
+        /// This assumes the text is stored as 16-bit code units.
+        /// </summary>
+        /// <exception cref="IndexOutOfRangeException">if an invalid value is
+        ///            supplied. i.e. value is out of bounds.</exception>
         public override int Index
         {
             get { return currentIndex; }
@@ -145,14 +143,14 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Returns next UTF16 character and increments the iterator's currentIndex by 1.
-         * If the resulting currentIndex is greater or equal to the text length, the
-         * currentIndex is reset to the text length and a value of DONECODEPOINT is
-         * returned.
-         * @return next UTF16 character in text or DONE if the new currentIndex is off the
-         *         end of the text range.
-         */
+        /// <summary>
+        /// Returns next UTF16 character and increments the iterator's <see cref="currentIndex"/> by 1.
+        /// If the resulting <see cref="currentIndex"/> is greater or equal to the text length, the
+        /// <see cref="currentIndex"/> is reset to the text length and a value of <see cref="UForwardCharacterIterator.DONE"/> is
+        /// returned.
+        /// </summary>
+        /// <returns>Next UTF16 character in text or <see cref="UForwardCharacterIterator.DONE"/> if the new <see cref="currentIndex"/> is off the
+        ///         end of the text range.</returns>
         public override int Next()
         {
             if (currentIndex < replaceable.Length)
@@ -162,15 +160,14 @@ namespace ICU4N.Impl
             return UForwardCharacterIterator.DONE;
         }
 
-
-        /**
-         * Returns previous UTF16 character and decrements the iterator's currentIndex by
-         * 1.
-         * If the resulting currentIndex is less than 0, the currentIndex is reset to 0 and a
-         * value of DONECODEPOINT is returned.
-         * @return next UTF16 character in text or DONE if the new currentIndex is off the
-         *         start of the text range.
-         */
+        /// <summary>
+        /// Returns previous UTF16 character and decrements the iterator's <see cref="currentIndex"/> by
+        /// 1.
+        /// If the resulting <see cref="currentIndex"/> is less than 0, the <see cref="currentIndex"/> is reset to 0 and a
+        /// value of <see cref="UForwardCharacterIterator.DONE"/> is returned.
+        /// </summary>
+        /// <returns>Next UTF16 character in text or <see cref="UForwardCharacterIterator.DONE"/> if the new <see cref="currentIndex"/> is off the
+        ///         start of the text range.</returns>
         public override int Previous()
         {
             if (currentIndex > 0)
@@ -180,25 +177,7 @@ namespace ICU4N.Impl
             return UForwardCharacterIterator.DONE;
         }
 
-        //    /**
-        //     * <p>Sets the currentIndex to the specified currentIndex in the text and returns that
-        //     * single UTF16 character at currentIndex.
-        //     * This assumes the text is stored as 16-bit code units.</p>
-        //     * @param currentIndex the currentIndex within the text.
-        //     * @exception IllegalArgumentException is thrown if an invalid currentIndex is
-        //     *            supplied. i.e. currentIndex is out of bounds.
-        //     * @returns the character at the specified currentIndex or DONE if the specified
-        //     *         currentIndex is equal to the end of the text.
-        //     */
-
-        //public override void setIndex(int currentIndex) 
-        //    {
-        //    if (currentIndex< 0 || currentIndex> replaceable.Length) {
-        //        throw new IndexOutOfRangeException();
-        //}
-        //    this.currentIndex = currentIndex;
-        //}
-
+        // ICU4N specific - moved setter to the Index property
 
         public override int GetText(char[] fillIn, int offset)
         {
@@ -207,21 +186,19 @@ namespace ICU4N.Impl
             {
                 throw new IndexOutOfRangeException(length.ToString());
             }
-            //replaceable.GetChars(0, length, fillIn, offset);
             replaceable.CopyTo(0, fillIn, offset, length);
             return length;
         }
 
         // private data members ----------------------------------------------------
 
-        /**
-         * Replacable object
-         */
+        /// <summary>
+        /// Replacable object
+        /// </summary>
         private IReplaceable replaceable;
-        /**
-         * Current currentIndex
-         */
+        /// <summary>
+        /// Current currentIndex
+        /// </summary>
         private int currentIndex;
-
     }
 }
