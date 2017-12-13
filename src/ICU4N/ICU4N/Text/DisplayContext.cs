@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ICU4N.Text
 {
-    public enum DisplayContext
+    public enum DisplayContext // ICU4N TODO: API - Change case to follow .NET Conventions
     {
         /**
          * ================================
@@ -105,7 +105,7 @@ namespace ICU4N.Text
      * Type values for DisplayContext
      * @stable ICU 51
      */
-    public enum DisplayContextType
+    public enum DisplayContextType // ICU4N TODO: API - change case to follow .NET Conventions
     {
         /**
          * DIALECT_HANDLING can be set to STANDARD_NAMES or DIALECT_NAMES.

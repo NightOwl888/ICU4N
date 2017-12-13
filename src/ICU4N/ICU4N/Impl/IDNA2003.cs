@@ -1,7 +1,5 @@
-﻿using ICU4N.Support.Text;
-using ICU4N.Text;
+﻿using ICU4N.Text;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
@@ -303,9 +301,7 @@ namespace ICU4N.Impl
 
         public static StringBuffer ConvertIDNToASCII(string src, int options)
         {
-
-            char[]
-        srcArr = src.ToCharArray();
+            char[] srcArr = src.ToCharArray();
             StringBuffer result = new StringBuffer();
             int sepIndex = 0;
             int oldSepIndex = 0;
@@ -338,9 +334,7 @@ namespace ICU4N.Impl
 
         public static StringBuffer ConvertToUnicode(UCharacterIterator src, int options)
         {
-
-            bool[]
-            caseFlags = null;
+            bool[] caseFlags = null;
 
             // the source contains all ascii codepoints
             bool srcIsASCII = true;
@@ -464,9 +458,7 @@ namespace ICU4N.Impl
 
         public static StringBuffer ConvertIDNToUnicode(String src, int options)
         {
-
-            char[]
-        srcArr = src.ToCharArray();
+            char[] srcArr = src.ToCharArray();
             StringBuffer result = new StringBuffer();
             int sepIndex = 0;
             int oldSepIndex = 0;
@@ -497,7 +489,7 @@ namespace ICU4N.Impl
             return result;
         }
 
-        public static int Compare(String s1, String s2, int options)
+        public static int Compare(string s1, string s2, int options)
         {
             StringBuffer s1Out = ConvertIDNToASCII(s1, options);
             StringBuffer s2Out = ConvertIDNToASCII(s2, options);

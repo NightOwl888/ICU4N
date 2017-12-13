@@ -16,29 +16,29 @@ namespace ICU4N.Impl
 {
     public class ICUResourceBundle : UResourceBundle
     {
-        /**
-     * CLDR string value "∅∅∅" prevents fallback to the parent bundle.
-     */
-        public static readonly string NO_INHERITANCE_MARKER = "\u2205\u2205\u2205";
+        /// <summary>
+        /// CLDR string value "∅∅∅" prevents fallback to the parent bundle.
+        /// </summary>
+        public static readonly string NO_INHERITANCE_MARKER = "\u2205\u2205\u2205"; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * The class loader constant to be used with getBundleInstance API
-         */
-        public static readonly Assembly ICU_DATA_CLASS_LOADER = typeof(ICUData).GetTypeInfo().Assembly; //ClassLoaderUtil.getClassLoader(ICUData.class);
+        /// <summary>
+        /// The class loader constant to be used with <see cref="GetBundleInstance(string, string, Assembly, OpenType)"/> API
+        /// </summary>
+        public static readonly Assembly ICU_DATA_CLASS_LOADER = typeof(ICUData).GetTypeInfo().Assembly; //ClassLoaderUtil.getClassLoader(ICUData.class); // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * The name of the resource containing the installed locales
-         */
-        protected static readonly string INSTALLED_LOCALES = "InstalledLocales";
+        /// <summary>
+        /// The name of the resource containing the installed locales
+        /// </summary>
+        protected static readonly string INSTALLED_LOCALES = "InstalledLocales"; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * Fields for a whole bundle, rather than any specific resource in the bundle.
-         * Corresponds roughly to ICU4C/source/common/uresimp.h struct UResourceDataEntry.
-         */
-        protected internal sealed class WholeBundle
+        /// <summary>
+        /// Fields for a whole bundle, rather than any specific resource in the bundle.
+        /// Corresponds roughly to ICU4C/source/common/uresimp.h struct UResourceDataEntry.
+        /// </summary>
+        protected internal sealed class WholeBundle // ICU4N TODO: API - de-nest ?
         {
             internal WholeBundle(string baseName, string localeID, Assembly loader,
-                    ICUResourceBundleReader reader)
+                ICUResourceBundleReader reader)
             {
                 this.baseName = baseName;
                 this.localeID = localeID;
@@ -52,10 +52,10 @@ namespace ICU4N.Impl
             internal ULocale ulocale;
             internal Assembly loader;
 
-            /**
-             * Access to the bits and bytes of the resource bundle.
-             * Hides low-level details.
-             */
+            /// <summary>
+            /// Access to the bits and bytes of the resource bundle.
+            /// Hides low-level details.
+            /// </summary>
             internal ICUResourceBundleReader reader;
 
             // TODO: Remove topLevelKeys when we upgrade to Java 6 where ResourceBundle caches the keySet().
@@ -65,8 +65,10 @@ namespace ICU4N.Impl
         internal WholeBundle wholeBundle;
         private ICUResourceBundle container;
 
-        /** Loader for bundle instances, for caching. */
-        private abstract class Loader
+        /// <summary>
+        /// Loader for bundle instances, for caching.
+        /// </summary>
+        private abstract class Loader// ICU4N TODO: API - de-nest ?
         {
             internal abstract ICUResourceBundle Load();
         }
@@ -81,23 +83,24 @@ namespace ICU4N.Impl
 
         private static CacheBase<String, ICUResourceBundle, Loader> BUNDLE_CACHE = new BundleCache();
 
-        /**
-         * Returns a functionally equivalent locale, considering keywords as well, for the specified keyword.
-         * @param baseName resource specifier
-         * @param resName top level resource to consider (such as "collations")
-         * @param keyword a particular keyword to consider (such as "collation" )
-         * @param locID The requested locale
-         * @param isAvailable If non-null, 1-element array of fillin parameter that indicates whether the
-         * requested locale was available. The locale is defined as 'available' if it physically
-         * exists within the specified tree and included in 'InstalledLocales'.
-         * @param omitDefault  if true, omit keyword and value if default.
-         * 'de_DE\@collation=standard' -> 'de_DE'
-         * @return the locale
-         * @internal ICU 3.0
-         */
-        public static ULocale GetFunctionalEquivalent(string baseName, Assembly loader,
-                string resName, string keyword, ULocale locID,
-                bool[] isAvailable, bool omitDefault)
+        /// <summary>
+        /// Returns a functionally equivalent locale, considering keywords as well, for the specified keyword.
+        /// </summary>
+        /// <param name="baseName">Resource specifier.</param>
+        /// <param name="assembly"></param>
+        /// <param name="resName">Top level resource to consider (such as "collations").</param>
+        /// <param name="keyword">A particular keyword to consider (such as "collation" ).</param>
+        /// <param name="locID">The requested locale.</param>
+        /// <param name="isAvailable">If non-null, 1-element array of fillin parameter that indicates whether the
+        /// requested locale was available. The locale is defined as 'available' if it physically
+        /// exists within the specified tree and included in 'InstalledLocales'.</param>
+        /// <param name="omitDefault">If true, omit keyword and value if default.
+        /// 'de_DE\@collation=standard' -> 'de_DE'</param>
+        /// <returns>The locale.</returns>
+        /// <internal>ICU 3.0</internal>
+        public static ULocale GetFunctionalEquivalent(string baseName, Assembly assembly,
+            string resName, string keyword, ULocale locID,
+            bool[] isAvailable, bool omitDefault)
         {
             string kwVal = locID.GetKeywordValue(keyword);
             string baseLoc = locID.GetBaseName();
@@ -123,7 +126,7 @@ namespace ICU4N.Impl
             if (isAvailable != null)
             {
                 isAvailable[0] = false;
-                ULocale[] availableULocales = GetAvailEntry(baseName, loader).GetULocaleList();
+                ULocale[] availableULocales = GetAvailEntry(baseName, assembly).GetULocaleList();
                 for (int i = 0; i < availableULocales.Length; i++)
                 {
                     if (parent.Equals(availableULocales[i]))
@@ -302,22 +305,24 @@ namespace ICU4N.Impl
             return keywords.ToArray();
         }
 
-        /**
-         * This method performs multilevel fallback for fetching items from the
-         * bundle e.g: If resource is in the form de__PHONEBOOK{ collations{
-         * default{ "phonebook"} } } If the value of "default" key needs to be
-         * accessed, then do: <code>
-         *  UResourceBundle bundle = UResourceBundle.getBundleInstance("de__PHONEBOOK");
-         *  ICUResourceBundle result = null;
-         *  if(bundle instanceof ICUResourceBundle){
-         *      result = ((ICUResourceBundle) bundle).getWithFallback("collations/default");
-         *  }
-         * </code>
-         *
-         * @param path The path to the required resource key
-         * @return resource represented by the key
-         * @exception MissingResourceException If a resource was not found.
-         */
+        // ICU4N TODO: API - change code sample UResourceBundle > UResourceManager
+        /// <summary>
+        /// This method performs multilevel fallback for fetching items from the
+        /// bundle e.g: If resource is in the form de__PHONEBOOK{ collations{
+        /// default{ "phonebook"} } } If the value of "default" key needs to be
+        /// accessed, then do: 
+        /// <code>
+        ///     UResourceBundle bundle = UResourceBundle.GetBundleInstance("de__PHONEBOOK");
+        ///     ICUResourceBundle result = null;
+        ///     if (bundle is ICUResourceBundle)
+        ///     {
+        ///         result = ((ICUResourceBundle) bundle).GetWithFallback("collations/default");
+        ///     }
+        /// </code>
+        /// </summary>
+        /// <param name="path">The path to the required resource key.</param>
+        /// <returns>Resource represented by the key.</returns>
+        /// <exception cref="MissingManifestResourceException">If a resource was not found.</exception>
         public virtual ICUResourceBundle GetWithFallback(string path)
         {
             ICUResourceBundle actualBundle = this;
@@ -366,12 +371,12 @@ namespace ICU4N.Impl
             return (ICUResourceBundle)base.FindTopLevel(aKey);
         }
 
-        /**
-         * Like getWithFallback, but returns null if the resource is not found instead of
-         * throwing an exception.
-         * @param path the path to the resource
-         * @return the resource, or null
-         */
+        /// <summary>
+        /// Like <see cref="GetWithFallback(string)"/>, but returns null if the resource is not found instead of
+        /// throwing an exception.
+        /// </summary>
+        /// <param name="path">The path to the resource.</param>
+        /// <returns>The resource, or null.</returns>
         public virtual ICUResourceBundle FindWithFallback(string path)
         {
             return FindResourceWithFallback(path, this, null);
@@ -402,7 +407,7 @@ namespace ICU4N.Impl
             return result;
         }
 
-        public virtual void GetAllItemsWithFallbackNoFail(string path, UResource.Sink sink) // ICU4N TODO: Change to TryGetAllItemsWithFallback
+        public virtual void GetAllItemsWithFallbackNoFail(string path, UResource.Sink sink) // ICU4N TODO: API Change to TryGetAllItemsWithFallback (swap impl with below)
         {
             try
             {
@@ -444,7 +449,7 @@ namespace ICU4N.Impl
         }
 
         private void GetAllItemsWithFallback(
-                UResource.Key key, ReaderValue readerValue, UResource.Sink sink)
+            UResource.Key key, ReaderValue readerValue, UResource.Sink sink)
         {
             // We recursively enumerate child-first,
             // only storing parent items in the absence of child items.
@@ -487,89 +492,90 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Return a set of the locale names supported by a collection of resource
-         * bundles.
-         *
-         * @param bundlePrefix the prefix of the resource bundles to use.
-         */
-        public static ISet<string> GetAvailableLocaleNameSet(string bundlePrefix, Assembly loader)
+        /// <summary>
+        /// Return a set of the locale names supported by a collection of resource
+        /// bundles.
+        /// </summary>
+        /// <param name="bundlePrefix">The prefix of the resource bundles to use.</param>
+        /// <param name="assembly"></param>
+        public static ISet<string> GetAvailableLocaleNameSet(string bundlePrefix, Assembly assembly)
         {
-            return GetAvailEntry(bundlePrefix, loader).GetLocaleNameSet();
+            return GetAvailEntry(bundlePrefix, assembly).GetLocaleNameSet();
         }
 
-        /**
-         * Return a set of all the locale names supported by a collection of
-         * resource bundles.
-         */
+        /// <summary>
+        /// Return a set of all the locale names supported by a collection of
+        /// resource bundles.
+        /// </summary>
         public static ISet<string> GetFullLocaleNameSet()
         {
             return GetFullLocaleNameSet(ICUData.ICU_BASE_NAME, ICU_DATA_CLASS_LOADER);
         }
 
-        /**
-         * Return a set of all the locale names supported by a collection of
-         * resource bundles.
-         *
-         * @param bundlePrefix the prefix of the resource bundles to use.
-         */
-        public static ISet<String> GetFullLocaleNameSet(string bundlePrefix, Assembly loader)
+        /// <summary>
+        /// Return a set of all the locale names supported by a collection of
+        /// resource bundles.
+        /// </summary>
+        /// <param name="bundlePrefix">The prefix of the resource bundles to use.</param>
+        /// <param name="assembly"></param>
+        public static ISet<String> GetFullLocaleNameSet(string bundlePrefix, Assembly assembly)
         {
-            return GetAvailEntry(bundlePrefix, loader).GetFullLocaleNameSet();
+            return GetAvailEntry(bundlePrefix, assembly).GetFullLocaleNameSet();
         }
 
-        /**
-         * Return a set of the locale names supported by a collection of resource
-         * bundles.
-         */
+        /// <summary>
+        /// Return a set of the locale names supported by a collection of resource
+        /// bundles.
+        /// </summary>
+        /// <returns></returns>
         public static ISet<string> GetAvailableLocaleNameSet()
         {
             return GetAvailableLocaleNameSet(ICUData.ICU_BASE_NAME, ICU_DATA_CLASS_LOADER);
         }
 
-        /**
-         * Get the set of Locales installed in the specified bundles.
-         * @return the list of available locales
-         */
-        public static ULocale[] GetAvailableULocales(string baseName, Assembly loader)
+        /// <summary>
+        /// Get the set of <see cref="ULocale"/>s installed in the specified bundles.
+        /// </summary>
+        /// <returns>The list of available locales.</returns>
+        public static ULocale[] GetAvailableULocales(string baseName, Assembly assembly) // ICU4N TODO: API - rename GetAvaliableUCultureInfos ?
         {
-            return GetAvailEntry(baseName, loader).GetULocaleList();
+            return GetAvailEntry(baseName, assembly).GetULocaleList();
         }
 
-        /**
-         * Get the set of ULocales installed the base bundle.
-         * @return the list of available locales
-         */
-        public static ULocale[] GetAvailableULocales()
+        /// <summary>
+        /// Get the set of <see cref="ULocale"/>s installed the base bundle.
+        /// </summary>
+        /// <returns>The list of available locales.</returns>
+        public static ULocale[] GetAvailableULocales() // ICU4N TODO: API - rename GetAvaliableUCultureInfos ?
         {
             return GetAvailableULocales(ICUData.ICU_BASE_NAME, ICU_DATA_CLASS_LOADER);
         }
 
-        /**
-         * Get the set of Locales installed in the specified bundles.
-         * @return the list of available locales
-         */
-        public static CultureInfo[] GetAvailableLocales(string baseName, Assembly loader)
+        /// <summary>
+        /// Get the set of <see cref="CultureInfo"/>s installed in the specified bundles.
+        /// </summary>
+        /// <returns>The list of available locales.</returns>
+        public static CultureInfo[] GetAvailableLocales(string baseName, Assembly assembly) // ICU4N TODO: API - rename GetAvaliableCultureInfos ?
         {
-            return GetAvailEntry(baseName, loader).GetLocaleList();
+            return GetAvailEntry(baseName, assembly).GetLocaleList();
         }
 
-        /**
-          * Get the set of Locales installed the base bundle.
-          * @return the list of available locales
-          */
-        public static CultureInfo[] GetAvailableLocales()
+        /// <summary>
+        /// Get the set of <see cref="CultureInfo"/>s installed the base bundle.
+        /// </summary>
+        /// <returns>The list of available locales.</returns>
+        public static CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetAvaliableCultureInfos ?
         {
             return GetAvailEntry(ICUData.ICU_BASE_NAME, ICU_DATA_CLASS_LOADER).GetLocaleList();
         }
 
-        /**
-         * Convert a list of ULocales to a list of Locales.  ULocales with a script code will not be converted
-         * since they cannot be represented as a Locale.  This means that the two lists will <b>not</b> match
-         * one-to-one, and that the returned list might be shorter than the input list.
-         * @param ulocales a list of ULocales to convert to a list of Locales.
-         * @return the list of converted ULocales
-         */
+        /// <summary>
+        /// Convert a list of <see cref="ULocale"/>s to a list of <see cref="CultureInfo"/>s.  <see cref="ULocale"/>s with a script code will not be converted
+        /// since they cannot be represented as a <see cref="CultureInfo"/>.  This means that the two lists will <b>not</b> match
+        /// one-to-one, and that the returned list might be shorter than the input list.
+        /// </summary>
+        /// <param name="ulocales">A list of <see cref="ULocale"/>s to convert to a list of <see cref="CultureInfo"/>s.</param>
+        /// <returns>The list of converted Locales.</returns>
         public static CultureInfo[] GetLocaleList(ULocale[] ulocales)
         {
             List<CultureInfo> list = new List<CultureInfo>(ulocales.Length);
@@ -586,18 +592,16 @@ namespace ICU4N.Impl
             return list.ToArray();
         }
 
-        /**
-         * Returns the locale of this resource bundle. This method can be used after
-         * a call to getBundle() to determine whether the resource bundle returned
-         * really corresponds to the requested locale or is a fallback.
-         *
-         * @return the locale of this resource bundle
-         */
+        /// <summary>
+        /// Returns the locale of this resource bundle. This method can be used after
+        /// a call to <see cref="GetBundle(ICUResourceBundleReader, string, string, Assembly)"/> to determine whether the resource bundle returned
+        /// really corresponds to the requested locale or is a fallback.
+        /// </summary>
+        /// <returns>The locale of this resource bundle.</returns>
         public override CultureInfo GetLocale()
         {
             return GetULocale().ToLocale();
         }
-
 
         // ========== privates ==========
         private static readonly string ICU_RESOURCE_INDEX = "res_index";
@@ -606,13 +610,13 @@ namespace ICU4N.Impl
 
         // The name of text file generated by ICU4J build script including all locale names
         // (canonical, alias and root)
-        private static readonly string FULL_LOCALE_NAMES_LIST = "fullLocaleNames.lst";
+        private static readonly string FULL_LOCALE_NAMES_LIST = "fullLocaleNames.lst"; // ICU4N TODO: Do we need this list ?
 
         // Flag for enabling/disabling debugging code
         private static readonly bool DEBUG = ICUDebug.Enabled("localedata");
 
         private static ULocale[] CreateULocaleList(string baseName,
-                Assembly root)
+            Assembly root)
         {
             // the canned list is a subset of all the available .res files, the idea
             // is we don't export them
@@ -648,7 +652,7 @@ namespace ICU4N.Impl
         // Same as createULocaleList() but catches the MissingResourceException
         // and returns the data in a different form.
         private static void AddLocaleIDsFromIndexBundle(string baseName,
-                Assembly root, ISet<string> locales)
+            Assembly root, ISet<string> locales)
         {
             ICUResourceBundle bundle;
             try
@@ -677,7 +681,7 @@ namespace ICU4N.Impl
         }
 
         private static void AddBundleBaseNamesFromClassLoader(
-                string bn, Assembly root, ISet<string> names)
+            string bn, Assembly root, ISet<string> names) // ICU4N TODO: API - rename AddBundleBaseNamesFromAssembly
         {
             // ICU4N: Convert to .NET style base name
             string suffix = bn.Replace('/', '.').Replace('.' + ICUData.PACKAGE_NAME, "");
@@ -722,7 +726,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private static ISet<string> CreateFullLocaleNameSet(string baseName, Assembly loader)
+        private static ISet<string> CreateFullLocaleNameSet(string baseName, Assembly assembly)
         {
             string bn = baseName.EndsWith("/", StringComparison.Ordinal) ? baseName : baseName + "/";
             ISet<string> set = new HashSet<string>();
@@ -730,7 +734,7 @@ namespace ICU4N.Impl
             if (!skipScan.Equals("true", StringComparison.OrdinalIgnoreCase))
             {
                 // scan available locale resources under the base url first
-                AddBundleBaseNamesFromClassLoader(bn, loader, set);
+                AddBundleBaseNamesFromClassLoader(bn, assembly, set);
                 if (baseName.StartsWith(ICUData.ICU_BASE_NAME, StringComparison.Ordinal))
                 {
                     string folder;
@@ -775,12 +779,12 @@ namespace ICU4N.Impl
             if (set.Count == 0)
             {
                 if (DEBUG) Console.Out.WriteLine("unable to enumerate data files in " + baseName);
-                AddLocaleIDsFromListFile(bn, loader, set);
+                AddLocaleIDsFromListFile(bn, assembly, set);
             }
             if (set.Count == 0)
             {
                 // Use locale name set as the last resort fallback
-                AddLocaleIDsFromIndexBundle(baseName, loader, set);
+                AddLocaleIDsFromIndexBundle(baseName, assembly, set);
             }
             // We need to have the root locale in the set, but not as "root".
             set.Remove("root");
@@ -788,30 +792,30 @@ namespace ICU4N.Impl
             return (set).ToUnmodifiableSet();
         }
 
-        private static ISet<string> CreateLocaleNameSet(string baseName, Assembly loader)
+        private static ISet<string> CreateLocaleNameSet(string baseName, Assembly assembly)
         {
             HashSet<string> set = new HashSet<string>();
-            AddLocaleIDsFromIndexBundle(baseName, loader, set);
+            AddLocaleIDsFromIndexBundle(baseName, assembly, set);
             return (set).ToUnmodifiableSet();
         }
 
-        /**
-         * Holds the prefix, and lazily creates the Locale[] list or the locale name
-         * Set as needed.
-         */
+        /// <summary>
+        /// Holds the prefix, and lazily creates the <see cref="T:CultureInfo[]"/> list or the locale name
+        /// <see cref="ISet{T}"/> as needed.
+        /// </summary>
         private sealed class AvailEntry
         {
             private string prefix;
-            private Assembly loader;
+            private Assembly assembly; // ICU4N specific - renamed loader to assembly
             private volatile ULocale[] ulocales;
             private volatile CultureInfo[] locales;
             private volatile ISet<string> nameSet;
             private volatile ISet<string> fullNameSet;
 
-            internal AvailEntry(string prefix, Assembly loader)
+            internal AvailEntry(string prefix, Assembly assembly)
             {
                 this.prefix = prefix;
-                this.loader = loader;
+                this.assembly = assembly;
             }
 
             internal ULocale[] GetULocaleList()
@@ -822,7 +826,7 @@ namespace ICU4N.Impl
                     {
                         if (ulocales == null)
                         {
-                            ulocales = CreateULocaleList(prefix, loader);
+                            ulocales = CreateULocaleList(prefix, assembly);
                         }
                     }
                 }
@@ -851,7 +855,7 @@ namespace ICU4N.Impl
                     {
                         if (nameSet == null)
                         {
-                            nameSet = CreateLocaleNameSet(prefix, loader);
+                            nameSet = CreateLocaleNameSet(prefix, assembly);
                         }
                     }
                 }
@@ -875,7 +879,7 @@ namespace ICU4N.Impl
                     {
                         if (fullNameSet == null)
                         {
-                            fullNameSet = CreateFullLocaleNameSet(prefix, loader);
+                            fullNameSet = CreateFullLocaleNameSet(prefix, assembly);
                         }
                     }
                 }
@@ -885,30 +889,29 @@ namespace ICU4N.Impl
 
         private class AvailableEntryCache : SoftCache<string, AvailEntry, Assembly>
         {
-            protected override AvailEntry CreateInstance(string key, Assembly loader)
+            protected override AvailEntry CreateInstance(string key, Assembly assembly)
             {
-                return new AvailEntry(key, loader);
+                return new AvailEntry(key, assembly);
             }
         }
 
-        /*
-         * Cache used for AvailableEntry
-         */
-        private static CacheBase<String, AvailEntry, Assembly> GET_AVAILABLE_CACHE = new AvailableEntryCache();
+        /// <summary>
+        /// Cache used for AvailableEntry
+        /// </summary>
+        private static CacheBase<string, AvailEntry, Assembly> GET_AVAILABLE_CACHE = new AvailableEntryCache();
 
-
-        /**
-         * Stores the locale information in a cache accessed by key (bundle prefix).
-         * The cached objects are AvailEntries. The cache is implemented by SoftCache
-         * so it can be GC'd.
-         */
-        private static AvailEntry GetAvailEntry(string key, Assembly loader)
+        /// <summary>
+        /// Stores the locale information in a cache accessed by key (bundle prefix).
+        /// The cached objects are <see cref="AvailEntry"/>s. The cache is implemented by <see cref="SoftCache{K, V, D}"/>
+        /// so it can be GC'd.
+        /// </summary>
+        private static AvailEntry GetAvailEntry(string key, Assembly assembly)
         {
-            return GET_AVAILABLE_CACHE.GetInstance(key, loader);
+            return GET_AVAILABLE_CACHE.GetInstance(key, assembly);
         }
 
         private static ICUResourceBundle FindResourceWithFallback(string path,
-                UResourceBundle actualBundle, UResourceBundle requested)
+            UResourceBundle actualBundle, UResourceBundle requested)
         {
             if (path.Length == 0)
             {
@@ -926,8 +929,8 @@ namespace ICU4N.Impl
         }
 
         private static ICUResourceBundle FindResourceWithFallback(
-                string[] keys, int depth,
-                ICUResourceBundle @base, UResourceBundle requested)
+            string[] keys, int depth,
+            ICUResourceBundle @base, UResourceBundle requested)
         {
             if (requested == null)
             {
@@ -975,12 +978,12 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Like findResourceWithFallback(...).getString() but with minimal creation of intermediate
-         * ICUResourceBundle objects.
-         */
+        /// <summary>
+        /// Like FindResourceWithFallback(...).GetString() but with minimal creation of intermediate
+        /// <see cref="ICUResourceBundle"/> objects.
+        /// </summary>
         private static string FindStringWithFallback(string path,
-                UResourceBundle actualBundle, UResourceBundle requested)
+            UResourceBundle actualBundle, UResourceBundle requested)
         {
             if (path.Length == 0)
             {
@@ -1114,13 +1117,12 @@ namespace ICU4N.Impl
             return (container == null) ? 0 : container.GetResDepth() + 1;
         }
 
-        /**
-         * Fills some of the keys array with the keys on the path to this resource object.
-         * Writes the top-level key into index 0 and increments from there.
-         *
-         * @param keys
-         * @param depth must be {@link #getResDepth()}
-         */
+        /// <summary>
+        /// Fills some of the keys array with the keys on the path to this resource object.
+        /// Writes the top-level key into index 0 and increments from there.
+        /// </summary>
+        /// <param name="keys"></param>
+        /// <param name="depth">Must be <see cref="GetResDepth()"/>.</param>
         private void GetResPathKeys(string[] keys, int depth)
         {
             ICUResourceBundle b = this;
@@ -1149,14 +1151,13 @@ namespace ICU4N.Impl
             return num;
         }
 
-        /**
-         * Fills some of the keys array (from start) with the num keys from the path string.
-         *
-         * @param path path string
-         * @param num must be {@link #countPathKeys(String)}
-         * @param keys
-         * @param start index where the first path key is stored
-         */
+        /// <summary>
+        /// Fills some of the keys array (from start) with the num keys from the path string.
+        /// </summary>
+        /// <param name="path">Path string.</param>
+        /// <param name="num">Must be <see cref="CountPathKeys(string)"/>.</param>
+        /// <param name="keys"></param>
+        /// <param name="start">Index where the first path key is stored.</param>
         private static void GetResPathKeys(string path, int num, string[] keys, int start)
         {
             if (num == 0)
@@ -1212,46 +1213,47 @@ namespace ICU4N.Impl
             return 42;
         }
 
-        public enum OpenType
-        {  // C++ uresbund.cpp: enum UResOpenType
-           /**
-            * Open a resource bundle for the locale;
-            * if there is not even a base language bundle, then fall back to the default locale;
-            * if there is no bundle for that either, then load the root bundle.
-            *
-            * <p>This is the default bundle loading behavior.
-            */
+        // C++ uresbund.cpp: enum UResOpenType
+        public enum OpenType // ICU4N TODO: API - De-nest, Rename values for .NET Conventions
+        {
+            /// <summary>
+            /// Open a resource bundle for the locale;
+            /// if there is not even a base language bundle, then fall back to the default locale;
+            /// if there is no bundle for that either, then load the root bundle.
+            /// <para/>
+            /// This is the default bundle loading behavior.
+            /// </summary>
             LOCALE_DEFAULT_ROOT,
             // TODO: ICU ticket #11271 "consistent default locale across locale trees"
             // Add an option to look at the main locale tree for whether to
             // fall back to root directly (if the locale has main data) or
             // fall back to the default locale first (if the locale does not even have main data).
-            /**
-             * Open a resource bundle for the locale;
-             * if there is not even a base language bundle, then load the root bundle;
-             * never fall back to the default locale.
-             *
-             * <p>This is used for algorithms that have good pan-Unicode default behavior,
-             * such as case mappings, collation, and segmentation (BreakIterator).
-             */
+            /// <summary>
+            /// Open a resource bundle for the locale;
+            /// if there is not even a base language bundle, then load the root bundle;
+            /// never fall back to the default locale.
+            /// <para/>
+            /// This is used for algorithms that have good pan-Unicode default behavior,
+            /// such as case mappings, collation, and segmentation (BreakIterator).
+            /// </summary>
             LOCALE_ROOT,
-            /**
-             * Open a resource bundle for the locale;
-             * if there is not even a base language bundle, then fail;
-             * never fall back to the default locale nor to the root locale.
-             *
-             * <p>This is used when fallback to another language is not desired
-             * and the root locale is not generally useful.
-             * For example, {@link com.ibm.icu.util.LocaleData#setNoSubstitute(boolean)}
-             * or currency display names for {@link com.ibm.icu.text.LocaleDisplayNames}.
-             */
+            /// <summary>
+            /// Open a resource bundle for the locale;
+            /// if there is not even a base language bundle, then fail;
+            /// never fall back to the default locale nor to the root locale.
+            /// <para/>
+            /// This is used when fallback to another language is not desired
+            /// and the root locale is not generally useful.
+            /// For example, <see cref="Util.LocaleData.NoSubstitute"/>
+            /// or currency display names for <see cref="Text.LocaleDisplayNames"/>.
+            /// </summary>
             LOCALE_ONLY,
-            /**
-             * Open a resource bundle for the exact bundle name as requested;
-             * no fallbacks, do not load parent bundles.
-             *
-             * <p>This is used for supplemental (non-locale) data.
-             */
+            /// <summary>
+            /// Open a resource bundle for the exact bundle name as requested;
+            /// no fallbacks, do not load parent bundles.
+            /// <para/>
+            /// This is used for supplemental (non-locale) data.
+            /// </summary>
             DIRECT
         };
 
@@ -1315,6 +1317,7 @@ namespace ICU4N.Impl
                     (localeID.Length == lang.Length || localeID[lang.Length] == '_');
         }
 
+        // ICU4N TODO: Revert back to this implementation
         //private class BundleLoader : Loader
         //{
         //    private readonly Func<ICUResourceBundle> load;
@@ -1558,55 +1561,62 @@ namespace ICU4N.Impl
             return obj;
         }
 
-        /** Data member where the subclasses store the key. */
-        protected string key;
+        /// <summary>
+        /// Data member where the subclasses store the key.
+        /// </summary>
+        protected string key; // ICU4N TODO: API - rename m_key (matches property name)
 
-        /**
-         * A resource word value that means "no resource".
-         * Note: 0xffffffff == -1
-         * This has the same value as UResourceBundle.NONE, but they are semantically
-         * different and should be used appropriately according to context:
-         * NONE means "no type".
-         * (The type of RES_BOGUS is RES_RESERVED=15 which was defined in ICU4C ures.h.)
-         */
-        public static readonly int RES_BOGUS = unchecked((int)0xffffffff);
+        /// <summary>
+        /// A resource word value that means "no resource".
+        /// Note: 0xffffffff == -1
+        /// <para/>
+        /// This has the same value as <see cref="UResourceBundle.NONE"/>, but they are semantically
+        /// different and should be used appropriately according to context:
+        /// NONE means "no type".
+        /// (The type of <see cref="RES_BOGUS"/> is RES_RESERVED=15 which was defined in ICU4C ures.h.)
+        /// </summary>
+        public static readonly int RES_BOGUS = unchecked((int)0xffffffff); // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
         //blic static readonly int RES_MAX_OFFSET = 0x0fffffff;
 
-        /**
-         * Resource type constant for aliases;
-         * internally stores a string which identifies the actual resource
-         * storing the data (can be in a different resource bundle).
-         * Resolved internally before delivering the actual resource through the API.
-         */
-        public const int ALIAS = 3;
+        /// <summary>
+        /// Resource type constant for aliases;
+        /// internally stores a string which identifies the actual resource
+        /// storing the data (can be in a different resource bundle).
+        /// Resolved internally before delivering the actual resource through the API.
+        /// </summary>
+        public const int ALIAS = 3; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
 
-        /** Resource type constant for tables with 32-bit count, key offsets and values. */
-        public const int TABLE32 = 4;
+        /// <summary>
+        /// Resource type constant for tables with 32-bit count, key offsets and values.
+        /// </summary>
+        public const int TABLE32 = 4; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
 
-        /**
-         * Resource type constant for tables with 16-bit count, key offsets and values.
-         * All values are STRING_V2 strings.
-         */
-        public const int TABLE16 = 5;
+        /// <summary>
+        /// Resource type constant for tables with 16-bit count, key offsets and values.
+        /// All values are <see cref="STRING_V2"/> strings.
+        /// </summary>
+        public const int TABLE16 = 5; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
 
-        /** Resource type constant for 16-bit Unicode strings in formatVersion 2. */
-        public const int STRING_V2 = 6;
+        /// <summary>
+        /// Resource type constant for 16-bit Unicode strings in formatVersion 2.
+        /// </summary>
+        public const int STRING_V2 = 6; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
 
-        /**
-         * Resource type constant for arrays with 16-bit count and values.
-         * All values are STRING_V2 strings.
-         */
-        public const int ARRAY16 = 9;
+        /// <summary>
+        /// Resource type constant for arrays with 16-bit count and values.
+        /// All values are <see cref="STRING_V2"/> strings.
+        /// </summary>
+        public const int ARRAY16 = 9; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
 
         /* Resource type 15 is not defined but effectively used by RES_BOGUS=0xffffffff. */
 
-        /**
-        * Create a bundle using a reader.
-        * @param baseName The name for the bundle.
-        * @param localeID The locale identification.
-        * @param root The ClassLoader object root.
-        * @return the new bundle
-*/
+        /// <summary>
+        /// Create a bundle using a reader.
+        /// </summary>
+        /// <param name="baseName">The name for the bundle.</param>
+        /// <param name="localeID">The locale identification.</param>
+        /// <param name="root">The <see cref="Assembly"/> object root.</param>
+        /// <returns>The new bundle.</returns>
         public static ICUResourceBundle CreateBundle(string baseName, string localeID, Assembly root)
         {
             ICUResourceBundleReader reader = ICUResourceBundleReader.GetReader(baseName, localeID, root);
@@ -1633,25 +1643,20 @@ namespace ICU4N.Impl
             return wholeBundle.ulocale;
         }
 
-        /**
-         * Returns true if this is the root bundle, or an item in the root bundle.
-         */
+        /// <summary>
+        /// Returns true if this is the root bundle, or an item in the root bundle.
+        /// </summary>
         public virtual bool IsRoot
         {
             get { return string.IsNullOrEmpty(wholeBundle.localeID) || wholeBundle.localeID.Equals("root"); }
         }
-
-        //public override ICUResourceBundle GetParent()
-        //{
-        //    return (ICUResourceBundle)parent;
-        //}
 
         public override void SetParent(ResourceBundle parent)
         {
             this.parent = parent;
         }
 
-        new public ICUResourceBundle Parent
+        new public ICUResourceBundle Parent // ICU4N: Since the only purpose here is to cast, using the new keyword is fine
         {
             get { return (ICUResourceBundle)parent; }
             set { this.parent = value; }
@@ -1663,10 +1668,9 @@ namespace ICU4N.Impl
             get { return key; }
         }
 
-        /**
-         * Get the noFallback flag specified in the loaded bundle.
-         * @return The noFallback flag.
-         */
+        /// <summary>
+        /// Gets the noFallback flag specified in the loaded bundle.
+        /// </summary>
         private bool NoFallback
         {
             get { return wholeBundle.reader.NoFallback; }
@@ -1674,13 +1678,13 @@ namespace ICU4N.Impl
 
         private static ICUResourceBundle GetBundle(ICUResourceBundleReader reader,
                                                    string baseName, string localeID,
-                                                   Assembly loader)
+                                                   Assembly assembly)
         {
             ICUResourceBundleImpl.ResourceTable rootTable;
             int rootRes = reader.RootResource;
             if (ICUResourceBundleReader.URES_IS_TABLE(ICUResourceBundleReader.RES_GET_TYPE(rootRes)))
             {
-                WholeBundle wb = new WholeBundle(baseName, localeID, loader, reader);
+                WholeBundle wb = new WholeBundle(baseName, localeID, assembly, reader);
                 rootTable = new ICUResourceBundleImpl.ResourceTable(wb, rootRes);
             }
             else
@@ -1697,9 +1701,9 @@ namespace ICU4N.Impl
                 return rootTable;
             }
         }
-        /**
-         * Constructor for the root table of a bundle.
-         */
+        /// <summary>
+        /// Constructor for the root table of a bundle.
+        /// </summary>
         protected ICUResourceBundle(WholeBundle wholeBundle)
         {
             this.wholeBundle = wholeBundle;
@@ -1719,31 +1723,30 @@ namespace ICU4N.Impl
         private static readonly char HYPHEN = '-';
         private static readonly string LOCALE = "LOCALE";
 
-        /**
-         * Returns the resource object referred to from the alias _resource int's path string.
-         * Throws MissingResourceException if not found.
-         *
-         * If the alias path does not contain a key path:
-         * If keys != null then keys[:depth] is used.
-         * Otherwise the base key path plus the key parameter is used.
-         *
-         * @param base A direct or indirect container of the alias.
-         * @param keys The key path to the alias, or null. (const)
-         * @param depth The length of the key path, if keys != null.
-         * @param key The alias' own key within this current container, if keys == null.
-         * @param _resource The alias resource int.
-         * @param aliasesVisited Set of alias path strings already visited, for detecting loops.
-         *        We cannot change the type (e.g., to Set<String>) because it is used
-         *        in protected/@stable UResourceBundle methods.
-         * @param requested The original resource object from which the lookup started,
-         *        which is the starting point for "/LOCALE/..." aliases.
-         * @return the aliased resource object
-         */
+        /// <summary>
+        /// Returns the resource object referred to from the alias _resource int's path string.
+        /// Throws <see cref="MissingManifestResourceException"/> if not found.
+        /// <para/>
+        /// If the alias path does not contain a key path:
+        /// If keys != null then keys[:depth] is used.
+        /// Otherwise the base key path plus the key parameter is used.
+        /// </summary>
+        /// <param name="base">A direct or indirect container of the alias.</param>
+        /// <param name="keys">The key path to the alias, or null. (const)</param>
+        /// <param name="depth">The length of the key path, if keys != null.</param>
+        /// <param name="key">The alias' own key within this current container, if keys == null.</param>
+        /// <param name="_resource">The alias resource int.</param>
+        /// <param name="aliasesVisited">Set of alias path strings already visited, for detecting loops.
+        /// We cannot change the type (e.g., to <see cref="T:ISet{string}"/>) because it is used
+        /// in protected/@stable <see cref="UResourceBundle"/> methods.</param>
+        /// <param name="requested">The original resource object from which the lookup started,
+        /// which is the starting point for "/LOCALE/..." aliases.</param>
+        /// <returns>The aliased resource object.</returns>
         protected static ICUResourceBundle GetAliasedResource(
-                ICUResourceBundle @base, string[] keys, int depth,
-                string key, int _resource,
-                IDictionary<string, string> aliasesVisited,
-                UResourceBundle requested)
+            ICUResourceBundle @base, string[] keys, int depth,
+            string key, int _resource,
+            IDictionary<string, string> aliasesVisited,
+            UResourceBundle requested)
         {
             WholeBundle wholeBundle = @base.wholeBundle;
             Assembly loaderToUse = wholeBundle.loader;
@@ -1868,38 +1871,24 @@ namespace ICU4N.Impl
             return sub;
         }
 
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public ISet<string> GetTopLevelKeySet()
+        public ISet<string> TopLevelKeySet
         {
-            return wholeBundle.topLevelKeys;
+            get { return wholeBundle.topLevelKeys; }
+            set { wholeBundle.topLevelKeys = value; }
         }
 
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        [Obsolete("This API is ICU internal only.")]
-        public void SetTopLevelKeySet(ISet<string> keySet)
+        // This is the worker function for the public getKeys().
+        // TODO: Now that UResourceBundle uses HandleKeySet(), this function is obsolete.
+        // It is also not inherited from ResourceBundle, and it is not implemented
+        // by ResourceBundleWrapper despite its documentation requiring all subclasses to
+        // implement it.
+        // Consider deprecating UResourceBundle.HandleGetKeys(), and consider making it always return null.
+        protected override IEnumerable<string> HandleGetKeys()
         {
-            wholeBundle.topLevelKeys = keySet;
+            return HandleKeySet();
         }
-
-        // ICU4N TODO: finish implementation
-    //    // This is the worker function for the public getKeys().
-    //    // TODO: Now that UResourceBundle uses handleKeySet(), this function is obsolete.
-    //    // It is also not inherited from ResourceBundle, and it is not implemented
-    //    // by ResourceBundleWrapper despite its documentation requiring all subclasses to
-    //    // implement it.
-    //    // Consider deprecating UResourceBundle.handleGetKeys(), and consider making it always return null.
-    //    @Override
-    //protected Enumeration<string> HandleGetKeys()
-    //    {
-    //        return Collections.enumeration(HandleKeySet());
-    //    }
 
         protected override bool IsTopLevelResource
         {

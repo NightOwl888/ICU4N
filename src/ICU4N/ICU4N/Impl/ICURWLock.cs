@@ -1,69 +1,70 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
+﻿using System.Threading;
 
 namespace ICU4N.Impl
 {
-    /**
-     * <p>A Reader/Writer lock originally written for ICU service
-     * implementation. The internal implementation was replaced
-     * with the JDK's stock read write lock (ReentrantReadWriteLock)
-     * for ICU 52.</p>
-     *
-     * <p>This assumes that there will be little writing contention.
-     * It also doesn't allow active readers to acquire and release
-     * a write lock, or deal with priority inversion issues.</p>
-     *
-     * <p>Access to the lock should be enclosed in a try/finally block
-     * in order to ensure that the lock is always released in case of
-     * exceptions:<br><pre>
-     * try {
-     *     lock.acquireRead();
-     *     // use service protected by the lock
-     * }
-     * finally {
-     *     lock.releaseRead();
-     * }
-     * </pre></p>
-     *
-     * <p>The lock provides utility methods getStats and clearStats
-     * to return statistics on the use of the lock.</p>
-     */
+    /// <summary>
+    /// A Reader/Writer lock originally written for ICU service
+    /// implementation. The internal implementation was replaced
+    /// with .NET's stock read write lock <see cref="ReaderWriterLockSlim"/>
+    /// for ICU 52.
+    /// </summary>
+    /// <remarks>
+    /// This assumes that there will be little writing contention.
+    /// It also doesn't allow active readers to acquire and release
+    /// a write lock, or deal with priority inversion issues.
+    /// <para/>
+    /// Access to the lock should be enclosed in a try/finally block
+    /// in order to ensure that the lock is always released in case of
+    /// exceptions:
+    /// <code>
+    /// try
+    /// {
+    ///     lock.AcquireRead();
+    ///     // use service protected by the lock
+    /// }
+    /// finally
+    /// {
+    ///     lock.ReleaseRead();
+    /// }
+    /// </code>
+    /// <para/>
+    /// The lock provides utility methods <see cref="GetStats()"/> and <see cref="ClearStats()"/>
+    /// to return statistics on the use of the lock.
+    /// </remarks>
     public class ICURWLock
     {
         private ReaderWriterLockSlim rwl = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
         private Stats stats = null;
 
-        /**
-         * Internal class used to gather statistics on the RWLock.
-         */
+        /// <summary>
+        /// Internal class used to gather statistics on the <see cref="ICURWLock"/>.
+        /// </summary>
         public sealed class Stats
         {
-            /**
-             * Number of times read access granted (read count).
-             */
+            /// <summary>
+            /// Number of times read access granted (read count).
+            /// </summary>
             public int ReadCount { get; internal set; }
 
-            /**
-             * Number of times concurrent read access granted (multiple read count).
-             */
+            /// <summary>
+            /// Number of times concurrent read access granted (multiple read count).
+            /// </summary>
             public int MultipleReadCount { get; internal set; }
 
-            /**
-             * Number of times blocked for read (waiting reader count).
-             */
+            /// <summary>
+            /// Number of times blocked for read (waiting reader count).
+            /// </summary>
             public int WaitingReadCount { get; internal set; } // wait for read
 
-            /**
-             * Number of times write access granted (writer count).
-             */
+            /// <summary>
+            /// Number of times write access granted (writer count).
+            /// </summary>
             public int WriterCount { get; internal set; }
 
-            /**
-             * Number of times blocked for write (waiting writer count).
-             */
+            /// <summary>
+            /// Number of times blocked for write (waiting writer count).
+            /// </summary>
             public int WaitingWriterCount { get; internal set; }
 
             internal Stats()
@@ -84,9 +85,9 @@ namespace ICU4N.Impl
             {
             }
 
-            /**
-             * Return a string listing all the stats.
-             */
+            /// <summary>
+            /// Return a string listing all the stats.
+            /// </summary>
             public override string ToString()
             {
                 return " rc: " + ReadCount +
@@ -97,10 +98,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Reset the stats.  Returns existing stats, if any.
-         */
-        public Stats ResetStats()
+        /// <summary>
+        /// Reset the stats.  Returns existing stats, if any.
+        /// </summary>
+        public virtual Stats ResetStats()
         {
             lock (this)
             {
@@ -110,10 +111,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Clear the stats (stop collecting stats).  Returns existing stats, if any.
-         */
-        public Stats ClearStats()
+        /// <summary>
+        /// Clear the stats (stop collecting stats).  Returns existing stats, if any.
+        /// </summary>
+        public virtual Stats ClearStats()
         {
             lock (this)
             {
@@ -123,10 +124,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Return a snapshot of the current stats.  This does not reset the stats.
-         */
-        public Stats GetStats()
+        /// <summary>
+        /// Return a snapshot of the current stats.  This does not reset the stats.
+        /// </summary>
+        public virtual Stats GetStats()
         {
             lock (this)
             {
@@ -134,21 +135,23 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * <p>Acquire a read lock, blocking until a read lock is
-         * available.  Multiple readers can concurrently hold the read
-         * lock.</p>
-         *
-         * <p>If there's a writer, or a waiting writer, increment the
-         * waiting reader count and block on this.  Otherwise
-         * increment the active reader count and return.  Caller must call
-         * releaseRead when done (for example, in a finally block).</p>
-         */
-        public void AcquireRead()
+        /// <summary>
+        /// Acquire a read lock, blocking until a read lock is
+        /// available.  Multiple readers can concurrently hold the read
+        /// lock.
+        /// </summary>
+        /// <remarks>
+        /// If there's a writer, or a waiting writer, increment the
+        /// waiting reader count and block on this.  Otherwise
+        /// increment the active reader count and return.  Caller must call
+        /// <see cref="ReleaseRead()"/> when done (for example, in a finally block).
+        /// </remarks>
+        public virtual void AcquireRead()
         {
             if (stats != null)
             {    // stats is null by default
-                lock(this) {
+                lock (this)
+                {
                     stats.ReadCount++;
                     if (rwl.CurrentReadCount > 0)
                     {
@@ -161,39 +164,40 @@ namespace ICU4N.Impl
                 }
             }
             rwl.EnterReadLock();
-            //rwl.readLock().lock () ;
         }
 
-        /**
-         * <p>Release a read lock and return.  An error will be thrown
-         * if a read lock is not currently held.</p>
-         *
-         * <p>If this is the last active reader, notify the oldest
-         * waiting writer.  Call when finished with work
-         * controlled by acquireRead.</p>
-         */
-        public void ReleaseRead()
+        /// <summary>
+        /// Release a read lock and return.  An error will be thrown
+        /// if a read lock is not currently held.
+        /// </summary>
+        /// <remarks>
+        /// If this is the last active reader, notify the oldest
+        /// waiting writer.  Call when finished with work
+        /// controlled by <see cref="AcquireRead()"/>.
+        /// </remarks>
+        public virtual void ReleaseRead()
         {
             rwl.ExitReadLock();
-            //rwl.readLock().unlock();
         }
 
-        /**
-         * <p>Acquire the write lock, blocking until the write lock is
-         * available.  Only one writer can acquire the write lock, and
-         * when held, no readers can acquire the read lock.</p>
-         *
-         * <p>If there are no readers and no waiting writers, mark as
-         * having an active writer and return.  Otherwise, add a lock to the
-         * end of the waiting writer list, and block on it.  Caller
-         * must call releaseWrite when done (for example, in a finally
-         * block).<p>
-         */
-        public void AcquireWrite()
+        /// <summary>
+        /// Acquire the write lock, blocking until the write lock is
+        /// available.  Only one writer can acquire the write lock, and
+        /// when held, no readers can acquire the read lock.
+        /// </summary>
+        /// <remarks>
+        /// If there are no readers and no waiting writers, mark as
+        /// having an active writer and return.  Otherwise, add a lock to the
+        /// end of the waiting writer list, and block on it.  Caller
+        /// must call <see cref="ReleaseWrite()"/> when done (for example, in a finally
+        /// block).
+        /// </remarks>
+        public virtual void AcquireWrite()
         {
             if (stats != null)
             {    // stats is null by default
-                lock(this) {
+                lock (this)
+                {
                     stats.WriterCount++;
                     if (rwl.CurrentReadCount > 0 || rwl.IsWriteLockHeld)
                     {
@@ -202,22 +206,21 @@ namespace ICU4N.Impl
                 }
             }
             rwl.EnterWriteLock();
-            //rwl.writeLock().lock () ;
         }
 
-        /**
-         * <p>Release the write lock and return.  An error will be thrown
-         * if the write lock is not currently held.</p>
-         *
-         * <p>If there are waiting readers, make them all active and
-         * notify all of them.  Otherwise, notify the oldest waiting
-         * writer, if any.  Call when finished with work controlled by
-         * acquireWrite.</p>
-         */
-        public void ReleaseWrite()
+        /// <summary>
+        /// Release the write lock and return.  An error will be thrown
+        /// if the write lock is not currently held.
+        /// </summary>
+        /// <remarks>
+        /// If there are waiting readers, make them all active and
+        /// notify all of them.  Otherwise, notify the oldest waiting
+        /// writer, if any.  Call when finished with work controlled by
+        /// <see cref="AcquireWrite()"/>.
+        /// </remarks>
+        public virtual void ReleaseWrite()
         {
             rwl.ExitWriteLock();
-            //rwl.writeLock().unlock();
         }
     }
 }

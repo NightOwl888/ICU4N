@@ -15,6 +15,7 @@ namespace ICU4N.Impl
 
         static ICUDebug()
         {
+            // ICU4N TODO: Fix debugging so it makes sense in .NET
             parameters = SystemProperties.GetProperty("ICUDebug");
             debug = parameters != null;
             help = debug && (parameters.Equals("") || parameters.IndexOf("help") != -1);

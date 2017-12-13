@@ -1,20 +1,18 @@
 ﻿using ICU4N.Util;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Static utility functions for probing resource tables, used by ULocale and
-    /// LocaleDisplayNames.
+    /// Static utility functions for probing resource tables, used by <see cref="ULocale"/> and
+    /// <see cref="Text.LocaleDisplayNames"/>.
     /// </summary>
     public class ICUResourceTableAccess
     {
-        /**
-         * Utility to fetch locale display data from resource bundle tables.  Convenience
-         * wrapper for {@link #getTableString(ICUResourceBundle, string, string, string, string)}.
-         */
+        /// <summary>
+        /// Utility to fetch locale display data from resource bundle tables.  Convenience
+        /// wrapper for <see cref="GetTableString(ICUResourceBundle, string, string, string, string)"/>.
+        /// </summary>
         public static string GetTableString(string path, ULocale locale, string tableName,
                 string itemName, string defaultValue)
         {
@@ -23,10 +21,10 @@ namespace ICU4N.Impl
             return GetTableString(bundle, tableName, null, itemName, defaultValue);
         }
 
-        /**
-         * Utility to fetch locale display data from resource bundle tables.  Uses fallback
-         * through the "Fallback" resource if available.
-         */
+        /// <summary>
+        /// Utility to fetch locale display data from resource bundle tables.  Uses fallback
+        /// through the "Fallback" resource if available.
+        /// </summary>
         public static string GetTableString(ICUResourceBundle bundle, string tableName,
             string subtableName, string item, string defaultValue)
         {

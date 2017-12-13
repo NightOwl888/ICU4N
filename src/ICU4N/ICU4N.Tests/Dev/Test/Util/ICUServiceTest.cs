@@ -13,7 +13,7 @@ using IFactory = ICU4N.Impl.ICUService.IFactory; // ICU4N TODO: API - de-nest ?
 using Key = ICU4N.Impl.ICUService.Key; // ICU4N TODO: API - de-nest ?
 using LocaleKey = ICU4N.Impl.ICULocaleService.LocaleKey; // ICU4N TODO: API - de-nest ?
 using LocaleKeyFactory = ICU4N.Impl.ICULocaleService.LocaleKeyFactory; // ICU4N TODO: API - de-nest ?
-using ServiceListener = ICU4N.Impl.ICUService.ServiceListener; // ICU4N TODO: API - de-nest ?
+using IServiceListener = ICU4N.Impl.ICUService.IServiceListener; // ICU4N TODO: API - de-nest ?
 using SimpleFactory = ICU4N.Impl.ICUService.SimpleFactory; // ICU4N TODO: API - de-nest ?
 using StringBuffer = System.Text.StringBuilder;
 
@@ -127,7 +127,7 @@ namespace ICU4N.Dev.Test.Util
             }
         }
 
-        private class AnonymousServiceListener : ServiceListener
+        private class AnonymousServiceListener : IServiceListener
         {
             private readonly Action<ICUService, int> serviceChanged;
             public int n;
@@ -549,7 +549,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 Logln("simple registration notification");
                 ICULocaleService ls = new ICULocaleService();
-                ServiceListener l1 = new AnonymousServiceListener(serviceChanged: (s, n) =>
+                IServiceListener l1 = new AnonymousServiceListener(serviceChanged: (s, n) =>
                 {
                     Logln("listener 1 report " + n++ + " service changed: " + s);
                 });
@@ -563,7 +563,7 @@ namespace ICU4N.Dev.Test.Util
                 //}
                 //        };
                 ls.AddListener(l1);
-                ServiceListener l2 = new AnonymousServiceListener(serviceChanged: (s, n) =>
+                IServiceListener l2 = new AnonymousServiceListener(serviceChanged: (s, n) =>
                 {
                     Logln("listener 2 report " + n++ + " service changed: " + s);
                 });
@@ -602,7 +602,7 @@ namespace ICU4N.Dev.Test.Util
                 Logln("... registered foo");
 
                 // since in a separate thread, we can callback and not deadlock
-                ServiceListener l3 = new AnonymousServiceListener(serviceChanged: (s, n) =>
+                IServiceListener l3 = new AnonymousServiceListener(serviceChanged: (s, n) =>
                 {
                     Logln("listener 3 report " + n++ + " service changed...");
                     if (s.Get("en_BOINK") == null)
@@ -1169,23 +1169,23 @@ namespace ICU4N.Dev.Test.Util
             nf.RemoveListener(new MyListener());
         }
 
-        internal class MyListener : EventListener
+        internal class MyListener : IEventListener
         {
         }
 
-        internal class WrongListener : EventListener
+        internal class WrongListener : IEventListener
         {
         }
 
         internal class ICUNSubclass : ICUNotifier
         {
-            protected override bool AcceptsListener(EventListener l)
+            protected override bool AcceptsListener(IEventListener l)
             {
                 return l is MyListener;
             }
 
             // not used, just needed to implement abstract base
-            protected override void NotifyListener(EventListener l)
+            protected override void NotifyListener(IEventListener l)
             {
             }
         }

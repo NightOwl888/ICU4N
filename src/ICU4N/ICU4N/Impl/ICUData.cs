@@ -2,79 +2,78 @@
 using ICU4N.Support;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Resources;
-using System.Text;
 
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Provides access to ICU data files as InputStreams.  Implements security checking.
+    /// Provides access to ICU data files as <see cref="Stream"/>s.  Implements security checking.
     /// </summary>
     public sealed class ICUData
     {
-        /**
-     * The data path to be used with getBundleInstance API
-     */
-        internal static readonly string ICU_DATA_PATH = "Impl/";
-        /**
-         * The ICU data package name.
-         * This is normally the name of the .dat package, and the prefix (plus '/')
-         * of the package entry names.
-         */
-        internal static readonly string PACKAGE_NAME = "icudt" + VersionInfo.ICU_DATA_VERSION_PATH;
-        /**
-         * The data path to be used with Class.getResourceAsStream().
-         */
-        public static readonly string ICU_BUNDLE = "Data/" + PACKAGE_NAME;
+        /// <summary>
+        /// The data path to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// </summary>
+        internal static readonly string ICU_DATA_PATH = "Impl/"; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * The base name of ICU data to be used with ClassLoader.getResourceAsStream(),
-         * ICUResourceBundle.getBundleInstance() etc.
-         */
-        public static readonly string ICU_BASE_NAME = ICU_DATA_PATH + ICU_BUNDLE;
+        /// <summary>
+        /// The ICU data package name.
+        /// This is normally the name of the .dat package, and the prefix (plus '/')
+        /// of the package entry names.
+        /// </summary>
+        internal static readonly string PACKAGE_NAME = "icudt" + VersionInfo.ICU_DATA_VERSION_PATH; // ICU4N TODO: API - rename to follow .NET Conventions
+        /// <summary>
+        /// The data path to be used with <see cref="Assembly.GetManifestResourceStream(string)"/>.
+        /// </summary>
+        public static readonly string ICU_BUNDLE = "Data/" + PACKAGE_NAME; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * The base name of collation data to be used with getBundleInstance API
-         */
-        public static readonly string ICU_COLLATION_BASE_NAME = ICU_BASE_NAME + "/coll";
+        /// <summary>
+        /// The base name of ICU data to be used with <see cref="Assembly.GetManifestResourceStream(string)"/>,
+        /// <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, bool)"/> etc.
+        /// </summary>
+        public static readonly string ICU_BASE_NAME = ICU_DATA_PATH + ICU_BUNDLE; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * The base name of rbbi data to be used with getData API
-         */
-        public static readonly string ICU_BRKITR_NAME = "brkitr";
+        /// <summary>
+        /// The base name of collation data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// </summary>
+        public static readonly string ICU_COLLATION_BASE_NAME = ICU_BASE_NAME + "/coll"; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * The base name of rbbi data to be used with getBundleInstance API
-         */
-        public static readonly string ICU_BRKITR_BASE_NAME = ICU_BASE_NAME + '/' + ICU_BRKITR_NAME;
+        /// <summary>
+        /// The base name of rbbi data to be used with <see cref="ICUBinary.GetData(Assembly, string, string, bool)"/> API
+        /// </summary>
+        public static readonly string ICU_BRKITR_NAME = "brkitr"; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * The base name of rbnf data to be used with getBundleInstance API
-         */
-        public static readonly string ICU_RBNF_BASE_NAME = ICU_BASE_NAME + "/rbnf";
+        /// <summary>
+        /// The base name of rbbi data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// </summary>
+        public static readonly string ICU_BRKITR_BASE_NAME = ICU_BASE_NAME + '/' + ICU_BRKITR_NAME; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * The base name of transliterator data to be used with getBundleInstance API
-         */
-        public static readonly string ICU_TRANSLIT_BASE_NAME = ICU_BASE_NAME + "/translit";
+        /// <summary>
+        /// The base name of rbnf data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// </summary>
+        public static readonly string ICU_RBNF_BASE_NAME = ICU_BASE_NAME + "/rbnf"; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        public static readonly string ICU_LANG_BASE_NAME = ICU_BASE_NAME + "/lang";
-        public static readonly string ICU_CURR_BASE_NAME = ICU_BASE_NAME + "/curr";
-        public static readonly string ICU_REGION_BASE_NAME = ICU_BASE_NAME + "/region";
-        public static readonly string ICU_ZONE_BASE_NAME = ICU_BASE_NAME + "/zone";
-        public static readonly string ICU_UNIT_BASE_NAME = ICU_BASE_NAME + "/unit";
+        /// <summary>
+        /// The base name of transliterator data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// </summary>
+        public static readonly string ICU_TRANSLIT_BASE_NAME = ICU_BASE_NAME + "/translit"; // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * For testing (otherwise false): When reading an InputStream from a Class or ClassLoader
-         * (that is, not from a file), log when the stream contains ICU binary data.
-         *
-         * This cannot be ICUConfig'ured because ICUConfig calls ICUData.getStream()
-         * to read the properties file, so we would get a circular dependency
-         * in the class initialization.
-         */
+        public static readonly string ICU_LANG_BASE_NAME = ICU_BASE_NAME + "/lang"; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string ICU_CURR_BASE_NAME = ICU_BASE_NAME + "/curr"; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string ICU_REGION_BASE_NAME = ICU_BASE_NAME + "/region"; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string ICU_ZONE_BASE_NAME = ICU_BASE_NAME + "/zone"; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string ICU_UNIT_BASE_NAME = ICU_BASE_NAME + "/unit"; // ICU4N TODO: API - rename to follow .NET Conventions
+
+        /// <summary>
+        /// For testing (otherwise false): When reading a <see cref="Stream"/> from an <see cref="Assembly"/>
+        /// (that is, not from a file), log when the stream contains ICU binary data.
+        /// <para/>
+        /// This cannot be <see cref="ICUConfig"/>'ured because <see cref="ICUConfig"/> calls <see cref="ICUData.GetStream(string)"/>
+        /// to read the properties file, so we would get a circular dependency
+        /// in the class initialization.
+        /// </summary>
         private static readonly bool logBinaryDataFromInputStream = SystemProperties.GetPropertyAsBoolean("ICU4N.LogBinaryDataFromInputStream", false);
         private static readonly ILog logger = logBinaryDataFromInputStream ? LogProvider.For<ICUData>() : null;
 
@@ -96,9 +95,9 @@ namespace ICU4N.Impl
             return i;
         }
 
-        /**
-         * Should be called only from ICUBinary.getData() or from convenience overloads here.
-         */
+        /// <summary>
+        /// Should be called only from <see cref="ICUBinary.GetData(Assembly, string, string, bool)"/> or from convenience overloads here.
+        /// </summary>
         internal static Stream GetStream(Assembly loader, string resourceName, bool required)
         {
             Stream i = null;
@@ -139,47 +138,47 @@ namespace ICU4N.Impl
             }
         }
 
-        public static Stream GetStream(Assembly loader, string resourceName)
+        public static Stream GetStream(Assembly assembly, string resourceName)
         {
-            return GetStream(loader, resourceName, false);
+            return GetStream(assembly, resourceName, false);
         }
 
-        public static Stream GetRequiredStream(Assembly loader, string resourceName)
+        public static Stream GetRequiredStream(Assembly assembly, string resourceName)
         {
-            return GetStream(loader, resourceName, true);
+            return GetStream(assembly, resourceName, true);
         }
 
-        /**
-         * Convenience override that calls getStream(ICUData.class, resourceName, false);
-         * Returns null if the resource could not be found.
-         */
+        /// <summary>
+        /// Convenience override that calls <c>GetStream(typeof(ICUData), resourceName, false)</c>.
+        /// </summary>
+        /// <returns>Returns null if the resource could not be found.</returns>
         public static Stream GetStream(string resourceName)
         {
             return GetStream(typeof(ICUData), resourceName, false);
         }
 
-        /**
-         * Convenience method that calls getStream(ICUData.class, resourceName, true).
-         * @throws MissingResourceException if the resource could not be found
-         */
+        /// <summary>
+        /// Convenience method that calls <c>GetStream(typeof(ICUData), resourceName, true)</c>
+        /// </summary>
+        /// <exception cref="System.Resources.MissingManifestResourceException">If the resource could not be found.</exception>
         public static Stream GetRequiredStream(string resourceName)
         {
             return GetStream(typeof(ICUData), resourceName, true);
         }
 
-        /**
-         * Convenience override that calls getStream(root, resourceName, false);
-         * Returns null if the resource could not be found.
-         */
+        /// <summary>
+        /// Convenience override that calls <c>GetStream(root, resourceName, false)</c>.
+        /// </summary>
+        /// <returns>Returns null if the resource could not be found.</returns>
         public static Stream GetStream(Type root, string resourceName)
         {
             return GetStream(root, resourceName, false);
         }
 
-        /**
-         * Convenience method that calls getStream(root, resourceName, true).
-         * @throws MissingResourceException if the resource could not be found
-         */
+        /// <summary>
+        /// Convenience method that calls <c>GetStream(root, resourceName, true)</c>.
+        /// </summary>
+        /// <exception cref="System.Resources.MissingManifestResourceException">If the resource could not be found.</exception>
         public static Stream GetRequiredStream(Type root, string resourceName)
         {
             return GetStream(root, resourceName, true);

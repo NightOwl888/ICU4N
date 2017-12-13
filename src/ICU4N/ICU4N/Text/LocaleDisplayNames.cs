@@ -151,7 +151,7 @@ namespace ICU4N.Text
          * @return the display locale
          * @stable ICU 4.4
          */
-        public abstract ULocale GetLocale();
+        public abstract ULocale GetLocale(); // ICU4N TODO: API - make property, rename Culture ?
 
         /**
          * Returns the dialect handling used in the display names.

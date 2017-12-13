@@ -13,19 +13,19 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed class LocaleIDParser
     {
-        /**
-     * Char array representing the locale ID.
-     */
+        /// <summary>
+        /// Char array representing the locale ID.
+        /// </summary>
         private char[] id;
 
-        /**
-         * Current position in {@link #id} (while parsing).
-         */
+        /// <summary>
+        /// Current position in <see cref="id"/> (while parsing).
+        /// </summary>
         private int index;
 
-        /**
-         * Temporary buffer for parsed sections of data.
-         */
+        /// <summary>
+        /// Temporary buffer for parsed sections of data.
+        /// </summary>
         private StringBuilder buffer;
 
         // um, don't handle POSIX ids unless we request it.  why not?  well... because.
@@ -33,12 +33,12 @@ namespace ICU4N.Impl
         private bool hadCountry;
 
         // used when canonicalizing
-        IDictionary<string, string> keywords;
-        string baseName;
+        private IDictionary<string, string> keywords;
+        private string baseName;
 
-        /**
-         * Parsing constants.
-         */
+        /// <summary>
+        /// Parsing constants.
+        /// </summary>
         private static readonly char KEYWORD_SEPARATOR = '@';
         private static readonly char HYPHEN = '-';
         private static readonly char KEYWORD_ASSIGN = '=';
@@ -50,7 +50,6 @@ namespace ICU4N.Impl
         public LocaleIDParser(string localeID)
             : this(localeID, false)
         {
-
         }
 
         public LocaleIDParser(string localeID, bool canonicalize)
@@ -69,9 +68,9 @@ namespace ICU4N.Impl
 
         // utilities for working on text in the buffer
 
-        /**
-         * Append c to the buffer.
-         */
+        /// <summary>
+        /// Append <paramref name="c"/> to the buffer.
+        /// </summary>
         private void Append(char c)
         {
             buffer.Append(c);
@@ -82,26 +81,26 @@ namespace ICU4N.Impl
             Append(UNDERSCORE);
         }
 
-        /**
-         * Returns the text in the buffer from start to blen as a string.
-         */
+        /// <summary>
+        /// Returns the text in the buffer from start to blen as a string.
+        /// </summary>
         private string GetString(int start)
         {
             return buffer.ToString(start, buffer.Length - start);
         }
 
-        /**
-         * Set the length of the buffer to pos, then append the string.
-         */
+        /// <summary>
+        /// Set the length of the buffer to pos, then append the string.
+        /// </summary>
         private void Set(int pos, string s)
         {
             buffer.Delete(pos, buffer.Length);
             buffer.Insert(pos, s);
         }
 
-        /**
-         * Append the string to the buffer.
-         */
+        /// <summary>
+        /// Append the string to the buffer.
+        /// </summary>
         private void Append(string s)
         {
             buffer.Append(s);
@@ -109,16 +108,17 @@ namespace ICU4N.Impl
 
         // utilities for parsing text out of the id
 
-        /**
-         * Character to indicate no more text is available in the id.
-         */
+        /// <summary>
+        /// Character to indicate no more text is available in the id.
+        /// </summary>
         private static readonly char DONE = '\uffff';
 
-        /**
-         * Returns the character at index in the id, and advance index.  The returned character
-         * is DONE if index was at the limit of the buffer.  The index is advanced regardless
-         * so that decrementing the index will always 'unget' the last character returned.
-         */
+        /// <summary>
+        /// Returns the character at index in the id, and advance index.  The returned character
+        /// is <see cref="DONE"/> if index was at the limit of the buffer.  The index is advanced regardless
+        /// so that decrementing the index will always 'unget' the last character returned.
+        /// </summary>
+        /// <returns></returns>
         private char Next()
         {
             if (index == id.Length)
@@ -130,45 +130,45 @@ namespace ICU4N.Impl
             return id[index++];
         }
 
-        /**
-         * Advance index until the next terminator or id separator, and leave it there.
-         */
+        /// <summary>
+        /// Advance index until the next terminator or id separator, and leave it there.
+        /// </summary>
         private void SkipUntilTerminatorOrIDSeparator()
         {
             while (!IsTerminatorOrIDSeparator(Next())) ;
             --index;
         }
 
-        /**
-         * Returns true if the character at index in the id is a terminator.
-         */
+        /// <summary>
+        /// Returns true if the character at index in the id is a terminator.
+        /// </summary>
         private bool AtTerminator()
         {
             return index >= id.Length || IsTerminator(id[index]);
         }
 
-        /**
-         * Returns true if the character is a terminator (keyword separator, dot, or DONE).
-         * Dot is a terminator because of the POSIX form, where dot precedes the codepage.
-         */
+        /// <summary>
+        /// Returns true if the character is a terminator (keyword separator, dot, or DONE).
+        /// Dot is a terminator because of the POSIX form, where dot precedes the codepage.
+        /// </summary>
         private bool IsTerminator(char c)
         {
             // always terminate at DOT, even if not handling POSIX.  It's an error...
             return c == KEYWORD_SEPARATOR || c == DONE || c == DOT;
         }
 
-        /**
-         * Returns true if the character is a terminator or id separator.
-         */
+        /// <summary>
+        /// Returns true if the character is a terminator or id separator.
+        /// </summary>
         private bool IsTerminatorOrIDSeparator(char c)
         {
             return c == UNDERSCORE || c == HYPHEN || IsTerminator(c);
         }
 
-        /**
-         * Returns true if the start of the buffer has an experimental or private language
-         * prefix, the pattern '[ixIX][-_].' shows the syntax checked.
-         */
+        /// <summary>
+        /// Returns true if the start of the buffer has an experimental or private language
+        /// prefix, the pattern '[ixIX][-_].' shows the syntax checked.
+        /// </summary>
         private bool HaveExperimentalLanguagePrefix()
         {
             if (id.Length > 2)
@@ -183,9 +183,9 @@ namespace ICU4N.Impl
             return false;
         }
 
-        /**
-         * Returns true if a value separator occurs at or after index.
-         */
+        /// <summary>
+        /// Returns true if a value separator occurs at or after index.
+        /// </summary>
         private bool HaveKeywordAssign()
         {
             // assume it is safe to start from index
@@ -199,11 +199,11 @@ namespace ICU4N.Impl
             return false;
         }
 
-        /**
-         * Advance index past language, and accumulate normalized language code in buffer.
-         * Index must be at 0 when this is called.  Index is left at a terminator or id
-         * separator.  Returns the start of the language code in the buffer.
-         */
+        /// <summary>
+        /// Advance index past language, and accumulate normalized language code in buffer.
+        /// Index must be at 0 when this is called.  Index is left at a terminator or id
+        /// separator.  Returns the start of the language code in the buffer.
+        /// </summary>
         private int ParseLanguage()
         {
             int startLength = buffer.Length;
@@ -234,10 +234,10 @@ namespace ICU4N.Impl
             return 0;
         }
 
-        /**
-         * Advance index past language.  Index must be at 0 when this is called.  Index
-         * is left at a terminator or id separator.
-         */
+        /// <summary>
+        /// Advance index past language.  Index must be at 0 when this is called.  Index
+        /// is left at a terminator or id separator.
+        /// </summary>
         private void SkipLanguage()
         {
             if (HaveExperimentalLanguagePrefix())
@@ -247,15 +247,15 @@ namespace ICU4N.Impl
             SkipUntilTerminatorOrIDSeparator();
         }
 
-        /**
-         * Advance index past script, and accumulate normalized script in buffer.
-         * Index must be immediately after the language.
-         * If the item at this position is not a script (is not four characters
-         * long) leave index and buffer unchanged.  Otherwise index is left at
-         * a terminator or id separator.  Returns the start of the script code
-         * in the buffer (this may be equal to the buffer length, if there is no
-         * script).
-         */
+        /// <summary>
+        /// Advance index past script, and accumulate normalized script in buffer.
+        /// Index must be immediately after the language.
+        /// If the item at this position is not a script (is not four characters
+        /// long) leave index and buffer unchanged.  Otherwise index is left at
+        /// a terminator or id separator.  Returns the start of the script code
+        /// in the buffer (this may be equal to the buffer length, if there is no
+        /// script).
+        /// </summary>
         private int ParseScript()
         {
             if (!AtTerminator())
@@ -297,13 +297,13 @@ namespace ICU4N.Impl
             return buffer.Length;
         }
 
-        /**
-         * Advance index past script.
-         * Index must be immediately after the language and IDSeparator.
-         * If the item at this position is not a script (is not four characters
-         * long) leave index.  Otherwise index is left at a terminator or
-         * id separator.
-         */
+        /// <summary>
+        /// Advance index past script.
+        /// Index must be immediately after the language and IDSeparator.
+        /// If the item at this position is not a script (is not four characters
+        /// long) leave index.  Otherwise index is left at a terminator or
+        /// id separator.
+        /// </summary>
         private void SkipScript()
         {
             if (!AtTerminator())
@@ -322,11 +322,12 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Advance index past country, and accumulate normalized country in buffer.
-         * Index must be immediately after the script (if there is one, else language)
-         * and IDSeparator.  Return the start of the country code in the buffer.
-         */
+        /// <summary>
+        /// Advance index past country, and accumulate normalized country in buffer.
+        /// Index must be immediately after the script (if there is one, else language)
+        /// and IDSeparator.  Return the start of the country code in the buffer.
+        /// </summary>
+        /// <returns></returns>
         private int ParseCountry()
         {
             if (!AtTerminator())
@@ -380,11 +381,11 @@ namespace ICU4N.Impl
             return buffer.Length;
         }
 
-        /**
-         * Advance index past country.
-         * Index must be immediately after the script (if there is one, else language)
-         * and IDSeparator.
-         */
+        /// <summary>
+        /// Advance index past country.
+        /// Index must be immediately after the script (if there is one, else language)
+        /// and IDSeparator.
+        /// </summary>
         private void SkipCountry()
         {
             if (!AtTerminator())
@@ -408,30 +409,35 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Advance index past variant, and accumulate normalized variant in buffer.  This ignores
-         * the codepage information from POSIX ids.  Index must be immediately after the country
-         * or script.  Index is left at the keyword separator or at the end of the text.  Return
-         * the start of the variant code in the buffer.
-         *
-         * In standard form, we can have the following forms:
-         * ll__VVVV
-         * ll_CC_VVVV
-         * ll_Ssss_VVVV
-         * ll_Ssss_CC_VVVV
-         *
-         * This also handles POSIX ids, which can have the following forms (pppp is code page id):
-         * ll_CC.pppp          --> ll_CC
-         * ll_CC.pppp@VVVV     --> ll_CC_VVVV
-         * ll_CC@VVVV          --> ll_CC_VVVV
-         *
-         * We identify this use of '@' in POSIX ids by looking for an '=' following
-         * the '@'.  If there is one, we consider '@' to start a keyword list, instead of
-         * being part of a POSIX id.
-         *
-         * Note:  since it was decided that we want an option to not handle POSIX ids, this
-         * becomes a bit more complex.
-         */
+        /// <summary>
+        /// Advance index past variant, and accumulate normalized variant in buffer.  This ignores
+        /// the codepage information from POSIX ids.  Index must be immediately after the country
+        /// or script.  Index is left at the keyword separator or at the end of the text.  Return
+        /// the start of the variant code in the buffer.
+        /// </summary>
+        /// <remarks>
+        /// In standard form, we can have the following forms:
+        /// <list type="bullet">
+        ///     <item><description>ll__VVVV</description></item>
+        ///     <item><description>ll_CC_VVVV</description></item>
+        ///     <item><description>ll_Ssss_VVVV</description></item>
+        ///     <item><description>ll_Ssss_CC_VVVV</description></item>
+        /// </list>
+        /// <para/>
+        /// This also handles POSIX ids, which can have the following forms (pppp is code page id):
+        /// <list type="bullet">
+        ///     <item><description>ll_CC.pppp          --> ll_CC</description></item>
+        ///     <item><description>ll_CC.pppp@VVVV     --> ll_CC_VVVV</description></item>
+        ///     <item><description>ll_CC@VVVV          --> ll_CC_VVVV</description></item>
+        /// </list>
+        /// <para/>
+        /// We identify this use of '@' in POSIX ids by looking for an '=' following
+        /// the '@'.  If there is one, we consider '@' to start a keyword list, instead of
+        /// being part of a POSIX id.
+        /// <para/>
+        /// Note:  since it was decided that we want an option to not handle POSIX ids, this
+        /// becomes a bit more complex.
+        /// </remarks>
         private int ParseVariant()
         {
             int oldBlen = buffer.Length;
@@ -500,18 +506,18 @@ namespace ICU4N.Impl
         // no need for skipvariant, to get the keywords we'll just scan directly for
         // the keyword separator
 
-        /**
-         * Returns the normalized language id, or the empty string.
-         */
+        /// <summary>
+        /// Returns the normalized language id, or the empty string.
+        /// </summary>
         public string GetLanguage()
         {
             Reset();
             return GetString(ParseLanguage());
         }
 
-        /**
-         * Returns the normalized script id, or the empty string.
-         */
+        /// <summary>
+        /// Returns the normalized script id, or the empty string.
+        /// </summary>
         public string GetScript()
         {
             Reset();
@@ -519,9 +525,9 @@ namespace ICU4N.Impl
             return GetString(ParseScript());
         }
 
-        /**
-         * return the normalized country id, or the empty string.
-         */
+        /// <summary>
+        /// Returns the normalized country id, or the empty string.
+        /// </summary>
         public string GetCountry()
         {
             Reset();
@@ -530,9 +536,9 @@ namespace ICU4N.Impl
             return GetString(ParseCountry());
         }
 
-        /**
-         * Returns the normalized variant id, or the empty string.
-         */
+        /// <summary>
+        /// Returns the normalized variant id, or the empty string.
+        /// </summary>
         public string GetVariant()
         {
             Reset();
@@ -542,9 +548,9 @@ namespace ICU4N.Impl
             return GetString(ParseVariant());
         }
 
-        /**
-         * Returns the language, script, country, and variant as separate strings.
-         */
+        /// <summary>
+        /// Returns the language, script, country, and variant as separate strings.
+        /// </summary>
         public string[] GetLanguageScriptCountryVariant()
         {
             Reset();
@@ -553,7 +559,7 @@ namespace ICU4N.Impl
                 GetString(ParseScript()),
                 GetString(ParseCountry()),
                 GetString(ParseVariant())
-        };
+            };
         }
 
         public void SetBaseName(string baseName)
@@ -585,10 +591,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Returns the normalized base form of the locale id.  The base
-         * form does not include keywords.
-         */
+        /// <summary>
+        /// Returns the normalized base form of the locale id.  The base
+        /// form does not include keywords.
+        /// </summary>
         public string GetBaseName()
         {
             if (baseName != null)
@@ -599,10 +605,10 @@ namespace ICU4N.Impl
             return GetString(0);
         }
 
-        /**
-         * Returns the normalized full form of the locale id.  The full
-         * form includes keywords if they are present.
-         */
+        /// <summary>
+        /// Returns the normalized full form of the locale id.  The full
+        /// form includes keywords if they are present.
+        /// </summary>
         public string GetName()
         {
             ParseBaseName();
@@ -612,10 +618,10 @@ namespace ICU4N.Impl
 
         // keyword utilities
 
-        /**
-         * If we have keywords, advance index to the start of the keywords and return true,
-         * otherwise return false.
-         */
+        /// <summary>
+        /// If we have keywords, advance index to the start of the keywords and return true,
+        /// otherwise return false.
+        /// </summary>
         private bool SetToKeywordStart()
         {
             for (int i = index; i < id.Length; ++i)
@@ -685,14 +691,14 @@ namespace ICU4N.Impl
             }
         }
 
-        private IComparer<string> GetKeyComparator()
+        private IComparer<string> GetKeyComparator() // ICU4N TODO: API - rename GetKeyComparer
         {
             return new KeyComparer();
         }
 
-        /**
-         * Returns a map of the keywords and values, or null if there are none.
-         */
+        /// <summary>
+        /// Returns a map of the keywords and values, or null if there are none.
+        /// </summary>
         public IDictionary<string, string> GetKeywordMap()
         {
             if (keywords == null)
@@ -745,10 +751,9 @@ namespace ICU4N.Impl
             return keywords;
         }
 
-
-        /**
-         * Parse the keywords and return start of the string in the buffer.
-         */
+        /// <summary>
+        /// Parse the keywords and return start of the string in the buffer.
+        /// </summary>
         private int ParseKeywords()
         {
             int oldBlen = buffer.Length;
@@ -772,50 +777,50 @@ namespace ICU4N.Impl
             return oldBlen;
         }
 
-        /**
-         * Returns an iterator over the keywords, or null if we have an empty map.
-         */
+        /// <summary>
+        /// Returns an iterator over the keywords, or null if we have an empty map.
+        /// </summary>
         public IEnumerator<string> GetKeywords()
         {
             IDictionary<string, string> m = GetKeywordMap();
             return !m.Any() ? null : m.Keys.GetEnumerator();
         }
 
-        /**
-         * Returns the value for the named keyword, or null if the keyword is not
-         * present.
-         */
+        /// <summary>
+        /// Returns the value for the named keyword, or null if the keyword is not
+        /// present.
+        /// </summary>
         public string GetKeywordValue(string keywordName)
         {
             var m = GetKeywordMap();
             return !m.Any() ? null : m.Get(AsciiUtil.ToLowerString(keywordName.Trim()));
         }
 
-        /**
-         * Set the keyword value only if it is not already set to something else.
-         */
+        /// <summary>
+        /// Set the keyword value only if it is not already set to something else.
+        /// </summary>
         public void DefaultKeywordValue(string keywordName, string value)
         {
             SetKeywordValue(keywordName, value, false);
         }
 
-        /**
-         * Set the value for the named keyword, or unset it if value is null.  If
-         * keywordName itself is null, unset all keywords.  If keywordName is not null,
-         * value must not be null.
-         */
+        /// <summary>
+        /// Set the value for the named keyword, or unset it if <paramref name="value"/> is null.  If
+        /// <paramref name="keywordName"/> itself is null, unset all keywords.  If <paramref name="keywordName"/> is not null,
+        /// <paramref name="value"/> must not be null.
+        /// </summary>
         public void SetKeywordValue(string keywordName, string value)
         {
             SetKeywordValue(keywordName, value, true);
         }
 
-        /**
-         * Set the value for the named keyword, or unset it if value is null.  If
-         * keywordName itself is null, unset all keywords.  If keywordName is not null,
-         * value must not be null.  If reset is true, ignore any previous value for
-         * the keyword, otherwise do not change the keyword (including removal of
-         * one or all keywords).
-         */
+        /// <summary>
+        /// Set the value for the named keyword, or unset it if <paramref name="value"/> is null.  If
+        /// <paramref name="keywordName"/> itself is null, unset all keywords.  If <paramref name="keywordName"/> is not null,
+        /// <paramref name="value"/> must not be null.  If reset is true, ignore any previous value for
+        /// the keyword, otherwise do not change the keyword (including removal of
+        /// one or all keywords).
+        /// </summary>
         private void SetKeywordValue(string keywordName, string value, bool reset)
         {
             if (keywordName == null)

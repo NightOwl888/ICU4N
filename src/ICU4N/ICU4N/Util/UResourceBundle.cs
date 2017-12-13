@@ -637,7 +637,7 @@ namespace ICU4N.Util
                 // We do not cache the top-level keys in this base class so that
                 // not every string/int/binary... resource has to have a keys cache field.
                 icurb = (ICUResourceBundle)this;
-                keys = icurb.GetTopLevelKeySet();
+                keys = icurb.TopLevelKeySet;
             }
             if (keys == null)
             {
@@ -669,7 +669,7 @@ namespace ICU4N.Util
                     keys = (newKeySet).ToUnmodifiableSet();
                     if (icurb != null)
                     {
-                        icurb.SetTopLevelKeySet(keys);
+                        icurb.TopLevelKeySet = keys;
                     }
                 }
                 else

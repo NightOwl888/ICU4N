@@ -38,7 +38,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Capitalization context usage types for locale display names
         /// </summary>
-        private enum CapitalizationContextUsage
+        private enum CapitalizationContextUsage // ICU4N TODO: API - change case to follow .NET Conventions ?
         {
             LANGUAGE,
             SCRIPT,
@@ -704,7 +704,7 @@ namespace ICU4N.Impl
             return new UiListItem(minimized, modified, nameInDisplayLocale, nameInSelf);
         }
 
-        public class DataTable
+        public class DataTable // ICU4N TODO: API - de-nest ?
         {
             protected bool nullIfNotFound;
 
@@ -760,7 +760,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public abstract class DataTables
+        public abstract class DataTables // ICU4N TODO: API - de-nest ?
         {
             public abstract DataTable Get(ULocale locale, bool nullIfNotFound);
             public static DataTables Load(string className)
@@ -777,7 +777,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public abstract class ICUDataTables : DataTables
+        public abstract class ICUDataTables : DataTables // ICU4N TODO: API - de-nest ?
         {
             private readonly string path;
 
@@ -806,7 +806,7 @@ namespace ICU4N.Impl
             internal static readonly DataTables impl = DataTables.Load("ICU4N.Impl.ICURegionDataTables, ICU4N.RegionData");
         }
 
-        public enum DataTableType
+        public enum DataTableType // ICU4N TODO: API - de-nest and change case to follow .NET Conventions
         {
             LANG, REGION
         }

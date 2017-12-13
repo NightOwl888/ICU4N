@@ -8,7 +8,7 @@ namespace ICU4N.Impl
     /// <summary>
     /// A class to hold utility functions missing from java.util.Locale.
     /// </summary>
-    public class LocaleUtility
+    public class LocaleUtility // ICU4N TODO: Evaluate the need for this class, or whether a subclass of CultureInfo can serve as an all-inclusive ULocale object (possibly named UCultureInfo)
     {
         /**
          * A helper function to convert a string of the form

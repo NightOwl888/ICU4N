@@ -3,7 +3,6 @@ using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace ICU4N.Impl
 {
@@ -59,7 +58,6 @@ namespace ICU4N.Impl
 
         private sealed class ResourceBinary : ICUResourceBundleImpl
         {
-
             public override int Type
             {
                 get { return BINARY; }
@@ -79,7 +77,7 @@ namespace ICU4N.Impl
             {
             }
         }
-        private sealed class ResourceInt : ICUResourceBundleImpl
+        private sealed class ResourceInt : ICUResourceBundleImpl // ICU4N TODO: API - rename ResourceInt32
         {
             public override int Type
             {
@@ -91,7 +89,7 @@ namespace ICU4N.Impl
                 return ICUResourceBundleReader.RES_GET_INT(resource);
             }
 
-            public override int GetUInt32()
+            public override int GetUInt32() // ICU4N TODO: API - should this actually be uint rather than int?
             {
                 return ICUResourceBundleReader.RES_GET_UINT(resource);
             }
@@ -129,7 +127,7 @@ namespace ICU4N.Impl
                 }
             }
         }
-        private sealed class ResourceIntVector : ICUResourceBundleImpl
+        private sealed class ResourceIntVector : ICUResourceBundleImpl // ICU4N TODO: API Rename ResourceInt32Vector
         {
             public override int Type
             {
@@ -244,7 +242,6 @@ namespace ICU4N.Impl
         }
         internal class ResourceTable : ResourceContainer
         {
-
             public override int Type
             {
                 get { return TABLE; }
@@ -256,7 +253,7 @@ namespace ICU4N.Impl
             protected override ISet<string> HandleKeySet()
             {
                 ICUResourceBundleReader reader = wholeBundle.reader;
-                SortedSet<string> keySet = new SortedSet<string>();
+                SortedSet<string> keySet = new SortedSet<string>(StringComparer.Ordinal);
                 ICUResourceBundleReader.Table table = (ICUResourceBundleReader.Table)value;
                 for (int i = 0; i < table.Length; ++i)
                 {
@@ -330,9 +327,9 @@ namespace ICU4N.Impl
                 }
                 return base.HandleGetObject(key);
             }
-            /**
-             * Returns a String if found, or null if not found or if the key item is not a string.
-             */
+            /// <summary>
+            /// Returns a String if found, or null if not found or if the key item is not a string.
+            /// </summary>
             internal virtual string FindString(string key)
             {
                 ICUResourceBundleReader reader = wholeBundle.reader;
@@ -348,9 +345,9 @@ namespace ICU4N.Impl
             {
                 value = wholeBundle.reader.GetTable(resource);
             }
-            /**
-             * Constructor for the root table of a bundle.
-             */
+            /// <summary>
+            /// Constructor for the root table of a bundle.
+            /// </summary>
             internal ResourceTable(WholeBundle wholeBundle, int rootRes)
                 : base(wholeBundle)
             {

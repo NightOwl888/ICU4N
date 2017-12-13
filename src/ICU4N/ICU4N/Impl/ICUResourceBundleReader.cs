@@ -3,7 +3,6 @@ using ICU4N.Support.IO;
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -19,10 +18,10 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed class ICUResourceBundleReader
     {
-        /**
-         * File format version that this class understands.
-         * "ResB"
-         */
+        /// <summary>
+        /// File format version that this class understands.
+        /// "ResB"
+        /// </summary>
         private static readonly int DATA_FORMAT = 0x52657342;
         private sealed class IsAcceptable : IAuthenticate
         {
@@ -36,79 +35,76 @@ namespace ICU4N.Impl
         private static readonly IsAcceptable IS_ACCEPTABLE = new IsAcceptable();
 
         /* indexes[] value names; indexes are generally 32-bit (Resource) indexes */
-        /**
-         * [0] contains the length of indexes[]
-         * which is at most URES_INDEX_TOP of the latest format version
-         *
-         * formatVersion==1: all bits contain the length of indexes[]
-         *   but the length is much less than 0xff;
-         * formatVersion>1:
-         *   only bits  7..0 contain the length of indexes[],
-         *        bits 31..8 are reserved and set to 0
-         * formatVersion>=3:
-         *        bits 31..8 poolStringIndexLimit bits 23..0
-         */
+        /// <summary>
+        /// [0] contains the length of indexes[]
+        /// which is at most URES_INDEX_TOP of the latest format version
+        /// formatVersion==1: all bits contain the length of indexes[]
+        ///   but the length is much less than 0xff;
+        /// formatVersion>1:
+        ///   only bits  7..0 contain the length of indexes[],
+        ///        bits 31..8 are reserved and set to 0
+        /// formatVersion>=3:
+        ///        bits 31..8 poolStringIndexLimit bits 23..0
+        /// </summary>
         private static readonly int URES_INDEX_LENGTH = 0;
-        /**
-         * [1] contains the top of the key strings,
-         *     same as the bottom of resources or UTF-16 strings, rounded up
-         */
+        /// <summary>
+        /// [1] contains the top of the key strings,
+        ///     same as the bottom of resources or UTF-16 strings, rounded up
+        /// </summary>
         private static readonly int URES_INDEX_KEYS_TOP = 1;
-        /** [2] contains the top of all resources */
-        //ivate static final int URES_INDEX_RESOURCES_TOP    = 2;
-        /**
-         * [3] contains the top of the bundle,
-         *     in case it were ever different from [2]
-         */
+        ///// <summary>[2] contains the top of all resources</summary>
+        //private static readonly int URES_INDEX_RESOURCES_TOP    = 2;
+        /// <summary>
+        /// [3] contains the top of the bundle,
+        ///     in case it were ever different from [2]
+        /// </summary>
         private static readonly int URES_INDEX_BUNDLE_TOP = 3;
-        /** [4] max. length of any table */
+        /// <summary>[4] max. length of any table</summary>
         private static readonly int URES_INDEX_MAX_TABLE_LENGTH = 4;
-        /**
-         * [5] attributes bit set, see URES_ATT_* (new in formatVersion 1.2)
-         *
-         * formatVersion>=3:
-         *   bits 31..16 poolStringIndex16Limit
-         *   bits 15..12 poolStringIndexLimit bits 27..24
-         */
+        /// <summary>
+        /// [5] attributes bit set, see URES_ATT_* (new in formatVersion 1.2)
+        /// <para/>
+        /// formatVersion>=3:
+        ///   bits 31..16 poolStringIndex16Limit
+        ///   bits 15..12 poolStringIndexLimit bits 27..24
+        /// </summary>
         private static readonly int URES_INDEX_ATTRIBUTES = 5;
-        /**
-         * [6] top of the 16-bit units (UTF-16 string v2 UChars, URES_TABLE16, URES_ARRAY16),
-         *     rounded up (new in formatVersion 2.0, ICU 4.4)
-         */
+        /// <summary>
+        /// [6] top of the 16-bit units (UTF-16 string v2 UChars, URES_TABLE16, URES_ARRAY16),
+        ///     rounded up (new in formatVersion 2.0, ICU 4.4)
+        /// </summary>
         private static readonly int URES_INDEX_16BIT_TOP = 6;
-        /** [7] checksum of the pool bundle (new in formatVersion 2.0, ICU 4.4) */
+        /// <summary>[7] checksum of the pool bundle (new in formatVersion 2.0, ICU 4.4)</summary>
         private static readonly int URES_INDEX_POOL_CHECKSUM = 7;
-        //ivate static readonly int URES_INDEX_TOP              = 8;
+        //private static readonly int URES_INDEX_TOP              = 8;
 
-        /*
-         * Nofallback attribute, attribute bit 0 in indexes[URES_INDEX_ATTRIBUTES].
-         * New in formatVersion 1.2 (ICU 3.6).
-         *
-         * If set, then this resource bundle is a standalone bundle.
-         * If not set, then the bundle participates in locale fallback, eventually
-         * all the way to the root bundle.
-         * If indexes[] is missing or too short, then the attribute cannot be determined
-         * reliably. Dependency checking should ignore such bundles, and loading should
-         * use fallbacks.
-         */
+        /// <summary>
+        /// Nofallback attribute, attribute bit 0 in indexes[URES_INDEX_ATTRIBUTES].
+        /// New in formatVersion 1.2 (ICU 3.6).
+        /// <para/>
+        /// If set, then this resource bundle is a standalone bundle.
+        /// If not set, then the bundle participates in locale fallback, eventually
+        /// all the way to the root bundle.
+        /// If indexes[] is missing or too short, then the attribute cannot be determined
+        /// reliably. Dependency checking should ignore such bundles, and loading should
+        /// use fallbacks.
+        /// </summary>
         private static readonly int URES_ATT_NO_FALLBACK = 1;
-
-        /*
-         * Attributes for bundles that are, or use, a pool bundle.
-         * A pool bundle provides key strings that are shared among several other bundles
-         * to reduce their total size.
-         * New in formatVersion 2 (ICU 4.4).
-         */
+        /// <summary>
+        /// Attributes for bundles that are, or use, a pool bundle.
+        /// A pool bundle provides key strings that are shared among several other bundles
+        /// to reduce their total size.
+        /// New in formatVersion 2 (ICU 4.4).
+        /// </summary>
         private static readonly int URES_ATT_IS_POOL_BUNDLE = 2;
         private static readonly int URES_ATT_USES_POOL_BUNDLE = 4;
 
         private static readonly CharBuffer EMPTY_16_BIT_UNITS = CharBuffer.Wrap(new char[] { '\0' });  // read-only
-
-        /**
-         * Objects with more value bytes are stored in SoftReferences.
-         * Smaller objects (which are not much larger than a SoftReference)
-         * are stored directly, avoiding the overhead of the reference.
-         */
+        /// <summary>
+        /// Objects with more value bytes are stored in <see cref="SoftReference{T}"/>s.
+        /// Smaller objects (which are not much larger than a <see cref="SoftReference{T}"/>)
+        /// are stored directly, avoiding the overhead of the reference.
+        /// </summary>
         internal static readonly int LARGE_SIZE = 24;
 
         private static readonly bool DEBUG = false;
@@ -116,10 +112,10 @@ namespace ICU4N.Impl
         private int /* formatVersion, */ dataVersion;
 
         // See the ResourceData struct in ICU4C/source/common/uresdata.h.
-        /**
-         * Buffer of all of the resource bundle bytes after the header.
-         * (equivalent of C++ pRoot)
-         */
+        /// <summary>
+        /// Buffer of all of the resource bundle bytes after the header.
+        /// (equivalent of C++ pRoot)
+        /// </summary>
         private ByteBuffer bytes;
         private byte[] keyBytes;
         private CharBuffer b16BitUnits;
@@ -172,10 +168,8 @@ namespace ICU4N.Impl
 
         private class ReaderCache : SoftCache<ReaderCacheKey, ICUResourceBundleReader, Assembly>
         {
-            /* (non-Javadoc)
-             * @see com.ibm.icu.impl.CacheBase#createInstance(java.lang.Object, java.lang.Object)
-             */
-            protected override ICUResourceBundleReader CreateInstance(ReaderCacheKey key, Assembly loader)
+            /// <seealso cref="CacheBase{K, V, D}.CreateInstance(K, D)"/>
+            protected override ICUResourceBundleReader CreateInstance(ReaderCacheKey key, Assembly assembly)
             {
                 string fullName = ICUResourceBundleReader.GetFullName(key.baseName, key.localeID);
                 try
@@ -184,7 +178,7 @@ namespace ICU4N.Impl
                     if (key.baseName != null && key.baseName.StartsWith(ICUData.ICU_BASE_NAME, StringComparison.Ordinal))
                     {
                         string itemPath = fullName.Substring(ICUData.ICU_BASE_NAME.Length + 1);
-                        inBytes = ICUBinary.GetData(loader, fullName, itemPath);
+                        inBytes = ICUBinary.GetData(assembly, fullName, itemPath);
                         if (inBytes == null)
                         {
                             return NULL_READER;
@@ -193,14 +187,14 @@ namespace ICU4N.Impl
                     else
                     {
                         // Closed by getByteBufferFromInputStreamAndCloseStream().
-                        Stream stream = ICUData.GetStream(loader, fullName);
+                        Stream stream = ICUData.GetStream(assembly, fullName);
                         if (stream == null)
                         {
                             return NULL_READER;
                         }
                         inBytes = ICUBinary.GetByteBufferFromInputStreamAndCloseStream(stream);
                     }
-                    return new ICUResourceBundleReader(inBytes, key.baseName, key.localeID, loader);
+                    return new ICUResourceBundleReader(inBytes, key.baseName, key.localeID, assembly);
                 }
                 catch (IOException ex)
                 {
@@ -209,23 +203,23 @@ namespace ICU4N.Impl
             }
         }
 
-        /*
-         * Default constructor, just used for NULL_READER.
-         */
+        /// <summary>
+        /// Default constructor, just used for <see cref="NULL_READER"/>.
+        /// </summary>
         private ICUResourceBundleReader()
         {
         }
 
         private ICUResourceBundleReader(ByteBuffer inBytes,
-                string baseName, string localeID,
-                Assembly loader)
+            string baseName, string localeID,
+            Assembly assembly)
         {
             Init(inBytes);
 
             // set pool bundle if necessary
             if (usesPoolBundle)
             {
-                poolBundleReader = GetReader(baseName, "pool", loader);
+                poolBundleReader = GetReader(baseName, "pool", assembly);
                 if (poolBundleReader == null || !poolBundleReader.isPoolBundle)
                 {
                     throw new InvalidOperationException("pool.res is not a pool bundle");
@@ -265,7 +259,7 @@ namespace ICU4N.Impl
             // We need it so that we can read the key string bytes up front, for lookup performance.
 
             // read the variable-length indexes[] array
-            int indexes0 = getIndexesInt(URES_INDEX_LENGTH);
+            int indexes0 = GetIndexesInt(URES_INDEX_LENGTH);
             int indexLength = indexes0 & 0xff;
             if (indexLength <= URES_INDEX_MAX_TABLE_LENGTH)
             {
@@ -273,7 +267,7 @@ namespace ICU4N.Impl
             }
             int bundleTop;
             if (dataLength < ((1 + indexLength) << 2) ||
-                    dataLength < ((bundleTop = getIndexesInt(URES_INDEX_BUNDLE_TOP)) << 2))
+                    dataLength < ((bundleTop = GetIndexesInt(URES_INDEX_BUNDLE_TOP)) << 2))
             {
                 throw new ICUException("not enough bytes");
             }
@@ -291,7 +285,7 @@ namespace ICU4N.Impl
             {
                 // determine if this resource bundle falls back to a parent bundle
                 // along normal locale ID fallback
-                int att = getIndexesInt(URES_INDEX_ATTRIBUTES);
+                int att = GetIndexesInt(URES_INDEX_ATTRIBUTES);
                 noFallback = (att & URES_ATT_NO_FALLBACK) != 0;
                 isPoolBundle = (att & URES_ATT_IS_POOL_BUNDLE) != 0;
                 usesPoolBundle = (att & URES_ATT_USES_POOL_BUNDLE) != 0;
@@ -300,7 +294,7 @@ namespace ICU4N.Impl
             }
 
             int keysBottom = 1 + indexLength;
-            int keysTop = getIndexesInt(URES_INDEX_KEYS_TOP);
+            int keysTop = GetIndexesInt(URES_INDEX_KEYS_TOP);
             if (keysTop > keysBottom)
             {
                 // Deserialize the key strings up front.
@@ -325,7 +319,7 @@ namespace ICU4N.Impl
             // Read the array of 16-bit units.
             if (indexLength > URES_INDEX_16BIT_TOP)
             {
-                int _16BitTop = getIndexesInt(URES_INDEX_16BIT_TOP);
+                int _16BitTop = GetIndexesInt(URES_INDEX_16BIT_TOP);
                 if (_16BitTop > keysTop)
                 {
                     int num16BitUnits = (_16BitTop - keysTop) * 2;
@@ -346,7 +340,7 @@ namespace ICU4N.Impl
 
             if (indexLength > URES_INDEX_POOL_CHECKSUM)
             {
-                poolCheckSum = getIndexesInt(URES_INDEX_POOL_CHECKSUM);
+                poolCheckSum = GetIndexesInt(URES_INDEX_POOL_CHECKSUM);
             }
 
             if (!isPoolBundle || b16BitUnits.Length > 1)
@@ -358,7 +352,7 @@ namespace ICU4N.Impl
             bytes.Position = 0;
         }
 
-        private int getIndexesInt(int i)
+        private int GetIndexesInt(int i)
         {
             return bytes.GetInt32((1 + i) << 2);
         }
@@ -393,12 +387,12 @@ namespace ICU4N.Impl
         {
             return offset << 2;
         }
-        /* get signed and unsigned integer values directly from the Resource handle */
+        /// <summary>get signed and unsigned integer values directly from the Resource handle</summary>
         internal static int RES_GET_INT(int res)
         {
             return (res << 4) >> 4;
         }
-        internal static int RES_GET_UINT(int res)
+        internal static int RES_GET_UINT(int res) // ICU4N TODO: API Should this actually return uint?
         {
             return res & 0x0fffffff;
         }
@@ -588,9 +582,7 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * @return a string from the local bundle's b16BitUnits at the local offset
-         */
+        /// <returns>A string from the local bundle's b16BitUnits at the local offset.</returns>
         internal string GetStringV2(int res)
         {
             // Use the pool bundle's resource cache for pool bundle strings;
@@ -701,9 +693,9 @@ namespace ICU4N.Impl
             return (string)resourceCache.PutIfAbsent(res, s, s.Length * 2);
         }
 
-        /**
-         * CLDR string value "∅∅∅"=="\u2205\u2205\u2205" prevents fallback to the parent bundle.
-         */
+        /// <summary>
+        /// CLDR string value "∅∅∅"=="\u2205\u2205\u2205" prevents fallback to the parent bundle.
+        /// </summary>
         private bool IsNoInheritanceMarker(int res)
         {
             int offset = RES_GET_OFFSET(res);
@@ -957,30 +949,30 @@ namespace ICU4N.Impl
 
         // ICUResource.Value --------------------------------------------------- ***
 
-        /**
-         * From C++ uresdata.c gPublicTypes[URES_LIMIT].
-         */
+        /// <summary>
+        /// From C++ uresdata.c gPublicTypes[URES_LIMIT].
+        /// </summary>
         private static int[] PUBLIC_TYPES = {
-        UResourceBundle.STRING,
-        UResourceBundle.BINARY,
-        UResourceBundle.TABLE,
-        ICUResourceBundle.ALIAS,
+            UResourceBundle.STRING,
+            UResourceBundle.BINARY,
+            UResourceBundle.TABLE,
+            ICUResourceBundle.ALIAS,
 
-        UResourceBundle.TABLE,     /* URES_TABLE32 */
-        UResourceBundle.TABLE,     /* URES_TABLE16 */
-        UResourceBundle.STRING,    /* URES_STRING_V2 */
-        UResourceBundle.INT32,
+            UResourceBundle.TABLE,     /* URES_TABLE32 */
+            UResourceBundle.TABLE,     /* URES_TABLE16 */
+            UResourceBundle.STRING,    /* URES_STRING_V2 */
+            UResourceBundle.INT32,
 
-        UResourceBundle.ARRAY,
-        UResourceBundle.ARRAY,     /* URES_ARRAY16 */
-        UResourceBundle.NONE,
-        UResourceBundle.NONE,
+            UResourceBundle.ARRAY,
+            UResourceBundle.ARRAY,     /* URES_ARRAY16 */
+            UResourceBundle.NONE,
+            UResourceBundle.NONE,
 
-        UResourceBundle.NONE,
-        UResourceBundle.NONE,
-        UResourceBundle.INT32_VECTOR,
-        UResourceBundle.NONE
-    };
+            UResourceBundle.NONE,
+            UResourceBundle.NONE,
+            UResourceBundle.INT32_VECTOR,
+            UResourceBundle.NONE
+        };
 
         internal class ReaderValue : UResource.Value
         {
@@ -1350,28 +1342,29 @@ namespace ICU4N.Impl
 
         // Resource cache ------------------------------------------------------ ***
 
-        /**
-         * Cache of some of one resource bundle's resources.
-         * Avoids creating multiple Java objects for the same resource items,
-         * including multiple copies of their contents.
-         *
-         * <p>Mutable objects must not be cached and then returned to the caller
-         * because the cache must not be writable via the returned reference.
-         *
-         * <p>Resources are mapped by their resource integers.
-         * Empty resources with offset 0 cannot be mapped.
-         * Integers need not and should not be cached.
-         * Multiple .res items may share resource offsets (genrb eliminates some duplicates).
-         *
-         * <p>This cache uses int[] and Object[] arrays to minimize object creation
-         * and avoid auto-boxing.
-         *
-         * <p>Large resource objects are usually stored in SoftReferences.
-         *
-         * <p>For few resources, a small table is used with binary search.
-         * When more resources are cached, then the data structure changes to be faster
-         * but also use more memory.
-         */
+        /// <summary>
+        /// Cache of some of one resource bundle's resources.
+        /// Avoids creating multiple .NET objects for the same resource items,
+        /// including multiple copies of their contents.
+        /// </summary>
+        /// <remarks>
+        /// Mutable objects must not be cached and then returned to the caller
+        /// because the cache must not be writable via the returned reference.
+        /// <para/>
+        /// Resources are mapped by their resource integers.
+        /// Empty resources with offset 0 cannot be mapped.
+        /// Integers need not and should not be cached.
+        /// Multiple .res items may share resource offsets (genrb eliminates some duplicates).
+        /// <para/>
+        /// This cache uses int[] and Object[] arrays to minimize object creation
+        /// and avoid auto-boxing.
+        /// <para/>
+        /// Large resource objects are usually stored in <see cref="SoftReference{T}"/>s.
+        /// <para/>
+        /// For few resources, a small table is used with binary search.
+        /// When more resources are cached, then the data structure changes to be faster
+        /// but also use more memory.
+        /// </remarks>
         private sealed class ResourceCache
         {
             // Number of items to be stored in a simple array with binary search and insertion sort.
@@ -1389,9 +1382,9 @@ namespace ICU4N.Impl
 
             // Trie-like tree of levels, used when length < 0.
             private int maxOffsetBits;
-            /**
-             * Number of bits in each level, each stored in a nibble.
-             */
+            /// <summary>
+            /// Number of bits in each level, each stored in a nibble.
+            /// </summary>
             private int levelBitsList;
             private Level rootLevel;
 
@@ -1538,10 +1531,10 @@ namespace ICU4N.Impl
                 }
             }
 
-            /**
-             * Turns a resource integer (with unused bits in the middle)
-             * into a key with fewer bits (at most keyBits).
-             */
+            /// <summary>
+            /// Turns a resource integer (with unused bits in the middle)
+            /// into a key with fewer bits (at most keyBits).
+            /// </summary>
             private int MakeKey(int res)
             {
                 // It is possible for resources of different types in the 16-bit array
@@ -1673,9 +1666,9 @@ namespace ICU4N.Impl
 
         private static readonly string ICU_RESOURCE_SUFFIX = ".res";
 
-        /**
-         * Gets the full name of the resource with suffix.
-         */
+        /// <summary>
+        /// Gets the full name of the resource with suffix.
+        /// </summary>
         public static string GetFullName(string baseName, string localeName)
         {
             if (baseName == null || baseName.Length == 0)

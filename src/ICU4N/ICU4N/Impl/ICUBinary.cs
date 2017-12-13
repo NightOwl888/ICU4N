@@ -18,26 +18,26 @@ namespace ICU4N.Impl
     public interface IAuthenticate
     {
         /// <summary>
-        /// Method used in ICUBinary.ReadHeader() to provide data format
+        /// Method used in <see cref="ICUBinary.ReadHeader(ByteBuffer, int, IAuthenticate)"/> to provide data format
         /// authentication.
         /// </summary>
-        /// <param name="version">version of the current data</param>
+        /// <param name="version">Version of the current data.</param>
         /// <returns>true if dataformat is an acceptable version, false otherwise.</returns>
         bool IsDataVersionAcceptable(byte[] version);
     }
 
     public sealed class ICUBinary
     {
-        /**
-     * Reads the ICU .dat package file format.
-     * Most methods do not modify the ByteBuffer in any way,
-     * not even its position or other state.
-     */
+        /// <summary>
+        /// Reads the ICU .dat package file format.
+        /// Most methods do not modify the <see cref="ByteBuffer"/> in any way,
+        /// not even its position or other state.
+        /// </summary>
         private sealed class DatPackageReader
         {
-            /**
-             * .dat package data format ID "CmnD".
-             */
+            /// <summary>
+            /// .dat package data format ID "CmnD".
+            /// </summary>
             private static readonly int DATA_FORMAT = 0x436d6e44;
 
             private sealed class IsAcceptable : IAuthenticate
@@ -50,17 +50,19 @@ namespace ICU4N.Impl
             }
             private static readonly IsAcceptable IS_ACCEPTABLE = new IsAcceptable();
 
-            /**
-             * Checks that the ByteBuffer contains a valid, usable ICU .dat package.
-             * Moves the buffer position from 0 to after the data header.
-             */
+            /// <summary>
+            /// Checks that the <see cref="ByteBuffer"/> contains a valid, usable ICU .dat package.
+            /// Moves the buffer position from 0 to after the data header.
+            /// </summary>
+            /// <param name="bytes"></param>
+            /// <returns></returns>
             internal static bool Validate(ByteBuffer bytes)
             {
                 try
                 {
                     ReadHeader(bytes, DATA_FORMAT, IS_ACCEPTABLE);
                 }
-                catch (IOException ignored)
+                catch (IOException /* ignored */)
                 {
                     return false;
                 }
@@ -196,7 +198,7 @@ namespace ICU4N.Impl
                 return @base + bytes.GetInt32(@base + 4 + 4 + index * 8);
             }
 
-            static bool AddBaseName(ByteBuffer bytes, int index,
+            internal static bool AddBaseName(ByteBuffer bytes, int index,
                     string folder, string suffix, StringBuilder sb, ISet<string> names)
             {
                 int offset = GetNameOffset(bytes, index);
@@ -254,12 +256,10 @@ namespace ICU4N.Impl
 
             internal abstract ByteBuffer GetData(string requestedPath);
 
-            /**
-             * @param folder The relative ICU data folder, like "" or "coll".
-             * @param suffix Usually ".res".
-             * @param names File base names relative to the folder are added without the suffix,
-             *        for example "de_CH".
-             */
+            /// <param name="folder">The relative ICU data folder, like "" or "coll".</param>
+            /// <param name="suffix">Usually ".res".</param>
+            /// <param name="names">File base names relative to the folder are added without the suffix,
+            /// for example "de_CH".</param>
             internal abstract void AddBaseNamesInFolder(string folder, string suffix, ISet<string> names);
         }
 
@@ -290,7 +290,6 @@ namespace ICU4N.Impl
                 }
             }
 
-
             internal override void AddBaseNamesInFolder(string folder, string suffix, ISet<string> names)
             {
                 if (itemPath.Length > folder.Length + suffix.Length &&
@@ -307,11 +306,11 @@ namespace ICU4N.Impl
 
         private sealed class PackageDataFile : DataFile
         {
-            /**
-             * .dat package bytes, or null if not a .dat package.
-             * position() is after the header.
-             * Do not modify the position or other state, for thread safety.
-             */
+            /// <summary>
+            /// .dat package bytes, or null if not a .dat package.
+            /// position() is after the header.
+            /// Do not modify the position or other state, for thread safety.
+            /// </summary>
             private readonly ByteBuffer pkgBytes;
 
             internal PackageDataFile(string item, ByteBuffer bytes)
@@ -430,10 +429,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Compares the length-specified input key with the
-         * NUL-terminated table key. (ASCII)
-         */
+        /// <summary>
+        /// Compares the length-specified input key with the
+        /// NUL-terminated table key. (ASCII)
+        /// </summary>
         internal static int CompareKeys(string key, ByteBuffer bytes, int offset) // ICU4N specific: Changed key from ICharSequence to string
         {
             for (int i = 0; ; ++i, ++offset)
@@ -495,87 +494,81 @@ namespace ICU4N.Impl
 
         // public methods --------------------------------------------------------
 
-        /**
-         * Loads an ICU binary data file and returns it as a ByteBuffer.
-         * The buffer contents is normally read-only, but its position etc. can be modified.
-         *
-         * @param itemPath Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".
-         * @return The data as a read-only ByteBuffer,
-         *         or null if the resource could not be found.
-         */
+        /// <summary>
+        /// Loads an ICU binary data file and returns it as a <see cref="ByteBuffer"/>.
+        /// The buffer contents is normally read-only, but its position etc. can be modified.
+        /// </summary>
+        /// <param name="itemPath">Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".</param>
+        /// <returns>The data as a read-only <see cref="ByteBuffer"/>,
+        /// or null if the resource could not be found.</returns>
         public static ByteBuffer GetData(string itemPath)
         {
             return GetData(null, null, itemPath, false);
         }
 
-        /**
-         * Loads an ICU binary data file and returns it as a ByteBuffer.
-         * The buffer contents is normally read-only, but its position etc. can be modified.
-         *
-         * @param loader Used for loader.getResourceAsStream() unless the data is found elsewhere.
-         * @param resourceName Resource name for use with the loader.
-         * @param itemPath Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".
-         * @return The data as a read-only ByteBuffer,
-         *         or null if the resource could not be found.
-         */
-        public static ByteBuffer GetData(Assembly loader, string resourceName, string itemPath)
+        /// <summary>
+        /// Loads an ICU binary data file and returns it as a <see cref="ByteBuffer"/>.
+        /// The buffer contents is normally read-only, but its position etc. can be modified.
+        /// </summary>
+        /// <param name="assembly">Used for <see cref="Assembly.GetManifestResourceStream(string)"/> unless the data is found elsewhere.</param>
+        /// <param name="resourceName">Resource name for use with the <paramref name="assembly"/>.</param>
+        /// <param name="itemPath">Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".</param>
+        /// <returns>The data as a read-only <see cref="ByteBuffer"/>,
+        /// or null if the resource could not be found.</returns>
+        public static ByteBuffer GetData(Assembly assembly, string resourceName, string itemPath)
         {
-            return GetData(loader, resourceName, itemPath, false);
+            return GetData(assembly, resourceName, itemPath, false);
         }
 
-        /**
-         * Loads an ICU binary data file and returns it as a ByteBuffer.
-         * The buffer contents is normally read-only, but its position etc. can be modified.
-         *
-         * @param itemPath Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".
-         * @return The data as a read-only ByteBuffer.
-         * @throws MissingResourceException if required==true and the resource could not be found
-         */
+        /// <summary>
+        /// Loads an ICU binary data file and returns it as a <see cref="ByteBuffer"/>.
+        /// The buffer contents is normally read-only, but its position etc. can be modified.
+        /// </summary>
+        /// <param name="itemPath">Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".</param>
+        /// <returns>The data as a read-only <see cref="ByteBuffer"/>.</returns>
+        /// <exception cref="System.Resources.MissingManifestResourceException">If required==true and the resource could not be found.</exception>
         public static ByteBuffer GetRequiredData(string itemPath)
         {
             return GetData(null, null, itemPath, true);
         }
 
-        /**
-         * Loads an ICU binary data file and returns it as a ByteBuffer.
-         * The buffer contents is normally read-only, but its position etc. can be modified.
-         *
-         * @param loader Used for loader.getResourceAsStream() unless the data is found elsewhere.
-         * @param resourceName Resource name for use with the loader.
-         * @param itemPath Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".
-         * @return The data as a read-only ByteBuffer.
-         * @throws MissingResourceException if required==true and the resource could not be found
-         */
-        public static ByteBuffer GetRequiredData(Assembly loader, string resourceName,
-                string itemPath)
+        /// <summary>
+        /// Loads an ICU binary data file and returns it as a <see cref="ByteBuffer"/>.
+        /// The buffer contents is normally read-only, but its position etc. can be modified.
+        /// </summary>
+        /// <param name="assembly">Used for <see cref="Assembly.GetManifestResourceStream(string)"/> unless the data is found elsewhere.</param>
+        /// <param name="resourceName">Resource name for use with the <paramref name="assembly"/>.</param>
+        /// <param name="itemPath">Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".</param>
+        /// <returns>The data as a read-only <see cref="ByteBuffer"/>.</returns>
+        /// <exception cref="System.Resources.MissingManifestResourceException">If required==true and the resource could not be found.</exception>
+        public static ByteBuffer GetRequiredData(Assembly assembly, string resourceName,
+                string itemPath) // ICU4N specific - adding this commented overload so we can pass assembly
         {
-            return GetData(loader, resourceName, itemPath, true);
+            return GetData(assembly, resourceName, itemPath, true);
         }
 
-        /**
-         * Loads an ICU binary data file and returns it as a ByteBuffer.
-         * The buffer contents is normally read-only, but its position etc. can be modified.
-         *
-         * @param loader Used for loader.getResourceAsStream() unless the data is found elsewhere.
-         * @param resourceName Resource name for use with the loader.
-         * @param itemPath Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".
-         * @param required If the resource cannot be found,
-         *        this method returns null (!required) or throws an exception (required).
-         * @return The data as a read-only ByteBuffer,
-         *         or null if required==false and the resource could not be found.
-         * @throws MissingResourceException if required==true and the resource could not be found
-         */
-        private static ByteBuffer GetData(Assembly loader, string resourceName,
-                string itemPath, bool required)
+        /// <summary>
+        /// Loads an ICU binary data file and returns it as a <see cref="ByteBuffer"/>.
+        /// The buffer contents is normally read-only, but its position etc. can be modified.
+        /// </summary>
+        /// <param name="assembly">Used for <see cref="Assembly.GetManifestResourceStream(string)"/> unless the data is found elsewhere.</param>
+        /// <param name="resourceName">Resource name for use with the <paramref name="assembly"/>.</param>
+        /// <param name="itemPath">Relative ICU data item path, for example "root.res" or "coll/ucadata.icu".</param>
+        /// <param name="required">If the resource cannot be found,
+        /// this method returns null (!<paramref name="required"/>) or throws an exception (<paramref name="required"/>).</param>
+        /// <returns>The data as a read-only <see cref="ByteBuffer"/>,
+        /// or null if <paramref name="required"/>==false and the resource could not be found.</returns>
+        private static ByteBuffer GetData(Assembly assembly, string resourceName,
+            string itemPath, bool required)
         {
             ByteBuffer bytes = GetDataFromFile(itemPath);
             if (bytes != null)
             {
                 return bytes;
             }
-            if (loader == null)
+            if (assembly == null)
             {
-                loader = typeof(ICUData).GetTypeInfo().Assembly;
+                assembly = typeof(ICUData).GetTypeInfo().Assembly;
             }
             if (resourceName == null)
             {
@@ -585,7 +578,7 @@ namespace ICU4N.Impl
             try
             {
                 // Closed by getByteBufferFromInputStreamAndCloseStream().
-                Stream @is = ICUData.GetStream(loader, resourceName, required);
+                Stream @is = ICUData.GetStream(assembly, resourceName, required);
                 if (@is == null)
                 {
                     return null;
@@ -612,7 +605,7 @@ namespace ICU4N.Impl
             return null;
         }
 
-        //@SuppressWarnings("resource")  // Closing a file closes its channel.
+        // Closing a file closes its channel.
         private static ByteBuffer MapFile(FileInfo path)
         {
             MemoryMappedFile file;
@@ -646,12 +639,10 @@ namespace ICU4N.Impl
             return null;
         }
 
-        /**
-         * @param folder The relative ICU data folder, like "" or "coll".
-         * @param suffix Usually ".res".
-         * @param names File base names relative to the folder are added without the suffix,
-         *        for example "de_CH".
-         */
+        /// <param name="folder">The relative ICU data folder, like "" or "coll".</param>
+        /// <param name="suffix">Usually ".res".</param>
+        /// <param name="names">File base names relative to the folder are added without the suffix,
+        /// for example "de_CH".</param>
         public static void AddBaseNamesInFileFolder(string folder, string suffix, ISet<string> names)
         {
             foreach (DataFile dataFile in icuDataFiles)
@@ -660,9 +651,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Same as readHeader(), but returns a VersionInfo rather than a compact int.
-         */
+        /// <summary>
+        /// Same as <see cref="ReadHeader(ByteBuffer, int, IAuthenticate)"/>, 
+        /// but returns a <see cref="VersionInfo"/> rather than a compact int.
+        /// </summary>
         public static VersionInfo ReadHeaderAndDataVersion(ByteBuffer bytes,
                                                                  int dataFormat,
                                                                  IAuthenticate authenticate)
@@ -670,18 +662,19 @@ namespace ICU4N.Impl
             return GetVersionInfoFromCompactInt(ReadHeader(bytes, dataFormat, authenticate));
         }
 
-        /**
-         * Reads an ICU data header, checks the data format, and returns the data version.
-         *
-         * <p>Assumes that the ByteBuffer position is 0 on input.
-         * The buffer byte order is set according to the data.
-         * The buffer position is advanced past the header (including UDataInfo and comment).
-         *
-         * <p>See C++ ucmndata.h and unicode/udata.h.
-         *
-         * @return dataVersion
-         * @throws IOException if this is not a valid ICU data item of the expected dataFormat
-         */
+        /// <summary>
+        /// Reads an ICU data header, checks the data format, and returns the data version.
+        /// </summary>
+        /// <remarks>
+        /// Assumes that the <see cref="ByteBuffer"/> position is 0 on input.
+        /// <para/>
+        /// The buffer byte order is set according to the data.
+        /// The buffer position is advanced past the header (including UDataInfo and comment).
+        /// <para/>
+        /// See C++ ucmndata.h and unicode/udata.h.
+        /// </remarks>
+        /// <returns>dataVersion</returns>
+        /// <exception cref="IOException">If this is not a valid ICU data item of the expected dataFormat.</exception>
         public static int ReadHeader(ByteBuffer bytes, int dataFormat, IAuthenticate authenticate)
         {
             Debug.Assert(bytes != null && bytes.Position == 0);
@@ -711,8 +704,8 @@ namespace ICU4N.Impl
             // TODO: Change Authenticate to take int major, int minor, int milli, int micro
             // to avoid array allocation.
             byte[] formatVersion = new byte[] {
-            bytes.Get(16), bytes.Get(17), bytes.Get(18), bytes.Get(19)
-        };
+                bytes.Get(16), bytes.Get(17), bytes.Get(18), bytes.Get(19)
+            };
             if (bytes.Get(12) != (byte)(dataFormat >> 24) ||
                     bytes.Get(13) != (byte)(dataFormat >> 16) ||
                     bytes.Get(14) != (byte)(dataFormat >> 8) ||
@@ -736,15 +729,18 @@ namespace ICU4N.Impl
                     (bytes.Get(23) & 0xff);
         }
 
-        /**
-         * Writes an ICU data header.
-         * Does not write a copyright string.
-         *
-         * @return The length of the header (number of bytes written).
-         * @throws IOException from the DataOutputStream
-         */
+        /// <summary>
+        /// Writes an ICU data header.
+        /// Does not write a copyright string.
+        /// </summary>
+        /// <param name="dataFormat"></param>
+        /// <param name="formatVersion"></param>
+        /// <param name="dataVersion"></param>
+        /// <param name="dos"></param>
+        /// <returns>The length of the header (number of bytes written).</returns>
+        /// <exception cref="IOException">From the <see cref="DataOutputStream"/>.</exception>
         public static int WriteHeader(int dataFormat, int formatVersion, int dataVersion,
-                DataOutputStream dos)
+            DataOutputStream dos)
         {
             // ucmndata.h MappedData
             dos.WriteChar(32);  // headerSize
@@ -814,20 +810,20 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        /**
-         * Same as ByteBuffer.slice() plus preserving the byte order.
-         */
+        /// <summary>
+        /// Same as <see cref="ByteBuffer.Slice()"/>.slice() plus preserving the byte order.
+        /// </summary>
         public static ByteBuffer SliceWithOrder(ByteBuffer bytes)
         {
             ByteBuffer b = bytes.Slice();
             return b.SetOrder(bytes.Order);
         }
 
-        /**
-         * Reads the entire contents from the stream into a byte array
-         * and wraps it into a ByteBuffer. Closes the InputStream at the end.
-         */
-        public static ByteBuffer GetByteBufferFromInputStreamAndCloseStream(Stream input)
+        /// <summary>
+        /// Reads the entire contents from the stream into a byte array
+        /// and wraps it into a <see cref="ByteBuffer"/>. Disposes the <see cref="Stream"/> at the end.
+        /// </summary>
+        public static ByteBuffer GetByteBufferFromInputStreamAndCloseStream(Stream input) // ICU4N TODO: API Rename GetByteBufferFromStreamAndDisposeStream
         {
             try
             {
@@ -891,18 +887,18 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Returns a VersionInfo for the bytes in the compact version integer.
-         */
+        /// <summary>
+        /// Returns a <see cref="VersionInfo"/> for the bytes in the compact version integer.
+        /// </summary>
         public static VersionInfo GetVersionInfoFromCompactInt(int version) // ICU4N TODO: API - Rename GetVersionInfoFromCompactInt32
         {
             return VersionInfo.GetInstance(
                     (version.TripleShift(24)), (version >> 16) & 0xff, (version >> 8) & 0xff, version & 0xff);
         }
 
-        /**
-         * Returns an array of the bytes in the compact version integer.
-         */
+        /// <summary>
+        /// Returns an array of the bytes in the compact version integer.
+        /// </summary>
         public static byte[] GetVersionByteArrayFromCompactInt(int version) // ICU4N TODO: API - Rename GetVersionByteArrayFromCompactInt32
         {
             return new byte[] {
@@ -915,21 +911,15 @@ namespace ICU4N.Impl
 
         // private variables -------------------------------------------------
 
-        /**
-        * Magic numbers to authenticate the data file
-        */
+        // Magic numbers to authenticate the data file
         private static readonly byte MAGIC1 = (byte)0xda;
         private static readonly byte MAGIC2 = (byte)0x27;
 
-        /**
-        * File format authentication values
-        */
+        // File format authentication values
         private static readonly byte CHAR_SET_ = 0;
         private static readonly byte CHAR_SIZE_ = 2;
 
-        /**
-        * Error messages
-        */
+        // Error messages
         private static readonly string MAGIC_NUMBER_AUTHENTICATION_FAILED_ =
                                "ICU data file error: Not an ICU data file";
         private static readonly string HEADER_AUTHENTICATION_FAILED_ =

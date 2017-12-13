@@ -301,7 +301,7 @@ namespace ICU4N.Impl
         /// <param name="datamanipulate">Builder raw fold method implementation.</param>
         /// <returns>The number of bytes written to the output stream.</returns>
         public virtual int Serialize(Stream os, bool reduceTo16Bits,
-               TrieBuilder.IDataManipulate datamanipulate)
+            TrieBuilder.IDataManipulate datamanipulate)
         {
             if (datamanipulate == null)
             {
