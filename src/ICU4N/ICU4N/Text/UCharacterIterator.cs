@@ -12,7 +12,7 @@ namespace ICU4N.Text
     /// is done with pre-decrement semantics, while the <code>java.text.CharacterIterator</code> interface methods provided
     /// forward iteration with "pre-increment" and backward iteration with pre-decrement semantics. This API is more
     /// efficient for forward iteration over code points. The other major difference is that this API can do both code unit
-    /// and code point iteration, <code>java.text.CharacterIterator</code> can only iterate over code units and is limited to
+    /// and code point iteration, <see cref="CharacterIterator"/> can only iterate over code units and is limited to
     /// BMP (0 - 0xFFFF)
     /// </summary>
     /// <author>Ram</author>

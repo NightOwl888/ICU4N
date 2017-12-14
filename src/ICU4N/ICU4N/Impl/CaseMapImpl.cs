@@ -203,7 +203,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Bit mask for the titlecasing index adjustment options bit set.
         /// Currently two bits are defined:
-        /// <see cref="TITLECASE_NO_BREAK_ADJUSTMENT"/>, <see cref="TITLECASE_ADJUST_TO_CASED"/>.
+        /// <see cref="UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT"/>, <see cref="TITLECASE_ADJUST_TO_CASED"/>.
         /// See stringoptions.h.
         /// </summary>
         /// <internal/>

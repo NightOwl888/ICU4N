@@ -3578,40 +3578,40 @@ namespace ICU4N.Lang
          */
         public static readonly int MAX_RADIX = Character.MAX_RADIX;
 
-        /**
-         * Do not lowercase non-initial parts of words when titlecasing.
-         * Option bit for titlecasing APIs that take an options bit set.
-         *
-         * By default, titlecasing will titlecase the first cased character
-         * of a word and lowercase all other characters.
-         * With this option, the other characters will not be modified.
-         *
-         * @see #toTitleCase
-         * @stable ICU 3.8
-         */
-        public static readonly int TITLECASE_NO_LOWERCASE = 0x100;
+        /// <summary>
+        /// Do not lowercase non-initial parts of words when titlecasing.
+        /// Option bit for titlecasing APIs that take an options bit set.
+        /// </summary>
+        /// <remarks>
+        /// By default, titlecasing will titlecase the first cased character
+        /// of a word and lowercase all other characters.
+        /// With this option, the other characters will not be modified.
+        /// </remarks>
+        /// <see cref="ToTitleCase(int)"/>
+        /// <stable>ICU 3.8</stable>
+        public const int TITLECASE_NO_LOWERCASE = 0x100; // ICU4N TODO: API make into [Flags] enum
 
-        /**
-         * Do not adjust the titlecasing indexes from BreakIterator::next() indexes;
-         * titlecase exactly the characters at breaks from the iterator.
-         * Option bit for titlecasing APIs that take an options bit set.
-         *
-         * By default, titlecasing will take each break iterator index,
-         * adjust it by looking for the next cased character, and titlecase that one.
-         * Other characters are lowercased.
-         *
-         * This follows Unicode 4 &amp; 5 section 3.13 Default Case Operations:
-         *
-         * R3  toTitlecase(X): Find the word boundaries based on Unicode Standard Annex
-         * #29, "Text Boundaries." Between each pair of word boundaries, find the first
-         * cased character F. If F exists, map F to default_title(F); then map each
-         * subsequent character C to default_lower(C).
-         *
-         * @see #toTitleCase
-         * @see #TITLECASE_NO_LOWERCASE
-         * @stable ICU 3.8
-         */
-        public static readonly int TITLECASE_NO_BREAK_ADJUSTMENT = 0x200;
+        /// <summary>
+        /// Do not adjust the titlecasing indexes from BreakIterator::next() indexes;
+        /// titlecase exactly the characters at breaks from the iterator.
+        /// Option bit for titlecasing APIs that take an options bit set.
+        /// </summary>
+        /// <remarks>
+        /// By default, titlecasing will take each break iterator index,
+        /// adjust it by looking for the next cased character, and titlecase that one.
+        /// Other characters are lowercased.
+        /// <para/>
+        /// This follows Unicode 4 &amp; 5 section 3.13 Default Case Operations:
+        /// <para/>
+        /// R3  ToTitleCase(X): Find the word boundaries based on Unicode Standard Annex
+        /// #29, "Text Boundaries." Between each pair of word boundaries, find the first
+        /// cased character F. If F exists, map F to default_title(F); then map each
+        /// subsequent character C to default_lower(C).
+        /// </remarks>
+        /// <seealso cref="ToTitleCase(int)"/>
+        /// <seealso cref="TITLECASE_NO_LOWERCASE"/>
+        /// <stable>ICU 3.8</stable>
+        public const int TITLECASE_NO_BREAK_ADJUSTMENT = 0x200; // ICU4N TODO: API make into [Flags] enum
 
         // public methods ----------------------------------------------------
 
@@ -5140,10 +5140,10 @@ namespace ICU4N.Lang
          * @return lowercase version of the argument string
          * @stable ICU 3.8
          * @see #TITLECASE_NO_LOWERCASE
-         * @see #TITLECASE_NO_BREAK_ADJUSTMENT
+         * @see #TITLECASE_NO_BREAK_ADJUSTMENT // ICU4N TODO: This is not a possibility (documentation bug)
          */
         public static string ToTitleCase(ULocale locale, string str,
-                BreakIterator titleIter, int options)
+                BreakIterator titleIter, TitleCaseIteratorOptions options)
         {
             if (titleIter == null && locale == null)
             {
