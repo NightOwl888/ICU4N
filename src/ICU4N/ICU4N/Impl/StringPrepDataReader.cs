@@ -1,7 +1,5 @@
 ﻿using ICU4N.Support.IO;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Impl
 {
@@ -10,11 +8,11 @@ namespace ICU4N.Impl
     {
         private readonly static bool debug = ICUDebug.Enabled("NormalizerDataReader");
 
-        /**
-         * <p>private constructor.</p>
-         * @param bytes ICU StringPrep data file buffer
-         * @exception IOException throw if data file fails authentication
-         */
+        /// <summary>
+        /// Private constructor.
+        /// </summary>
+        /// <param name="bytes">ICU StringPrep data file buffer.</param>
+        /// <exception cref="System.IO.IOException">If data file fails authentication.</exception>
         public StringPrepDataReader(ByteBuffer bytes)
         {
             if (debug) Console.Out.WriteLine("Bytes in buffer " + bytes.Remaining);
@@ -56,9 +54,9 @@ namespace ICU4N.Impl
         // private data members -------------------------------------------------
 
 
-        /**
-        * ICU data file input stream
-        */
+        /// <summary>
+        /// ICU data file input stream
+        /// </summary>
         private ByteBuffer byteBuffer;
         private int unicodeVersion;
         /**
@@ -66,7 +64,7 @@ namespace ICU4N.Impl
         * No guarantees are made if a older version is used
         * see store.c of gennorm for more information and values
         */
-        ///* dataFormat="SPRP" 0x53, 0x50, 0x52, 0x50  */
+        //* dataFormat="SPRP" 0x53, 0x50, 0x52, 0x50  */
         private static readonly int DATA_FORMAT_ID = 0x53505250;
         private static readonly byte[] DATA_FORMAT_VERSION = {(byte)0x3, (byte)0x2,
                                                         (byte)0x5, (byte)0x2};

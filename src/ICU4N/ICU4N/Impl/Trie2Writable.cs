@@ -4,17 +4,16 @@ using System.Diagnostics;
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// A Trie2Writable is a modifiable, or build-time Trie2.
-    /// Functions for reading data from the Trie are all from class Trie2.
+    /// A <see cref="Trie2Writable"/> is a modifiable, or build-time <see cref="Trie2"/>.
+    /// Functions for reading data from the <see cref="Trie"/> are all from class <see cref="Trie2"/>.
     /// </summary>
     public class Trie2Writable : Trie2
     {
-        /**
-     * Create a new, empty, writable Trie2. 32-bit data values are used.
-     *
-     * @param initialValueP the initial value that is set for all code points
-     * @param errorValueP the value for out-of-range code points and illegal UTF-8
-     */
+        /// <summary>
+        /// Create a new, empty, writable <see cref="Trie2"/>. 32-bit data values are used.
+        /// </summary>
+        /// <param name="initialValueP">The initial value that is set for all code points.</param>
+        /// <param name="errorValueP">The value for out-of-range code points and illegal UTF-8.</param>
         public Trie2Writable(int initialValueP, int errorValueP)
         {
             // This constructor corresponds to utrie2_open() in ICU4C.
@@ -141,12 +140,10 @@ namespace ICU4N.Impl
 
         }
 
-
-        /**
-         * Create a new build time (modifiable) Trie2 whose contents are the same as the source Trie2.
-         * 
-         * @param source the source Trie2.  Its contents will be copied into the new Trie2.
-         */
+        /// <summary>
+        /// Create a new build time (modifiable) <see cref="Trie2"/> whose contents are the same as the source <see cref="Trie2"/>.
+        /// </summary>
+        /// <param name="source">The source <see cref="Trie2"/>.  Its contents will be copied into the new <see cref="Trie2"/>.</param>
         public Trie2Writable(Trie2 source)
         {
             Init(source.initialValue, source.errorValue);
@@ -156,7 +153,6 @@ namespace ICU4N.Impl
                 SetRange(r, true);
             }
         }
-
 
         private bool IsInNullBlock(int c, bool forLSCP)
         {
@@ -292,12 +288,10 @@ namespace ICU4N.Impl
             index2[i2] = block;
         }
 
-
-        /**
-         * No error checking for illegal arguments.
-         * 
-         * @internal
-         */
+        /// <summary>
+        /// No error checking for illegal arguments.
+        /// </summary>
+        /// <internal/>
         private int GetDataBlock(int c, bool forLSCP)
         {
             int i2, oldBlock, newBlock;
@@ -316,13 +310,14 @@ namespace ICU4N.Impl
             SetIndex2Entry(i2, newBlock);
             return newBlock;
         }
-        /**
-         * Set a value for a code point.
-         *
-         * @param c the code point
-         * @param value the value
-         */
-        public Trie2Writable Set(int c, int value)
+
+        /// <summary>
+        /// Set a value for a code point.
+        /// </summary>
+        /// <param name="c">The code point.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>This.</returns>
+        public virtual Trie2Writable Set(int c, int value)
         {
             if (c < 0 || c > 0x10ffff)
             {
@@ -345,18 +340,19 @@ namespace ICU4N.Impl
             return this;
         }
 
-
-        /*
-         * Uncompact a compacted Trie2Writable.
-         * This is needed if a the WritableTrie2 was compacted in preparation for creating a read-only
-         * Trie2, and then is subsequently altered.
-         * 
-         * The structure is a bit awkward - it would be cleaner to leave the original
-         * Trie2 unaltered - but compacting in place was taken directly from the ICU4C code.
-         * 
-         * The approach is to create a new (uncompacted) Trie2Writable from this one, then transfer
-         * the guts from the new to the old.
-         */
+        /// <summary>
+        /// Uncompact a compacted <see cref="Trie2Writable"/>.
+        /// </summary>
+        /// <remarks>
+        /// This is needed if a the <see cref="WritableTrie2"/> was compacted in preparation for creating a read-only
+        /// <see cref="Trie2"/>, and then is subsequently altered.
+        /// <para/>
+        /// The structure is a bit awkward - it would be cleaner to leave the original
+        /// <see cref="Trie2"/> unaltered - but compacting in place was taken directly from the ICU4C code.
+        /// <para/>
+        /// The approach is to create a new (uncompacted) <see cref="Trie2Writable"/> from this one, then transfer
+        /// the guts from the new to the old.
+        /// </remarks>
         private void Uncompact()
         {
             Trie2Writable tempTrie = new Trie2Writable(this);
@@ -394,10 +390,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * initialValue is ignored if overwrite=TRUE
-         * @internal
-         */
+        /// <summary>
+        /// <paramref name="initialValue"/> is ignored if <paramref name="overwrite"/>=TRUE.
+        /// </summary>
+        /// <internal/>
         private void FillBlock(int block, /*UChar32*/ int start, /*UChar32*/ int limit,
                   int value, int initialValue, bool overwrite)
         {
@@ -422,17 +418,18 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Set a value in a range of code points [start..end].
-         * All code points c with start<=c<=end will get the value if
-         * overwrite is TRUE or if the old value is the initial value.
-         *
-         * @param start the first code point to get the value
-         * @param end the last code point to get the value (inclusive)
-         * @param value the value
-         * @param overwrite flag for whether old non-initial values are to be overwritten
-         */
-        public Trie2Writable SetRange(int start, int end,
+        /// <summary>
+        /// Set a value in a range of code points [start..end].
+        /// <para/>
+        /// All code points c with start&lt;=c&lt;=end will get the value if
+        /// overwrite is TRUE or if the old value is the initial value.
+        /// </summary>
+        /// <param name="start">The first code point to get the value.</param>
+        /// <param name="end">The last code point to get the value (inclusive).</param>
+        /// <param name="value">The value.</param>
+        /// <param name="overwrite">Flag for whether old non-initial values are to be overwritten.</param>
+        /// <returns>This.</returns>
+        public virtual Trie2Writable SetRange(int start, int end,
                               int value, bool overwrite)
         {
             /*
@@ -578,22 +575,23 @@ namespace ICU4N.Impl
             return this;
         }
 
-        /**
-         * Set the values from a Trie2.Range.
-         * 
-         * All code points within the range will get the value if
-         * overwrite is TRUE or if the old value is the initial value.
-         *
-         * Ranges with the lead surrogate flag set will set the alternate
-         * lead-surrogate values in the Trie, rather than the code point values.
-         * 
-         * This function is intended to work with the ranges produced when iterating
-         * the contents of a source Trie.
-         * 
-         * @param range contains the range of code points and the value to be set.
-         * @param overwrite flag for whether old non-initial values are to be overwritten
-         */
-        public Trie2Writable SetRange(Trie2.Range range, bool overwrite)
+        /// <summary>
+        /// Set the values from a <see cref="Trie2.Range"/>.
+        /// </summary>
+        /// <remarks>
+        /// All code points within the range will get the value if
+        /// overwrite is TRUE or if the old value is the initial value.
+        /// <para/>
+        /// Ranges with the lead surrogate flag set will set the alternate
+        /// lead-surrogate values in the Trie, rather than the code point values.
+        /// <para/>
+        /// This function is intended to work with the ranges produced when iterating
+        /// the contents of a source Trie.
+        /// </remarks>
+        /// <param name="range">Contains the range of code points and the value to be set.</param>
+        /// <param name="overwrite">Flag for whether old non-initial values are to be overwritten.</param>
+        /// <returns>This.</returns>
+        public virtual Trie2Writable SetRange(Trie2.Range range, bool overwrite)
         {
             fHash = 0;
             if (range.LeadSurrogate)
@@ -613,36 +611,36 @@ namespace ICU4N.Impl
             return this;
         }
 
-        /**
-         * Set a value for a UTF-16 code unit.
-         * Note that a Trie2 stores separate values for 
-         * supplementary code points in the lead surrogate range
-         * (accessed via the plain set() and get() interfaces)
-         * and for lead surrogate code units.
-         * 
-         * The lead surrogate code unit values are set via this function and
-         * read by the function getFromU16SingleLead().
-         * 
-         * For code units outside of the lead surrogate range, this function
-         * behaves identically to set().
-         * 
-         * @param codeUnit A UTF-16 code unit. 
-         * @param value the value to be stored in the Trie2.
-         */
-        public Trie2Writable SetForLeadSurrogateCodeUnit(char codeUnit, int value)
+        /// <summary>
+        /// Set a value for a UTF-16 code unit.
+        /// </summary>
+        /// <remarks>
+        /// Note that a <see cref="Trie2"/> stores separate values for 
+        /// supplementary code points in the lead surrogate range
+        /// (accessed via the plain <see cref="Set(int, int)"/> and <see cref="Get(int)"/> interfaces)
+        /// and for lead surrogate code units.
+        /// <para/>
+        /// The lead surrogate code unit values are set via this function and
+        /// read by the function <see cref="GetFromU16SingleLead(char)"/>
+        /// <para/>
+        /// For code units outside of the lead surrogate range, this function
+        /// behaves identically to <see cref="Set(int, int)"/>.
+        /// </remarks>
+        /// <param name="codeUnit">A UTF-16 code unit.</param>
+        /// <param name="value">The value to be stored in the <see cref="Trie2"/>.</param>
+        /// <returns></returns>
+        public virtual Trie2Writable SetForLeadSurrogateCodeUnit(char codeUnit, int value)
         {
             fHash = 0;
             Set(codeUnit, false, value);
             return this;
         }
 
-
-        /**
-         * Get the value for a code point as stored in the Trie2.
-         *
-         * @param codePoint the code point
-         * @return the value
-         */
+        /// <summary>
+        /// Get the value for a code point as stored in the <see cref="Trie2"/>.
+        /// </summary>
+        /// <param name="codePoint">The code point.</param>
+        /// <returns>The value.</returns>
         public override int Get(int codePoint)
         {
             if (codePoint < 0 || codePoint > 0x10ffff)
@@ -654,7 +652,6 @@ namespace ICU4N.Impl
                 return Get(codePoint, true);
             }
         }
-
 
         private int Get(int c, bool fromLSCP)
         {
@@ -679,19 +676,19 @@ namespace ICU4N.Impl
             return data[block + (c & UTRIE2_DATA_MASK)];
         }
 
-        /**
-         * Get a trie value for a UTF-16 code unit.
-         * 
-         * This function returns the same value as get() if the input 
-         * character is outside of the lead surrogate range
-         * 
-         * There are two values stored in a Trie for inputs in the lead
-         * surrogate range.  This function returns the alternate value,
-         * while Trie2.get() returns the main value.
-         * 
-         * @param c the code point or lead surrogate value.
-         * @return the value
-         */
+        /// <summary>
+        /// Get a trie value for a UTF-16 code unit.
+        /// </summary>
+        /// <remarks>
+        /// This function returns the same value as <see cref="Get(int)"/> if the input 
+        /// character is outside of the lead surrogate range.
+        /// <para/>
+        /// There are two values stored in a Trie for inputs in the lead
+        /// surrogate range.  This function returns the alternate value,
+        /// while <see cref="Trie2.Get(int)"/> returns the main value.
+        /// </remarks>
+        /// <param name="c">The code point or lead surrogate value.</param>
+        /// <returns>The value.</returns>
         public override int GetFromU16SingleLead(char c)
         {
             return Get(c, false);
@@ -747,13 +744,12 @@ namespace ICU4N.Impl
             return -1;
         }
 
-        /*
-         * Find the start of the last range in the trie by enumerating backward.
-         * Indexes for supplementary code points higher than this will be omitted.
-         */
+        /// <summary>
+        /// Find the start of the last range in the trie by enumerating backward.
+        /// Indexes for supplementary code points higher than this will be omitted.
+        /// </summary>
         private int FindHighStart(int highValue)
         {
-
             int value;
             int c, prev;
             int i1, i2, j, i2Block, prevI2Block, block, prevBlock;
@@ -836,18 +832,22 @@ namespace ICU4N.Impl
             return 0;
         }
 
-        /*
-         * Compact a build-time trie.
-         *
-         * The compaction
-         * - removes blocks that are identical with earlier ones
-         * - overlaps adjacent blocks as much as possible (if overlap==TRUE)
-         * - moves blocks in steps of the data granularity
-         * - moves and overlaps blocks that overlap with multiple values in the overlap region
-         *
-         * It does not
-         * - try to move and overlap blocks that are not already adjacent
-         */
+        /// <summary>
+        /// Compact a build-time trie.
+        /// </summary>
+        /// <remarks>
+        /// The compaction
+        /// <list type="bullet">
+        ///     <item><description>removes blocks that are identical with earlier ones</description></item>
+        ///     <item><description>overlaps adjacent blocks as much as possible (if overlap==TRUE)</description></item>
+        ///     <item><description>moves blocks in steps of the data granularity</description></item>
+        ///     <item><description>moves and overlaps blocks that overlap with multiple values in the overlap region</description></item>
+        /// </list>
+        /// It does not
+        /// <list type="bullet">
+        ///     <item><description>try to move and overlap blocks that are not already adjacent</description></item>
+        /// </list>
+        /// </remarks>
         private void CompactData()
         {
             int start, newStart, movedStart;
@@ -1124,48 +1124,44 @@ namespace ICU4N.Impl
             isCompacted = true;
         }
 
-
-        /**
-         * Produce an optimized, read-only Trie2_16 from this writable Trie.
-         * The data values outside of the range that will fit in a 16 bit
-         * unsigned value will be truncated.
-         */
-        public Trie2_16 ToTrie2_16()
+        /// <summary>
+        /// Produce an optimized, read-only <see cref="Trie2_16"/> from this writable <see cref="Trie"/>.
+        /// The data values outside of the range that will fit in a 16 bit
+        /// unsigned value will be truncated.
+        /// </summary>
+        public virtual Trie2_16 ToTrie2_16()
         {
             Trie2_16 frozenTrie = new Trie2_16();
             Freeze(frozenTrie, ValueWidth.BITS_16);
             return frozenTrie;
         }
 
-
-        /**
-         * Produce an optimized, read-only Trie2_32 from this writable Trie.
-         * 
-         */
-        public Trie2_32 ToTrie2_32()
+        /// <summary>
+        /// Produce an optimized, read-only <see cref="Trie2_32"/> from this writable <see cref="Trie"/>.
+        /// </summary>
+        public virtual Trie2_32 ToTrie2_32()
         {
             Trie2_32 frozenTrie = new Trie2_32();
             Freeze(frozenTrie, ValueWidth.BITS_32);
             return frozenTrie;
         }
 
-
-        /**
-         * Maximum length of the runtime index array.
-         * Limited by its own 16-bit index values, and by uint16_t UTrie2Header.indexLength.
-         * (The actual maximum length is lower,
-         * (0x110000>>UTRIE2_SHIFT_2)+UTRIE2_UTF8_2B_INDEX_2_LENGTH+UTRIE2_MAX_INDEX_1_LENGTH.)
-         */
+        /// <summary>
+        /// Maximum length of the runtime index array.
+        /// Limited by its own 16-bit index values, and by uint16_t UTrie2Header.indexLength.
+        /// (The actual maximum length is lower,
+        /// (0x110000>>UTRIE2_SHIFT_2)+UTRIE2_UTF8_2B_INDEX_2_LENGTH+UTRIE2_MAX_INDEX_1_LENGTH.)
+        /// </summary>  
         private static readonly int UTRIE2_MAX_INDEX_LENGTH = 0xffff;
 
-        /**
-         * Maximum length of the runtime data array.
-         * Limited by 16-bit index values that are left-shifted by UTRIE2_INDEX_SHIFT,
-         * and by uint16_t UTrie2Header.shiftedDataLength.
-         */
+        /// <summary>
+        /// Maximum length of the runtime data array.
+        /// Limited by 16-bit index values that are left-shifted by <see cref="Trie2.UTRIE2_INDEX_SHIFT"/>,
+        /// and by uint16_t UTrie2Header.shiftedDataLength.
+        /// </summary>
         private static readonly int UTRIE2_MAX_DATA_LENGTH = 0xffff << UTRIE2_INDEX_SHIFT;
 
-        /* Compact the data and then populate an optimized read-only Trie.  */
+        /// <summary>Compact the data and then populate an optimized read-only Trie.</summary>
         private void Freeze(Trie2 dest, ValueWidth valueBits)
         {
             int i;
@@ -1331,34 +1327,34 @@ namespace ICU4N.Impl
         }
 
 
-        /* Start with allocation of 16k data entries. */
+        /// <summary>Start with allocation of 16k data entries.</summary>
         private static readonly int UNEWTRIE2_INITIAL_DATA_LENGTH = 1 << 14;
 
-        /* Grow about 8x each time. */
+        /// <summary>Grow about 8x each time.</summary>
         private static readonly int UNEWTRIE2_MEDIUM_DATA_LENGTH = 1 << 17;
 
-        /** The null index-2 block, following the gap in the index-2 table. */
+        /// <summary>The null index-2 block, following the gap in the index-2 table.</summary>
         private static readonly int UNEWTRIE2_INDEX_2_NULL_OFFSET = UNEWTRIE2_INDEX_GAP_OFFSET + UNEWTRIE2_INDEX_GAP_LENGTH;
 
-        /** The start of allocated index-2 blocks. */
+        /// <summary>The start of allocated index-2 blocks.</summary>
         private static readonly int UNEWTRIE2_INDEX_2_START_OFFSET = UNEWTRIE2_INDEX_2_NULL_OFFSET + UTRIE2_INDEX_2_BLOCK_LENGTH;
 
-        /**
-         * The null data block.
-         * Length 64=0x40 even if UTRIE2_DATA_BLOCK_LENGTH is smaller,
-         * to work with 6-bit trail bytes from 2-byte UTF-8.
-         */
+        /// <summary>
+        /// The null data block.
+        /// Length 64=0x40 even if <see cref="Trie2.UTRIE2_DATA_BLOCK_LENGTH"/> is smaller,
+        /// to work with 6-bit trail bytes from 2-byte UTF-8.
+        /// </summary>
         private static readonly int UNEWTRIE2_DATA_NULL_OFFSET = UTRIE2_DATA_START_OFFSET;
 
-        /** The start of allocated data blocks. */
+        /// <summary>The start of allocated data blocks.</summary>
         private static readonly int UNEWTRIE2_DATA_START_OFFSET = UNEWTRIE2_DATA_NULL_OFFSET + 0x40;
 
-        /**
-         * The start of data blocks for U+0800 and above.
-         * Below, compaction uses a block length of 64 for 2-byte UTF-8.
-         * From here on, compaction uses UTRIE2_DATA_BLOCK_LENGTH.
-         * Data values for 0x780 code points beyond ASCII.
-         */
+        /// <summary>
+        /// The start of data blocks for U+0800 and above.
+        /// Below, compaction uses a block length of 64 for 2-byte UTF-8.
+        /// From here on, compaction uses <see cref="Trie2.UTRIE2_DATA_BLOCK_LENGTH"/>.
+        /// Data values for 0x780 code points beyond ASCII.
+        /// </summary>
         private static readonly int UNEWTRIE2_DATA_0800_OFFSET = UNEWTRIE2_DATA_START_OFFSET + 0x780;
 
         //
@@ -1374,24 +1370,26 @@ namespace ICU4N.Impl
         new private int index2NullOffset; // ICU4N TODO: Check this out - why are we overriding here?
         private bool isCompacted;
 
-
-        /*
-         * Multi-purpose per-data-block table.
-         *
-         * Before compacting:
-         *
-         * Per-data-block reference counters/free-block list.
-         *  0: unused
-         * >0: reference counter (number of index-2 entries pointing here)
-         * <0: next free data block in free-block list
-         *
-         * While compacting:
-         *
-         * Map of adjusted indexes, used in compactData() and compactIndex2().
-         * Maps from original indexes to new ones.
-         */
+        /// <summary>
+        /// Multi-purpose per-data-block table.
+        /// </summary>
+        /// <remarks>
+        /// Before compacting:
+        /// <para/>
+        /// Per-data-block reference counters/free-block list.
+        /// <list type="table">
+        ///     <item><term>0</term><description>unused</description></item>
+        ///     <item><term>>0</term><description>reference counter (number of index-2 entries pointing here)</description></item>
+        ///     <item><term>&lt;0</term><description>next free data block in free-block list</description></item>
+        /// </list>
+        /// <para/>
+        /// While compacting:
+        /// <list type="bullet">
+        ///     <item><description>Map of adjusted indexes, used in <see cref="CompactData()"/> and <see cref="CompactIndex2()"/>.</description></item>
+        ///     <item><description>Maps from original indexes to new ones.</description></item>
+        /// </list>
+        /// </remarks>
         private int[] map = new int[UNEWTRIE2_MAX_DATA_LENGTH >> UTRIE2_SHIFT_2];
-
 
         private bool UTRIE2_DEBUG = false;
     }

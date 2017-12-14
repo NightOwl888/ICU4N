@@ -1,8 +1,4 @@
-﻿using ICU4N.Support.Collections;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace ICU4N.Impl
 {
@@ -55,6 +51,7 @@ namespace ICU4N.Impl
                 object temp;
                 lock (map)
                 {
+                    // ICU4N TODO: use PutIfAbsent logic from elsewhere to utilize ConcurrentDictionary...?
                     if (!map.TryGetValue(key, out temp))
                     {
                         // put if absent
@@ -68,12 +65,6 @@ namespace ICU4N.Impl
                     return value;
                 }
 
-                //mapValue = map.PutIfAbsent(key, mapValue);
-                //if (mapValue == null)
-                //{
-                //    // Normal "put": Our new value is now cached.
-                //    return value;
-                //}
                 // Race condition: Another thread beat us to putting a CacheValue
                 // into the map. Return its value, but just in case the garbage collector
                 // was aggressive, we also offer our new instance for caching.

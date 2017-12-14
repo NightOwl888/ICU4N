@@ -1,7 +1,6 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -17,14 +16,9 @@ namespace ICU4N.Impl
         private CharsTrie backwardsTrie; // i.e. ".srM" for Mrs.
         private CharsTrie forwardsPartialTrie; // Has ".a" for "a.M."
 
-        /**
-         * @param adoptBreakIterator
-         *            break iterator to adopt
-         * @param forwardsPartialTrie
-         *            forward & partial char trie to adopt
-         * @param backwardsTrie
-         *            backward trie to adopt
-         */
+        /// <param name="adoptBreakIterator">Break iterator to adopt.</param>
+        /// <param name="forwardsPartialTrie">Forward &amp; partial char trie to adopt.</param>
+        /// <param name="backwardsTrie">Backward trie to adopt.</param>
         public SimpleFilteredSentenceBreakIterator(BreakIterator adoptBreakIterator, CharsTrie forwardsPartialTrie,
                 CharsTrie backwardsTrie)
         {
@@ -33,21 +27,19 @@ namespace ICU4N.Impl
             this.backwardsTrie = backwardsTrie;
         }
 
-
-        /**
-         * Reset the filter from the delegate.
-         */
+        /// <summary>
+        /// Reset the filter from the delegate.
+        /// </summary>
         private void ResetState()
         {
             text = UCharacterIterator.GetInstance((CharacterIterator)@delegate.GetText().Clone());
         }
 
-        /**
-         * Is there an exception at this point?
-         *
-         * @param n the location of the possible break
-         * @return
-         */
+        /// <summary>
+        /// Is there an exception at this point?
+        /// </summary>
+        /// <param name="n">The location of the possible break.</param>
+        /// <returns></returns>
         private bool BreakExceptionAt(int n)
         {
             // Note: the C++ version of this function is SimpleFilteredSentenceBreakIterator::breakExceptionAt()
@@ -119,12 +111,12 @@ namespace ICU4N.Impl
             return false; // No exception here.
         }
 
-        /**
-         * Given that the delegate has already given its "initial" answer,
-         * find the NEXT actual (non-suppressed) break.
-         * @param n initial position from delegate
-         * @return new break position or BreakIterator.DONE
-         */
+        /// <summary>
+        /// Given that the delegate has already given its "initial" answer,
+        /// find the NEXT actual (non-suppressed) break.
+        /// </summary>
+        /// <param name="n">Initial position from delegate.</param>
+        /// <returns>New break position or <see cref="BreakIterator.DONE"/>.</returns>
         private int InternalNext(int n)
         {
             if (n == BreakIterator.DONE || // at end or
@@ -155,12 +147,12 @@ namespace ICU4N.Impl
             return n; //hit underlying DONE or break at end of text
         }
 
-        /**
-         * Given that the delegate has already given its "initial" answer,
-         * find the PREV actual (non-suppressed) break.
-         * @param n initial position from delegate
-         * @return new break position or BreakIterator.DONE
-         */
+        /// <summary>
+        /// Given that the delegate has already given its "initial" answer,
+        /// find the PREV actual (non-suppressed) break.
+        /// </summary>
+        /// <param name="n">Initial position from delegate.</param>
+        /// <returns>New break position or <see cref="BreakIterator.DONE"/>.</returns>
         private int InternalPrev(int n)
         {
             if (n == 0 || n == BreakIterator.DONE || // at end or
@@ -189,7 +181,7 @@ namespace ICU4N.Impl
             return n; //hit underlying DONE or break at end of text
         }
 
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (obj == null)
                 return false;
@@ -283,11 +275,11 @@ namespace ICU4N.Impl
             @delegate.SetText(newText);
         }
 
-        public class Builder : FilteredBreakIteratorBuilder
+        public class Builder : FilteredBreakIteratorBuilder // ICU4N TODO: API - de-nest ?
         {
-            /**
-             * filter set to store all exceptions
-             */
+            /// <summary>
+            /// Filter set to store all exceptions.
+            /// </summary>
             private HashSet<ICharSequence> filterSet = new HashSet<ICharSequence>();
 
             internal static readonly int PARTIAL = (1 << 0); // < partial - need to run through forward trie
@@ -299,10 +291,11 @@ namespace ICU4N.Impl
                 : this(ULocale.ForLocale(loc))
             {
             }
-            /**
-             * Create SimpleFilteredBreakIteratorBuilder using given locale
-             * @param loc the locale to get filtered iterators
-             */
+
+            /// <summary>
+            /// Create <see cref="SimpleFilteredSentenceBreakIterator.Builder"/> using given locale.
+            /// </summary>
+            /// <param name="loc">The locale to get filtered iterators.</param>
             public Builder(ULocale loc)
 #pragma warning disable 612, 618
             : base()
@@ -324,9 +317,9 @@ namespace ICU4N.Impl
                 }
             }
 
-            /**
-             * Create SimpleFilteredBreakIteratorBuilder with no exception
-             */
+            /// <summary>
+            /// Create <see cref="SimpleFilteredSentenceBreakIterator.Builder"/> with no exception.
+            /// </summary>
             public Builder()
 #pragma warning disable 612, 618
             : base()

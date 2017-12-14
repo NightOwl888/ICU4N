@@ -8,55 +8,61 @@ namespace ICU4N.Impl
     /// Computationally efficient determination of the relationship between
     /// two SortedSets.
     /// </summary>
-    public class SortedSetRelation
+    public static class SortedSetRelation // ICU4N specific - made class static, since it has no instance members
     {
-        /**
-         * The relationship between two sets A and B can be determined by looking at:
-         * A - B
-         * A & B (intersection)
-         * B - A
-         * These are represented by a set of bits.
-         * Bit 2 is true if A - B is not empty
-         * Bit 1 is true if A & B is not empty
-         * BIT 0 is true if B - A is not empty
-         */
-        public const int
+        /// <summary>
+        /// The relationship between two sets A and B can be determined by looking at:
+        /// <list type="bullet">
+        ///     <item><description>A - B</description></item>
+        ///     <item><description>A &amp; B (intersection)</description></item>
+        ///     <item><description>B - A</description></item>
+        /// </list>
+        /// These are represented by a set of bits.
+        /// <list type="bullet">
+        ///     <item><description>Bit 2 is true if A - B is not empty</description></item>
+        ///     <item><description>Bit 1 is true if A &amp; B is not empty</description></item>
+        ///     <item><description>BIT 0 is true if B - A is not empty</description></item>
+        /// </list>
+        /// </summary>
+        public const int // ICU4N TODO: API Make [Flags] enum ?
             A_NOT_B = 4,
             A_AND_B = 2,
             B_NOT_A = 1;
 
-        /**
-         * There are 8 combinations of the relationship bits. These correspond to
-         * the filters (combinations of allowed bits) in hasRelation. They also
-         * correspond to the modification functions, listed in comments.
-         */
+        // ICU4N TODO: API Make [Flags] enum ?
+        /// <summary>
+        /// There are 8 combinations of the relationship bits. These correspond to
+        /// the filters (combinations of allowed bits) in <see cref="HasRelation{T}(SortedSet{T}, int, SortedSet{T})"/>. They also
+        /// correspond to the modification functions, listed in comments.
+        /// </summary>
         public const int
-           ANY = A_NOT_B | A_AND_B | B_NOT_A,    // union,           addAll
-           CONTAINS = A_NOT_B | A_AND_B,                // A                (unnecessary)
-           DISJOINT = A_NOT_B | B_NOT_A,    // A xor B,         missing Java function
-           ISCONTAINED = A_AND_B | B_NOT_A,    // B                (unnecessary)
-           NO_B = A_NOT_B,                            // A setDiff B,     removeAll
-           EQUALS = A_AND_B,                // A intersect B,   retainAll
-           NO_A = B_NOT_A,    // B setDiff A,     removeAll
-           NONE = 0,                                  // null             (unnecessary)
+            ANY = A_NOT_B | A_AND_B | B_NOT_A,    // union,           addAll
+            CONTAINS = A_NOT_B | A_AND_B,                // A                (unnecessary)
+            DISJOINT = A_NOT_B | B_NOT_A,    // A xor B,         missing Java function
+            ISCONTAINED = A_AND_B | B_NOT_A,    // B                (unnecessary)
+            NO_B = A_NOT_B,                            // A setDiff B,     removeAll
+            // ICU4N TODO: API - rename for CLS compliance
+            EQUALS = A_AND_B,                // A intersect B,   retainAll
+            NO_A = B_NOT_A,    // B setDiff A,     removeAll
+            NONE = 0,                                  // null             (unnecessary)
 
-           ADDALL = ANY,                // union,           addAll
-           A = CONTAINS,                // A                (unnecessary)
-           COMPLEMENTALL = DISJOINT,    // A xor B,         missing Java function
-           B = ISCONTAINED,             // B                (unnecessary)
-           REMOVEALL = NO_B,            // A setDiff B,     removeAll
-           RETAINALL = EQUALS,          // A intersect B,   retainAll
-           B_REMOVEALL = NO_A;          // B setDiff A,     removeAll
+            ADDALL = ANY,                // union,           addAll
+            A = CONTAINS,                // A                (unnecessary)
+            COMPLEMENTALL = DISJOINT,    // A xor B,         missing Java function
+            B = ISCONTAINED,             // B                (unnecessary)
+            REMOVEALL = NO_B,            // A setDiff B,     removeAll
+            RETAINALL = EQUALS,          // A intersect B,   retainAll
+            B_REMOVEALL = NO_A;          // B setDiff A,     removeAll
 
-
-        /**
-         * Utility that could be on SortedSet. Faster implementation than
-         * what is in Java for doing contains, equals, etc.
-         * @param a first set
-         * @param allow filter, using ANY, CONTAINS, etc.
-         * @param b second set
-         * @return whether the filter relationship is true or not.
-         */
+        /// <summary>
+        /// Utility that could be on SortedSet. Faster implementation than
+        /// what is in .NET for doing contains, equals, etc.
+        /// </summary>
+        /// <typeparam name="T">Type of element. Must implement <see cref="IComparable{T}"/>.</typeparam>
+        /// <param name="a">First set.</param>
+        /// <param name="allow">Filter, using <see cref="ANY"/>, <see cref="CONTAINS"/>, etc.</param>
+        /// <param name="b">Second set.</param>
+        /// <returns>Whether the filter relationship is true or not.</returns>
         public static bool HasRelation<T>(SortedSet<T> a, int allow, SortedSet<T> b) where T : IComparable<T>
         {
             if (allow < NONE || allow > ANY)
@@ -140,14 +146,15 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Utility that could be on SortedSet. Allows faster implementation than
-         * what is in Java for doing addAll, removeAll, retainAll, (complementAll).
-         * @param a first set
-         * @param relation the relation filter, using ANY, CONTAINS, etc.
-         * @param b second set
-         * @return the new set
-         */
+        /// <summary>
+        /// Utility that could be on SortedSet. Allows faster implementation than
+        /// what is in .NET for doing UnionWith, ExceptWith, IntersectWith, (complementAll).
+        /// </summary>
+        /// <typeparam name="T">Type of element. Must implement <see cref="IComparable{T}"/>.</typeparam>
+        /// <param name="a">First set.</param>
+        /// <param name="relation">Relation the relation filter, using <see cref="ANY"/>, <see cref="CONTAINS"/>, etc.</param>
+        /// <param name="b">Second set.</param>
+        /// <returns>The new set.</returns>
         public static SortedSet<T> DoOperation<T>(SortedSet<T> a, int relation, SortedSet<T> b) where T : IComparable<T>
         {
             // TODO: optimize this as above
@@ -169,13 +176,14 @@ namespace ICU4N.Impl
                 case RETAINALL:
                     a.IntersectWith(b);
                     return a;
-                // the following is the only case not really supported by Java
+                // the following is the only case not really supported by .NET
                 // although all could be optimized
                 case COMPLEMENTALL:
                     temp = new SortedSet<T>(b, GenericComparer.NaturalComparer<T>());
                     temp.ExceptWith(a);
                     a.ExceptWith(b);
                     a.UnionWith(temp);
+                    // a.SymmetricExceptWith(b); // ICU4N TODO: This should be the equivalent in .NET (need to test it)
                     return a;
                 case B_REMOVEALL:
                     temp = new SortedSet<T>(b, GenericComparer.NaturalComparer<T>());

@@ -37,7 +37,7 @@ namespace ICU4N.Impl
     }
 
     /// <summary>
-    /// This is the interface and common implementation of a Unicode Trie2.
+    /// This is the interface and common implementation of a Unicode <see cref="Trie2"/>.
     /// It is a kind of compressed table that maps from Unicode code points (0..0x10ffff)
     /// to 16- or 32-bit integer values.  It works best when there are ranges of
     /// characters with the same value, which is generally the case with Unicode
@@ -47,32 +47,31 @@ namespace ICU4N.Impl
     /// </summary>
     public abstract class Trie2 : IEnumerable<Trie2.Range>
     {
-        /**
-     * Create a Trie2 from its serialized form.  Inverse of utrie2_serialize().
-     *
-     * Reads from the current position and leaves the buffer after the end of the trie.
-     *
-     * The serialized format is identical between ICU4C and ICU4J, so this function
-     * will work with serialized Trie2s from either.
-     *
-     * The actual type of the returned Trie2 will be either Trie2_16 or Trie2_32, depending
-     * on the width of the data.
-     *
-     * To obtain the width of the Trie2, check the actual class type of the returned Trie2.
-     * Or use the createFromSerialized() function of Trie2_16 or Trie2_32, which will
-     * return only Tries of their specific type/size.
-     *
-     * The serialized Trie2 on the stream may be in either little or big endian byte order.
-     * This allows using serialized Tries from ICU4C without needing to consider the
-     * byte order of the system that created them.
-     *
-     * @param bytes a byte buffer to the serialized form of a UTrie2.
-     * @return An unserialized Trie2, ready for use.
-     * @throws IllegalArgumentException if the stream does not contain a serialized Trie2.
-     * @throws IOException if a read error occurs in the buffer.
-     *
-     */
-        public static Trie2 CreateFromSerialized(ByteBuffer bytes)
+        /// <summary>
+        /// Create a <see cref="Trie2"/> from its serialized form.  Inverse of utrie2_serialize().
+        /// </summary>
+        /// <remarks>
+        /// Reads from the current position and leaves the buffer after the end of the trie.
+        /// <para/>
+        /// The serialized format is identical between ICU4C, ICU4J, and ICU4N, so this function
+        /// will work with serialized <see cref="Trie2s"/> from any.
+        /// <para/>
+        /// The actual type of the returned <see cref="Trie2"/> will be either <see cref="Trie2_16"/> or <see cref="Trie2_32"/>, depending
+        /// on the width of the data.
+        /// <para/>
+        /// To obtain the width of the <see cref="Trie2"/>, check the actual class type of the returned <see cref="Trie2"/>.
+        /// Or use the <see cref="Trie2_16.CreateFromSerialized(ByteBuffer)"/> or <see cref="Trie2_32.CreateFromSerialized(ByteBuffer)"/> method, which will
+        /// return only <see cref="Trie"/>s of their specific type/size.
+        /// <para/>
+        /// The serialized <see cref="Trie2"/> on the stream may be in either little or big endian byte order.
+        /// This allows using serialized <see cref="Trie"/>s from ICU4C without needing to consider the
+        /// byte order of the system that created them.
+        /// </remarks>
+        /// <param name="bytes">A byte buffer to the serialized form of a UTrie2.</param>
+        /// <returns>An unserialized <see cref="Trie2"/>, ready for use.</returns>
+        /// <exception cref="ArgumentException">If the stream does not contain a serialized <see cref="Trie2"/>.</exception>
+        /// <exception cref="IOException">If a read error occurs in the buffer.</exception>
+        public static Trie2 CreateFromSerialized(ByteBuffer bytes) // ICU4N TODO: API Create overload that accepts byte[]
         {
             //    From ICU4C utrie2_impl.h
             //    * Trie2 data structure in serialized form:
@@ -218,22 +217,20 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Get the UTrie version from an InputStream containing the serialized form
-         * of either a Trie (version 1) or a Trie2 (version 2).
-         *
-         * @param is   an InputStream containing the serialized form
-         *             of a UTrie, version 1 or 2.  The stream must support mark() and reset().
-         *             The position of the input stream will be left unchanged.
-         * @param littleEndianOk If FALSE, only big-endian (Java native) serialized forms are recognized.
-         *                    If TRUE, little-endian serialized forms are recognized as well.
-         * @return     the Trie version of the serialized form, or 0 if it is not
-         *             recognized as a serialized UTrie
-         * @throws     IOException on errors in reading from the input stream.
-         */
+        /// <summary>
+        /// Get the UTrie version from a <see cref="Stream"/> containing the serialized form
+        /// of either a <see cref="Trie"/> (version 1) or a <see cref="Trie2"/> (version 2).
+        /// </summary>
+        /// <param name="input">A <see cref="Stream"/> containing the serialized form
+        /// of a UTrie, version 1 or 2.  The stream must be seekable.
+        /// The position of the input stream will be left unchanged.</param>
+        /// <param name="littleEndianOk">If FALSE, only big-endian (Java native) serialized forms are recognized.
+        /// If TRUE, little-endian serialized forms are recognized as well.</param>
+        /// <returns>The Trie version of the serialized form, or 0 if it is not
+        /// recognized as a serialized UTrie.</returns>
+        /// <exception cref="IOException">On errors in reading from the input stream.</exception>
         public static int GetVersion(Stream input, bool littleEndianOk)
         {
-            // ICU4N TODO: Determine if using seekable streams is acceptable here
             if (!input.CanSeek)
             {
                 throw new ArgumentException("Input stream must support Seek().");
@@ -271,59 +268,55 @@ namespace ICU4N.Impl
             return 0;
         }
 
-        /**
-         * Get the value for a code point as stored in the Trie2.
-         *
-         * @param codePoint the code point
-         * @return the value
-         */
+        /// <summary>
+        /// Get the value for a code point as stored in the <see cref="Trie2"/>.
+        /// </summary>
+        /// <param name="codePoint">The code point.</param>
+        /// <returns>The value.</returns>
         abstract public int Get(int codePoint);
 
-
-        /**
-         * Get the trie value for a UTF-16 code unit.
-         *
-         * A Trie2 stores two distinct values for input in the lead surrogate
-         * range, one for lead surrogates, which is the value that will be
-         * returned by this function, and a second value that is returned
-         * by Trie2.get().
-         *
-         * For code units outside of the lead surrogate range, this function
-         * returns the same result as Trie2.get().
-         *
-         * This function, together with the alternate value for lead surrogates,
-         * makes possible very efficient processing of UTF-16 strings without
-         * first converting surrogate pairs to their corresponding 32 bit code point
-         * values.
-         *
-         * At build-time, enumerate the contents of the Trie2 to see if there
-         * is non-trivial (non-initialValue) data for any of the supplementary
-         * code points associated with a lead surrogate.
-         * If so, then set a special (application-specific) value for the
-         * lead surrogate code _unit_, with Trie2Writable.setForLeadSurrogateCodeUnit().
-         *
-         * At runtime, use Trie2.getFromU16SingleLead(). If there is non-trivial
-         * data and the code unit is a lead surrogate, then check if a trail surrogate
-         * follows. If so, assemble the supplementary code point and look up its value
-         * with Trie2.get(); otherwise reset the lead
-         * surrogate's value or do a code point lookup for it.
-         *
-         * If there is only trivial data for lead and trail surrogates, then processing
-         * can often skip them. For example, in normalization or case mapping
-         * all characters that do not have any mappings are simply copied as is.
-         *
-         * @param c the code point or lead surrogate value.
-         * @return the value
-         */
+        /// <summary>
+        /// Get the trie value for a UTF-16 code unit.
+        /// </summary>
+        /// <remarks>
+        /// A <see cref="Trie2"/> stores two distinct values for input in the lead surrogate
+        /// range, one for lead surrogates, which is the value that will be
+        /// returned by this function, and a second value that is returned
+        /// by <see cref="Trie2.Get(int)"/>.
+        /// <para/>
+        /// For code units outside of the lead surrogate range, this function
+        /// returns the same result as <see cref="Trie2.Get(int)"/>.
+        /// <para/>
+        /// This function, together with the alternate value for lead surrogates,
+        /// makes possible very efficient processing of UTF-16 strings without
+        /// first converting surrogate pairs to their corresponding 32 bit code point
+        /// values.
+        /// <para/>
+        /// At build-time, enumerate the contents of the <see cref="Trie2"/> to see if there
+        /// is non-trivial (non-initialValue) data for any of the supplementary
+        /// code points associated with a lead surrogate.
+        /// If so, then set a special (application-specific) value for the
+        /// lead surrogate code _unit_, with <see cref="Trie2Writable.SetForLeadSurrogateCodeUnit(char, int)"/>.
+        /// <para/>
+        /// At runtime, use <see cref="Trie2.GetFromU16SingleLead(char)"/>. If there is non-trivial
+        /// data and the code unit is a lead surrogate, then check if a trail surrogate
+        /// follows. If so, assemble the supplementary code point and look up its value
+        /// with <see cref="Trie2.Get(int)"/>; otherwise reset the lead
+        /// surrogate's value or do a code point lookup for it.
+        /// <para/>
+        /// If there is only trivial data for lead and trail surrogates, then processing
+        /// can often skip them. For example, in normalization or case mapping
+        /// all characters that do not have any mappings are simply copied as is.
+        /// </remarks>
+        /// <param name="c">The code point or lead surrogate value.</param>
+        /// <returns>The value.</returns>
         abstract public int GetFromU16SingleLead(char c);
 
-
-        /**
-         * Equals function.  Two Tries are equal if their contents are equal.
-         * The type need not be the same, so a Trie2Writable will be equal to
-         * (read-only) Trie2_16 or Trie2_32 so long as they are storing the same values.
-         *
-         */
+        /// <summary>
+        /// Equals function.  Two <see cref="Trie"/>s are equal if their contents are equal.
+        /// The type need not be the same, so a <see cref="Trie2Writable"/> will be equal to
+        /// (read-only) <see cref="Trie2_16"/> or <see cref="Trie2_32"/> so long as they are storing the same values.
+        /// </summary>
         public override bool Equals(object other)
         {
             if (!(other is Trie2))
@@ -381,15 +374,16 @@ namespace ICU4N.Impl
             return fHash;
         }
 
-        /**
-         * When iterating over the contents of a Trie2, Elements of this type are produced.
-         * The iterator will return one item for each contiguous range of codepoints  having the same value.
-         *
-         * When iterating, the same Trie2EnumRange object will be reused and returned for each range.
-         * If you need to retain complete iteration results, clone each returned Trie2EnumRange,
-         * or save the range in some other way, before advancing to the next iteration step.
-         */
-        public class Range
+        /// <summary>
+        /// When iterating over the contents of a <see cref="Trie2"/>, Elements of this type are produced.
+        /// The iterator will return one item for each contiguous range of codepoints  having the same value.
+        /// </summary>
+        /// <remarks>
+        /// When iterating, the same <see cref="Trie2EnumRange"/> object will be reused and returned for each range.
+        /// If you need to retain complete iteration results, clone each returned <see cref="Trie2EnumRange"/>,
+        /// or save the range in some other way, before advancing to the next iteration step.
+        /// </remarks>
+        public class Range // ICU4N TODO: API De-nest ?
         {
             public int StartCodePoint { get; set; }
             public int EndCodePoint { get; set; }    // Inclusive.
@@ -422,26 +416,20 @@ namespace ICU4N.Impl
             }
         }
 
-
-        /**
-         *  Create an iterator over the value ranges in this Trie2.
-         *  Values from the Trie2 are not remapped or filtered, but are returned as they
-         *  are stored in the Trie2.
-         *
-         * @return an Iterator
-         */
-    //    @Override
-    //public Iterator<Range> iterator()
-    //    {
-    //        return iterator(defaultValueMapper);
-    //    }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator(defaultValueMapper);
         }
 
-        public IEnumerator<Trie2.Range> GetEnumerator()
+        /// <summary>
+        /// Create an enumerator over the value ranges in this <see cref="Trie2"/>.
+        /// Values from the <see cref="Trie2"/> are not remapped or filtered, but are returned as they
+        /// are stored in the <see cref="Trie2"/>.
+        /// <para/>
+        /// Note that this method was named iterator() in ICU4J.
+        /// </summary>
+        /// <returns></returns>
+        public virtual IEnumerator<Trie2.Range> GetEnumerator()
         {
             return GetEnumerator(defaultValueMapper);
         }
@@ -456,73 +444,74 @@ namespace ICU4N.Impl
 
         private static IValueMapper defaultValueMapper = new DefaultValueMapper();
 
-        /**
-         * Create an iterator over the value ranges from this Trie2.
-         * Values from the Trie2 are passed through a caller-supplied remapping function,
-         * and it is the remapped values that determine the ranges that
-         * will be produced by the iterator.
-         *
-         *
-         * @param mapper provides a function to remap values obtained from the Trie2.
-         * @return an Iterator
-         */
-        //public Iterator<Range> iterator(IValueMapper mapper)
-        //{
-        //    return new Trie2Iterator(mapper);
-        //}
-
-        public IEnumerator<Range> GetEnumerator(IValueMapper mapper)
+        /// <summary>
+        /// Create an enumerator over the value ranges from this <see cref="Trie2"/>.
+        /// Values from the <see cref="Trie2"/> are passed through a caller-supplied remapping function,
+        /// and it is the remapped values that determine the ranges that
+        /// will be produced by the iterator.
+        /// <para/>
+        /// Note that this method was named iterator(ValueMapper) in ICU4J.
+        /// </summary>
+        /// <param name="mapper">Provides a function to remap values obtained from the <see cref="Trie2"/>.</param>
+        /// <returns>An enumerator.</returns>
+        public virtual IEnumerator<Range> GetEnumerator(IValueMapper mapper)
         {
             return new Trie2Iterator(this, mapper);
         }
 
-
-        /**
-         * Create an iterator over the Trie2 values for the 1024=0x400 code points
-         * corresponding to a given lead surrogate.
-         * For example, for the lead surrogate U+D87E it will enumerate the values
-         * for [U+2F800..U+2FC00[.
-         * Used by data builder code that sets special lead surrogate code unit values
-         * for optimized UTF-16 string processing.
-         *
-         * Do not modify the Trie2 during the iteration.
-         *
-         * Except for the limited code point range, this functions just like Trie2.iterator().
-         *
-         */
-        public IEnumerator<Range> GetEnumeratorForLeadSurrogate(char lead, IValueMapper mapper)
+        /// <summary>
+        /// Create an enumerator over the <see cref="Trie2"/> values for the 1024=0x400 code points
+        /// corresponding to a given <paramref name="lead"/> surrogate.
+        /// <para/>
+        /// For example, for the lead surrogate U+D87E it will enumerate the values
+        /// for [U+2F800..U+2FC00[.
+        /// <para/>
+        /// Note that this method was named iteratorForLeadSurrogate(char, ValueMapper) in ICU4J.
+        /// </summary>
+        /// <remarks>
+        /// Used by data builder code that sets special lead surrogate code unit values
+        /// for optimized UTF-16 string processing.
+        /// <para/>
+        /// Do not modify the <see cref="Trie2"/> during the iteration.
+        /// <para/>
+        /// Except for the limited code point range, this functions just like <see cref="Trie2.GetEnumerator()"/>.
+        /// </remarks>
+        public virtual IEnumerator<Range> GetEnumeratorForLeadSurrogate(char lead, IValueMapper mapper)
         {
             return new Trie2Iterator(this, lead, mapper);
         }
 
-        /**
-         * Create an iterator over the Trie2 values for the 1024=0x400 code points
-         * corresponding to a given lead surrogate.
-         * For example, for the lead surrogate U+D87E it will enumerate the values
-         * for [U+2F800..U+2FC00[.
-         * Used by data builder code that sets special lead surrogate code unit values
-         * for optimized UTF-16 string processing.
-         *
-         * Do not modify the Trie2 during the iteration.
-         *
-         * Except for the limited code point range, this functions just like Trie2.iterator().
-         *
-         */
-        public IEnumerator<Range> GetEnumeratorForLeadSurrogate(char lead)
+        /// <summary>
+        /// Create an enumerator over the <see cref="Trie2"/> values for the 1024=0x400 code points
+        /// corresponding to a given lead surrogate.
+        /// <para/>
+        /// For example, for the lead surrogate U+D87E it will enumerate the values
+        /// for [U+2F800..U+2FC00[.
+        /// <para/>
+        /// Note that this method was named iteratorForLeadSurrogate(char) in ICU4J.
+        /// </summary>
+        /// <remarks>
+        /// Used by data builder code that sets special lead surrogate code unit values
+        /// for optimized UTF-16 string processing.
+        /// <para/>
+        /// Do not modify the <see cref="Trie2"/> during the iteration.
+        /// <para/>
+        /// Except for the limited code point range, this functions just like <see cref="Trie2.GetEnumerator()"/>.
+        /// </remarks>
+        public virtual IEnumerator<Range> GetEnumeratorForLeadSurrogate(char lead)
         {
             return new Trie2Iterator(this, lead, defaultValueMapper);
         }
 
         // ICU4N specific - de-nested IValueMapper
 
-
-        /**
-          * Serialize a trie2 Header and Index onto an OutputStream.  This is
-          * common code used for  both the Trie2_16 and Trie2_32 serialize functions.
-          * @param dos the stream to which the serialized Trie2 data will be written.
-          * @return the number of bytes written.
-          */
-        protected int SerializeHeader(DataOutputStream dos)
+        /// <summary>
+        /// Serialize a <see cref="Trie2"/> Header and Index onto a <see cref="DataOutputStream"/>.  This is
+        /// common code used for both the <see cref="Trie2_16"/> and <see cref="Trie2_32"/> serialize functions.
+        /// </summary>
+        /// <param name="dos">The stream to which the serialized <see cref="Trie2"/> data will be written.</param>
+        /// <returns>The number of bytes written.</returns>
+        protected virtual int SerializeHeader(DataOutputStream dos) // ICU4N TODO: API Can this be converted to BinaryWriter or Stream (as was Trie2_16)?
         {
             // Write the header.  It is already set and ready to use, having been
             //  created when the Trie2 was unserialized or when it was frozen.
@@ -547,24 +536,23 @@ namespace ICU4N.Impl
             return bytesWritten;
         }
 
-
-        /**
-         * Struct-like class for holding the results returned by a UTrie2 CharSequence iterator.
-         * The iteration walks over a CharSequence, and for each Unicode code point therein
-         * returns the character and its associated Trie2 value.
-         */
-        public class CharSequenceValues // ICU4N TODO: API De-nest
+        /// <summary>
+        /// Struct-like class for holding the results returned by a UTrie2 <see cref="ICharSequence"/> iterator.
+        /// The iteration walks over a <see cref="ICharSequence"/>, and for each Unicode code point therein
+        /// returns the character and its associated <see cref="Trie2"/> value.
+        /// </summary>
+        public class CharSequenceValues // ICU4N TODO: API De-nest ?
         {
-            /** string index of the current code point. */
+            /// <summary>String index of the current code point.</summary>
             public int Index { get; set; }
-            /** The code point at index.  */
+            /// <summary>The code point at index.</summary>
             public int CodePoint { get; set; }
-            /** The Trie2 value for the current code point */
+            /// <summary>The <see cref="Trie2"/> value for the current code point.</summary>
             public int Value { get; set; }
         }
 
         /// <summary>
-        /// Create an iterator that will produce the values from the Trie2 for
+        /// Create an enumerator that will produce the values from the <see cref="Trie2"/> for
         /// the sequence of code points in an input text.
         /// </summary>
         /// <param name="text">A text string to be iterated over.</param>
@@ -576,7 +564,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Create an iterator that will produce the values from the Trie2 for
+        /// Create an enumerator that will produce the values from the <see cref="Trie2"/> for
         /// the sequence of code points in an input text.
         /// </summary>
         /// <param name="text">A text string to be iterated over.</param>
@@ -600,7 +588,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Create an iterator that will produce the values from the Trie2 for
+        /// Create an enumerator that will produce the values from the <see cref="Trie2"/> for
         /// the sequence of code points in an input text.
         /// </summary>
         /// <param name="text">A text string to be iterated over.</param>
@@ -615,17 +603,18 @@ namespace ICU4N.Impl
         //        and if there is none, remove it from here.
         //        Don't waste time testing and maintaining unused code.
 
-        /**
-         * An iterator that operates over an input CharSequence, and for each Unicode code point
-         * in the input returns the associated value from the Trie2.
-         *
-         * The iterator can move forwards or backwards, and can be reset to an arbitrary index.
-         *
-         * Note that Trie2_16 and Trie2_32 subclass Trie2.CharSequenceIterator.  This is done
-         * only for performance reasons.  It does require that any changes made here be propagated
-         * into the corresponding code in the subclasses.
-         */
-        public class CharSequenceEnumerator : IEnumerator<CharSequenceValues> //: Iterator<CharSequenceValues> 
+        /// <summary>
+        /// An enumerator that operates over an input <see cref="ICharSequence"/>, and for each Unicode code point
+        /// in the input returns the associated value from the <see cref="Trie2"/>.
+        /// </summary>
+        /// <remarks>
+        /// This iterator can move forwards or backwards, and can be reset to an arbitrary index.
+        /// <para/>
+        /// Note that <see cref="Trie2_16"/> and <see cref="Trie2_32"/> subclass <see cref="Trie2.CharSequenceEnumerator"/>.  This is done
+        /// only for performance reasons.  It does require that any changes made here be propagated
+        /// into the corresponding code in the subclasses.
+        /// </remarks>
+        public class CharSequenceEnumerator : IEnumerator<CharSequenceValues> // ICU4N TODO: De-nest ?
         {
             /// <summary>
             /// Internal constructor.
@@ -745,52 +734,53 @@ namespace ICU4N.Impl
         //--------------------------------------------------------------------------------
 
 
-        /**
-         * Selectors for the width of a UTrie2 data value.
-         */
+        /// <summary>
+        /// Selectors for the width of a UTrie2 data value.
+        /// </summary>
         internal enum ValueWidth
         {
             BITS_16,
             BITS_32
         }
 
-        /**
-        * Trie2 data structure in serialized form:
-        *
-        * UTrie2Header header;
-        * uint16_t index[header.index2Length];
-        * uint16_t data[header.shiftedDataLength<<2];  -- or uint32_t data[...]
-        *
-        * For Java, this is read from the stream into an instance of UTrie2Header.
-        * (The C version just places a struct over the raw serialized data.)
-        *
-        * @internal
-*/
+        /// <summary>
+        /// Trie2 data structure in serialized form:
+        /// <code>
+        /// UTrie2Header header;
+        /// uint16_t index[header.index2Length];
+        /// uint16_t data[header.shiftedDataLength&lt;&lt;2];  -- or uint32_t data[...]
+        /// </code>
+        /// For .NET, this is read from the stream into an instance of UTrie2Header.
+        /// (The C version just places a struct over the raw serialized data.)
+        /// </summary>
+        /// <internal/>
         internal class UTrie2Header
         {
-            /** "Tri2" in big-endian US-ASCII (0x54726932) */
+            /// <summary>"Tri2" in big-endian US-ASCII (0x54726932)</summary>
             internal int signature;
 
-            /**
-             * options bit field (uint16_t):
-             * 15.. 4   reserved (0)
-             *  3.. 0   UTrie2ValueBits valueBits
-             */
+            /// <summary>
+            /// options bit field (uint16_t):
+            /// <code>
+            /// 15.. 4   reserved (0)
+            /// 3.. 0   UTrie2ValueBits valueBits
+            /// </code>
+            /// </summary>
             internal int options;
 
-            /** UTRIE2_INDEX_1_OFFSET..UTRIE2_MAX_INDEX_LENGTH  (uint16_t) */
+            /// <summary>UTRIE2_INDEX_1_OFFSET..UTRIE2_MAX_INDEX_LENGTH  (uint16_t)</summary>
             internal int indexLength;
 
-            /** (UTRIE2_DATA_START_OFFSET..UTRIE2_MAX_DATA_LENGTH)>>UTRIE2_INDEX_SHIFT  (uint16_t) */
+            /// <summary>(UTRIE2_DATA_START_OFFSET..UTRIE2_MAX_DATA_LENGTH)>>UTRIE2_INDEX_SHIFT  (uint16_t)</summary>
             internal int shiftedDataLength;
 
-            /** Null index and data blocks, not shifted.  (uint16_t) */
+            /// <summary>Null index and data blocks, not shifted.  (uint16_t)</summary>
             internal int index2NullOffset, dataNullOffset;
 
-            /**
-             * First code point of the single-value range ending with U+10ffff,
-             * rounded up and then shifted right by UTRIE2_SHIFT_1.  (uint16_t)
-             */
+            /// <summary>
+            /// First code point of the single-value range ending with U+10ffff,
+            /// rounded up and then shifted right by UTRIE2_SHIFT_1.  (uint16_t)
+            /// </summary>
             internal int shiftedHighStart;
         }
 
@@ -808,10 +798,10 @@ namespace ICU4N.Impl
         internal int index2NullOffset;  // 0xffff if there is no dedicated index-2 null block
         internal int initialValue;
 
-        /** Value returned for out-of-range code points and illegal UTF-8. */
+        /// <summary>Value returned for out-of-range code points and illegal UTF-8.</summary>
         internal int errorValue;
 
-        /* Start of the last range which ends at U+10ffff, and its value. */
+        /// <summary>Start of the last range which ends at U+10ffff, and its value.</summary>
         internal int highStart;
         internal int highValueIndex;
 
@@ -823,99 +813,99 @@ namespace ICU4N.Impl
                                          //     the same hash on a frozen Trie2, no damage is done.
 
 
-        /**
-         * Trie2 constants, defining shift widths, index array lengths, etc.
-         *
-         * These are needed for the runtime macros but users can treat these as
-         * implementation details and skip to the actual public API further below.
-         */
-
+        /// <summary>
+        /// <see cref="Trie2"/> constants, defining shift widths, index array lengths, etc.
+        /// <para/>
+        /// These are needed for the runtime macros but users can treat these as
+        /// implementation details and skip to the actual public API further below.
+        /// </summary>
         internal static readonly int UTRIE2_OPTIONS_VALUE_BITS_MASK = 0x000f;
 
 
-        /** Shift size for getting the index-1 table offset. */
+        /// <summary>Shift size for getting the index-1 table offset.</summary>
         internal static readonly int UTRIE2_SHIFT_1 = 6 + 5;
 
-        /** Shift size for getting the index-2 table offset. */
+        /// <summary>Shift size for getting the index-2 table offset.</summary>
         internal static readonly int UTRIE2_SHIFT_2 = 5;
 
-        /**
-         * Difference between the two shift sizes,
-         * for getting an index-1 offset from an index-2 offset. 6=11-5
-         */
+        /// <summary>
+        /// Difference between the two shift sizes,
+        /// for getting an index-1 offset from an index-2 offset. 6=11-5
+        /// </summary>
         internal static readonly int UTRIE2_SHIFT_1_2 = UTRIE2_SHIFT_1 - UTRIE2_SHIFT_2;
 
-        /**
-         * Number of index-1 entries for the BMP. 32=0x20
-         * This part of the index-1 table is omitted from the serialized form.
-         */
+        /// <summary>
+        /// Number of index-1 entries for the BMP. 32=0x20
+        /// This part of the index-1 table is omitted from the serialized form.
+        /// </summary>
         internal static readonly int UTRIE2_OMITTED_BMP_INDEX_1_LENGTH = 0x10000 >> UTRIE2_SHIFT_1;
 
-        /** Number of code points per index-1 table entry. 2048=0x800 */
+        /// <summary>Number of code points per index-1 table entry. 2048=0x800</summary>
         internal static readonly int UTRIE2_CP_PER_INDEX_1_ENTRY = 1 << UTRIE2_SHIFT_1;
 
-        /** Number of entries in an index-2 block. 64=0x40 */
+        /// <summary>Number of entries in an index-2 block. 64=0x40</summary>
         internal static readonly int UTRIE2_INDEX_2_BLOCK_LENGTH = 1 << UTRIE2_SHIFT_1_2;
 
-        /** Mask for getting the lower bits for the in-index-2-block offset. */
+        /// <summary>Mask for getting the lower bits for the in-index-2-block offset.</summary>
         internal static readonly int UTRIE2_INDEX_2_MASK = UTRIE2_INDEX_2_BLOCK_LENGTH - 1;
 
-        /** Number of entries in a data block. 32=0x20 */
+        /// <summary>Number of entries in a data block. 32=0x20</summary>
         internal static readonly int UTRIE2_DATA_BLOCK_LENGTH = 1 << UTRIE2_SHIFT_2;
 
-        /** Mask for getting the lower bits for the in-data-block offset. */
+        /// <summary>Mask for getting the lower bits for the in-data-block offset.</summary>
         internal static readonly int UTRIE2_DATA_MASK = UTRIE2_DATA_BLOCK_LENGTH - 1;
 
-        /**
-         * Shift size for shifting left the index array values.
-         * Increases possible data size with 16-bit index values at the cost
-         * of compactability.
-         * This requires data blocks to be aligned by UTRIE2_DATA_GRANULARITY.
-         */
+        /// <summary>
+        /// Shift size for shifting left the index array values.
+        /// Increases possible data size with 16-bit index values at the cost
+        /// of compactability.
+        /// This requires data blocks to be aligned by <see cref="UTRIE2_DATA_GRANULARITY"/>.
+        /// </summary>
         internal static readonly int UTRIE2_INDEX_SHIFT = 2;
 
-        /** The alignment size of a data block. Also the granularity for compaction. */
+        /// <summary>The alignment size of a data block. Also the granularity for compaction.</summary>
         internal static readonly int UTRIE2_DATA_GRANULARITY = 1 << UTRIE2_INDEX_SHIFT;
 
         /* Fixed layout of the first part of the index array. ------------------- */
 
-        /**
-         * The BMP part of the index-2 table is fixed and linear and starts at offset 0.
-         * Length=2048=0x800=0x10000>>UTRIE2_SHIFT_2.
-         */
+        /// <summary>
+        /// The BMP part of the index-2 table is fixed and linear and starts at offset 0.
+        /// Length=2048=0x800=0x10000>><see cref="UTRIE2_SHIFT_2"/>.
+        /// </summary>
         internal static readonly int UTRIE2_INDEX_2_OFFSET = 0;
 
-        /**
-         * The part of the index-2 table for U+D800..U+DBFF stores values for
-         * lead surrogate code _units_ not code _points_.
-         * Values for lead surrogate code _points_ are indexed with this portion of the table.
-         * Length=32=0x20=0x400>>UTRIE2_SHIFT_2. (There are 1024=0x400 lead surrogates.)
-         */
+        /// <summary>
+        /// The part of the index-2 table for U+D800..U+DBFF stores values for
+        /// lead surrogate code _units_ not code _points_.
+        /// Values for lead surrogate code _points_ are indexed with this portion of the table.
+        /// Length=32=0x20=0x400>><see cref="UTRIE2_SHIFT_2"/>. (There are 1024=0x400 lead surrogates.)
+        /// </summary>
         internal static readonly int UTRIE2_LSCP_INDEX_2_OFFSET = 0x10000 >> UTRIE2_SHIFT_2;
         internal static readonly int UTRIE2_LSCP_INDEX_2_LENGTH = 0x400 >> UTRIE2_SHIFT_2;
 
-        /** Count the lengths of both BMP pieces. 2080=0x820 */
+        /// <summary>Count the lengths of both BMP pieces. 2080=0x820</summary>
         internal static readonly int UTRIE2_INDEX_2_BMP_LENGTH = UTRIE2_LSCP_INDEX_2_OFFSET + UTRIE2_LSCP_INDEX_2_LENGTH;
 
-        /**
-         * The 2-byte UTF-8 version of the index-2 table follows at offset 2080=0x820.
-         * Length 32=0x20 for lead bytes C0..DF, regardless of UTRIE2_SHIFT_2.
-         */
+        /// <summary>
+        /// The 2-byte UTF-8 version of the index-2 table follows at offset 2080=0x820.
+        /// Length 32=0x20 for lead bytes C0..DF, regardless of <see cref="UTRIE2_SHIFT_2"/>.
+        /// </summary>
         internal static readonly int UTRIE2_UTF8_2B_INDEX_2_OFFSET = UTRIE2_INDEX_2_BMP_LENGTH;
         internal static readonly int UTRIE2_UTF8_2B_INDEX_2_LENGTH = 0x800 >> 6;  /* U+0800 is the first code point after 2-byte UTF-8 */
 
-        /**
-         * The index-1 table, only used for supplementary code points, at offset 2112=0x840.
-         * Variable length, for code points up to highStart, where the last single-value range starts.
-         * Maximum length 512=0x200=0x100000>>UTRIE2_SHIFT_1.
-         * (For 0x100000 supplementary code points U+10000..U+10ffff.)
-         *
-         * The part of the index-2 table for supplementary code points starts
-         * after this index-1 table.
-         *
-         * Both the index-1 table and the following part of the index-2 table
-         * are omitted completely if there is only BMP data.
-         */
+        /// <summary>
+        /// The index-1 table, only used for supplementary code points, at offset 2112=0x840.
+        /// Variable length, for code points up to highStart, where the last single-value range starts.
+        /// Maximum length 512=0x200=0x100000>><see cref="UTRIE2_SHIFT_1"/>.
+        /// <para/>
+        /// (For 0x100000 supplementary code points U+10000..U+10ffff.)
+        /// <para/>
+        /// The part of the index-2 table for supplementary code points starts
+        /// after this index-1 table.
+        /// <para/>
+        /// Both the index-1 table and the following part of the index-2 table
+        /// are omitted completely if there is only BMP data.
+        /// </summary>
         internal static readonly int UTRIE2_INDEX_1_OFFSET = UTRIE2_UTF8_2B_INDEX_2_OFFSET + UTRIE2_UTF8_2B_INDEX_2_LENGTH;
         internal static readonly int UTRIE2_MAX_INDEX_1_LENGTH = 0x100000 >> UTRIE2_SHIFT_1;
 
@@ -924,14 +914,14 @@ namespace ICU4N.Impl
          * Starts with 4 blocks (128=0x80 entries) for ASCII.
          */
 
-        /**
-         * The illegal-UTF-8 data block follows the ASCII block, at offset 128=0x80.
-         * Used with linear access for single bytes 0..0xbf for simple error handling.
-         * Length 64=0x40, not UTRIE2_DATA_BLOCK_LENGTH.
-         */
+        /// <summary>
+        /// The illegal-UTF-8 data block follows the ASCII block, at offset 128=0x80.
+        /// Used with linear access for single bytes 0..0xbf for simple error handling.
+        /// Length 64=0x40, not <see cref="UTRIE2_DATA_BLOCK_LENGTH"/>.
+        /// </summary>
         internal static readonly int UTRIE2_BAD_UTF8_DATA_OFFSET = 0x80;
 
-        /** The start of non-linear-ASCII data blocks, at offset 192=0xc0. */
+        /// <summary>The start of non-linear-ASCII data blocks, at offset 192=0xc0.</summary>
         internal static readonly int UTRIE2_DATA_START_OFFSET = 0xc0;
 
         /* Building a Trie2 ---------------------------------------------------------- */
@@ -941,24 +931,24 @@ namespace ICU4N.Impl
          * utrie2_get32() and utrie2_enum().
          */
 
-        /*
-         * At build time, leave a gap in the index-2 table,
-         * at least as long as the maximum lengths of the 2-byte UTF-8 index-2 table
-         * and the supplementary index-1 table.
-         * Round up to UTRIE2_INDEX_2_BLOCK_LENGTH for proper compacting.
-         */
+        /// <summary>
+        /// At build time, leave a gap in the index-2 table,
+        /// at least as long as the maximum lengths of the 2-byte UTF-8 index-2 table
+        /// and the supplementary index-1 table.
+        /// Round up to <see cref="UTRIE2_INDEX_2_BLOCK_LENGTH"/> for proper compacting.
+        /// </summary>
         internal static readonly int UNEWTRIE2_INDEX_GAP_OFFSET = UTRIE2_INDEX_2_BMP_LENGTH;
         internal static readonly int UNEWTRIE2_INDEX_GAP_LENGTH =
             ((UTRIE2_UTF8_2B_INDEX_2_LENGTH + UTRIE2_MAX_INDEX_1_LENGTH) + UTRIE2_INDEX_2_MASK) &
             ~UTRIE2_INDEX_2_MASK;
 
-        /**
-         * Maximum length of the build-time index-2 array.
-         * Maximum number of Unicode code points (0x110000) shifted right by UTRIE2_SHIFT_2,
-         * plus the part of the index-2 table for lead surrogate code points,
-         * plus the build-time index gap,
-         * plus the null index-2 block.
-         */
+        /// <summary>
+        /// Maximum length of the build-time index-2 array.
+        /// Maximum number of Unicode code points (0x110000) shifted right by <see cref="UTRIE2_SHIFT_2"/>,
+        /// plus the part of the index-2 table for lead surrogate code points,
+        /// plus the build-time index gap,
+        /// plus the null index-2 block.
+        /// </summary>
         internal static readonly int UNEWTRIE2_MAX_INDEX_2_LENGTH =
             (0x110000 >> UTRIE2_SHIFT_2) +
             UTRIE2_LSCP_INDEX_2_LENGTH +
@@ -967,24 +957,21 @@ namespace ICU4N.Impl
 
         internal static readonly int UNEWTRIE2_INDEX_1_LENGTH = 0x110000 >> UTRIE2_SHIFT_1;
 
-        /**
-         * Maximum length of the build-time data array.
-         * One entry per 0x110000 code points, plus the illegal-UTF-8 block and the null block,
-         * plus values for the 0x400 surrogate code units.
-         */
+        /// <summary>
+        /// Maximum length of the build-time data array.
+        /// One entry per 0x110000 code points, plus the illegal-UTF-8 block and the null block,
+        /// plus values for the 0x400 surrogate code units.
+        /// </summary>
         internal static readonly int UNEWTRIE2_MAX_DATA_LENGTH = (0x110000 + 0x40 + 0x40 + 0x400);
 
-
-
-        /**
-         * Implementation class for an iterator over a Trie2.
-         *
-         *   Iteration over a Trie2 first returns all of the ranges that are indexed by code points,
-         *   then returns the special alternate values for the lead surrogates
-         *
-         * @internal
-         */
-        public class Trie2Iterator : IEnumerator<Range> //: Iterator<Range>
+        /// <summary>
+        /// Implementation class for an enumerator over a <see cref="Trie2"/>.
+        /// <para/>
+        /// Iteration over a <see cref="Trie2"/> first returns all of the ranges that are indexed by code points,
+        /// then returns the special alternate values for the lead surrogates.
+        /// </summary>
+        /// <internal/>
+        public class Trie2Iterator : IEnumerator<Range> // ICU4N TODO: API - de-nest ? Rename Trie2Enumerator
         {
             private readonly Trie2 outerInstance;
             private Range current = null;
@@ -1016,11 +1003,10 @@ namespace ICU4N.Impl
                                             //   values after completing iteration over code points.
             }
 
-            /**
-             *  The main next() function for Trie2 iterators
-             *
-             */
-                private Range Next()
+            /// <summary>
+            /// The main Next() function for <see cref="Trie2"/> iterators
+            /// </summary>
+            private Range Next()
             {
                 //if (!hasNext())
                 //{
@@ -1089,10 +1075,7 @@ namespace ICU4N.Impl
                 return returnValue;
             }
 
-            /**
-             *
-             */
-                private bool HasNext
+            private bool HasNext
             {
                 get { return doingCodePoints && (doLeadSurrogates || nextStart < limitCP) || nextStart < 0xdc00; }
             }
@@ -1133,23 +1116,21 @@ namespace ICU4N.Impl
 
             // ICU4N specific - Remove() not supported in .NET
 
-
-
-            /**
-             * Find the last lead surrogate in a contiguous range  with the
-             * same Trie2 value as the input character.
-             *
-             * Use the alternate Lead Surrogate values from the Trie2,
-             * not the code-point values.
-             *
-             * Note: Trie2_16 and Trie2_32 override this implementation with optimized versions,
-             *       meaning that the implementation here is only being used with
-             *       Trie2Writable.  The code here is logically correct with any type
-             *       of Trie2, however.
-             *
-             * @param c  The character to begin with.
-             * @return   The last contiguous character with the same value.
-             */
+            /// <summary>
+            /// Find the last lead surrogate in a contiguous range  with the
+            /// same <see cref="Trie2"/> value as the input character.
+            /// </summary>
+            /// <remarks>
+            /// Use the alternate Lead Surrogate values from the Trie2,
+            /// not the code-point values.
+            /// <para/>
+            /// Note: <see cref="Trie2_16"/> and <see cref="Trie2_32"/> override this implementation with optimized versions,
+            ///       meaning that the implementation here is only being used with
+            ///       <see cref="Trie2Writable"/>.  The code here is logically correct with any type
+            ///       of <see cref="Trie2"/>, however.      
+            /// </remarks>
+            /// <param name="startingLS">The character to begin with.</param>
+            /// <returns>The last contiguous character with the same value.</returns>
             private int RangeEndLS(char startingLS)
             {
                 if (startingLS >= 0xdbff)
@@ -1169,35 +1150,40 @@ namespace ICU4N.Impl
                 return c - 1;
             }
 
-            
-
             //
             //   Iteration State Variables
             //
             private IValueMapper mapper;
             private Range returnValue = new Range();
-            // The starting code point for the next range to be returned.
+            /// <summary>The starting code point for the next range to be returned.</summary>
             private int nextStart;
-            // The upper limit for the last normal range to be returned.  Normally 0x110000, but
-            //   may be lower when iterating over the code points for a single lead surrogate.
+            /// <summary>
+            /// The upper limit for the last normal range to be returned.  Normally 0x110000, but
+            /// may be lower when iterating over the code points for a single lead surrogate.
+            /// </summary>
             private int limitCP;
 
-            // True while iterating over the the Trie2 values for code points.
-            // False while iterating over the alternate values for lead surrogates.
+            /// <summary>
+            /// True while iterating over the the <see cref="Trie2"/> values for code points.
+            /// False while iterating over the alternate values for lead surrogates.
+            /// </summary>
             private bool doingCodePoints = true;
-
-            // True if the iterator should iterate the special values for lead surrogates in
-            //   addition to the normal values for code points.
+ 
+            /// <summary>
+            /// True if the iterator should iterate the special values for lead surrogates in
+            /// addition to the normal values for code points.
+            /// </summary>
             private bool doLeadSurrogates = true;
         }
 
-        /**
-         * Find the last character in a contiguous range of characters with the
-         * same Trie2 value as the input character.
-         *
-         * @param c  The character to begin with.
-         * @return   The last contiguous character with the same value.
-         */
+        /// <summary>
+        /// Find the last character in a contiguous range of characters with the
+        /// same <see cref="Trie2"/> value as the input character.
+        /// </summary>
+        /// <param name="start">The character to begin with.</param>
+        /// <param name="limitp"></param>
+        /// <param name="val"></param>
+        /// <returns>The last contiguous character with the same value.</returns>
         internal virtual int RangeEnd(int start, int limitp, int val)
         {
             int c;

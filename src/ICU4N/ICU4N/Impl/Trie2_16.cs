@@ -1,47 +1,57 @@
 ﻿using ICU4N.Support.IO;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ICU4N.Impl
 {
+    /// <summary>
+    /// A read-only <see cref="Trie2"/>, holding 16 bit data values.
+    /// </summary>
+    /// <remarks>
+    /// A <see cref="Trie2"/> is a highly optimized data structure for mapping from Unicode
+    /// code points (values ranging from 0 to 0x10ffff) to a 16 or 32 bit value.
+    /// <para/>
+    /// See class <see cref="Trie2"/> for descriptions of the API for accessing the contents of a trie.
+    /// <para/>
+    /// The fundamental data access methods are declared final in this class, with
+    /// the intent that applications might gain a little extra performance, when compared
+    /// with calling the same methods via the abstract <see cref="Trie2"/> base class.
+    /// </remarks>
+    /// <author>aheninger</author>
     public sealed class Trie2_16 : Trie2
     {
-        /**
-     *  Internal constructor, not for general use.
-     */
+        /// <summary>
+        /// Internal constructor, not for general use.
+        /// </summary>
         internal Trie2_16()
         {
         }
 
-
-        /**
-         * Create a Trie2 from its serialized form.  Inverse of utrie2_serialize().
-         * The serialized format is identical between ICU4C and ICU4J, so this function
-         * will work with serialized Trie2s from either.
-         *
-         * The serialized Trie2 in the bytes may be in either little or big endian byte order.
-         * This allows using serialized Tries from ICU4C without needing to consider the
-         * byte order of the system that created them.
-         *
-         * @param bytes a byte buffer to the serialized form of a UTrie2.
-         * @return An unserialized Trie2_16, ready for use.
-         * @throws IllegalArgumentException if the buffer does not contain a serialized Trie2.
-         * @throws IOException if a read error occurs in the buffer.
-         * @throws InvalidCastException if the bytes contain a serialized Trie2_32
-         */
-        new public static Trie2_16 CreateFromSerialized(ByteBuffer bytes)
+        /// <summary>
+        /// Create a <see cref="Trie2"/> from its serialized form.  Inverse of utrie2_serialize().
+        /// </summary>
+        /// <remarks>
+        /// The serialized format is identical between ICU4C, ICU4J, and ICU4N, so this function
+        /// will work with serialized <see cref="Trie2"/>s from any.
+        /// <para/>
+        /// The serialized <see cref="Trie2"/> in the bytes may be in either little or big endian byte order.
+        /// This allows using serialized Tries from ICU4C without needing to consider the
+        /// byte order of the system that created them.
+        /// </remarks>
+        /// <param name="bytes">A byte buffer to the serialized form of a <see cref="Trie2"/>.</param>
+        /// <returns>An unserialized <see cref="Trie2_16"/>, ready for use.</returns>
+        /// <exception cref="System.ArgumentException">If the buffer does not contain a serialized <see cref="Trie2"/>.</exception>
+        /// <exception cref="System.IO.IOException">If a read error occurs in the buffer.</exception>
+        /// <exception cref="System.InvalidCastException">If the bytes contain a serialized <see cref="Trie2_32"/>.</exception>
+        new public static Trie2_16 CreateFromSerialized(ByteBuffer bytes) // ICU4N TODO: API Create overload that accepts byte[]
         {
             return (Trie2_16)Trie2.CreateFromSerialized(bytes);
         }
 
-        /**
-         * Get the value for a code point as stored in the Trie2.
-         *
-         * @param codePoint the code point
-         * @return the value
-         */
+        /// <summary>
+        /// Get the value for a code point as stored in the <see cref="Trie2"/>.
+        /// </summary>
+        /// <param name="codePoint">The code point.</param>
+        /// <returns>The value.</returns>
         public override sealed int Get(int codePoint)
         {
             int value;
@@ -94,20 +104,19 @@ namespace ICU4N.Impl
             return errorValue;
         }
 
-
-        /**
-         * Get a Trie2 value for a UTF-16 code unit.
-         * 
-         * This function returns the same value as get() if the input 
-         * character is outside of the lead surrogate range
-         * 
-         * There are two values stored in a Trie2 for inputs in the lead
-         * surrogate range.  This function returns the alternate value,
-         * while Trie2.get() returns the main value.
-         * 
-         * @param codeUnit a 16 bit code unit or lead surrogate value.
-         * @return the value
-         */
+        /// <summary>
+        /// Get a <see cref="Trie2"/> value for a UTF-16 code unit.
+        /// </summary>
+        /// <remarks>
+        /// This function returns the same value as <see cref="Get(int)"/> if the input 
+        /// character is outside of the lead surrogate range.
+        /// <para/>
+        /// There are two values stored in a <see cref="Trie2"/> for inputs in the lead
+        /// surrogate range.  This function returns the alternate value,
+        /// while <see cref="Trie2.Get(int)"/> returns the main value.
+        /// </remarks>
+        /// <param name="codeUnit">A 16 bit code unit or lead surrogate value.</param>
+        /// <returns>The value.</returns>
         public override int GetFromU16SingleLead(char codeUnit)
         {
             int value;
@@ -121,18 +130,17 @@ namespace ICU4N.Impl
             return value;
         }
 
-
-        /**
-         * Serialize a Trie2_16 onto an OutputStream.
-         * 
-         * A Trie2 can be serialized multiple times.
-         * The serialized data is compatible with ICU4C UTrie2 serialization.
-         * Trie2 serialization is unrelated to Java object serialization.
-         *  
-         * @param os the stream to which the serialized Trie2 data will be written.
-         * @return the number of bytes written.
-         * @throw IOException on an error writing to the OutputStream.
-         */
+        /// <summary>
+        /// Serialize a <see cref="Trie2_16"/> onto an <see cref="Stream"/>.
+        /// </summary>
+        /// <remarks>
+        /// A <see cref="Trie2"/> can be serialized multiple times.
+        /// The serialized data is compatible with ICU4C UTrie2 serialization.
+        /// <see cref="Trie2"/> serialization is unrelated to .NET object serialization.
+        /// </remarks>
+        /// <param name="os">The stream to which the serialized Trie2 data will be written.</param>
+        /// <returns>The number of bytes written.</returns>
+        /// <exception cref="IOException">On an error writing to the <see cref="Stream"/>.</exception>
         public int Serialize(Stream os)
         {
             DataOutputStream dos = new DataOutputStream(os);
@@ -147,23 +155,27 @@ namespace ICU4N.Impl
             return bytesWritten;
         }
 
-        /**
-         * @return the number of bytes of the serialized trie
-         */
+        /// <summary>
+        /// Gets the number of bytes of the serialized trie.
+        /// </summary>
+        /// <returns>The number of bytes of the serialized trie.</returns>
         public int GetSerializedLength() // ICU4N TODO: API - Make property
         {
             return 16 + (header.indexLength + dataLength) * 2;
         }
 
-        /**
-         * Given a starting code point, find the last in a range of code points,
-         * all with the same value.
-         * 
-         * This function is part of the implementation of iterating over the
-         * Trie2's contents.
-         * @param startingCP The code point at which to begin looking.
-         * @return The last code point with the same value as the starting code point.
-         */
+        /// <summary>
+        /// Given a starting code point, find the last in a range of code points,
+        /// all with the same value.
+        /// </summary>
+        /// <remarks>
+        /// This function is part of the implementation of iterating over the
+        /// <see cref="Trie2"/>'s contents.
+        /// </remarks>
+        /// <param name="startingCP">The code point at which to begin looking.</param>
+        /// <param name="limit"></param>
+        /// <param name="value"></param>
+        /// <returns>The last code point with the same value as the starting code point.</returns>
         internal override int RangeEnd(int startingCP, int limit, int value)
         {
             int cp = startingCP;

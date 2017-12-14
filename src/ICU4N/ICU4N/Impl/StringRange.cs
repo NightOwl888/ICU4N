@@ -4,7 +4,6 @@ using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using static ICU4N.Impl.StringRange;
 
 namespace ICU4N.Impl
 {
@@ -12,12 +11,10 @@ namespace ICU4N.Impl
     {
         private static readonly bool DEBUG = false;
 
-        public interface Adder
+        public interface IAdder // ICU4N TODO: API - de-nest ?
         {
-            /**
-             * @param start
-             * @param end   may be null, for adding single string
-             */
+            /// <param name="start"></param>
+            /// <param name="end">May be null, for adding single string.</param>
             void Add(string start, string end);
         }
 
@@ -38,16 +35,16 @@ namespace ICU4N.Impl
             }
         }
 
-        public static readonly IComparer<int[]> COMPARE_INT_ARRAYS = new Int32ArrayComparer();
+        public static readonly IComparer<int[]> COMPARE_INT_ARRAYS = new Int32ArrayComparer(); // ICU4N TODO: API - rename to follow .NET Conventions
 
-        /**
-         * Compact the set of strings.
-         * @param source set of strings
-         * @param adder adds each pair to the output. See the {@link Adder} interface.
-         * @param shorterPairs use abc-d instead of abc-abd
-         * @param moreCompact use a more compact form, at the expense of more processing. If false, source must be sorted.
-         */
-        public static void Compact(ISet<string> source, Adder adder, bool shorterPairs, bool moreCompact)
+        /// <summary>
+        /// Compact the set of strings.
+        /// </summary>
+        /// <param name="source">Set of strings.</param>
+        /// <param name="adder">Adds each pair to the output. See the <see cref="IAdder"/> interface.</param>
+        /// <param name="shorterPairs">Use abc-d instead of abc-abd.</param>
+        /// <param name="moreCompact">Use a more compact form, at the expense of more processing. If false, source must be sorted.</param>
+        public static void Compact(ISet<string> source, IAdder adder, bool shorterPairs, bool moreCompact)
         {
             if (!moreCompact)
             {
@@ -86,6 +83,7 @@ namespace ICU4N.Impl
             }
             else
             {
+                throw new NotImplementedException();
                 // ICU4N TODO: Finish implementation
                 //        // not a fast algorithm, but ok for now
                 //        // TODO rewire to use the first (slower) algorithm to generate the ranges, then compact them from there.
@@ -95,28 +93,29 @@ namespace ICU4N.Impl
                 //            Ranges item = new Ranges(s);
                 //lengthToArrays.put(item.size(), item);
                 //        }
-                //        // then compact items of each length and emit compacted sets
-                //        for (Entry<Integer, Set<Ranges>> entry : lengthToArrays.keyValuesSet()) {
-                //            LinkedList<Ranges> compacted = compact(entry.getKey(), entry.getValue());
-                //            for (Ranges ranges : compacted) {
-                //                adder.add(ranges.start(), ranges.end(shorterPairs));
-                //            }
-                //        }
+                //// then compact items of each length and emit compacted sets
+                //foreach (var entry in lengthToArrays.keyValuesSet())
+                //{
+                //    LinkedList<Ranges> compacted = compact(entry.getKey(), entry.getValue());
+                //    for (Ranges ranges : compacted)
+                //    {
+                //        adder.add(ranges.start(), ranges.end(shorterPairs));
+                //    }
+                //}
             }
         }
 
-        /**
-         * Faster but not as good compaction. Only looks at final codepoint.
-         * @param source set of strings
-         * @param adder adds each pair to the output. See the {@link Adder} interface.
-         * @param shorterPairs use abc-d instead of abc-abd
-         */
-        public static void Compact(ISet<string> source, Adder adder, bool shorterPairs)
+        /// <summary>
+        /// Faster but not as good compaction. Only looks at final codepoint.
+        /// </summary>
+        /// <param name="source">Set of strings.</param>
+        /// <param name="adder">Adds each pair to the output. See the <see cref="IAdder"/> interface.</param>
+        /// <param name="shorterPairs">Use abc-d instead of abc-abd.</param>
+        public static void Compact(ISet<string> source, IAdder adder, bool shorterPairs)
         {
             Compact(source, adder, shorterPairs, false);
         }
 
-        // ICU4N NOTE: This method isn't referenced
         private static LinkedList<Ranges> Compact(int size, ISet<Ranges> inputRanges)
         {
             LinkedList<Ranges> ranges = new LinkedList<Ranges>(inputRanges);
@@ -124,10 +123,8 @@ namespace ICU4N.Impl
             {
                 List<Ranges> toRemove = new List<Ranges>();
                 Ranges last = null;
-                //for (Iterator<Ranges> it = ranges.iterator(); it.hasNext();)
                 foreach (Ranges item in ranges)
                 {
-                    //Ranges item = it.next();
                     if (last == null)
                     {
                         last = item;
