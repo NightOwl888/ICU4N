@@ -15,7 +15,7 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
-    public sealed partial class Utility
+    public static partial class Utility
     {
 
 	    /// <summary>

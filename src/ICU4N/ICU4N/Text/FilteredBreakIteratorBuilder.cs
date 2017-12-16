@@ -69,6 +69,7 @@ namespace ICU4N.Text
             return new SimpleFilteredSentenceBreakIterator.Builder();
         }
 
+        // ICU4N TODO: API Generate APIs
 
         public virtual bool SuppressBreakAfter(string str) // ICU4N specific
         {

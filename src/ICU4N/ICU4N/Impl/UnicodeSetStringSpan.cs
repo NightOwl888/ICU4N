@@ -1,21 +1,19 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
-using ICU4N.Util;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using static ICU4N.Text.UnicodeSet;
 
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Implement Span() etc. for a set with strings.
+    /// Implement <see cref="Span(string, int, SpanCondition)"/> etc. for a set with strings.
     /// Avoid recursion because of its exponential complexity.
     /// Instead, try multiple paths at once and track them with an IndexList.
     /// </summary>
     public partial class UnicodeSetStringSpan
     {
+        // ICU4N TODO: API - make [Flags] enum ?
         /*
          * Which span() variant will be used? The object is either built for one variant and used once,
          * or built for all and may be used many times.
@@ -38,41 +36,42 @@ namespace ICU4N.Impl
          * Special spanLength short values. (since Java has not unsigned byte type)
          * All code points in the string are contained in the parent set.
          */
-        static readonly short ALL_CP_CONTAINED = 0xff;
-        /** The spanLength is >=0xfe. */
-        static readonly short LONG_SPAN = (short)(ALL_CP_CONTAINED - 1);
+        internal static readonly short ALL_CP_CONTAINED = 0xff; // ICU4N TODO: API - change to byte ?
+        /// <summary>The spanLength is >=0xfe.</summary>
+        internal static readonly short LONG_SPAN = (short)(ALL_CP_CONTAINED - 1); // ICU4N TODO: API - change to byte ?
 
-        /** Set for span(). Same as parent but without strings. */
+        /// <summary>Set for <see cref="Span(string, int, SpanCondition)"/>. Same as parent but without strings.</summary>
         private UnicodeSet spanSet;
 
-        /**
-         * Set for span(not contained).
-         * Same as spanSet, plus characters that start or end strings.
-         */
+        /// <summary>
+        /// Set for Span(not contained).
+        /// Same as <see cref="spanSet"/>, plus characters that start or end strings.
+        /// </summary>
         private UnicodeSet spanNotSet;
 
-        /** The strings of the parent set. */
+        /// <summary>The strings of the parent set.</summary>
         private IList<string> strings;
 
-        /** The lengths of span(), spanBack() etc. for each string. */
+        /// <summary>The lengths of <see cref="Span(string, int, SpanCondition)"/>, 
+        /// <see cref="SpanBack(string, int, SpanCondition)"/> etc. for each string.</summary>
         private short[] spanLengths;
 
-        /** Maximum lengths of relevant strings. */
+        /// <summary>Maximum lengths of relevant strings.</summary>
         private readonly int maxLength16;
 
-        /** Are there strings that are not fully contained in the code point set? */
+        /// <summary>Are there strings that are not fully contained in the code point set?</summary>
         private bool someRelevant;
 
-        /** Set up for all variants of span()? */
+        /// <summary>Set up for all variants of <see cref="SpanBack(string, int, SpanCondition)"/>?</summary>
         private bool all;
 
-        /** Span helper */
+        /// <summary>Span helper</summary>
         private OffsetList offsets;
 
-        /**
-         * Constructs for all variants of span(), or only for any one variant.
-         * Initializes as little as possible, for single use.
-         */
+        /// <summary>
+        /// Constructs for all variants of <see cref="Span(string, int, SpanCondition)"/>, or only for any one variant.
+        /// Initializes as little as possible, for single use.
+        /// </summary>
         public UnicodeSetStringSpan(UnicodeSet set, IList<string> setStrings, int which)
         {
             spanSet = new UnicodeSet(0, 0x10ffff);
@@ -225,10 +224,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Constructs a copy of an existing UnicodeSetStringSpan.
-         * Assumes which==ALL for a frozen set.
-         */
+        /// <summary>
+        /// Constructs a copy of an existing UnicodeSetStringSpan.
+        /// Assumes which==<see cref="ALL"/> for a frozen set.
+        /// </summary>
         public UnicodeSetStringSpan(UnicodeSetStringSpan otherStringSpan,
                 IList<string> newParentSetStrings)
         {
@@ -250,27 +249,26 @@ namespace ICU4N.Impl
             spanLengths = (short[])otherStringSpan.spanLengths.Clone();
         }
 
-        /**
-         * Do the strings need to be checked in span() etc.?
-         *
-         * @return true if strings need to be checked (call span() here),
-         *         false if not (use a BMPSet for best performance).
-         */
+        /// <summary>
+        /// Do the strings need to be checked in <see cref="Span(string, int, SpanCondition)"/> etc.?
+        /// Returns true if strings need to be checked (call <see cref="Span(string, int, SpanCondition)"/> here),
+        /// false if not (use a BMPSet for best performance).
+        /// </summary>
         public bool NeedsStringSpanUTF16
         {
             get { return someRelevant; }
         }
 
-        /** For fast UnicodeSet::contains(c). */
+        /// <summary>For fast <see cref="UnicodeSet.Contains(int)"/>.</summary>
         public bool Contains(int c)
         {
             return spanSet.Contains(c);
         }
 
-        /**
-         * Adds a starting or ending string character to the spanNotSet
-         * so that a character span ends before any string.
-         */
+        /// <summary>
+        /// Adds a starting or ending string character to the <see cref="spanNotSet"/>
+        /// so that a character span ends before any string.
+        /// </summary>
         private void AddToSpanNotSet(int c)
         {
             if (Utility.SameObjects(spanNotSet, null) || Utility.SameObjects(spanNotSet, spanSet))
@@ -420,20 +418,15 @@ namespace ICU4N.Impl
 
         // ICU4N specific - SpanOneBack(UnicodeSet set, ICharSequence s, int length) moved to UnicodeSetStringSpanExtension.tt
 
-        /**
-         /// 
-         /// 
-         /// <p>
-     */
 
         /// <summary>
-        /// Helper class for UnicodeSetStringSpan.
+        /// Helper class for <see cref="UnicodeSetStringSpan"/>.
         /// </summary>
         /// <remarks>
         /// List of offsets from the current position from where to try matching
         /// a code point or a string.
         /// Stores offsets rather than indexes to simplify the code and use the same list
-        /// for both increments (in Span()) and decrements (in SpanBack()).
+        /// for both increments (in <see cref="Span(string, int, SpanCondition)"/>) and decrements (in <see cref="SpanBack(string, int, SpanCondition)"/>).
         /// 
         /// <para/>Assumption: The maximum offset is limited, and the offsets that are stored at any one time
         /// are relatively dense, that is,
@@ -448,7 +441,7 @@ namespace ICU4N.Impl
         /// This avoids inserting into a sorted list of offsets (or absolute indexes)
         /// and physically moving part of the list.
         /// 
-        /// <para/>Note: In principle, the caller should SetMaxLength() to
+        /// <para/>Note: In principle, the caller should <see cref="SetMaxLength(int)"/> to
         /// the maximum of the max string length and U16_LENGTH/U8_LENGTH
         /// to account for "long" single code points.
         /// 

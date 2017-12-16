@@ -1,27 +1,25 @@
 ﻿using ICU4N.Lang;
-using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Impl
 {
-    public sealed partial class Utility
+    public static partial class Utility // ICU4N specific - made class static because there are no instance members
     {
         private static readonly char APOSTROPHE = '\'';
         private static readonly char BACKSLASH = '\\';
         private static readonly int MAGIC_UNSIGNED = unchecked((int)0x80000000);
 
-        /**
-         * Convenience utility to compare two Object[]s.
-         * Ought to be in System
-         */
+        /// <summary>
+        /// Convenience utility to compare two <see cref="T:object[]"/>s.
+        /// Ought to be in System.
+        /// </summary>
         public static bool ArrayEquals(object[] source, object target)
         {
             if (source == null) return (target == null);
@@ -31,10 +29,10 @@ namespace ICU4N.Impl
                     && ArrayRegionMatches(source, 0, targ, 0, source.Length));
         }
 
-        /**
-         * Convenience utility to compare two int[]s
-         * Ought to be in System
-         */
+        /// <summary>
+        /// Convenience utility to compare two <see cref="T:int[]"/>s.
+        /// Ought to be in System.
+        /// </summary>
         public static bool ArrayEquals(int[] source, object target)
         {
             if (source == null) return (target == null);
@@ -44,10 +42,10 @@ namespace ICU4N.Impl
                     && ArrayRegionMatches(source, 0, targ, 0, source.Length));
         }
 
-        /**
-         * Convenience utility to compare two double[]s
-         * Ought to be in System
-         */
+        /// <summary>
+        /// Convenience utility to compare two <see cref="T:double[]"/>s.
+        /// Ought to be in System.
+        /// </summary>
         public static bool ArrayEquals(double[] source, object target)
         {
             if (source == null) return (target == null);
@@ -65,10 +63,10 @@ namespace ICU4N.Impl
                     && ArrayRegionMatches(source, 0, targ, 0, source.Length));
         }
 
-        /**
-         * Convenience utility to compare two Object[]s
-         * Ought to be in System
-         */
+        /// <summary>
+        /// Convenience utility to compare two <see cref="T:object[]"/>s.
+        /// Ought to be in System.
+        /// </summary>
         public static bool ArrayEquals(object source, object target)
         {
             if (source == null) return (target == null);
@@ -85,12 +83,15 @@ namespace ICU4N.Impl
             return source.Equals(target);
         }
 
-        /**
-         * Convenience utility to compare two Object[]s
-         * Ought to be in System.
-         * @param len the length to compare.
-         * The start indices and start+len must be valid.
-         */
+        /// <summary>
+        /// Convenience utility to compare two <see cref="T:object[]"/>s.
+        /// Ought to be in System.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="sourceStart"></param>
+        /// <param name="target"></param>
+        /// <param name="targetStart"></param>
+        /// <param name="len">The length to compare. The start indices and start+len must be valid.</param>
         public static bool ArrayRegionMatches(object[] source, int sourceStart,
                 object[] target, int targetStart,
                 int len)
@@ -105,12 +106,15 @@ namespace ICU4N.Impl
             return true;
         }
 
-        /**
-         * Convenience utility to compare two Object[]s
-         * Ought to be in System.
-         * @param len the length to compare.
-         * The start indices and start+len must be valid.
-         */
+        /// <summary>
+        /// Convenience utility to compare two <see cref="T:char[]"/>s.
+        /// Ought to be in System.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="sourceStart"></param>
+        /// <param name="target"></param>
+        /// <param name="targetStart"></param>
+        /// <param name="len">The length to compare. The start indices and start+len must be valid.</param>
         public static bool ArrayRegionMatches(char[] source, int sourceStart,
                 char[] target, int targetStart,
                 int len)
@@ -125,12 +129,15 @@ namespace ICU4N.Impl
             return true;
         }
 
-        /**
-         * Convenience utility to compare two int[]s.
-         * @param len the length to compare.
-         * The start indices and start+len must be valid.
-         * Ought to be in System
-         */
+        /// <summary>
+        /// Convenience utility to compare two <see cref="T:int[]"/>s.
+        /// Ought to be in System.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="sourceStart"></param>
+        /// <param name="target"></param>
+        /// <param name="targetStart"></param>
+        /// <param name="len">The length to compare. The start indices and start+len must be valid.</param>
         public static bool ArrayRegionMatches(int[] source, int sourceStart,
                 int[] target, int targetStart,
                 int len)
@@ -145,12 +152,15 @@ namespace ICU4N.Impl
             return true;
         }
 
-        /**
-         * Convenience utility to compare two arrays of doubles.
-         * @param len the length to compare.
-         * The start indices and start+len must be valid.
-         * Ought to be in System
-         */
+        /// <summary>
+        /// Convenience utility to compare two <see cref="T:double[]"/>s.
+        /// Ought to be in System.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="sourceStart"></param>
+        /// <param name="target"></param>
+        /// <param name="targetStart"></param>
+        /// <param name="len">The length to compare. The start indices and start+len must be valid.</param>
         public static bool ArrayRegionMatches(double[] source, int sourceStart,
                 double[] target, int targetStart,
                 int len)
@@ -177,19 +187,19 @@ namespace ICU4N.Impl
             return true;
         }
 
-        /**
-         * Trivial reference equality.
-         * This method should help document that we really want == not equals(),
-         * and to have a single place to suppress warnings from static analysis tools.
-         */
+        /// <summary>
+        /// Trivial reference equality.
+        /// This method should help document that we really want == not <see cref="Equals(object, object)"/>
+        /// and to have a single place to suppress warnings from static analysis tools.
+        /// </summary>
         public static bool SameObjects(object a, object b)
         {
             return a == b;
         }
 
-        /**
-         * Convenience utility. Does null checks on objects, then calls equals.
-         */
+        /// <summary>
+        /// Convenience utility. Does null checks on objects, then calls <see cref="object.Equals(object)"/>.
+        /// </summary>
         public static bool ObjectEquals(object a, object b)
         {
             return a == null ?
@@ -199,7 +209,7 @@ namespace ICU4N.Impl
 
         // ICU4N specific - overload to ensure culture insensitive comparison when comparing strings
         /// <summary>
-        /// Convenience utility. Does null checks on objects, then calls compare.
+        /// Convenience utility. Does null checks on objects, then calls <see cref="StringExtensions.CompareToOrdinal(string, string)"/>.
         /// </summary>
         public static int CheckCompare(string a, string b)
         {
@@ -210,7 +220,7 @@ namespace ICU4N.Impl
 
         // ICU4N specific - generic overload for comparing objects of known type
         /// <summary>
-        /// Convenience utility. Does null checks on objects, then calls compare.
+        /// Convenience utility. Does null checks on objects, then calls <see cref="IComparable{T}.CompareTo(T)"/>.
         /// </summary>
         public static int CheckCompare<T>(T a, T b) where T : IComparable<T>
         {
@@ -220,7 +230,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Convenience utility. Does null checks on objects, then calls compare.
+        /// Convenience utility. Does null checks on objects, then calls <see cref="IComparable.CompareTo(object)"/>.
         /// </summary>
         public static int CheckCompare(IComparable a, IComparable b)
         {
@@ -229,39 +239,45 @@ namespace ICU4N.Impl
                         b == null ? 1 : a.CompareTo(b);
         }
 
-        /**
-         * Convenience utility. Does null checks on object, then calls hashCode.
-         */
+        /// <summary>
+        /// Convenience utility. Does null checks on object, then calls <see cref="object.GetHashCode()"/>.
+        /// </summary>
         public static int CheckHashCode(object a)
         {
             return a == null ? 0 : a.GetHashCode();
         }
 
-        /**
-         * The ESCAPE character is used during run-length encoding.  It signals
-         * a run of identical chars.
-         */
+        /// <summary>
+        /// The <see cref="ESCAPE"/> character is used during run-length encoding.  It signals
+        /// a run of identical chars.
+        /// </summary>
         private static readonly char ESCAPE = '\uA5A5';
 
-        /**
-         * The ESCAPE_BYTE character is used during run-length encoding.  It signals
-         * a run of identical bytes.
-         */
-        static readonly byte ESCAPE_BYTE = (byte)0xA5;
+        /// <summary>
+        /// The <see cref="ESCAPE_BYTE"/> character is used during run-length encoding.  It signals
+        /// a run of identical bytes.
+        /// </summary>
+        internal static readonly byte ESCAPE_BYTE = (byte)0xA5;
 
-        /**
-         * Construct a string representing an int array.  Use run-length encoding.
-         * A character represents itself, unless it is the ESCAPE character.  Then
-         * the following notations are possible:
-         *   ESCAPE ESCAPE   ESCAPE literal
-         *   ESCAPE n c      n instances of character c
-         * Since an encoded run occupies 3 characters, we only encode runs of 4 or
-         * more characters.  Thus we have n > 0 and n != ESCAPE and n <= 0xFFFF.
-         * If we encounter a run where n == ESCAPE, we represent this as:
-         *   c ESCAPE n-1 c
-         * The ESCAPE value is chosen so as not to collide with commonly
-         * seen values.
-         */
+        /// <summary>
+        /// Construct a string representing an <see cref="int"/> array.  Use run-length encoding.
+        /// </summary>
+        /// <remarks>
+        /// A character represents itself, unless it is the <see cref="ESCAPE"/> character.  Then
+        /// the following notations are possible:
+        /// <code>
+        ///   ESCAPE ESCAPE   ESCAPE literal
+        ///   ESCAPE n c      n instances of character c
+        /// </code>
+        /// Since an encoded run occupies 3 characters, we only encode runs of 4 or
+        /// more characters.  Thus we have n > 0 and n != <see cref="ESCAPE"/> and n &lt;= 0xFFFF.
+        /// If we encounter a run where n == <see cref="ESCAPE"/>, we represent this as:
+        /// <code>
+        ///   c ESCAPE n-1 c
+        /// </code>
+        /// The <see cref="ESCAPE"/> value is chosen so as not to collide with commonly
+        /// seen values.
+        /// </remarks>
         static public string ArrayToRLEString(int[] a)
         {
             StringBuilder buffer = new StringBuilder();
@@ -287,19 +303,25 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
-        /**
-         * Construct a string representing a short array.  Use run-length encoding.
-         * A character represents itself, unless it is the ESCAPE character.  Then
-         * the following notations are possible:
-         *   ESCAPE ESCAPE   ESCAPE literal
-         *   ESCAPE n c      n instances of character c
-         * Since an encoded run occupies 3 characters, we only encode runs of 4 or
-         * more characters.  Thus we have n > 0 and n != ESCAPE and n <= 0xFFFF.
-         * If we encounter a run where n == ESCAPE, we represent this as:
-         *   c ESCAPE n-1 c
-         * The ESCAPE value is chosen so as not to collide with commonly
-         * seen values.
-         */
+        /// <summary>
+        /// Construct a string representing a <see cref="short"/> array.  Use run-length encoding.
+        /// </summary>
+        /// <remarks>
+        /// A character represents itself, unless it is the <see cref="ESCAPE"/> character.  Then
+        /// the following notations are possible:
+        /// <code>
+        ///   ESCAPE ESCAPE   ESCAPE literal
+        ///   ESCAPE n c      n instances of character c
+        /// </code>
+        /// Since an encoded run occupies 3 characters, we only encode runs of 4 or
+        /// more characters.  Thus we have n > 0 and n != <see cref="ESCAPE"/> and n &lt;= 0xFFFF.
+        /// If we encounter a run where n == <see cref="ESCAPE"/>, we represent this as:
+        /// <code>
+        ///   c ESCAPE n-1 c
+        /// </code>
+        /// The <see cref="ESCAPE"/> value is chosen so as not to collide with commonly
+        /// seen values.
+        /// </remarks>
         static public string ArrayToRLEString(short[] a)
         {
             StringBuilder buffer = new StringBuilder();
@@ -323,19 +345,25 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
-        /**
-         * Construct a string representing a char array.  Use run-length encoding.
-         * A character represents itself, unless it is the ESCAPE character.  Then
-         * the following notations are possible:
-         *   ESCAPE ESCAPE   ESCAPE literal
-         *   ESCAPE n c      n instances of character c
-         * Since an encoded run occupies 3 characters, we only encode runs of 4 or
-         * more characters.  Thus we have n > 0 and n != ESCAPE and n <= 0xFFFF.
-         * If we encounter a run where n == ESCAPE, we represent this as:
-         *   c ESCAPE n-1 c
-         * The ESCAPE value is chosen so as not to collide with commonly
-         * seen values.
-         */
+        /// <summary>
+        /// Construct a string representing a <see cref="char"/> array.  Use run-length encoding.
+        /// </summary>
+        /// <remarks>
+        /// A character represents itself, unless it is the <see cref="ESCAPE"/> character.  Then
+        /// the following notations are possible:
+        /// <code>
+        ///   ESCAPE ESCAPE   ESCAPE literal
+        ///   ESCAPE n c      n instances of character c
+        /// </code>
+        /// Since an encoded run occupies 3 characters, we only encode runs of 4 or
+        /// more characters.  Thus we have n > 0 and n != <see cref="ESCAPE"/> and n &lt;= 0xFFFF.
+        /// If we encounter a run where n == <see cref="ESCAPE"/>, we represent this as:
+        /// <code>
+        ///   c ESCAPE n-1 c
+        /// </code>
+        /// The <see cref="ESCAPE"/> value is chosen so as not to collide with commonly
+        /// seen values.
+        /// </remarks>
         static public string ArrayToRLEString(char[] a)
         {
             StringBuilder buffer = new StringBuilder();
@@ -358,20 +386,26 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
-        /**
-         * Construct a string representing a byte array.  Use run-length encoding.
-         * Two bytes are packed into a single char, with a single extra zero byte at
-         * the end if needed.  A byte represents itself, unless it is the
-         * ESCAPE_BYTE.  Then the following notations are possible:
-         *   ESCAPE_BYTE ESCAPE_BYTE   ESCAPE_BYTE literal
-         *   ESCAPE_BYTE n b           n instances of byte b
-         * Since an encoded run occupies 3 bytes, we only encode runs of 4 or
-         * more bytes.  Thus we have n > 0 and n != ESCAPE_BYTE and n <= 0xFF.
-         * If we encounter a run where n == ESCAPE_BYTE, we represent this as:
-         *   b ESCAPE_BYTE n-1 b
-         * The ESCAPE_BYTE value is chosen so as not to collide with commonly
-         * seen values.
-         */
+        /// <summary>
+        /// Construct a string representing a <see cref="byte"/> array.  Use run-length encoding.
+        /// </summary>
+        /// <remarks>
+        /// Two bytes are packed into a single <see cref="char"/>, with a single extra zero byte at
+        /// the end if needed.  A byte represents itself, unless it is the
+        /// <see cref="ESCAPE_BYTE"/>.  Then the following notations are possible:
+        /// <code>
+        ///   ESCAPE_BYTE ESCAPE_BYTE   ESCAPE_BYTE literal
+        ///   ESCAPE_BYTE n b           n instances of byte b
+        /// </code>
+        /// Since an encoded run occupies 3 bytes, we only encode runs of 4 or
+        /// more bytes.  Thus we have n > 0 and n != <see cref="ESCAPE_BYTE"/> and n &lt;= 0xFF.
+        /// If we encounter a run where n == <see cref="ESCAPE_BYTE"/>, we represent this as:
+        /// <code>
+        ///   b ESCAPE_BYTE n-1 b
+        /// </code>
+        /// The <see cref="ESCAPE_BYTE"/> value is chosen so as not to collide with commonly
+        /// seen values.
+        /// </remarks>
         static public string ArrayToRLEString(byte[] a)
         {
             StringBuilder buffer = new StringBuilder();
@@ -418,7 +452,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Construct an array of <see cref="int"/>s from a run-length encoded <see cref="string"/>.
         /// </summary>
-        static public int[] RLEStringToIntArray(string s)
+        static public int[] RLEStringToIntArray(string s) // ICU4N TODO: API - rename Int to Int32
         {
             int length = GetInt(s, 0);
             int[] array = new int[length];
@@ -459,7 +493,7 @@ namespace ICU4N.Impl
 
             return array;
         }
-        internal static int GetInt(string s, int i)
+        internal static int GetInt(string s, int i) // ICU4N TODO: API - rename Int to Int32
         {
             return ((s[2 * i]) << 16) | s[2 * i + 1];
         }
@@ -467,7 +501,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Construct an array of <see cref="short"/>s from a run-length encoded <see cref="string"/>.
         /// </summary>
-        static public short[] RLEStringToShortArray(string s)
+        static public short[] RLEStringToShortArray(string s) // ICU4N TODO: API - rename Short to Int16
         {
             int length = ((s[0]) << 16) | (s[1]);
             short[] array = new short[length];
@@ -622,11 +656,11 @@ namespace ICU4N.Impl
 
         static public string LINE_SEPARATOR = Environment.NewLine;
 
-        /**
-         * Format a string for representation in a source file.  This includes
-         * breaking it into lines and escaping characters using octal notation
-         * when necessary (control characters and double quotes).
-         */
+        /// <summary>
+        /// Format a string for representation in a source file.  This includes
+        /// breaking it into lines and escaping characters using octal notation
+        /// when necessary (control characters and double quotes).
+        /// </summary>
         static public string FormatForSource(string s)
         {
             StringBuilder buffer = new StringBuilder();
@@ -698,10 +732,10 @@ namespace ICU4N.Impl
         internal static readonly char[] HEX_DIGIT = {'0','1','2','3','4','5','6','7',
             '8','9','A','B','C','D','E','F'};
 
-        /**
-         * Format a string for representation in a source file.  Like
-         * formatForSource but does not do line breaking.
-         */
+        /// <summary>
+        /// Format a string for representation in a source file.  Like
+        /// <see cref="FormatForSource(string)"/> but does not do line breaking.
+        /// </summary>
         static public string Format1ForSource(string s)
         {
             StringBuilder buffer = new StringBuilder();
@@ -758,10 +792,10 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
-        /**
-         * Convert characters outside the range U+0020 to U+007F to
-         * Unicode escapes, and convert backslash to a double backslash.
-         */
+        /// <summary>
+        /// Convert characters outside the range U+0020 to U+007F to
+        /// Unicode escapes, and convert backslash to a double backslash.
+        /// </summary>
         public static string Escape(string s)
         {
             StringBuilder buf = new StringBuilder();
@@ -806,14 +840,15 @@ namespace ICU4N.Impl
             /*v*/ (char)0x76, (char)0x0b
         };
 
-        /**
-         * Convert an escape to a 32-bit code point value.  We attempt
-         * to parallel the icu4c unescapeAt() function.
-         * @param offset16 an array containing offset to the character
-         * <em>after</em> the backslash.  Upon return offset16[0] will
-         * be updated to point after the escape sequence.
-         * @return character value from 0 to 10FFFF, or -1 on error.
-         */
+        /// <summary>
+        /// Convert an escape to a 32-bit code point value.  We attempt
+        /// to parallel the icu4c unescapeAt() function.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="offset16">An array containing offset to the character
+        /// <em>after</em> the backslash.  Upon return offset16[0] will
+        /// be updated to point after the escape sequence.</param>
+        /// <returns>Character value from 0 to 10FFFF, or -1 on error.</returns>
         public static int UnescapeAt(string s, int[] offset16)
         {
             int c;
@@ -955,11 +990,10 @@ namespace ICU4N.Impl
             return c;
         }
 
-        /**
-         * Convert all escapes in a given string using unescapeAt().
-         * @exception IllegalArgumentException if an invalid escape is
-         * seen.
-         */
+        /// <summary>
+        /// Convert all escapes in a given string using <see cref="UnescapeAt(string, int[])"/>.
+        /// </summary>
+        /// <exception cref="ArgumentException">If an invalid escape is seen.</exception>
         public static string Unescape(string s)
         {
             StringBuilder buf = new StringBuilder();
@@ -987,10 +1021,10 @@ namespace ICU4N.Impl
             return buf.ToString();
         }
 
-        /**
-         * Convert all escapes in a given string using unescapeAt().
-         * Leave invalid escape sequences unchanged.
-         */
+        /// <summary>
+        /// Convert all escapes in a given string using <see cref="UnescapeAt(string, int[])"/>.
+        /// Leave invalid escape sequences unchanged.
+        /// </summary>
         public static string UnescapeLeniently(string s)
         {
             StringBuilder buf = new StringBuilder();
@@ -1020,18 +1054,18 @@ namespace ICU4N.Impl
             return buf.ToString();
         }
 
-        /**
-         * Convert a char to 4 hex uppercase digits.  E.g., hex('a') =>
-         * "0041".
-         */
+        /// <summary>
+        /// Convert a char to 4 hex uppercase digits.  E.g., hex('a') =>
+        /// "0041".
+        /// </summary>
         public static string Hex(long ch)
         {
             return Hex(ch, 4);
         }
 
-        /**
-         * Supplies a zero-padded hex representation of an integer (without 0x)
-         */
+        /// <summary>
+        /// Supplies a zero-padded hex representation of an integer (without 0x)
+        /// </summary>
         static public string Hex(long i, int places)
         {
             if (i == long.MinValue) return "-8000000000000000";
@@ -1060,17 +1094,17 @@ namespace ICU4N.Impl
 
         // ICU4N specific - Hex(ICharSequence s, int width, ICharSequence separator) moved to UtilityExtension.tt
 
-        /**
-         * Split a string into pieces based on the given divider character
-         * @param s the string to split
-         * @param divider the character on which to split.  Occurrences of
-         * this character are not included in the output
-         * @param output an array to receive the substrings between
-         * instances of divider.  It must be large enough on entry to
-         * accomodate all output.  Adjacent instances of the divider
-         * character will place empty strings into output.  Before
-         * returning, output is padded out with empty strings.
-         */
+        /// <summary>
+        /// Split a string into pieces based on the given <paramref name="divider"/> character
+        /// </summary>
+        /// <param name="s">The string to split.</param>
+        /// <param name="divider">The character on which to split.  Occurrences of
+        /// this character are not included in the output.</param>
+        /// <param name="output">An array to receive the substrings between
+        /// instances of divider.  It must be large enough on entry to
+        /// accomodate all output.  Adjacent instances of the <paramref name="divider"/>
+        /// character will place empty strings into output.  Before
+        /// returning, output is padded out with empty strings.</param>
         public static void Split(string s, char divider, string[] output)
         {
             int last = 0;
@@ -1091,15 +1125,15 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Split a string into pieces based on the given divider character
-         * @param s the string to split
-         * @param divider the character on which to split.  Occurrences of
-         * this character are not included in the output
-         * @return output an array to receive the substrings between
-         * instances of divider. Adjacent instances of the divider
-         * character will place empty strings into output.
-         */
+        /// <summary>
+        /// Split a string into pieces based on the given <paramref name="divider"/> character.
+        /// </summary>
+        /// <param name="s">The string to split.</param>
+        /// <param name="divider">The character on which to split.  Occurrences of
+        /// this character are not included in the output.</param>
+        /// <returns>An array of the substrings between
+        /// instances of <paramref name="divider"/>. Adjacent instances of the <paramref name="divider"/>
+        /// character will place empty strings into output.</returns>
         public static string[] Split(string s, char divider)
         {
             int last = 0;
@@ -1117,16 +1151,16 @@ namespace ICU4N.Impl
             return output.ToArray();
         }
 
-        /**
-         * Look up a given string in a string array.  Returns the index at
-         * which the first occurrence of the string was found in the
-         * array, or -1 if it was not found.
-         * @param source the string to search for
-         * @param target the array of zero or more strings in which to
-         * look for source
-         * @return the index of target at which source first occurs, or -1
-         * if not found
-         */
+        /// <summary>
+        /// Look up a given string in a string array.  Returns the index at
+        /// which the first occurrence of the string was found in the
+        /// array, or -1 if it was not found.
+        /// </summary>
+        /// <param name="source">The string to search for.</param>
+        /// <param name="target">The array of zero or more strings in which to
+        /// look for source.</param>
+        /// <returns>The index of target at which source first occurs, or -1
+        /// if not found.</returns>
         public static int Lookup(string source, string[] target)
         {
             for (int i = 0; i < target.Length; ++i)
@@ -1136,18 +1170,18 @@ namespace ICU4N.Impl
             return -1;
         }
 
-        /**
-         * Parse a single non-whitespace character 'ch', optionally
-         * preceded by whitespace.
-         * @param id the string to be parsed
-         * @param pos INPUT-OUTPUT parameter.  On input, pos[0] is the
-         * offset of the first character to be parsed.  On output, pos[0]
-         * is the index after the last parsed character.  If the parse
-         * fails, pos[0] will be unchanged.
-         * @param ch the non-whitespace character to be parsed.
-         * @return true if 'ch' is seen preceded by zero or more
-         * whitespace characters.
-         */
+        /// <summary>
+        /// Parse a single non-whitespace character '<paramref name="ch"/>', optionally
+        /// preceded by whitespace.
+        /// </summary>
+        /// <param name="id">The string to be parsed.</param>
+        /// <param name="pos">INPUT-OUTPUT parameter.  On input, pos[0] is the
+        /// offset of the first character to be parsed.  On output, pos[0]
+        /// is the index after the last parsed character.  If the parse
+        /// fails, pos[0] will be unchanged.</param>
+        /// <param name="ch">The non-whitespace character to be parsed.</param>
+        /// <returns>true if '<paramref name="ch"/>' is seen preceded by zero or more
+        /// whitespace characters.</returns>
         public static bool ParseChar(string id, int[] pos, char ch)
         {
             int start = pos[0];
@@ -1162,26 +1196,29 @@ namespace ICU4N.Impl
             return true;
         }
 
-        /**
-         * Parse a pattern string starting at offset pos.  Keywords are
-         * matched case-insensitively.  Spaces may be skipped and may be
-         * optional or required.  Integer values may be parsed, and if
-         * they are, they will be returned in the given array.  If
-         * successful, the offset of the next non-space character is
-         * returned.  On failure, -1 is returned.
-         * @param pattern must only contain lowercase characters, which
-         * will match their uppercase equivalents as well.  A space
-         * character matches one or more required spaces.  A '~' character
-         * matches zero or more optional spaces.  A '#' character matches
-         * an integer and stores it in parsedInts, which the caller must
-         * ensure has enough capacity.
-         * @param parsedInts array to receive parsed integers.  Caller
-         * must ensure that parsedInts.length is >= the number of '#'
-         * signs in 'pattern'.
-         * @return the position after the last character parsed, or -1 if
-         * the parse failed
-         */
-        public static int ParsePattern(string rule, int pos, int limit,
+        /// <summary>
+        /// Parse a pattern string starting at offset pos.  Keywords are
+        /// matched case-insensitively.  Spaces may be skipped and may be
+        /// optional or required.  Integer values may be parsed, and if
+        /// they are, they will be returned in the given array.  If
+        /// successful, the offset of the next non-space character is
+        /// returned.  On failure, -1 is returned.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <param name="pos"></param>
+        /// <param name="limit"></param>
+        /// <param name="pattern">Must only contain lowercase characters, which
+        /// will match their uppercase equivalents as well.  A space
+        /// character matches one or more required spaces.  A '~' character
+        /// matches zero or more optional spaces.  A '#' character matches
+        /// an integer and stores it in <paramref name="parsedInts"/>, which the caller must
+        /// ensure has enough capacity.</param>
+        /// <param name="parsedInts">Array to receive parsed integers.  Caller
+        /// must ensure that parsedInts.Length is >= the number of '#'
+        /// signs in 'pattern'.</param>
+        /// <returns>The position after the last character parsed, or -1 if
+        /// the parse failed.</returns>
+        public static int ParsePattern(string rule, int pos, int limit, // ICU4N TODO: API Make limit into length, like in .NET ?
                 string pattern, int[] parsedInts)
         {
             // TODO Update this to handle surrogates
@@ -1235,26 +1272,26 @@ namespace ICU4N.Impl
             return pos;
         }
 
-        /**
-         * Parse a pattern string within the given Replaceable and a parsing
-         * pattern.  Characters are matched literally and case-sensitively
-         * except for the following special characters:
-         *
-         * ~  zero or more Pattern_White_Space chars
-         *
-         * If end of pattern is reached with all matches along the way,
-         * pos is advanced to the first unparsed index and returned.
-         * Otherwise -1 is returned.
-         * @param pat pattern that controls parsing
-         * @param text text to be parsed, starting at index
-         * @param index offset to first character to parse
-         * @param limit offset after last character to parse
-         * @return index after last parsed character, or -1 on parse failure.
-         */
+        /// <summary>
+        /// Parse a pattern string within the given <see cref="IReplaceable"/> and a parsing
+        /// pattern.  Characters are matched literally and case-sensitively
+        /// except for the following special characters:
+        /// <code>
+        /// ~  zero or more Pattern_White_Space chars
+        /// </code>
+        /// If end of pattern is reached with all matches along the way,
+        /// pos is advanced to the first unparsed index and returned.
+        /// Otherwise -1 is returned.
+        /// </summary>
+        /// <param name="pat">Pattern that controls parsing.</param>
+        /// <param name="text">Text to be parsed, starting at index.</param>
+        /// <param name="index">Offset to first character to parse.</param>
+        /// <param name="limit">Offset after last character to parse.</param>
+        /// <returns>Index after last parsed character, or -1 on parse failure.</returns>
         public static int ParsePattern(string pat,
                 IReplaceable text,
                 int index,
-                int limit)
+                int limit) // ICU4N TODO: API Make limit into length, like in .NET ?
         {
             int ipat = 0;
 
@@ -1313,15 +1350,17 @@ namespace ICU4N.Impl
             return -1; // text ended before end of pat
         }
 
-        /**
-         * Parse an integer at pos, either of the form \d+ or of the form
-         * 0x[0-9A-Fa-f]+ or 0[0-7]+, that is, in standard decimal, hex,
-         * or octal format.
-         * @param pos INPUT-OUTPUT parameter.  On input, the first
-         * character to parse.  On output, the character after the last
-         * parsed character.
-         */
-        public static int ParseInteger(string rule, int[] pos, int limit)
+        /// <summary>
+        /// Parse an integer at pos, either of the form \d+ or of the form
+        /// 0x[0-9A-Fa-f]+ or 0[0-7]+, that is, in standard decimal, hex,
+        /// or octal format.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <param name="pos">INPUT-OUTPUT parameter.  On input, the first
+        /// character to parse.  On output, the character after the last
+        /// parsed character.</param>
+        /// <param name="limit"></param>
+        public static int ParseInteger(string rule, int[] pos, int limit) // ICU4N TODO: API Make limit into length, like in .NET ?
         {
             int count = 0;
             int value = 0;
@@ -1367,19 +1406,19 @@ namespace ICU4N.Impl
             return value;
         }
 
-        /**
-         * Parse a Unicode identifier from the given string at the given
-         * position.  Return the identifier, or null if there is no
-         * identifier.
-         * @param str the string to parse
-         * @param pos INPUT-OUPUT parameter.  On INPUT, pos[0] is the
-         * first character to examine.  It must be less than str.length(),
-         * and it must not point to a whitespace character.  That is, must
-         * have pos[0] &lt; str.length().  On
-         * OUTPUT, the position after the last parsed character.
-         * @return the Unicode identifier, or null if there is no valid
-         * identifier at pos[0].
-         */
+        /// <summary>
+        /// Parse a Unicode identifier from the given string at the given
+        /// position.  Return the identifier, or null if there is no
+        /// identifier.
+        /// </summary>
+        /// <param name="str">The string to parse.</param>
+        /// <param name="pos">INPUT-OUPUT parameter.  On INPUT, pos[0] is the
+        /// first character to examine.  It must be less than str.Length,
+        /// and it must not point to a whitespace character.  That is, must
+        /// have pos[0] &lt; str.Length.  On
+        /// OUTPUT, the position after the last parsed character.</param>
+        /// <returns>The Unicode identifier, or null if there is no valid
+        /// identifier at pos[0].</returns>
         public static string ParseUnicodeIdentifier(string str, int[] pos)
         {
             // assert(pos[0] < str.length());
@@ -1429,22 +1468,21 @@ namespace ICU4N.Impl
         // ICU4N specific - AppendNumber(T result, int n,
         //    int radix, int minDigits) where T : IAppendable moved to UtilityExtension.tt
 
-        /**
-         * Parse an unsigned 31-bit integer at the given offset.  Use
-         * UCharacter.digit() to parse individual characters into digits.
-         * @param text the text to be parsed
-         * @param pos INPUT-OUTPUT parameter.  On entry, pos[0] is the
-         * offset within text at which to start parsing; it should point
-         * to a valid digit.  On exit, pos[0] is the offset after the last
-         * parsed character.  If the parse failed, it will be unchanged on
-         * exit.  Must be >= 0 on entry.
-         * @param radix the radix in which to parse; must be >= 2 and &lt;=
-         * 36.
-         * @return a non-negative parsed number, or -1 upon parse failure.
-         * Parse fails if there are no digits, that is, if pos[0] does not
-         * point to a valid digit on entry, or if the number to be parsed
-         * does not fit into a 31-bit unsigned integer.
-         */
+        /// <summary>
+        /// Parse an unsigned 31-bit integer at the given offset.  Use
+        /// <see cref="UCharacter.Digit(int, int)"/> to parse individual characters into digits.
+        /// </summary>
+        /// <param name="text">The text to be parsed.</param>
+        /// <param name="pos">INPUT-OUTPUT parameter.  On entry, pos[0] is the
+        /// offset within text at which to start parsing; it should point
+        /// to a valid digit.  On exit, pos[0] is the offset after the last
+        /// parsed character.  If the parse failed, it will be unchanged on
+        /// exit.  Must be >= 0 on entry.</param>
+        /// <param name="radix">The radix in which to parse; must be >= 2 and &lt;= 36.</param>
+        /// <returns>A non-negative parsed number, or -1 upon parse failure.
+        /// Parse fails if there are no digits, that is, if pos[0] does not
+        /// point to a valid digit on entry, or if the number to be parsed
+        /// does not fit into a 31-bit unsigned integer.</returns>
         public static int ParseNumber(string text, int[] pos, int radix)
         {
             // assert(pos[0] >= 0);
@@ -1477,10 +1515,10 @@ namespace ICU4N.Impl
             return n;
         }
 
-        /**
-         * Return true if the character is NOT printable ASCII.  The tab,
-         * newline and linefeed characters are considered unprintable.
-         */
+        /// <summary>
+        /// Return true if the character is NOT printable ASCII.  The tab,
+        /// newline and linefeed characters are considered unprintable.
+        /// </summary>
         public static bool IsUnprintable(int c)
         {
             //0x20 = 32 and 0x7E = 126
@@ -1490,24 +1528,20 @@ namespace ICU4N.Impl
         // ICU4N specific - EscapeUnprintable(IAppendable result, int c)
         //    moved to UtilityExtension.tt
 
-
-        /**
-         * Returns the index of the first character in a set, ignoring quoted text.
-         * For example, in the string "abc'hide'h", the 'h' in "hide" will not be
-         * found by a search for "h".  Unlike string.indexOf(), this method searches
-         * not for a single character, but for any character of the string
-         * <code>setOfChars</code>.
-         * @param text text to be searched
-         * @param start the beginning index, inclusive; <code>0 <= start
-         * <= limit</code>.
-         * @param limit the ending index, exclusive; <code>start <= limit
-         * <= text.length()</code>.
-         * @param setOfChars string with one or more distinct characters
-         * @return Offset of the first character in <code>setOfChars</code>
-         * found, or -1 if not found.
-         * @see string#indexOf
-         */
-        public static int QuotedIndexOf(string text, int start, int limit,
+        /// <summary>
+        /// Returns the index of the first character in a set, ignoring quoted text.
+        /// For example, in the string "abc'hide'h", the 'h' in "hide" will not be
+        /// found by a search for "h".  Unlike <see cref="string.IndexOf(char, int, int)"/>, this method searches
+        /// not for a single character, but for any character of the string <paramref name="setOfChars"/>.
+        /// </summary>
+        /// <param name="text">Text to be searched.</param>
+        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= start &lt;= limit</c>.</param>
+        /// <param name="limit">The ending index, exclusive; <c>start &lt;= limit &lt;= text.Length</c>.</param>
+        /// <param name="setOfChars">String with one or more distinct characters.</param>
+        /// <returns>Offset of the first character in <paramref name="setOfChars"/>
+        /// found, or -1 if not found.</returns>
+        /// <seealso cref="string.IndexOf(char, int, int)"/>
+        public static int QuotedIndexOf(string text, int start, int limit, // ICU4N TODO: API Make limit into length, like in .NET ?
                 string setOfChars)
         {
             for (int i = start; i < limit; ++i)
@@ -1530,24 +1564,24 @@ namespace ICU4N.Impl
             return -1;
         }
 
-        /**
-         * Append a character to a rule that is being built up.  To flush
-         * the quoteBuf to rule, make one final call with isLiteral == true.
-         * If there is no final character, pass in (int)-1 as c.
-         * @param rule the string to append the character to
-         * @param c the character to append, or (int)-1 if none.
-         * @param isLiteral if true, then the given character should not be
-         * quoted or escaped.  Usually this means it is a syntactic element
-         * such as > or $
-         * @param escapeUnprintable if true, then unprintable characters
-         * should be escaped using escapeUnprintable().  These escapes will
-         * appear outside of quotes.
-         * @param quoteBuf a buffer which is used to build up quoted
-         * substrings.  The caller should initially supply an empty buffer,
-         * and thereafter should not modify the buffer.  The buffer should be
-         * cleared out by, at the end, calling this method with a literal
-         * character (which may be -1).
-         */
+        /// <summary>
+        /// Append a character to a rule that is being built up.  To flush
+        /// the <paramref name="quoteBuf"/> to <paramref name="rule"/>, make one final call with <paramref name="isLiteral"/> == true.
+        /// If there is no final character, pass in (int)-1 as <paramref name="c"/>.
+        /// </summary>
+        /// <param name="rule">The string to append the character to.</param>
+        /// <param name="c">The character to append, or (int)-1 if none.</param>
+        /// <param name="isLiteral">If true, then the given character should not be
+        /// quoted or escaped.  Usually this means it is a syntactic element
+        /// such as > or $.</param>
+        /// <param name="escapeUnprintable">If true, then unprintable characters
+        /// should be escaped using <see cref="EscapeUnprintable(StringBuffer, int)"/>.  These escapes will
+        /// appear outside of quotes.</param>
+        /// <param name="quoteBuf">A buffer which is used to build up quoted
+        /// substrings.  The caller should initially supply an empty buffer,
+        /// and thereafter should not modify the buffer.  The buffer should be
+        /// cleared out by, at the end, calling this method with a literal
+        /// character (which may be -1).</param>
         public static void AppendToRule(StringBuffer rule,
                 int c,
                 bool isLiteral,
@@ -1652,10 +1686,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Append the given string to the rule.  Calls the single-character
-         * version of appendToRule for each character.
-         */
+        /// <summary>
+        /// Append the given string to the rule.  Calls the single-character
+        /// version of <see cref="AppendToRule(StringBuffer, int, bool, bool, StringBuffer)"/> for each character.
+        /// </summary>
         public static void AppendToRule(StringBuffer rule,
                 string text,
                 bool isLiteral,
@@ -1669,10 +1703,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Given a matcher reference, which may be null, append its
-         * pattern as a literal to the given rule.
-         */
+        /// <summary>
+        /// Given a matcher reference, which may be null, append its
+        /// pattern as a literal to the given rule.
+        /// </summary>
         public static void AppendToRule(StringBuffer rule,
                 IUnicodeMatcher matcher,
                 bool escapeUnprintable,
@@ -1685,13 +1719,12 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Compares 2 unsigned integers
-         * @param source 32 bit unsigned integer
-         * @param target 32 bit unsigned integer
-         * @return 0 if equals, 1 if source is greater than target and -1
-         *         otherwise
-         */
+        /// <summary>
+        /// Compares 2 unsigned integers.
+        /// </summary>
+        /// <param name="source">32 bit unsigned integer.</param>
+        /// <param name="target">32 bit unsigned integer.</param>
+        /// <returns>0 if equals, 1 if source is greater than target and -1 otherwise.</returns>
         public static int CompareUnsigned(int source, int target)
         {
             source += MAGIC_UNSIGNED;
@@ -1707,16 +1740,15 @@ namespace ICU4N.Impl
             return 0;
         }
 
-        /**
-         * Find the highest bit in a positive integer. This is done
-         * by doing a binary search through the bits.
-         *
-         * @param n is the integer
-         *
-         * @return the bit number of the highest bit, with 0 being
-         * the low order bit, or -1 if <code>n</code> is not positive
-         */
-        public static byte HighBit(int n) // ICU4N NOTE: Returning byte means no negative results. Be sure to cast to sbyte for usage.
+        /// <summary>
+        /// Find the highest bit in a positive integer. This is done
+        /// by doing a binary search through the bits.
+        /// </summary>
+        /// <param name="n">The integer.</param>
+        /// <returns>the bit number of the highest bit, with 0 being
+        /// the low order bit, or -1 if <paramref name="n"/> is not positive.</returns>
+        // ICU4N NOTE: Returning byte means no negative results. Be sure to cast to sbyte for usage.
+        public static byte HighBit(int n) // ICU4N TODO: API Change to short so we can return negative and be CLS compliant, or change to sbyte and mark CLS compliant false?
         {
             if (n <= 0)
             {
@@ -1757,10 +1789,11 @@ namespace ICU4N.Impl
 
             return bit;
         }
-        /**
-         * Utility method to take a int[] containing codepoints and return
-         * a string representation with code units.
-         */
+
+        /// <summary>
+        /// Utility method to take a <see cref="T:int[]"/> containing codepoints and return
+        /// a string representation with code units.
+        /// </summary>
         public static string ValueOf(int[] source)
         {
             // TODO: Investigate why this method is not on UTF16 class
@@ -1772,12 +1805,11 @@ namespace ICU4N.Impl
             return result.ToString();
         }
 
-
-        /**
-         * Utility to duplicate a string count times
-         * @param s string to be duplicated.
-         * @param count Number of times to duplicate a string.
-         */
+        /// <summary>
+        /// Utility to duplicate a string count times.
+        /// </summary>
+        /// <param name="s">String to be duplicated.</param>
+        /// <param name="count">Number of times to duplicate a string.</param>
         public static string Repeat(string s, int count)
         {
             if (count <= 0) return "";
@@ -1795,33 +1827,33 @@ namespace ICU4N.Impl
             return Regex.Split(src, "\\Q" + target + "\\E");
         }
 
-        /**
-         * Split the string at runs of ascii whitespace characters.
-         */
+        /// <summary>
+        /// Split the string at runs of ascii whitespace characters.
+        /// </summary>
         public static string[] SplitWhitespace(string src)
         {
             return Regex.Split(src, "\\s+");
         }
 
-        /**
-         * Parse a list of hex numbers and return a string
-         * @param string string of hex numbers.
-         * @param minLength Minimal length.
-         * @param separator Separator.
-         * @return A string from hex numbers.
-         */
+        /// <summary>
+        /// Parse a list of hex numbers and return a string.
+        /// </summary>
+        /// <param name="str">String of hex numbers.</param>
+        /// <param name="minLength">Minimal length.</param>
+        /// <param name="separator">Separator.</param>
+        /// <returns>A string from hex numbers.</returns>
         public static string FromHex(string str, int minLength, string separator)
         {
-            return FromHex(str, minLength, new Regex(separator != null ? separator : "\\s+"));
+            return FromHex(str, minLength, new Regex(separator ?? "\\s+"));
         }
 
-        /**
-         * Parse a list of hex numbers and return a string
-         * @param string string of hex numbers.
-         * @param minLength Minimal length.
-         * @param separator Separator.
-         * @return A string from hex numbers.
-         */
+        /// <summary>
+        /// Parse a list of hex numbers and return a string.
+        /// </summary>
+        /// <param name="str">String of hex numbers.</param>
+        /// <param name="minLength">Minimal length.</param>
+        /// <param name="separator">Separator.</param>
+        /// <returns>A string from hex numbers.</returns>
         public static string FromHex(string str, int minLength, Regex separator)
         {
             StringBuilder buffer = new StringBuilder();
@@ -1839,24 +1871,25 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
-        /**
-         * This implementation is equivalent to Java 7+ Objects#equals(Object a, Object b)
-         *
-         * @param a an object
-         * @param b an object to be compared with a for equality
-         * @return true if the arguments are equal to each other and false otherwise
-         */
+        /// <summary>
+        /// This implementation is equivalent to Java 7+ Objects.equals(Object a, Object b).
+        /// Note this compares the values in any nested collections.
+        /// </summary>
+        /// <param name="a">An object.</param>
+        /// <param name="b">An object to be compared with a for equality.</param>
+        /// <returns>true if the arguments are equal to each other and false otherwise.</returns>
         new public static bool Equals(object a, object b)
         {
             return (a == b)
-                    || (a != null && b != null && a.Equals(b));
+                    || (a != null && b != null && a.Equals(b)); // ICU4N TODO: use CollectionUtil.Equals()
         }
 
-        /**
-         * This implementation is equivalent to Java 7+ Objects#hash(Object... values)
-         * @param values the values to be hashed
-         * @return a hash value of the sequence of input values
-         */
+        /// <summary>
+        /// This implementation is equivalent to Java 7+ Objects.hash(Object... values).
+        /// Note this takes into consideration the values in any nested collections.
+        /// </summary>
+        /// <param name="values">The values to be hashed.</param>
+        /// <returns>A hash value of the sequence of input values.</returns>
         public static int Hash(params object[] values)
         {
             //return Arrays.hashCode(values);
@@ -1875,32 +1908,34 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    elementHashCode = (element).GetHashCode();
+                    elementHashCode = (element).GetHashCode(); // ICU4N TODO: use CollectionUtil.GetHashCode()
                 }
                 hashCode = 31 * hashCode + elementHashCode;
             }
             return hashCode;
         }
 
-        /**
-         * This implementation is equivalent to Java 7+ Objects#hashCode(Object o)
-         * @param o an object
-         * @return a hash value of a non-null argument and 0 for null argument
-         */
+        /// <summary>
+        /// This implementation is equivalent to Java 7+ Objects.hashCode(Object o).
+        /// Note this takes into consideration the values in any nested collections.
+        /// </summary>
+        /// <param name="o">An object.</param>
+        /// <returns>A hash value of a non-null argument and 0 for null argument.</returns>
         public static int GetHashCode(object o)
         {
-            return o == null ? 0 : o.GetHashCode();
+            return o == null ? 0 : o.GetHashCode(); // ICU4N TODO: use CollectionUtil.GetHashCode()
         }
 
-        /**
-         * This implementation is equivalent to Java 7+ Objects#toString(Object o)
-         * @param o an object
-         * @return the result of calling toStirng for a non-null argument and "null" for a
-         * null argument
-         */
+        /// <summary>
+        /// This implementation is equivalent to Java 7+ Objects.toString(Object o).
+        /// Note this takes into consideration the values in any nested collections.
+        /// </summary>
+        /// <param name="o">An object.</param>
+        /// <returns>the result of calling <see cref="Support.Collections.CollectionUtil.ToString(object)"/> for a non-null argument and "null" for a
+        /// null argument.</returns>
         public static string ToString(object o)
         {
-            return o == null ? "null" : o.ToString();
+            return o == null ? "null" : o.ToString(); // ICU4N TODO: use CollectionUtil.ToString()
         }
     }
 }

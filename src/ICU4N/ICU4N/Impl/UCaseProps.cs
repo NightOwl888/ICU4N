@@ -1,17 +1,21 @@
 ﻿using ICU4N.Lang;
-using ICU4N.Support;
 using ICU4N.Support.IO;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
 
 namespace ICU4N.Impl
 {
+    /// <summary>
+    /// Low-level Unicode character/string case mapping code.
+    /// .NET port of ucase.h/.c.
+    /// </summary>
+    /// <author>Markus W. Scherer</author>
+    /// <created>2005jan29</created>
     public sealed partial class UCaseProps
     {
         // constructors etc. --------------------------------------------------- ***
@@ -68,7 +72,7 @@ namespace ICU4N.Impl
             }
         }
 
-        // implement ICUBinary.Authenticate
+        // implement IAuthenticate
         private sealed class IsAcceptable : IAuthenticate
         {
             public bool IsDataVersionAcceptable(byte[] version)
@@ -112,7 +116,7 @@ namespace ICU4N.Impl
             return (props & EXCEPTION) != 0;
         }
 
-        /* number of bits in an 8-bit integer value */
+        /// <summary>number of bits in an 8-bit integer value</summary>
         private static readonly byte[/*256*/] flagsOffset ={
             0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
             1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
@@ -141,15 +145,14 @@ namespace ICU4N.Impl
             return flagsOffset[flags & ((1 << index) - 1)];
         }
 
-        /*
-         * Get the value of an optional-value slot where hasSlot(excWord, index).
-         *
-         * @param excWord (in) initial exceptions word
-         * @param index (in) desired slot index
-         * @param excOffset (in) offset into exceptions[] after excWord=exceptions.charAt(excOffset++);
-         * @return bits 31..0: slot value
-         *             63..32: modified excOffset, moved to the last char of the value, use +1 for beginning of next slot
-         */
+        /// <summary>
+        /// Get the value of an optional-value slot where HasSlot(excWord, index).
+        /// </summary>
+        /// <param name="excWord">Initial exceptions word.</param>
+        /// <param name="index">Desired slot index.</param>
+        /// <param name="excOffset">offset into exceptions[] after excWord=exceptions[excOffset++];</param>
+        /// <returns>bits 31..0: slot value
+        ///             63..32: modified excOffset, moved to the last char of the value, use +1 for beginning of next slot</returns>
         private long GetSlotValueAndOffset(int excWord, int index, int excOffset)
         {
             long value;
@@ -167,7 +170,11 @@ namespace ICU4N.Impl
             return value | ((long)excOffset << 32);
         }
 
-        /* same as getSlotValueAndOffset() but does not return the slot offset */
+        /// <summary>Same as <see cref="GetSlotValueAndOffset(int, int, int)"/> but does not return the slot offset.</summary>
+        /// <param name="excWord">Initial exceptions word.</param>
+        /// <param name="index">Desired slot index.</param>
+        /// <param name="excOffset">offset into exceptions[] after excWord=exceptions[excOffset++];</param>
+        /// <returns>bits 63..32: modified excOffset, moved to the last char of the value, use +1 for beginning of next slot</returns>
         private int GetSlotValue(int excWord, int index, int excOffset)
         {
             int value;
@@ -263,15 +270,19 @@ namespace ICU4N.Impl
             return c;
         }
 
-        /**
-         * Adds all simple case mappings and the full case folding for c to sa,
-         * and also adds special case closure mappings.
-         * c itself is not added.
-         * For example, the mappings
-         * - for s include long s
-         * - for sharp s include ss
-         * - for k include the Kelvin sign
-         */
+        /// <summary>
+        /// Adds all simple case mappings and the full case folding for <paramref name="c"/> to sa,
+        /// and also adds special case closure mappings.
+        /// </summary>
+        /// <remarks>
+        /// <paramref name="c"/> itself is not added.
+        /// For example, the mappings
+        /// <list type="bullet">
+        ///     <item><description>for s include long s</description></item>
+        ///     <item><description>for sharp s include ss</description></item>
+        ///     <item><description>for k include the Kelvin sign</description></item>
+        /// </list>
+        /// </remarks>
         public void AddCaseClosure(int c, UnicodeSet set)
         {
             /*
@@ -397,10 +408,10 @@ namespace ICU4N.Impl
             }
         }
 
-        /*
-         * compare s, which has a length, with t=unfold[unfoldOffset..], which has a maximum length or is NUL-terminated
-         * must be s.length()>0 and max>0 and s.length()<=max
-         */
+        /// <summary>
+        /// compare s, which has a length, with t=unfold[unfoldOffset..], which has a maximum length or is NUL-terminated
+        /// must be s.Length>0 and max>0 and s.Length&lt;=max
+        /// </summary>
         private int StrCmpMax(string s, int unfoldOffset, int max)
         {
             int i1, length, c1, c2;
@@ -434,17 +445,18 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Maps the string to single code points and adds the associated case closure
-         * mappings.
-         * The string is mapped to code points if it is their full case folding string.
-         * In other words, this performs a reverse full case folding and then
-         * adds the case closure items of the resulting code points.
-         * If the string is found and its closure applied, then
-         * the string itself is added as well as part of its code points' closure.
-         *
-         * @return true if the string was found
-         */
+        /// <summary>
+        /// Maps the string to single code points and adds the associated case closure
+        /// mappings.
+        /// </summary>
+        /// <remarks>
+        /// The string is mapped to code points if it is their full case folding string.
+        /// In other words, this performs a reverse full case folding and then
+        /// adds the case closure items of the resulting code points.
+        /// If the string is found and its closure applied, then
+        /// the string itself is added as well as part of its code points' closure.
+        /// </remarks>
+        /// <returns>true if the string was found.</returns>
         public bool AddStringCaseClosure(string s, UnicodeSet set)
         {
             int i, length, start, limit, result, unfoldOffset, unfoldRows, unfoldRowWidth, unfoldStringWidth;
@@ -512,19 +524,21 @@ namespace ICU4N.Impl
             return false; /* string not found */
         }
 
-        /** @return NONE, LOWER, UPPER, TITLE */
+        /// <returns><see cref="NONE"/>, <see cref="LOWER"/>, <see cref="UPPER"/>, <see cref="TITLE"/></returns>
         public int GetType(int c)
         {
             return GetTypeFromProps(trie.Get(c));
         }
 
-        /** @return like getType() but also sets IGNORABLE if c is case-ignorable */
+        /// <summary>
+        /// Like <see cref="GetType(int)"/>, but also sets <see cref="IGNORABLE"/> if <paramref name="c"/> is case-ignorable.
+        /// </summary>
         public int GetTypeOrIgnorable(int c)
         {
             return GetTypeAndIgnorableFromProps(trie.Get(c));
         }
 
-        /** @return NO_DOT, SOFT_DOTTED, ABOVE, OTHER_ACCENT */
+        /// <returns><see cref="NO_DOT"/>, <see cref="SOFT_DOTTED"/>, <see cref="ABOVE"/>, <see cref="OTHER_ACCENT"/>.</returns>
         public int GetDotType(int c)
         {
             int props = trie.Get(c);
@@ -628,53 +642,58 @@ namespace ICU4N.Impl
          *     zero or more case-ignorable characters.
          */
 
-        /**
-         * Iterator for string case mappings, which need to look at the
-         * context (surrounding text) of a given character for conditional mappings.
-         *
-         * The iterator only needs to go backward or forward away from the
-         * character in question. It does not use any indexes on this interface.
-         * It does not support random access or an arbitrary change of
-         * iteration direction.
-         *
-         * The code point being case-mapped itself is never returned by
-         * this iterator.
-         */
+        /// <summary>
+        /// Iterator for string case mappings, which need to look at the
+        /// context (surrounding text) of a given character for conditional mappings.
+        /// </summary>
+        /// <remarks>
+        /// The iterator only needs to go backward or forward away from the
+        /// character in question. It does not use any indexes on this interface.
+        /// It does not support random access or an arbitrary change of
+        /// iteration direction.
+        /// <para/>
+        /// The code point being case-mapped itself is never returned by
+        /// this iterator.
+        /// </remarks>
         public interface IContextIterator // ICU4N TODO: API De-nest this interface
         {
-            /**
-             * Reset the iterator for forward or backward iteration.
-             * @param dir >0: Begin iterating forward from the first code point
-             * after the one that is being case-mapped.
-             *            <0: Begin iterating backward from the first code point
-             * before the one that is being case-mapped.
-             */
+            /// <summary>
+            /// Reset the iterator for forward or backward iteration.
+            /// </summary>
+            /// <param name="dir">
+            /// >0: Begin iterating forward from the first code point
+            /// after the one that is being case-mapped.
+            /// &lt;0: Begin iterating backward from the first code point
+            /// before the one that is being case-mapped.
+            /// </param>
             void Reset(int dir);
-            /**
-             * Iterate and return the next code point, moving in the direction
-             * determined by the reset() call.
-             * @return Next code point, or <0 when the iteration is done.
-             */
+
+            /// <summary>
+            /// Iterate and return the next code point, moving in the direction
+            /// determined by the <see cref="Reset(int)"/> call.
+            /// </summary>
+            /// <returns>Next code point, or &lt;0 when the iteration is done.</returns>
             int Next();
         }
 
-        /**
-         * For string case mappings, a single character (a code point) is mapped
-         * either to itself (in which case in-place mapping functions do nothing),
-         * or to another single code point, or to a string.
-         * Aside from the string contents, these are indicated with a single int
-         * value as follows:
-         *
-         * Mapping to self: Negative values (~self instead of -self to support U+0000)
-         *
-         * Mapping to another code point: Positive values >MAX_STRING_LENGTH
-         *
-         * Mapping to a string: The string length (0..MAX_STRING_LENGTH) is
-         * returned. Note that the string result may indeed have zero length.
-         */
+        /// <summary>
+        /// For string case mappings, a single character (a code point) is mapped
+        /// either to itself (in which case in-place mapping functions do nothing),
+        /// or to another single code point, or to a string.
+        /// Aside from the string contents, these are indicated with a single int
+        /// value as follows:
+        /// <list type="table">
+        ///     <item><term>Mapping to self</term><description>Negative values (~self instead of -self to support U+0000)</description></item>
+        ///     <item><term>Mapping to another code point</term><description>Positive values ><see cref="MAX_STRING_LENGTH"/></description></item>
+        ///     <item><term>Mapping to a string</term><description>
+        ///         The string length (0..MAX_STRING_LENGTH) is
+        ///         returned. Note that the string result may indeed have zero length.
+        ///     </description></item>
+        /// </list>
+        /// </summary>
         public static readonly int MAX_STRING_LENGTH = 0x1f;
 
-        //ivate static readonly int LOC_UNKNOWN=0;
+        //private static readonly int LOC_UNKNOWN=0;
         public static readonly int LOC_ROOT = 1;
         private static readonly int LOC_TURKISH = 2;
         private static readonly int LOC_LITHUANIAN = 3;
@@ -689,7 +708,7 @@ namespace ICU4N.Impl
         {
             return GetCaseLocale(locale.GetLanguage());
         }
-        /** Accepts both 2- and 3-letter language subtags. */
+        /// <summary>Accepts both 2- and 3-letter language subtags.</summary>
         private static int GetCaseLocale(string language)
         {
             // Check the subtag length to reduce the number of comparisons
@@ -741,7 +760,7 @@ namespace ICU4N.Impl
             return LOC_ROOT;
         }
 
-        /* Is followed by {case-ignorable}* cased  ? (dir determines looking forward/backward) */
+        /// <summary>Is followed by {case-ignorable}* cased  ? (dir determines looking forward/backward)</summary>
         private bool IsFollowedByCasedLetter(IContextIterator iter, int dir)
         {
             int c;
@@ -771,7 +790,7 @@ namespace ICU4N.Impl
             return false; /* not followed by cased letter */
         }
 
-        /* Is preceded by Soft_Dotted character with no intervening cc=230 ? */
+        /// <summary>Is preceded by Soft_Dotted character with no intervening cc=230 ?</summary>
         private bool IsPrecededBySoftDotted(IContextIterator iter)
         {
             int c;
@@ -832,7 +851,7 @@ namespace ICU4N.Impl
          * Markus W. Scherer 2003-feb-15
          */
 
-        /* Is preceded by base character 'I' with no intervening cc=230 ? */
+        /// <summary>Is preceded by base character 'I' with no intervening cc=230 ?</summary>
         private bool IsPrecededBy_I(IContextIterator iter)
         {
             int c;
@@ -859,7 +878,7 @@ namespace ICU4N.Impl
             return false; /* not preceded by I */
         }
 
-        /* Is followed by one or more cc==230 ? */
+        /// <summary>Is followed by one or more cc==230 ?</summary>
         private bool IsFollowedByMoreAbove(IContextIterator iter)
         {
             int c;
@@ -886,7 +905,7 @@ namespace ICU4N.Impl
             return false; /* no more cc==230 following */
         }
 
-        /* Is followed by a dot above (without cc==230 in between) ? */
+        /// <summary>Is followed by a dot above (without cc==230 in between) ?</summary>
         private bool IsFollowedByDotAbove(IContextIterator iter)
         {
             int c;
@@ -980,20 +999,20 @@ namespace ICU4N.Impl
          * U+0130 has no simple case folding (simple-case-folds to itself).
          */
 
-        /**
-         * Bit mask for getting just the options from a string compare options word
-         * that are relevant for case folding (of a single string or code point).
-         *
-         * Currently only bit 0 for FOLD_CASE_EXCLUDE_SPECIAL_I.
-         * It is conceivable that at some point we might use one more bit for using uppercase sharp s.
-         * It is conceivable that at some point we might want the option to use only simple case foldings
-         * when operating on strings.
-         *
-         * @internal
-         */
+        /// <summary>
+        /// Bit mask for getting just the options from a string compare options word
+        /// that are relevant for case folding (of a single string or code point).
+        /// </summary>
+        /// <remarks>
+        /// Currently only bit 0 for <see cref="UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I"/>.
+        /// It is conceivable that at some point we might use one more bit for using uppercase sharp s.
+        /// It is conceivable that at some point we might want the option to use only simple case foldings
+        /// when operating on strings.
+        /// </remarks>
+        /// <internal/>
         private static readonly int FOLD_CASE_OPTIONS_MASK = 7;
 
-        /* return the simple case folding mapping for c */
+        /// <summary>Returns the simple case folding mapping for <paramref name="c"/>.</summary>
         public int Fold(int c, int options)
         {
             int props = trie.Get(c);
@@ -1064,16 +1083,16 @@ namespace ICU4N.Impl
 
         /* case mapping properties API ---------------------------------------------- */
 
-        /*
-         * We need a StringBuilder for multi-code point output from the
-         * full case mapping functions. However, we do not actually use that output,
-         * we just check whether the input character was mapped to anything else.
-         * We use a shared StringBuilder to avoid allocating a new one in each call.
-         * We remove its contents each time so that it does not grow large over time.
-         *
-         * @internal
-         */
+        
         private static StringBuilder dummyStringBuilder = new StringBuilder();
+
+        /// <summary>
+        /// We need a <see cref="StringBuilder"/> for multi-code point output from the
+        /// full case mapping functions. However, we do not actually use that output,
+        /// we just check whether the input character was mapped to anything else.
+        /// We use a shared <see cref="StringBuilder"/> to avoid allocating a new one in each call.
+        /// We remove its contents each time so that it does not grow large over time.
+        /// </summary>
         public static StringBuilder DummyStringBuilder { get { return dummyStringBuilder; } }
 
         public bool HasBinaryProperty(int c, int which)
@@ -1137,7 +1156,7 @@ namespace ICU4N.Impl
         private static readonly String DATA_TYPE = "icu";
         private static readonly String DATA_FILE_NAME = DATA_NAME + "." + DATA_TYPE;
 
-        /* format "cAsE" */
+        /// <summary>format "cAsE"</summary>
         private static readonly int FMT = 0x63415345;
 
         /* indexes into indexes[] */
@@ -1154,18 +1173,20 @@ namespace ICU4N.Impl
 
         /* 2-bit constants for types of cased characters */
         public static readonly int TYPE_MASK = 3;
-        public static readonly int NONE = 0;
+        public static readonly int NONE = 0; // ICU4N TODO: Make into [Flags] enum ?
         public static readonly int LOWER = 1;
         public static readonly int UPPER = 2;
         public static readonly int TITLE = 3;
 
-        /** @return NONE, LOWER, UPPER, TITLE */
+        /// <returns><see cref="NONE"/>, <see cref="LOWER"/>, <see cref="UPPER"/>, <see cref="TITLE"/></returns>
         private static int GetTypeFromProps(int props)
         {
             return props & TYPE_MASK;
         }
 
-        /** @return like getTypeFromProps() but also sets IGNORABLE if props indicate case-ignorable */
+        /// <summary>
+        /// Like <see cref="GetTypeFromProps(int)"/>, but also sets <see cref="IGNORABLE"/> if <paramref name="props"/> indicate case-ignorable.
+        /// </summary>
         private static int GetTypeAndIgnorableFromProps(int props)
         {
             return props & 7;
@@ -1175,6 +1196,7 @@ namespace ICU4N.Impl
         private static readonly int SENSITIVE = 8;
         private static readonly int EXCEPTION = 0x10;
 
+        // ICU4N TODO: API - make into [Flags] enum ?
         private static readonly int DOT_MASK = 0x60;
         //private static readonly int NO_DOT=        0;      /* normal characters with cc=0 */
         private static readonly int SOFT_DOTTED = 0x20;   /* soft-dotted characters with cc=0 */
@@ -1192,14 +1214,14 @@ namespace ICU4N.Impl
             return (short)props >> DELTA_SHIFT;
         }
 
-        /* exception: bits 15..5 are an unsigned 11-bit index into the exceptions array */
+        /// <summary>exception: bits 15..5 are an unsigned 11-bit index into the exceptions array</summary>
         private static readonly int EXC_SHIFT = 5;
         //private static readonly int EXC_MASK=      0xffe0;
         //private static readonly int MAX_EXCEPTIONS=((EXC_MASK>>EXC_SHIFT)+1);
 
         /* definitions for 16-bit main exceptions word ------------------------------ */
 
-        /* first 8 bits indicate values in optional slots */
+        /// <summary>first 8 bits indicate values in optional slots</summary>
         private static readonly int EXC_LOWER = 0;
         private static readonly int EXC_FOLD = 1;
         private static readonly int EXC_UPPER = 2;
@@ -1210,12 +1232,12 @@ namespace ICU4N.Impl
         private static readonly int EXC_FULL_MAPPINGS = 7;
         //private static readonly int EXC_ALL_SLOTS=8;   /* one past the last slot */
 
-        /* each slot is 2 uint16_t instead of 1 */
+        /// <summary>each slot is 2 uint16_t instead of 1</summary>
         private static readonly int EXC_DOUBLE_SLOTS = 0x100;
 
         /* reserved: exception bits 11..9 */
 
-        /* EXC_DOT_MASK=DOT_MASK<<EXC_DOT_SHIFT */
+        /// <summary>EXC_DOT_MASK=<see cref="DOT_MASK"/>&lt;&lt;<see cref="EXC_DOT_SHIFT"/></summary>
         private static readonly int EXC_DOT_SHIFT = 7;
 
         /* normally stored in the main word, but pushed out for larger exception indexes */
@@ -1244,9 +1266,9 @@ namespace ICU4N.Impl
         private static readonly int UNFOLD_ROW_WIDTH = 1;
         private static readonly int UNFOLD_STRING_WIDTH = 2;
 
-        /*
-         * public singleton instance
-         */
+        /// <summary>
+        /// Public singleton instance.
+        /// </summary>
         public static readonly UCaseProps INSTANCE;
 
         // This static initializer block must be placed after

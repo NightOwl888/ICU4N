@@ -3,13 +3,16 @@ using ICU4N.Support;
 using ICU4N.Support.IO;
 using ICU4N.Text;
 using ICU4N.Util;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ICU4N.Impl
 {
+    /// <summary>
+    /// Low-level Unicode bidi/shaping properties access.
+    /// .NET port of ubidi_props.h/.c.
+    /// </summary>
+    /// <author>Markus W. Scherer</author>
+    /// <created>2005jan16</created>
     public sealed class UBiDiProps
     {
         // constructors etc. --------------------------------------------------- ***
@@ -358,9 +361,9 @@ namespace ICU4N.Impl
         }
 
 
-        /*
-         * public singleton instance
-         */
+        /// <summary>
+        /// public singleton instance
+        /// </summary>
         public static readonly UBiDiProps INSTANCE;
 
         // This static initializer block must be placed after

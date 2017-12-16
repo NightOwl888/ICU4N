@@ -773,25 +773,25 @@ namespace ICU4N.Util
          * {@icu} Resource type constant for "no resource".
          * @stable ICU 3.8
          */
-        public const int NONE = -1;
+        public const int NONE = -1; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
 
         /**
          * {@icu} Resource type constant for strings.
          * @stable ICU 3.8
          */
-        public const int STRING = 0;
+        public const int STRING = 0; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
 
         /**
          * {@icu} Resource type constant for binary data.
          * @stable ICU 3.8
          */
-        public const int BINARY = 1;
+        public const int BINARY = 1; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
 
         /**
          * {@icu} Resource type constant for tables of key-value pairs.
          * @stable ICU 3.8
          */
-        public const int TABLE = 2;
+        public const int TABLE = 2; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
 
         /**
          * {@icu} Resource type constant for a single 28-bit integer, interpreted as
@@ -799,20 +799,20 @@ namespace ICU4N.Util
          * @see #getInt
          * @stable ICU 3.8
          */
-        public const int INT32 = 7;
+        public const int INT32 = 7; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
 
         /**
          * {@icu} Resource type constant for arrays of resources.
          * @stable ICU 3.8
          */
-        public const int ARRAY = 8;
+        public const int ARRAY = 8; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
 
         /**
          * Resource type constant for vectors of 32-bit integers.
          * @see #getIntVector
          * @stable ICU 3.8
          */
-        public const int INT32_VECTOR = 14;
+        public const int INT32_VECTOR = 14; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
 
         //====== protected members ==============
 

@@ -1,12 +1,10 @@
-﻿using ICU4N.Impl;
-using ICU4N.Lang;
+﻿using ICU4N.Lang;
 using ICU4N.Support;
 using ICU4N.Support.IO;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -16,95 +14,115 @@ using static ICU4N.Lang.UCharacter;
 
 namespace ICU4N.Impl
 {
+    /// <summary>
+    /// Internal class used for Unicode character property database.
+    /// </summary>
+    /// <remarks>
+    /// This classes store binary data read from uprops.icu.
+    /// It does not have the capability to parse the data into more high-level
+    /// information. It only returns bytes of information when required.
+    /// <para/>
+    /// Due to the form most commonly used for retrieval, array of char is used
+    /// to store the binary data.
+    /// <para/>
+    /// <see cref="UCharacterPropertyDB"/> also contains information on accessing indexes to
+    /// significant points in the binary data.
+    /// <para/>
+    /// Responsibility for molding the binary data into more meaning form lies on
+    /// <see cref="UCharacter"/>.
+    /// </remarks>
+    /// <author>Syn Wee Quek</author>
+    /// <since>release 2.1, february 1st 2002</since>
     public sealed class UCharacterProperty
     {
         // public data members -----------------------------------------------
 
-        /*
-         * public singleton instance
-         */
+        /// <summary>
+        /// Public singleton instance.
+        /// </summary>
         public static readonly UCharacterProperty INSTANCE;
 
-        /**
-        * Trie data
-        */
+
         private Trie2_16 m_trie_;
+        /// <summary>
+        /// Trie data.
+        /// </summary>
         public Trie2_16 Trie { get { return m_trie_; } }
 
-        /**
-        * Unicode version
-        */
+
         private VersionInfo m_unicodeVersion_;
+        /// <summary>
+        /// Unicode version.
+        /// </summary>
         public VersionInfo UnicodeVersion { get { return m_unicodeVersion_; } }
 
-        /**
-        * Latin capital letter i with dot above
-        */
-        public static readonly char LATIN_CAPITAL_LETTER_I_WITH_DOT_ABOVE_ = (char)0x130;
-        /**
-        * Latin small letter i with dot above
-        */
-        public static readonly char LATIN_SMALL_LETTER_DOTLESS_I_ = (char)0x131;
-        /**
-        * Latin lowercase i
-        */
-        public static readonly char LATIN_SMALL_LETTER_I_ = (char)0x69;
-        /**
-        * Character type mask
-        */
-        public static readonly int TYPE_MASK = 0x1F;
+        /// <summary>
+        /// Latin capital letter i with dot above
+        /// </summary>
+        public const char LATIN_CAPITAL_LETTER_I_WITH_DOT_ABOVE_ = (char)0x130;
+        /// <summary>
+        /// Latin small letter i with dot above
+        /// </summary>
+        public const char LATIN_SMALL_LETTER_DOTLESS_I_ = (char)0x131;
+        /// <summary>
+        /// Latin lowercase i
+        /// </summary>
+        public const char LATIN_SMALL_LETTER_I_ = (char)0x69;
+        /// <summary>
+        /// Character type mask
+        /// </summary>
+        public const int TYPE_MASK = 0x1F;
 
         // uprops.h enum UPropertySource --------------------------------------- ***
 
         // ICU4N TODO: API - Make into enum?
 
-        /** No source, not a supported property. */
+        /// <summary>No source, not a supported property.</summary>
         public const int SRC_NONE = 0;
-        /** From uchar.c/uprops.icu main trie */
+        /// <summary>From uchar.c/uprops.icu main trie</summary>
         public const int SRC_CHAR = 1;
-        /** From uchar.c/uprops.icu properties vectors trie */
+        /// <summary>From uchar.c/uprops.icu properties vectors trie</summary>
         public const int SRC_PROPSVEC = 2;
-        /** From unames.c/unames.icu */
+        /// <summary>From unames.c/unames.icu</summary>
         public const int SRC_NAMES = 3;
-        /** From ucase.c/ucase.icu */
+        /// <summary>From ucase.c/ucase.icu</summary>
         public const int SRC_CASE = 4;
-        /** From ubidi_props.c/ubidi.icu */
+        /// <summary>From ubidi_props.c/ubidi.icu</summary>
         public const int SRC_BIDI = 5;
-        /** From uchar.c/uprops.icu main trie as well as properties vectors trie */
+        /// <summary>From uchar.c/uprops.icu main trie as well as properties vectors trie</summary>
         public const int SRC_CHAR_AND_PROPSVEC = 6;
-        /** From ucase.c/ucase.icu as well as unorm.cpp/unorm.icu */
+        /// <summary>From ucase.c/ucase.icu as well as unorm.cpp/unorm.icu</summary>
         public const int SRC_CASE_AND_NORM = 7;
-        /** From normalizer2impl.cpp/nfc.nrm */
+        /// <summary>From normalizer2impl.cpp/nfc.nrm</summary>
         public const int SRC_NFC = 8;
-        /** From normalizer2impl.cpp/nfkc.nrm */
+        /// <summary>From normalizer2impl.cpp/nfkc.nrm</summary>
         public const int SRC_NFKC = 9;
-        /** From normalizer2impl.cpp/nfkc_cf.nrm */
+        /// <summary>From normalizer2impl.cpp/nfkc_cf.nrm</summary>
         public const int SRC_NFKC_CF = 10;
-        /** From normalizer2impl.cpp/nfc.nrm canonical iterator data */
+        /// <summary>From normalizer2impl.cpp/nfc.nrm canonical iterator data</summary>
         public const int SRC_NFC_CANON_ITER = 11;
-        /** One more than the highest UPropertySource (SRC_) constant. */
+        /// <summary>One more than the highest UPropertySource (SRC_) constant.</summary>
         public const int SRC_COUNT = 12;
 
         // public methods ----------------------------------------------------
 
-        /**
-        * Gets the main property value for code point ch.
-        * @param ch code point whose property value is to be retrieved
-        * @return property value of code point
-        */
+        /// <summary>
+        /// Gets the main property value for code point <paramref name="ch"/>.
+        /// </summary>
+        /// <param name="ch">Code point whose property value is to be retrieved.</param>
+        /// <returns>Property value of code point.</returns>
         public int GetProperty(int ch)
         {
             return m_trie_.Get(ch);
         }
 
-        /**
-         * Gets the unicode additional properties.
-         * Java version of C u_getUnicodeProperties().
-         * @param codepoint codepoint whose additional properties is to be
-         *                  retrieved
-         * @param column The column index.
-         * @return unicode properties
-         */
+        /// <summary>
+        /// Gets the unicode additional properties.
+        /// .NET version of C u_getUnicodeProperties().
+        /// </summary>
+        /// <param name="codepoint">Codepoint whose additional properties is to be retrieved.</param>
+        /// <param name="column">The column index.</param>
+        /// <returns>Unicode properties.</returns>
         public int GetAdditional(int codepoint, int column)
         {
             Debug.Assert(column >= 0);
@@ -115,26 +133,30 @@ namespace ICU4N.Impl
             return m_additionalVectors_[m_additionalTrie_.Get(codepoint) + column];
         }
 
-        static readonly int MY_MASK = UCharacterProperty.TYPE_MASK
+        internal static readonly int MY_MASK = UCharacterProperty.TYPE_MASK
             & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue()) |
                 (1 << UnicodeCategory.LowercaseLetter.ToIcuValue()) |
                 (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue()) |
                 (1 << UnicodeCategory.ModifierLetter.ToIcuValue()) |
                 (1 << UnicodeCategory.OtherLetter.ToIcuValue()));
 
-
-        /**
-      * <p>Get the "age" of the code point.</p>
-      * <p>The "age" is the Unicode version when the code point was first
-      * designated (as a non-character or for Private Use) or assigned a
-      * character.</p>
-      * <p>This can be useful to avoid emitting code points to receiving
-      * processes that do not accept newer characters.</p>
-      * <p>The data is from the UCD file DerivedAge.txt.</p>
-      * <p>This API does not check the validity of the codepoint.</p>
-      * @param codepoint The code point.
-      * @return the Unicode version number
-      */
+        /// <summary>
+        /// Get the "age" of the code point.
+        /// </summary>
+        /// <remarks>
+        /// The "age" is the Unicode version when the code point was first
+        /// designated (as a non-character or for Private Use) or assigned a
+        /// character.
+        /// <para/>
+        /// This can be useful to avoid emitting code points to receiving
+        /// processes that do not accept newer characters.
+        /// <para/>
+        /// The data is from the UCD file DerivedAge.txt.
+        /// <para/>
+        /// This API does not check the validity of the codepoint.
+        /// </remarks>
+        /// <param name="codepoint">The code point.</param>
+        /// <returns>The Unicode version number.</returns>
         public VersionInfo GetAge(int codepoint)
         {
             int version = GetAdditional(codepoint, 0) >> AGE_SHIFT_;
@@ -149,16 +171,16 @@ namespace ICU4N.Impl
         private static readonly int GC_ZS_MASK = GetMask(UnicodeCategory.SpaceSeparator.ToIcuValue());
         private static readonly int GC_ZL_MASK = GetMask(UnicodeCategory.LineSeparator.ToIcuValue());
         private static readonly int GC_ZP_MASK = GetMask(UnicodeCategory.ParagraphSeparator.ToIcuValue());
-        /** Mask constant for multiple UCharCategory bits (Z Separators). */
+        /// <summary>Mask constant for multiple UCharCategory bits (Z Separators).</summary>
         private static readonly int GC_Z_MASK = GC_ZS_MASK | GC_ZL_MASK | GC_ZP_MASK;
 
-        /**
-         * Checks if c is in
-         * [^\p{space}\p{gc=Control}\p{gc=Surrogate}\p{gc=Unassigned}]
-         * with space=\p{Whitespace} and Control=Cc.
-         * Implements UCHAR_POSIX_GRAPH.
-         * @internal
-         */
+        /// <summary>
+        /// Checks if <paramref name="c"/> is in
+        /// [^\p{space}\p{gc=Control}\p{gc=Surrogate}\p{gc=Unassigned}]
+        /// with space=\p{Whitespace} and Control=Cc.
+        /// Implements UCHAR_POSIX_GRAPH.
+        /// </summary>
+        /// <internal/>
         private static bool IsgraphPOSIX(int c)
         {
             /* \p{space}\p{gc=Control} == \p{gc=Z}\p{Control} */
@@ -336,11 +358,11 @@ namespace ICU4N.Impl
                 new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
                     {  // UCHAR_POSIX_PRINT
                         /*
-                            * Checks if codepoint is in \p{graph}\p{blank} - \p{cntrl}.
-                            *
-                            * The only cntrl character in graph+blank is TAB (in blank).
-                            * Here we implement (blank-TAB)=Zs instead of calling u_isblank().
-                            */
+                        * Checks if codepoint is in \p{graph}\p{blank} - \p{cntrl}.
+                        *
+                        * The only cntrl character in graph+blank is TAB (in blank).
+                        * Here we implement (blank-TAB)=Zs instead of calling u_isblank().
+                        */
                         return (UCharacter.GetType(c) == UnicodeCategory.SpaceSeparator) || IsgraphPOSIX(c);
                     }),
                 new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
@@ -519,10 +541,10 @@ namespace ICU4N.Impl
             return GetProperty(c) & TYPE_MASK;
         }
 
-        /*
-         * Map some of the Grapheme Cluster Break values to Hangul Syllable Types.
-         * Hangul_Syllable_Type is fully redundant with a subset of Grapheme_Cluster_Break.
-         */
+        /// <summary>
+        /// Map some of the Grapheme Cluster Break values to Hangul Syllable Types.
+        /// Hangul_Syllable_Type is fully redundant with a subset of Grapheme_Cluster_Break.
+        /// </summary>
         private static readonly int[] /* UHangulSyllableType */ gcbToHst ={
             HangulSyllableType.NOT_APPLICABLE,   /* U_GCB_OTHER */
             HangulSyllableType.NOT_APPLICABLE,   /* U_GCB_CONTROL */
@@ -851,10 +873,11 @@ namespace ICU4N.Impl
         }
         */
 
-        /**
-         * Get the the maximum values for some enum/int properties.
-         * @return maximum values for the integer properties.
-         */
+        /// <summary>
+        /// Get the the maximum values for some enum/int properties.
+        /// </summary>
+        /// <param name="column"></param>
+        /// <returns>Maximum values for the integer properties.</returns>
         public int GetMaxValues(int column)
         {
             // return m_maxBlockScriptValue_;
@@ -870,25 +893,24 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Gets the type mask
-         * @param type character type
-         * @return mask
-         */
+        /// <summary>
+        /// Gets the type mask.
+        /// </summary>
+        /// <param name="type">Character type.</param>
+        /// <returns>Mask.</returns>
         public static int GetMask(int type)
         {
             return 1 << type;
         }
 
-
-        /**
-         * Returns the digit values of characters like 'A' - 'Z', normal,
-         * half-width and full-width. This method assumes that the other digit
-         * characters are checked by the calling method.
-         * @param ch character to test
-         * @return -1 if ch is not a character of the form 'A' - 'Z', otherwise
-         *         its corresponding digit will be returned.
-         */
+        /// <summary>
+        /// Returns the digit values of characters like 'A' - 'Z', normal,
+        /// half-width and full-width. This method assumes that the other digit
+        /// characters are checked by the calling method.
+        /// </summary>
+        /// <param name="ch">Character to test.</param>
+        /// <returns>-1 if ch is not a character of the form 'A' - 'Z', otherwise
+        /// its corresponding digit will be returned.</returns>
         public static int GetEuropeanDigit(int ch)
         {
             if ((ch > 0x7a && ch < 0xff21)
@@ -1118,80 +1140,87 @@ namespace ICU4N.Impl
 
         // protected variables -----------------------------------------------
 
-        /**
-         * Extra property trie
-         */
+        /// <summary>
+        /// Extra property trie
+        /// </summary>
         private Trie2_16 m_additionalTrie_;
-        /**
-         * Extra property vectors, 1st column for age and second for binary
-         * properties.
-         */
+        /// <summary>
+        /// Extra property vectors, 1st column for age and second for binary
+        /// properties.
+        /// </summary>
         private int[] m_additionalVectors_;
-        /**
-         * Number of additional columns
-         */
+        /// <summary>
+        /// Number of additional columns
+        /// </summary>
         private int m_additionalColumnsCount_;
-        /**
-         * Maximum values for block, bits used as in vector word
-         * 0
-         */
+        /// <summary>
+        /// Maximum values for block, bits used as in vector word
+        /// 0
+        /// </summary>
         private int m_maxBlockScriptValue_;
-        /**
-         * Maximum values for script, bits used as in vector word
-         * 0
-         */
+        /// <summary>
+        /// Maximum values for script, bits used as in vector word
+        /// 0
+        /// </summary>
         private int m_maxJTGValue_;
 
-        /**
-         * Script_Extensions data
-         */
+        /// <summary>
+        /// Script_Extensions data
+        /// </summary>
         public char[] m_scriptExtensions_;
 
         // private variables -------------------------------------------------
 
-        /**
-        * Default name of the datafile
-*/
+        /// <summary>
+        /// Default name of the datafile
+        /// </summary>
         private static readonly string DATA_FILE_NAME_ = "uprops.icu";
 
         // property data constants -------------------------------------------------
 
-        /**
-         * Numeric types and values in the main properties words.
-         */
+        /// <summary>
+        /// Numeric types and values in the main properties words.
+        /// </summary>
         private static readonly int NUMERIC_TYPE_VALUE_SHIFT_ = 6;
         private static int GetNumericTypeValue(int props)
         {
             return props >> NUMERIC_TYPE_VALUE_SHIFT_;
         }
         /* constants for the storage form of numeric types and values */
-        /** No numeric value. */
+        /// <summary> No numeric value.</summary>
         private static readonly int NTV_NONE_ = 0;
-        /** Decimal digits: nv=0..9 */
+        /// <summary>Decimal digits: nv=0..9</summary>
         private static readonly int NTV_DECIMAL_START_ = 1;
-        /** Other digits: nv=0..9 */
+        /// <summary>Other digits: nv=0..9</summary>
         private static readonly int NTV_DIGIT_START_ = 11;
-        /** Small integers: nv=0..154 */
+        /// <summary>Small integers: nv=0..154</summary>
         private static readonly int NTV_NUMERIC_START_ = 21;
-        /** Fractions: ((ntv>>4)-12) / ((ntv&0xf)+1) = -1..17 / 1..16 */
+        /// <summary>Fractions: ((ntv>>4)-12) / ((ntv&amp;0xf)+1) = -1..17 / 1..16</summary>
         private static readonly int NTV_FRACTION_START_ = 0xb0;
-        /**
-         * Large integers:
-         * ((ntv>>5)-14) * 10^((ntv&0x1f)+2) = (1..9)*(10^2..10^33)
-         * (only one significant decimal digit)
-         */
+
+        /// <summary>
+        /// Large integers:
+        /// <code>
+        /// ((ntv>>5)-14) * 10^((ntv&0x1f)+2) = (1..9)*(10^2..10^33)
+        /// (only one significant decimal digit)
+        /// </code>
+        /// </summary>
         private static readonly int NTV_LARGE_START_ = 0x1e0;
-        /**
-         * Sexagesimal numbers:
-         * ((ntv>>2)-0xbf) * 60^((ntv&3)+1) = (1..9)*(60^1..60^4)
-         */
+        /// <summary>
+        /// Sexagesimal numbers:
+        /// <code>
+        /// ((ntv>>2)-0xbf) * 60^((ntv&3)+1) = (1..9)*(60^1..60^4)
+        /// </code>
+        /// </summary>
         private static readonly int NTV_BASE60_START_ = 0x300;
-        /**
-         * Fraction-20 values:
-         * frac20 = ntv-0x324 = 0..0x17 -> 1|3|5|7 / 20|40|80|160|320|640
-         * numerator: num = 2*(frac20&3)+1
-         * denominator: den = 20<<(frac20>>2)
-         */
+        /// <summary>
+        /// Fraction-20 values:
+        /// <code>
+        /// frac20 = ntv-0x324 = 0..0x17 -> 1|3|5|7 / 20|40|80|160|320|640
+        /// numerator: num = 2*(frac20&amp;3)+1
+        /// denominator: den = 20&lt;&lt;(frac20>>2)
+        /// </code>
+        /// </summary>
         private static readonly int NTV_FRACTION20_START_ = NTV_BASE60_START_ + 36;  // 0x300+9*4=0x324
                                                                                      /** No numeric value (yet). */
         private static readonly int NTV_RESERVED_START_ = NTV_FRACTION20_START_ + 24;  // 0x324+6*4=0x34c
@@ -1220,35 +1249,35 @@ namespace ICU4N.Impl
          *  7.. 0   UScriptCode
          */
 
-        /**
-         * Script_Extensions: mask includes Script
-         */
+        /// <summary>
+        /// Script_Extensions: mask includes Script
+        /// </summary>
         public static readonly int SCRIPT_X_MASK = 0x00c000ff;
         //private static final int SCRIPT_X_SHIFT = 22;
-        /**
-         * Integer properties mask and shift values for East Asian cell width.
-         * Equivalent to icu4c UPROPS_EA_MASK
-         */
+        /// <summary>
+        /// Integer properties mask and shift values for East Asian cell width.
+        /// Equivalent to icu4c UPROPS_EA_MASK
+        /// </summary>
         private static readonly int EAST_ASIAN_MASK_ = 0x000e0000;
-        /**
-         * Integer properties mask and shift values for East Asian cell width.
-         * Equivalent to icu4c UPROPS_EA_SHIFT
-         */
+        /// <summary>
+        /// Integer properties mask and shift values for East Asian cell width.
+        /// Equivalent to icu4c UPROPS_EA_SHIFT
+        /// </summary>
         private static readonly int EAST_ASIAN_SHIFT_ = 17;
-        /**
-         * Integer properties mask and shift values for blocks.
-         * Equivalent to icu4c UPROPS_BLOCK_MASK
-         */
+        /// <summary>
+        /// Integer properties mask and shift values for blocks.
+        /// Equivalent to icu4c UPROPS_BLOCK_MASK
+        /// </summary>
         private static readonly int BLOCK_MASK_ = 0x0001ff00;
-        /**
-         * Integer properties mask and shift values for blocks.
-         * Equivalent to icu4c UPROPS_BLOCK_SHIFT
-         */
+        /// <summary>
+        /// Integer properties mask and shift values for blocks.
+        /// Equivalent to icu4c UPROPS_BLOCK_SHIFT
+        /// </summary>
         private static readonly int BLOCK_SHIFT_ = 8;
-        /**
-         * Integer properties mask and shift values for scripts.
-         * Equivalent to icu4c UPROPS_SHIFT_MASK
-         */
+        /// <summary>
+        /// Integer properties mask and shift values for scripts.
+        /// Equivalent to icu4c UPROPS_SHIFT_MASK
+        /// </summary>
         public static readonly int SCRIPT_MASK_ = 0x000000ff;
 
         /* SCRIPT_X_WITH_COMMON must be the lowest value that involves Script_Extensions. */
@@ -1332,32 +1361,32 @@ namespace ICU4N.Impl
         private static readonly int GCB_MASK = 0x000003e0;
         private static readonly int GCB_SHIFT = 5;
 
-        /**
-         * Integer properties mask for decomposition type.
-         * Equivalent to icu4c UPROPS_DT_MASK.
-         */
+        /// <summary>
+        /// Integer properties mask for decomposition type.
+        /// Equivalent to icu4c UPROPS_DT_MASK.
+        /// </summary>
         private static readonly int DECOMPOSITION_TYPE_MASK_ = 0x0000001f;
 
-        /**
-         * First nibble shift
-         */
+        /// <summary>
+        /// First nibble shift
+        /// </summary>
         private static readonly int FIRST_NIBBLE_SHIFT_ = 0x4;
-        /**
-         * Second nibble mask
-         */
+        /// <summary>
+        /// Second nibble mask
+        /// </summary>
         private static readonly int LAST_NIBBLE_MASK_ = 0xF;
-        /**
-         * Age value shift
-         */
+        /// <summary>
+        /// Age value shift
+        /// </summary>
         private static readonly int AGE_SHIFT_ = 24;
 
 
         // private constructors --------------------------------------------------
 
-        /**
-         * Constructor
-         * @exception IOException thrown when data reading fails or data corrupted
-         */
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <exception cref="IOException">Thrown when data reading fails or data corrupted.</exception>
         private UCharacterProperty()
         {
             Init();
@@ -1586,7 +1615,7 @@ namespace ICU4N.Impl
             return set; // for chaining
         }
 
-        public void upropsvec_addPropertyStarts(UnicodeSet set)
+        public void upropsvec_addPropertyStarts(UnicodeSet set) // ICU4N TODO: API - rename to use .NET Conventions
         {
             /* add the start code point of each same-value range of the properties vectors trie */
             if (m_additionalColumnsCount_ > 0)

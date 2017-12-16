@@ -1,7 +1,5 @@
 ﻿using ICU4N.Support.Collections;
 using ICU4N.Support.IO;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -32,11 +30,11 @@ namespace ICU4N.Impl
 
         // protected constructor ---------------------------------------------
 
-        /**
-        * <p>Protected constructor.</p>
-        * @param bytes ICU uprop.dat file buffer
-        * @exception IOException throw if data file fails authentication
-        */
+        /// <summary>
+        /// Protected constructor.
+        /// </summary>
+        /// <param name="bytes">ICU uprop.dat file buffer.</param>
+        /// <exception cref="IOException">If data file fails authentication.</exception>
         internal UCharacterNameReader(ByteBuffer bytes)
         {
             ICUBinary.ReadHeader(bytes, DATA_FORMAT_ID_, this);
@@ -45,13 +43,13 @@ namespace ICU4N.Impl
 
         // protected methods -------------------------------------------------
 
-        /**
-        * Read and break up the stream of data passed in as arguments
-        * and fills up UCharacterName.
-        * If unsuccessful false will be returned.
-        * @param data instance of datablock
-        * @exception IOException thrown when there's a data error.
-        */
+        /// <summary>
+        /// Read and break up the stream of data passed in as arguments
+        /// and fills up <see cref="UCharacterName"/>.
+        /// If unsuccessful false will be returned.
+        /// </summary>
+        /// <param name="data">Instance of datablock.</param>
+        /// <exception cref="IOException">Thrown when there's a data error.</exception>
         internal void Read(UCharacterName data)
         {
             // reading index
@@ -96,14 +94,14 @@ namespace ICU4N.Impl
             data.SetAlgorithm(alg);
         }
 
-        /**
-        * <p>Checking the file for the correct format.</p>
-        * @param dataformatid
-        * @param dataformatversion
-        * @return true if the file format version is correct
-        */
-        ///CLOVER:OFF
-        protected bool Authenticate(byte[] dataformatid,
+        /// <summary>
+        /// Checking the file for the correct format.
+        /// </summary>
+        /// <param name="dataformatid"></param>
+        /// <param name="dataformatversion"></param>
+        /// <returns>true if the file format version is correct.</returns>
+        //CLOVER:OFF
+        private bool Authenticate(byte[] dataformatid,
                                        byte[] dataformatversion)
         {
             return Arrays.Equals(
@@ -111,46 +109,46 @@ namespace ICU4N.Impl
                     dataformatid) &&
                    IsDataVersionAcceptable(dataformatversion);
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
         // private variables -------------------------------------------------
 
-        /**
-        * Byte buffer for names
-*/
+        /// <summary>
+        /// Byte buffer for names
+        /// </summary>
         private ByteBuffer m_byteBuffer_;
-        /**
-        * Size of the group information block in number of char
-*/
+        /// <summary>
+        /// Size of the group information block in number of char
+        /// </summary>
         private static readonly int GROUP_INFO_SIZE_ = 3;
 
-        /**
-        * Index of the offset information
-*/
+        /// <summary>
+        /// Index of the offset information
+        /// </summary>
         private int m_tokenstringindex_;
         private int m_groupindex_;
         private int m_groupstringindex_;
         private int m_algnamesindex_;
 
-        /**
-        * Size of an algorithmic name information group
-        * start code point size + end code point size + type size + variant size +
-        * size of data size
-*/
+        /// <summary>
+        /// Size of an algorithmic name information group
+        /// start code point size + end code point size + type size + variant size +
+        /// size of data size
+        /// </summary>
         private static readonly int ALG_INFO_SIZE_ = 12;
 
-        /**
-        * File format id that this class understands.
-*/
+        /// <summary>
+        /// File format id that this class understands.
+        /// </summary>
         private static readonly int DATA_FORMAT_ID_ = 0x756E616D;
 
         // private methods ---------------------------------------------------
 
-        /**
-        * Reads an individual record of AlgorithmNames
-        * @return an instance of AlgorithNames if read is successful otherwise null
-        * @exception IOException thrown when file read error occurs or data is corrupted
-*/
+        /// <summary>
+        /// Reads an individual record of <see cref="UCharacterName.AlgorithmName"/>s
+        /// </summary>
+        /// <returns>An instance of <see cref="UCharacterName.AlgorithmName"/>s if read is successful otherwise null.</returns>
+        /// <exception cref="IOException">Thrown when file read error occurs or data is corrupted.</exception>
         private UCharacterName.AlgorithmName ReadAlg()
         {
             UCharacterName.AlgorithmName result =

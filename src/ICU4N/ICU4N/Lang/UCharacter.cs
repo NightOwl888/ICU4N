@@ -5143,7 +5143,7 @@ namespace ICU4N.Lang
          * @see #TITLECASE_NO_BREAK_ADJUSTMENT // ICU4N TODO: This is not a possibility (documentation bug)
          */
         public static string ToTitleCase(ULocale locale, string str,
-                BreakIterator titleIter, TitleCaseIteratorOptions options)
+                BreakIterator titleIter, int options)
         {
             if (titleIter == null && locale == null)
             {

@@ -291,7 +291,7 @@ namespace ICU4N.Text
          * validity criteria, then one or more of these error bits are set.
          * @stable ICU 4.6
          */
-        public enum Error
+        public enum Error // ICU4N TODO: De-nest and rename to follow .NET Conventions.
         {
             /**
              * A non-final domain name label (or the whole domain name) is empty.

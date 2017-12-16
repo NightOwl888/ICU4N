@@ -8,6 +8,30 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
+    /// <summary>
+    /// Wrapper for the pnames.icu binary data file.  This data file is
+    /// imported from icu4c.  It contains property and property value
+    /// aliases from the UCD files PropertyAliases.txt and
+    /// PropertyValueAliases.txt.  The file is built by the icu4c tool
+    /// genpname.  It must be an ASCII big-endian file to be
+    /// usable in ICU4N.
+    /// </summary>
+    /// <remarks>
+    /// This class performs two functions.
+    /// <list type="number">
+    ///     <item><description>It can import the flat binary data into usable objects.</description></item>
+    ///     <item><description>It provides an API to access the tree of objects.</description></item>
+    /// </list>
+    /// <para/>
+    /// Needless to say, this class is tightly coupled to the binary format
+    /// of icu4c's pnames.icu file.
+    /// <para/>
+    /// Each time a <see cref="UPropertyAliases"/> is constructed, the pnames.icu file is
+    /// read, parsed, and data structures assembled.  Clients should create one
+    /// singleton instance and cache it.
+    /// </remarks>
+    /// <author>Alan Liu</author>
+    /// <since>ICU 2.4</since>
     public sealed partial class UPropertyAliases
     {
         // Byte offsets from the start of the data, after the generic header.
@@ -229,9 +253,9 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns a property name given a property enum.
+        /// Returns a property name given a <paramref name="property"/> enum.
         /// Multiple names may be available for each property;
-        /// the nameChoice selects among them.
+        /// the <paramref name="nameChoice"/> selects among them.
         /// </summary>
         public string GetPropertyName(UProperty property, NameChoice nameChoice)
         {
@@ -245,9 +269,9 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns a property name given a property enum.
+        /// Returns a property name given a <paramref name="property"/> enum.
         /// Multiple names may be available for each property;
-        /// the nameChoice selects among them.
+        /// the <paramref name="nameChoice"/> selects among them.
         /// </summary>
         /// <stable>ICU4N 60.1.0</stable>
         public bool TryGetPropertyName(UProperty property, NameChoice nameChoice, out string result) // ICU4N TODO: Tests
@@ -262,12 +286,12 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns a value name given a property enum and a value enum.
+        /// Returns a value name given a <paramref name="property"/> enum and a <paramref name="value"/> enum.
         /// Multiple names may be available for each value;
         /// the <paramref name="nameChoice"/> selects among them.
         /// </summary>
         /// <seealso cref="TryGetPropertyValueName(UProperty, int, NameChoice, out string)"/>
-        public string GetPropertyValueName(UProperty property, int value, NameChoice nameChoice)
+        public string GetPropertyValueName(UProperty property, int value, NameChoice nameChoice) // ICU4N TODO: API - make value into enum ?
         {
             int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
@@ -287,7 +311,7 @@ namespace ICU4N.Impl
 
         // ICU4N specific method for getting the property name without throwing any exceptions
         /// <summary>
-        /// Gets a value name given a property enum and a value enum.
+        /// Gets a value name given a <paramref name="property"/> enum and a <paramref name="value"/> enum.
         /// Multiple names may be available for each value;
         /// the <paramref name="nameChoice"/> selects among them.
         /// <para/>
@@ -295,6 +319,7 @@ namespace ICU4N.Impl
         /// but will return a true/false result rather than throwing exceptions.
         /// </summary>
         /// <seealso cref="GetPropertyValueName(UnicodeProperty, int, NameChoice)"/>
+         // ICU4N TODO: API - make value into enum ?
         public bool TryGetPropertyValueName(UProperty property, int value, NameChoice nameChoice, out string result) // ICU4N TODO: Tests
         {
             result = null;
@@ -344,9 +369,6 @@ namespace ICU4N.Impl
         /// comparison is that described as "loose" matching in the
         /// Property*Aliases.txt files.
         /// </summary>
-        /// <param name="stra"></param>
-        /// <param name="strb"></param>
-        /// <returns></returns>
         public static int Compare(string stra, string strb)
         {
             // Note: This implementation is a literal copy of

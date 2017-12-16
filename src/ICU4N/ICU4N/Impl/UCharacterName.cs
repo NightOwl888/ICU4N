@@ -4,21 +4,31 @@ using ICU4N.Support.IO;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Resources;
-using System.Text;
+using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Impl
 {
+    /// <summary>
+    /// Internal class to manage character names.
+    /// Since data for names are stored
+    /// in an array of <see cref="char"/>, by default indexes used in this class is refering to
+    /// a 2 byte count, unless otherwise stated. Cases where the index is refering
+    /// to a byte count, the index is halved and depending on whether the index is
+    /// even or odd, the MSB or LSB of the result char at the halved index is
+    /// returned. For indexes to an array of <see cref="int"/>, the index is multiplied by 2,
+    /// result <see cref="char"/> at the multiplied index and its following <see cref="char"/> is returned as an
+    /// <see cref="int"/>.
+    /// </summary>
     public sealed class UCharacterName
     {
         // public data members ----------------------------------------------
 
-        /*
-         * public singleton instance
-         */
+        /// <summary>
+        /// Public singleton instance.
+        /// </summary>
         public static readonly UCharacterName INSTANCE;
 
         static UCharacterName()
@@ -35,32 +45,31 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-        * Number of lines per group
-        * 1 << GROUP_SHIFT_
-        */
+        /// <summary>
+        /// Number of lines per group
+        /// 1 &lt;&lt; GROUP_SHIFT_
+        /// </summary>
         public static readonly int LINES_PER_GROUP_ = 1 << 5;
-        /**
-         * Maximum number of groups
-         */
+        /// <summary>
+        /// Maximum number of groups.
+        /// </summary>
         internal int m_groupcount_ = 0;
 
         public int GroupCount { get { return m_groupcount_; } }
 
         // public methods ---------------------------------------------------
 
-        /**
-        * Retrieve the name of a Unicode code point.
-        * Depending on <code>choice</code>, the character name written into the
-        * buffer is the "modern" name or the name that was defined in Unicode
-        * version 1.0.
-        * The name contains only "invariant" characters
-        * like A-Z, 0-9, space, and '-'.
-        *
-        * @param ch the code point for which to get the name.
-        * @param choice Selector for which name to get.
-        * @return if code point is above 0x1fff, null is returned
-*/
+        /// <summary>
+        /// Retrieve the name of a Unicode code point.
+        /// Depending on <paramref name="choice"/>, the character name written into the
+        /// buffer is the "modern" name or the name that was defined in Unicode
+        /// version 1.0.
+        /// The name contains only "invariant" characters
+        /// like A-Z, 0-9, space, and '-'.
+        /// </summary>
+        /// <param name="ch">The code point for which to get the name.</param>
+        /// <param name="choice">Selector for which name to get.</param>
+        /// <returns>If code point is above 0x1fff, null is returned.</returns>
         public string GetName(int ch, UCharacterNameChoice choice)
         {
             if (ch < UCharacter.MIN_VALUE || ch > UCharacter.MAX_VALUE ||
@@ -89,13 +98,13 @@ namespace ICU4N.Impl
             return result;
         }
 
-        /**
-        * Find a character by its name and return its code point value
-        * @param choice selector to indicate if argument name is a Unicode 1.0
-        *        or the most current version
-        * @param name the name to search for
-        * @return code point
-*/
+        /// <summary>
+        /// Find a character by its name and return its code point value
+        /// 
+        /// </summary>
+        /// <param name="choice">Selector to indicate if argument name is a Unicode 1.0 or the most current version.</param>
+        /// <param name="name">The name to search for.</param>
+        /// <returns>Code point.</returns>
         public int GetCharFromName(UCharacterNameChoice choice, string name)
         {
             // checks for illegal arguments
@@ -154,22 +163,26 @@ namespace ICU4N.Impl
 
         // these are all UCharacterNameIterator use methods -------------------
 
-        /**
-        * Reads a block of compressed lengths of 32 strings and expands them into
-        * offsets and lengths for each string. Lengths are stored with a
-        * variable-width encoding in consecutive nibbles:
-        * If a nibble<0xc, then it is the length itself (0 = empty string).
-        * If a nibble>=0xc, then it forms a length value with the following
-        * nibble.
-        * The offsets and lengths arrays must be at least 33 (one more) long
-        * because there is no check here at the end if the last nibble is still
-        * used.
-        * @param index of group string object in array
-        * @param offsets array to store the value of the string offsets
-        * @param lengths array to store the value of the string length
-        * @return next index of the data string immediately after the lengths
-        *         in terms of byte address
-*/
+        /// <summary>
+        /// Reads a block of compressed lengths of 32 strings and expands them into
+        /// offsets and lengths for each string. 
+        /// </summary>
+        /// <remarks>
+        /// Lengths are stored with a
+        /// variable-width encoding in consecutive nibbles:
+        /// <list type="bullet">
+        ///     <item><description>If a nibble&lt;0xc, then it is the length itself (0 = empty string).</description></item>
+        ///     <item><description>If a nibble>=0xc, then it forms a length value with the following nibble.</description></item>
+        /// </list>
+        /// The offsets and lengths arrays must be at least 33 (one more) long
+        /// because there is no check here at the end if the last nibble is still
+        /// used.
+        /// </remarks>
+        /// <param name="index">Index of group string object in array.</param>
+        /// <param name="offsets">Array to store the value of the string offsets.</param>
+        /// <param name="lengths">Array to store the value of the string length.</param>
+        /// <returns>Next index of the data string immediately after the lengths
+        /// in terms of byte address.</returns>
         public int GetGroupLengths(int index, char[] offsets, char[] lengths)
         {
             char length = (char)0xffff;
@@ -224,20 +237,22 @@ namespace ICU4N.Impl
             return stringoffset;
         }
 
-        /**
-        * Gets the name of the argument group index.
-        * UnicodeData.txt uses ';' as a field separator, so no field can contain
-        * ';' as part of its contents. In unames.icu, it is marked as
-        * token[';'] == -1 only if the semicolon is used in the data file - which
-        * is iff we have Unicode 1.0 names or ISO comments or aliases.
-        * So, it will be token[';'] == -1 if we store U1.0 names/ISO comments/aliases
-        * although we know that it will never be part of a name.
-        * Equivalent to ICU4C's expandName.
-        * @param index of the group name string in byte count
-        * @param length of the group name string
-        * @param choice of Unicode 1.0 name or the most current name
-        * @return name of the group
-*/
+        /// <summary>
+        /// Gets the name of the argument group index.
+        /// </summary>
+        /// <remarks>
+        /// UnicodeData.txt uses ';' as a field separator, so no field can contain
+        /// ';' as part of its contents. In unames.icu, it is marked as
+        /// token[';'] == -1 only if the semicolon is used in the data file - which
+        /// is iff we have Unicode 1.0 names or ISO comments or aliases.
+        /// So, it will be token[';'] == -1 if we store U1.0 names/ISO comments/aliases
+        /// although we know that it will never be part of a name.
+        /// Equivalent to ICU4C's expandName.
+        /// </remarks>
+        /// <param name="index">Index of the group name string in byte count.</param>
+        /// <param name="length">Length of the group name string.</param>
+        /// <param name="choice">Choice of Unicode 1.0 name or the most current name.</param>
+        /// <returns>Name of the group.</returns>
         public string GetGroupName(int index, int length, UCharacterNameChoice choice)
         {
             if (choice != UCharacterNameChoice.UNICODE_CHAR_NAME &&
@@ -329,9 +344,9 @@ namespace ICU4N.Impl
             return null;
         }
 
-        /**
-        * Retrieves the extended name
-*/
+        /// <summary>
+        /// Retrieves the extended name.
+        /// </summary>
         public string GetExtendedName(int ch)
         {
             string result = GetName(ch, UCharacterNameChoice.UNICODE_CHAR_NAME);
@@ -343,11 +358,11 @@ namespace ICU4N.Impl
             return result;
         }
 
-        /**
-         * Gets the group index for the codepoint, or the group before it.
-         * @param codepoint The codepoint index.
-         * @return group index containing codepoint or the group before it.
-         */
+        /// <summary>
+        /// Gets the group index for the codepoint, or the group before it.
+        /// </summary>
+        /// <param name="codepoint">The codepoint index.</param>
+        /// <returns>Group index containing codepoint or the group before it.</returns>
         public int GetGroup(int codepoint)
         {
             int endGroup = m_groupcount_;
@@ -371,12 +386,12 @@ namespace ICU4N.Impl
             return result;
         }
 
-        /**
-         * Gets the extended and 1.0 name when the most current unicode names
-         * fail
-         * @param ch codepoint
-         * @return name of codepoint extended or 1.0
-         */
+        /// <summary>
+        /// Gets the extended and 1.0 name when the most current unicode names
+        /// fail.
+        /// </summary>
+        /// <param name="ch">Codepoint.</param>
+        /// <returns>Name of codepoint extended or 1.0.</returns>
         public string GetExtendedOr10Name(int ch)
         {
             string result = null;
@@ -416,11 +431,11 @@ namespace ICU4N.Impl
             return result;
         }
 
-        /**
-         * Gets the MSB from the group index
-         * @param gindex group index
-         * @return the MSB of the group if gindex is valid, -1 otherwise
-         */
+        /// <summary>
+        /// Gets the MSB from the group index.
+        /// </summary>
+        /// <param name="gindex">Group index.</param>
+        /// <returns>The MSB of the group if gindex is valid, -1 otherwise.</returns>
         public int GetGroupMSB(int gindex)
         {
             if (gindex >= m_groupcount_)
@@ -430,93 +445,92 @@ namespace ICU4N.Impl
             return m_groupinfo_[gindex * m_groupsize_];
         }
 
-        /**
-         * Gets the MSB of the codepoint
-         * @param codepoint The codepoint value.
-         * @return the MSB of the codepoint
-         */
+        /// <summary>
+        /// Gets the MSB of the codepoint.
+        /// </summary>
+        /// <param name="codepoint">The codepoint value.</param>
+        /// <returns>The MSB of the codepoint.</returns>
         public static int GetCodepointMSB(int codepoint)
         {
             return codepoint >> GROUP_SHIFT_;
         }
 
-        /**
-         * Gets the maximum codepoint + 1 of the group
-         * @param msb most significant byte of the group
-         * @return limit codepoint of the group
-         */
+        /// <summary>
+        /// Gets the maximum codepoint + 1 of the group.
+        /// </summary>
+        /// <param name="msb">Most significant byte of the group.</param>
+        /// <returns>Limit codepoint of the group.</returns>
         public static int GetGroupLimit(int msb)
         {
             return (msb << GROUP_SHIFT_) + LINES_PER_GROUP_;
         }
 
-        /**
-         * Gets the minimum codepoint of the group
-         * @param msb most significant byte of the group
-         * @return minimum codepoint of the group
-         */
+        /// <summary>
+        /// Gets the minimum codepoint of the group.
+        /// </summary>
+        /// <param name="msb">Most significant byte of the group.</param>
+        /// <returns>Minimum codepoint of the group.</returns>
         public static int GetGroupMin(int msb)
         {
             return msb << GROUP_SHIFT_;
         }
 
-        /**
-         * Gets the offset to a group
-         * @param codepoint The codepoint value.
-         * @return offset to a group
-         */
+        /// <summary>
+        /// Gets the offset to a group.
+        /// </summary>
+        /// <param name="codepoint">The codepoint value.</param>
+        /// <returns>Offset to a group.</returns>
         public static int GetGroupOffset(int codepoint)
         {
             return codepoint & GROUP_MASK_;
         }
 
-        /**
-         * Gets the minimum codepoint of a group
-         * @param codepoint The codepoint value.
-         * @return minimum codepoint in the group which codepoint belongs to
-         */
-        ///CLOVER:OFF
+        /// <summary>
+        /// Gets the minimum codepoint of a group.
+        /// </summary>
+        /// <param name="codepoint">The codepoint value.</param>
+        /// <returns>Minimum codepoint in the group which codepoint belongs to.</returns>
+        //CLOVER:OFF
         public static int GetGroupMinFromCodepoint(int codepoint)
         {
             return codepoint & ~GROUP_MASK_;
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
-        /**
-         * Get the Algorithm range length
-         * @return Algorithm range length
-         */
-        public int GetAlgorithmLength()
+        /// <summary>
+        /// Gets the Algorithm range length.
+        /// </summary>
+        public int GetAlgorithmLength() // ICU4N TODO: API - make property
         {
             return m_algorithm_.Length;
         }
 
-        /**
-         * Gets the start of the range
-         * @param index algorithm index
-         * @return algorithm range start
-         */
-        public int getAlgorithmStart(int index)
+        /// <summary>
+        /// Gets the start of the range.
+        /// </summary>
+        /// <param name="index">Algorithm index.</param>
+        /// <returns>Algorithm range start.</returns>
+        public int getAlgorithmStart(int index) // ICU4N TODO: API - function name
         {
             return m_algorithm_[index].m_rangestart_;
         }
 
-        /**
-         * Gets the end of the range
-         * @param index algorithm index
-         * @return algorithm range end
-         */
+        /// <summary>
+        /// Gets the end of the range.
+        /// </summary>
+        /// <param name="index">Algorithm index.</param>
+        /// <returns>Algorithm range end.</returns>
         public int GetAlgorithmEnd(int index)
         {
             return m_algorithm_[index].m_rangeend_;
         }
 
-        /**
-         * Gets the Algorithmic name of the codepoint
-         * @param index algorithmic range index
-         * @param codepoint The codepoint value.
-         * @return algorithmic name of codepoint
-         */
+        /// <summary>
+        /// Gets the Algorithmic name of the codepoint.
+        /// </summary>
+        /// <param name="index">Algorithmic range index.</param>
+        /// <param name="codepoint">The codepoint value.</param>
+        /// <returns>Algorithmic name of codepoint.</returns>
         public string GetAlgorithmName(int index, int codepoint)
         {
             string result = null;
@@ -529,11 +543,12 @@ namespace ICU4N.Impl
             return result;
         }
 
-        /**
-        * Gets the group name of the character
-        * @param ch character to get the group name
-        * @param choice name choice selector to choose a unicode 1.0 or newer name
-*/
+        /// <summary>
+        /// Gets the group name of the character.
+        /// </summary>
+        /// <param name="ch">Character to get the group name.</param>
+        /// <param name="choice"></param>
+        /// <returns>Choice name choice selector to choose a unicode 1.0 or newer name.</returns>
         public string GetGroupName(int ch, UCharacterNameChoice choice)
         {
             lock (this)
@@ -558,12 +573,12 @@ namespace ICU4N.Impl
 
         // these are transliterator use methods ---------------------------------
 
-        /**
-         * Gets the maximum length of any codepoint name.
-         * Equivalent to uprv_getMaxCharNameLength.
-         * @return the maximum length of any codepoint name
-         */
-        public int GetMaxCharNameLength()
+        /// <summary>
+        /// Gets the maximum length of any codepoint name.
+        /// Equivalent to uprv_getMaxCharNameLength.
+        /// </summary>
+        /// <returns>The maximum length of any codepoint name.</returns>
+        public int GetMaxCharNameLength() // ICU4N TODO: API make property
         {
             if (InitNameSetsLengths())
             {
@@ -575,13 +590,13 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Gets the maximum length of any iso comments.
-         * Equivalent to uprv_getMaxISOCommentLength.
-         * @return the maximum length of any codepoint name
-         */
-        ///CLOVER:OFF
-        public int GetMaxISOCommentLength()
+        /// <summary>
+        /// Gets the maximum length of any iso comments.
+        /// Equivalent to uprv_getMaxISOCommentLength.
+        /// </summary>
+        /// <returns>The maximum length of any codepoint name.</returns>
+        //CLOVER:OFF
+        public int GetMaxISOCommentLength() // ICU4N TODO: API make property
         {
             if (InitNameSetsLengths())
             {
@@ -592,66 +607,66 @@ namespace ICU4N.Impl
                 return 0;
             }
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
-        /**
-         * Fills set with characters that are used in Unicode character names.
-         * Equivalent to uprv_getCharNameCharacters.
-         * @param set USet to receive characters. Existing contents are deleted.
-         */
+        /// <summary>
+        /// Fills set with characters that are used in Unicode character names.
+        /// Equivalent to uprv_getCharNameCharacters.
+        /// </summary>
+        /// <param name="set">USet to receive characters. Existing contents are deleted.</param>
         public void GetCharNameCharacters(UnicodeSet set)
         {
             Convert(m_nameSet_, set);
         }
 
-        /**
-         * Fills set with characters that are used in Unicode character names.
-         * Equivalent to uprv_getISOCommentCharacters.
-         * @param set USet to receive characters. Existing contents are deleted.
-         */
-        ///CLOVER:OFF
+        /// <summary>
+        /// Fills set with characters that are used in Unicode character names.
+        /// Equivalent to uprv_getISOCommentCharacters.
+        /// </summary>
+        /// <param name="set">USet to receive characters. Existing contents are deleted.</param>
+        //CLOVER:OFF
         public void GetISOCommentCharacters(UnicodeSet set)
         {
             Convert(m_ISOCommentSet_, set);
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
         // package private inner class --------------------------------------
 
-        /**
-        * Algorithmic name class
-*/
+        /// <summary>
+        /// Algorithmic name class.
+        /// </summary>
         internal sealed class AlgorithmName
         {
             // package private data members ----------------------------------
 
-            /**
-            * Constant type value of the different AlgorithmName
-            */
+            /// <summary>
+            /// Constant type value of the different AlgorithmName
+            /// </summary>
             internal const int TYPE_0_ = 0;
             internal const int TYPE_1_ = 1;
 
             // package private constructors ----------------------------------
 
-            /**
-            * Constructor
-            */
+            /// <summary>
+            /// Constructor.
+            /// </summary>
             internal AlgorithmName()
             {
             }
 
             // package private methods ---------------------------------------
 
-            /**
-            * Sets the information for accessing the algorithmic names
-            * @param rangestart starting code point that lies within this name group
-            * @param rangeend end code point that lies within this name group
-            * @param type algorithm type. There's 2 kinds of algorithmic type. First
-            *        which uses code point as part of its name and the other uses
-            *        variant postfix strings
-            * @param variant algorithmic variant
-            * @return true if values are valid
-            */
+            /// <summary>
+            /// Sets the information for accessing the algorithmic names/
+            /// </summary>
+            /// <param name="rangestart">Starting code point that lies within this name group.</param>
+            /// <param name="rangeend">End code point that lies within this name group.</param>
+            /// <param name="type">algorithm type. There's 2 kinds of algorithmic type. First
+            /// which uses code point as part of its name and the other uses
+            /// variant postfix strings.</param>
+            /// <param name="variant">Algorithmic variant.</param>
+            /// <returns>true if values are valid.</returns>
             internal bool SetInfo(int rangestart, int rangeend, byte type, byte variant)
             {
                 if (rangestart >= UCharacter.MIN_VALUE && rangestart <= rangeend
@@ -667,11 +682,11 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            /**
-            * Sets the factor data
-            * @param factor Array of factor
-            * @return true if factors are valid
-            */
+            /// <summary>
+            /// Sets the factor data.
+            /// </summary>
+            /// <param name="factor">Array of factor.</param>
+            /// <returns>true if factors are valid.</returns>
             internal bool SetFactor(char[] factor)
             {
                 if (factor.Length == m_variant_)
@@ -682,11 +697,11 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            /**
-            * Sets the name prefix
-            * @param prefix
-            * @return true if prefix is set
-            */
+            /// <summary>
+            /// Sets the name prefix.
+            /// </summary>
+            /// <param name="prefix"></param>
+            /// <returns>true if prefix is set.</returns>
             internal bool SetPrefix(string prefix)
             {
                 if (prefix != null && prefix.Length > 0)
@@ -697,11 +712,11 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            /**
-            * Sets the variant factorized name data
-            * @param string variant factorized name data
-            * @return true if values are set
-            */
+            /// <summary>
+            /// Sets the variant factorized name data.
+            /// </summary>
+            /// <param name="str">Variant factorized name data.</param>
+            /// <returns>true if values are set.</returns>
             internal bool SetFactorString(byte[] str)
             {
                 // factor and variant string can be empty for things like
@@ -710,23 +725,23 @@ namespace ICU4N.Impl
                 return true;
             }
 
-            /**
-            * Checks if code point lies in Algorithm object at index
-            * @param ch code point
-            */
+            /// <summary>
+            /// Checks if code point lies in Algorithm object at index.
+            /// </summary>
+            /// <param name="ch">Code point.</param>
             internal bool Contains(int ch)
             {
                 return m_rangestart_ <= ch && ch <= m_rangeend_;
             }
 
-            /**
-            * Appends algorithm name of code point into StringBuffer.
-            * Note this method does not check for validity of code point in Algorithm,
-            * result is undefined if code point does not belong in Algorithm.
-            * @param ch code point
-            * @param str StringBuffer to append to
-            */
-            internal void AppendName(int ch, StringBuilder str)
+            /// <summary>
+            /// Appends algorithm name of code point into <see cref="StringBuffer"/>.
+            /// Note this method does not check for validity of code point in Algorithm,
+            /// result is undefined if code point does not belong in Algorithm.
+            /// </summary>
+            /// <param name="ch">Code point.</param>
+            /// <param name="str"><see cref="StringBuffer"/> to append to.</param>
+            internal void AppendName(int ch, StringBuffer str)
             {
                 str.Append(m_prefix_);
                 switch (m_type_)
@@ -765,10 +780,10 @@ namespace ICU4N.Impl
                 }
             }
 
-            /**
-            * Gets the character for the argument algorithmic name
-            * @return the algorithmic char or -1 otherwise.
-            */
+            /// <summary>
+            /// Gets the character for the argument algorithmic name.
+            /// </summary>
+            /// <returns>The algorithmic char or -1 otherwise.</returns>
             internal int GetChar(string name)
             {
                 int prefixlen = m_prefix_.Length;
@@ -836,14 +851,14 @@ namespace ICU4N.Impl
                 return -1;
             }
 
-            /**
-             * Adds all chars in the set of algorithmic names into the set.
-             * Equivalent to part of calcAlgNameSetsLengths.
-             * @param set int set to add the chars of the algorithm names into
-             * @param maxlength maximum length to compare to
-             * @return the length that is either maxlength of the length of this
-             *         algorithm name if it is longer than maxlength
-             */
+            /// <summary>
+            /// Adds all chars in the set of algorithmic names into the set.
+            /// Equivalent to part of calcAlgNameSetsLengths.
+            /// </summary>
+            /// <param name="set"><see cref="int"/> set to add the chars of the algorithm names into.</param>
+            /// <param name="maxlength">Maximum length to compare to.</param>
+            /// <returns>The length that is either <paramref name="maxlength"/> of the length of this
+            /// algorithm name if it is longer than <paramref name="maxlength"/>.</returns>
             internal int Add(int[] set, int maxlength)
             {
                 // prefix length
@@ -901,9 +916,9 @@ namespace ICU4N.Impl
 
             // private data members ------------------------------------------
 
-            /**
-            * Algorithmic data information
-            */
+            //
+            // Algorithmic data information
+            //
             internal int m_rangestart_;
             internal int m_rangeend_;
             private byte m_type_;
@@ -911,24 +926,23 @@ namespace ICU4N.Impl
             private char[] m_factor_;
             private string m_prefix_;
             private byte[] m_factorstring_;
-            /**
-             * Utility StringBuffer
-             */
-            private StringBuilder m_utilStringBuffer_ = new StringBuilder();
-            /**
-             * Utility int buffer
-             */
+            /// <summary>
+            /// Utility StringBuffer
+            /// </summary>
+            private StringBuffer m_utilStringBuffer_ = new StringBuffer();
+            /// <summary>
+            /// Utility int buffer
+            /// </summary>
             private int[] m_utilIntBuffer_ = new int[256];
 
             // private methods -----------------------------------------------
 
-            /**
-            * Gets the indexth string in each of the argument factor block
-            * @param index array with each index corresponding to each factor block
-            * @param length length of the array index
-            * @return the combined string of the array of indexth factor string in
-            *         factor block
-            */
+            /// <summary>
+            /// Gets the indexth string in each of the argument factor block.
+            /// </summary>
+            /// <param name="index">Array with each index corresponding to each factor block.</param>
+            /// <param name="length">Length of the array index.</param>
+            /// <returns>The combined string of the array of indexth factor string in factor block.</returns>
             private string GetFactorString(int[] index, int length)
             {
                 int size = m_factor_.Length;
@@ -962,15 +976,15 @@ namespace ICU4N.Impl
                 }
             }
 
-            /**
-            * Compares the indexth string in each of the argument factor block with
-            * the argument string
-            * @param index array with each index corresponding to each factor block
-            * @param length index array length
-            * @param str string to compare with
-            * @param offset of str to start comparison
-            * @return true if string matches
-            */
+            /// <summary>
+            /// Compares the indexth string in each of the argument factor block with
+            /// the argument string.
+            /// </summary>
+            /// <param name="index">Array with each index corresponding to each factor block.</param>
+            /// <param name="length">Index array length.</param>
+            /// <param name="str">String to compare with.</param>
+            /// <param name="offset">Offset of str to start comparison.</param>
+            /// <returns>true if string matches.</returns>
             private bool CompareFactorString(int[] index, int length, string str,
                                                 int offset)
             {
@@ -1010,19 +1024,19 @@ namespace ICU4N.Impl
 
         // package private data members --------------------------------------
 
-        /**
-         * Size of each groups
-         */
-        int m_groupsize_ = 0;
+        /// <summary>
+        /// Size of each groups
+        /// </summary>
+        internal int m_groupsize_ = 0;
 
         // package private methods --------------------------------------------
 
-        /**
-        * Sets the token data
-        * @param token array of tokens
-        * @param tokenstring array of string values of the tokens
-        * @return false if there is a data error
-*/
+        /// <summary>
+        /// Sets the token data.
+        /// </summary>
+        /// <param name="token">Array of tokens.</param>
+        /// <param name="tokenstring">Array of string values of the tokens.</param>
+        /// <returns>false if there is a data error.</returns>
         internal bool SetToken(char[] token, byte[] tokenstring)
         {
             if (token != null && tokenstring != null && token.Length > 0 &&
@@ -1035,11 +1049,11 @@ namespace ICU4N.Impl
             return false;
         }
 
-        /**
-        * Set the algorithm name information array
-        * @param alg Algorithm information array
-        * @return true if the group string offset has been set correctly
-*/
+        /// <summary>
+        /// Set the algorithm name information array.
+        /// </summary>
+        /// <param name="alg">Algorithm information array.</param>
+        /// <returns>true if the group string offset has been set correctly.</returns>
         internal bool SetAlgorithm(AlgorithmName[] alg)
         {
             if (alg != null && alg.Length != 0)
@@ -1050,12 +1064,12 @@ namespace ICU4N.Impl
             return false;
         }
 
-        /**
-        * Sets the number of group and size of each group in number of char
-        * @param count number of groups
-        * @param size size of group in char
-        * @return true if group size is set correctly
-*/
+        /// <summary>
+        /// Sets the number of group and size of each group in number of char.
+        /// </summary>
+        /// <param name="count">Number of groups.</param>
+        /// <param name="size">Size of group in char.</param>
+        /// <returns>true if group size is set correctly.</returns>
         internal bool SetGroupCountSize(int count, int size)
         {
             if (count <= 0 || size <= 0)
@@ -1067,12 +1081,12 @@ namespace ICU4N.Impl
             return true;
         }
 
-        /**
-        * Sets the group name data
-        * @param group index information array
-        * @param groupstring name information array
-        * @return false if there is a data error
-*/
+        /// <summary>
+        /// Sets the group name data.
+        /// </summary>
+        /// <param name="group">Index information array.</param>
+        /// <param name="groupstring">Name information array.</param>
+        /// <returns>false if there is a data error.</returns>
         internal bool SetGroup(char[] group, byte[] groupstring)
         {
             if (group != null && groupstring != null && group.Length > 0 &&
@@ -1087,47 +1101,48 @@ namespace ICU4N.Impl
 
         // private data members ----------------------------------------------
 
-        /**
-        * Data used in unames.icu
-*/
+        //
+        // Data used in unames.icu
+        //
         private char[] m_tokentable_;
         private byte[] m_tokenstring_;
         private char[] m_groupinfo_;
         private byte[] m_groupstring_;
         private AlgorithmName[] m_algorithm_;
 
-        /**
-        * Group use.  Note - access must be synchronized.
-*/
+        //
+        // Group use.  Note - access must be synchronized.
+        //
         private char[] m_groupoffsets_ = new char[LINES_PER_GROUP_ + 1];
         private char[] m_grouplengths_ = new char[LINES_PER_GROUP_ + 1];
 
-        /**
-        * Default name of the name datafile
-*/
+        /// <summary>
+        /// Default name of the name datafile
+        /// </summary>
         private static readonly string FILE_NAME_ = "unames.icu";
-        /**
-        * Shift count to retrieve group information
-        */
+        /// <summary>
+        /// Shift count to retrieve group information
+        /// </summary>
         private static readonly int GROUP_SHIFT_ = 5;
-        /**
-        * Mask to retrieve the offset for a particular character within a group
-*/
+        /// <summary>
+        /// Mask to retrieve the offset for a particular character within a group
+        /// </summary>
         private static readonly int GROUP_MASK_ = LINES_PER_GROUP_ - 1;
 
-        /**
-        * Position of offsethigh in group information array
-*/
+        /// <summary>
+        /// Position of offsethigh in group information array
+        /// </summary>
         private static readonly int OFFSET_HIGH_OFFSET_ = 1;
 
-        /**
-        * Position of offsetlow in group information array
-*/
+        /// <summary>
+        /// Position of offsetlow in group information array
+        /// </summary>
         private static readonly int OFFSET_LOW_OFFSET_ = 2;
-        /**
-        * Double nibble indicator, any nibble > this number has to be combined
-        * with its following nibble
-*/
+
+        /// <summary>
+        /// Double nibble indicator, any nibble > this number has to be combined
+        /// with its following nibble
+        /// </summary>
         private static readonly int SINGLE_NIBBLE_MAX_ = 11;
 
         /*
@@ -1139,35 +1154,35 @@ namespace ICU4N.Impl
          */
         //private static int MAX_ISO_COMMENT_LENGTH_ = 0;
 
-        /**
-         * Set of chars used in character names (regular & 1.0).
-         * Chars are platform-dependent (can be EBCDIC).
-         */
+        /// <summary>
+        /// Set of chars used in character names (regular & 1.0).
+        /// Chars are platform-dependent (can be EBCDIC).
+        /// </summary>
         private int[] m_nameSet_ = new int[8];
-        /**
-         * Set of chars used in ISO comments. (regular & 1.0).
-         * Chars are platform-dependent (can be EBCDIC).
-         */
+        /// <summary>
+        /// Set of chars used in ISO comments. (regular & 1.0).
+        /// Chars are platform-dependent (can be EBCDIC).
+        /// </summary>
         private int[] m_ISOCommentSet_ = new int[8];
-        /**
-         * Utility StringBuffer
-         */
-        private StringBuilder m_utilStringBuffer_ = new StringBuilder();
-        /**
-         * Utility int buffer
-         */
+        /// <summary>
+        /// Utility <see cref="StringBuffer"/>
+        /// </summary>
+        private StringBuffer m_utilStringBuffer_ = new StringBuffer();
+        /// <summary>
+        /// Utility <see cref="int"/> buffer
+        /// </summary>
         private int[] m_utilIntBuffer_ = new int[2];
-        /**
-         * Maximum ISO comment length
-         */
+        /// <summary>
+        /// Maximum ISO comment length
+        /// </summary>
         private int m_maxISOCommentLength_;
-        /**
-         * Maximum name length
-         */
+        /// <summary>
+        /// Maximum name length
+        /// </summary>
         private int m_maxNameLength_;
-        /**
-         * Type names used for extended names
-         */
+        /// <summary>
+        /// Type names used for extended names
+        /// </summary>
         private static readonly string[] TYPE_NAMES_ = {"unassigned",
                                                  "uppercase letter",
                                                  "lowercase letter",
@@ -1201,37 +1216,37 @@ namespace ICU4N.Impl
                                                  "noncharacter",
                                                  "lead surrogate",
                                                  "trail surrogate"};
-        /**
-         * Unknown type name
-         */
+        /// <summary>
+        /// Unknown type name
+        /// </summary>
         private static readonly string UNKNOWN_TYPE_NAME_ = "unknown";
-        /**
-         * Not a character type
-         */
+        /// <summary>
+        /// Not a character type
+        /// </summary>
         private static readonly int NON_CHARACTER_
                                         = UCharacterCategory.CHAR_CATEGORY_COUNT;
-        /**
-        * Lead surrogate type
-*/
+        /// <summary>
+        /// Lead surrogate type
+        /// </summary>
         private static readonly int LEAD_SURROGATE_
                                       = UCharacterCategory.CHAR_CATEGORY_COUNT + 1;
-        /**
-        * Trail surrogate type
-*/
+        /// <summary>
+        /// Trail surrogate type
+        /// </summary>
         private static readonly int TRAIL_SURROGATE_
                                       = UCharacterCategory.CHAR_CATEGORY_COUNT + 2;
-        /**
-        * Extended category count
-*/
+        /// <summary>
+        /// Extended category count
+        /// </summary>
         static readonly int EXTENDED_CATEGORY_
                                       = UCharacterCategory.CHAR_CATEGORY_COUNT + 3;
 
         // private constructor ------------------------------------------------
 
-        /**
-        * <p>Protected constructor for use in UCharacter.</p>
-        * @exception IOException thrown when data reading fails
-*/
+        /// <summary>
+        /// Protected constructor for use in <see cref="UCharacter"/>.
+        /// </summary>
+        /// <exception cref="IOException">Thrown when data reading fails.</exception>
         private UCharacterName()
         {
             ByteBuffer b = ICUBinary.GetRequiredData(FILE_NAME_);
@@ -1241,12 +1256,12 @@ namespace ICU4N.Impl
 
         // private methods ---------------------------------------------------
 
-        /**
-        * Gets the algorithmic name for the argument character
-        * @param ch character to determine name for
-        * @param choice name choice
-        * @return the algorithmic name or null if not found
-*/
+        /// <summary>
+        /// Gets the algorithmic name for the argument character.
+        /// </summary>
+        /// <param name="ch">Character to determine name for.</param>
+        /// <param name="choice">Name choice.</param>
+        /// <returns>The algorithmic name or null if not found.</returns>
         private string GetAlgName(int ch, UCharacterNameChoice choice)
         {
             /* Only the normative character name can be algorithmic. */
@@ -1272,12 +1287,12 @@ namespace ICU4N.Impl
             return null;
         }
 
-        /**
-        * Getting the character with the tokenized argument name
-        * @param name of the character
-        * @return character with the tokenized argument name or -1 if character
-        *         is not found
-*/
+        /// <summary>
+        /// Getting the character with the tokenized argument name.
+        /// </summary>
+        /// <param name="name">Name of the character.</param>
+        /// <param name="choice"></param>
+        /// <returns>Character with the tokenized argument name or -1 if character is not found.</returns>
         private int GetGroupChar(string name, UCharacterNameChoice choice)
         {
             lock (this)
@@ -1302,16 +1317,16 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-        * Compares and retrieve character if name is found within the argument
-        * group
-        * @param index index where the set of names reside in the group block
-        * @param length list of lengths of the strings
-        * @param name character name to search for
-        * @param choice of either 1.0 or the most current unicode name
-        * @return relative character in the group which matches name, otherwise if
-        *         not found, -1 will be returned
-*/
+        /// <summary>
+        /// Compares and retrieve character if name is found within the argument
+        /// group.
+        /// </summary>
+        /// <param name="index">Index where the set of names reside in the group block.</param>
+        /// <param name="length">List of lengths of the strings.</param>
+        /// <param name="name">Character name to search for.</param>
+        /// <param name="choice">Choice of either 1.0 or the most current unicode name.</param>
+        /// <returns>Relative character in the group which matches name, otherwise if
+        /// not found, -1 will be returned.</returns>
         private int GetGroupChar(int index, char[] length, string name,
                                  UCharacterNameChoice choice)
         {
@@ -1397,11 +1412,11 @@ namespace ICU4N.Impl
             return -1;
         }
 
-        /**
-        * Gets the character extended type
-        * @param ch character to be tested
-        * @return extended type it is associated with
-*/
+        /// <summary>
+        /// Gets the character extended type.
+        /// </summary>
+        /// <param name="ch">Character to be tested.</param>
+        /// <returns>Extended type it is associated with.</returns>
         private static int GetType(int ch)
         {
             if (UCharacterUtility.IsNonCharacter(ch))
@@ -1424,13 +1439,13 @@ namespace ICU4N.Impl
             return result;
         }
 
-        /**
-        * Getting the character with extended name of the form <....>.
-        * @param name of the character to be found
-        * @param choice name choice
-        * @return character associated with the name, -1 if such character is not
-        *                   found and -2 if we should continue with the search.
-*/
+        /// <summary>
+        /// Getting the character with extended name of the form &lt;....>.
+        /// </summary>
+        /// <param name="name">Name of the character to be found.</param>
+        /// <param name="choice">Name choice.</param>
+        /// <returns>Character associated with the name, -1 if such character is not
+        /// found and -2 if we should continue with the search.</returns>
         private static int GetExtendedChar(string name, UCharacterNameChoice choice)
         {
             if (name[0] == '<')
@@ -1476,35 +1491,35 @@ namespace ICU4N.Impl
 
         // sets of name characters, maximum name lengths -----------------------
 
-        /**
-         * Adds a codepoint into a set of ints.
-         * Equivalent to SET_ADD.
-         * @param set set to add to
-         * @param ch 16 bit char to add
-         */
+        /// <summary>
+        /// Adds a codepoint into a set of <see cref="int"/>s.
+        /// Equivalent to SET_ADD.
+        /// </summary>
+        /// <param name="set">Set to add to.</param>
+        /// <param name="ch">16 bit char to add.</param>
         private static void Add(int[] set, char ch)
         {
             set[ch.TripleShift(5)] |= 1 << (ch & 0x1f);
         }
 
-        /**
-         * Checks if a codepoint is a part of a set of ints.
-         * Equivalent to SET_CONTAINS.
-         * @param set set to check in
-         * @param ch 16 bit char to check
-         * @return true if codepoint is part of the set, false otherwise
-         */
+        /// <summary>
+        /// Checks if a codepoint is a part of a set of <see cref="int"/>s.
+        /// Equivalent to SET_CONTAINS.
+        /// </summary>
+        /// <param name="set">Set to check in.</param>
+        /// <param name="ch">16 bit char to check.</param>
+        /// <returns>true if codepoint is part of the set, false otherwise.</returns>
         private static bool Contains(int[] set, char ch)
         {
             return (set[ch.TripleShift(5)] & (1 << (ch & 0x1f))) != 0;
         }
 
-        /**
-         * Adds all characters of the argument str and gets the length
-         * Equivalent to calcStringSetLength.
-         * @param set set to add all chars of str to
-         * @param str string to add
-         */
+        /// <summary>
+        /// Adds all characters of the argument <paramref name="str"/> and gets the length.
+        /// Equivalent to calcStringSetLength.
+        /// </summary>
+        /// <param name="set">Set to add all chars of <paramref name="str"/> to.</param>
+        /// <param name="str">String to add.</param>
         private static int Add(int[] set, string str)
         {
             int result = str.Length;
@@ -1516,13 +1531,14 @@ namespace ICU4N.Impl
             return result;
         }
 
-        /**
-         * Adds all characters of the argument str and gets the length
-         * Equivalent to calcStringSetLength.
-         * @param set set to add all chars of str to
-         * @param str string to add
-         */
-        private static int Add(int[] set, StringBuilder str)
+        /// <summary>
+        /// Adds all characters of the argument <paramref name="str"/> and gets the length.
+        /// Equivalent to calcStringSetLength.
+        /// </summary>
+        /// <param name="set">Set to add all chars of <paramref name="str"/> to.</param>
+        /// <param name="str">String to add.</param>
+        /// <returns></returns>
+        private static int Add(int[] set, StringBuffer str)
         {
             int result = str.Length;
 
@@ -1533,13 +1549,13 @@ namespace ICU4N.Impl
             return result;
         }
 
-        /**
-         * Adds all algorithmic names into the name set.
-         * Equivalent to part of calcAlgNameSetsLengths.
-         * @param maxlength length to compare to
-         * @return the maximum length of any possible algorithmic name if it is >
-         *         maxlength, otherwise maxlength is returned.
-         */
+        /// <summary>
+        /// Adds all algorithmic names into the name set.
+        /// Equivalent to part of calcAlgNameSetsLengths.
+        /// </summary>
+        /// <param name="maxlength">Length to compare to.</param>
+        /// <returns>the maximum length of any possible algorithmic name if it is >
+        /// maxlength, otherwise <paramref name="maxlength"/> is returned.</returns>
         private int AddAlgorithmName(int maxlength)
         {
             int result = 0;
@@ -1554,12 +1570,12 @@ namespace ICU4N.Impl
             return maxlength;
         }
 
-        /**
-         * Adds all extended names into the name set.
-         * Equivalent to part of calcExtNameSetsLengths.
-         * @param maxlength length to compare to
-         * @return the maxlength of any possible extended name.
-         */
+        /// <summary>
+        /// Adds all extended names into the name set.
+        /// Equivalent to part of calcExtNameSetsLengths.
+        /// </summary>
+        /// <param name="maxlength">Length to compare to.</param>
+        /// <returns>The <paramref name="maxlength"/> of any possible extended name.</returns>
         private int AddExtendedName(int maxlength)
         {
             for (int i = TYPE_NAMES_.Length - 1; i >= 0; i--)
@@ -1578,16 +1594,16 @@ namespace ICU4N.Impl
             return maxlength;
         }
 
-        /**
-         * Adds names of a group to the argument set.
-         * Equivalent to calcNameSetLength.
-         * @param offset of the group name string in byte count
-         * @param length of the group name string
-         * @param tokenlength array to store the length of each token
-         * @param set to add to
-         * @return the length of the name string and the length of the group
-         *         string parsed
-         */
+        /// <summary>
+        /// Adds names of a group to the argument set.
+        /// Equivalent to calcNameSetLength.
+        /// </summary>
+        /// <param name="offset">Offset of the group name string in byte count.</param>
+        /// <param name="length">Length of the group name string.</param>
+        /// <param name="tokenlength">Array to store the length of each token.</param>
+        /// <param name="set">Set to add to.</param>
+        /// <returns>The length of the name string and the length of the group
+        /// string parsed.</returns>
         private int[] AddGroupName(int offset, int length, byte[] tokenlength,
                                    int[] set)
         {
@@ -1649,13 +1665,13 @@ namespace ICU4N.Impl
             return m_utilIntBuffer_;
         }
 
-        /**
-         * Adds names of all group to the argument set.
-         * Sets the data member m_max*Length_.
-         * Method called only once.
-         * Equivalent to calcGroupNameSetsLength.
-         * @param maxlength length to compare to
-         */
+        /// <summary>
+        /// Adds names of all group to the argument set.
+        /// Sets the data member m_max*Length_.
+        /// Method called only once.
+        /// Equivalent to calcGroupNameSetsLength.
+        /// </summary>
+        /// <param name="maxlength">Length to compare to.</param>
         private void AddGroupName(int maxlength)
         {
             int maxisolength = 0;
@@ -1726,10 +1742,10 @@ namespace ICU4N.Impl
             m_maxNameLength_ = maxlength;
         }
 
-        /**
-         * Sets up the name sets and the calculation of the maximum lengths.
-         * Equivalent to calcNameSetsLengths.
-         */
+        /// <summary>
+        /// Sets up the name sets and the calculation of the maximum lengths.
+        /// Equivalent to calcNameSetsLengths.
+        /// </summary>
         private bool InitNameSetsLengths()
         {
             if (m_maxNameLength_ > 0)
@@ -1754,12 +1770,12 @@ namespace ICU4N.Impl
             return true;
         }
 
-        /**
-         * Converts the char set cset into a Unicode set uset.
-         * Equivalent to charSetToUSet.
-         * @param set Set of 256 bit flags corresponding to a set of chars.
-         * @param uset USet to receive characters. Existing contents are deleted.
-         */
+        /// <summary>
+        /// Converts the char set cset into a Unicode set uset.
+        /// Equivalent to charSetToUSet.
+        /// </summary>
+        /// <param name="set">Set of 256 bit flags corresponding to a set of chars.</param>
+        /// <param name="uset">USet to receive characters. Existing contents are deleted.</param>
         private void Convert(int[] set, UnicodeSet uset)
         {
             uset.Clear();

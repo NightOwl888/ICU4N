@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ICU4N.Impl
+﻿namespace ICU4N.Impl
 {
-    public enum UCharacterNameChoice
+    public enum UCharacterNameChoice // ICU4N TODO: API Rename to follow .NET Conventions
     {
         // public variables =============================================
 

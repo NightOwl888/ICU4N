@@ -16,13 +16,13 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed partial class UResource
     {
-        /**
-         * Represents a resource bundle item's key string.
-         * Avoids object creations as much as possible.
-         * Mutable, not thread-safe.
-         * For permanent storage, use clone() or toString().
-         */
-        public sealed partial class Key : ICharSequence, IComparable<Key>
+        /// <summary>
+        /// Represents a resource bundle item's key string.
+        /// Avoids object creations as much as possible.
+        /// Mutable, not thread-safe.
+        /// For permanent storage, use <see cref="Clone()"/> or <see cref="ToString()"/>.
+        /// </summary>
+        public sealed partial class Key : ICharSequence, IComparable<Key> // ICU4N TODO: API De-nest ?
 #if FEATURE_CLONEABLE
             , ICloneable
 #endif
@@ -37,17 +37,17 @@ namespace ICU4N.Impl
             private int length;
             private string s;
 
-            /**
-             * Constructs an empty resource key string object.
-             */
+            /// <summary>
+            /// Constructs an empty resource key string object.
+            /// </summary>
             public Key()
             {
                 s = "";
             }
 
-            /**
-             * Constructs a resource key object equal to the given string.
-             */
+            /// <summary>
+            /// Constructs a resource key object equal to the given string.
+            /// </summary>
             public Key(string s)
             {
                 SetString(s);
@@ -60,16 +60,16 @@ namespace ICU4N.Impl
                 length = keyLength;
             }
 
-            /**
-             * Mutates this key for a new NUL-terminated resource key string.
-             * The corresponding ASCII-character bytes are not copied and
-             * must not be changed during the lifetime of this key
-             * (or until the next setBytes() call)
-             * and lifetimes of subSequences created from this key.
-             *
-             * @param keyBytes new key string byte array
-             * @param keyOffset new key string offset
-             */
+            /// <summary>
+            /// Mutates this key for a new NUL-terminated resource key string.
+            /// The corresponding ASCII-character bytes are not copied and
+            /// must not be changed during the lifetime of this key
+            /// (or until the next <see cref="SetBytes(byte[], int)"/> call)
+            /// and lifetimes of subSequences created from this key.
+            /// </summary>
+            /// <param name="keyBytes">New key string byte array.</param>
+            /// <param name="keyOffset">New key string offset.</param>
+            /// <returns>This.</returns>
             public Key SetBytes(byte[] keyBytes, int keyOffset)
             {
                 bytes = keyBytes;
@@ -79,9 +79,10 @@ namespace ICU4N.Impl
                 return this;
             }
 
-            /**
-             * Mutates this key to an empty resource key string.
-             */
+            /// <summary>
+            /// Mutates this key to an empty resource key string.
+            /// </summary>
+            /// <returns>This.</returns>
             public Key SetToEmpty()
             {
                 bytes = null;
@@ -90,9 +91,10 @@ namespace ICU4N.Impl
                 return this;
             }
 
-            /**
-             * Mutates this key to be equal to the given string.
-             */
+            /// <summary>
+            /// Mutates this key to be equal to the given string.
+            /// </summary>
+            /// <returns>This.</returns>
             public Key SetString(string s)
             {
                 if (string.IsNullOrEmpty(s))
@@ -121,10 +123,11 @@ namespace ICU4N.Impl
                 return this;
             }
 
-            /**
-             * {@inheritDoc}
-             * Does not clone the byte array.
-             */
+            /// <summary>
+            /// Creates a new object that is a copy of the current instance.
+            /// Does not clone the byte array.
+            /// </summary>
+            /// <returns>A new object that is a copy of this instance.</returns>
             public object Clone()
             {
                 return base.MemberwiseClone();
@@ -151,9 +154,9 @@ namespace ICU4N.Impl
                 return new Key(bytes, offset + start, end - start);
             }
 
-            /**
-             * Creates/caches/returns this resource key string as a Java String.
-             */
+            /// <summary>
+            /// Creates/caches/returns this resource key string as a .NET <see cref="string"/>.
+            /// </summary>
             public override string ToString()
             {
                 if (s == null)
@@ -173,19 +176,19 @@ namespace ICU4N.Impl
                 return sb.ToString();
             }
 
-            /**
-             * Creates a new Java String for a sub-sequence of this resource key string.
-             */
+            /// <summary>
+            /// Creates a new .NET <see cref="string"/> for a sub-sequence of this resource key string.
+            /// </summary>
             public string Substring(int start)
             {
                 Debug.Assert(0 <= start && start < length);
                 return InternalSubString(start, length);
             }
 
-            /**
-             * Creates a new Java String for a sub-sequence of this resource key string.
-             */
-            public string Substring(int start, int end) // ICU4N TODO: Change 2nd param behavior to be like .NET ?
+            /// <summary>
+            /// Creates a new .NET <see cref="string"/> for a sub-sequence of this resource key string.
+            /// </summary>
+            public string Substring(int start, int end) // ICU4N TODO: API Change 2nd param behavior to be like .NET ?
             {
                 Debug.Assert(0 <= start && start < length);
                 Debug.Assert(start <= end && end <= length);
@@ -261,157 +264,146 @@ namespace ICU4N.Impl
             // ICU4N specific - CompareTo(ICharSequence cs) moved to UResourceExtension.tt
         }
 
-        /**
-         * Interface for iterating over a resource bundle array resource.
-         * Does not use Java Iterator to reduce object creations.
-         */
-        public interface IArray
+        /// <summary>
+        /// Interface for iterating over a resource bundle array resource.
+        /// Does not use .NET enumerator to reduce object creations.
+        /// </summary>
+        public interface IArray // ICU4N TODO: API - de-nest ?
         {
-            /**
-             * @return The number of items in the array resource.
-             */
+            /// <summary>
+            /// Gets the number of items in the array resource.
+            /// </summary>
             int Length { get; }
-            /**
-             * @param i Array item index.
-             * @param value Output-only, receives the value of the i'th item.
-             * @return true if i is non-negative and less than getSize().
-             */
+            /// <summary>
+            /// Returns true if i is non-negative and less than <see cref="Length"/>.
+            /// </summary>
+            /// <param name="i">Array item index.</param>
+            /// <param name="value">Output-only, receives the value of the i'th item.</param>
+            /// <returns>true if i is non-negative and less than <see cref="Length"/>.</returns>
             bool GetValue(int i, Value value);
         }
 
-        /**
-         * Interface for iterating over a resource bundle table resource.
-         * Does not use Java Iterator to reduce object creations.
-         */
-        public interface ITable
+        /// <summary>
+        /// Interface for iterating over a resource bundle table resource.
+        /// Does not use .NET enumerator to reduce object creations.
+        /// </summary>
+        public interface ITable // ICU4N TODO: API - de-nest ?
         {
-            /**
-             * @return The number of items in the array resource.
-             */
+            /// <summary>
+            /// Gets the number of items in the table resource.
+            /// </summary>
             int Length { get; }
-            /**
-             * @param i Array item index.
-             * @param key Output-only, receives the key of the i'th item.
-             * @param value Output-only, receives the value of the i'th item.
-             * @return true if i is non-negative and less than getSize().
-             */
+            /// <summary>
+            /// Returns true if i is non-negative and less than <see cref="Length"/>.
+            /// </summary>
+            /// <param name="i">Array item index.</param>
+            /// <param name="key">Output-only, receives the key of the i'th item.</param>
+            /// <param name="value">Output-only, receives the value of the i'th item.</param>
+            /// <returns>true if i is non-negative and less than <see cref="Length"/>.</returns>
             bool GetKeyAndValue(int i, Key key, Value value);
         }
 
-        /**
-         * Represents a resource bundle item's value.
-         * Avoids object creations as much as possible.
-         * Mutable, not thread-safe.
-         */
-        public abstract class Value
+        /// <summary>
+        /// Represents a resource bundle item's value.
+        /// Avoids object creations as much as possible.
+        /// Mutable, not thread-safe.
+        /// </summary>
+        public abstract class Value // ICU4N TODO: API - de-nest ?
         {
             protected Value() { }
 
-            /**
-             * @return ICU resource type like {@link UResourceBundle#getType()},
-             *     for example, {@link UResourceBundle#STRING}
-             */
+            /// <summary>
+            /// Gets ICU resource type like <see cref="UResourceBundle.Type"/>
+            /// for example, <see cref="UResourceType.String"/>.
+            /// </summary>
             public abstract int Type { get; }
 
-            /**
-             * @see UResourceBundle#getString()
-             * @throws UResourceTypeMismatchException if this is not a string resource
-             */
+            /// <seealso cref="UResourceBundle.GetString()"/>
+            /// <exception cref="UResourceTypeMismatchException">If this is not a string resource.</exception>
             public abstract string GetString();
 
-            /**
-             * @throws UResourceTypeMismatchException if this is not an alias resource
-             */
+            /// <exception cref="UResourceTypeMismatchException">If this is not an alias resource.</exception>
             public abstract string GetAliasString();
 
-            /**
-             * @see UResourceBundle#getInt()
-             * @throws UResourceTypeMismatchException if this is not an integer resource
-             */
+            /// <seealso cref="UResourceBundle.GetInt32()"/>
+            /// <exception cref="UResourceTypeMismatchException">If this is not an integer resource.</exception>
             public abstract int GetInt32();
 
-            /**
-             * @see UResourceBundle#getUInt()
-             * @throws UResourceTypeMismatchException if this is not an integer resource
-             */
+            /// <seealso cref="UResourceBundle.GetUInt32()"/>
+            /// <exception cref="UResourceTypeMismatchException">If this is not an integer resource.</exception>
             public abstract int GetUInt32();
 
-            /**
-             * @see UResourceBundle#getIntVector()
-             * @throws UResourceTypeMismatchException if this is not an intvector resource
-             */
+            /// <seealso cref="UResourceBundle.GetInt32Vector()"/>
+            /// <exception cref="UResourceTypeMismatchException">If this is not an intvector resource.</exception>
             public abstract int[] GetInt32Vector();
 
-            /**
-             * @see UResourceBundle#getBinary()
-             * @throws UResourceTypeMismatchException if this is not a binary-blob resource
-             */
-            public abstract ByteBuffer GetBinary(); // ICU4N TODO: Find an alternative than ByteBuffer for binary data (byte[] ?)
+            /// <seealso cref="UResourceBundle.GetBinary()"/>
+            /// <exception cref="UResourceTypeMismatchException">If this is not a binary-blob resource.</exception>
+            public abstract ByteBuffer GetBinary(); // ICU4N TODO: API Find an alternative than ByteBuffer for binary data (byte[] ?)
 
-            /**
-             * @throws UResourceTypeMismatchException if this is not an array resource
-             */
+            /// <exception cref="UResourceTypeMismatchException">If this is not an array resource.</exception>
             public abstract IArray GetArray();
 
-            /**
-             * @throws UResourceTypeMismatchException if this is not a table resource
-             */
+            /// <exception cref="UResourceTypeMismatchException">If this is not a table resource.</exception>
             public abstract ITable GetTable();
 
-            /**
-             * Is this a no-fallback/no-inheritance marker string?
-             * Such a marker is used for CLDR no-fallback data values of "∅∅∅"
-             * when enumerating tables with fallback from the specific resource bundle to root.
-             *
-             * @return true if this is a no-inheritance marker string
-             */
+            /// <summary>
+            /// Is this a no-fallback/no-inheritance marker string?
+            /// Such a marker is used for CLDR no-fallback data values of "∅∅∅"
+            /// when enumerating tables with fallback from the specific resource bundle to root.
+            /// Returns true if this is a no-inheritance marker string.
+            /// </summary>
             public abstract bool IsNoInheritanceMarker { get; }
 
-            /**
-             * @return the array of strings in this array resource.
-             * @see UResourceBundle#getStringArray()
-             * @throws UResourceTypeMismatchException if this is not an array resource
-             *     or if any of the array items is not a string
-             */
+            /// <summary>
+            /// The array of strings in this array resource.
+            /// </summary>
+            /// <seealso cref="UResourceBundle.GetStringArray()"/>
+            /// <exception cref="UResourceTypeMismatchException">If this is not an array resource
+            /// or if any of the array items is not a string.</exception>
             public abstract string[] GetStringArray();
 
-            /**
-             * Same as
-             * <pre>
-             * if (getType() == STRING) {
-             *     return new String[] { getString(); }
-             * } else {
-             *     return getStringArray();
-             * }
-             * </pre>
-             *
-             * @see #getString()
-             * @see #getStringArray()
-             * @throws UResourceTypeMismatchException if this is
-             *     neither a string resource nor an array resource containing strings
-             */
+            /// <summary>
+            /// Same as
+            /// <code>
+            /// if (Type == UResourceType.String)
+            /// {
+            ///     return new string[] { GetString(); }
+            /// }
+            /// else
+            /// {
+            ///     return GetStringArray();
+            /// }
+            /// </code>
+            /// </summary>
+            /// <seealso cref="GetString()"/>
+            /// <seealso cref="GetStringArray()"/>
+            /// <exception cref="UResourceTypeMismatchException">If this is
+            /// neither a string resource nor an array resource containing strings.</exception>
             public abstract string[] GetStringArrayOrStringAsArray();
 
-            /**
-             * Same as
-             * <pre>
-             * if (getType() == STRING) {
-             *     return getString();
-             * } else {
-             *     return getStringArray()[0];
-             * }
-             * </pre>
-             *
-             * @see #getString()
-             * @see #getStringArray()
-             * @throws UResourceTypeMismatchException if this is
-             *     neither a string resource nor an array resource containing strings
-             */
+            /// <summary>
+            /// Same as
+            /// <code>
+            /// if (Type == UResourceType.String)
+            /// {
+            ///     return GetString();
+            /// }
+            /// else
+            /// {
+            ///     return GetStringArray()[0];
+            /// }
+            /// </code>
+            /// </summary>
+            /// <seealso cref="GetString()"/>
+            /// <seealso cref="GetStringArray()"/>
+            /// <exception cref="UResourceTypeMismatchException">If this is
+            /// neither a string resource nor an array resource containing strings.</exception>
             public abstract string GetStringOrFirstOfArray();
 
-            /**
-             * Only for debugging.
-             */
+            /// <summary>
+            /// Only for debugging.
+            /// </summary>
             public override string ToString()
             {
                 switch (Type)
@@ -445,26 +437,25 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * Sink for ICU resource bundle contents.
-         */
-        public abstract class Sink
+        /// <summary>
+        /// Sink for ICU resource bundle contents.
+        /// </summary>
+        public abstract class Sink // ICU4N TODO: API - de-nest ?
         {
-            /**
-             * Called once for each bundle (child-parent-...-root).
-             * The value is normally an array or table resource,
-             * and implementations of this method normally iterate over the
-             * tree of resource items stored there.
-             *
-             * @param key Initially the key string of the enumeration-start resource.
-             *     Empty if the enumeration starts at the top level of the bundle.
-             *     Reuse for output values from Array and Table getters.
-             * @param value Call getArray() or getTable() as appropriate.
-             *     Then reuse for output values from Array and Table getters.
-             * @param noFallback true if the bundle has no parent;
-             *     that is, its top-level table has the nofallback attribute,
-             *     or it is the root bundle of a locale tree.
-             */
+            /// <summary>
+            /// Called once for each bundle (child-parent-...-root).
+            /// The value is normally an array or table resource,
+            /// and implementations of this method normally iterate over the
+            /// tree of resource items stored there.
+            /// </summary>
+            /// <param name="key">Initially the key string of the enumeration-start resource.
+            /// Empty if the enumeration starts at the top level of the bundle.
+            /// Reuse for output values from <see cref="IArray"/> and <see cref="ITable"/> getters.</param>
+            /// <param name="value">Call <see cref="Value.GetArray()"/> or <see cref="Value.GetTable()"/> as appropriate.
+            /// Then reuse for output values from <see cref="IArray"/> and <see cref="ITable"/> getters.</param>
+            /// <param name="noFallback">true if the bundle has no parent;
+            /// that is, its top-level table has the nofallback attribute,
+            /// or it is the root bundle of a locale tree.</param>
             public abstract void Put(Key key, Value value, bool noFallback);
         }
     }
