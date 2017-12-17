@@ -637,9 +637,9 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>An iterator over the text being analyzed.</returns>
         /// <stable>ICU 2.0</stable>
-        public override CharacterIterator GetText() // ICU4N TODO: API make property ?
+        public override CharacterIterator Text
         {
-            return fText;
+            get { return fText; }
         }
 
         /// <summary>

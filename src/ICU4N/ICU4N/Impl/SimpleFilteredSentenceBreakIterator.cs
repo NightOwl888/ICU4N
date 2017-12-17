@@ -32,7 +32,7 @@ namespace ICU4N.Impl
         /// </summary>
         private void ResetState()
         {
-            text = UCharacterIterator.GetInstance((CharacterIterator)@delegate.GetText().Clone());
+            text = UCharacterIterator.GetInstance((CharacterIterator)@delegate.Text.Clone());
         }
 
         /// <summary>
@@ -265,9 +265,9 @@ namespace ICU4N.Impl
             return @delegate.Last();
         }
 
-        public override CharacterIterator GetText()
+        public override CharacterIterator Text
         {
-            return @delegate.GetText();
+            get { return @delegate.Text; }
         }
 
         public override void SetText(CharacterIterator newText)

@@ -497,7 +497,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a <see cref="CharacterIterator"/> over the text being analyzed.
+        /// Gets a <see cref="CharacterIterator"/> over the text being analyzed.
         /// For at least some subclasses of <see cref="BreakIterator"/>, this is a reference
         /// to the <b>actual iterator being used</b> by the <see cref="BreakIterator"/>,
         /// and therefore, this function's return value should be treated as
@@ -507,7 +507,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>A <see cref="CharacterIterator"/> over the text being analyzed.</returns>
         /// <stable>ICU 2.0</stable>
-        public abstract CharacterIterator GetText(); // ICU4N TODO: API - make property
+        public abstract CharacterIterator Text { get; }
 
         /// <summary>
         /// Sets the iterator to analyze a new piece of text.  The new
@@ -856,7 +856,7 @@ namespace ICU4N.Text
                 BreakIteratorCache cache = (BreakIteratorCache)iterCache[kind].Get();
                 if (cache != null)
                 {
-                    if (cache.GetLocale().Equals(locale))
+                    if (cache.Locale.Equals(locale))
                     {
                         iterCache[kind] = null;
                     }
@@ -926,7 +926,7 @@ namespace ICU4N.Text
                 BreakIteratorCache cache2 = (BreakIteratorCache)iterCache[kind].Get();
                 if (cache2 != null)
                 {
-                    if (cache2.GetLocale().Equals(where))
+                    if (cache2.Locale.Equals(where))
                     {
                         return cache2.CreateBreakInstance();
                     }
@@ -989,9 +989,9 @@ namespace ICU4N.Text
                 this.iter = (BreakIterator)iter.Clone();
             }
 
-            internal ULocale GetLocale() // ICU4N TODO: API - make property
+            internal ULocale Locale
             {
-                return where;
+                get { return where; }
             }
 
             internal BreakIterator CreateBreakInstance()

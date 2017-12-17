@@ -67,7 +67,7 @@ namespace ICU4N.Dev.Test.Rbbi
             assertTrue(error, "unregister null");
 
             {
-                CharacterIterator sci = BreakIterator.GetWordInstance(new CultureInfo("en-US")).GetText();
+                CharacterIterator sci = BreakIterator.GetWordInstance(new CultureInfo("en-US")).Text;
                 int len = sci.EndIndex - sci.BeginIndex;
                 assertEqual(len, 0, "us word text: " + getString(sci));
             }
@@ -94,7 +94,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 // ICU4N: Arbitrary locales are not allowed in .NET
                 //assertEqual(test4, rwbi, "root word break");
 
-                CharacterIterator sci = test1.GetText();
+                CharacterIterator sci = test1.Text;
                 int len = sci.EndIndex - sci.BeginIndex;
                 assertEqual(len, 0, "us sentence-word break text: " + getString(sci));
             }

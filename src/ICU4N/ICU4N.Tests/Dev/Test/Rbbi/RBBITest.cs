@@ -245,7 +245,7 @@ namespace ICU4N.Dev.Test.Rbbi
             try
             {
                 rbbi.SetText((CharacterIterator)null);
-                if (((RuleBasedBreakIterator)rbbi.Clone()).GetText() != null)
+                if (((RuleBasedBreakIterator)rbbi.Clone()).Text != null)
                     Errln("RuleBasedBreakIterator.clone() was suppose to return "
                             + "the same object because fText is set to null.");
             }

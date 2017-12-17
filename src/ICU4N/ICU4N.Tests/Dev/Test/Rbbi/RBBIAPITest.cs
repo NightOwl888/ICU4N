@@ -53,8 +53,8 @@ namespace ICU4N.Dev.Test.Rbbi
                 || !bi2clone.Equals(bi2))
                 Errln("ERROR:2 RBBI's clone() method failed");
 
-            if (!bi1.GetText().Equals(bi1clone.GetText())
-                || !bi2clone.GetText().Equals(bi2.GetText())
+            if (!bi1.Text.Equals(bi1clone.Text)
+                || !bi2clone.Text.Equals(bi2.Text)
                 || bi2clone.Equals(bi1clone))
                 Errln("ERROR: RBBI's clone() method failed");
         }
@@ -120,7 +120,7 @@ namespace ICU4N.Dev.Test.Rbbi
             //CharacterIterator text1Clone = (CharacterIterator) text1.Clone();
             //CharacterIterator text2 = new StringCharacterIterator(str2);
             wordIter1.SetText(str1);
-            if (!wordIter1.GetText().Equals(text1))
+            if (!wordIter1.Text.Equals(text1))
                 Errln("ERROR:1 error in setText or getText ");
             if (wordIter1.Current != 0)
                 Errln("ERROR:1 setText did not set the iteration position to the beginning of the text, it is"

@@ -373,10 +373,13 @@ namespace ICU4N.Impl
                 }
             }
 
-            public override CharacterIterator GetText()
+            public override CharacterIterator Text
             {
-                NotImplemented();
-                return null;
+                get
+                {
+                    NotImplemented();
+                    return null;
+                }
             }
 
             public override void SetText(CharacterIterator newText)

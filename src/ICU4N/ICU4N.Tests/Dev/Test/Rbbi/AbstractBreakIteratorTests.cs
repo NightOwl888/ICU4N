@@ -63,9 +63,9 @@ namespace ICU4N.Dev.Test.Rbbi
                 get { return position; }
             }
 
-            public override CharacterIterator GetText()
+            public override CharacterIterator Text
             {
-                return null;
+                get { return null; }
             }
 
             public override void SetText(CharacterIterator newText)
