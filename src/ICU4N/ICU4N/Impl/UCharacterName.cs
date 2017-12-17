@@ -73,7 +73,7 @@ namespace ICU4N.Impl
         public string GetName(int ch, UCharacterNameChoice choice)
         {
             if (ch < UCharacter.MIN_VALUE || ch > UCharacter.MAX_VALUE ||
-                choice > UCharacterNameChoice.CHAR_NAME_CHOICE_COUNT)
+                choice > UCharacterNameChoice.CharNameChoiceCount)
             {
                 return null;
             }
@@ -85,7 +85,7 @@ namespace ICU4N.Impl
             // getting normal character name
             if (result == null || result.Length == 0)
             {
-                if (choice == UCharacterNameChoice.EXTENDED_CHAR_NAME)
+                if (choice == UCharacterNameChoice.ExtendedCharName)
                 {
                     result = GetExtendedName(ch);
                 }
@@ -108,7 +108,7 @@ namespace ICU4N.Impl
         public int GetCharFromName(UCharacterNameChoice choice, string name)
         {
             // checks for illegal arguments
-            if ((int)choice >= (int)UCharacterNameChoice.CHAR_NAME_CHOICE_COUNT ||
+            if ((int)choice >= (int)UCharacterNameChoice.CharNameChoiceCount ||
                 name == null || name.Length == 0)
             {
                 return -1;
@@ -125,8 +125,8 @@ namespace ICU4N.Impl
             // try algorithmic names first, if fails then try group names
             // int result = getAlgorithmChar(choice, uppercasename);
 
-            if (choice == UCharacterNameChoice.UNICODE_CHAR_NAME ||
-                choice == UCharacterNameChoice.EXTENDED_CHAR_NAME
+            if (choice == UCharacterNameChoice.UnicodeCharName ||
+                choice == UCharacterNameChoice.ExtendedCharName
             )
             {
                 int count = 0;
@@ -144,14 +144,14 @@ namespace ICU4N.Impl
                 }
             }
 
-            if (choice == UCharacterNameChoice.EXTENDED_CHAR_NAME)
+            if (choice == UCharacterNameChoice.ExtendedCharName)
             {
                 result = GetGroupChar(upperCaseName,
-                                      UCharacterNameChoice.UNICODE_CHAR_NAME);
+                                      UCharacterNameChoice.UnicodeCharName);
                 if (result == -1)
                 {
                     result = GetGroupChar(upperCaseName,
-                                          UCharacterNameChoice.CHAR_NAME_ALIAS);
+                                          UCharacterNameChoice.CharNameAlias);
                 }
             }
             else
@@ -255,8 +255,8 @@ namespace ICU4N.Impl
         /// <returns>Name of the group.</returns>
         public string GetGroupName(int index, int length, UCharacterNameChoice choice)
         {
-            if (choice != UCharacterNameChoice.UNICODE_CHAR_NAME &&
-                choice != UCharacterNameChoice.EXTENDED_CHAR_NAME
+            if (choice != UCharacterNameChoice.UnicodeCharName &&
+                choice != UCharacterNameChoice.ExtendedCharName
             )
             {
                 if (';' >= m_tokentable_.Length || m_tokentable_[';'] == 0xFFFF)
@@ -265,7 +265,7 @@ namespace ICU4N.Impl
                      * skip the modern name if it is not requested _and_
                      * if the semicolon byte value is a character, not a token number
                      */
-                    int fieldIndex = choice == UCharacterNameChoice.ISO_COMMENT_ ? 2 : (int)choice;
+                    int fieldIndex = choice == UCharacterNameChoice.IsoComment ? 2 : (int)choice;
                     do
                     {
                         int oldindex = index;
@@ -319,7 +319,7 @@ namespace ICU4N.Impl
                                 // names and there was no 2.0 name but there
                                 // is a 1.0 name.
                                 if (m_utilStringBuffer_.Length == 0 && choice ==
-                                       UCharacterNameChoice.EXTENDED_CHAR_NAME)
+                                       UCharacterNameChoice.ExtendedCharName)
                                 {
                                     continue;
                                 }
@@ -349,7 +349,7 @@ namespace ICU4N.Impl
         /// </summary>
         public string GetExtendedName(int ch)
         {
-            string result = GetName(ch, UCharacterNameChoice.UNICODE_CHAR_NAME);
+            string result = GetName(ch, UCharacterNameChoice.UnicodeCharName);
             if (result == null)
             {
                 // TODO: Return Name_Alias/control names for control codes 0..1F & 7F..9F.
@@ -1265,8 +1265,8 @@ namespace ICU4N.Impl
         private string GetAlgName(int ch, UCharacterNameChoice choice)
         {
             /* Only the normative character name can be algorithmic. */
-            if (choice == UCharacterNameChoice.UNICODE_CHAR_NAME ||
-                choice == UCharacterNameChoice.EXTENDED_CHAR_NAME
+            if (choice == UCharacterNameChoice.UnicodeCharName ||
+                choice == UCharacterNameChoice.ExtendedCharName
             )
             {
                 // index in terms integer index
@@ -1342,15 +1342,15 @@ namespace ICU4N.Impl
                 nindex = 0;
                 len = length[result];
 
-                if (choice != UCharacterNameChoice.UNICODE_CHAR_NAME &&
-                    choice != UCharacterNameChoice.EXTENDED_CHAR_NAME
+                if (choice != UCharacterNameChoice.UnicodeCharName &&
+                    choice != UCharacterNameChoice.ExtendedCharName
                 )
                 {
                     /*
                      * skip the modern name if it is not requested _and_
                      * if the semicolon byte value is a character, not a token number
                      */
-                    int fieldIndex = choice == UCharacterNameChoice.ISO_COMMENT_ ? 2 : (int)choice;
+                    int fieldIndex = choice == UCharacterNameChoice.IsoComment ? 2 : (int)choice;
                     do
                     {
                         int oldindex = index;
@@ -1450,7 +1450,7 @@ namespace ICU4N.Impl
         {
             if (name[0] == '<')
             {
-                if (choice == UCharacterNameChoice.EXTENDED_CHAR_NAME)
+                if (choice == UCharacterNameChoice.ExtendedCharName)
                 {
                     int endIndex = name.Length - 1;
                     if (name[endIndex] == '>')

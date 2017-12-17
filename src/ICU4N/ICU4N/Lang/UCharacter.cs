@@ -4461,7 +4461,7 @@ namespace ICU4N.Lang
          */
         public static string GetName(int ch)
         {
-            return UCharacterName.INSTANCE.GetName(ch, UCharacterNameChoice.UNICODE_CHAR_NAME);
+            return UCharacterName.INSTANCE.GetName(ch, UCharacterNameChoice.UnicodeCharName);
         }
 
         /**
@@ -4524,7 +4524,7 @@ namespace ICU4N.Lang
          */
         public static string GetExtendedName(int ch)
         {
-            return UCharacterName.INSTANCE.GetName(ch, UCharacterNameChoice.EXTENDED_CHAR_NAME);
+            return UCharacterName.INSTANCE.GetName(ch, UCharacterNameChoice.ExtendedCharName);
         }
 
         /**
@@ -4540,7 +4540,7 @@ namespace ICU4N.Lang
          */
         public static string GetNameAlias(int ch)
         {
-            return UCharacterName.INSTANCE.GetName(ch, UCharacterNameChoice.CHAR_NAME_ALIAS);
+            return UCharacterName.INSTANCE.GetName(ch, UCharacterNameChoice.CharNameAlias);
         }
 
         /**
@@ -4572,7 +4572,7 @@ namespace ICU4N.Lang
         public static int GetCharFromName(string name)
         {
             return UCharacterName.INSTANCE.GetCharFromName(
-                    UCharacterNameChoice.UNICODE_CHAR_NAME, name);
+                    UCharacterNameChoice.UnicodeCharName, name);
         }
 
         /**
@@ -4613,7 +4613,7 @@ namespace ICU4N.Lang
         public static int GetCharFromExtendedName(string name)
         {
             return UCharacterName.INSTANCE.GetCharFromName(
-                    UCharacterNameChoice.EXTENDED_CHAR_NAME, name);
+                    UCharacterNameChoice.ExtendedCharName, name);
         }
 
         /**
@@ -4627,7 +4627,7 @@ namespace ICU4N.Lang
          */
         public static int GetCharFromNameAlias(string name)
         {
-            return UCharacterName.INSTANCE.GetCharFromName(UCharacterNameChoice.CHAR_NAME_ALIAS, name);
+            return UCharacterName.INSTANCE.GetCharFromName(UCharacterNameChoice.CharNameAlias, name);
         }
 
         /// <summary>
@@ -5504,7 +5504,7 @@ namespace ICU4N.Lang
         public static IValueIterator GetNameIterator()
         {
             return new UCharacterNameIterator(UCharacterName.INSTANCE,
-                    UCharacterNameChoice.UNICODE_CHAR_NAME);
+                    UCharacterNameChoice.UnicodeCharName);
         }
 
         /**
@@ -5552,7 +5552,7 @@ namespace ICU4N.Lang
         public static IValueIterator GetExtendedNameIterator()
         {
             return new UCharacterNameIterator(UCharacterName.INSTANCE,
-                    UCharacterNameChoice.EXTENDED_CHAR_NAME);
+                    UCharacterNameChoice.ExtendedCharName);
         }
 
         /**

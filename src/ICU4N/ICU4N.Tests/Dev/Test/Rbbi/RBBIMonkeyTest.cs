@@ -812,7 +812,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     {
                         secondRuleName = fBkRules.fBreakRules[f2ndRuleForPos[charIdx]].fName;
                     }
-                    String cName = UCharacterName.INSTANCE.GetName(c, UCharacterNameChoice.EXTENDED_CHAR_NAME);
+                    String cName = UCharacterName.INSTANCE.GetName(c, UCharacterNameChoice.ExtendedCharName);
 
                     Console.Out.Write("  {0:d4} {1:x6}   {2}  {3} {4}   {5} {6}    {7}\n",
                             charIdx, c, cc.fName.PadRight(20, ' '),

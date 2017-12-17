@@ -36,8 +36,8 @@ namespace ICU4N.Lang
                 return false;
             }
 
-            if (m_choice_ == (int)UCharacterNameChoice.UNICODE_CHAR_NAME ||
-                m_choice_ == (int)UCharacterNameChoice.EXTENDED_CHAR_NAME
+            if (m_choice_ == (int)UCharacterNameChoice.UnicodeCharName ||
+                m_choice_ == (int)UCharacterNameChoice.ExtendedCharName
             )
             {
                 int length = m_name_.GetAlgorithmLength();
@@ -108,7 +108,7 @@ namespace ICU4N.Lang
                 m_current_++;
                 return true;
             }
-            else if (m_choice_ == (int)UCharacterNameChoice.EXTENDED_CHAR_NAME)
+            else if (m_choice_ == (int)UCharacterNameChoice.ExtendedCharName)
             {
                 if (!IterateExtended(element, m_limit_))
                 {
@@ -260,7 +260,7 @@ namespace ICU4N.Lang
                                                   index + GROUP_OFFSETS_[offset],
                                                   GROUP_LENGTHS_[offset], (UCharacterNameChoice)m_choice_);
                         if ((name == null || name.Length == 0) &&
-                            m_choice_ == (int)UCharacterNameChoice.EXTENDED_CHAR_NAME)
+                            m_choice_ == (int)UCharacterNameChoice.ExtendedCharName)
                         {
                             name = m_name_.GetExtendedName(m_current_);
                         }
@@ -329,7 +329,7 @@ namespace ICU4N.Lang
                     {
                         gMIN = limit;
                     }
-                    if (m_choice_ == (int)UCharacterNameChoice.EXTENDED_CHAR_NAME)
+                    if (m_choice_ == (int)UCharacterNameChoice.ExtendedCharName)
                     {
                         if (!IterateExtended(result, gMIN))
                         {
