@@ -774,7 +774,7 @@ namespace ICU4N.Dev.Test.Util
             Trie2 trie16;
             try
             {
-                trie16 = Trie2.CreateFromSerialized(ICUBinary.GetByteBufferFromInputStreamAndCloseStream(@is));
+                trie16 = Trie2.CreateFromSerialized(ICUBinary.GetByteBufferFromStreamAndDisposeStream(@is));
             }
             finally
             {
@@ -786,7 +786,7 @@ namespace ICU4N.Dev.Test.Util
             Trie2 trie32;
             try
             {
-                trie32 = Trie2.CreateFromSerialized(ICUBinary.GetByteBufferFromInputStreamAndCloseStream(@is));
+                trie32 = Trie2.CreateFromSerialized(ICUBinary.GetByteBufferFromStreamAndDisposeStream(@is));
             }
             finally
             {

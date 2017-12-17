@@ -227,7 +227,7 @@ namespace ICU4N.Text
          * @stable ICU 2.8
          */
         public StringPrep(Stream inputStream)
-            : this(ICUBinary.GetByteBufferFromInputStreamAndCloseStream(inputStream))
+            : this(ICUBinary.GetByteBufferFromStreamAndDisposeStream(inputStream))
         {
             // TODO: Add a public constructor that takes ByteBuffer directly.
         }

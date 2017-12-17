@@ -583,7 +583,7 @@ namespace ICU4N.Impl
                 {
                     return null;
                 }
-                buffer = GetByteBufferFromInputStreamAndCloseStream(@is);
+                buffer = GetByteBufferFromStreamAndDisposeStream(@is);
             }
             catch (IOException e)
             {
@@ -823,7 +823,10 @@ namespace ICU4N.Impl
         /// Reads the entire contents from the stream into a byte array
         /// and wraps it into a <see cref="ByteBuffer"/>. Disposes the <see cref="Stream"/> at the end.
         /// </summary>
-        public static ByteBuffer GetByteBufferFromInputStreamAndCloseStream(Stream input) // ICU4N TODO: API Rename GetByteBufferFromStreamAndDisposeStream
+        /// <remarks>
+        /// This was named getByteBufferFromInputStreamAndCloseStream() in ICU4J.
+        /// </remarks>
+        public static ByteBuffer GetByteBufferFromStreamAndDisposeStream(Stream input)
         {
             try
             {

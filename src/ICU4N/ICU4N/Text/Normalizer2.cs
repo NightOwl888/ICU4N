@@ -203,7 +203,7 @@ namespace ICU4N.Text
             {
                 try
                 {
-                    bytes = ICUBinary.GetByteBufferFromInputStreamAndCloseStream(data);
+                    bytes = ICUBinary.GetByteBufferFromStreamAndDisposeStream(data);
                 }
                 catch (IOException e)
                 {

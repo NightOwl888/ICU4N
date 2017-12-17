@@ -192,7 +192,7 @@ namespace ICU4N.Impl
                         {
                             return NULL_READER;
                         }
-                        inBytes = ICUBinary.GetByteBufferFromInputStreamAndCloseStream(stream);
+                        inBytes = ICUBinary.GetByteBufferFromStreamAndDisposeStream(stream);
                     }
                     return new ICUResourceBundleReader(inBytes, key.baseName, key.localeID, assembly);
                 }

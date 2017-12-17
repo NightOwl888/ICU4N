@@ -53,7 +53,7 @@ namespace ICU4N.Text
         public static RuleBasedBreakIterator GetInstanceFromCompiledRules(Stream input)
         {
             RuleBasedBreakIterator This = new RuleBasedBreakIterator();
-            This.fRData = RBBIDataWrapper.Get(ICUBinary.GetByteBufferFromInputStreamAndCloseStream(input));
+            This.fRData = RBBIDataWrapper.Get(ICUBinary.GetByteBufferFromStreamAndDisposeStream(input));
             return This;
         }
 
