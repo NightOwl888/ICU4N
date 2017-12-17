@@ -86,11 +86,11 @@ namespace ICU4N.Text
     /// At a normalization boundary, the portions of the string
     /// before it and starting from it do not interact and can be handled independently.
     /// <para/>
-    /// The SpanQuickCheckYes() stops at a normalization boundary.
+    /// The <see cref="SpanQuickCheckYes(string)"/> stops at a normalization boundary.
     /// When the goal is a normalized string, then the text before the boundary
-    /// can be copied, and the remainder can be processed with NormalizeSecondAndAppend().
+    /// can be copied, and the remainder can be processed with <see cref="NormalizeSecondAndAppend(StringBuilder, string)"/>.
     /// <para/>
-    /// The HasBoundaryBefore(), HasBoundaryAfter() and IsInert() functions test whether
+    /// The <see cref="HasBoundaryBefore(int)"/>, <see cref="HasBoundaryAfter(int)"/> and <see cref="IsInert(int)"/> functions test whether
     /// a character is guaranteed to be at a normalization boundary,
     /// regardless of context.
     /// This is used for moving from one normalization boundary to the next
@@ -121,62 +121,62 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a Normalizer2 instance for Unicode NFC normalization.
+        /// Returns a <see cref="Normalizer2"/> instance for Unicode NFC normalization.
         /// Same as GetInstance(null, "nfc", UNormalization2Mode.UNORM2_COMPOSE).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
-        /// <returns>The requested Normalizer2, if successful.</returns>
+        /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         public static Normalizer2 GetNFCInstance()
         {
             return Norm2AllModes.GetNFCInstance().Comp;
         }
 
         /// <summary>
-        /// Returns a Normalizer2 instance for Unicode NFD normalization.
+        /// Returns a <see cref="Normalizer2"/> instance for Unicode NFD normalization.
         /// Same as GetInstance(null, "nfc", UNormalization2Mode.UNORM2_DECOMPOSE).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
-        /// <returns>The requested Normalizer2, if successful.</returns>
+        /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         public static Normalizer2 GetNFDInstance()
         {
             return Norm2AllModes.GetNFCInstance().Decomp;
         }
 
         /// <summary>
-        /// Returns a Normalizer2 instance for Unicode NFKC normalization.
+        /// Returns a <see cref="Normalizer2"/> instance for Unicode NFKC normalization.
         /// Same as GetInstance(null, "nfkc", UNormalization2Mode.UNORM2_COMPOSE).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
-        /// <returns>The requested Normalizer2, if successful.</returns>
+        /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         public static Normalizer2 GetNFKCInstance()
         {
             return Norm2AllModes.GetNFKCInstance().Comp;
         }
 
         /// <summary>
-        /// Returns a Normalizer2 instance for Unicode NFKD normalization.
+        /// Returns a <see cref="Normalizer2"/> instance for Unicode NFKD normalization.
         /// Same as GetInstance(null, "nfkc", UNormalization2Mode.UNORM2_DECOMPOSE).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
-        /// <returns>The requested Normalizer2, if successful.</returns>
+        /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         public static Normalizer2 GetNFKDInstance()
         {
             return Norm2AllModes.GetNFKCInstance().Decomp;
         }
 
         /// <summary>
-        /// Returns a Normalizer2 instance for Unicode NFKC_Casefold normalization.
+        /// Returns a <see cref="Normalizer2"/> instance for Unicode NFKC_Casefold normalization.
         /// Same as GetInstance(null, "nfkc_cf", UNormalization2Mode.UNORM2_COMPOSE).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
-        /// <returns>The requested Normalizer2, if successful.</returns>
+        /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         public static Normalizer2 GetNFKCCasefoldInstance()
         {
             return Norm2AllModes.GetNFKC_CFInstance().Comp;
         }
 
         /// <summary>
-        /// Returns a Normalizer2 instance which uses the specified data file
+        /// Returns a <see cref="Normalizer2"/> instance which uses the specified data file
         /// (an ICU data file if data=null, or else custom binary data)
         /// and which composes or decomposes text according to the specified mode.
         /// Returns an unmodifiable singleton instance.
@@ -195,7 +195,7 @@ namespace ICU4N.Text
         /// <param name="data">The binary, big-endian normalization (.nrm file) data, or null for ICU data.</param>
         /// <param name="name">"nfc" or "nfkc" or "nfkc_cf" or name of custom data file.</param>
         /// <param name="mode">Normalization mode (compose or decompose etc.)</param>
-        /// <returns>The requested Normalizer2, if successful.</returns>
+        /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
         public static Normalizer2 GetInstance(Stream data, string name, Normalizer2Mode mode)
         {
             ByteBuffer bytes = null;
@@ -413,7 +413,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Gets the decomposition mapping of <paramref name="codePoint"/>.
         /// Roughly equivalent to normalizing the <see cref="string"/> form of <paramref name="codePoint"/>
-        /// on a DECOMPOSE Normalizer2 instance, but much faster, and except that this function
+        /// on a DECOMPOSE <see cref="Normalizer2"/> instance, but much faster, and except that this function
         /// returns null if c does not have a decomposition mapping in this instance's data.
         /// This function is independent of the mode of the Normalizer2.
         /// </summary>
@@ -431,14 +431,14 @@ namespace ICU4N.Text
         /// By contrast, <see cref="GetDecomposition"/> returns the processed,
         /// recursively-decomposed version of this mapping.
         /// <para/>
-        /// When used on a standard NFKC Normalizer2 instance,
+        /// When used on a standard NFKC <see cref="Normalizer2"/> instance,
         /// <see cref="GetRawDecomposition"/> returns the Unicode Decomposition_Mapping (dm) property.
         /// <para/>
-        /// When used on a standard NFC Normalizer2 instance,
+        /// When used on a standard NFC <see cref="Normalizer2"/> instance,
         /// it returns the Decomposition_Mapping only if the Decomposition_Type (dt) is Canonical (Can);
         /// in this case, the result contains either one or two code points (=1..4 .NET chars).
         /// <para/>
-        /// This function is independent of the mode of the Normalizer2.
+        /// This function is independent of the mode of the <see cref="Normalizer2"/>.
         /// The default implementation returns null.
         /// </remarks>
         /// <param name="codePoint">Code point.</param>
