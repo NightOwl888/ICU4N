@@ -80,7 +80,7 @@ namespace ICU4N.Dev.Test.Util
             sbyte[] result = { -1, -1, -1, 15, 12 };
             for (int i = 0; i < data.Length; i++)
             {
-                if (Utility.HighBit(data[i]) != (byte)result[i])
+                if (Utility.HighBit(data[i]) != result[i])
                 {
                     Errln("Fail: Highest bit of \\u"
                           + (data[i]).ToHexString() + " should be "

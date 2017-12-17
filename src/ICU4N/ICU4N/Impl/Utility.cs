@@ -1744,15 +1744,19 @@ namespace ICU4N.Impl
         /// Find the highest bit in a positive integer. This is done
         /// by doing a binary search through the bits.
         /// </summary>
+        /// <remarks>
+        /// Return type changed from byte in ICU4J to short in ICU4N because it can
+        /// have negative values, which <see cref="byte"/> doesn't support in .NET, and 
+        /// <see cref="sbyte"/> is not CLS compliant.
+        /// </remarks>
         /// <param name="n">The integer.</param>
         /// <returns>the bit number of the highest bit, with 0 being
         /// the low order bit, or -1 if <paramref name="n"/> is not positive.</returns>
-        // ICU4N NOTE: Returning byte means no negative results. Be sure to cast to sbyte for usage.
-        public static byte HighBit(int n) // ICU4N TODO: API Change to short so we can return negative and be CLS compliant, or change to sbyte and mark CLS compliant false?
+        public static short HighBit(int n)
         {
             if (n <= 0)
             {
-                return unchecked((byte)-1);
+                return -1;
             }
 
             byte bit = 0;
