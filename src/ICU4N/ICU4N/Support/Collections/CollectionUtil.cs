@@ -249,6 +249,126 @@ namespace ICU4N.Support.Collections
         }
 
         /// <summary>
+        /// The same implementation of GetHashCode from Java's AbstractList
+        /// (the default implementation for all lists).
+        /// <para/>
+        /// This algorithm depends on the order of the items in the list.
+        /// It is recursive and will build the hash code based on the values of
+        /// all nested collections.
+        /// <para/>
+        /// Note this operation currently only supports <see cref="IList{T}"/>, <see cref="ISet{T}"/>, 
+        /// and <see cref="IDictionary{TKey, TValue}"/>.
+        /// </summary>
+        public static int GetHashCode<T>(IList<T> list)
+        {
+            int hashCode = 1;
+            bool isValueType = typeof(T).GetTypeInfo().IsValueType;
+            foreach (T e in list)
+            {
+                hashCode = 31 * hashCode +
+                    (isValueType ? e.GetHashCode() : (e == null ? 0 : GetHashCode(e)));
+            }
+
+            return hashCode;
+        }
+
+        /// <summary>
+        /// The same implementation of GetHashCode from Java's AbstractSet
+        /// (the default implementation for all sets)
+        /// <para/>
+        /// This algorithm does not depend on the order of the items in the set.
+        /// It is recursive and will build the hash code based on the values of
+        /// all nested collections.
+        /// <para/>
+        /// Note this operation currently only supports <see cref="IList{T}"/>, <see cref="ISet{T}"/>, 
+        /// and <see cref="IDictionary{TKey, TValue}"/>.
+        /// </summary>
+        public static int GetHashCode<T>(ISet<T> set)
+        {
+            int h = 0;
+            bool isValueType = typeof(T).GetTypeInfo().IsValueType;
+            using (var i = set.GetEnumerator())
+            {
+                while (i.MoveNext())
+                {
+                    T obj = i.Current;
+                    if (isValueType)
+                    {
+                        h += obj.GetHashCode();
+                    }
+                    else if (obj != null)
+                    {
+                        h += GetHashCode(obj);
+                    }
+                }
+            }
+            return h;
+        }
+
+        /// <summary>
+        /// The same implementation of GetHashCode from Java's AbstractMap
+        /// (the default implementation for all dictionaries)
+        /// <para/>
+        /// This algoritm does not depend on the order of the items in the dictionary.
+        /// It is recursive and will build the hash code based on the values of
+        /// all nested collections.
+        /// <para/>
+        /// Note this operation currently only supports <see cref="IList{T}"/>, <see cref="ISet{T}"/>, 
+        /// and <see cref="IDictionary{TKey, TValue}"/>.
+        /// </summary>
+        public static int GetHashCode<TKey, TValue>(IDictionary<TKey, TValue> dictionary)
+        {
+            int h = 0;
+            bool keyIsValueType = typeof(TKey).GetTypeInfo().IsValueType;
+            bool valueIsValueType = typeof(TValue).GetTypeInfo().IsValueType;
+            using (var i = dictionary.GetEnumerator())
+            {
+                while (i.MoveNext())
+                {
+                    TKey key = i.Current.Key;
+                    TValue value = i.Current.Value;
+                    int keyHash = (keyIsValueType ? key.GetHashCode() : (key == null ? 0 : GetHashCode(key)));
+                    int valueHash = (valueIsValueType ? value.GetHashCode() : (value == null ? 0 : GetHashCode(value)));
+                    h += keyHash ^ valueHash;
+                }
+            }
+            return h;
+        }
+
+        /// <summary>
+        /// This method generally assists with the recursive GetHashCode() that
+        /// builds a hash code based on all of the values in a collection 
+        /// including any nested collections (lists, sets, arrays, and dictionaries).
+        /// <para/>
+        /// Note this currently only supports <see cref="IList{T}"/>, <see cref="ISet{T}"/>, 
+        /// and <see cref="IDictionary{TKey, TValue}"/>.
+        /// </summary>
+        /// <param name="obj">the object to build the hash code for</param>
+        /// <returns>a value that represents the unique state of all of the values and 
+        /// nested collection values in the object, provided the main object itself is 
+        /// a collection, otherwise calls <see cref="object.GetHashCode()"/> on the 
+        /// object that is passed.</returns>
+        public static int GetHashCode(object obj)
+        {
+            if (obj == null)
+            {
+                return 0; // 0 for null
+            }
+
+            Type t = obj.GetType();
+            if (t.GetTypeInfo().IsGenericType
+                && (t.ImplementsGenericInterface(typeof(IList<>))
+                || t.ImplementsGenericInterface(typeof(ISet<>))
+                || t.ImplementsGenericInterface(typeof(IDictionary<,>))))
+            {
+                dynamic genericType = Convert.ChangeType(obj, t);
+                return GetHashCode(genericType);
+            }
+
+            return obj.GetHashCode();
+        }
+
+        /// <summary>
         /// This is the same implementation of ToString from Java's AbstractCollection
         /// (the default implementation for all sets and lists)
         /// </summary>

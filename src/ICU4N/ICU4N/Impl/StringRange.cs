@@ -83,25 +83,24 @@ namespace ICU4N.Impl
             }
             else
             {
-                throw new NotImplementedException();
-                // ICU4N TODO: Finish implementation
-                //        // not a fast algorithm, but ok for now
-                //        // TODO rewire to use the first (slower) algorithm to generate the ranges, then compact them from there.
-                //        // first sort by lengths
-                //        Relation<int, Ranges> lengthToArrays = Relation.of(new TreeMap<int, Set<Ranges>>(), TreeSet.class);
-                //        for (String s : source) {
-                //            Ranges item = new Ranges(s);
-                //lengthToArrays.put(item.size(), item);
-                //        }
-                //// then compact items of each length and emit compacted sets
-                //foreach (var entry in lengthToArrays.keyValuesSet())
-                //{
-                //    LinkedList<Ranges> compacted = compact(entry.getKey(), entry.getValue());
-                //    for (Ranges ranges : compacted)
-                //    {
-                //        adder.add(ranges.start(), ranges.end(shorterPairs));
-                //    }
-                //}
+                // not a fast algorithm, but ok for now
+                // TODO rewire to use the first (slower) algorithm to generate the ranges, then compact them from there.
+                // first sort by lengths
+                Relation<int, Ranges> lengthToArrays = Relation.Of(new SortedDictionary<int, ISet<Ranges>>(), typeof(SortedDictionary<int, ISet<Ranges>>));
+                foreach (string s in source)
+                {
+                    Ranges item = new Ranges(s);
+                    lengthToArrays.Put(item.Length, item);
+                }
+                // then compact items of each length and emit compacted sets
+                foreach (var entry in lengthToArrays.KeyValues)
+                {
+                    LinkedList<Ranges> compacted = Compact(entry.Key, entry.Value);
+                    foreach (Ranges ranges in compacted)
+                    {
+                        adder.Add(ranges.Start(), ranges.End(shorterPairs));
+                    }
+                }
             }
         }
 
