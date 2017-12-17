@@ -63,7 +63,7 @@ namespace ICU4N.Lang
                         // interleave the data-driven ones with the algorithmic ones
                         // iterate over all algorithmic ranges; assume that they are
                         // in ascending order
-                        int start = m_name_.getAlgorithmStart(m_algorithmIndex_);
+                        int start = m_name_.GetAlgorithmStart(m_algorithmIndex_);
                         if (m_current_ < start)
                         {
                             // this should get rid of those codepoints that are not

@@ -510,7 +510,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="index">Algorithm index.</param>
         /// <returns>Algorithm range start.</returns>
-        public int getAlgorithmStart(int index) // ICU4N TODO: API - function name
+        public int GetAlgorithmStart(int index)
         {
             return m_algorithm_[index].m_rangestart_;
         }
