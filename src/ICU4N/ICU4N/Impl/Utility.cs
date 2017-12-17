@@ -1,4 +1,5 @@
 ﻿using ICU4N.Lang;
+using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
@@ -1868,8 +1869,7 @@ namespace ICU4N.Impl
                 {
                     throw new ArgumentException("code point too short: " + part);
                 }
-                //int cp = Integer.parseInt(part, 16);
-                int cp = Convert.ToInt32(part, 16);
+                int cp = int.Parse(part, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
                 buffer.AppendCodePoint(cp);
             }
             return buffer.ToString();
@@ -1885,7 +1885,7 @@ namespace ICU4N.Impl
         new public static bool Equals(object a, object b)
         {
             return (a == b)
-                    || (a != null && b != null && a.Equals(b)); // ICU4N TODO: use CollectionUtil.Equals()
+                    || (a != null && b != null && CollectionUtil.Equals(a, b));
         }
 
         /// <summary>
@@ -1912,7 +1912,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    elementHashCode = (element).GetHashCode(); // ICU4N TODO: use CollectionUtil.GetHashCode()
+                    elementHashCode = CollectionUtil.GetHashCode(element);
                 }
                 hashCode = 31 * hashCode + elementHashCode;
             }
@@ -1927,7 +1927,7 @@ namespace ICU4N.Impl
         /// <returns>A hash value of a non-null argument and 0 for null argument.</returns>
         public static int GetHashCode(object o)
         {
-            return o == null ? 0 : o.GetHashCode(); // ICU4N TODO: use CollectionUtil.GetHashCode()
+            return o == null ? 0 : CollectionUtil.GetHashCode(o);
         }
 
         /// <summary>
@@ -1939,7 +1939,7 @@ namespace ICU4N.Impl
         /// null argument.</returns>
         public static string ToString(object o)
         {
-            return o == null ? "null" : o.ToString(); // ICU4N TODO: use CollectionUtil.ToString()
+            return o == null ? "null" : CollectionUtil.ToString(o);
         }
     }
 }
