@@ -130,7 +130,7 @@ namespace ICU4N.Util
             int pos = pos_;
             if (pos < 0)
             {
-                return Result.NO_MATCH;
+                return Result.NoMatch;
             }
             int length = remainingMatchLength_;  // Actual remaining match length minus 1.
             for (; ; )
@@ -146,7 +146,7 @@ namespace ICU4N.Util
                         pos_ = pos;
                         int node2;
                         return (length < 0 && (node2 = chars_[pos]) >= kMinValueLead) ?
-                                valueResults_[node2 >> 15] : Result.NO_VALUE;
+                                valueResults_[node2 >> 15] : Result.NoValue;
                     }
                     inUnit = s[sIndex++];
                     if (length < 0)
@@ -157,7 +157,7 @@ namespace ICU4N.Util
                     if (inUnit != chars_[pos])
                     {
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     ++pos;
                     --length;
@@ -168,20 +168,20 @@ namespace ICU4N.Util
                     if (node < kMinLinearMatch)
                     {
                         Result result = BranchNext(pos, node, inUnit);
-                        if (result == Result.NO_MATCH)
+                        if (result == Result.NoMatch)
                         {
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         // Fetch the next input unit, if there is one.
                         if (sIndex == sLimit)
                         {
                             return result;
                         }
-                        if (result == Result.FINAL_VALUE)
+                        if (result == Result.FinalValue)
                         {
                             // No further matching units.
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         inUnit = s[sIndex++];
                         pos = pos_;  // branchNext() advanced pos and wrote it to pos_ .
@@ -194,7 +194,7 @@ namespace ICU4N.Util
                         if (inUnit != chars_[pos])
                         {
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         ++pos;
                         --length;
@@ -204,7 +204,7 @@ namespace ICU4N.Util
                     {
                         // No further matching units.
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     else
                     {
@@ -240,7 +240,7 @@ namespace ICU4N.Util
             int pos = pos_;
             if (pos < 0)
             {
-                return Result.NO_MATCH;
+                return Result.NoMatch;
             }
             int length = remainingMatchLength_;  // Actual remaining match length minus 1.
             for (; ; )
@@ -256,7 +256,7 @@ namespace ICU4N.Util
                         pos_ = pos;
                         int node2;
                         return (length < 0 && (node2 = chars_[pos]) >= kMinValueLead) ?
-                                valueResults_[node2 >> 15] : Result.NO_VALUE;
+                                valueResults_[node2 >> 15] : Result.NoValue;
                     }
                     inUnit = s[sIndex++];
                     if (length < 0)
@@ -267,7 +267,7 @@ namespace ICU4N.Util
                     if (inUnit != chars_[pos])
                     {
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     ++pos;
                     --length;
@@ -278,20 +278,20 @@ namespace ICU4N.Util
                     if (node < kMinLinearMatch)
                     {
                         Result result = BranchNext(pos, node, inUnit);
-                        if (result == Result.NO_MATCH)
+                        if (result == Result.NoMatch)
                         {
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         // Fetch the next input unit, if there is one.
                         if (sIndex == sLimit)
                         {
                             return result;
                         }
-                        if (result == Result.FINAL_VALUE)
+                        if (result == Result.FinalValue)
                         {
                             // No further matching units.
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         inUnit = s[sIndex++];
                         pos = pos_;  // branchNext() advanced pos and wrote it to pos_ .
@@ -304,7 +304,7 @@ namespace ICU4N.Util
                         if (inUnit != chars_[pos])
                         {
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         ++pos;
                         --length;
@@ -314,7 +314,7 @@ namespace ICU4N.Util
                     {
                         // No further matching units.
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     else
                     {
@@ -350,7 +350,7 @@ namespace ICU4N.Util
             int pos = pos_;
             if (pos < 0)
             {
-                return Result.NO_MATCH;
+                return Result.NoMatch;
             }
             int length = remainingMatchLength_;  // Actual remaining match length minus 1.
             for (; ; )
@@ -366,7 +366,7 @@ namespace ICU4N.Util
                         pos_ = pos;
                         int node2;
                         return (length < 0 && (node2 = chars_[pos]) >= kMinValueLead) ?
-                                valueResults_[node2 >> 15] : Result.NO_VALUE;
+                                valueResults_[node2 >> 15] : Result.NoValue;
                     }
                     inUnit = s[sIndex++];
                     if (length < 0)
@@ -377,7 +377,7 @@ namespace ICU4N.Util
                     if (inUnit != chars_[pos])
                     {
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     ++pos;
                     --length;
@@ -388,20 +388,20 @@ namespace ICU4N.Util
                     if (node < kMinLinearMatch)
                     {
                         Result result = BranchNext(pos, node, inUnit);
-                        if (result == Result.NO_MATCH)
+                        if (result == Result.NoMatch)
                         {
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         // Fetch the next input unit, if there is one.
                         if (sIndex == sLimit)
                         {
                             return result;
                         }
-                        if (result == Result.FINAL_VALUE)
+                        if (result == Result.FinalValue)
                         {
                             // No further matching units.
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         inUnit = s[sIndex++];
                         pos = pos_;  // branchNext() advanced pos and wrote it to pos_ .
@@ -414,7 +414,7 @@ namespace ICU4N.Util
                         if (inUnit != chars_[pos])
                         {
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         ++pos;
                         --length;
@@ -424,7 +424,7 @@ namespace ICU4N.Util
                     {
                         // No further matching units.
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     else
                     {
@@ -460,7 +460,7 @@ namespace ICU4N.Util
             int pos = pos_;
             if (pos < 0)
             {
-                return Result.NO_MATCH;
+                return Result.NoMatch;
             }
             int length = remainingMatchLength_;  // Actual remaining match length minus 1.
             for (; ; )
@@ -476,7 +476,7 @@ namespace ICU4N.Util
                         pos_ = pos;
                         int node2;
                         return (length < 0 && (node2 = chars_[pos]) >= kMinValueLead) ?
-                                valueResults_[node2 >> 15] : Result.NO_VALUE;
+                                valueResults_[node2 >> 15] : Result.NoValue;
                     }
                     inUnit = s[sIndex++];
                     if (length < 0)
@@ -487,7 +487,7 @@ namespace ICU4N.Util
                     if (inUnit != chars_[pos])
                     {
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     ++pos;
                     --length;
@@ -498,20 +498,20 @@ namespace ICU4N.Util
                     if (node < kMinLinearMatch)
                     {
                         Result result = BranchNext(pos, node, inUnit);
-                        if (result == Result.NO_MATCH)
+                        if (result == Result.NoMatch)
                         {
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         // Fetch the next input unit, if there is one.
                         if (sIndex == sLimit)
                         {
                             return result;
                         }
-                        if (result == Result.FINAL_VALUE)
+                        if (result == Result.FinalValue)
                         {
                             // No further matching units.
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         inUnit = s[sIndex++];
                         pos = pos_;  // branchNext() advanced pos and wrote it to pos_ .
@@ -524,7 +524,7 @@ namespace ICU4N.Util
                         if (inUnit != chars_[pos])
                         {
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         ++pos;
                         --length;
@@ -534,7 +534,7 @@ namespace ICU4N.Util
                     {
                         // No further matching units.
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     else
                     {

@@ -1,52 +1,51 @@
-﻿using ICU4N.Support.IO;
+﻿using ICU4N.Support;
+using ICU4N.Support.IO;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Collections;
-using System.Linq;
-using ICU4N.Support;
 
 namespace ICU4N.Util
 {
-    /**
-     * Return values for BytesTrie.next(), CharsTrie.next() and similar methods.
-     * @stable ICU 4.8
-     */
+    /// <summary>
+    /// Return values for <see cref="BytesTrie.Next(int)"/>, <see cref="CharsTrie.Next(int)"/> and similar methods.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
     public enum Result
     {
-        /**
-         * The input unit(s) did not continue a matching string.
-         * Once current()/next() return NO_MATCH,
-         * all further calls to current()/next() will also return NO_MATCH,
-         * until the trie is reset to its original state or to a saved state.
-         * @stable ICU 4.8
-         */
-        NO_MATCH, // ICU4N TODO: API - change case for .NET
-        /**
-         * The input unit(s) continued a matching string
-         * but there is no value for the string so far.
-         * (It is a prefix of a longer string.)
-         * @stable ICU 4.8
-         */
-        NO_VALUE,
-        /**
-         * The input unit(s) continued a matching string
-         * and there is a value for the string so far.
-         * This value will be returned by getValue().
-         * No further input byte/unit can continue a matching string.
-         * @stable ICU 4.8
-         */
-        FINAL_VALUE,
-        /**
-         * The input unit(s) continued a matching string
-         * and there is a value for the string so far.
-         * This value will be returned by getValue().
-         * Another input byte/unit can continue a matching string.
-         * @stable ICU 4.8
-         */
-        INTERMEDIATE_VALUE
+        /// <summary>
+        /// The input unit(s) did not continue a matching string.
+        /// Once <see cref="BytesTrie.Current"/>/<see cref="BytesTrie.Next(int)"/> return <see cref="NoMatch"/>,
+        /// all further calls to <see cref="BytesTrie.Current"/>/<see cref="BytesTrie.Next(int)"/> will also return <see cref="NoMatch"/>,
+        /// until the trie is reset to its original state or to a saved state.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        NoMatch,
+        /// <summary>
+        /// The input unit(s) continued a matching string
+        /// but there is no value for the string so far.
+        /// (It is a prefix of a longer string.)
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        NoValue,
+        /// <summary>
+        /// The input unit(s) continued a matching string
+        /// and there is a value for the string so far.
+        /// This value will be returned by <see cref="BytesTrie.GetValue()"/>
+        /// No further input byte/unit can continue a matching string.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        FinalValue,
+        /// <summary>
+        /// The input unit(s) continued a matching string
+        /// and there is a value for the string so far.
+        /// This value will be returned by <see cref="BytesTrie.GetValue()"/>
+        /// Another input byte/unit can continue a matching string.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        IntermediateValue
 
         // Note: The following methods assume the particular order
         // of enum constants, treating the ordinal() values like bit sets.
@@ -55,26 +54,28 @@ namespace ICU4N.Util
 
     public static class ResultExtensions
     {
-        /**
-         * Same as (result!=NO_MATCH).
-         * @return true if the input bytes/units so far are part of a matching string/byte sequence.
-         * @stable ICU 4.8
-         */
-        public static bool Matches(this Result result) { return result != Result.NO_MATCH; }
+        /// <summary>
+        /// Same as (result!=<see cref="Result.NoMatch"/>).
+        /// </summary>
+        /// <param name="result">This <see cref="Result"/>.</param>
+        /// <returns>true if the input bytes/units so far are part of a matching string/byte sequence.</returns>
+        /// <stable>ICU 4.8</stable>
+        public static bool Matches(this Result result) { return result != Result.NoMatch; }
 
-        /**
-         * Equivalent to (result==INTERMEDIATE_VALUE || result==FINAL_VALUE).
-         * @return true if there is a value for the input bytes/units so far.
-         * @see #getValue
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Equivalent to (result==<see cref="Result.IntermediateValue"/> || result==<see cref="Result.FinalValue"/>).
+        /// </summary>
+        /// <param name="result">This <see cref="Result"/>.</param>
+        /// <returns>true if there is a value for the input bytes/units so far.</returns>
+        /// <stable>ICU 4.8</stable>
         public static bool HasValue(this Result result) { return (int)result >= 2; }
 
-        /**
-         * Equivalent to (result==NO_VALUE || result==INTERMEDIATE_VALUE).
-         * @return true if another input byte/unit can continue a matching string.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Equivalent to (result==<see cref="Result.NoValue"/> || result==<see cref="Result.IntermediateValue"/>).
+        /// </summary>
+        /// <param name="result">This <see cref="Result"/>.</param>
+        /// <returns>true if another input byte/unit can continue a matching string.</returns>
+        /// <stable>ICU 4.8</stable>
         public static bool HasNext(this Result result) { return ((int)result & 1) != 0; }
     }
 
@@ -92,21 +93,21 @@ namespace ICU4N.Util
         , ICloneable
 #endif
     {
-        /**
-     * Constructs a BytesTrie reader instance.
-     *
-     * <p>The array must contain a copy of a byte sequence from the BytesTrieBuilder,
-     * with the offset indicating the first byte of that sequence.
-     * The BytesTrie object will not read more bytes than
-     * the BytesTrieBuilder generated in the corresponding build() call.
-     *
-     * <p>The array is not copied/cloned and must not be modified while
-     * the BytesTrie object is in use.
-     *
-     * @param trieBytes Bytes array that contains the serialized trie.
-     * @param offset Root offset of the trie in the array.
-     * @stable ICU 4.8
-     */
+        /// <summary>
+        /// Constructs a <see cref="BytesTrie"/> reader instance.
+        /// </summary>
+        /// <remarks>
+        /// The array must contain a copy of a byte sequence from the <see cref="BytesTrieBuilder"/>,
+        /// with the offset indicating the first byte of that sequence.
+        /// The <see cref="BytesTrie"/> object will not read more bytes than
+        /// the <see cref="BytesTrieBuilder"/> generated in the corresponding <see cref="BytesTrieBuilder.Build(StringTrieBuilder.Option)"/> call.
+        /// <para/>
+        /// The array is not copied/cloned and must not be modified while
+        /// the <see cref="BytesTrie"/> object is in use.
+        /// </remarks>
+        /// <param name="trieBytes">Bytes array that contains the serialized trie.</param>
+        /// <param name="offset">Root offset of the trie in the array.</param>
+        /// <stable>ICU 4.8</stable>
         public BytesTrie(byte[] trieBytes, int offset)
         {
             bytes_ = trieBytes;
@@ -114,22 +115,22 @@ namespace ICU4N.Util
             remainingMatchLength_ = -1;
         }
 
-        /**
-         * Clones this trie reader object and its state,
-         * but not the byte array which will be shared.
-         * @return A shallow clone of this trie.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Clones this trie reader object and its state,
+        /// but not the byte array which will be shared.
+        /// </summary>
+        /// <returns>A shallow clone of this trie.</returns>
+        /// <stable>ICU 4.8</stable>
         public object Clone()
         {
             return base.MemberwiseClone();  // A shallow copy is just what we need.
         }
 
-        /**
-         * Resets this trie to its initial state.
-         * @return this
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Resets this trie to its initial state.
+        /// </summary>
+        /// <returns>This.</returns>
+        /// <stable>ICU 4.8</stable>
         public BytesTrie Reset()
         {
             pos_ = root_;
@@ -137,17 +138,17 @@ namespace ICU4N.Util
             return this;
         }
 
-        /**
-         * BytesTrie state object, for saving a trie's current state
-         * and resetting the trie back to this state later.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// <see cref="BytesTrie"/> state object, for saving a trie's current state
+        /// and resetting the trie back to this state later.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public sealed class State // ICU4N TODO: API De-nest?
         {
-            /**
-             * Constructs an empty State.
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Constructs an empty <see cref="State"/>.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public State() { }
             internal byte[] Bytes { get; set; }
             internal int Root { get; set; }
@@ -155,13 +156,12 @@ namespace ICU4N.Util
             internal int RemainingMatchLength { get; set; }
         }
 
-        /**
-         * Saves the state of this trie.
-         * @param state The State object to hold the trie's state.
-         * @return this
-         * @see #resetToState
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Saves the state of this trie.
+        /// </summary>
+        /// <param name="state">The State object to hold the trie's state.</param>
+        /// <seealso cref="ResetToState(State)"/>
+        /// <stable>ICU 4.8</stable>
         public BytesTrie SaveState(State state) /*const*/
         {
             state.Bytes = bytes_;
@@ -171,16 +171,16 @@ namespace ICU4N.Util
             return this;
         }
 
-        /**
-         * Resets this trie to the saved state.
-         * @param state The State object which holds a saved trie state.
-         * @return this
-         * @throws IllegalArgumentException if the state object contains no state,
-         *         or the state of a different trie
-         * @see #saveState
-         * @see #reset
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Resets this trie to the saved state.
+        /// </summary>
+        /// <param name="state">The State object which holds a saved trie state.</param>
+        /// <returns>This.</returns>
+        /// <exception cref="ArgumentException">If the state object contains no state,
+        /// or the state of a different trie.</exception>
+        /// <seealso cref="SaveState(State)"/>
+        /// <seealso cref="Reset()"/>
+        /// <stable>ICU 4.8</stable>
         public BytesTrie ResetToState(State state)
         {
             if (bytes_ == state.Bytes && bytes_ != null && root_ == state.Root)
@@ -198,13 +198,12 @@ namespace ICU4N.Util
         // ICU4N specific - de-nested Result and renamed BytesTrieResult
 
 
-
-        /**
-         * Determines whether the byte sequence so far matches, whether it has a value,
-         * and whether another input byte can continue a matching byte sequence.
-         * @return The match/value Result.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Determines whether the byte sequence so far matches, whether it has a value,
+        /// and whether another input byte can continue a matching byte sequence.
+        /// Returns the match/value <see cref="Result"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public Result Current /*const*/
         {
             get
@@ -212,25 +211,25 @@ namespace ICU4N.Util
                 int pos = pos_;
                 if (pos < 0)
                 {
-                    return Result.NO_MATCH;
+                    return Result.NoMatch;
                 }
                 else
                 {
                     int node;
                     return (remainingMatchLength_ < 0 && (node = bytes_[pos] & 0xff) >= kMinValueLead) ?
-                            valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
+                            valueResults_[node & kValueIsFinal] : Result.NoValue;
                 }
             }
         }
 
-        /**
-         * Traverses the trie from the initial state for this input byte.
-         * Equivalent to reset().next(inByte).
-         * @param inByte Input byte value. Values -0x100..-1 are treated like 0..0xff.
-         *               Values below -0x100 and above 0xff will never match.
-         * @return The match/value Result.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Traverses the trie from the initial state for this input byte.
+        /// Equivalent to <c>Reset().Next(inByte)</c>.
+        /// </summary>
+        /// <param name="inByte">Input byte value. Values -0x100..-1 are treated like 0..0xff.
+        /// Values below -0x100 and above 0xff will never match.</param>
+        /// <returns>The match/value <see cref="Result"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Result First(int inByte)
         {
             remainingMatchLength_ = -1;
@@ -240,20 +239,20 @@ namespace ICU4N.Util
             }
             return NextImpl(root_, inByte);
         }
-
-        /**
-         * Traverses the trie from the current state for this input byte.
-         * @param inByte Input byte value. Values -0x100..-1 are treated like 0..0xff.
-         *               Values below -0x100 and above 0xff will never match.
-         * @return The match/value Result.
-         * @stable ICU 4.8
-         */
+ 
+        /// <summary>
+        /// Traverses the trie from the current state for this input byte.
+        /// </summary>
+        /// <param name="inByte">Input byte value. Values -0x100..-1 are treated like 0..0xff.
+        /// Values below -0x100 and above 0xff will never match.</param>
+        /// <returns>The match/value <see cref="Result"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Result Next(int inByte)
         {
             int pos = pos_;
             if (pos < 0)
             {
-                return Result.NO_MATCH;
+                return Result.NoMatch;
             }
             if (inByte < 0)
             {
@@ -269,33 +268,35 @@ namespace ICU4N.Util
                     pos_ = pos;
                     int node;
                     return (length < 0 && (node = bytes_[pos] & 0xff) >= kMinValueLead) ?
-                            valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
+                            valueResults_[node & kValueIsFinal] : Result.NoValue;
                 }
                 else
                 {
                     Stop();
-                    return Result.NO_MATCH;
+                    return Result.NoMatch;
                 }
             }
             return NextImpl(pos, inByte);
         }
 
-        /**
-         * Traverses the trie from the current state for this byte sequence.
-         * Equivalent to
-         * <pre>
-         * Result result=current();
-         * for(each c in s)
-         *   if(!result.hasNext()) return Result.NO_MATCH;
-         *   result=next(c);
-         * return result;
-         * </pre>
-         * @param s Contains a string or byte sequence.
-         * @param sIndex The start index of the byte sequence in s.
-         * @param sLimit The (exclusive) end index of the byte sequence in s.
-         * @return The match/value Result.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Traverses the trie from the current state for this byte sequence.
+        /// Equivalent to
+        /// <code>
+        /// Result result=Current;
+        /// foreach (var c in s)
+        /// {
+        ///     if(!result.HasNext()) return Result.NoMatch;
+        ///     result=Next(c);
+        /// }
+        /// return result;
+        /// </code>
+        /// </summary>
+        /// <param name="s">Contains a string or byte sequence.</param>
+        /// <param name="sIndex">The start index of the byte sequence in <paramref name="s"/>.</param>
+        /// <param name="sLimit">The (exclusive) end index of the byte sequence in <paramref name="s"/>.</param>
+        /// <returns>The match/value <see cref="Result"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Result Next(byte[] s, int sIndex, int sLimit)
         {
             if (sIndex >= sLimit)
@@ -306,7 +307,7 @@ namespace ICU4N.Util
             int pos = pos_;
             if (pos < 0)
             {
-                return Result.NO_MATCH;
+                return Result.NoMatch;
             }
             int length = remainingMatchLength_;  // Actual remaining match length minus 1.
             for (; ; )
@@ -322,7 +323,7 @@ namespace ICU4N.Util
                         pos_ = pos;
                         int node;
                         return (length < 0 && (node = (bytes_[pos] & 0xff)) >= kMinValueLead) ?
-                                valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
+                                valueResults_[node & kValueIsFinal] : Result.NoValue;
                     }
                     inByte = s[sIndex++];
                     if (length < 0)
@@ -333,7 +334,7 @@ namespace ICU4N.Util
                     if (inByte != bytes_[pos])
                     {
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     ++pos;
                     --length;
@@ -344,20 +345,20 @@ namespace ICU4N.Util
                     if (node < kMinLinearMatch)
                     {
                         Result result = BranchNext(pos, node, inByte & 0xff);
-                        if (result == Result.NO_MATCH)
+                        if (result == Result.NoMatch)
                         {
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         // Fetch the next input byte, if there is one.
                         if (sIndex == sLimit)
                         {
                             return result;
                         }
-                        if (result == Result.FINAL_VALUE)
+                        if (result == Result.FinalValue)
                         {
                             // No further matching bytes.
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         inByte = s[sIndex++];
                         pos = pos_;  // branchNext() advanced pos and wrote it to pos_ .
@@ -369,7 +370,7 @@ namespace ICU4N.Util
                         if (inByte != bytes_[pos])
                         {
                             Stop();
-                            return Result.NO_MATCH;
+                            return Result.NoMatch;
                         }
                         ++pos;
                         --length;
@@ -379,7 +380,7 @@ namespace ICU4N.Util
                     {
                         // No further matching bytes.
                         Stop();
-                        return Result.NO_MATCH;
+                        return Result.NoMatch;
                     }
                     else
                     {
@@ -392,15 +393,16 @@ namespace ICU4N.Util
             }
         }
 
-        /**
-         * Returns a matching byte sequence's value if called immediately after
-         * current()/first()/next() returned Result.INTERMEDIATE_VALUE or Result.FINAL_VALUE.
-         * getValue() can be called multiple times.
-         *
-         * Do not call getValue() after Result.NO_MATCH or Result.NO_VALUE!
-         * @return The value for the byte sequence so far.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Returns a matching byte sequence's value if called immediately after
+        /// <see cref="Current"/>/<see cref="First(int)"/>/<see cref="Next(int)"/>
+        /// returned <see cref="Result.IntermediateValue"/> or <see cref="Result.FinalValue"/>.
+        /// <see cref="GetValue()"/> can be called multiple times.
+        /// <para/>
+        /// Do not call <see cref="GetValue()"/> after <see cref="Result.NoMatch"/> or <see cref="Result.NoValue"/>!
+        /// </summary>
+        /// <returns>The value for the byte sequence so far.</returns>
+        /// <stable>ICU 4.8</stable>
         public int GetValue() /*const*/
         {
             int pos = pos_;
@@ -409,14 +411,14 @@ namespace ICU4N.Util
             return ReadValue(bytes_, pos, leadByte >> 1);
         }
 
-        /**
-         * Determines whether all byte sequences reachable from the current state
-         * map to the same value, and if so, returns that value.
-         * @return The unique value in bits 32..1 with bit 0 set,
-         *         if all byte sequences reachable from the current state
-         *         map to the same value; otherwise returns 0.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Determines whether all byte sequences reachable from the current state
+        /// map to the same value, and if so, returns that value.
+        /// </summary>
+        /// <returns>The unique value in bits 32..1 with bit 0 set,
+        /// if all byte sequences reachable from the current state
+        /// map to the same value; otherwise returns 0.</returns>
+        /// <stable>ICU 4.8</stable>
         public long GetUniqueValue() /*const*/
         {
             int pos = pos_;
@@ -430,14 +432,14 @@ namespace ICU4N.Util
             return (uniqueValue << 31) >> 31;
         }
 
-        /**
-         * Finds each byte which continues the byte sequence from the current state.
-         * That is, each byte b for which it would be next(b)!=Result.NO_MATCH now.
-         * @param out Each next byte is 0-extended to a char and appended to this object.
-         *            (Only uses the out.append(c) method.)
-         * @return The number of bytes which continue the byte sequence from here.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Finds each byte which continues the byte sequence from the current state.
+        /// That is, each byte b for which it would be Next(b)!=<see cref="Result.NoMatch"/> now.
+        /// </summary>
+        /// <param name="output">Each next byte is 0-extended to a char and appended to this object.
+        /// (Only uses the output.Append(c) method.)</param>
+        /// <returns>The number of bytes which continue the byte sequence from here.</returns>
+        /// <stable>ICU 4.8</stable>
         public int GetNextBytes(StringBuilder output) /*const*/
         {
             int pos = pos_;
@@ -481,64 +483,67 @@ namespace ICU4N.Util
             }
         }
 
-        /**
-         * Iterates from the current state of this trie.
-         * @return A new BytesTrie.Iterator.
-         * @stable ICU 4.8
-         */
-        //@Override
-        //    public Iterator iterator()
-        //{
-        //    return new Iterator(bytes_, pos_, remainingMatchLength_, 0);
-        //}
-
+        /// <summary>
+        /// Iterates from the current state of this trie.
+        /// </summary>
+        /// <remarks>
+        /// This is equivalent to iterator() in ICU4J.
+        /// </remarks>
+        /// <returns>A new <see cref="BytesTrie.Enumerator"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Enumerator GetEnumerator()
         {
             return new Enumerator(bytes_, pos_, remainingMatchLength_, 0);
         }
 
+        // ICU4N specific for .NET enumerator support
         IEnumerator<Entry> IEnumerable<Entry>.GetEnumerator()
         {
             return new Enumerator(bytes_, pos_, remainingMatchLength_, 0);
         }
 
+        // ICU4N specific for .NET enumerator support
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
-
-
-        /**
-         * Iterates from the current state of this trie.
-         * @param maxStringLength If 0, the iterator returns full strings/byte sequences.
-         *                        Otherwise, the iterator returns strings with this maximum length.
-         * @return A new BytesTrie.Iterator.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Iterates from the current state of this trie.
+        /// </summary>
+        /// <remarks>
+        /// This is equivalent to iterator(int) in ICU4J.
+        /// </remarks>
+        /// <param name="maxStringLength">If 0, the enumerator returns full strings/byte sequences.
+        /// Otherwise, the enumerator returns strings with this maximum length.</param>
+        /// <returns>A new <see cref="BytesTrie.Enumerator"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Enumerator GetEnumerator(int maxStringLength)
         {
             return new Enumerator(bytes_, pos_, remainingMatchLength_, maxStringLength);
         }
 
-        /**
-         * Iterates from the root of a byte-serialized BytesTrie.
-         * @param trieBytes Bytes array that contains the serialized trie.
-         * @param offset Root offset of the trie in the array.
-         * @param maxStringLength If 0, the iterator returns full strings/byte sequences.
-         *                        Otherwise, the iterator returns strings with this maximum length.
-         * @return A new BytesTrie.Iterator.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Iterates from the root of a byte-serialized <see cref="BytesTrie"/>.
+        /// </summary>
+        /// <remarks>
+        /// This is equivalent to iterator(byte[], int, int) in ICU4J.
+        /// </remarks>
+        /// <param name="trieBytes">Bytes array that contains the serialized trie.</param>
+        /// <param name="offset">Root offset of the trie in the array.</param>
+        /// <param name="maxStringLength">If 0, the enumerator returns full strings/byte sequences.
+        /// Otherwise, the enumerator returns strings with this maximum length.</param>
+        /// <returns>A new <see cref="BytesTrie.Enumerator"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public static Enumerator GetEnumerator(byte[] trieBytes, int offset, int maxStringLength)
         {
             return new Enumerator(trieBytes, offset, -1, maxStringLength);
         }
 
-        /**
-         * Return value type for the Iterator.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Return value type for the <see cref="Enumerator"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public sealed class Entry // ICU4N TODO: API De-nest?
         {
             internal Entry(int capacity)
@@ -546,41 +551,48 @@ namespace ICU4N.Util
                 bytes = new byte[capacity];
             }
 
-            /**
-             * @return The length of the byte sequence.
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Gets the length of the byte sequence.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public int BytesLength { get { return length; } }
-            /**
-             * Returns a byte of the byte sequence.
-             * @param index An index into the byte sequence.
-             * @return The index-th byte sequence byte.
-             * @stable ICU 4.8
-             */
-            public byte ByteAt(int index) { return bytes[index]; }
-            /**
-             * Copies the byte sequence into a byte array.
-             * @param dest Destination byte array.
-             * @param destOffset Starting offset to where in dest the byte sequence is copied.
-             * @stable ICU 4.8
-             */
+
+            /// <summary>
+            /// Returns a byte of the byte sequence.
+            /// </summary>
+            /// <remarks>
+            /// This was byteAt(int) in ICU4J.
+            /// </remarks>
+            /// <param name="index">An index into the byte sequence.</param>
+            /// <returns>The index-th byte sequence byte.</returns>
+            /// <stable>ICU 4.8</stable>
+            public byte ByteAt(int index) { return bytes[index]; } // ICU4N TODO: API - make into this[]
+
+            /// <summary>
+            /// Copies the byte sequence into a byte array.
+            /// </summary>
+            /// <param name="dest">Destination byte array.</param>
+            /// <param name="destOffset">Starting offset to where in dest the byte sequence is copied.</param>
+            /// <stable>ICU 4.8</stable>
             public void CopyBytesTo(byte[] dest, int destOffset)
             {
                 System.Array.Copy(bytes, 0, dest, destOffset, length);
             }
-            /**
-             * @return The byte sequence as a read-only ByteBuffer.
-             * @stable ICU 4.8
-             */
-            public ByteBuffer BytesAsByteBuffer()
+
+            /// <summary>
+            /// Returns the byte sequence as a read-only <see cref="ByteBuffer"/>.
+            /// </summary>
+            /// <returns>The byte sequence as a read-only <see cref="ByteBuffer"/>.</returns>
+            /// <stable>ICU 4.8</stable>
+            public ByteBuffer BytesAsByteBuffer() // ICU4N TODO: API Make internal ?
             {
                 return ByteBuffer.Wrap(bytes, 0, length).AsReadOnlyBuffer();
             }
 
-            /**
-             * The value associated with the byte sequence.
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// The value associated with the byte sequence.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public int value;
 
             private void EnsureCapacity(int len)
@@ -611,10 +623,10 @@ namespace ICU4N.Util
             internal int Length { get { return length; } }
         }
 
-        /**
-         * Iterator for all of the (byte sequence, value) pairs in a BytesTrie.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Iterator for all of the (byte sequence, value) pairs in a <see cref="BytesTrie"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public sealed class Enumerator : IEnumerator<Entry> // ICU4N TODO: API de-nest ?
         {
             private Entry current = null;
@@ -641,11 +653,11 @@ namespace ICU4N.Util
                 }
             }
 
-            /**
-             * Resets this iterator to its initial state.
-             * @return this
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Resets this iterator to its initial state.
+            /// </summary>
+            /// <returns>This.</returns>
+            /// <stable>ICU 4.8</stable>
             public Enumerator Reset()
             {
                 pos_ = initialPos_;
@@ -667,23 +679,24 @@ namespace ICU4N.Util
                 Reset();
             }
 
-            /**
-             * @return true if there are more elements.
-             * @stable ICU 4.8
-             */
-            private bool HasNext() /*const*/ { return pos_ >= 0 || stack_.Count > 0; }
+            /// <summary>
+            /// Returns true if there are more elements.
+            /// </summary>
+            /// <returns>true if there are more elements.</returns>
+            /// <stable>ICU 4.8</stable>
+            private bool HasNext() /*const*/ { return pos_ >= 0 || stack_.Count > 0; } // ICU4N TODO: API - make property
 
-            /**
-             * Finds the next (byte sequence, value) pair if there is one.
-             *
-             * If the byte sequence is truncated to the maximum length and does not
-             * have a real value, then the value is set to -1.
-             * In this case, this "not a real value" is indistinguishable from
-             * a real value of -1.
-             * @return An Entry with the string and value of the next element.
-             * @throws NoSuchElementException - iteration has no more elements.
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Finds the next (byte sequence, value) pair if there is one.
+            /// </summary>
+            /// <remarks>
+            /// If the byte sequence is truncated to the maximum length and does not
+            /// have a real value, then the value is set to -1.
+            /// In this case, this "not a real value" is indistinguishable from
+            /// a real value of -1.
+            /// </remarks>
+            /// <returns>An <see cref="Entry"/> with the string and value of the next element.</returns>
+            /// <stable>ICU 4.8</stable>
             private Entry Next()
             {
                 int pos = pos_;
@@ -769,15 +782,7 @@ namespace ICU4N.Util
                 }
             }
 
-            ///**
-            // * Iterator.remove() is not supported.
-            // * @throws UnsupportedOperationException (always)
-            // * @stable ICU 4.8
-            // */
-            //        public void remove()
-            //{
-            //    throw new UnsupportedOperationException();
-            //}
+            // ICU4N specific - Remove() not supported in .NET
 
             private Entry TruncateAndStop()
             {
@@ -820,6 +825,10 @@ namespace ICU4N.Util
                 }
             }
 
+            /// <summary>
+            /// Gets the element in the collection at the current position of the enumerator.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public Entry Current
             {
                 get { return current; }
@@ -830,6 +839,17 @@ namespace ICU4N.Util
                 get { return current; }
             }
 
+            /// <summary>
+            /// Finds the next (byte sequence, value) pair if there is one.
+            /// </summary>
+            /// <remarks>
+            /// If the byte sequence is truncated to the maximum length and does not
+            /// have a real value, then the value is set to -1.
+            /// In this case, this "not a real value" is indistinguishable from
+            /// a real value of -1.
+            /// </remarks>
+            /// <returns>Returns true if an element has been set to <see cref="Current"/>; otherwise false.</returns>
+            /// <stable>ICU 4.8</stable>
             public bool MoveNext()
             {
                 if (!HasNext())
@@ -971,7 +991,7 @@ namespace ICU4N.Util
             return pos;
         }
 
-        private static Result[] valueResults_ = { Result.INTERMEDIATE_VALUE, Result.FINAL_VALUE };
+        private static Result[] valueResults_ = { Result.IntermediateValue, Result.FinalValue };
 
         // Handles a branch node for both next(byte) and next(string).
         private Result BranchNext(int pos, int length, int inByte)
@@ -1010,7 +1030,7 @@ namespace ICU4N.Util
                     if ((node & kValueIsFinal) != 0)
                     {
                         // Leave the final value for getValue() to read.
-                        result = Result.FINAL_VALUE;
+                        result = Result.FinalValue;
                     }
                     else
                     {
@@ -1045,7 +1065,7 @@ namespace ICU4N.Util
                         // end readValue()
                         pos += delta;
                         node = bytes_[pos] & 0xff;
-                        result = node >= kMinValueLead ? valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
+                        result = node >= kMinValueLead ? valueResults_[node & kValueIsFinal] : Result.NoValue;
                     }
                     pos_ = pos;
                     return result;
@@ -1057,12 +1077,12 @@ namespace ICU4N.Util
             {
                 pos_ = pos;
                 int node = bytes_[pos] & 0xff;
-                return node >= kMinValueLead ? valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
+                return node >= kMinValueLead ? valueResults_[node & kValueIsFinal] : Result.NoValue;
             }
             else
             {
                 Stop();
-                return Result.NO_MATCH;
+                return Result.NoMatch;
             }
         }
 
@@ -1085,7 +1105,7 @@ namespace ICU4N.Util
                         remainingMatchLength_ = --length;
                         pos_ = pos;
                         return (length < 0 && (node = bytes_[pos] & 0xff) >= kMinValueLead) ?
-                                valueResults_[node & kValueIsFinal] : Result.NO_VALUE;
+                                valueResults_[node & kValueIsFinal] : Result.NoValue;
                     }
                     else
                     {
@@ -1107,7 +1127,7 @@ namespace ICU4N.Util
                 }
             }
             Stop();
-            return Result.NO_MATCH;
+            return Result.NoMatch;
         }
 
         // Helper functions for getUniqueValue().

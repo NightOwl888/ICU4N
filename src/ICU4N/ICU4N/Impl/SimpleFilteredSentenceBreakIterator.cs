@@ -64,7 +64,7 @@ namespace ICU4N.Impl
                 uch = text.NextCodePoint();
             }
 
-            Result r = Result.INTERMEDIATE_VALUE;
+            Result r = Result.IntermediateValue;
 
             while ((uch = text.PreviousCodePoint()) != UCharacterIterator.DONE && // more to consume backwards and..
                     ((r = backwardsTrie.NextForCodePoint(uch)).HasNext()))
@@ -95,7 +95,7 @@ namespace ICU4N.Impl
                     // to see if it matches something going forward.
                     forwardsPartialTrie.Reset();
 
-                    Result rfwd = Result.INTERMEDIATE_VALUE;
+                    Result rfwd = Result.IntermediateValue;
                     text.Index = bestPosn; // hope that's close ..
                     while ((uch = text.NextCodePoint()) != BreakIterator.DONE
                             && ((rfwd = forwardsPartialTrie.NextForCodePoint(uch)).HasNext()))

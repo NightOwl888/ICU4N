@@ -26,22 +26,22 @@ namespace ICU4N.Util
     {
         // ICU4N specific - constructor moved to CharsTrieExtension.tt
 
-        /**
-         * Clones this trie reader object and its state,
-         * but not the char array which will be shared.
-         * @return A shallow clone of this trie.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Clones this trie reader object and its state,
+        /// but not the char array which will be shared.
+        /// </summary>
+        /// <returns>A shallow clone of this trie.</returns>
+        /// <stable>ICU 4.8</stable>
         public object Clone()
         {
             return base.MemberwiseClone();  // A shallow copy is just what we need.
         }
 
-        /**
-         * Resets this trie to its initial state.
-         * @return this
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Resets this trie to its initial state.
+        /// </summary>
+        /// <returns>This.</returns>
+        /// <stable>ICU 4.8</stable>
         public CharsTrie Reset()
         {
             pos_ = root_;
@@ -49,17 +49,17 @@ namespace ICU4N.Util
             return this;
         }
 
-        /**
-         * CharsTrie state object, for saving a trie's current state
-         * and resetting the trie back to this state later.
-         * @stable ICU 4.8
-         */
-        public sealed class State
+        /// <summary>
+        /// CharsTrie state object, for saving a trie's current state
+        /// and resetting the trie back to this state later.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public sealed class State // ICU4N TODO: API De-nest?
         {
-            /**
-             * Constructs an empty State.
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Constructs an empty <see cref="State"/>.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public State() { }
             internal ICharSequence Chars { get; set; }
             internal int Root { get; set; }
@@ -67,13 +67,13 @@ namespace ICU4N.Util
             internal int RemainingMatchLength { get; set; }
         }
 
-        /**
-         * Saves the state of this trie.
-         * @param state The State object to hold the trie's state.
-         * @return this
-         * @see #resetToState
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Saves the state of this trie.
+        /// </summary>
+        /// <param name="state">The <see cref="State"/> object to hold the trie's state.</param>
+        /// <returns>This.</returns>
+        /// <see cref="ResetToState(State)"/>
+        /// <stable>ICU 4.8</stable>
         public CharsTrie SaveState(State state) /*const*/
         {
             state.Chars = chars_;
@@ -83,16 +83,16 @@ namespace ICU4N.Util
             return this;
         }
 
-        /**
-         * Resets this trie to the saved state.
-         * @param state The State object which holds a saved trie state.
-         * @return this
-         * @throws IllegalArgumentException if the state object contains no state,
-         *         or the state of a different trie
-         * @see #saveState
-         * @see #reset
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Resets this trie to the saved state.
+        /// </summary>
+        /// <param name="state">The State object which holds a saved trie state.</param>
+        /// <returns>This.</returns>
+        /// <exception cref="ArgumentException">If the state object contains no state,
+        /// or the state of a different trie.</exception>
+        /// <seealso cref="SaveState(State)"/>
+        /// <seealso cref="Reset()"/>
+        /// <stable>ICU 4.8</stable>
         public CharsTrie ResetToState(State state)
         {
             if (chars_ == state.Chars && chars_ != null && root_ == state.Root)
@@ -107,12 +107,12 @@ namespace ICU4N.Util
             return this;
         }
 
-        /**
-         * Determines whether the string so far matches, whether it has a value,
-         * and whether another input char can continue a matching string.
-         * @return The match/value Result.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Determines whether the byte sequence so far matches, whether it has a value,
+        /// and whether another input byte can continue a matching byte sequence.
+        /// Returns the match/value <see cref="Result"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public Result Current /*const*/
         {
             get
@@ -120,59 +120,59 @@ namespace ICU4N.Util
                 int pos = pos_;
                 if (pos < 0)
                 {
-                    return Result.NO_MATCH;
+                    return Result.NoMatch;
                 }
                 else
                 {
                     int node;
                     return (remainingMatchLength_ < 0 && (node = chars_[pos]) >= kMinValueLead) ?
-                            valueResults_[node >> 15] : Result.NO_VALUE;
+                            valueResults_[node >> 15] : Result.NoValue;
                 }
             }
         }
 
-        /**
-         * Traverses the trie from the initial state for this input char.
-         * Equivalent to reset().next(inUnit).
-         * @param inUnit Input char value. Values below 0 and above 0xffff will never match.
-         * @return The match/value Result.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Traverses the trie from the initial state for this input char.
+        /// Equivalent to <c>Reset().Next(inByte)</c>.
+        /// </summary>
+        /// <param name="inUnit">Input char value. Values below 0 and above 0xffff will never match.</param>
+        /// <returns>The match/value <see cref="Result"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Result First(int inUnit)
         {
             remainingMatchLength_ = -1;
             return NextImpl(root_, inUnit);
         }
 
-        /**
-         * Traverses the trie from the initial state for the
-         * one or two UTF-16 code units for this input code point.
-         * Equivalent to reset().nextForCodePoint(cp).
-         * @param cp A Unicode code point 0..0x10ffff.
-         * @return The match/value Result.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Traverses the trie from the initial state for the
+        /// one or two UTF-16 code units for this input code point.
+        /// Equivalent to <c>Reset().NextForCodePoint(cp)</c>.
+        /// </summary>
+        /// <param name="cp">A Unicode code point 0..0x10ffff.</param>
+        /// <returns>The match/value <see cref="Result"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Result FirstForCodePoint(int cp)
         {
             return cp <= 0xffff ?
                 First(cp) :
                 (First(UTF16.GetLeadSurrogate(cp)).HasNext() ?
                     Next(UTF16.GetTrailSurrogate(cp)) :
-                    Result.NO_MATCH);
+                    Result.NoMatch);
         }
 
-        /**
-         * Traverses the trie from the current state for this input char.
-         * @param inUnit Input char value. Values below 0 and above 0xffff will never match.
-         * @return The match/value Result.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Traverses the trie from the current state for this input char.
+        /// </summary>
+        /// <param name="inUnit">Input char value. Values below 0 and above 0xffff will never match.</param>
+        /// <returns>The match/value <see cref="Result"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Result Next(int inUnit)
         {
             int pos = pos_;
             if (pos < 0)
             {
-                return Result.NO_MATCH;
+                return Result.NoMatch;
             }
             int length = remainingMatchLength_;  // Actual remaining match length minus 1.
             if (length >= 0)
@@ -184,46 +184,45 @@ namespace ICU4N.Util
                     pos_ = pos;
                     int node;
                     return (length < 0 && (node = chars_[pos]) >= kMinValueLead) ?
-                            valueResults_[node >> 15] : Result.NO_VALUE;
+                            valueResults_[node >> 15] : Result.NoValue;
                 }
                 else
                 {
                     Stop();
-                    return Result.NO_MATCH;
+                    return Result.NoMatch;
                 }
             }
             return NextImpl(pos, inUnit);
         }
 
-        /**
-         * Traverses the trie from the current state for the
-         * one or two UTF-16 code units for this input code point.
-         * @param cp A Unicode code point 0..0x10ffff.
-         * @return The match/value Result.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Traverses the trie from the current state for the
+        /// one or two UTF-16 code units for this input code point.
+        /// </summary>
+        /// <param name="cp">A Unicode code point 0..0x10ffff.</param>
+        /// <returns>The match/value <see cref="Result"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Result NextForCodePoint(int cp)
         {
             return cp <= 0xffff ?
                 Next(cp) :
                 (Next(UTF16.GetLeadSurrogate(cp)).HasNext() ?
                     Next(UTF16.GetTrailSurrogate(cp)) :
-                    Result.NO_MATCH);
+                    Result.NoMatch);
         }
 
         // ICU4N specific - Next(ICharSequence s, int sIndex, int sLimit) moved to CharsTrieExtension.tt
 
-
-
-        /**
-         * Returns a matching string's value if called immediately after
-         * current()/first()/next() returned Result.INTERMEDIATE_VALUE or Result.FINAL_VALUE.
-         * getValue() can be called multiple times.
-         *
-         * Do not call getValue() after Result.NO_MATCH or Result.NO_VALUE!
-         * @return The value for the string so far.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Returns a matching string's value if called immediately after
+        /// <see cref="Current"/>/<see cref="First(int)"/>/<see cref="Next(int)"/>
+        /// returned <see cref="Result.IntermediateValue"/> or <see cref="Result.FinalValue"/>.
+        /// <see cref="GetValue()"/> can be called multiple times.
+        /// <para/>
+        /// Do not call <see cref="GetValue()"/> after <see cref="Result.NoMatch"/> or <see cref="Result.NoValue"/>!
+        /// </summary>
+        /// <returns>The value for the string so far.</returns>
+        /// <stable>ICU 4.8</stable>
         public int GetValue() /*const*/
         {
             int pos = pos_;
@@ -233,14 +232,14 @@ namespace ICU4N.Util
                 ReadValue(chars_, pos, leadUnit & 0x7fff) : ReadNodeValue(chars_, pos, leadUnit);
         }
 
-        /**
-         * Determines whether all strings reachable from the current state
-         * map to the same value, and if so, returns that value.
-         * @return The unique value in bits 32..1 with bit 0 set,
-         *         if all strings reachable from the current state
-         *         map to the same value; otherwise returns 0.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Determines whether all strings reachable from the current state
+        /// map to the same value, and if so, returns that value.
+        /// </summary>
+        /// <returns>The unique value in bits 32..1 with bit 0 set,
+        /// if all strings reachable from the current state
+        /// map to the same value; otherwise returns 0.</returns>
+        /// <stable>ICU 4.8</stable>
         public long GetUniqueValue() /*const*/
         {
             int pos = pos_;
@@ -254,14 +253,14 @@ namespace ICU4N.Util
             return (uniqueValue << 31) >> 31;
         }
 
-        /**
-         * Finds each char which continues the string from the current state.
-         * That is, each char c for which it would be next(c)!=Result.NO_MATCH now.
-         * @param out Each next char is appended to this object.
-         *            (Only uses the out.append(c) method.)
-         * @return The number of chars which continue the string from here.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Finds each char which continues the string from the current state.
+        /// That is, each char c for which it would be Next(c)!=<see cref="Result.NoMatch"/> now.
+        /// </summary>
+        /// <param name="output">Each next char is appended to this object.
+        /// (Only uses the output.Append(c) method.)</param>
+        /// <returns>The number of chars which continue the string from here.</returns>
+        /// <stable>ICU 4.8</stable>
         public int GetNextChars(StringBuilder output) /*const*/
         {
             int pos = pos_;
@@ -304,23 +303,29 @@ namespace ICU4N.Util
             }
         }
 
-        /**
-         * Iterates from the current state of this trie.
-         * @return A new CharsTrie.Iterator.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Iterates from the current state of this trie.
+        /// </summary>
+        /// <remarks>
+        /// This is equivalent to iterator() in ICU4J.
+        /// </remarks>
+        /// <returns>A new <see cref="CharsTrie.Enumerator"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Enumerator GetEnumerator()
         {
             return new Enumerator(chars_, pos_, remainingMatchLength_, 0);
         }
 
-        /**
-         * Iterates from the current state of this trie.
-         * @param maxStringLength If 0, the iterator returns full strings.
-         *                        Otherwise, the iterator returns strings with this maximum length.
-         * @return A new CharsTrie.Iterator.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Iterates from the current state of this trie.
+        /// </summary>
+        /// <remarks>
+        /// This is equivalent to iterator(int) in ICU4J.
+        /// </remarks>
+        /// <param name="maxStringLength">If 0, the enumerator returns full strings.
+        /// Otherwise, the enumerator returns strings with this maximum length.</param>
+        /// <returns>A new <see cref="CharsTrie.Enumerator"/>.</returns>
+        /// <stable>ICU 4.8</stable>
         public Enumerator GetEnumerator(int maxStringLength)
         {
             return new Enumerator(chars_, pos_, remainingMatchLength_, maxStringLength);
@@ -337,8 +342,11 @@ namespace ICU4N.Util
         }
 
         /// <summary>
-        /// Iterates from the root of a char-serialized BytesTrie.
+        /// Iterates from the root of a char-serialized <see cref="BytesTrie"/>.
         /// </summary>
+        /// <remarks>
+        /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
+        /// </remarks>
         /// <param name="trieChars"><see cref="string"/> that contains the serialized trie.</param>
         /// <param name="offset">Root offset of the trie in the <see cref="string"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
@@ -351,8 +359,11 @@ namespace ICU4N.Util
         }
 
         /// <summary>
-        /// Iterates from the root of a char-serialized BytesTrie.
+        /// Iterates from the root of a char-serialized <see cref="BytesTrie"/>.
         /// </summary>
+        /// <remarks>
+        /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
+        /// </remarks>
         /// <param name="trieChars"><see cref="StringBuilder"/> that contains the serialized trie.</param>
         /// <param name="offset">Root offset of the trie in the <see cref="StringBuilder"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
@@ -365,8 +376,11 @@ namespace ICU4N.Util
         }
 
         /// <summary>
-        /// Iterates from the root of a char-serialized BytesTrie.
+        /// Iterates from the root of a char-serialized <see cref="BytesTrie"/>.
         /// </summary>
+        /// <remarks>
+        /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
+        /// </remarks>
         /// <param name="trieChars"><see cref="Char[]"/> that contains the serialized trie.</param>
         /// <param name="offset">Root offset of the trie in the <see cref="Char[]"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
@@ -379,8 +393,11 @@ namespace ICU4N.Util
         }
 
         /// <summary>
-        /// Iterates from the root of a char-serialized BytesTrie.
+        /// Iterates from the root of a char-serialized <see cref="BytesTrie"/>.
         /// </summary>
+        /// <remarks>
+        /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
+        /// </remarks>
         /// <param name="trieChars"><see cref="ICharSequence"/> that contains the serialized trie.</param>
         /// <param name="offset">Root offset of the trie in the <see cref="ICharSequence"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
@@ -392,22 +409,22 @@ namespace ICU4N.Util
             return new Enumerator(trieChars, offset, -1, maxStringLength);
         }
 
-        /**
-         * Return value type for the Iterator.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Return value type for the <see cref="Enumerator"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public sealed class Entry
         {
-            /**
-             * The string.
-             * @stable ICU 4.8
-             */
-            /*public*/
-            internal ICharSequence Chars { get; set; } // ICU4N TODO: API Make public
-                                                       /**
-                                                        * The value associated with the string.
-                                                        * @stable ICU 4.8
-                                                        */
+            /// <summary>
+            /// The string.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
+            public ICharSequence Chars { get; set; }
+
+            /// <summary>
+            /// Gets or Sets the value associated with the string.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public int Value { get; set; }
 
             internal Entry()
@@ -415,10 +432,10 @@ namespace ICU4N.Util
             }
         }
 
-        /**
-         * Iterator for all of the (string, value) pairs in a CharsTrie.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Iterator for all of the (string, value) pairs in a <see cref="CharsTrie"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public sealed class Enumerator : IEnumerator<Entry>
         {
             private Entry current = null;
@@ -444,11 +461,11 @@ namespace ICU4N.Util
                 }
             }
 
-            /**
-             * Resets this iterator to its initial state.
-             * @return this
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Resets this iterator to its initial state.
+            /// </summary>
+            /// <returns>This.</returns>
+            /// <stable>ICU 4.8</stable>
             public Enumerator Reset()
             {
                 pos_ = initialPos_;
@@ -466,23 +483,24 @@ namespace ICU4N.Util
                 return this;
             }
 
-            /**
-             * @return true if there are more elements.
-             * @stable ICU 4.8
-             */
-            private bool HasNext() /*const*/ { return pos_ >= 0 || stack_.Count > 0; }
+            /// <summary>
+            /// Returns true if there are more elements.
+            /// </summary>
+            /// <returns>true if there are more elements.</returns>
+            /// <stable>ICU 4.8</stable>
+            private bool HasNext() /*const*/ { return pos_ >= 0 || stack_.Count > 0; } // ICU4N TODO: API - make property
 
-            /**
-             * Finds the next (string, value) pair if there is one.
-             *
-             * If the string is truncated to the maximum length and does not
-             * have a real value, then the value is set to -1.
-             * In this case, this "not a real value" is indistinguishable from
-             * a real value of -1.
-             * @return An Entry with the string and value of the next element.
-             * @throws NoSuchElementException - iteration has no more elements.
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Finds the next (string, value) pair if there is one.
+            /// </summary>
+            /// <remarks>
+            /// If the string is truncated to the maximum length and does not
+            /// have a real value, then the value is set to -1.
+            /// In this case, this "not a real value" is indistinguishable from
+            /// a real value of -1.
+            /// </remarks>
+            /// <returns>An <see cref="Entry"/> with the string and value of the next element.</returns>
+            /// <stable>ICU 4.8</stable>
             private Entry Next()
             {
                 int pos = pos_;
@@ -590,15 +608,7 @@ namespace ICU4N.Util
                 }
             }
 
-            ///**
-            // * Iterator.remove() is not supported.
-            // * @throws UnsupportedOperationException (always)
-            // * @stable ICU 4.8
-            // */
-            //public void remove()
-            //{
-            //    throw new NotSupportedException();
-            //}
+            // ICU4N specific - Remove() not supported in .NET
 
             private Entry TruncateAndStop()
             {
@@ -645,6 +655,10 @@ namespace ICU4N.Util
                 }
             }
 
+            /// <summary>
+            /// Gets the element in the collection at the current position of the enumerator.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public Entry Current
             {
                 get { return current; }
@@ -655,6 +669,17 @@ namespace ICU4N.Util
                 get { return current; }
             }
 
+            /// <summary>
+            /// Finds the next (string, value) pair if there is one.
+            /// </summary>
+            /// <remarks>
+            /// If the string is truncated to the maximum length and does not
+            /// have a real value, then the value is set to -1.
+            /// In this case, this "not a real value" is indistinguishable from
+            /// a real value of -1.
+            /// </remarks>
+            /// <returns>Returns true if an element has been set to <see cref="Current"/>; otherwise false.</returns>
+            /// <stable>ICU 4.8</stable>
             public bool MoveNext()
             {
                 if (!HasNext())
@@ -663,7 +688,7 @@ namespace ICU4N.Util
                 return (current != null);
             }
 
-            void IEnumerator.Reset()
+            void IEnumerator.Reset() // ICU4N specific - expicit interface declaration for .NET compatibility
             {
                 Reset();
             }
@@ -809,7 +834,7 @@ namespace ICU4N.Util
             return pos;
         }
 
-        private static Result[] valueResults_ = { Result.INTERMEDIATE_VALUE, Result.FINAL_VALUE };
+        private static Result[] valueResults_ = { Result.IntermediateValue, Result.FinalValue };
 
         // Handles a branch node for both next(unit) and next(string).
         private Result BranchNext(int pos, int length, int inUnit)
@@ -847,7 +872,7 @@ namespace ICU4N.Util
                     if ((node & kValueIsFinal) != 0)
                     {
                         // Leave the final value for getValue() to read.
-                        result = Result.FINAL_VALUE;
+                        result = Result.FinalValue;
                     }
                     else
                     {
@@ -871,7 +896,7 @@ namespace ICU4N.Util
                         // end readValue()
                         pos += delta;
                         node = chars_[pos];
-                        result = node >= kMinValueLead ? valueResults_[node >> 15] : Result.NO_VALUE;
+                        result = node >= kMinValueLead ? valueResults_[node >> 15] : Result.NoValue;
                     }
                     pos_ = pos;
                     return result;
@@ -883,12 +908,12 @@ namespace ICU4N.Util
             {
                 pos_ = pos;
                 int node = chars_[pos];
-                return node >= kMinValueLead ? valueResults_[node >> 15] : Result.NO_VALUE;
+                return node >= kMinValueLead ? valueResults_[node >> 15] : Result.NoValue;
             }
             else
             {
                 Stop();
-                return Result.NO_MATCH;
+                return Result.NoMatch;
             }
         }
 
@@ -911,7 +936,7 @@ namespace ICU4N.Util
                         remainingMatchLength_ = --length;
                         pos_ = pos;
                         return (length < 0 && (node = chars_[pos]) >= kMinValueLead) ?
-                                valueResults_[node >> 15] : Result.NO_VALUE;
+                                valueResults_[node >> 15] : Result.NoValue;
                     }
                     else
                     {
@@ -932,7 +957,7 @@ namespace ICU4N.Util
                 }
             }
             Stop();
-            return Result.NO_MATCH;
+            return Result.NoMatch;
         }
 
         // Helper functions for getUniqueValue().

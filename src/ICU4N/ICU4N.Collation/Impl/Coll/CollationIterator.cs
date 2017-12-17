@@ -841,7 +841,7 @@ namespace ICU4N.Impl.Coll
                     if (skipped != null && !skipped.IsEmpty) { skipped.SaveTrieState(suffixes); }
                     sinceMatch = 1;
                 }
-                else if (match == Result.NO_MATCH || (nextCp = NextSkippedCodePoint()) < 0)
+                else if (match == Result.NoMatch || (nextCp = NextSkippedCodePoint()) < 0)
                 {
                     // No match for c, or partial match (BytesTrie.Result.NO_VALUE) and no further text.
                     // Back up if necessary, and try a discontiguous contraction.

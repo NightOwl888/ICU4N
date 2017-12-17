@@ -246,36 +246,36 @@ namespace ICU4N.Dev.Test.Util
              };
             CharsTrie trie = buildTrie(data, data.Length, StringTrieBuilder.Option.FAST);
             Result result;
-            if ((result = trie.NextForCodePoint(0x4dff)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x10000)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x9999)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x20000)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0xdfff)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x10ffff)) != Result.FINAL_VALUE || result != trie.Current ||
+            if ((result = trie.NextForCodePoint(0x4dff)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x10000)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x9999)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x20000)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0xdfff)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x10ffff)) != Result.FinalValue || result != trie.Current ||
                 trie.GetValue() != 2000000000
             )
             {
                 Errln("CharsTrie.NextForCodePoint() fails for " + data[0].s);
             }
-            if ((result = trie.FirstForCodePoint(0x4dff)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x10000)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x9999)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x20002)) != Result.FINAL_VALUE || result != trie.Current ||
+            if ((result = trie.FirstForCodePoint(0x4dff)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x10000)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x9999)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x20002)) != Result.FinalValue || result != trie.Current ||
                 trie.GetValue() != 44444
             )
             {
                 Errln("CharsTrie.NextForCodePoint() fails for " + data[1].s);
             }
-            if ((result = trie.Reset().NextForCodePoint(0x4dff)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x10000)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x9999)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x20222)) != Result.NO_MATCH || result != trie.Current  // no match for trail surrogate
+            if ((result = trie.Reset().NextForCodePoint(0x4dff)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x10000)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x9999)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x20222)) != Result.NoMatch || result != trie.Current  // no match for trail surrogate
             )
             {
                 Errln("CharsTrie.NextForCodePoint() fails for \u4dff\\U00010000\u9999\\U00020222");
             }
-            if ((result = trie.Reset().NextForCodePoint(0x4dff)) != Result.NO_VALUE || result != trie.Current ||
-                (result = trie.NextForCodePoint(0x103ff)) != Result.FINAL_VALUE || result != trie.Current ||
+            if ((result = trie.Reset().NextForCodePoint(0x4dff)) != Result.NoValue || result != trie.Current ||
+                (result = trie.NextForCodePoint(0x103ff)) != Result.FinalValue || result != trie.Current ||
                 trie.GetValue() != 99999
             )
             {
@@ -349,7 +349,7 @@ namespace ICU4N.Dev.Test.Util
                 }
                 else
                 {
-                    if (trie.First(x[0]) == Result.NO_MATCH)
+                    if (trie.First(x[0]) == Result.NoMatch)
                     {
                         Errln(String.Format("first(first char U+{0:x4})=BytesTrie.Result.NO_MATCH for string {1}\n",
                                 char.GetNumericValue(x[0]), gen.GetIndex()));
@@ -433,7 +433,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 Errln("unique value after \"ju\"");
             }
-            if (trie.Next('n') != Result.INTERMEDIATE_VALUE || 6 != trie.GetValue())
+            if (trie.Next('n') != Result.IntermediateValue || 6 != trie.GetValue())
             {
                 Errln("not normal value 6 after \"jun\"");
             }
@@ -832,10 +832,10 @@ namespace ICU4N.Dev.Test.Util
                                             data[i].s, j));
                         break;
                     }
-                    if (result == Result.INTERMEDIATE_VALUE)
+                    if (result == Result.IntermediateValue)
                     {
                         trie.GetValue();
-                        if (trie.Current != Result.INTERMEDIATE_VALUE)
+                        if (trie.Current != Result.IntermediateValue)
                         {
                             Errln(String.Format("trie.getValue().Current!=Result.INTERMEDIATE_VALUE " +
                                                 "before end of {0} (at index {1})", data[i].s, j));
@@ -882,7 +882,7 @@ namespace ICU4N.Dev.Test.Util
                         break;
                     }
                 }
-                if ((result == Result.INTERMEDIATE_VALUE) != nextContinues)
+                if ((result == Result.IntermediateValue) != nextContinues)
                 {
                     Errln("(trie.Current==BytesTrie.Result.INTERMEDIATE_VALUE) contradicts " +
                           "(trie.Next(some char)!=BytesTrie.Result.NO_MATCH) after end of " + data[i].s);
@@ -928,7 +928,7 @@ namespace ICU4N.Dev.Test.Util
                     valueAtState = trie.GetValue();
                 }
                 result = trie.Next(0);  // mismatch
-                if (result != Result.NO_MATCH || result != trie.Current)
+                if (result != Result.NoMatch || result != trie.Current)
                 {
                     Errln("trie.Next(0) matched after part of " + data[i].s);
                 }

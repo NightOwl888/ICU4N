@@ -64,12 +64,12 @@ namespace ICU4N.Text
                         lengths[count] = numChars;
                         count++;
                     }
-                    if (result == Result.FINAL_VALUE)
+                    if (result == Result.FinalValue)
                     {
                         break;
                     }
                 }
-                else if (result == Result.NO_MATCH)
+                else if (result == Result.NoMatch)
                 {
                     break;
                 }

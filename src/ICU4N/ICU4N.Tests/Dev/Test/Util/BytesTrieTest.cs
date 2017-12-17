@@ -287,7 +287,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 Errln("unique value after \"ju\"");
             }
-            if (trie.Next('n') != Result.INTERMEDIATE_VALUE || 6 != trie.GetValue())
+            if (trie.Next('n') != Result.IntermediateValue || 6 != trie.GetValue())
             {
                 Errln("not normal value 6 after \"jun\"");
             }
@@ -671,10 +671,10 @@ namespace ICU4N.Dev.Test.Util
                                             data[i].s, j));
                         break;
                     }
-                    if (result == Result.INTERMEDIATE_VALUE)
+                    if (result == Result.IntermediateValue)
                     {
                         trie.GetValue();
-                        if (trie.Current != Result.INTERMEDIATE_VALUE)
+                        if (trie.Current != Result.IntermediateValue)
                         {
                             Errln(String.Format("trie.GetValue().Current!=BytesTrieResult.INTERMEDIATE_VALUE " +
                                                 "before end of {0} (at index {1:d})", data[i].s, j));
@@ -717,7 +717,7 @@ namespace ICU4N.Dev.Test.Util
                         break;
                     }
                 }
-                if ((result == Result.INTERMEDIATE_VALUE) != nextContinues)
+                if ((result == Result.IntermediateValue) != nextContinues)
                 {
                     Errln("(trie.Current==BytesTrieResult.INTERMEDIATE_VALUE) contradicts " +
                           "(trie.Next(some UChar)!=BytesTrieResult.NO_MATCH) after end of " + data[i].s);
@@ -763,7 +763,7 @@ namespace ICU4N.Dev.Test.Util
                     valueAtState = trie.GetValue();
                 }
                 result = trie.Next(0);  // mismatch
-                if (result != Result.NO_MATCH || result != trie.Current)
+                if (result != Result.NoMatch || result != trie.Current)
                 {
                     Errln("trie.Next(0) matched after part of " + data[i].s);
                 }
