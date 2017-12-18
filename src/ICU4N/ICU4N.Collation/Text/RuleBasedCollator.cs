@@ -1247,7 +1247,7 @@ namespace ICU4N.Text
         private sealed class CollationKeyByteSink : SortKeyByteSink
         {
             internal CollationKeyByteSink(RawCollationKey key)
-                : base(key.bytes)
+                : base(key.Bytes)
             {
                 key_ = key;
             }
@@ -1278,7 +1278,7 @@ namespace ICU4N.Text
                 // We only set it when we are done.
                 byte[] newBytes = new byte[newCapacity];
                 System.Array.Copy(buffer_, 0, newBytes, 0, length);
-                buffer_ = key_.bytes = newBytes;
+                buffer_ = key_.Bytes = newBytes;
                 return true;
             }
 
@@ -1293,13 +1293,13 @@ namespace ICU4N.Text
             {
                 key = new RawCollationKey(SimpleKeyLengthEstimate(source));
             }
-            else if (key.bytes == null)
+            else if (key.Bytes == null)
             {
-                key.bytes = new byte[SimpleKeyLengthEstimate(source)];
+                key.Bytes = new byte[SimpleKeyLengthEstimate(source)];
             }
             CollationKeyByteSink sink = new CollationKeyByteSink(key);
             WriteSortKey(source, sink, buffer);
-            key.Count = sink.NumberOfBytesAppended;
+            key.Length = sink.NumberOfBytesAppended;
             return key;
         }
 
@@ -1340,7 +1340,7 @@ namespace ICU4N.Text
             int nfdQCYesLimit = data.nfcImpl.Decompose(s, 0, s.Length, null);
             sink.Append(Collation.LEVEL_SEPARATOR_BYTE);
             // Sync the ByteArrayWrapper size with the key length.
-            sink.Key.Count = sink.NumberOfBytesAppended;
+            sink.Key.Length = sink.NumberOfBytesAppended;
             int prev = 0;
             if (nfdQCYesLimit != 0)
             {
@@ -1355,7 +1355,7 @@ namespace ICU4N.Text
                 BOCSU.WriteIdenticalLevelRun(prev, nfd, 0, nfd.Length, sink.Key);
             }
             // Sync the key with the buffer again which got bytes appended and may have been reallocated.
-            sink.SetBufferAndAppended(sink.Key.bytes, sink.Key.Count);
+            sink.SetBufferAndAppended(sink.Key.Bytes, sink.Key.Length);
         }
 
         /**

@@ -127,7 +127,7 @@ namespace ICU4N.Text
         public CollationKey(string source, RawCollationKey key)
         {
             m_source_ = source;
-            m_length_ = key.Count - 1;
+            m_length_ = key.Length - 1;
             m_key_ = key.ReleaseBytes();
             Debug.Assert(m_key_[m_length_] == 0);
             m_hashCode_ = 0;

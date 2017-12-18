@@ -183,7 +183,7 @@ namespace ICU4N.Dev.Test.Collate
 
         internal static String Prettify(RawCollationKey key)
         {
-            return Prettify(key.bytes, key.Count);
+            return Prettify(key.Bytes, key.Length);
         }
 
         internal static String Prettify(byte[] skBytes, int length)

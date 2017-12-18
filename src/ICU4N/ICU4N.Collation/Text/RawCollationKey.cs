@@ -25,7 +25,7 @@ namespace ICU4N.Text
          */
         public RawCollationKey(int capacity)
         {
-            bytes = new byte[capacity];
+            Bytes = new byte[capacity];
         }
 
         /**
@@ -36,7 +36,7 @@ namespace ICU4N.Text
          */
         public RawCollationKey(byte[] bytes)
         {
-            this.bytes = bytes;
+            this.Bytes = bytes;
         }
 
         /**

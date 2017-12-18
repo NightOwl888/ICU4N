@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.IO;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace ICU4N.Util
@@ -22,20 +23,21 @@ namespace ICU4N.Util
         /// Internal byte array.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public byte[] bytes; // ICU4N TODO: API Make this into GetBytes() ? We really shouldn't expose arrays like this
+        [SuppressMessage("Microsoft.Performance", "CA1819", Justification = "design requires some writable array properties")]
+        public byte[] Bytes { get; set; }
 
         /// <summary>
         /// Size of the internal byte array used. 
-        /// Different from bytes.length, size will be &lt;= bytes.length.
-        /// Semantics of Count is similar to java.util.Vector.size().
+        /// Different from bytes.Length, <see cref="Length"/> will be &lt;= bytes.Length.
+        /// Semantics of <see cref="Length"/> is similar to <see cref="System.Collections.BitArray.Length"/>.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public int Count { get; set; } // ICU4N TODO: API Change to Length (this is an array)
+        public int Length { get; set; }
 
         // public constructor ------------------------------------------------
 
         /// <summary>
-        /// Construct a new ByteArrayWrapper with no data.
+        /// Construct a new <see cref="ByteArrayWrapper"/> with no data.
         /// </summary>
         /// <stable>ICU 2.8</stable>
         public ByteArrayWrapper()
@@ -49,7 +51,7 @@ namespace ICU4N.Util
         /// <param name="bytesToAdopt">The byte array to adopt.</param>
         /// <param name="size">The length of valid data in the byte array.</param>
         /// <exception cref="IndexOutOfRangeException">if bytesToAdopt == null and size != 0, or
-        /// size &lt; 0, or size &gt; bytesToAdopt.length.</exception>
+        /// size &lt; 0, or size &gt; bytesToAdopt.Length.</exception>
         /// <stable>ICU 3.2</stable>
         public ByteArrayWrapper(byte[] bytesToAdopt, int size)
         {
@@ -57,8 +59,8 @@ namespace ICU4N.Util
             {
                 throw new IndexOutOfRangeException("illegal size: " + size);
             }
-            this.bytes = bytesToAdopt;
-            this.Count = size;
+            this.Bytes = bytesToAdopt;
+            this.Length = size;
         }
 
         /// <summary>
@@ -68,9 +70,9 @@ namespace ICU4N.Util
         /// <stable>ICU 3.2</stable>
         public ByteArrayWrapper(ByteBuffer source)
         {
-            Count = source.Limit;
-            bytes = new byte[Count];
-            source.Get(bytes, 0, Count);
+            Length = source.Limit;
+            Bytes = new byte[Length];
+            source.Get(Bytes, 0, Length);
         }
 
         /**
@@ -101,21 +103,21 @@ namespace ICU4N.Util
         /// Ensure that the internal byte array is at least of length capacity.
         /// If the byte array is null or its length is less than capacity, a new
         /// byte array of length capacity will be allocated.
-        /// The contents of the array (between 0 and <see cref="Count"/>) remain unchanged.
+        /// The contents of the array (between 0 and <see cref="Length"/>) remain unchanged.
         /// </summary>
         /// <param name="capacity">Minimum length of internal byte array.</param>
         /// <returns>This <see cref="ByteArrayWrapper"/>.</returns>
         /// <stable>ICU 3.2</stable>
         public virtual ByteArrayWrapper EnsureCapacity(int capacity)
         {
-            if (bytes == null || bytes.Length < capacity)
+            if (Bytes == null || Bytes.Length < capacity)
             {
                 byte[] newbytes = new byte[capacity];
-                if (bytes != null)
+                if (Bytes != null)
                 {
-                    CopyBytes(bytes, 0, newbytes, 0, Count);
+                    CopyBytes(Bytes, 0, newbytes, 0, Length);
                 }
-                bytes = newbytes;
+                Bytes = newbytes;
             }
             return this;
         }
@@ -131,9 +133,9 @@ namespace ICU4N.Util
         /// <param name="count">Number of bytes to copy from <paramref name="src"/>.</param>
         /// <returns>This <see cref="ByteArrayWrapper"/>.</returns>
         /// <stable>ICU 3.2</stable>
-        public ByteArrayWrapper Set(byte[] src, int start, int count)
+        public ByteArrayWrapper Set(byte[] src, int start, int count) // ICU4N specific - changed 3rd parameter from end to count (like in .NET)
         {
-            Count = 0;
+            Length = 0;
             Append(src, start, count);
             return this;
         }
@@ -161,9 +163,9 @@ namespace ICU4N.Util
         public ByteArrayWrapper Append(byte[] src, int start, int count) // ICU4N specific - changed 3rd parameter from end to count (like in .NET)
         {
             int len = count;
-            EnsureCapacity(Count + len);
-            CopyBytes(src, start, bytes, Count, len);
-            Count += len;
+            EnsureCapacity(Length + len);
+            CopyBytes(src, start, Bytes, Length, len);
+            Length += len;
             return this;
         }
 
@@ -182,9 +184,9 @@ namespace ICU4N.Util
         /// <stable>ICU 2.8</stable>
         public byte[] ReleaseBytes()
         {
-            byte[] result = bytes;
-            bytes = null;
-            Count = 0;
+            byte[] result = Bytes;
+            Bytes = null;
+            Length = 0;
             return result;
         }
 
@@ -197,10 +199,10 @@ namespace ICU4N.Util
         public override string ToString()
         {
             StringBuilder result = new StringBuilder();
-            for (int i = 0; i < Count; ++i)
+            for (int i = 0; i < Length; ++i)
             {
                 if (i != 0) result.Append(" ");
-                result.Append(Utility.Hex(bytes[i] & 0xFF, 2));
+                result.Append(Utility.Hex(Bytes[i] & 0xFF, 2));
             }
             return result.ToString();
         }
@@ -218,10 +220,10 @@ namespace ICU4N.Util
             try
             {
                 ByteArrayWrapper that = (ByteArrayWrapper)other;
-                if (Count != that.Count) return false;
-                for (int i = 0; i < Count; ++i)
+                if (Length != that.Length) return false;
+                for (int i = 0; i < Length; ++i)
                 {
-                    if (bytes[i] != that.bytes[i]) return false;
+                    if (Bytes[i] != that.Bytes[i]) return false;
                 }
                 return true;
             }
@@ -238,10 +240,10 @@ namespace ICU4N.Util
         /// <stable>ICU 3.2</stable>
         public override int GetHashCode()
         {
-            int result = bytes.Length;
-            for (int i = 0; i < Count; ++i)
+            int result = Bytes.Length;
+            for (int i = 0; i < Length; ++i)
             {
-                result = 37 * result + bytes[i];
+                result = 37 * result + Bytes[i];
             }
             return result;
         }
@@ -260,15 +262,15 @@ namespace ICU4N.Util
                 throw new ArgumentNullException(nameof(other));
 
             if (this == other) return 0;
-            int minSize = Count < other.Count ? Count : other.Count;
+            int minSize = Length < other.Length ? Length : other.Length;
             for (int i = 0; i < minSize; ++i)
             {
-                if (bytes[i] != other.bytes[i])
+                if (Bytes[i] != other.Bytes[i])
                 {
-                    return (bytes[i] & 0xFF) - (other.bytes[i] & 0xFF);
+                    return (Bytes[i] & 0xFF) - (other.Bytes[i] & 0xFF);
                 }
             }
-            return Count - other.Count;
+            return Length - other.Length;
         }
 
         /// <summary>

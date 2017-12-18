@@ -32,9 +32,9 @@ namespace ICU4N.Impl.Coll
                 // but we do not want to force the sink to allocate
                 // for a large min_capacity because we might actually only write one byte.
                 EnsureAppendCapacity(sink, 16, s.Length * 2);
-                byte[] buffer = sink.bytes;
+                byte[] buffer = sink.Bytes;
                 int capacity = buffer.Length;
-                int p = sink.Count;
+                int p = sink.Length;
                 int lastSafe = capacity - SLOPE_MAX_BYTES_;
                 while (i < length && p <= lastSafe)
                 {
@@ -62,17 +62,17 @@ namespace ICU4N.Impl.Coll
                         prev = c;
                     }
                 }
-                sink.Count = p;
+                sink.Length = p;
             }
             return prev;
         }
 
         private static void EnsureAppendCapacity(ByteArrayWrapper sink, int minCapacity, int desiredCapacity)
         {
-            int remainingCapacity = sink.bytes.Length - sink.Count;
+            int remainingCapacity = sink.Bytes.Length - sink.Length;
             if (remainingCapacity >= minCapacity) { return; }
             if (desiredCapacity < minCapacity) { desiredCapacity = minCapacity; }
-            sink.EnsureCapacity(sink.Count + desiredCapacity);
+            sink.EnsureCapacity(sink.Length + desiredCapacity);
         }
 
         // private data members --------------------------------------------------

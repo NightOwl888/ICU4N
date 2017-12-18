@@ -128,14 +128,14 @@ namespace ICU4N.Dev.Test.Collate
         {
             // testing constructors
             RawCollationKey key = new RawCollationKey();
-            if (key.bytes != null || key.Count != 0)
+            if (key.Bytes != null || key.Length != 0)
             {
                 Errln("Empty default constructor expected to leave the bytes null "
                       + "and size 0");
             }
             byte[] array = new byte[128];
             key = new RawCollationKey(array);
-            if (key.bytes != array || key.Count != 0)
+            if (key.Bytes != array || key.Length != 0)
             {
                 Errln("Constructor taking an array expected to adopt it and "
                       + "retaining its size 0");
@@ -161,13 +161,13 @@ namespace ICU4N.Dev.Test.Collate
                 Logln("PASS: Constructor failed as expected");
             }
             key = new RawCollationKey(array, array.Length >> 1);
-            if (key.bytes != array || key.Count != (array.Length >> 1))
+            if (key.Bytes != array || key.Length != (array.Length >> 1))
             {
                 Errln("Constructor taking an array and a size, "
                       + "expected to adopt it and take the size specified");
             }
             key = new RawCollationKey(10);
-            if (key.bytes == null || key.bytes.Length != 10 || key.Count != 0)
+            if (key.Bytes == null || key.Bytes.Length != 10 || key.Length != 0)
             {
                 Errln("Constructor taking a specified capacity expected to "
                       + "create a new internal byte array with length 10 and "
@@ -841,8 +841,8 @@ namespace ICU4N.Dev.Test.Collate
                 {
                     key = new RawCollationKey();
                 }
-                key.bytes = temp2;
-                key.Count = temp2.Length;
+                key.Bytes = temp2;
+                key.Length = temp2.Length;
                 return key;
             }
 
