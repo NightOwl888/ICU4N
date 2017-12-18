@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Util
 {
@@ -9,11 +7,13 @@ namespace ICU4N.Util
     /// Some ICU APIs do not throw the standard exception but instead wrap it
     /// into this unchecked version.
     /// </summary>
+    /// <stable>ICU 53</stable>
     public class ICUUncheckedIOException : Exception
     {
         /// <summary>
         /// Default constructor.
         /// </summary>
+        /// <stable>ICU 53</stable>
         public ICUUncheckedIOException()
         {
         }
@@ -22,6 +22,7 @@ namespace ICU4N.Util
         /// Constructor.
         /// </summary>
         /// <param name="message">exception message string</param>
+        /// <stable>ICU 53</stable>
         public ICUUncheckedIOException(string message)
             : base(message)
         {
@@ -31,6 +32,7 @@ namespace ICU4N.Util
         /// Constructor.
         /// </summary>
         /// <param name="innerException">original exception</param>
+        /// <stable>ICU 53</stable>
         public ICUUncheckedIOException(Exception innerException)
             : base(string.Empty, innerException)
         {
@@ -41,6 +43,7 @@ namespace ICU4N.Util
         /// </summary>
         /// <param name="message">exception message string</param>
         /// <param name="innerException">original exception</param>
+        /// <stable>ICU 53</stable>
         public ICUUncheckedIOException(string message, Exception innerException)
             : base(message, innerException)
         {

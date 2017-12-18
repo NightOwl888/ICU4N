@@ -20,7 +20,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public BytesTrieBuilder() { }
 
-        // Used in add() to wrap the bytes into a CharSequence for StringTrieBuilder.addImpl().
+        // Used in Add() to wrap the bytes into a ICharSequence for StringTrieBuilder.AddImpl().
         private sealed class BytesAsCharSequence : ICharSequence
         {
             public BytesAsCharSequence(byte[] sequence, int length)
@@ -122,33 +122,17 @@ namespace ICU4N.Util
             return this;
         }
 
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override bool MatchNodesCanHaveValues /*const*/ { get { return false; } }
 
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int MaxBranchLinearSubNodeLength /*const*/{ get { return BytesTrie.kMaxBranchLinearSubNodeLength; } }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int MinLinearMatch /*const*/{ get { return BytesTrie.kMinLinearMatch; } }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int MaxLinearMatchLength /*const*/{ get { return BytesTrie.kMaxLinearMatchLength; } }
 
@@ -167,11 +151,7 @@ namespace ICU4N.Util
                 bytes = newBytes;
             }
         }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int Write(int b)
         {
@@ -181,11 +161,7 @@ namespace ICU4N.Util
             bytes[bytes.Length - bytesLength] = (byte)b;
             return bytesLength;
         }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int Write(int offset, int length)
         {
@@ -212,11 +188,7 @@ namespace ICU4N.Util
         // For writeValueAndFinal() and writeDeltaTo().
         private readonly byte[] intBytes = new byte[5];
 
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int WriteValueAndFinal(int i, bool isFinal)
         {
@@ -261,11 +233,7 @@ namespace ICU4N.Util
             intBytes[0] = (byte)((intBytes[0] << 1) | (isFinal ? 1 : 0));
             return Write(intBytes, length);
         }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int WriteValueAndType(bool hasValue, int value, int node)
         {
@@ -276,11 +244,7 @@ namespace ICU4N.Util
             }
             return offset;
         }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int WriteDeltaTo(int jumpTarget)
         {

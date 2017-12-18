@@ -1,34 +1,60 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Util
 {
-    public class UResourceBundleEnumerator : IEnumerator<UResourceBundle>
+    /// <summary>
+    /// Class for enabling iteration over <see cref="UResourceBundle"/> objects.
+    /// </summary>
+    /// <remarks>
+    /// Example of use:
+    /// <code>
+    /// ICUResourceBundleEnumerator iterator = resB.GetEnumerator();
+    /// ICUResourceBundle temp;
+    /// while (iterator.MoveNext())
+    /// {
+    ///     temp = iterator.Current;
+    ///     int type = temp.Type;
+    ///     switch (type)
+    ///     {
+    ///         case UResourceBundle.STRING:
+    ///             str = temp.GetString();
+    ///             break;
+    ///         case UResourceBundle.INT32:
+    ///             integer = temp.GetInt32();
+    ///             break;
+    ///         .....
+    ///     }
+    ///     // do something interesting with data collected
+    /// }
+    /// </code>
+    /// </remarks>
+    /// <author>ram</author>
+    /// <stable>ICU 3.8</stable>
+    public class UResourceBundleEnumerator : IEnumerator<UResourceBundle> // ICU4N TODO: API Rename UResourceManagerEnumerator, Update code sample
     {
         private UResourceBundle bundle;
         private int index = 0;
         private int size = 0;
-        /**
-         * Construct a resource bundle iterator for the
-         * given resource bundle
-         * 
-         * @param bndl The resource bundle to iterate over
-         * @stable ICU 3.8
-         */
+
+        /// <summary>
+        /// Construct a resource bundle iterator for the
+        /// given resource bundle.
+        /// </summary>
+        /// <param name="bndl">The resource bundle to iterate over.</param>
+        /// <stable>ICU 3.8</stable>
         public UResourceBundleEnumerator(UResourceBundle bndl)
         {
             bundle = bndl;
             size = bundle.Length;
         }
 
-        /**
-         * Returns the next element of this iterator if this iterator object has at least one more element to provide
-         * @return the UResourceBundle object
-         * @throws NoSuchElementException If there does not exist such an element.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Returns the next element of this iterator if this iterator object has at least one more element to provide.
+        /// </summary>
+        /// <returns>The UResourceBundle object.</returns>
+        /// <stable>ICU 3.8</stable>
         private UResourceBundle Next()
         {
             if (index < size)
@@ -36,39 +62,26 @@ namespace ICU4N.Util
                 return bundle.Get(index++);
             }
             return null;
-            //throw new NoSuchElementException();
         }
-        ///**
-        // * Returns the next String of this iterator if this iterator object has at least one more element to provide
-        // * @return the UResourceBundle object
-        // * @throws NoSuchElementException If there does not exist such an element.
-        // * @throws UResourceTypeMismatchException If resource has a type mismatch.
-        // * @stable ICU 3.8
-        // */
-        //private string NextString()
-        //        {
-        //        if(index<size){
-        //            return bundle.GetString(index++);
-        //        }
-        //            return null;
-        //        //throw new NoSuchElementException();
-        //    }
 
-        /**
-         * Resets the internal context of a resource so that iteration starts from the first element.
-         * @stable ICU 3.8
-         */
+        // ICU4N specific - removed NextString() method.
+        // Alternative: iter.MoveNext(); string str = iter.Current.GetString();
+
+        /// <summary>
+        /// Resets the internal context of a resource so that iteration starts from the first element.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
         public virtual void Reset()
         {
             //reset the internal context   
             index = 0;
         }
 
-        /**
-         * Checks whether the given resource has another element to iterate over.
-         * @return TRUE if there are more elements, FALSE if there is no more elements
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Checks whether the given resource has another element to iterate over.
+        /// TRUE if there are more elements, FALSE if there is no more elements.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
         public virtual bool HasNext
         {
             get { return index < size; }
@@ -78,8 +91,12 @@ namespace ICU4N.Util
 
         private UResourceBundle current;
 
-
-        public bool MoveNext()
+        /// <summary>
+        /// Advances to the next element of this enumerator if this enumerator object has at least one more element to provide.
+        /// </summary>
+        /// <returns>true if another bundle is available; otherwise false.</returns>
+        /// <stable>ICU 3.8</stable>
+        public virtual bool MoveNext()
         {
             if (!HasNext)
                 return false;

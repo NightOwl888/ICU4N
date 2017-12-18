@@ -4443,7 +4443,7 @@ namespace ICU4N.Lang
          * @return the unicode version number used
          * @stable ICU 2.1
          */
-        public static VersionInfo GetUnicodeVersion()
+        public static VersionInfo GetUnicodeVersion() // ICU4N TODO: Make property
         {
             return UCharacterProperty.INSTANCE.UnicodeVersion;
         }

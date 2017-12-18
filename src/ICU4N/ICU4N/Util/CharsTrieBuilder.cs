@@ -1,7 +1,6 @@
 ﻿using ICU4N.Support.IO;
 using ICU4N.Support.Text;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
@@ -16,10 +15,10 @@ namespace ICU4N.Util
     /// <author>Markus W. Scherer</author>
     public sealed class CharsTrieBuilder : StringTrieBuilder
     {
-        /**
-         * Constructs an empty builder.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Constructs an empty builder.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public CharsTrieBuilder() { }
 
         /// <summary>
@@ -86,40 +85,42 @@ namespace ICU4N.Util
             return this;
         }
 
-        /**
-         * Builds a CharsTrie for the add()ed data.
-         * Once built, no further data can be add()ed until clear() is called.
-         *
-         * <p>A CharsTrie cannot be empty. At least one (string, value) pair
-         * must have been add()ed.
-         *
-         * <p>Multiple calls to build() or buildCharSequence() return tries or sequences
-         * which share the builder's char array, without rebuilding.
-         * After clear() has been called, a new array will be used.
-         * @param buildOption Build option, see StringTrieBuilder.Option.
-         * @return A new CharsTrie for the add()ed data.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Builds a <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.
+        /// Once built, no further data can be <see cref="Add(string, int)"/>ed until <see cref="Clear()"/> is called.
+        /// </summary>
+        /// <remarks>
+        /// A <see cref="CharsTrie"/> cannot be empty. At least one (string, value) pair
+        /// must have been <see cref="Add(string, int)"/>ed.
+        /// <para/>
+        /// Multiple calls to <see cref="Build(Option)"/> or <see cref="BuildCharSequence(Option)"/> return tries or sequences
+        /// which share the builder's char array, without rebuilding.
+        /// After <see cref="Clear()"/> has been called, a new array will be used.
+        /// </remarks>
+        /// <param name="buildOption">Build option, see <see cref="StringTrieBuilder.Option"/>.</param>
+        /// <returns>A new <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.</returns>
+        /// <stable>ICU 4.8</stable>
         public CharsTrie Build(StringTrieBuilder.Option buildOption)
         {
             return new CharsTrie(BuildCharSequence(buildOption), 0);
         }
 
-        /**
-         * Builds a CharsTrie for the add()ed data and char-serializes it.
-         * Once built, no further data can be add()ed until clear() is called.
-         *
-         * <p>A CharsTrie cannot be empty. At least one (string, value) pair
-         * must have been add()ed.
-         *
-         * <p>Multiple calls to build() or buildCharSequence() return tries or sequences
-         * which share the builder's char array, without rebuilding.
-         * After clear() has been called, a new array will be used.
-         * @param buildOption Build option, see StringTrieBuilder.Option.
-         * @return A CharSequence with the char-serialized CharsTrie for the add()ed data.
-         * @stable ICU 4.8
-         */
-        internal ICharSequence BuildCharSequence(StringTrieBuilder.Option buildOption) // ICU4N TODO: API : Should be public
+        /// <summary>
+        /// Builds a <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data and char-serializes it.
+        /// Once built, no further data can be <see cref="Add(string, int)"/>ed until <see cref="Clear()"/> is called.
+        /// </summary>
+        /// <remarks>
+        /// A <see cref="CharsTrie"/> cannot be empty. At least one (string, value) pair
+        /// must have been <see cref="Add(string, int)"/>ed.
+        /// <para/>
+        /// Multiple calls to <see cref="Build(Option)"/> or <see cref="BuildCharSequence(Option)"/> return tries or sequences
+        /// which share the builder's char array, without rebuilding.
+        /// After <see cref="Clear()"/> has been called, a new array will be used.
+        /// </remarks>
+        /// <param name="buildOption">Build option, see <see cref="StringTrieBuilder.Option"/>.</param>
+        /// <returns>A <see cref="ICharSequence"/> with the char-serialized <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.</returns>
+        /// <stable>ICU 4.8</stable>
+        public ICharSequence BuildCharSequence(StringTrieBuilder.Option buildOption)
         {
             BuildChars(buildOption);
             return CharBuffer.Wrap(chars, chars.Length - charsLength, charsLength);
@@ -135,12 +136,12 @@ namespace ICU4N.Util
             BuildImpl(buildOption);
         }
 
-        /**
-         * Removes all (string, value) pairs.
-         * New data can then be add()ed and a new trie can be built.
-         * @return this
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Removes all (string, value) pairs.
+        /// New data can then be <see cref="Add(string, int)"/>ed and a new trie can be built.
+        /// </summary>
+        /// <returns>This.</returns>
+        /// <stable>ICU 4.8</stable>
         public CharsTrieBuilder Clear()
         {
             ClearImpl();
@@ -149,35 +150,19 @@ namespace ICU4N.Util
             return this;
         }
 
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override bool MatchNodesCanHaveValues /*const*/ { get { return true; } }
 
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-    protected override int MaxBranchLinearSubNodeLength /*const*/ { get { return CharsTrie.kMaxBranchLinearSubNodeLength; } }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        protected override int MaxBranchLinearSubNodeLength /*const*/ { get { return CharsTrie.kMaxBranchLinearSubNodeLength; } }
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-    protected override int MinLinearMatch /*const*/{ get { return CharsTrie.kMinLinearMatch; } }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        protected override int MinLinearMatch /*const*/{ get { return CharsTrie.kMinLinearMatch; } }
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-    protected override int MaxLinearMatchLength /*const*/{ get { return CharsTrie.kMaxLinearMatchLength; } }
+        protected override int MaxLinearMatchLength /*const*/{ get { return CharsTrie.kMaxLinearMatchLength; } }
 
         private void ensureCapacity(int length)
         {
@@ -194,11 +179,7 @@ namespace ICU4N.Util
                 chars = newChars;
             }
         }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int Write(int unit)
         {
@@ -208,11 +189,7 @@ namespace ICU4N.Util
             chars[chars.Length - charsLength] = (char)unit;
             return charsLength;
         }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int Write(int offset, int length)
         {
@@ -227,7 +204,7 @@ namespace ICU4N.Util
             }
             return charsLength;
         }
-        private int write(char[] s, int length)
+        private int Write(char[] s, int length)
         {
             int newLength = charsLength + length;
             ensureCapacity(newLength);
@@ -239,11 +216,7 @@ namespace ICU4N.Util
         // For writeValueAndFinal(), writeValueAndType() and writeDeltaTo().
         private readonly char[] intUnits = new char[3];
 
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int WriteValueAndFinal(int i, bool isFinal)
         {
@@ -269,13 +242,9 @@ namespace ICU4N.Util
                 length = 2;
             }
             intUnits[0] = (char)(intUnits[0] | (isFinal ? CharsTrie.kValueIsFinal : 0));
-            return write(intUnits, length);
+            return Write(intUnits, length);
         }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int WriteValueAndType(bool hasValue, int value, int node)
         {
@@ -303,13 +272,9 @@ namespace ICU4N.Util
                 length = 2;
             }
             intUnits[0] |= (char)node;
-            return write(intUnits, length);
+            return Write(intUnits, length);
         }
-        /**
-         * {@inheritDoc}
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int WriteDeltaTo(int jumpTarget)
         {
@@ -332,7 +297,7 @@ namespace ICU4N.Util
                 length = 2;
             }
             intUnits[length++] = (char)i;
-            return write(intUnits, length);
+            return Write(intUnits, length);
         }
 
         // char serialization of the trie.

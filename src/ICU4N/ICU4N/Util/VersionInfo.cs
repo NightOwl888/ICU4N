@@ -5,232 +5,246 @@ using System.Text;
 
 namespace ICU4N.Util
 {
+    /// <summary>
+    /// Class to store version numbers of the form major.minor.milli.micro.
+    /// </summary>
+    /// <author>synwee</author>
+    /// <stable>ICU 2.6</stable>
     public sealed class VersionInfo : IComparable<VersionInfo>
     {
         internal static object syncLock = new object();
 
         // public data members -------------------------------------------------
 
-        /**
-         * Unicode 1.0 version
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Unicode 1.0 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_1_0;
-        /**
-         * Unicode 1.0.1 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 1.0.1 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_1_0_1;
-        /**
-         * Unicode 1.1.0 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 1.1.0 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_1_1_0;
-        /**
-         * Unicode 1.1.5 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 1.1.5 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_1_1_5;
-        /**
-         * Unicode 2.0 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 2.0 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_2_0;
-        /**
-         * Unicode 2.1.2 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 2.1.2 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_2_1_2;
-        /**
-         * Unicode 2.1.5 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 2.1.5 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_2_1_5;
-        /**
-         * Unicode 2.1.8 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 2.1.8 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_2_1_8;
-        /**
-         * Unicode 2.1.9 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 2.1.9 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_2_1_9;
-        /**
-         * Unicode 3.0 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 3.0 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_3_0;
-        /**
-         * Unicode 3.0.1 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 3.0.1 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_3_0_1;
-        /**
-         * Unicode 3.1.0 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 3.1.0 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_3_1_0;
-        /**
-         * Unicode 3.1.1 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 3.1.1 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_3_1_1;
-        /**
-         * Unicode 3.2 version
-         * @stable ICU 2.6
-         */
+
+        /// <summary>
+        /// Unicode 3.2 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_3_2;
 
-        /**
-         * Unicode 4.0 version
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Unicode 4.0 version
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public static readonly VersionInfo UNICODE_4_0;
 
-        /**
-         * Unicode 4.0.1 version
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Unicode 4.0.1 version
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         public static readonly VersionInfo UNICODE_4_0_1;
 
-        /**
-         * Unicode 4.1 version
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Unicode 4.1 version
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         public static readonly VersionInfo UNICODE_4_1;
 
-        /**
-         * Unicode 5.0 version
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Unicode 5.0 version
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         public static readonly VersionInfo UNICODE_5_0;
 
-        /**
-         * Unicode 5.1 version
-         * @stable ICU 4.2
-         */
+        /// <summary>
+        /// Unicode 5.1 version
+        /// </summary>
+        /// <stable>ICU 4.2</stable>
         public static readonly VersionInfo UNICODE_5_1;
 
-        /**
-         * Unicode 5.2 version
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Unicode 5.2 version
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         public static readonly VersionInfo UNICODE_5_2;
 
-        /**
-         * Unicode 6.0 version
-         * @stable ICU 4.6
-         */
+        /// <summary>
+        /// Unicode 6.0 version
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
         public static readonly VersionInfo UNICODE_6_0;
 
-        /**
-         * Unicode 6.1 version
-         * @stable ICU 49
-         */
+        /// <summary>
+        /// Unicode 6.1 version
+        /// </summary>
+        /// <stable>ICU 49</stable>
         public static readonly VersionInfo UNICODE_6_1;
 
-        /**
-         * Unicode 6.2 version
-         * @stable ICU 50
-         */
+        /// <summary>
+        /// Unicode 6.2 version
+        /// </summary>
+        /// <stable>ICU 50</stable>
         public static readonly VersionInfo UNICODE_6_2;
 
-        /**
-         * Unicode 6.3 version
-         * @stable ICU 52
-         */
+        /// <summary>
+        /// Unicode 6.3 version
+        /// </summary>
+        /// <stable>ICU 52</stable>
         public static readonly VersionInfo UNICODE_6_3;
 
-        /**
-         * Unicode 7.0 version
-         * @stable ICU 54
-         */
+        /// <summary>
+        /// Unicode 7.0 version
+        /// </summary>
+        /// <stable>ICU 54</stable>
         public static readonly VersionInfo UNICODE_7_0;
 
-        /**
-         * Unicode 8.0 version
-         * @stable ICU 56
-         */
+        /// <summary>
+        /// Unicode 8.0 version
+        /// </summary>
+        /// <stable>ICU 56</stable>
         public static readonly VersionInfo UNICODE_8_0;
 
-        /**
-         * Unicode 9.0 version
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// Unicode 9.0 version
+        /// </summary>
+        /// <stable>ICU 58</stable>
         public static readonly VersionInfo UNICODE_9_0;
 
-        /**
-         * Unicode 10.0 version
-         * @stable ICU 60
-         */
+        /// <summary>
+        /// Unicode 10.0 version
+        /// </summary>
+        /// <stable>ICU 60</stable>
         public static readonly VersionInfo UNICODE_10_0;
 
-        /**
-         * ICU4J current release version
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// ICU4N current release version
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         public static readonly VersionInfo ICU_VERSION;
 
-        /**
-         * Data version string for ICU's internal data.
-         * Used for appending to data path (e.g. icudt43b)
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        [Obsolete]
+        /// <summary>
+        /// Data version string for ICU's internal data.
+        /// Used for appending to data path (e.g. icudt43b)
+        /// </summary>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
         public static readonly String ICU_DATA_VERSION_PATH = "60b";
 
-        /**
-         * Data version in ICU4J.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        [Obsolete]
+        /// <summary>
+        /// Data version in ICU4N.
+        /// </summary>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
         public static readonly VersionInfo ICU_DATA_VERSION;
 
-        /**
-         * Collation runtime version (sort key generator, string comparisons).
-         * If the version is different, sort keys for the same string could be different.
-         * This value may change in subsequent releases of ICU.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Collation runtime version (sort key generator, string comparisons).
+        /// If the version is different, sort keys for the same string could be different.
+        /// This value may change in subsequent releases of ICU.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         public static readonly VersionInfo UCOL_RUNTIME_VERSION;
 
-        /**
-         * Collation builder code version.
-         * When this is different, the same tailoring might result
-         * in assigning different collation elements to code points.
-         * This value may change in subsequent releases of ICU.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        ///  Collation builder code version.
+        ///  When this is different, the same tailoring might result
+        ///  in assigning different collation elements to code points.
+        ///  This value may change in subsequent releases of ICU.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         public static readonly VersionInfo UCOL_BUILDER_VERSION;
 
-        /**
-         * Constant version 1.
-         * This was intended to be the version of collation tailorings,
-         * but instead the tailoring data carries a version number.
-         * @deprecated ICU 54
-         */
-        [Obsolete]
+        /// <summary>
+        /// Constant version 1.
+        /// This was intended to be the version of collation tailorings,
+        /// but instead the tailoring data carries a version number.
+        /// </summary>
+        [Obsolete("ICU 54")]
         public static readonly VersionInfo UCOL_TAILORINGS_VERSION;
 
 
         // public methods ------------------------------------------------------
 
-        /**
-         * Returns an instance of VersionInfo with the argument version.
-         * @param version version String in the format of "major.minor.milli.micro"
-         *                or "major.minor.milli" or "major.minor" or "major",
-         *                where major, minor, milli, micro are non-negative numbers
-         *                &lt;= 255. If the trailing version numbers are
-         *                not specified they are taken as 0s. E.g. Version "3.1" is
-         *                equivalent to "3.1.0.0".
-         * @return an instance of VersionInfo with the argument version.
-         * @exception IllegalArgumentException when the argument version
-         *                is not in the right format
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns an instance of <see cref="VersionInfo"/> with the argument version.
+        /// or "major.minor.milli" or "major.minor" or "major",
+        /// where major, minor, milli, micro are non-negative numbers
+        /// &lt;= 255. If the trailing version numbers are
+        /// not specified they are taken as 0s. E.g. Version "3.1" is
+        /// equivalent to "3.1.0.0".</summary>
+        /// <param name="version">Version string in the format of "major.minor.milli.micro"
+        /// </param>
+        /// <returns>An instance of <see cref="VersionInfo"/> with the argument version.</returns>
+        /// <exception cref="ArgumentException">When the argument version is not in the right format.</exception>
+        /// <stable>ICU 2.6</stable>
         public static VersionInfo GetInstance(string version)
         {
             int length = version.Length;
@@ -273,15 +287,16 @@ namespace ICU4N.Util
             return GetInstance(array[0], array[1], array[2], array[3]);
         }
 
-        /**
-         * Returns an instance of VersionInfo with the argument version.
-         * @param major major version, non-negative number &lt;= 255.
-         * @param minor minor version, non-negative number &lt;= 255.
-         * @param milli milli version, non-negative number &lt;= 255.
-         * @param micro micro version, non-negative number &lt;= 255.
-         * @exception IllegalArgumentException when either arguments are negative or &gt; 255
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns an instance of <see cref="VersionInfo"/> with the argument version.
+        /// </summary>
+        /// <param name="major">Major version, non-negative number &lt;= 255.</param>
+        /// <param name="minor">Minor version, non-negative number &lt;= 255.</param>
+        /// <param name="milli">Milli version, non-negative number &lt;= 255.</param>
+        /// <param name="micro">Micro version, non-negative number &lt;= 255.</param>
+        /// <returns>An instance of <see cref="VersionInfo"/> with the arguments' version.</returns>
+        /// <exception cref="ArgumentException">When any argument is negative or &gt; 255.</exception>
+        /// <stable>ICU 2.6</stable>
         public static VersionInfo GetInstance(int major, int minor, int milli,
                                               int micro)
         {
@@ -323,116 +338,57 @@ namespace ICU4N.Util
             return result;
         }
 
-        /**
-         * Returns an instance of VersionInfo with the argument version.
-         * Equivalent to getInstance(major, minor, milli, 0).
-         * @param major major version, non-negative number &lt;= 255.
-         * @param minor minor version, non-negative number &lt;= 255.
-         * @param milli milli version, non-negative number &lt;= 255.
-         * @exception IllegalArgumentException when either arguments are
-         *                                     negative or &gt; 255
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns an instance of <see cref="VersionInfo"/> with the argument version.
+        /// Equivalent to <c>GetInstance(major, minor, milli, 0)</c>.
+        /// </summary>
+        /// <param name="major">Major version, non-negative number &lt;= 255.</param>
+        /// <param name="minor">Minor version, non-negative number &lt;= 255.</param>
+        /// <param name="milli">Milli version, non-negative number &lt;= 255.</param>
+        /// <returns>An instance of <see cref="VersionInfo"/> with the arguments' version.</returns>
+        /// <exception cref="ArgumentException">When any argument is negative or &gt; 255.</exception>
+        /// <stable>ICU 2.6</stable>
         public static VersionInfo GetInstance(int major, int minor, int milli)
         {
             return GetInstance(major, minor, milli, 0);
         }
 
-        /**
-         * Returns an instance of VersionInfo with the argument version.
-         * Equivalent to getInstance(major, minor, 0, 0).
-         * @param major major version, non-negative number &lt;= 255.
-         * @param minor minor version, non-negative number &lt;= 255.
-         * @exception IllegalArgumentException when either arguments are
-         *                                     negative or &gt; 255
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns an instance of <see cref="VersionInfo"/> with the argument version.
+        /// Equivalent to <c>GetInstance(major, minor, 0, 0)</c>.
+        /// </summary>
+        /// <param name="major">Major version, non-negative number &lt;= 255.</param>
+        /// <param name="minor">Minor version, non-negative number &lt;= 255.</param>
+        /// <returns>An instance of <see cref="VersionInfo"/> with the arguments' version.</returns>
+        /// <exception cref="ArgumentException">When any argument is negative or &gt; 255.</exception>
+        /// <stable>ICU 2.6</stable>
         public static VersionInfo GetInstance(int major, int minor)
         {
             return GetInstance(major, minor, 0, 0);
         }
 
-        /**
-         * Returns an instance of VersionInfo with the argument version.
-         * Equivalent to getInstance(major, 0, 0, 0).
-         * @param major major version, non-negative number &lt;= 255.
-         * @exception IllegalArgumentException when either arguments are
-         *                                     negative or &gt; 255
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns an instance of <see cref="VersionInfo"/> with the argument version.
+        /// Equivalent to <c>GetInstance(major, 0, 0, 0)</c>.
+        /// </summary>
+        /// <param name="major">Major version, non-negative number &lt;= 255.</param>
+        /// <returns>An instance of <see cref="VersionInfo"/> with the argument's version.</returns>
+        /// <exception cref="ArgumentException">When any argument is negative or &gt; 255.</exception>
+        /// <stable>ICU 2.6</stable>
         public static VersionInfo GetInstance(int major)
         {
             return GetInstance(major, 0, 0, 0);
         }
 
-        //private static volatile VersionInfo javaVersion;
+        // ICU4N: JavaVersion not applicable in .NET
 
-        ///**
-        // * @internal
-        // * @deprecated This API is ICU internal only.
-        // */
-
-        //internal static VersionInfo JavaVersion()
-        //{
-        //    if (javaVersion == null)
-        //    {
-        //        lock (VersionInfo.syncLock)
-        //        {
-        //            if (javaVersion == null)
-        //            {
-        //                string s = string.Empty; //System.getProperty("java.version");
-        //                // clean string
-        //                // preserve only digits, separated by single '.'
-        //                // ignore over 4 digit sequences
-        //                // does not test < 255, very odd...
-
-        //                char[] chars = s.ToCharArray();
-        //                int r = 0, w = 0, count = 0;
-        //                bool numeric = false; // ignore leading non-numerics
-        //                while (r < chars.Length)
-        //                {
-        //                    char c = chars[r++];
-        //                    if (c < '0' || c > '9')
-        //                    {
-        //                        if (numeric)
-        //                        {
-        //                            if (count == 3)
-        //                            {
-        //                                // only four digit strings allowed
-        //                                break;
-        //                            }
-        //                            numeric = false;
-        //                            chars[w++] = '.';
-        //                            ++count;
-        //                        }
-        //                    }
-        //                    else
-        //                    {
-        //                        numeric = true;
-        //                        chars[w++] = c;
-        //                    }
-        //                }
-        //                while (w > 0 && chars[w - 1] == '.')
-        //                {
-        //                    --w;
-        //                }
-
-        //                string vs = new string(chars, 0, w);
-
-        //                javaVersion = VersionInfo.GetInstance(vs);
-        //            }
-        //        }
-        //    }
-        //    return javaVersion;
-        //}
-
-        /**
-         * Returns the String representative of VersionInfo in the format of
-         * "major.minor.milli.micro"
-         * @return String representative of VersionInfo
-         * @stable ICU 2.6
-         */
-        public override String ToString()
+        /// <summary>
+        /// Returns the <see cref="string"/> representative of <see cref="VersionInfo"/> in the format of
+        /// "major.minor.milli.micro"
+        /// </summary>
+        /// <returns><see cref="string"/> representative of <see cref="VersionInfo"/>.</returns>
+        /// <stable>ICU 2.6</stable>
+        public override string ToString()
         {
             StringBuilder result = new StringBuilder(7);
             result.Append(Major);
@@ -445,81 +401,78 @@ namespace ICU4N.Util
             return result.ToString();
         }
 
-        /**
-         * Returns the major version number
-         * @return the major version number
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Gets the major version number.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public int Major
         {
             get { return (m_version_ >> 24) & LAST_BYTE_MASK_; }
         }
 
-        /**
-         * Returns the minor version number
-         * @return the minor version number
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Gets the minor version number.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public int Minor
         {
             get { return (m_version_ >> 16) & LAST_BYTE_MASK_; }
         }
 
-        /**
-         * Returns the milli version number
-         * @return the milli version number
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Gets the milli version number.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public int Milli
         {
             get { return (m_version_ >> 8) & LAST_BYTE_MASK_; }
         }
 
-        /**
-         * Returns the micro version number
-         * @return the micro version number
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Gets the micro version number.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public int Micro
         {
             get { return m_version_ & LAST_BYTE_MASK_; }
         }
 
-        /**
-         * Checks if this version information is equals to the argument version
-         * @param other object to be compared
-         * @return true if other is equals to this object's version information,
-         *         false otherwise
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Checks if this version information is equals to the argument version
+        /// </summary>
+        /// <param name="other">Object to be compared.</param>
+        /// <returns>true if other is equals to this object's version information,
+        /// false otherwise.</returns>
+        /// <stable>ICU 2.6</stable>
         public override bool Equals(object other)
         {
             return other == this;
         }
 
-        /**
-         * Returns the hash code value for this set.
-         *
-         * @return the hash code value for this set.
-         * @see java.lang.Object#hashCode()
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// Returns the hash code value for this set.
+        /// </summary>
+        /// <returns>The hash code value for this set.</returns>
+        /// <seealso cref="object.GetHashCode()"/>
+        /// <stable>ICU 58</stable>
         public override int GetHashCode()
         {
             return m_version_;
         }
 
-        /**
-         * Compares other with this VersionInfo.
-         * @param other VersionInfo to be compared
-         * @return 0 if the argument is a VersionInfo object that has version
-         *           information equals to this object.
-         *           Less than 0 if the argument is a VersionInfo object that has
-         *           version information greater than this object.
-         *           Greater than 0 if the argument is a VersionInfo object that
-         *           has version information less than this object.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Compares other with this <see cref="VersionInfo"/>.
+        /// </summary>
+        /// <param name="other"><see cref="VersionInfo"/> to be compared.</param>
+        /// <returns>
+        /// 0 if the argument is a <see cref="VersionInfo"/> object that has version
+        /// information equal to this object.
+        /// Less than 0 if the argument is a <see cref="VersionInfo"/> object that has
+        /// version information greater than this object.
+        /// Greater than 0 if the argument is a <see cref="VersionInfo"/> object that
+        /// has version information less than this object.
+        /// </returns>
+        /// <stable>ICU 2.6</stable>
         public int CompareTo(VersionInfo other)
         {
             return m_version_ - other.m_version_;
@@ -527,42 +480,42 @@ namespace ICU4N.Util
 
         // private data members ----------------------------------------------
 
-        /**
-         * Unicode data version used by the current release.
-         * Defined here privately for printing by the main() method in this class.
-         * Should be the same as {@link com.ibm.icu.lang.UCharacter#getUnicodeVersion()}
-         * which gets the version number from a data file.
-         * We do not want VersionInfo to have an import dependency on UCharacter.
-         */
+        /// <summary>
+        /// Unicode data version used by the current release.
+        /// Defined here privately for printing by the <see cref="PrintVersionInfo(string[])"/> method in this class.
+        /// Should be the same as <see cref="Lang.UCharacter.GetUnicodeVersion()"/>
+        /// which gets the version number from a data file.
+        /// We do not want <see cref="VersionInfo"/> to have an import dependency on <see cref="Lang.UCharacter"/>.
+        /// </summary>
         private static readonly VersionInfo UNICODE_VERSION;
-
-        /**
-         * Version number stored as a byte for each of the major, minor, milli and
-         * micro numbers in the 32 bit int.
-         * Most significant for the major and the least significant contains the
-         * micro numbers.
-         */
+ 
+        /// <summary>
+        /// Version number stored as a byte for each of the major, minor, milli and
+        /// micro numbers in the 32 bit int.
+        /// Most significant for the major and the least significant contains the
+        /// micro numbers.
+        /// </summary>
         private int m_version_;
-        /**
-         * Map of singletons
-         */
+        /// <summary>
+        /// Map of singletons
+        /// </summary>
         // ICU4N specific - we need to lock the dictionary externally anyway, so there is no need for ConcurrentDictionary
         private static readonly IDictionary<int, VersionInfo> MAP_ = new Dictionary<int, VersionInfo>();
-        /**
-         * Last byte mask
-         */
+        /// <summary>
+        /// Last byte mask
+        /// </summary>
         private static readonly int LAST_BYTE_MASK_ = 0xFF;
-        /**
-         * Error statement string
-         */
+        /// <summary>
+        /// Error statement string
+        /// </summary>
         private static readonly string INVALID_VERSION_NUMBER_ =
                 "Invalid version number: Version number may be negative or greater than 255";
 
         // static declaration ------------------------------------------------
 
-        /**
-         * Initialize versions only after MAP_ has been created
-         */
+        /// <summary>
+        /// Initialize versions only after <see cref="MAP_"/> has been created
+        /// </summary>
         static VersionInfo()
         {
             UNICODE_1_0 = GetInstance(1, 0, 0, 0);
@@ -605,32 +558,32 @@ namespace ICU4N.Util
 
         // private constructor -----------------------------------------------
 
-        /**
-         * Constructor with int
-         * @param compactversion a 32 bit int with each byte representing a number
-         */
+        /// <summary>
+        /// Constructor with <see cref="int"/>.
+        /// </summary>
+        /// <param name="compactversion">A 32 bit int with each byte representing a number.</param>
         private VersionInfo(int compactversion)
         {
             m_version_ = compactversion;
         }
 
-        /**
-         * Gets the int from the version numbers
-         * @param major non-negative version number
-         * @param minor non-negative version number
-         * @param milli non-negative version number
-         * @param micro non-negative version number
-         */
+        /// <summary>
+        /// Gets the <see cref="int"/> from the version numbers.
+        /// </summary>
+        /// <param name="major">Non-negative version number.</param>
+        /// <param name="minor">Non-negative version number.</param>
+        /// <param name="milli">Non-negative version number.</param>
+        /// <param name="micro">Non-negative version number.</param>
         private static int GetInt32(int major, int minor, int milli, int micro)
         {
             return (major << 24) | (minor << 16) | (milli << 8) | micro;
         }
         ///CLOVER:OFF
-        /**
-         * Main method prints out ICU version information
-         * @param args arguments (currently not used)
-         * @stable ICU 4.6
-         */
+        /// <summary>
+        /// Main method prints out ICU version information
+        /// </summary>
+        /// <param name="args">Arguments (currently not used).</param>
+        /// <stable>ICU 4.6</stable>
         public static void PrintVersionInfo(string[] args) // ICU4N specific - was Main() in icu4j
         {
             string icuApiVer;
@@ -677,17 +630,16 @@ namespace ICU4N.Util
             Console.Out.WriteLine("Time Zone Data Version: " + GetTZDataVersion());
         }
 
-        /**
-         * Generate version string separated by dots with
-         * the specified digit width.  Version digit 0
-         * after <code>minDigits</code> will be trimmed off.
-         * @param minDigits Minimum number of version digits
-         * @param maxDigits Maximum number of version digits
-         * @return A tailored version string
-         * @internal
-         * @deprecated This API is ICU internal only. (For use in CLDR, etc.)
-         */
-        [Obsolete]
+        /// <summary>
+        /// Generate version string separated by dots with
+        /// the specified digit width.  Version digit 0
+        /// after <paramref name="minDigits"/> will be trimmed off.
+        /// </summary>
+        /// <param name="minDigits">Minimum number of version digits.</param>
+        /// <param name="maxDigits">Maximum number of version digits.</param>
+        /// <returns>A tailored version string.</returns>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only. (For use in CLDR, etc.)")]
         public string GetVersionString(int minDigits, int maxDigits)
         {
             if (minDigits < 1 || maxDigits < 1

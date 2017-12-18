@@ -110,7 +110,7 @@ namespace ICU4N.Util
         /// Traverses the trie from the current state for this string.
         /// Equivalent to
         /// <code>
-        ///     if(!result.HasNext()) return Result.NO_MATCH;
+        ///     if(!result.HasNext()) return Result.NoMatch;
         ///     result=Next(c);
         ///     return result;
         /// </code>
@@ -220,7 +220,7 @@ namespace ICU4N.Util
         /// Traverses the trie from the current state for this string.
         /// Equivalent to
         /// <code>
-        ///     if(!result.HasNext()) return Result.NO_MATCH;
+        ///     if(!result.HasNext()) return Result.NoMatch;
         ///     result=Next(c);
         ///     return result;
         /// </code>
@@ -330,7 +330,7 @@ namespace ICU4N.Util
         /// Traverses the trie from the current state for this string.
         /// Equivalent to
         /// <code>
-        ///     if(!result.HasNext()) return Result.NO_MATCH;
+        ///     if(!result.HasNext()) return Result.NoMatch;
         ///     result=Next(c);
         ///     return result;
         /// </code>
@@ -440,7 +440,7 @@ namespace ICU4N.Util
         /// Traverses the trie from the current state for this string.
         /// Equivalent to
         /// <code>
-        ///     if(!result.HasNext()) return Result.NO_MATCH;
+        ///     if(!result.HasNext()) return Result.NoMatch;
         ///     result=Next(c);
         ///     return result;
         /// </code>

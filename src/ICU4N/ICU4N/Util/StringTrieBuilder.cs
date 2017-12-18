@@ -16,27 +16,27 @@ namespace ICU4N.Util
     /// <stable>ICU 4.8</stable>
     public abstract class StringTrieBuilder
     {
-        /**
-         * Build options for BytesTrieBuilder and CharsTrieBuilder.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Build options for <see cref="BytesTrieBuilder"/> and <see cref="CharsTrieBuilder"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public enum Option // ICU4N TODO: API - de-nest
         {
-            /**
-             * Builds a trie quickly.
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Builds a trie quickly.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             FAST,
-            /**
-             * Builds a trie more slowly, attempting to generate
-             * a shorter but equivalent serialization.
-             * This build option also uses more memory.
-             *
-             * <p>This option can be effective when many integer values are the same
-             * and string/byte sequence suffixes can be shared.
-             * Runtime speed is not expected to improve.
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Builds a trie more slowly, attempting to generate
+            /// a shorter but equivalent serialization.
+            /// This build option also uses more memory.
+            /// <para/>
+            /// This option can be effective when many integer values are the same
+            /// and string/byte sequence suffixes can be shared.
+            /// Runtime speed is not expected to improve.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             SMALL
         }
 
@@ -46,7 +46,7 @@ namespace ICU4N.Util
 
 
         [Obsolete("This API is ICU internal only.")]
-        internal virtual void AddImpl(ICharSequence s, int value) // ICU4N TODO: API - this should be protected when ICharSequence is made public
+        protected virtual void AddImpl(ICharSequence s, int value)
         {
             if (state != State.ADDING)
             {
@@ -124,13 +124,13 @@ namespace ICU4N.Util
             state = State.ADDING;
         }
 
-        /**
-         * Makes sure that there is only one unique node registered that is
-         * equivalent to newNode, unless BUILDING_FAST.
-         * @param newNode Input node. The builder takes ownership.
-         * @return newNode if it is the first of its kind, or
-         *         an equivalent node if newNode is a duplicate.
-         */
+        /// <summary>
+        /// Makes sure that there is only one unique node registered that is
+        /// equivalent to <paramref name="newNode"/>, unless <see cref="State.BUILDING_FAST"/>.
+        /// </summary>
+        /// <param name="newNode">Input node. The builder takes ownership.</param>
+        /// <returns><paramref name="newNode"/> if it is the first of its kind, or
+        /// an equivalent node if <paramref name="newNode"/> is a duplicate.</returns>
         private Node RegisterNode(Node newNode)
         {
             if (state == State.BUILDING_FAST)
@@ -151,13 +151,13 @@ namespace ICU4N.Util
             return newNode;
         }
 
-        /**
-         * Makes sure that there is only one unique FinalValueNode registered
-         * with this value.
-         * Avoids creating a node if the value is a duplicate.
-         * @param value A final value.
-         * @return A FinalValueNode with the given value.
-         */
+        /// <summary>
+        /// Makes sure that there is only one unique <see cref="ValueNode"/> registered
+        /// with this value.
+        /// Avoids creating a node if the value is a duplicate.
+        /// </summary>
+        /// <param name="value">A final value.</param>
+        /// <returns>A <see cref="ValueNode"/> with the given value.</returns>
         private ValueNode RegisterFinalValue(int value)
         {
             // We always register final values because while ADDING
@@ -191,52 +191,57 @@ namespace ICU4N.Util
             {
                 return this == other || this.GetType() == other.GetType();
             }
-            /**
-             * Recursive method for adding a new (string, value) pair.
-             * Matches the remaining part of s from start,
-             * and adds a new node where there is a mismatch.
-             * @return this or a replacement Node
-             */
+
+            /// <summary>
+            /// Recursive method for adding a new (string, value) pair.
+            /// Matches the remaining part of <paramref name="s"/> from <paramref name="start"/>,
+            /// and adds a new node where there is a mismatch.
+            /// </summary>
+            /// <returns>This or a replacement <see cref="Node"/>.</returns>
             public virtual Node Add(StringTrieBuilder builder, ICharSequence s, int start, int sValue)
             {
                 return this;
             }
-            /**
-             * Recursive method for registering unique nodes,
-             * after all (string, value) pairs have been added.
-             * Final-value nodes are pre-registered while add()ing (string, value) pairs.
-             * Other nodes created while add()ing registerNode() themselves later
-             * and might replace themselves with new types of nodes for write()ing.
-             * @return The registered version of this node which implements write().
-             */
+
+            /// <summary>
+            /// Recursive method for registering unique nodes,
+            /// after all (string, value) pairs have been added.
+            /// Final-value nodes are pre-registered while 
+            /// <see cref="Add(StringTrieBuilder, ICharSequence, int, int)"/>ing 
+            /// (string, value) pairs. Other nodes created while 
+            /// <see cref="Add(StringTrieBuilder, ICharSequence, int, int)"/>ing 
+            /// <see cref="RegisterNode(Node)"/> themselves later and might replace 
+            /// themselves with new types of nodes for <see cref="Write(StringTrieBuilder)"/>ing.
+            /// </summary>
+            /// <returns>The registered version of this node which implements <see cref="Write(StringTrieBuilder)"/>.</returns>
             public virtual Node Register(StringTrieBuilder builder) { return this; }
-            /**
-             * Traverses the Node graph and numbers branch edges, with rightmost edges first.
-             * This is to avoid writing a duplicate node twice.
-             *
-             * Branch nodes in this trie data structure are not symmetric.
-             * Most branch edges "jump" to other nodes but the rightmost branch edges
-             * just continue without a jump.
-             * Therefore, write() must write the rightmost branch edge last
-             * (trie units are written backwards), and must write it at that point even if
-             * it is a duplicate of a node previously written elsewhere.
-             *
-             * This function visits and marks right branch edges first.
-             * Edges are numbered with increasingly negative values because we share the
-             * offset field which gets positive values when nodes are written.
-             * A branch edge also remembers the first number for any of its edges.
-             *
-             * When a further-left branch edge has a number in the range of the rightmost
-             * edge's numbers, then it will be written as part of the required right edge
-             * and we can avoid writing it first.
-             *
-             * After root.markRightEdgesFirst(-1) the offsets of all nodes are negative
-             * edge numbers.
-             *
-             * @param edgeNumber The first edge number for this node and its sub-nodes.
-             * @return An edge number that is at least the maximum-negative
-             *         of the input edge number and the numbers of this node and all of its sub-nodes.
-             */
+            /// <summary>
+            /// Traverses the <see cref="Node"/> graph and numbers branch edges, with rightmost edges first.
+            /// This is to avoid writing a duplicate node twice.
+            /// </summary>
+            /// <remarks>
+            /// Branch nodes in this trie data structure are not symmetric.
+            /// Most branch edges "jump" to other nodes but the rightmost branch edges
+            /// just continue without a jump.
+            /// Therefore, <see cref="Write(StringTrieBuilder)"/> must write the rightmost branch edge last
+            /// (trie units are written backwards), and must write it at that point even if
+            /// it is a duplicate of a node previously written elsewhere.
+            /// <para/>
+            /// This function visits and marks right branch edges first.
+            /// Edges are numbered with increasingly negative values because we share the
+            /// offset field which gets positive values when nodes are written.
+            /// A branch edge also remembers the first number for any of its edges.
+            /// <para/>
+            /// When a further-left branch edge has a number in the range of the rightmost
+            /// edge's numbers, then it will be written as part of the required right edge
+            /// and we can avoid writing it first.
+            /// <para/>
+            /// After root.MarkRightEdgesFirst(-1) the offsets of all nodes are negative
+            /// edge numbers.
+            /// </remarks>
+            /// <param name="edgeNumber">The first edge number for this node and its sub-nodes.</param>
+            /// <returns>An edge number that is at least the maximum-negative
+            /// of the input edge number and the numbers of this node and all of its sub-nodes.</returns>
             public virtual int MarkRightEdgesFirst(int edgeNumber)
             {
                 if (offset == 0)
@@ -245,9 +250,9 @@ namespace ICU4N.Util
                 }
                 return edgeNumber;
             }
-            // write() must set the offset to a positive value.
+            // Write() must set the offset to a positive value.
             public abstract void Write(StringTrieBuilder builder);
-            // See markRightEdgesFirst.
+            // See MarkRightEdgesFirst.
             public void WriteUnlessInsideRightEdge(int firstRight, int lastRight,
                                                    StringTrieBuilder builder)
             {

@@ -41,7 +41,7 @@ namespace ICU4N.Util
         /// Gets the underlying string.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public string String
+        public virtual string String
         {
             get { return str; }
         }

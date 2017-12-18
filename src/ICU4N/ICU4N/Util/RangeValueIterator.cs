@@ -37,7 +37,7 @@ namespace ICU4N.Util
         }
     }
 
-    public interface IRangeValueIterator
+    public interface IRangeValueIterator // ICU4N TODO: API - Refactor to enumerator
     {
         // public methods -------------------------------------------------
 

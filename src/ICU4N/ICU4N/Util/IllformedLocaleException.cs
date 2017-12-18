@@ -8,7 +8,7 @@ namespace ICU4N.Util
     /// </summary>
     /// <seealso cref="ULocale"/>
     /// <stable>ICU 4.2</stable>
-    public class IllformedLocaleException : Exception // ICU4N TODO: Subclass FormatException?
+    public class IllformedLocaleException : Exception // ICU4N TODO: API Subclass FormatException?
     {
         //private static readonly long serialVersionUID = 1L;
 
