@@ -164,7 +164,7 @@ namespace ICU4N.Impl.Locale
                 sts.Reset();
             }
 
-            StringTokenIterator itr;
+            StringTokenEnumerator itr;
             bool isGrandfathered = false;
 
             // Check if the tag is grandfathered
@@ -172,14 +172,16 @@ namespace ICU4N.Impl.Locale
             if (GRANDFATHERED.TryGetValue(new AsciiUtil.CaseInsensitiveKey(languageTag), out gfmap) && gfmap != null)
             {
                 // use preferred mapping
-                itr = new StringTokenIterator(gfmap[1], SEP);
+                itr = new StringTokenEnumerator(gfmap[1], SEP);
                 isGrandfathered = true;
             }
             else
             {
-                itr = new StringTokenIterator(languageTag, SEP);
+                itr = new StringTokenEnumerator(languageTag, SEP);
             }
 
+            // ICU4N: Move to the first element
+            itr.MoveNext();
             LanguageTag tag = new LanguageTag();
 
             // langtag must start with either language or privateuse
@@ -222,7 +224,7 @@ namespace ICU4N.Impl.Locale
         // Language subtag parsers
         //
 
-        private bool ParseLanguage(StringTokenIterator itr, ParseStatus sts)
+        private bool ParseLanguage(StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -237,13 +239,13 @@ namespace ICU4N.Impl.Locale
                 found = true;
                 _language = s;
                 sts.ParseLength = itr.CurrentEnd;
-                itr.Next();
+                itr.MoveNext();
             }
 
             return found;
         }
 
-        private bool ParseExtlangs(StringTokenIterator itr, ParseStatus sts)
+        private bool ParseExtlangs(StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -266,7 +268,7 @@ namespace ICU4N.Impl.Locale
                 }
                 _extlangs.Add(s);
                 sts.ParseLength = itr.CurrentEnd;
-                itr.Next();
+                itr.MoveNext();
 
                 if (_extlangs.Count == 3)
                 {
@@ -278,7 +280,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        private bool ParseScript(StringTokenIterator itr, ParseStatus sts)
+        private bool ParseScript(StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -293,13 +295,13 @@ namespace ICU4N.Impl.Locale
                 found = true;
                 _script = s;
                 sts.ParseLength = itr.CurrentEnd;
-                itr.Next();
+                itr.MoveNext();
             }
 
             return found;
         }
 
-        private bool ParseRegion(StringTokenIterator itr, ParseStatus sts)
+        private bool ParseRegion(StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -314,13 +316,13 @@ namespace ICU4N.Impl.Locale
                 found = true;
                 _region = s;
                 sts.ParseLength = itr.CurrentEnd;
-                itr.Next();
+                itr.MoveNext();
             }
 
             return found;
         }
 
-        private bool ParseVariants(StringTokenIterator itr, ParseStatus sts)
+        private bool ParseVariants(StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -343,13 +345,13 @@ namespace ICU4N.Impl.Locale
                 }
                 _variants.Add(s);
                 sts.ParseLength = itr.CurrentEnd;
-                itr.Next();
+                itr.MoveNext();
             }
 
             return found;
         }
 
-        private bool ParseExtensions(StringTokenIterator itr, ParseStatus sts)
+        private bool ParseExtensions(StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -367,7 +369,7 @@ namespace ICU4N.Impl.Locale
                     string singleton = s;
                     StringBuilder sb = new StringBuilder(singleton);
 
-                    itr.Next();
+                    itr.MoveNext();
                     while (!itr.IsDone)
                     {
                         s = itr.Current;
@@ -380,7 +382,7 @@ namespace ICU4N.Impl.Locale
                         {
                             break;
                         }
-                        itr.Next();
+                        itr.MoveNext();
                     }
 
                     if (sts.ParseLength <= start)
@@ -405,7 +407,7 @@ namespace ICU4N.Impl.Locale
             return found;
         }
 
-        private bool ParsePrivateuse(StringTokenIterator itr, ParseStatus sts)
+        private bool ParsePrivateuse(StringTokenEnumerator itr, ParseStatus sts)
         {
             if (itr.IsDone || sts.IsError)
             {
@@ -420,7 +422,7 @@ namespace ICU4N.Impl.Locale
                 int start = itr.CurrentStart;
                 StringBuilder sb = new StringBuilder(s);
 
-                itr.Next();
+                itr.MoveNext();
                 while (!itr.IsDone)
                 {
                     s = itr.Current;
@@ -431,7 +433,7 @@ namespace ICU4N.Impl.Locale
                     sb.Append(SEP).Append(s);
                     sts.ParseLength = itr.CurrentEnd;
 
-                    itr.Next();
+                    itr.MoveNext();
                 }
 
                 if (sts.ParseLength <= start)
@@ -508,8 +510,8 @@ namespace ICU4N.Impl.Locale
             if (variant.Length > 0)
             {
                 List<string> variants = null;
-                StringTokenIterator varitr = new StringTokenIterator(variant, BaseLocale.SEP);
-                while (!varitr.IsDone)
+                StringTokenEnumerator varitr = new StringTokenEnumerator(variant, BaseLocale.SEP);
+                while (varitr.MoveNext())
                 {
                     string var = varitr.Current;
                     if (!IsVariant(var))
@@ -528,7 +530,6 @@ namespace ICU4N.Impl.Locale
                     {
                         variants.Add(CanonicalizeVariant(var));
                     }
-                    varitr.Next();
                 }
                 if (variants != null)
                 {
@@ -556,7 +557,7 @@ namespace ICU4N.Impl.Locale
                             prvv = AsciiUtil.ToLowerString(prvv);
                         }
                         buf.Append(prvv);
-                        varitr.Next();
+                        varitr.MoveNext();
                     }
                     if (buf.Length > 0)
                     {

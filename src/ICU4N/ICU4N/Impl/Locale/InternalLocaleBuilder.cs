@@ -147,15 +147,14 @@ namespace ICU4N.Impl.Locale
                     // normalize separator to "-"
                     string tp = type.Replace(BaseLocale.SEP, LanguageTag.SEP);
                     // validate
-                    StringTokenIterator itr = new StringTokenIterator(tp, LanguageTag.SEP);
-                    while (!itr.IsDone)
+                    StringTokenEnumerator itr = new StringTokenEnumerator(tp, LanguageTag.SEP);
+                    while (itr.MoveNext())
                     {
                         string s = itr.Current;
                         if (!UnicodeLocaleExtension.IsTypeSubtag(s))
                         {
                             throw new FormatException("Ill-formed Unicode locale keyword type: " + type /*, itr.CurrentStart*/);
                         }
-                        itr.Next();
                     }
                 }
                 if (_ukeywords == null)
@@ -205,8 +204,8 @@ namespace ICU4N.Impl.Locale
             {
                 // validate value
                 string val = value.Replace(BaseLocale.SEP, LanguageTag.SEP);
-                StringTokenIterator itr = new StringTokenIterator(val, LanguageTag.SEP);
-                while (!itr.IsDone)
+                StringTokenEnumerator itr = new StringTokenEnumerator(val, LanguageTag.SEP);
+                while (itr.MoveNext())
                 {
                     string s = itr.Current;
                     bool validSubtag;
@@ -222,7 +221,6 @@ namespace ICU4N.Impl.Locale
                     {
                         throw new FormatException("Ill-formed extension value: " + s /*, itr.CurrentStart*/);
                     }
-                    itr.Next();
                 }
 
                 if (UnicodeLocaleExtension.IsSingletonChar(key.Value))
@@ -252,13 +250,16 @@ namespace ICU4N.Impl.Locale
                 return this;
             }
             subtags = subtags.Replace(BaseLocale.SEP, LanguageTag.SEP);
-            StringTokenIterator itr = new StringTokenIterator(subtags, LanguageTag.SEP);
+            StringTokenEnumerator itr = new StringTokenEnumerator(subtags, LanguageTag.SEP);
 
             List<string> extensions = null;
             string privateuse = null;
 
             int parsed = 0;
             int start;
+
+            // Move to first element
+            itr.MoveNext();
 
             // Make a list of extension subtags
             while (!itr.IsDone)
@@ -270,7 +271,7 @@ namespace ICU4N.Impl.Locale
                     string singleton = s;
                     StringBuilder sb = new StringBuilder(singleton);
 
-                    itr.Next();
+                    itr.MoveNext();
                     while (!itr.IsDone)
                     {
                         s = itr.Current;
@@ -283,7 +284,7 @@ namespace ICU4N.Impl.Locale
                         {
                             break;
                         }
-                        itr.Next();
+                        itr.MoveNext();
                     }
 
                     if (parsed < start)
@@ -310,7 +311,7 @@ namespace ICU4N.Impl.Locale
                     start = itr.CurrentStart;
                     StringBuilder sb = new StringBuilder(s);
 
-                    itr.Next();
+                    itr.MoveNext();
                     while (!itr.IsDone)
                     {
                         s = itr.Current;
@@ -321,7 +322,7 @@ namespace ICU4N.Impl.Locale
                         sb.Append(LanguageTag.SEP).Append(s);
                         parsed = itr.CurrentEnd;
 
-                        itr.Next();
+                        itr.MoveNext();
                     }
                     if (parsed <= start)
                     {
@@ -579,10 +580,10 @@ namespace ICU4N.Impl.Locale
                 string privuse;
                 if (_extensions.TryGetValue(PRIVUSE_KEY, out privuse) && privuse != null)
                 {
-                    StringTokenIterator itr = new StringTokenIterator(privuse, LanguageTag.SEP);
+                    StringTokenEnumerator itr = new StringTokenEnumerator(privuse, LanguageTag.SEP);
                     bool sawPrefix = false;
                     int privVarStart = -1;
-                    while (!itr.IsDone)
+                    while (itr.MoveNext())
                     {
                         if (sawPrefix)
                         {
@@ -593,7 +594,6 @@ namespace ICU4N.Impl.Locale
                         {
                             sawPrefix = true;
                         }
-                        itr.Next();
                     }
                     if (privVarStart != -1)
                     {
@@ -629,14 +629,15 @@ namespace ICU4N.Impl.Locale
         /// </summary>
         internal static string RemovePrivateuseVariant(string privuseVal)
         {
-            StringTokenIterator itr = new StringTokenIterator(privuseVal, LanguageTag.SEP);
+            StringTokenEnumerator itr = new StringTokenEnumerator(privuseVal, LanguageTag.SEP);
 
             // Note: privateuse value "abc-lvariant" is unchanged
             // because no subtags after "lvariant".
 
             int prefixStart = -1;
             bool sawPrivuseVar = false;
-            while (!itr.IsDone)
+
+            while (itr.MoveNext())
             {
                 if (prefixStart != -1)
                 {
@@ -649,7 +650,6 @@ namespace ICU4N.Impl.Locale
                 {
                     prefixStart = itr.CurrentStart;
                 }
-                itr.Next();
             }
             if (!sawPrivuseVar)
             {
@@ -666,15 +666,14 @@ namespace ICU4N.Impl.Locale
         /// </summary>
         private int CheckVariants(string variants, string sep)
         {
-            StringTokenIterator itr = new StringTokenIterator(variants, sep);
-            while (!itr.IsDone)
+            StringTokenEnumerator itr = new StringTokenEnumerator(variants, sep);
+            while (itr.MoveNext())
             {
                 string s = itr.Current;
                 if (!LanguageTag.IsVariant(s))
                 {
                     return itr.CurrentStart;
                 }
-                itr.Next();
             }
             return -1;
         }
@@ -696,10 +695,10 @@ namespace ICU4N.Impl.Locale
                 _ukeywords.Clear();
             }
 
-            StringTokenIterator itr = new StringTokenIterator(subtags, LanguageTag.SEP);
+            StringTokenEnumerator itr = new StringTokenEnumerator(subtags, LanguageTag.SEP);
 
             // parse attributes
-            while (!itr.IsDone)
+            while (itr.MoveNext())
             {
                 if (!UnicodeLocaleExtension.IsAttribute(itr.Current))
                 {
@@ -710,7 +709,6 @@ namespace ICU4N.Impl.Locale
                     _uattributes = new HashSet<CaseInsensitiveString>(/*4*/);
                 }
                 _uattributes.Add(new CaseInsensitiveString(itr.Current));
-                itr.Next();
             }
 
             // parse keywords
@@ -759,7 +757,7 @@ namespace ICU4N.Impl.Locale
                     }
                 }
 
-                if (!itr.HasNext())
+                if (!itr.HasNext)
                 {
                     if (key != null)
                     {
@@ -775,7 +773,7 @@ namespace ICU4N.Impl.Locale
                     break;
                 }
 
-                itr.Next();
+                itr.MoveNext();
             }
         }
 

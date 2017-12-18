@@ -2,7 +2,10 @@
 
 namespace ICU4N.Impl.Locale
 {
-    public class StringTokenIterator // ICU4N TODO: Rename StringTokenEnumerator
+    /// <summary>
+    /// NOTE: This is equivalent to StringTokenEnumerator in ICU4J
+    /// </summary>
+    public class StringTokenEnumerator
     {
         private string _text;
         private string _dlms;
@@ -12,11 +15,11 @@ namespace ICU4N.Impl.Locale
         private int _end;
         private bool _done;
 
-        public StringTokenIterator(string text, string dlms)
+        public StringTokenEnumerator(string text, string dlms)
         {
             _text = text;
             _dlms = dlms;
-            SetStart(0);
+            _start = -1; // .NET semantics - start state is not on an element, so first call to MoveNext() sets us to the start.
         }
 
         public string First()
@@ -45,10 +48,9 @@ namespace ICU4N.Impl.Locale
             get { return _done; }
         }
 
-        // ICU4N TODO: API Replace with MoveNext() (we already have Current, so this should be easy)
-        public string Next()
+        private string Next()
         {
-            if (HasNext())
+            if (HasNext)
             {
                 _start = _end + 1;
                 _end = NextDelimiter(_start);
@@ -63,12 +65,25 @@ namespace ICU4N.Impl.Locale
             return _token;
         }
 
-        public bool HasNext() // ICU4N TODO: API - make property
+        // ICU4N specific enumerator method.
+        public bool MoveNext()
         {
-            return (_end < _text.Length);
+            // ICU4N: We initially set the start to -1 to indicate "before bounds" state
+            // in .NET. So, we need to check here and move to the first position if that
+            // is the case.
+            if (_start < 0)
+                SetStart(0);
+            else
+                Next();
+            return !_done;
         }
 
-        public StringTokenIterator SetStart(int offset)
+        public bool HasNext
+        {
+            get { return (_end < _text.Length); }
+        }
+
+        public StringTokenEnumerator SetStart(int offset)
         {
             if (offset > _text.Length)
             {
@@ -81,7 +96,7 @@ namespace ICU4N.Impl.Locale
             return this;
         }
 
-        public StringTokenIterator SetText(string text)
+        public StringTokenEnumerator SetText(string text)
         {
             _text = text;
             SetStart(0);
