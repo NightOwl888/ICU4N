@@ -40,7 +40,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Public singleton instance.
         /// </summary>
-        public static readonly UCharacterProperty INSTANCE;
+        public static readonly UCharacterProperty INSTANCE; // ICU4N TODO: API Make property Instance to wrap this
 
 
         private Trie2_16 m_trie_;

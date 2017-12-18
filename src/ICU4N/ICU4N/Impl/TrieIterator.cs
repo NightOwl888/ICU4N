@@ -3,7 +3,8 @@ using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
-using Element = ICU4N.Util.RangeValueIteratorElement;
+using System.Collections;
+using Element = ICU4N.Util.RangeValueEnumeratorElement;
 
 namespace ICU4N.Impl
 {
@@ -71,7 +72,7 @@ namespace ICU4N.Impl
     ///         ...
     ///         
     ///         TrieIterator fcdIter  = new TrieIteratorImpl(fcdTrieImpl.FcdTrie);
-    ///         while (fcdIter.Next(result))
+    ///         while (fcdIter.MoveNext())
     ///         {
     ///             // port the implementation of _enumPropertyStartsRange
     ///         }
@@ -82,9 +83,9 @@ namespace ICU4N.Impl
     ///     <code>
     ///         // utrie_enum(&fcdTrie, NULL, _enumPropertyStartsRange, set);
     ///         TrieIterator fcdIter  = new TrieIterator(fcdTrieImpl.FcdTrie);
-    ///         while (fcdIter.Next(result))
+    ///         while (fcdIter.MoveNext())
     ///         {
-    ///             set.Add(result.Start);
+    ///             set.Add(fcdIter.Current.Start);
     ///         }
     ///     </code></description></item>
     /// </list>
@@ -93,7 +94,7 @@ namespace ICU4N.Impl
     /// <author>synwee</author>
     /// <since>release 2.1, Jan 17 2002</since>
     // 2015-sep-03 TODO: Only used in test code, move there.
-    public class TrieIterator : IRangeValueIterator
+    public class TrieIterator : IRangeValueEnumerator
     {
         // public constructor ---------------------------------------------
 
@@ -125,7 +126,7 @@ namespace ICU4N.Impl
         /// <param name="element">Return result.</param>
         /// <returns>true if we are not at the end of the iteration, false otherwise.</returns>
         /// <seealso cref="Element"/>
-        public bool Next(Element element) // ICU4N TODO: API - Make private and implement IEnumerator ?
+        private bool Next(Element element)
         {
             if (m_nextCodepoint_ > UCharacter.MAX_VALUE)
             {
@@ -138,6 +139,41 @@ namespace ICU4N.Impl
             }
             CalculateNextSupplementaryElement(element);
             return true;
+        }
+
+        /// <summary>
+        /// Gets the current <see cref="Element"/> of the iteration.
+        /// </summary>
+        public Element Current => current;
+
+        object IEnumerator.Current => current;
+
+        /// <summary>
+        /// Returns true if we are not at the end of the iteration, false
+        /// otherwise.
+        /// The next set of codepoints with the same value type will be
+        /// calculated during this call and set to <see cref="Current"/>.
+        /// </summary>
+        /// <returns>true if we are not at the end of the iteration, false otherwise.</returns>
+        /// <seealso cref="Element"/>
+        public bool MoveNext()
+        {
+            var temp = new Element();
+            var hasNext = Next(temp);
+            if (hasNext)
+                current = temp;
+            return hasNext;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public virtual void Dispose(bool disposing)
+        {
+            // nothing to do.
         }
 
         /// <summary>
@@ -567,5 +603,8 @@ namespace ICU4N.Impl
         private int m_nextBlock_;
         private int m_nextBlockIndex_;
         private int m_nextTrailIndexOffset_;
+
+        // Holds current element
+        private Element current;
     }
 }

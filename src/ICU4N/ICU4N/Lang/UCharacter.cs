@@ -4,6 +4,7 @@ using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -5415,44 +5416,61 @@ namespace ICU4N.Lang
 
         }
 
-        /**
-         * {@icu} <p>Returns an iterator for character types, iterating over codepoints.
-         * <p>Example of use:<br>
-         * <pre>
-         * RangeValueIterator iterator = UCharacter.getTypeIterator();
-         * RangeValueIterator.Element element = new RangeValueIterator.Element();
-         * while (iterator.next(element)) {
-         *     System.out.println("Codepoint \\u" +
-         *                        Integer.toHexString(element.start) +
-         *                        " to codepoint \\u" +
-         *                        Integer.toHexString(element.limit - 1) +
-         *                        " has the character type " +
-         *                        element.value);
-         * }
-         * </pre>
-         * @return an iterator
-         * @stable ICU 2.6
-         */
-        public static IRangeValueIterator GetTypeIterator()
+        /// <icu/>
+        /// <summary>
+        /// Returns an iterator for character types, iterating over codepoints.
+        /// <para/>
+        /// Example of use:
+        /// <code>
+        /// RangeValueEnumerator iterator = UCharacter.GetTypeEnumerator();
+        /// while (iterator.MoveNext())
+        /// {
+        ///     Console.WriteLine("Codepoint \\u" +
+        ///                         iterator.Current.Start.ToHexString() +
+        ///                         " to codepoint \\u" +
+        ///                         (iterator.Current.Limit - 1).ToHexString() +
+        ///                         " has the character type " +
+        ///                         iterator.Current.Value);
+        /// }
+        /// </code>
+        /// </summary>
+        /// <returns>An enumerator.</returns>
+        /// <stable>ICU 2.6</stable>
+        public static IRangeValueEnumerator GetTypeEnumerator()
         {
-            return new UCharacterTypeIterator();
+            return new UCharacterTypeEnumerator();
         }
 
-        private sealed class UCharacterTypeIterator : IRangeValueIterator
+        private sealed class UCharacterTypeEnumerator : IRangeValueEnumerator
         {
-            internal UCharacterTypeIterator()
+            private RangeValueEnumeratorElement current;
+
+            internal UCharacterTypeEnumerator()
             {
                 Reset();
             }
 
-            // implements RangeValueIterator
-            public bool Next(RangeValueIteratorElement element)
+            public RangeValueEnumeratorElement Current => current;
+
+            object IEnumerator.Current => current;
+
+            // implements RangeValueEnumerator
+            public void Reset()
+            {
+                trieIterator = UCharacterProperty.INSTANCE.Trie.GetEnumerator(MASK_TYPE);
+            }
+
+            // implements RangeValueEnumerator
+            public bool MoveNext()
             {
                 if (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
                 {
-                    element.Start = range.StartCodePoint;
-                    element.Limit = range.EndCodePoint + 1;
-                    element.Value = range.Value;
+                    current = new RangeValueEnumeratorElement
+                    {
+                        Start = range.StartCodePoint,
+                        Limit = range.EndCodePoint + 1,
+                        Value = range.Value
+                    };
                     return true;
                 }
                 else
@@ -5461,10 +5479,11 @@ namespace ICU4N.Lang
                 }
             }
 
-            // implements RangeValueIterator
-            public void Reset()
+            // implements RangeValueEnumerator
+            public void Dispose()
             {
-                trieIterator = UCharacterProperty.INSTANCE.Trie.GetEnumerator(MASK_TYPE);
+                if (trieIterator != null)
+                    trieIterator.Dispose();
             }
 
             private IEnumerator<Trie2.Range> trieIterator;

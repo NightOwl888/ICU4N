@@ -138,53 +138,53 @@ namespace ICU4N.Dev.Test.Util
                 }
             }
 
-            { 
-            int limit = s.Length;
-            // try forward
-            int p = 0;
-            int i = 0;
-            while (p < limit)
             {
-                int c = UTF16.CharAt(s, p);
-                p += UTF16.GetCharCount(c);
-                int value = trie.GetCodePointValue(c);
-                if (value != values[i])
+                int limit = s.Length;
+                // try forward
+                int p = 0;
+                int i = 0;
+                while (p < limit)
                 {
-                    Errln("wrong value from UTRIE_NEXT(U+"
-                          + (c).ToHexString() + "): 0x"
-                          + (value).ToHexString() + " instead of 0x"
-                          + (values[i]).ToHexString());
-                }
-                // unlike the c version lead is 0 if c is non-supplementary
-                char lead = UTF16.GetLeadSurrogate(c);
-                char trail = UTF16.GetTrailSurrogate(c);
-                if (lead == 0
-                    ? trail != s[p - 1]
-                    : !UTF16.IsLeadSurrogate(lead)
-                      || !UTF16.IsTrailSurrogate(trail) || lead != s[p - 2]
-                      || trail != s[p - 1])
-                {
-                    Errln("wrong (lead, trail) from UTRIE_NEXT(U+"
-                          + (c).ToHexString());
-                    continue;
-                }
-                if (lead != 0)
-                {
-                    value = trie.GetLeadValue(lead);
-                    value = trie.GetTrailValue(value, trail);
-                    if (value != trie.GetSurrogateValue(lead, trail)
-                        && value != values[i])
+                    int c = UTF16.CharAt(s, p);
+                    p += UTF16.GetCharCount(c);
+                    int value = trie.GetCodePointValue(c);
+                    if (value != values[i])
                     {
-                        Errln("wrong value from getting supplementary "
-                              + "values (U+"
+                        Errln("wrong value from UTRIE_NEXT(U+"
                               + (c).ToHexString() + "): 0x"
                               + (value).ToHexString() + " instead of 0x"
                               + (values[i]).ToHexString());
                     }
+                    // unlike the c version lead is 0 if c is non-supplementary
+                    char lead = UTF16.GetLeadSurrogate(c);
+                    char trail = UTF16.GetTrailSurrogate(c);
+                    if (lead == 0
+                        ? trail != s[p - 1]
+                        : !UTF16.IsLeadSurrogate(lead)
+                          || !UTF16.IsTrailSurrogate(trail) || lead != s[p - 2]
+                          || trail != s[p - 1])
+                    {
+                        Errln("wrong (lead, trail) from UTRIE_NEXT(U+"
+                              + (c).ToHexString());
+                        continue;
+                    }
+                    if (lead != 0)
+                    {
+                        value = trie.GetLeadValue(lead);
+                        value = trie.GetTrailValue(value, trail);
+                        if (value != trie.GetSurrogateValue(lead, trail)
+                            && value != values[i])
+                        {
+                            Errln("wrong value from getting supplementary "
+                                  + "values (U+"
+                                  + (c).ToHexString() + "): 0x"
+                                  + (value).ToHexString() + " instead of 0x"
+                                  + (values[i]).ToHexString());
+                        }
+                    }
+                    ++i;
                 }
-                ++i;
             }
-        }
         }
 
         private void _testTrieRanges(SetRange[] setRanges, int countSetRanges,
@@ -325,53 +325,53 @@ namespace ICU4N.Dev.Test.Util
                         }
                     }
                 }
-            
 
-            // enumerate and verify all ranges
 
-            int enumRanges = 1;
-            TrieIterator iter = new _testEnumValue(trie);
-            RangeValueIteratorElement result = new RangeValueIteratorElement();
-            while (iter.Next(result))
-            {
-                if (result.Start != checkRanges[enumRanges - 1].Limit
-                    || result.Limit != checkRanges[enumRanges].Limit
-                    || (result.Value ^ 0x5555) != checkRanges[enumRanges].Value)
+                // enumerate and verify all ranges
+
+                int enumRanges = 1;
+                TrieIterator iter = new _testEnumValue(trie);
+                while (iter.MoveNext())
                 {
-                    Errln("utrie_enum() delivers wrong range [U+"
-                          + (result.Start).ToHexString() + "..U+"
-                          + (result.Limit).ToHexString() + "].0x"
-                          + (result.Value ^ 0x5555).ToHexString()
-                          + " instead of [U+"
-                          + (checkRanges[enumRanges - 1].Limit).ToHexString()
-                          + "..U+"
-                          + (checkRanges[enumRanges].Limit).ToHexString()
-                          + "].0x"
-                          + (checkRanges[enumRanges].Value).ToHexString());
-                }
-                enumRanges++;
-            }
-
-            // test linear Latin-1 range
-            if (trie.IsLatin1Linear)
-            {
-                for (start = 0; start < 0x100; ++start)
-                {
-                    if (trie.GetLatin1LinearValue((char)start)
-                        != trie.GetLeadValue((char)start))
+                    RangeValueEnumeratorElement result = iter.Current;
+                    if (result.Start != checkRanges[enumRanges - 1].Limit
+                        || result.Limit != checkRanges[enumRanges].Limit
+                        || (result.Value ^ 0x5555) != checkRanges[enumRanges].Value)
                     {
-                        Errln("trie.getLatin1LinearValue[U+"
-                              + (start).ToHexString() + "]=0x"
-                              + (
-                                            trie.GetLatin1LinearValue((char)start).ToHexString())
-                              + " instead of 0x"
-                              + (
-                                            trie.GetLeadValue((char)start)).ToHexString());
+                        Errln("utrie_enum() delivers wrong range [U+"
+                              + (result.Start).ToHexString() + "..U+"
+                              + (result.Limit).ToHexString() + "].0x"
+                              + (result.Value ^ 0x5555).ToHexString()
+                              + " instead of [U+"
+                              + (checkRanges[enumRanges - 1].Limit).ToHexString()
+                              + "..U+"
+                              + (checkRanges[enumRanges].Limit).ToHexString()
+                              + "].0x"
+                              + (checkRanges[enumRanges].Value).ToHexString());
+                    }
+                    enumRanges++;
+                }
+
+                // test linear Latin-1 range
+                if (trie.IsLatin1Linear)
+                {
+                    for (start = 0; start < 0x100; ++start)
+                    {
+                        if (trie.GetLatin1LinearValue((char)start)
+                            != trie.GetLeadValue((char)start))
+                        {
+                            Errln("trie.getLatin1LinearValue[U+"
+                                  + (start).ToHexString() + "]=0x"
+                                  + (
+                                                trie.GetLatin1LinearValue((char)start).ToHexString())
+                                  + " instead of 0x"
+                                  + (
+                                                trie.GetLeadValue((char)start)).ToHexString());
+                        }
                     }
                 }
-            }
 
-            _testTrieIteration(trie, checkRanges, countCheckRanges);
+                _testTrieIteration(trie, checkRanges, countCheckRanges);
             }
         }
 

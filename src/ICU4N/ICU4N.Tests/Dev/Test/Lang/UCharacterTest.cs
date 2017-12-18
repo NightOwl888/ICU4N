@@ -1736,10 +1736,11 @@ namespace ICU4N.Dev.Test.Lang
             new int[] { 0x110000, (int)UnicodeDirection.LeftToRight }
         };
 
-            IRangeValueIterator iterator = UCharacter.GetTypeIterator();
-            RangeValueIteratorElement result = new RangeValueIteratorElement();
-            while (iterator.Next(result))
+            IRangeValueEnumerator iterator = UCharacter.GetTypeEnumerator();
+            RangeValueEnumeratorElement result;
+            while (iterator.MoveNext())
             {
+                result = iterator.Current;
                 if (result.Start != limit)
                 {
                     Errln("UCharacterIteration failed: Ranges not continuous " +
@@ -1848,9 +1849,9 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             iterator.Reset();
-            if (iterator.Next(result) == false || result.Start != 0)
+            if (iterator.MoveNext() == false || iterator.Current.Start != 0)
             {
-                Console.Out.WriteLine("result " + result.Start);
+                Console.Out.WriteLine("result " + iterator.Current.Start);
                 Errln("UCharacterIteration reset() failed");
             }
         }
