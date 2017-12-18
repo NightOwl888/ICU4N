@@ -7,6 +7,9 @@ namespace ICU4N.Util
     /// Stores the start and limit of the continous result range and the
     /// common value all integers between [start, limit - 1] has.
     /// </summary>
+    /// <remarks>
+    /// This is equivalent to RangeValueIterator.Element in ICU4J.
+    /// </remarks>
     /// <stable>ICU 2.6</stable>
     public class RangeValueEnumeratorElement
     {
@@ -69,6 +72,8 @@ namespace ICU4N.Util
     /// <para/>
     /// Most implementations will be created by factory methods, such as the
     /// character type iterator in <see cref="Lang.UCharacter.GetTypeEnumerator()"/>. See example below.
+    /// <para/>
+    /// This is equivalent to RangeValueIterator in ICU4J.
     /// </remarks>
     public interface IRangeValueEnumerator : IEnumerator<RangeValueEnumeratorElement>
     {

@@ -1382,17 +1382,16 @@ namespace ICU4N.Dev.Test.Lang
         {
             try
             {
-                IValueIterator iterator = UCharacter.GetExtendedNameIterator();
-                ValueIteratorElement element = new ValueIteratorElement();
-                ValueIteratorElement old = new ValueIteratorElement();
+                IValueEnumerator iterator = UCharacter.GetExtendedNameEnumerator();
+                ValueEnumeratorElement old = new ValueEnumeratorElement();
                 // testing subrange
                 iterator.SetRange(-10, -5);
-                if (iterator.Next(element))
+                if (iterator.MoveNext())
                 {
                     Errln("Fail, expected iterator to return false when range is set outside the meaningful range");
                 }
                 iterator.SetRange(0x110000, 0x111111);
-                if (iterator.Next(element))
+                if (iterator.MoveNext())
                 {
                     Errln("Fail, expected iterator to return false when range is set outside the meaningful range");
                 }
@@ -1406,145 +1405,145 @@ namespace ICU4N.Dev.Test.Lang
                 }
 
                 iterator.SetRange(-10, 10);
-                if (!iterator.Next(element) || element.Integer != 0)
+                if (!iterator.MoveNext() || iterator.Current.Integer != 0)
                 {
                     Errln("Fail, expected iterator to return 0 when range start limit is set outside the meaningful range");
                 }
 
                 iterator.SetRange(0x10FFFE, 0x200000);
                 int last = 0;
-                while (iterator.Next(element))
+                while (iterator.MoveNext())
                 {
-                    last = element.Integer;
+                    last = iterator.Current.Integer;
                 }
                 if (last != 0x10FFFF)
                 {
                     Errln("Fail, expected iterator to return 0x10FFFF when range end limit is set outside the meaningful range");
                 }
 
-                iterator = UCharacter.GetNameIterator();
+                iterator = UCharacter.GetNameEnumerator();
                 iterator.SetRange(0xF, 0x45);
-                while (iterator.Next(element))
+                while (iterator.MoveNext())
                 {
-                    if (element.Integer <= old.Integer)
+                    if (iterator.Current.Integer <= old.Integer)
                     {
                         Errln("FAIL next returned a less codepoint \\u" +
-                            (element.Integer).ToHexString() + " than \\u" +
+                            (iterator.Current.Integer).ToHexString() + " than \\u" +
                             (old.Integer).ToHexString());
                         break;
                     }
-                    if (!UCharacter.GetName(element.Integer).Equals(element.Value))
+                    if (!UCharacter.GetName(iterator.Current.Integer).Equals(iterator.Current.Value))
                     {
                         Errln("FAIL next codepoint \\u" +
-                            (element.Integer).ToHexString() +
+                            (iterator.Current.Integer).ToHexString() +
                             " does not have the expected name " +
-                            UCharacter.GetName(element.Integer) +
-                            " instead have the name " + (String)element.Value);
+                            UCharacter.GetName(iterator.Current.Integer) +
+                            " instead have the name " + (String)iterator.Current.Value);
                         break;
                     }
-                    old.Integer = element.Integer;
+                    old.Integer = iterator.Current.Integer;
                 }
 
                 iterator.Reset();
-                iterator.Next(element);
-                if (element.Integer != 0x20)
+                iterator.MoveNext();
+                if (iterator.Current.Integer != 0x20)
                 {
                     Errln("FAIL reset in iterator");
                 }
 
                 iterator.SetRange(0, 0x110000);
                 old.Integer = 0;
-                while (iterator.Next(element))
+                while (iterator.MoveNext())
                 {
-                    if (element.Integer != 0 && element.Integer <= old.Integer)
+                    if (iterator.Current.Integer != 0 && iterator.Current.Integer <= old.Integer)
                     {
                         Errln("FAIL next returned a less codepoint \\u" +
-                            (element.Integer).ToHexString() + " than \\u" +
+                            (iterator.Current.Integer).ToHexString() + " than \\u" +
                             (old.Integer).ToHexString());
                         break;
                     }
-                    if (!UCharacter.GetName(element.Integer).Equals(element.Value))
+                    if (!UCharacter.GetName(iterator.Current.Integer).Equals(iterator.Current.Value))
                     {
                         Errln("FAIL next codepoint \\u" +
-                                (element.Integer).ToHexString() +
+                                (iterator.Current.Integer).ToHexString() +
                                 " does not have the expected name " +
-                                UCharacter.GetName(element.Integer) +
-                                " instead have the name " + (String)element.Value);
+                                UCharacter.GetName(iterator.Current.Integer) +
+                                " instead have the name " + (String)iterator.Current.Value);
                         break;
                     }
-                    for (int i = old.Integer + 1; i < element.Integer; i++)
+                    for (int i = old.Integer + 1; i < iterator.Current.Integer; i++)
                     {
                         if (UCharacter.GetName(i) != null)
                         {
                             Errln("FAIL between codepoints are not null \\u" +
                                     (old.Integer).ToHexString() + " and " +
-                                    (element.Integer).ToHexString() + " has " +
+                                    (iterator.Current.Integer).ToHexString() + " has " +
                                     (i).ToHexString() + " with a name " +
                                     UCharacter.GetName(i));
                             break;
                         }
                     }
-                    old.Integer = element.Integer;
+                    old.Integer = iterator.Current.Integer;
                 }
 
-                iterator = UCharacter.GetExtendedNameIterator();
+                iterator = UCharacter.GetExtendedNameEnumerator();
                 old.Integer = 0;
-                while (iterator.Next(element))
+                while (iterator.MoveNext())
                 {
-                    if (element.Integer != 0 && element.Integer != old.Integer)
+                    if (iterator.Current.Integer != 0 && iterator.Current.Integer != old.Integer)
                     {
                         Errln("FAIL next returned a codepoint \\u" +
-                                (element.Integer).ToHexString() +
+                                (iterator.Current.Integer).ToHexString() +
                                 " different from \\u" +
                                 (old.Integer).ToHexString());
                         break;
                     }
-                    if (!UCharacter.GetExtendedName(element.Integer).Equals(
-                                                                  element.Value))
+                    if (!UCharacter.GetExtendedName(iterator.Current.Integer).Equals(
+                                                                  iterator.Current.Value))
                     {
                         Errln("FAIL next codepoint \\u" +
-                            (element.Integer).ToHexString() +
+                            (iterator.Current.Integer).ToHexString() +
                             " name should be "
-                            + UCharacter.GetExtendedName(element.Integer) +
-                            " instead of " + (String)element.Value);
+                            + UCharacter.GetExtendedName(iterator.Current.Integer) +
+                            " instead of " + (String)iterator.Current.Value);
                         break;
                     }
                     old.Integer++;
                 }
-                iterator = UCharacter.GetName1_0Iterator();
+                iterator = UCharacter.GetName1_0Enumerator();
                 old.Integer = 0;
-                while (iterator.Next(element))
+                while (iterator.MoveNext())
                 {
-                    Logln((element.Integer).ToHexString() + " " +
-                                                            (String)element.Value);
-                    if (element.Integer != 0 && element.Integer <= old.Integer)
+                    Logln((iterator.Current.Integer).ToHexString() + " " +
+                                                            (String)iterator.Current.Value);
+                    if (iterator.Current.Integer != 0 && iterator.Current.Integer <= old.Integer)
                     {
                         Errln("FAIL next returned a less codepoint \\u" +
-                            (element.Integer).ToHexString() + " than \\u" +
+                            (iterator.Current.Integer).ToHexString() + " than \\u" +
                             (old.Integer).ToHexString());
                         break;
                     }
-                    if (!element.Value.Equals(UCharacter.GetName1_0(
-                                                                element.Integer)))
+                    if (!iterator.Current.Value.Equals(UCharacter.GetName1_0(
+                                                                iterator.Current.Integer)))
                     {
                         Errln("FAIL next codepoint \\u" +
-                                (element.Integer).ToHexString() +
+                                (iterator.Current.Integer).ToHexString() +
                                 " name cannot be null");
                         break;
                     }
-                    for (int i = old.Integer + 1; i < element.Integer; i++)
+                    for (int i = old.Integer + 1; i < iterator.Current.Integer; i++)
                     {
                         if (UCharacter.GetName1_0(i) != null)
                         {
                             Errln("FAIL between codepoints are not null \\u" +
                                 (old.Integer).ToHexString() + " and " +
-                                (element.Integer).ToHexString() + " has " +
+                                (iterator.Current.Integer).ToHexString() + " has " +
                                 (i).ToHexString() + " with a name " +
                                 UCharacter.GetName1_0(i));
                             break;
                         }
                     }
-                    old.Integer = element.Integer;
+                    old.Integer = iterator.Current.Integer;
                 }
             }
             catch (Exception e)

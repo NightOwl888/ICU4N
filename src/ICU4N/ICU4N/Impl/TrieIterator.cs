@@ -21,7 +21,7 @@ namespace ICU4N.Impl
     /// Method <see cref="Extract(int)"/> can be overwritten to perform manipulations on
     /// codepoint values in order to perform specialized comparison.
     /// <para/>
-    /// TrieIterator is designed to be a generic iterator for the <see cref="CharTrie"/>
+    /// TrieEnumerator is designed to be a generic iterator for the <see cref="CharTrie"/>
     /// and the <see cref="Int32Trie"/>, hence to accommodate both types of data, the return
     /// result will be in terms of int (32 bit) values.
     /// <para/>
@@ -39,7 +39,7 @@ namespace ICU4N.Impl
     /// icu4c performs the iteration within utrie_enum.
     /// To follow the JDK model, icu4j is slightly different from icu4c.
     /// Instead of requesting the caller to implement an object for a callback.
-    /// The caller will have to implement a subclass of TrieIterator, fleshing out
+    /// The caller will have to implement a subclass of TrieEnumerator, fleshing out
     /// the method extract(int) (equivalent to UTrieEnumValue). Independent of icu4j,
     /// the caller will have to code his own iteration and flesh out the task
     /// (equivalent to UTrieEnumRange) to be performed in the iteration loop.
@@ -47,18 +47,18 @@ namespace ICU4N.Impl
     /// There are basically 3 usage scenarios for porting:
     /// <list type="number">
     ///     <item><description>UTrieEnumValue is the only implemented callback then just implement a
-    ///     subclass of TrieIterator and override the extract(int) method. The
+    ///     subclass of TrieEnumerator and override the extract(int) method. The
     ///     extract(int) method is analogus to UTrieEnumValue callback.</description></item>
     ///     <item><description>UTrieEnumValue and UTrieEnumRange both are implemented then implement
-    ///     a subclass of TrieIterator, override the extract method and iterate, e.g
+    ///     a subclass of TrieEnumerator, override the extract method and iterate, e.g
     ///     <code>
     ///         utrie_enum(&normTrie, _enumPropertyStartsValue, _enumPropertyStartsRange, set);
     ///     </code>
     ///     In .NET:
     ///     <code>
-    ///         class TrieIteratorImpl : TrieIterator
+    ///         class TrieEnumeratorImpl : TrieEnumerator
     ///         {
-    ///             public TrieIteratorImpl(Trie data)
+    ///             public TrieEnumeratorImpl(Trie data)
     ///                 : base(data)
     ///             {
     ///             }
@@ -71,7 +71,7 @@ namespace ICU4N.Impl
     ///         
     ///         ...
     ///         
-    ///         TrieIterator fcdIter  = new TrieIteratorImpl(fcdTrieImpl.FcdTrie);
+    ///         TrieEnumerator fcdIter  = new TrieEnumeratorImpl(fcdTrieImpl.FcdTrie);
     ///         while (fcdIter.MoveNext())
     ///         {
     ///             // port the implementation of _enumPropertyStartsRange
@@ -82,19 +82,21 @@ namespace ICU4N.Impl
     ///     the while loop, when utrie_enum is called
     ///     <code>
     ///         // utrie_enum(&fcdTrie, NULL, _enumPropertyStartsRange, set);
-    ///         TrieIterator fcdIter  = new TrieIterator(fcdTrieImpl.FcdTrie);
+    ///         TrieEnumerator fcdIter  = new TrieEnumerator(fcdTrieImpl.FcdTrie);
     ///         while (fcdIter.MoveNext())
     ///         {
     ///             set.Add(fcdIter.Current.Start);
     ///         }
     ///     </code></description></item>
     /// </list>
+    /// <para/>
+    /// NOTE: This is equivalent to TrieIterator in ICU4J.
     /// </remarks>
     /// <seealso cref="Trie"/>
     /// <author>synwee</author>
     /// <since>release 2.1, Jan 17 2002</since>
     // 2015-sep-03 TODO: Only used in test code, move there.
-    public class TrieIterator : IRangeValueEnumerator
+    public class TrieEnumerator : IRangeValueEnumerator
     {
         // public constructor ---------------------------------------------
 
@@ -103,7 +105,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="trie">Trie to be used.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="trie"/> argument is null.</exception>
-        public TrieIterator(Trie trie)
+        public TrieEnumerator(Trie trie)
         {
             if (trie == null)
             {

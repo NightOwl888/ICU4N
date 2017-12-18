@@ -1,8 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Collections;
 
 namespace ICU4N.Lang
 {
@@ -12,24 +11,28 @@ namespace ICU4N.Lang
     /// Result of each iteration contains a valid codepoint that has valid
     /// name.
     /// <para/>
-    /// See <see cref="UCharacter.GetNameIterator()"/> for an example of use.
+    /// See <see cref="UCharacter.GetNameEnumerator()"/> for an example of use.
     /// </summary>
+    /// <remarks>
+    /// NOTE: This is equivalent to UCharacterNameIterator in ICU4J.
+    /// </remarks>
     /// <author>synwee</author>
     /// <since>release 2.1, March 5 2002</since>
-    internal class UCharacterNameIterator : IValueIterator
+    internal class UCharacterNameEnumerator : IValueEnumerator
     {
         // public methods ----------------------------------------------------
 
-        /**
-        * <p>Gets the next result for this iteration and returns
-        * true if we are not at the end of the iteration, false otherwise.</p>
-        * <p>If the return boolean is a false, the contents of elements will not
-        * be updated.</p>
-        * @param element for storing the result codepoint and name
-        * @return true if we are not at the end of the iteration, false otherwise.
-        * @see com.ibm.icu.util.ValueIterator.Element
-        */
-        public virtual bool Next(ValueIteratorElement element)
+        /// <summary>
+        /// Gets the next result for this iteration and returns
+        /// true if we are not at the end of the iteration, false otherwise.
+        /// <para/>
+        /// If the return boolean is a false, the contents of elements will not
+        /// be updated.
+        /// </summary>
+        /// <param name="element">Element for storing the result codepoint and name.</param>
+        /// <returns>true if we are not at the end of the iteration, false otherwise.</returns>
+        /// <seealso cref="ValueEnumeratorElement"/>
+        private bool Next(ValueEnumeratorElement element)
         {
             if (m_current_ >= m_limit_)
             {
@@ -120,11 +123,39 @@ namespace ICU4N.Lang
             return false;
         }
 
-        /**
-        * <p>Resets the iterator to start iterating from the integer index
-        * UCharacter.MIN_VALUE or X if a setRange(X, Y) has been called previously.
-        * </p>
-        */
+        /// <summary>
+        /// Gets the current <see cref="RangeValueEnumeratorElement"/> in the iteration.
+        /// </summary>
+        public ValueEnumeratorElement Current => current;
+
+        object IEnumerator.Current => current;
+
+        /// <summary>
+        /// Gets the next result for this iteration and returns
+        /// true if we are not at the end of the iteration, false otherwise.
+        /// </summary>
+        /// <returns>true if we are not at the end of the iteration, false otherwise.</returns>
+        /// <seealso cref="ValueEnumeratorElement"/>
+        public bool MoveNext()
+        {
+            return Next(current);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public virtual void Dispose(bool disposing)
+        {
+            // Nothing to do
+        }
+
+        /// <summary>
+        /// Resets the iterator to start iterating from the integer index
+        /// <see cref="UCharacter.MIN_VALUE"/> or X if a <c>SetRange(X, Y)</c> has been called previously.
+        /// </summary>
         public virtual void Reset()
         {
             m_current_ = m_start_;
@@ -132,21 +163,22 @@ namespace ICU4N.Lang
             m_algorithmIndex_ = -1;
         }
 
-        /**
-         * <p>Restricts the range of integers to iterate and resets the iteration
-         * to begin at the index argument start.</p>
-         * <p>If setRange(start, end) is not performed before next(element) is
-         * called, the iteration will start from the integer index
-         * UCharacter.MIN_VALUE and end at UCharacter.MAX_VALUE.</p>
-         * <p>
-         * If this range is set outside the range of UCharacter.MIN_VALUE and
-         * UCharacter.MAX_VALUE, next(element) will always return false.
-         * </p>
-         * @param start first integer in range to iterate
-         * @param limit 1 integer after the last integer in range
-         * @exception IllegalArgumentException thrown when attempting to set an
-         *            illegal range. E.g limit <= start
-         */
+        /// <summary>
+        /// Restricts the range of integers to iterate and resets the iteration
+        /// to begin at the index argument start.
+        /// </summary>
+        /// <remarks>
+        /// If <see cref="SetRange(int, int)"/> is not performed before <see cref="MoveNext()"/> is
+        /// called, the iteration will start from the integer index
+        /// <see cref="UCharacter.MIN_VALUE"/> and end at <see cref="UCharacter.MAX_VALUE"/>.
+        /// <para/>
+        /// If this range is set outside the range of <see cref="UCharacter.MIN_VALUE"/> and 
+        /// <see cref="UCharacter.MAX_VALUE"/>, <see cref="MoveNext()"/> will always return false.
+        /// </remarks>
+        /// <param name="start">First integer in range to iterate.</param>
+        /// <param name="limit">1 integer after the last integer in range.</param>
+        /// <exception cref="ArgumentException">Thrown when attempting to set an
+        /// illegal range. E.g limit &lt;= start.</exception>
         public virtual void SetRange(int start, int limit)
         {
             if (start >= limit)
@@ -176,13 +208,12 @@ namespace ICU4N.Lang
 
         // protected constructor ---------------------------------------------
 
-        /**
-        * Constructor
-        * @param name name data
-        * @param choice name choice from the class
-        *               com.ibm.icu.lang.UCharacterNameChoice
-        */
-        public UCharacterNameIterator(UCharacterName name, UCharacterNameChoice choice)
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="name">Name data.</param>
+        /// <param name="choice">Name choice from the class <see cref="UCharacterNameChoice"/>.</param>
+        public UCharacterNameEnumerator(UCharacterName name, UCharacterNameChoice choice)
         {
             if (name == null)
             {
@@ -198,54 +229,59 @@ namespace ICU4N.Lang
 
         // private data members ---------------------------------------------
 
-        /**
-         * Name data
-         */
+        /// <summary>
+        /// Name data
+        /// </summary>
         private UCharacterName m_name_;
-        /**
-         * Name choice
-         */
+        /// <summary>
+        /// Name choice
+        /// </summary>
         private int m_choice_;
-        /**
-        * Start iteration range
-        */
+        /// <summary>
+        /// Start iteration range
+        /// </summary>
         private int m_start_;
-        /**
-         * End + 1 iteration range
-         */
+        /// <summary>
+        /// End + 1 iteration range
+        /// </summary>
         private int m_limit_;
-        /**
-         * Current codepoint
-         */
+        /// <summary>
+        /// Current codepoint
+        /// </summary>
         private int m_current_;
-        /**
-         * Group index
-         */
+        /// <summary>
+        /// Group index
+        /// </summary>
         private int m_groupIndex_ = -1;
-        /**
-         * Algorithm index
-         */
+        /// <summary>
+        /// Algorithm index
+        /// </summary>
         private int m_algorithmIndex_ = -1;
-        /**
-        * Group use
-        */
+        /// <summary>
+        /// Group use
+        /// </summary>
         private static char[] GROUP_OFFSETS_ =
                                     new char[UCharacterName.LINES_PER_GROUP_ + 1];
         private static char[] GROUP_LENGTHS_ =
                                     new char[UCharacterName.LINES_PER_GROUP_ + 1];
 
+        /// <summary>
+        /// Current enumerator element
+        /// </summary>
+        private ValueEnumeratorElement current = new ValueEnumeratorElement();
+
         // private methods --------------------------------------------------
 
-        /**
-         * Group name iteration, iterate all the names in the current 32-group and
-         * returns the first codepoint that has a valid name.
-         * @param result stores the result codepoint and name
-         * @param limit last codepoint + 1 in range to search
-         * @return false if a codepoint with a name is found in group and we can
-         *         bail from further iteration, true to continue on with the
-         *         iteration
-         */
-        private bool IterateSingleGroup(ValueIteratorElement result, int limit)
+        /// <summary>
+        /// Group name iteration, iterate all the names in the current 32-group and
+        /// returns the first codepoint that has a valid name.
+        /// </summary>
+        /// <param name="result">Stores the result codepoint and name.</param>
+        /// <param name="limit">Last codepoint + 1 in range to search.</param>
+        /// <returns>false if a codepoint with a name is found in group and we can
+        /// bail from further iteration, true to continue on with the
+        /// iteration.</returns>
+        private bool IterateSingleGroup(ValueEnumeratorElement result, int limit)
         {
             lock (GROUP_OFFSETS_)
             {
@@ -277,16 +313,16 @@ namespace ICU4N.Lang
             return true;
         }
 
-        /**
-         * Group name iteration, iterate all the names in the current 32-group and
-         * returns the first codepoint that has a valid name.
-         * @param result stores the result codepoint and name
-         * @param limit last codepoint + 1 in range to search
-         * @return false if a codepoint with a name is found in group and we can
-         *         bail from further iteration, true to continue on with the
-         *         iteration
-         */
-        private bool IterateGroup(ValueIteratorElement result, int limit)
+        /// <summary>
+        /// Group name iteration, iterate all the names in the current 32-group and
+        /// returns the first codepoint that has a valid name.
+        /// </summary>
+        /// <param name="result">Stores the result codepoint and name.</param>
+        /// <param name="limit">Last codepoint + 1 in range to search.</param>
+        /// <returns>false if a codepoint with a name is found in group and we can
+        /// bail from further iteration, true to continue on with the
+        /// iteration.</returns>
+        private bool IterateGroup(ValueEnumeratorElement result, int limit)
         {
             if (m_groupIndex_ < 0)
             {
@@ -343,15 +379,15 @@ namespace ICU4N.Lang
             return true;
         }
 
-        /**
-         * Iterate extended names.
-         * @param result stores the result codepoint and name
-         * @param limit last codepoint + 1 in range to search
-         * @return false if a codepoint with a name is found and we can
-         *         bail from further iteration, true to continue on with the
-         *         iteration (this will always be false for valid codepoints)
-         */
-        private bool IterateExtended(ValueIteratorElement result,
+        /// <summary>
+        /// Iterate extended names.
+        /// </summary>
+        /// <param name="result">Stores the result codepoint and name.</param>
+        /// <param name="limit">Last codepoint + 1 in range to search.</param>
+        /// <returns>false if a codepoint with a name is found and we can
+        /// bail from further iteration, true to continue on with the
+        /// iteration (this will always be false for valid codepoints).</returns>
+        private bool IterateExtended(ValueEnumeratorElement result,
                                         int limit)
         {
             while (m_current_ < limit)

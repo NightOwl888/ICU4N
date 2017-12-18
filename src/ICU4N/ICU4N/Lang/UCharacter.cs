@@ -5422,7 +5422,7 @@ namespace ICU4N.Lang
         /// <para/>
         /// Example of use:
         /// <code>
-        /// RangeValueEnumerator iterator = UCharacter.GetTypeEnumerator();
+        /// IRangeValueEnumerator iterator = UCharacter.GetTypeEnumerator();
         /// while (iterator.MoveNext())
         /// {
         ///     Console.WriteLine("Codepoint \\u" +
@@ -5434,6 +5434,9 @@ namespace ICU4N.Lang
         /// }
         /// </code>
         /// </summary>
+        /// <remarks>
+        /// This is equivalent to getTypeIterator() in ICU4J.
+        /// </remarks>
         /// <returns>An enumerator.</returns>
         /// <stable>ICU 2.6</stable>
         public static IRangeValueEnumerator GetTypeEnumerator()
@@ -5454,13 +5457,13 @@ namespace ICU4N.Lang
 
             object IEnumerator.Current => current;
 
-            // implements RangeValueEnumerator
+            // implements IRangeValueEnumerator
             public void Reset()
             {
                 trieIterator = UCharacterProperty.INSTANCE.Trie.GetEnumerator(MASK_TYPE);
             }
 
-            // implements RangeValueEnumerator
+            // implements IRangeValueEnumerator
             public bool MoveNext()
             {
                 if (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
@@ -5479,7 +5482,7 @@ namespace ICU4N.Lang
                 }
             }
 
-            // implements RangeValueEnumerator
+            // implements IRangeValueEnumerator
             public void Dispose()
             {
                 if (trieIterator != null)
@@ -5500,77 +5503,102 @@ namespace ICU4N.Lang
             private static readonly MaskType MASK_TYPE = new MaskType();
         }
 
-        /**
-         * {@icu} <p>Returns an iterator for character names, iterating over codepoints.
-         * <p>This API only gets the iterator for the modern, most up-to-date
-         * Unicode names. For older 1.0 Unicode names use get1_0NameIterator() or
-         * for extended names use getExtendedNameIterator().
-         * <p>Example of use:<br>
-         * <pre>
-         * ValueIterator iterator = UCharacter.getNameIterator();
-         * ValueIterator.Element element = new ValueIterator.Element();
-         * while (iterator.next(element)) {
-         *     System.out.println("Codepoint \\u" +
-         *                        Integer.toHexString(element.codepoint) +
-         *                        " has the name " + (string)element.value);
-         * }
-         * </pre>
-         * <p>The maximal range which the name iterator iterates is from
-         * UCharacter.MIN_VALUE to UCharacter.MAX_VALUE.
-         * @return an iterator
-         * @stable ICU 2.6
-         */
-        public static IValueIterator GetNameIterator()
+        /// <icu/>
+        /// <summary>
+        /// Returns an enumerator for character names, iterating over codepoints.
+        /// </summary>
+        /// <remarks>
+        /// This API only gets the iterator for the modern, most up-to-date
+        /// Unicode names. For older 1.0 Unicode names use <see cref="GetName1_0Enumerator"/> or
+        /// for extended names use <see cref="GetExtendedNameEnumerator()"/>.
+        /// <para/>
+        /// Example of use:
+        /// <code>
+        /// IValueEnumerator iterator = UCharacter.GetNameEnumerator();
+        /// while (iterator.MoveNext())
+        /// {
+        ///     Console.WriteLine("Codepoint \\u" +
+        ///                         (iterator.Current.Codepoint).ToHexString() +
+        ///                         " has the name " + (string)iterator.Current.Value);
+        /// }
+        /// </code>
+        /// <para/>
+        /// The maximal range which the name iterator iterates is from
+        /// <see cref="UCharacter.MIN_VALUE"/> to <see cref="UCharacter.MAX_VALUE"/>
+        /// <para/>
+        /// NOTE: This is equivalent to getNameIterator() in ICU4J
+        /// </remarks>
+        /// <returns>An enumerator.</returns>
+        /// <stable>ICU 2.6</stable>
+        public static IValueEnumerator GetNameEnumerator()
         {
-            return new UCharacterNameIterator(UCharacterName.INSTANCE,
+            return new UCharacterNameEnumerator(UCharacterName.INSTANCE,
                     UCharacterNameChoice.UnicodeCharName);
         }
 
-        /**
-         * {@icu} Returns an empty iterator.
-         * <p>Used to return an iterator for the older 1.0 Unicode character names, iterating over codepoints.
-         * @return an empty iterator
-         * @deprecated 
-         * @see #getName1_0(int)
-         */
+        /// <icu/>
+        /// <summary>
+        /// Returns an empty enumerator.
+        /// <para/>
+        /// Used to return an iterator for the older 1.0 Unicode character names, iterating over codepoints.
+        /// </summary>
+        /// <returns>An empty enumerator.</returns>
+        /// <seealso cref="GetName1_0(int)"/>
+        // NOTE: This is equivalent to getName1_0Iterator() in ICU4J
         [Obsolete("ICU 49")]
-        public static IValueIterator GetName1_0Iterator()
+        public static IValueEnumerator GetName1_0Enumerator()
         {
-            return new DummyValueIterator();
+            return new DummyValueEnumerator();
         }
 
-        private sealed class DummyValueIterator : IValueIterator
+        private sealed class DummyValueEnumerator : IValueEnumerator
         {
+            public ValueEnumeratorElement Current => null;
 
-            public bool Next(ValueIteratorElement element) { return false; }
+            object IEnumerator.Current => null;
+
+            public void Dispose()
+            {
+                // nothing to do
+            }
+
+            public bool MoveNext() { return false; }
 
             public void Reset() { }
 
             public void SetRange(int start, int limit) { }
         }
 
-        /**
-         * {@icu} <p>Returns an iterator for character names, iterating over codepoints.
-         * <p>This API only gets the iterator for the extended names.
-         * For modern, most up-to-date Unicode names use getNameIterator() or
-         * for older 1.0 Unicode names use get1_0NameIterator().
-         * <p>Example of use:<br>
-         * <pre>
-         * ValueIterator iterator = UCharacter.getExtendedNameIterator();
-         * ValueIterator.Element element = new ValueIterator.Element();
-         * while (iterator.next(element)) {
-         *     System.out.println("Codepoint \\u" +
-         *                        Integer.toHexString(element.codepoint) +
-         *                        " has the name " + (string)element.value);
-         * }
-         * </pre>
-         * <p>The maximal range which the name iterator iterates is from
-         * @return an iterator
-         * @stable ICU 2.6
-         */
-        public static IValueIterator GetExtendedNameIterator()
+        /// <icu/>
+        /// <summary>
+        /// Returns an enumerator for character names, iterating over codepoints.
+        /// </summary>
+        /// <remarks>
+        /// This API only gets the enumerator for the extended names.
+        /// For modern, most up-to-date Unicode names use <see cref="GetNameEnumerator()"/> or
+        /// for older 1.0 Unicode names use <see cref="GetName1_0Enumerator()"/>.
+        /// <para/>
+        /// Example of use:
+        /// <code>
+        /// IValueEnumerator iterator = UCharacter.GetExtendedNameIterator();
+        /// while (iterator.MoveNext())
+        /// {
+        ///     Console.WriteLine("Codepoint \\u" +
+        ///                         (iterator.Current.Codepoint).ToHexString() +
+        ///                         " has the name " + (string)iterator.Current.Value);
+        /// }
+        /// </code>
+        /// <para/>
+        /// The maximal range which the name iterator iterates is from
+        /// <see cref="UCharacter.MIN_VALUE"/> to <see cref="UCharacter.MAX_VALUE"/>.
+        /// <para/>
+        /// NOTE: This is equivalent to getExtendedNameIterator() in ICU4J
+        /// </remarks>
+        /// <returns>An enumerator.</returns>
+        /// <stable>ICU 2.6</stable>
+        public static IValueEnumerator GetExtendedNameEnumerator()
         {
-            return new UCharacterNameIterator(UCharacterName.INSTANCE,
+            return new UCharacterNameEnumerator(UCharacterName.INSTANCE,
                     UCharacterNameChoice.ExtendedCharName);
         }
 

@@ -107,7 +107,7 @@ namespace ICU4N.Dev.Test.Util
             }
         }
 
-        private sealed class _testEnumValue : TrieIterator
+        private sealed class _testEnumValue : TrieEnumerator
         {
             public _testEnumValue(Trie data)
                     : base(data)
@@ -330,7 +330,7 @@ namespace ICU4N.Dev.Test.Util
                 // enumerate and verify all ranges
 
                 int enumRanges = 1;
-                TrieIterator iter = new _testEnumValue(trie);
+                TrieEnumerator iter = new _testEnumValue(trie);
                 while (iter.MoveNext())
                 {
                     RangeValueEnumeratorElement result = iter.Current;
