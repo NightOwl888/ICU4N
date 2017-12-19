@@ -1,8 +1,5 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Text;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text

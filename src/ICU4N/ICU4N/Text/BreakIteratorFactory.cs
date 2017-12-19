@@ -3,16 +3,15 @@ using ICU4N.Support.IO;
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Resources;
-using System.Text;
 using ICUResourceBundleFactory = ICU4N.Impl.ICULocaleService.ICUResourceBundleFactory; // ICU4N TODO: de-nest?
 using IFactory = ICU4N.Impl.ICUService.IFactory; // ICU4N TODO: de-nest ?
 
 namespace ICU4N.Text
 {
+    /// <author>Ram</author>
     internal sealed class BreakIteratorFactory : BreakIterator.BreakIteratorServiceShim
     {
 
@@ -80,14 +79,14 @@ namespace ICU4N.Text
                 MarkDefault();
             }
 
-            /**
-             * createBreakInstance() returns an appropriate BreakIterator for any locale.
-             * It falls back to root if there is no specific data.
-             *
-             * <p>Without this override, the service code would fall back to the default locale
-             * which is not desirable for an algorithm with a good Unicode default,
-             * like break iteration.
-             */
+            /// <summary>
+            /// <see cref="CreateBreakInstance(ULocale, int)"/> returns an appropriate <see cref="BreakIterator"/> for any locale.
+            /// It falls back to root if there is no specific data.
+            /// <para/>
+            /// Without this override, the service code would fall back to the default locale
+            /// which is not desirable for an algorithm with a good Unicode default,
+            /// like break iteration.
+            /// </summary>
             public override string ValidateFallbackLocale()
             {
                 return "";
@@ -104,15 +103,15 @@ namespace ICU4N.Text
 
         internal static readonly ICULocaleService service = new BFService();
 
-
-        /** KIND_NAMES are the resource key to be used to fetch the name of the
-         *             pre-compiled break rules.  The resource bundle name is "boundaries".
-         *             The value for each key will be the rules to be used for the
-         *             specified locale - "word" -> "word_th" for Thai, for example.
-         */
+        /// <summary>
+        /// KIND_NAMES are the resource key to be used to fetch the name of the
+        ///             pre-compiled break rules.  The resource bundle name is "boundaries".
+        ///             The value for each key will be the rules to be used for the
+        ///             specified locale - "word" -> "word_th" for Thai, for example.            
+        /// </summary>
         private static readonly string[] KIND_NAMES = {
-            "grapheme", "word", "line", "sentence", "title"
-    };
+                "grapheme", "word", "line", "sentence", "title"
+        };
 
 
         private static BreakIterator CreateBreakInstance(ULocale locale, int kind)
@@ -130,7 +129,7 @@ namespace ICU4N.Text
             string typeKeyExt = null;
             if (kind == BreakIterator.KIND_LINE)
             {
-                String lbKeyValue = locale.GetKeywordValue("lb");
+                string lbKeyValue = locale.GetKeywordValue("lb");
                 if (lbKeyValue != null && (lbKeyValue.Equals("strict") || lbKeyValue.Equals("normal") || lbKeyValue.Equals("loose")))
                 {
                     typeKeyExt = "_" + lbKeyValue;

@@ -582,7 +582,7 @@ namespace ICU4N.Text
 
         /// <icu/>
         /// <stable>ICU 2.4</stable>
-        public const int KIND_CHARACTER = 0;
+        public const int KIND_CHARACTER = 0; // ICU4N TODO: API - change to enum ? rename to follow .NET Conventions...?
 
         /// <icu/>
         /// <stable>ICU 2.4</stable>

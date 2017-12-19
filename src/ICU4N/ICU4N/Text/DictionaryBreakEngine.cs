@@ -1,18 +1,16 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICU4N.Text
 {
     internal abstract class DictionaryBreakEngine : ILanguageBreakEngine
     {
-        /* Helper class for improving readability of the Thai/Lao/Khmer word break
-     * algorithm.
-     */
+        /// <summary>
+        /// Helper class for improving readability of the Thai/Lao/Khmer word break
+        /// algorithm.
+        /// </summary>
         internal class PossibleWord
         {
             // List size, limited by the maximum number of words in the dictionary
@@ -89,12 +87,12 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         *  A deque-like structure holding raw ints.
-         *  Partial, limited implementation, only what is needed by the dictionary implementation.
-         *  For internal use only.
-         * @internal
-         */
+        /// <summary>
+        /// A deque-like structure holding raw <see cref="int"/>s.
+        /// Partial, limited implementation, only what is needed by the dictionary implementation.
+        /// For internal use only.
+        /// </summary>
+        /// <internal/>
         internal class DequeI
 #if FEATURE_CLONEABLE
             : ICloneable
@@ -196,10 +194,8 @@ namespace ICU4N.Text
         internal UnicodeSet fSet = new UnicodeSet();
         private BitSet fTypes = new BitSet(32);
 
-        /**
-         * @param breakTypes The types of break iterators that can use this engine.
-         *  For example, BreakIterator.KIND_LINE
-         */
+        /// <param name="breakTypes">The types of break iterators that can use this engine.
+        /// For example, <see cref="BreakIterator.KIND_LINE"/>.</param>
         public DictionaryBreakEngine(params int[] breakTypes)
         {
             foreach (int type in breakTypes)
@@ -250,16 +246,15 @@ namespace ICU4N.Text
             fSet.Compact();
         }
 
-        /**
-         * <p>Divide up a range of known dictionary characters handled by this break engine.</p>
-         *
-         * @param text A UText representing the text
-         * @param rangeStart The start of the range of dictionary characters
-         * @param rangeEnd The end of the range of dictionary characters
-         * @param foundBreaks Output of break positions. Positions are pushed.
-         *                    Pre-existing contents of the output stack are unaltered.
-         * @return The number of breaks found
-         */
+        /// <summary>
+        /// Divide up a range of known dictionary characters handled by this break engine.
+        /// </summary>
+        /// <param name="text">A <see cref="CharacterIterator"/> representing the text.</param>
+        /// <param name="rangeStart">The start of the range of dictionary characters.</param>
+        /// <param name="rangeEnd">The end of the range of dictionary characters.</param>
+        /// <param name="foundBreaks">Output of break positions. Positions are pushed.
+        /// Pre-existing contents of the output stack are unaltered.</param>
+        /// <returns>The number of breaks found.</returns>
         public abstract int DivideUpDictionaryRange(CharacterIterator text,
                                              int rangeStart,
                                              int rangeEnd,

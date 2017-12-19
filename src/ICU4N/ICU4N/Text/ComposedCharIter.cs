@@ -16,7 +16,7 @@ namespace ICU4N.Text
     /// and decomposed characters equivalently.
     /// <para/>
     /// For example, imagine that you have built a collation table with ordering
-    /// rules for the  canonically decomposed (<see cref="Normalizer.DECOMP"/>) forms of all
+    /// rules for the canonically decomposed (<see cref="Normalizer.DECOMP"/>) forms of all
     /// characters used in a particular language.  When you process input text using
     /// this table, the text must first be decomposed so that it matches the form
     /// used in the table.  This can impose a performance penalty that may be
@@ -95,7 +95,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns></returns>
         [Obsolete("ICU 2.2")]
-        public bool HasNext()
+        public bool HasNext() // ICU4N TODO: API - make property
         {
             if (nextChar == Normalizer.DONE)
             {

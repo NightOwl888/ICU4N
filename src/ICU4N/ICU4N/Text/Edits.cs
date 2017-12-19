@@ -1,5 +1,4 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.Collections;
+﻿using ICU4N.Support.Collections;
 using ICU4N.Support.IO;
 using System;
 using System.Diagnostics;
@@ -39,21 +38,21 @@ namespace ICU4N.Text
         private int delta;
         private int numChanges;
 
-        /**
-         * Constructs an empty object.
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Constructs an empty object.
+        /// </summary>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public Edits()
         {
             array = new char[STACK_CAPACITY];
         }
 
-        /**
-         * Resets the data but may not release memory.
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Resets the data but may not release memory.
+        /// </summary>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public void Reset()
         {
             length = delta = numChanges = 0;
@@ -65,12 +64,12 @@ namespace ICU4N.Text
             set { array[length - 1] = (char)value; }
         }
 
-        /**
-         * Adds a record for an unchanged segment of text.
-         * Normally called from inside ICU string transformation functions, not user code.
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Adds a record for an unchanged segment of text.
+        /// Normally called from inside ICU string transformation functions, not user code.
+        /// </summary>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public void AddUnchanged(int unchangedLength)
         {
             if (unchangedLength < 0)
@@ -104,12 +103,12 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Adds a record for a text replacement/insertion/deletion.
-         * Normally called from inside ICU string transformation functions, not user code.
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Adds a record for a text replacement/insertion/deletion.
+        /// Normally called from inside ICU string transformation functions, not user code.
+        /// </summary>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public void AddReplace(int oldLength, int newLength)
         {
             if (oldLength < 0 || newLength < 0)
@@ -234,43 +233,44 @@ namespace ICU4N.Text
             return true;
         }
 
-        /**
-         * How much longer is the new text compared with the old text?
-         * @return new length minus old length
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// How much longer is the new text compared with the old text?
+        /// Returns new length minus old length.
+        /// </summary>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public int LengthDelta { get { return delta; } }
-        /**
-         * @return true if there are any change edits
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
+
+        /// <summary>
+        /// Returns true if there are any change edits.
+        /// </summary>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public bool HasChanges { get { return numChanges != 0; } }
 
-        /**
-         * @return the number of change edits
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Gets the number of change edits.
+        /// </summary>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public int NumberOfChanges { get { return numChanges; } }
 
-        /**
-         * Access to the list of edits.
-         * @see #getCoarseIterator
-         * @see #getFineIterator
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
-        public sealed class Iterator
+        /// <summary>
+        /// Access to the list of edits.
+        /// </summary>
+        /// <seealso cref="GetCoarseIterator()"/>
+        /// <seealso cref="GetFineIterator()"/>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public sealed class Iterator // ICU4N TODO: API - change to Enumerator ?
         {
             private readonly char[] array;
             private int index;
             private readonly int length;
-            /**
-             * 0 if we are not within compressed equal-length changes.
-             * Otherwise the number of remaining changes, including the current one.
-             */
+            /// <summary>
+            /// 0 if we are not within compressed equal-length changes.
+            /// Otherwise the number of remaining changes, including the current one.
+            /// </summary>
             private int remaining;
             private readonly bool onlyChanges_, coarse;
 
@@ -341,13 +341,13 @@ namespace ICU4N.Text
                 return false;
             }
 
-            /**
-             * Advances to the next edit.
-             * @return true if there is another edit
-             * @draft ICU 59
-             * @provisional This API might change or be removed in a future release.
-             */
-            public bool Next()
+            /// <summary>
+            /// Advances to the next edit.
+            /// </summary>
+            /// <returns>true if there is another edit.</returns>
+            /// <draft>ICU 59</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
+            public bool Next() // ICU4N TODO: Rename MoveNext() ? Already has .NET semantics, just not the right name.
             {
                 return Next(onlyChanges_);
             }
@@ -602,51 +602,49 @@ namespace ICU4N.Text
                 return true;
             }
 
-            /**
-             * Finds the edit that contains the source index.
-             * The source index may be found in a non-change
-             * even if normal iteration would skip non-changes.
-             * Normal iteration can continue from a found edit.
-             *
-             * <p>The iterator state before this search logically does not matter.
-             * (It may affect the performance of the search.)
-             *
-             * <p>The iterator state after this search is undefined
-             * if the source index is out of bounds for the source string.
-             *
-             * @param i source index
-             * @return true if the edit for the source index was found
-             * @draft ICU 59
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Finds the edit that contains the source index.
+            /// The source index may be found in a non-change
+            /// even if normal iteration would skip non-changes.
+            /// Normal iteration can continue from a found edit.
+            /// <para/>
+            /// The iterator state before this search logically does not matter.
+            /// (It may affect the performance of the search.)
+            /// <para/>
+            /// The iterator state after this search is undefined
+            /// if the source index is out of bounds for the source string.
+            /// </summary>
+            /// <param name="i">Source index.</param>
+            /// <returns>true if the edit for the source index was found.</returns>
+            /// <draft>ICU 59</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public bool FindSourceIndex(int i)
             {
                 return FindIndex(i, true) == 0;
             }
 
-            /**
-             * Finds the edit that contains the destination index.
-             * The destination index may be found in a non-change
-             * even if normal iteration would skip non-changes.
-             * Normal iteration can continue from a found edit.
-             *
-             * <p>The iterator state before this search logically does not matter.
-             * (It may affect the performance of the search.)
-             *
-             * <p>The iterator state after this search is undefined
-             * if the source index is out of bounds for the source string.
-             *
-             * @param i destination index
-             * @return true if the edit for the destination index was found
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Finds the edit that contains the destination index.
+            /// The destination index may be found in a non-change
+            /// even if normal iteration would skip non-changes.
+            /// Normal iteration can continue from a found edit.
+            /// <para/>
+            /// The iterator state before this search logically does not matter.
+            /// (It may affect the performance of the search.)
+            /// <para/>
+            /// The iterator state after this search is undefined
+            /// if the source index is out of bounds for the source string.
+            /// </summary>
+            /// <param name="i">Destination index.</param>
+            /// <returns>true if the edit for the destination index was found.</returns>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public bool FindDestinationIndex(int i)
             {
                 return FindIndex(i, false) == 0;
             }
 
-            /** @return -1: error or i<0; 0: found; 1: i>=string length */
+            /// <returns>-1: error or i&lt;0; 0: found; 1: i>=string length</returns>
             private int FindIndex(int i, bool findSource)
             {
                 if (i < 0) { return -1; }
@@ -752,26 +750,25 @@ namespace ICU4N.Text
                 return 1;
             }
 
-            /**
-             * Returns the destination index corresponding to the given source index.
-             * If the source index is inside a change edit (not at its start),
-             * then the destination index at the end of that edit is returned,
-             * since there is no information about index mapping inside a change edit.
-             *
-             * <p>(This means that indexes to the start and middle of an edit,
-             * for example around a grapheme cluster, are mapped to indexes
-             * encompassing the entire edit.
-             * The alternative, mapping an interior index to the start,
-             * would map such an interval to an empty one.)
-             *
-             * <p>This operation will usually but not always modify this object.
-             * The iterator state after this search is undefined.
-             *
-             * @param i source index
-             * @return destination index; undefined if i is not 0..string length
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Returns the destination index corresponding to the given source index.
+            /// If the source index is inside a change edit (not at its start),
+            /// then the destination index at the end of that edit is returned,
+            /// since there is no information about index mapping inside a change edit.
+            /// <para/>
+            /// (This means that indexes to the start and middle of an edit,
+            /// for example around a grapheme cluster, are mapped to indexes
+            /// encompassing the entire edit.
+            /// The alternative, mapping an interior index to the start,
+            /// would map such an interval to an empty one.)
+            /// <para/>
+            /// This operation will usually but not always modify this object.
+            /// The iterator state after this search is undefined.
+            /// </summary>
+            /// <param name="i">Source index.</param>
+            /// <returns>Destination index; undefined if i is not 0..string length.</returns>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public int DestinationIndexFromSourceIndex(int i)
             {
                 int where = FindIndex(i, true);
@@ -797,26 +794,25 @@ namespace ICU4N.Text
                 }
             }
 
-            /**
-             * Returns the source index corresponding to the given destination index.
-             * If the destination index is inside a change edit (not at its start),
-             * then the source index at the end of that edit is returned,
-             * since there is no information about index mapping inside a change edit.
-             *
-             * <p>(This means that indexes to the start and middle of an edit,
-             * for example around a grapheme cluster, are mapped to indexes
-             * encompassing the entire edit.
-             * The alternative, mapping an interior index to the start,
-             * would map such an interval to an empty one.)
-             *
-             * <p>This operation will usually but not always modify this object.
-             * The iterator state after this search is undefined.
-             *
-             * @param i destination index
-             * @return source index; undefined if i is not 0..string length
-             * @draft ICU 60
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Returns the source index corresponding to the given destination index.
+            /// If the destination index is inside a change edit (not at its start),
+            /// then the source index at the end of that edit is returned,
+            /// since there is no information about index mapping inside a change edit.
+            /// <para/>
+            /// (This means that indexes to the start and middle of an edit,
+            /// for example around a grapheme cluster, are mapped to indexes
+            /// encompassing the entire edit.
+            /// The alternative, mapping an interior index to the start,
+            /// would map such an interval to an empty one.)
+            /// <para/>
+            /// This operation will usually but not always modify this object.
+            /// The iterator state after this search is undefined.
+            /// </summary>
+            /// <param name="i">Destination index.</param>
+            /// <returns>Source index; undefined if i is not 0..string length.</returns>
+            /// <draft>ICU 60</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public int SourceIndexFromDestinationIndex(int i)
             {
                 int where = FindIndex(i, false);
@@ -842,25 +838,25 @@ namespace ICU4N.Text
                 }
             }
 
-            /**
-             * @return true if this edit replaces oldLength() units with newLength() different ones.
-             *         false if oldLength units remain unchanged.
-             * @draft ICU 59
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Returns true if this edit replaces <see cref="OldLength"/> units with <see cref="NewLength"/> different ones.
+            /// false if <see cref="OldLength"/> units remain unchanged.
+            /// </summary>
+            /// <draft>ICU 59</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public bool HasChange { get { return changed; } }
-            /**
-             * @return the number of units in the original string which are replaced or remain unchanged.
-             * @draft ICU 59
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Gets the number of units in the original string which are replaced or remain unchanged.
+            /// </summary>
+            /// <draft>ICU 59</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public int OldLength { get { return oldLength_; } }
-            /**
-             * @return the number of units in the modified string, if hasChange() is true.
-             *         Same as oldLength if hasChange() is false.
-             * @draft ICU 59
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Gets the number of units in the modified string, if <see cref="HasChange"/> is true.
+            /// Same as <see cref="OldLength"/> if <see cref="HasChange"/> is false.
+            /// </summary>
+            /// <draft>ICU 59</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public int NewLength { get { return newLength_; } }
 
             /**
@@ -868,93 +864,100 @@ namespace ICU4N.Text
              * @draft ICU 59
              * @provisional This API might change or be removed in a future release.
              */
+            /// <summary>
+            /// Gets the number of units in the original string which are replaced or remain unchanged.
+            /// </summary>
+            /// <draft>ICU 59</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public int SourceIndex { get { return srcIndex; } }
-            /**
-             * @return the current index into the replacement-characters-only string,
-             *         not counting unchanged spans
-             * @draft ICU 59
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Gets the current index into the replacement-characters-only string,
+            /// not counting unchanged spans.
+            /// </summary>
+            /// <draft>ICU 59</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public int ReplacementIndex { get { return replIndex; } }
-            /**
-             * @return the current index into the full destination string
-             * @draft ICU 59
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Gets the current index into the full destination string.
+            /// </summary>
+            /// <draft>ICU 59</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public int DestinationIndex { get { return destIndex; } }
         };
 
-        /**
-         * Returns an Iterator for coarse-grained changes for simple string updates.
-         * Skips non-changes.
-         * @return an Iterator that merges adjacent changes.
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
-        public Iterator GetCoarseChangesIterator()
+        /// <summary>
+        /// Returns an <see cref="Iterator"/> for coarse-grained changes for simple string updates.
+        /// Skips non-changes.
+        /// </summary>
+        /// <returns>An <see cref="Iterator"/> that merges adjacent changes.</returns>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public Iterator GetCoarseChangesIterator() // ICU4N TODO: API Rename GetCoarseChangesEnumerator
         {
             return new Iterator(array, length, true, true);
         }
-
-        /**
-         * Returns an Iterator for coarse-grained changes and non-changes for simple string updates.
-         * @return an Iterator that merges adjacent changes.
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
-        public Iterator GetCoarseIterator()
+        /// <summary>
+        /// Returns an <see cref="Iterator"/> for coarse-grained changes and non-changes for simple string updates.
+        /// </summary>
+        /// <returns>An <see cref="Iterator"/> that merges adjacent changes.</returns>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public Iterator GetCoarseIterator() // ICU4N TODO: API Rename GetCoarseEnumerator
         {
             return new Iterator(array, length, false, true);
         }
 
-        /**
-         * Returns an Iterator for fine-grained changes for modifying styled text.
-         * Skips non-changes.
-         * @return an Iterator that separates adjacent changes.
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
-        public Iterator GetFineChangesIterator()
+        /// <summary>
+        /// Returns an <see cref="Iterator"/> for fine-grained changes for modifying styled text.
+        /// Skips non-changes.
+        /// </summary>
+        /// <returns>An <see cref="Iterator"/> that separates adjacent changes.</returns>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public Iterator GetFineChangesIterator() // ICU4N TODO: API Rename GetFineChangesEnumerator
         {
             return new Iterator(array, length, true, false);
         }
 
-        /**
-         * Returns an Iterator for fine-grained changes and non-changes for modifying styled text.
-         * @return an Iterator that separates adjacent changes.
-         * @draft ICU 59
-         * @provisional This API might change or be removed in a future release.
-         */
-        public Iterator GetFineIterator()
+        /// <summary>
+        /// Returns an <see cref="Iterator"/> for fine-grained changes and non-changes for modifying styled text.
+        /// </summary>
+        /// <returns>An <see cref="Iterator"/> that separates adjacent changes.</returns>
+        /// <draft>ICU 59</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public Iterator GetFineIterator() // ICU4N TODO: API Rename GetFineEnumerator
         {
             return new Iterator(array, length, false, false);
         }
 
-        /**
-         * Merges the two input Edits and appends the result to this object.
-         *
-         * <p>Consider two string transformations (for example, normalization and case mapping)
-         * where each records Edits in addition to writing an output string.<br>
-         * Edits ab reflect how substrings of input string a
-         * map to substrings of intermediate string b.<br>
-         * Edits bc reflect how substrings of intermediate string b
-         * map to substrings of output string c.<br>
-         * This function merges ab and bc such that the additional edits
-         * recorded in this object reflect how substrings of input string a
-         * map to substrings of output string c.
-         *
-         * <p>If unrelated Edits are passed in where the output string of the first
-         * has a different length than the input string of the second,
-         * then an IllegalArgumentException is thrown.
-         *
-         * @param ab reflects how substrings of input string a
-         *     map to substrings of intermediate string b.
-         * @param bc reflects how substrings of intermediate string b
-         *     map to substrings of output string c.
-         * @return this, with the merged edits appended
-         * @draft ICU 60
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// Merges the two input Edits and appends the result to this object.
+        /// </summary>
+        /// <remarks>
+        /// Consider two string transformations (for example, normalization and case mapping)
+        /// where each records Edits in addition to writing an output string.
+        /// <para/>
+        /// Edits <paramref name="ab"/> reflect how substrings of input string a
+        /// map to substrings of intermediate string b.
+        /// <para/>
+        /// Edits <paramref name="bc"/> reflect how substrings of intermediate string b
+        /// map to substrings of output string c.
+        /// <para/>
+        /// This function merges <paramref name="ab"/> and <paramref name="bc"/> such that the additional edits
+        /// recorded in this object reflect how substrings of input string a
+        /// map to substrings of output string c.
+        /// <para/>
+        /// If unrelated <see cref="Edits"/> are passed in where the output string of the first
+        /// has a different length than the input string of the second,
+        /// then an <see cref="ArgumentException"/> is thrown.
+        /// </remarks>
+        /// <param name="ab">Reflects how substrings of input string a
+        /// map to substrings of intermediate string b.</param>
+        /// <param name="bc">Reflects how substrings of intermediate string b
+        /// map to substrings of output string c.</param>
+        /// <returns>This, with the merged edits appended.</returns>
+        /// <draft>ICU 60</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public Edits MergeAndAppend(Edits ab, Edits bc)
         {
             // Picture string a --(Edits ab)--> string b --(Edits bc)--> string c.

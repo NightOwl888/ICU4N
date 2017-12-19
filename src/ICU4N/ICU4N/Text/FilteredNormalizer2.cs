@@ -1,9 +1,5 @@
 ﻿using ICU4N.Support.Text;
-using ICU4N.Util;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace ICU4N.Text
 {
@@ -13,7 +9,7 @@ namespace ICU4N.Text
 	/// portions not contained in the filter set unchanged.
 	/// Filtering is done via UnicodeSet.Span(..., UnicodeSet.SpanCondition.SIMPLE).
 	/// Not-in-the-filter text is treated as "is normalized" and "quick check yes".
-	/// This class implements all of (and only) the Normalizer2 API.
+	/// This class implements all of (and only) the <see cref="Normalizer2"/> API.
 	/// An instance of this class is unmodifiable/immutable.
 	/// </summary>
     /// <stable>ICU 4.4</stable>
@@ -27,8 +23,8 @@ namespace ICU4N.Text
         /// is used.
         /// The filter set should be frozen; otherwise the performance will suffer greatly.
         /// </summary>
-        /// <param name="n2">Wrapped Normalizer2 instance.</param>
-        /// <param name="filterSet">UnicodeSet which determines the characters to be normalized.</param>
+        /// <param name="n2">Wrapped <see cref="Normalizer2"/> instance.</param>
+        /// <param name="filterSet"><see cref="UnicodeSet"/> which determines the characters to be normalized.</param>
         /// <stable>ICU 4.4</stable>
         public FilteredNormalizer2(Normalizer2 n2, UnicodeSet filterSet)
         {
@@ -73,9 +69,9 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s decomposition mapping, if any; otherwise null.</returns>
         /// <stable>ICU 4.6</stable>
-        public override string GetDecomposition(int c)
+        public override string GetDecomposition(int codePoint)
         {
-            return set.Contains(c) ? norm2.GetDecomposition(c) : null;
+            return set.Contains(codePoint) ? norm2.GetDecomposition(codePoint) : null;
         }
 
         /// <summary>
@@ -101,18 +97,18 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s raw decomposition mapping, if any; otherwise null.</returns>
         /// <stable>ICU 49</stable>
-        public override string GetRawDecomposition(int c)
+        public override string GetRawDecomposition(int codePoint)
         {
-            return set.Contains(c) ? norm2.GetRawDecomposition(c) : null;
+            return set.Contains(codePoint) ? norm2.GetRawDecomposition(codePoint) : null;
         }
 
         /// <summary>
-        /// Performs pairwise composition of a &amp; b and returns the composite if there is one.
+        /// Performs pairwise composition of <paramref name="a"/> &amp; <paramref name="b"/> and returns the composite if there is one.
         /// </summary>
         /// <remarks>
         /// Returns a composite code point c only if c has a two-way mapping to a+b.
         /// In standard Unicode normalization, this means that
-        /// c has a canonical decomposition to a+b
+        /// c has a canonical decomposition to <paramref name="a"/>+<paramref name="b"/>
         /// and c does not have the Full_Composition_Exclusion property.
         /// <para/>
         /// This function is independent of the mode of the Normalizer2.
@@ -135,9 +131,9 @@ namespace ICU4N.Text
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s combining class.</returns>
         /// <stable>ICU 49</stable>
-        public override int GetCombiningClass(int c)
+        public override int GetCombiningClass(int codePoint)
         {
-            return set.Contains(c) ? norm2.GetCombiningClass(c) : 0;
+            return set.Contains(codePoint) ? norm2.GetCombiningClass(codePoint) : 0;
         }
 
         // ICU4N specific - IsNormalized(ICharSequence s) moved to FilteredNormalizerExtension.tt
@@ -147,7 +143,7 @@ namespace ICU4N.Text
         // ICU4N specific - SpanQuickCheckYes(ICharSequence s) moved to FilteredNormalizerExtension.tt
 
         /// <summary>
-        /// Tests if the character always has a normalization boundary before it,
+        /// Tests if the <paramref name="character"/> always has a normalization boundary before it,
         /// regardless of context.
         /// If true, then the character does not normalization-interact with
         /// preceding characters.
@@ -159,13 +155,13 @@ namespace ICU4N.Text
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> has a normalization boundary before it.</returns>
         /// <stable>ICU 4.4</stable>
-        public override bool HasBoundaryBefore(int c)
+        public override bool HasBoundaryBefore(int character)
         {
-            return !set.Contains(c) || norm2.HasBoundaryBefore(c);
+            return !set.Contains(character) || norm2.HasBoundaryBefore(character);
         }
 
         /// <summary>
-        /// Tests if the character always has a normalization boundary after it,
+        /// Tests if the <paramref name="character"/> always has a normalization boundary after it,
         /// regardless of context.
         /// If true, then the character does not normalization-interact with
         /// following characters.
@@ -179,13 +175,13 @@ namespace ICU4N.Text
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> has a normalization boundary after it.</returns>
         /// <stable>ICU 4.4</stable>
-        public override bool HasBoundaryAfter(int c)
+        public override bool HasBoundaryAfter(int character)
         {
-            return !set.Contains(c) || norm2.HasBoundaryAfter(c);
+            return !set.Contains(character) || norm2.HasBoundaryAfter(character);
         }
 
         /// <summary>
-        /// Tests if the character is normalization-inert.
+        /// Tests if the <paramref name="character"/> is normalization-inert.
         /// If true, then the character does not change, nor normalization-interact with
         /// preceding or following characters.
         /// In other words, a string containing this character can be normalized
@@ -198,9 +194,9 @@ namespace ICU4N.Text
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> is normalization-inert.</returns>
         /// <stable>ICU 4.4</stable>
-        public override bool IsInert(int c)
+        public override bool IsInert(int character)
         {
-            return !set.Contains(c) || norm2.IsInert(c);
+            return !set.Contains(character) || norm2.IsInert(character);
         }
 
         // ICU4N specific - Normalize(ICharSequence src, IAppendable dest,

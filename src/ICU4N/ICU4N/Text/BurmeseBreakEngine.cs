@@ -58,7 +58,7 @@ namespace ICU4N.Text
             fDictionary = DictionaryData.LoadDictionaryFor("Mymr");
         }
 
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             // Normally is a singleton, but it's possible to have duplicates
             //   during initialization. All are equivalent.

@@ -1,11 +1,6 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.IO;
 using ICU4N.Util;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Resources;
-using System.Text;
 
 namespace ICU4N.Text
 {

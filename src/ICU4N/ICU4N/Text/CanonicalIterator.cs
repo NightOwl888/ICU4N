@@ -8,13 +8,40 @@ using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
-    public sealed class CanonicalIterator
+    /// <summary>
+    /// This class allows one to iterate through all the strings that are canonically equivalent to a given
+    /// string. 
+    /// </summary>
+    /// <remarks>
+    /// For example, here are some sample results:
+    /// Results for: {A WITH RING ABOVE}{d}{DOT ABOVE}{CEDILLA}
+    /// <list type="number">
+    ///     <item><description>{A}{RING ABOVE}{d}{DOT ABOVE}{CEDILLA}</description></item>
+    ///     <item><description>{A}{RING ABOVE}{d}{CEDILLA}{DOT ABOVE}</description></item>
+    ///     <item><description>{A}{RING ABOVE}{d WITH DOT ABOVE}{CEDILLA}</description></item>
+    ///     <item><description>{A}{RING ABOVE}{d WITH CEDILLA}{DOT ABOVE}</description></item>
+    ///     <item><description>{A WITH RING ABOVE}{d}{DOT ABOVE}{CEDILLA}</description></item>
+    ///     <item><description>{A WITH RING ABOVE}{d}{CEDILLA}{DOT ABOVE}</description></item>
+    ///     <item><description>{A WITH RING ABOVE}{d WITH DOT ABOVE}{CEDILLA}</description></item>
+    ///     <item><description>{A WITH RING ABOVE}{d WITH CEDILLA}{DOT ABOVE}</description></item>
+    ///     <item><description>{ANGSTROM SIGN}{d}{DOT ABOVE}{CEDILLA}</description></item>
+    ///     <item><description>{ANGSTROM SIGN}{d}{CEDILLA}{DOT ABOVE}</description></item>
+    ///     <item><description>{ANGSTROM SIGN}{d WITH DOT ABOVE}{CEDILLA}</description></item>
+    ///     <item><description>{ANGSTROM SIGN}{d WITH CEDILLA}{DOT ABOVE}</description></item>
+    /// </list>
+    /// <para/>
+    /// Note: the code is intended for use with small strings, and is not suitable for larger ones,
+    /// since it has not been optimized for that situation.
+    /// </remarks>
+    /// <author>M. Davis</author>
+    /// <stable>ICU 2.4</stable>
+    public sealed class CanonicalIterator // ICU4N TODO: API - rename CanonicalEnumerator
     {
-        /**
-     * Construct a CanonicalIterator object
-     * @param source string to get results for
-     * @stable ICU 2.4
-     */
+        /// <summary>
+        /// Construct a <see cref="CanonicalIterator"/> object.
+        /// </summary>
+        /// <param name="source">String to get results for.</param>
+        /// <stable>ICU 2.4</stable>
         public CanonicalIterator(string source)
         {
             Norm2AllModes allModes = Norm2AllModes.GetNFCInstance();
@@ -23,20 +50,20 @@ namespace ICU4N.Text
             SetSource(source);
         }
 
-        /**
-         * Gets the NFD form of the current source we are iterating over.
-         * @return gets the source: NOTE: it is the NFD form of the source originally passed in
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Gets the NFD form of the current source we are iterating over.
+        /// NOTE: it is the NFD form of the source originally passed in.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         public string Source
         {
             get { return source; }
         }
 
-        /**
-         * Resets the iterator so that one can start again from the beginning.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Resets the iterator so that one can start again from the beginning.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         public void Reset()
         {
             done = false;
@@ -46,14 +73,15 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Get the next canonically equivalent string.
-         * <br><b>Warning: The strings are not guaranteed to be in any particular order.</b>
-         * @return the next string that is canonically equivalent. The value null is returned when
-         * the iteration is done.
-         * @stable ICU 2.4
-         */
-        public string Next()
+        /// <summary>
+        /// Get the next canonically equivalent string.
+        /// <para/>
+        /// <b>Warning: The strings are not guaranteed to be in any particular order.</b>
+        /// </summary>
+        /// <returns>The next string that is canonically equivalent. The value null is returned when
+        /// the iteration is done.</returns>
+        /// <stable>ICU 2.4</stable>
+        public string Next() // ICU4N TODO: API - change to MoveNext(), Current
         {
             if (done) return null;
 
@@ -82,13 +110,13 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Set a new source for this iterator. Allows object reuse.
-         * @param newSource the source string to iterate against. This allows the same iterator to be used
-         * while changing the source string, saving object creation.
-         * @stable ICU 2.4
-         */
-        public void SetSource(String newSource)
+        /// <summary>
+        /// Set a new source for this iterator. Allows object reuse.
+        /// </summary>
+        /// <param name="newSource">The source string to iterate against. This allows the same iterator to be used
+        /// while changing the source string, saving object creation.</param>
+        /// <stable>ICU 2.4</stable>
+        public void SetSource(string newSource)
         {
             source = nfd.Normalize(newSource);
             done = false;
@@ -96,9 +124,9 @@ namespace ICU4N.Text
             // catch degenerate case
             if (newSource.Length == 0)
             {
-                pieces = new String[1][];
+                pieces = new string[1][];
                 current = new int[1];
-                pieces[0] = new String[] { "" };
+                pieces[0] = new string[] { "" };
                 return;
             }
 
@@ -124,7 +152,7 @@ namespace ICU4N.Text
             segmentList.Add(source.Substring(start, i - start)); // add last one // ICU4N: Corrected 2nd substring parameter
 
             // allocate the arrays, and find the strings that are CE to each segment
-            pieces = new String[segmentList.Count][];
+            pieces = new string[segmentList.Count][];
             current = new int[segmentList.Count];
             for (i = 0; i < pieces.Length; ++i)
             {
@@ -133,15 +161,15 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Simple implementation of permutation.
-         * <br><b>Warning: The strings are not guaranteed to be in any particular order.</b>
-         * @param source the string to find permutations for
-         * @param skipZeros set to true to skip characters with canonical combining class zero
-         * @param output the set to add the results to
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Simple implementation of permutation.
+        /// <para/>
+        /// <b>Warning: The strings are not guaranteed to be in any particular order.</b>
+        /// </summary>
+        /// <param name="source">The string to find permutations for.</param>
+        /// <param name="skipZeros">Set to true to skip characters with canonical combining class zero.</param>
+        /// <param name="output">The set to add the results to.</param>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         public static void Permute(string source, bool skipZeros, ISet<string> output)
         {
@@ -231,7 +259,7 @@ namespace ICU4N.Text
 
 
         // we have a segment, in NFD. Find all the strings that are canonically equivalent to it.
-        private string[] GetEquivalents(String segment)
+        private string[] GetEquivalents(string segment)
         {
             ISet<string> result = new HashSet<string>();
             ISet<string> basic = GetEquivalents2(segment);
@@ -244,7 +272,7 @@ namespace ICU4N.Text
             {
                 while (it.MoveNext())
                 {
-                    String item = it.Current;
+                    string item = it.Current;
                     permutations.Clear();
                     Permute(item, SKIP_ZEROS, permutations);
                     using (IEnumerator<string> it2 = permutations.GetEnumerator())
@@ -360,11 +388,16 @@ namespace ICU4N.Text
             */
         }
 
-        /**
-         * See if the decomposition of cp2 is at segment starting at segmentPos
-         * (with canonical rearrangment!)
-         * If so, take the remainder, and return the equivalents
-         */
+        /// <summary>
+        /// See if the decomposition of cp2 is at segment starting at <paramref name="segmentPos"/>
+        /// (with canonical rearrangment!).
+        /// If so, take the remainder, and return the equivalents.
+        /// </summary>
+        /// <param name="comp"></param>
+        /// <param name="segment"></param>
+        /// <param name="segmentPos"></param>
+        /// <param name="buf"></param>
+        /// <returns></returns>
         private ISet<string> Extract(int comp, string segment, int segmentPos, StringBuffer buf)
         {
             if (PROGRESS) Console.Out.WriteLine(" extract: " + Utility.Hex(UTF16.ValueOf(comp))

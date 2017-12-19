@@ -3778,7 +3778,7 @@ namespace ICU4N.Text
          * @provisional This API might change or be removed in a future release.
          * @author medavis
          */
-        abstract public class XSymbolTable : ISymbolTable
+        abstract public class XSymbolTable : ISymbolTable  // ICU4N TODO: API - de-nest ?
         {
             /**
              * Default constructor
@@ -3946,7 +3946,7 @@ namespace ICU4N.Text
          *
          * @stable ICU 54
          */
-        public class EntryRange
+        public class EntryRange // ICU4N TODO: API - de-nest ?
         {
             /**
              * The starting code point of the range.
@@ -3981,28 +3981,29 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Provide for faster iteration than by String. Returns an Iterable/Iterator over ranges of code points.
-         * The UnicodeSet must not be altered during the iteration.
-         * The EntryRange instance is the same each time; the contents are just reset.
-         *
-         * <p><b>Warning: </b>To iterate over the full contents, you have to also iterate over the strings.
-         *
-         * <p><b>Warning: </b>For speed, UnicodeSet iteration does not check for concurrent modification.
-         * Do not alter the UnicodeSet while iterating.
-         *
-         * <pre>
-         * // Sample code
-         * for (EntryRange range : us1.ranges()) {
-         *     // do something with code points between range.codepoint and range.codepointEnd;
-         * }
-         * for (String s : us1.strings()) {
-         *     // do something with each string;
-         * }
-         * </pre>
-         *
-         * @stable ICU 54
-         */
+        /// <summary>
+        /// Provide for faster enumeration than by <see cref="string"/>. Returns an Enumerable/Enumerator over ranges of code points.
+        /// The <see cref="UnicodeSet"/> must not be altered during the iteration.
+        /// The <see cref="EntryRange"/> instance is the same each time; the contents are just reset.
+        /// </summary>
+        /// <remarks>
+        /// <b>Warning: </b>To iterate over the full contents, you have to also iterate over the strings.
+        /// <para/>
+        /// <b>Warning: </b>For speed, <see cref="UnicodeSet"/> iteration does not check for concurrent modification.
+        /// Do not alter the <see cref="UnicodeSet"/> while iterating.
+        /// <code>
+        /// // Sample code
+        /// foreach (EntryRange range in us1.Ranges)
+        /// {
+        ///     // do something with code points between range.Codepoint and range.CodepointEnd;
+        /// }
+        /// foreach (string s in us1.Strings)
+        /// {
+        ///     // do something with each string;
+        /// }
+        /// </code>
+        /// </remarks>
+        /// <stable>ICU 54</stable>
         public IEnumerable<EntryRange> Ranges
         {
             get { return new EntryRangeEnumerable(this); }
@@ -4056,7 +4057,7 @@ namespace ICU4N.Text
 
             public bool MoveNext()
             {
-                if (!HasNext())
+                if (!HasNext)
                     return false;
                 return Next() != null;
             }
@@ -4066,9 +4067,9 @@ namespace ICU4N.Text
                 throw new NotSupportedException();
             }
 
-            private bool HasNext()
+            private bool HasNext
             {
-                return pos < outerInstance.outerInstance.len - 1;
+                get { return pos < outerInstance.outerInstance.len - 1; }
             }
 
             private EntryRange Next()
@@ -4080,23 +4081,23 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    //throw new NoSuchElementException();
                     return null;
                 }
                 return result;
             }
-            // ICU4N NOTE: Remove not supported in .NET
+            // ICU4N NOTE: Remove() not supported in .NET
         }
 
-
-        /**
-         * Returns a string iterator. Uses the same order of iteration as {@link UnicodeSetIterator}.
-         * <p><b>Warning: </b>For speed, UnicodeSet iteration does not check for concurrent modification.
-         * Do not alter the UnicodeSet while iterating.
-         * @see java.util.Set#iterator()
-         * @stable ICU 4.4
-         */
-        public virtual IEnumerator<String> GetEnumerator()
+        /// <summary>
+        /// Returns a string enumerator. Uses the same order of iteration as <see cref="UnicodeSetIterator"/>.
+        /// <para/>
+        /// <b>Warning: </b>For speed, <see cref="UnicodeSet"/> iteration does not check for concurrent modification.
+        /// <para/>
+        /// Do not alter the <see cref="UnicodeSet"/> while iterating.
+        /// </summary>
+        /// <seealso cref="IEnumerable{T}.GetEnumerator()"/>
+        /// <stable>ICU 4.4</stable>
+        public virtual IEnumerator<string> GetEnumerator()
         {
             return new UnicodeSetEnumerator2(this);
         }
@@ -4190,7 +4191,7 @@ namespace ICU4N.Text
                     currentElement = new string(new char[] { (char)codepoint });
                     return true;
                 }
-                // But Java lacks a valueOfCodePoint, so we handle ourselves for speed
+                // But .NET lacks a valueOfCodePoint, so we handle ourselves for speed
                 // allocate a buffer the first time, to make conversion faster.
                 if (buffer == null)
                 {
@@ -4198,7 +4199,7 @@ namespace ICU4N.Text
                 }
                 // compute ourselves, to save tests and calls
                 int offset = codepoint - Character.MIN_SUPPLEMENTARY_CODE_POINT;
-                buffer[0] = (char)((int)((uint)(offset >> 10)) + Character.MIN_HIGH_SURROGATE);
+                buffer[0] = (char)(offset.TripleShift(10) + Character.MIN_HIGH_SURROGATE);
                 buffer[1] = (char)((offset & 0x3ff) + Character.MIN_LOW_SURROGATE);
                 currentElement = new string(buffer);
                 return true;
@@ -4209,64 +4210,7 @@ namespace ICU4N.Text
                 throw new NotSupportedException();
             }
 
-            ///* (non-Javadoc)
-            // * @see java.util.Iterator#hasNext()
-            // */
-            //private bool HasNext()
-            //{
-            //    return sourceList != null || stringIterator.HasNext();
-            //}
-
-            ///* (non-Javadoc)
-            // * @see java.util.Iterator#next()
-            // */
-            //private string Next()
-            //{
-            //    if (sourceList == null)
-            //    {
-            //        return stringIterator.next();
-            //    }
-            //    int codepoint = current++;
-            //    // we have the codepoint we need, but we may need to adjust the state
-            //    if (current >= limit)
-            //    {
-            //        if (item >= len)
-            //        {
-            //            stringIterator = sourceStrings.iterator();
-            //            sourceList = null;
-            //        }
-            //        else
-            //        {
-            //            current = sourceList[item++];
-            //            limit = sourceList[item++];
-            //        }
-            //    }
-            //    // Now return. Single code point is easy
-            //    if (codepoint <= 0xFFFF)
-            //    {
-            //        return String.valueOf((char)codepoint);
-            //    }
-            //    // But Java lacks a valueOfCodePoint, so we handle ourselves for speed
-            //    // allocate a buffer the first time, to make conversion faster.
-            //    if (buffer == null)
-            //    {
-            //        buffer = new char[2];
-            //    }
-            //    // compute ourselves, to save tests and calls
-            //    int offset = codepoint - Character.MIN_SUPPLEMENTARY_CODE_POINT;
-            //    buffer[0] = (char)((offset >>> 10) + Character.MIN_HIGH_SURROGATE);
-            //    buffer[1] = (char)((offset & 0x3ff) + Character.MIN_LOW_SURROGATE);
-            //    return String.valueOf(buffer);
-            //}
-
-            ///* (non-Javadoc)
-            // * @see java.util.Iterator#remove()
-            // */
-            //@Override
-            //    public void remove()
-            //{
-            //    throw new UnsupportedOperationException();
-            //}
+            // ICU4N NOTE: Remove() not supported in .NET
         }
 
         // ICU4N specific - ContainsAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
@@ -4282,42 +4226,36 @@ namespace ICU4N.Text
         // ICU4N specific - RetainAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
 
 
-
-        /**
-         * Comparison style enums used by {@link UnicodeSet#compareTo(UnicodeSet, ComparisonStyle)}.
-         * @stable ICU 4.4
-         */
-        public enum ComparisonStyle
+        /// <summary>
+        /// Comparison style enums used by <see cref="CompareTo(UnicodeSet, ComparisonStyle)"/>.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        public enum ComparisonStyle // ICU4N TODO: API - de-nest and name according to .NET conventions
         {
-            /**
-             * @stable ICU 4.4
-             */
+            /// <stable>ICU 4.4</stable>
             SHORTER_FIRST,
-            /**
-             * @stable ICU 4.4
-             */
+            /// <stable>ICU 4.4</stable>
             LEXICOGRAPHIC,
-            /**
-             * @stable ICU 4.4
-             */
+            /// <stable>ICU 4.4</stable>
             LONGER_FIRST
         }
 
-        /**
-         * Compares UnicodeSets, where shorter come first, and otherwise lexigraphically
-         * (according to the comparison of the first characters that differ).
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Compares <see cref="UnicodeSet"/>s, where shorter come first, and otherwise lexigraphically
+        /// (according to the comparison of the first characters that differ).
+        /// </summary>
+        /// <seealso cref="IComparable.CompareTo(object)"/>
+        /// <stable>ICU 4.4</stable>
         public virtual int CompareTo(UnicodeSet o)
         {
             return CompareTo(o, ComparisonStyle.SHORTER_FIRST);
         }
-        /**
-         * Compares UnicodeSets, in three different ways.
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Compares <see cref="UnicodeSet"/>s, in three different ways.
+        /// </summary>
+        /// <seealso cref="IComparable.CompareTo(object)"/>
+        /// <stable>ICU 4.4</stable>
         public virtual int CompareTo(UnicodeSet o, ComparisonStyle style)
         {
             if (style != ComparisonStyle.LEXICOGRAPHIC)
@@ -4358,9 +4296,7 @@ namespace ICU4N.Text
             return Compare(strings, o.strings);
         }
 
-        /**
-         * @stable ICU 4.4
-         */
+        /// <stable>ICU 4.4</stable>
         public virtual int CompareTo(IEnumerable<string> other)
         {
             return Compare(this, other);
@@ -4370,14 +4306,15 @@ namespace ICU4N.Text
 
         // ICU4N specific - Compare(int codePoint, ICharSequence str) moved to UnicodeSetExtension.tt
 
-        /**
-         * Utility to compare two iterables. Warning: the ordering in iterables is important. For Collections that are ordered,
-         * like Lists, that is expected. However, Sets in Java violate Leibniz's law when it comes to iteration.
-         * That means that sets can't be compared directly with this method, unless they are TreeSets without
-         * (or with the same) comparator. Unfortunately, it is impossible to reliably detect in Java whether subclass of
-         * Collection satisfies the right criteria, so it is left to the user to avoid those circumstances.
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Utility to compare two enumerators. Warning: the ordering in enumerables is important. For Collections that are ordered,
+        /// like Lists, that is expected. However, Sets in .NET violate Leibniz's law when it comes to iteration.
+        /// That means that sets can't be compared directly with this method, unless they are <see cref="SortedSet{T}"/>s without
+        /// (or with the same) comparer. Unfortunately, it is impossible to reliably detect in .NET whether subclass of
+        /// Collection satisfies the right criteria, so it is left to the user to avoid those circumstances.
+        /// </summary>
+        /// <typeparam name="T">The type of items to compare.</typeparam>
+        /// <stable>ICU 4.4</stable>
         public static int Compare<T>(IEnumerable<T> collection1, IEnumerable<T> collection2) where T : IComparable<T>
         {
 #pragma warning disable 612, 618
@@ -4385,15 +4322,15 @@ namespace ICU4N.Text
 #pragma warning restore 612, 618
         }
 
-        /**
-         * Utility to compare two iterators. Warning: the ordering in iterables is important. For Collections that are ordered,
-         * like Lists, that is expected. However, Sets in Java violate Leibniz's law when it comes to iteration.
-         * That means that sets can't be compared directly with this method, unless they are TreeSets without
-         * (or with the same) comparator. Unfortunately, it is impossible to reliably detect in Java whether subclass of
-         * Collection satisfies the right criteria, so it is left to the user to avoid those circumstances.
-         * @internal
-         * @deprecated 
-         */
+        /// <summary>
+        /// Utility to compare two enumerators. Warning: the ordering in enumerables is important. For Collections that are ordered,
+        /// like Lists, that is expected. However, Sets in .NET violate Leibniz's law when it comes to iteration.
+        /// That means that sets can't be compared directly with this method, unless they are <see cref="SortedSet{T}"/>s without
+        /// (or with the same) comparer. Unfortunately, it is impossible to reliably detect in .NET whether subclass of
+        /// Collection satisfies the right criteria, so it is left to the user to avoid those circumstances.
+        /// </summary>
+        /// <typeparam name="T">The type of items to compare.</typeparam>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         public static int Compare<T>(IEnumerator<T> first, IEnumerator<T> other) where T : IComparable<T>
         {
@@ -4417,11 +4354,11 @@ namespace ICU4N.Text
             }
         }
 
-
-        /**
-         * Utility to compare two collections, optionally by size, and then lexicographically.
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Utility to compare two collections, optionally by size, and then lexicographically.
+        /// </summary>
+        /// <typeparam name="T">The type of items to compare.</typeparam>
+        /// <stable>ICU 4.4</stable>
         public static int Compare<T>(ICollection<T> collection1, ICollection<T> collection2, ComparisonStyle style) where T : IComparable<T>
         {
             if (style != ComparisonStyle.LEXICOGRAPHIC)
@@ -4435,10 +4372,12 @@ namespace ICU4N.Text
             return Compare(collection1, collection2);
         }
 
-        /**
-         * Utility for adding the contents of an iterable to a collection.
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Utility for adding the contents of an enumerable to a collection.
+        /// </summary>
+        /// <typeparam name="T">The source element type.</typeparam>
+        /// <typeparam name="U">The target type (must implement <see cref="ICollection{T}"/>).</typeparam>
+        /// <stable>ICU 4.4</stable>
         public static U AddAllTo<T, U>(IEnumerable<T> source, U target) where U : ICollection<T>
         {
             foreach (T item in source)
@@ -4448,10 +4387,11 @@ namespace ICU4N.Text
             return target;
         }
 
-        /**
-         * Utility for adding the contents of an iterable to a collection.
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Utility for adding the contents of an enumerable to a collection.
+        /// </summary>
+        /// <typeparam name="T">The type of items to add.</typeparam>
+        /// <stable>ICU 4.4</stable>
         public static T[] AddAllTo<T>(IEnumerable<T> source, T[] target)
         {
             int i = 0;
@@ -4462,15 +4402,16 @@ namespace ICU4N.Text
             return target;
         }
 
-        /**
-         * For iterating through the strings in the set. Example:
-         * <pre>
-         * for (String key : myUnicodeSet.strings()) {
-         *   doSomethingWith(key);
-         * }
-         * </pre>
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// For iterating through the strings in the set. Example:
+        /// <code>
+        /// foreach (string key in myUnicodeSet.Strings)
+        /// {
+        ///     DoSomethingWith(key);
+        /// }
+        /// </code>
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         public ICollection<string> Strings
         {
             get { return strings.ToUnmodifiableSet(); }
@@ -4478,15 +4419,14 @@ namespace ICU4N.Text
 
         // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UnicodeSetExtension.tt
 
-        /**
-         * Simplify the ranges in a Unicode set by merging any ranges that are only separated by characters in the dontCare set.
-         * For example, the ranges: \\u2E80-\\u2E99\\u2E9B-\\u2EF3\\u2F00-\\u2FD5\\u2FF0-\\u2FFB\\u3000-\\u303E change to \\u2E80-\\u303E
-         * if the dontCare set includes unassigned characters (for a particular version of Unicode).
-         * @param dontCare Set with the don't-care characters for spanning
-         * @return the input set, modified
-         * @internal
-         * @deprecated 
-         */
+        /// <summary>
+        /// Simplify the ranges in a Unicode set by merging any ranges that are only separated by characters in the <paramref name="dontCare"/> set.
+        /// For example, the ranges: \\u2E80-\\u2E99\\u2E9B-\\u2EF3\\u2F00-\\u2FD5\\u2FF0-\\u2FFB\\u3000-\\u303E change to \\u2E80-\\u303E
+        /// if the <paramref name="dontCare"/> set includes unassigned characters (for a particular version of Unicode).
+        /// </summary>
+        /// <param name="dontCare">Set with the don't-care characters for spanning.</param>
+        /// <returns>The input set, modified.</returns>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         public UnicodeSet AddBridges(UnicodeSet dontCare)
         {
@@ -4507,131 +4447,131 @@ namespace ICU4N.Text
 
         // ICU4N specific - StripFrom(ICharSequence source, bool matches) moved to UnicodeSetExtension.tt
 
-
-        /**
-         * Argument values for whether span() and similar functions continue while the current character is contained vs.
-         * not contained in the set.
-         * <p>
-         * The functionality is straightforward for sets with only single code points, without strings (which is the common
-         * case):
-         * <ul>
-         * <li>CONTAINED and SIMPLE work the same.
-         * <li>CONTAINED and SIMPLE are inverses of NOT_CONTAINED.
-         * <li>span() and spanBack() partition any string the
-         * same way when alternating between span(NOT_CONTAINED) and span(either "contained" condition).
-         * <li>Using a
-         * complemented (inverted) set and the opposite span conditions yields the same results.
-         * </ul>
-         * When a set contains multi-code point strings, then these statements may not be true, depending on the strings in
-         * the set (for example, whether they overlap with each other) and the string that is processed. For a set with
-         * strings:
-         * <ul>
-         * <li>The complement of the set contains the opposite set of code points, but the same set of strings.
-         * Therefore, complementing both the set and the span conditions may yield different results.
-         * <li>When starting spans
-         * at different positions in a string (span(s, ...) vs. span(s+1, ...)) the ends of the spans may be different
-         * because a set string may start before the later position.
-         * <li>span(SIMPLE) may be shorter than
-         * span(CONTAINED) because it will not recursively try all possible paths. For example, with a set which
-         * contains the three strings "xy", "xya" and "ax", span("xyax", CONTAINED) will return 4 but span("xyax",
-         * SIMPLE) will return 3. span(SIMPLE) will never be longer than span(CONTAINED).
-         * <li>With either "contained" condition, span() and spanBack() may partition a string in different ways. For example,
-         * with a set which contains the two strings "ab" and "ba", and when processing the string "aba", span() will yield
-         * contained/not-contained boundaries of { 0, 2, 3 } while spanBack() will yield boundaries of { 0, 1, 3 }.
-         * </ul>
-         * Note: If it is important to get the same boundaries whether iterating forward or backward through a string, then
-         * either only span() should be used and the boundaries cached for backward operation, or an ICU BreakIterator could
-         * be used.
-         * <p>
-         * Note: Unpaired surrogates are treated like surrogate code points. Similarly, set strings match only on code point
-         * boundaries, never in the middle of a surrogate pair.
-         *
-         * @stable ICU 4.4
-         */
-        public enum SpanCondition
+        /// <summary>
+        /// Argument values for whether <see cref="Span(string, int, SpanCondition)"/> and similar functions continue while the current character is contained vs.
+        /// not contained in the set.
+        /// </summary>
+        /// <remarks>
+        /// The functionality is straightforward for sets with only single code points, without strings (which is the common
+        /// case):
+        /// <list type="bullet">
+        ///     <item><description><see cref="CONTAINED"/> and <see cref="SIMPLE"/> work the same.</description></item>
+        ///     <item><description><see cref="CONTAINED"/> and <see cref="SIMPLE"/> are inverses of <see cref="NOT_CONTAINED"/>.</description></item>
+        ///     <item><description><see cref="Span(string, int, SpanCondition)"/> and <see cref="SpanBack(string, int, SpanCondition)"/> partition any string the
+        ///         same way when alternating between Span(<see cref="NOT_CONTAINED"/>) and Span(either "contained" condition).</description></item>
+        ///     <item><description>Using a complemented (inverted) set and the opposite span conditions yields the same results.</description></item>
+        /// </list>
+        /// When a set contains multi-code point strings, then these statements may not be true, depending on the strings in
+        /// the set (for example, whether they overlap with each other) and the string that is processed. For a set with
+        /// strings:
+        /// <list type="bullet">
+        ///     <item><description>
+        ///         The complement of the set contains the opposite set of code points, but the same set of strings.
+        ///         Therefore, complementing both the set and the span conditions may yield different results.
+        ///     </description></item>
+        ///     <item><description>
+        ///         When starting spans at different positions in a string (span(s, ...) vs. span(s+1, ...)) the 
+        ///         ends of the spans may be different because a set string may start before the later position.
+        ///     </description></item>
+        ///     <item><description>
+        ///         Span(<see cref="SIMPLE"/>) may be shorter than Span(<see cref="CONTAINED"/>) because it will 
+        ///         not recursively try all possible paths. For example, with a set which
+        ///         contains the three strings "xy", "xya" and "ax", Span("xyax", <see cref="CONTAINED"/>) will return 4 but span("xyax",
+        ///         <see cref="SIMPLE"/>) will return 3. Span(<see cref="SIMPLE"/>) will never be longer than Span(<see cref="CONTAINED"/>).
+        ///     </description></item>
+        ///     <item><description>
+        ///         With either "contained" condition, Span() and SpanBack() may partition a string in different ways. For example,
+        ///         with a set which contains the two strings "ab" and "ba", and when processing the string "aba", Span() will yield
+        ///         contained/not-contained boundaries of { 0, 2, 3 } while SpanBack() will yield boundaries of { 0, 1, 3 }.
+        ///     </description></item>
+        /// </list>
+        /// Note: If it is important to get the same boundaries whether iterating forward or backward through a string, then
+        /// either only Span() should be used and the boundaries cached for backward operation, or an ICU <see cref="BreakIterator"/> could
+        /// be used.
+        /// <para/>
+        /// Note: Unpaired surrogates are treated like surrogate code points. Similarly, set strings match only on code point
+        /// boundaries, never in the middle of a surrogate pair.
+        /// </remarks>
+        /// <stable>ICU 4.4</stable>
+        public enum SpanCondition // ICU4N TODO: API - de-nest and name according to .NET conventions
         {
-            /**
-             * Continues a span() while there is no set element at the current position.
-             * Increments by one code point at a time.
-             * Stops before the first set element (character or string).
-             * (For code points only, this is like while contains(current)==false).
-             * <p>
-             * When span() returns, the substring between where it started and the position it returned consists only of
-             * characters that are not in the set, and none of its strings overlap with the span.
-             *
-             * @stable ICU 4.4
-             */
+            /// <summary>
+            /// Continues a <see cref="Span(string, int, SpanCondition)"/> while there is no set element at the current position.
+            /// Increments by one code point at a time.
+            /// Stops before the first set element (character or string).
+            /// (For code points only, this is like while Contains(current)==false).
+            /// </summary>
+            /// <remarks>
+            /// When <see cref="Span(string, int, SpanCondition)"/> returns, the substring between where it started and the position it returned consists only of
+            /// characters that are not in the set, and none of its strings overlap with the span.
+            /// </remarks>
+            /// <stable>ICU 4.4</stable>
             NOT_CONTAINED,
 
-            /**
-             * Spans the longest substring that is a concatenation of set elements (characters or strings).
-             * (For characters only, this is like while contains(current)==true).
-             * <p>
-             * When span() returns, the substring between where it started and the position it returned consists only of set
-             * elements (characters or strings) that are in the set.
-             * <p>
-             * If a set contains strings, then the span will be the longest substring for which there
-             * exists at least one non-overlapping concatenation of set elements (characters or strings).
-             * This is equivalent to a POSIX regular expression for <code>(OR of each set element)*</code>.
-             * (Java/ICU/Perl regex stops at the first match of an OR.)
-             *
-             * @stable ICU 4.4
-             */
+            /// <summary>
+            /// Spans the longest substring that is a concatenation of set elements (characters or strings).
+            /// (For characters only, this is like while Contains(current)==true).
+            /// </summary>
+            /// <remarks>
+            /// When <see cref="Span(string, int, SpanCondition)"/> returns, the substring between where it started and the position it returned consists only of set
+            /// elements (characters or strings) that are in the set.
+            /// <para/>
+            /// If a set contains strings, then the span will be the longest substring for which there
+            /// exists at least one non-overlapping concatenation of set elements (characters or strings).
+            /// This is equivalent to a POSIX regular expression for <c>(OR of each set element)*</c>.
+            /// (.NET/ICU/Perl regex stops at the first match of an OR.)
+            /// </remarks>
+            /// <stable>ICU 4.4</stable>
             CONTAINED,
 
-            /**
-             * Continues a span() while there is a set element at the current position.
-             * Increments by the longest matching element at each position.
-             * (For characters only, this is like while contains(current)==true).
-             * <p>
-             * When span() returns, the substring between where it started and the position it returned consists only of set
-             * elements (characters or strings) that are in the set.
-             * <p>
-             * If a set only contains single characters, then this is the same as CONTAINED.
-             * <p>
-             * If a set contains strings, then the span will be the longest substring with a match at each position with the
-             * longest single set element (character or string).
-             * <p>
-             * Use this span condition together with other longest-match algorithms, such as ICU converters
-             * (ucnv_getUnicodeSet()).
-             *
-             * @stable ICU 4.4
-             */
+            /// <summary>
+            /// Continues a <see cref="Span(string, int, SpanCondition)"/> while there is a set element at the current position.
+            /// Increments by the longest matching element at each position.
+            /// (For characters only, this is like while Contains(current)==true).
+            /// </summary>
+            /// <remarks>
+            /// When <see cref="Span(string, int, SpanCondition)"/> returns, the substring between where it started and the position it returned consists only of set
+            /// elements (characters or strings) that are in the set.
+            /// <para/>
+            /// If a set only contains single characters, then this is the same as <see cref="CONTAINED"/>.
+            /// <para/>
+            /// If a set contains strings, then the span will be the longest substring with a match at each position with the
+            /// longest single set element (character or string).
+            /// <para/>
+            /// Use this span condition together with other longest-match algorithms, such as ICU converters
+            /// (ucnv_getUnicodeSet()).
+            /// </remarks>
+            /// <stable>ICU 4.4</stable>
             SIMPLE,
 
-            /**
-             * One more than the last span condition.
-             *
-             * @stable ICU 4.4
-             */
+            /// <summary>
+            /// One more than the last span condition.
+            /// </summary>
+            /// <stable>ICU 4.4</stable>
             CONDITION_COUNT
         }
 
-        /**
-         * Get the default symbol table. Null means ordinary processing. For internal use only.
-         * @return the symbol table
-         * @internal
-         * @deprecated 
-         */
+        /// <summary>
+        /// Get the default symbol table. Null means ordinary processing. For internal use only.
+        /// </summary>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         public static XSymbolTable DefaultXSymbolTable
         {
             get { return XSYMBOL_TABLE; }
         }
 
-        /**
-         * Set the default symbol table. Null means ordinary processing. For internal use only. Will affect all subsequent parsing
-         * of UnicodeSets.
-         * <p>
-         * WARNING: If this function is used with a UnicodeProperty, and the
-         * Unassigned characters (gc=Cn) are different than in ICU other than in ICU, you MUST call
-         * {@code UnicodeProperty.ResetCacheProperties} afterwards. If you then call {@code UnicodeSet.setDefaultXSymbolTable}
-         * with null to clear the value, you MUST also call {@code UnicodeProperty.ResetCacheProperties}.
-         *
-         * @param xSymbolTable the new default symbol table.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Set the default symbol table. Null means ordinary processing. For internal use only. Will affect all subsequent parsing
+        /// of <see cref="UnicodeSet"/>s.
+        /// <para/>
+        /// WARNING: If this function is used with a UnicodeProperty, and the
+        /// Unassigned characters (gc=Cn) are different than in ICU other than in ICU, you MUST call
+        /// <c>UnicodeProperty.ResetCacheProperties</c> afterwards. If you then set <see cref="UnicodeSet.DefaultXSymbolTable"/>
+        /// with null to clear the value, you MUST also call <c>UnicodeProperty.ResetCacheProperties</c>.
+        /// </summary>
+        /// <param name="xSymbolTable">The new default symbol table.</param>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         public static void SetDefaultXSymbolTable(XSymbolTable xSymbolTable) // ICU4N NOTE: Has side-effect, so isn't a good property candidate
         {
