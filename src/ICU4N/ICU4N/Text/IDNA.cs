@@ -6,6 +6,104 @@ using StringBuffer = System.Text.StringBuilder;
 namespace ICU4N.Text
 {
     /// <summary>
+    /// IDNA error bit set values.
+    /// When a domain name or label fails a processing step or does not meet the
+    /// validity criteria, then one or more of these error bits are set.
+    /// </summary>
+    /// <stable>ICU 4.6</stable>
+    public enum IDNAError
+    {
+        /// <summary>
+        /// A non-final domain name label (or the whole domain name) is empty.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        EmptyLabel,
+        /// <summary>
+        /// A domain name label is longer than 63 bytes.
+        /// (See STD13/RFC1034 3.1. Name space specifications and terminology.)
+        /// This is only checked in ToASCII operations, and only if the output label is all-ASCII.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        LabelTooLong,
+        /// <summary>
+        /// A domain name is longer than 255 bytes in its storage form.
+        /// (See STD13/RFC1034 3.1. Name space specifications and terminology.)
+        /// This is only checked in ToASCII operations, and only if the output domain name is all-ASCII.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        DomainNameTooLong,
+        /// <summary>
+        /// A label starts with a hyphen-minus ('-').
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        LeadingHyphen,
+        /// <summary>
+        /// A label ends with a hyphen-minus ('-').
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        TrailingHyphen,
+        /// <summary>
+        /// A label contains hyphen-minus ('-') in the third and fourth positions.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        Hyphen_3_4,
+        /// <summary>
+        /// A label starts with a combining mark.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        LeadingCombiningMark,
+        /// <summary>
+        /// A label or domain name contains disallowed characters.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        Disallowed,
+        /// <summary>
+        /// A label starts with "xn--" but does not contain valid Punycode.
+        /// That is, an xn-- label failed Punycode decoding.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        Punycode,
+        /// <summary>
+        /// A label contains a dot=full stop.
+        /// This can occur in an input string for a single-label function.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        LabelHasDot,
+        /// <summary>
+        /// An ACE label does not contain a valid label string.
+        /// The label was successfully ACE (Punycode) decoded but the resulting
+        /// string had severe validation errors. For example,
+        /// it might contain characters that are not allowed in ACE labels,
+        /// or it might not be normalized.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        InvalidAceLabel,
+        /// <summary>
+        /// A label does not meet the IDNA BiDi requirements (for right-to-left characters).
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        BiDi,
+        /// <summary>
+        /// A label does not meet the IDNA CONTEXTJ requirements.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        ContextJ,
+        /// <summary>
+        /// A label does not meet the IDNA CONTEXTO requirements for punctuation characters.
+        /// Some punctuation characters "Would otherwise have been DISALLOWED"
+        /// but are allowed in certain contexts. (RFC 5892)
+        /// </summary>
+        /// <stable>ICU 49</stable>
+        ContextOPunctuation,
+        /// <summary>
+        /// A label does not meet the IDNA CONTEXTO requirements for digits.
+        /// Arabic-Indic Digits (U+066x) must not be mixed with Extended Arabic-Indic Digits (U+06Fx).
+        /// </summary>
+        /// <stable>ICU 49</stable>
+        ContextODigits
+    }
+
+    /// <summary>
     /// Abstract base class for IDNA processing.
     /// See <a href="http://www.unicode.org/reports/tr46/">http://www.unicode.org/reports/tr46/</a>
     /// and <a href="http://www.ietf.org/rfc/rfc3490.txt">http://www.ietf.org/rfc/rfc3490.txt</a>
@@ -101,8 +199,8 @@ namespace ICU4N.Text
             /// <stable>ICU 4.6</stable>
             public Info()
             {
-                errors = new HashSet<Error>();
-                labelErrors = new HashSet<Error>();
+                errors = new HashSet<IDNAError>();
+                labelErrors = new HashSet<IDNAError>();
                 isTransDiff = false;
                 isBiDi = false;
                 isOkBiDi = true;
@@ -118,7 +216,7 @@ namespace ICU4N.Text
             /// Returns a set indicating IDNA processing errors (modifiable, and not null).
             /// </summary>
             /// <stable>ICU 4.6</stable>
-            public ISet<Error> Errors { get { return errors; } }
+            public ISet<IDNAError> Errors { get { return errors; } }
             /// <summary>
             /// Returns true if transitional and nontransitional processing produce different results.
             /// This is the case when the input label or domain name contains
@@ -146,7 +244,7 @@ namespace ICU4N.Text
                 isOkBiDi = true;
             }
 
-            internal ISet<Error> errors, labelErrors;
+            internal ISet<IDNAError> errors, labelErrors;
             internal bool isTransDiff;
             internal bool isBiDi;
             internal bool isOkBiDi;
@@ -164,19 +262,19 @@ namespace ICU4N.Text
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool HasCertainErrors(Info info, ISet<Error> errors)
+        protected static bool HasCertainErrors(Info info, ISet<IDNAError> errors)
         {
             return info.errors.Count > 0 && info.errors.Overlaps(errors);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool HasCertainLabelErrors(Info info, ISet<Error> errors)
+        protected static bool HasCertainLabelErrors(Info info, ISet<IDNAError> errors)
         {
             return info.labelErrors.Count > 0 && info.labelErrors.Overlaps(errors);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void AddLabelError(Info info, Error error)
+        protected static void AddLabelError(Info info, IDNAError error)
         {
             info.labelErrors.Add(error);
         }
@@ -192,7 +290,7 @@ namespace ICU4N.Text
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void AddError(Info info, Error error)
+        protected static void AddError(Info info, IDNAError error)
         {
             info.errors.Add(error);
         }
@@ -227,103 +325,7 @@ namespace ICU4N.Text
             return info.isOkBiDi;
         }
 
-        /// <summary>
-        /// IDNA error bit set values.
-        /// When a domain name or label fails a processing step or does not meet the
-        /// validity criteria, then one or more of these error bits are set.
-        /// </summary>
-        /// <stable>ICU 4.6</stable>
-        public enum Error // ICU4N TODO: API De-nest and rename to follow .NET Conventions.
-        {
-            /// <summary>
-            /// A non-final domain name label (or the whole domain name) is empty.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            EMPTY_LABEL,
-            /// <summary>
-            /// A domain name label is longer than 63 bytes.
-            /// (See STD13/RFC1034 3.1. Name space specifications and terminology.)
-            /// This is only checked in ToASCII operations, and only if the output label is all-ASCII.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            LABEL_TOO_LONG,
-            /// <summary>
-            /// A domain name is longer than 255 bytes in its storage form.
-            /// (See STD13/RFC1034 3.1. Name space specifications and terminology.)
-            /// This is only checked in ToASCII operations, and only if the output domain name is all-ASCII.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            DOMAIN_NAME_TOO_LONG,
-            /// <summary>
-            /// A label starts with a hyphen-minus ('-').
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            LEADING_HYPHEN,
-            /// <summary>
-            /// A label ends with a hyphen-minus ('-').
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            TRAILING_HYPHEN,
-            /// <summary>
-            /// A label contains hyphen-minus ('-') in the third and fourth positions.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            HYPHEN_3_4,
-            /// <summary>
-            /// A label starts with a combining mark.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            LEADING_COMBINING_MARK,
-            /// <summary>
-            /// A label or domain name contains disallowed characters.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            DISALLOWED,
-            /// <summary>
-            /// A label starts with "xn--" but does not contain valid Punycode.
-            /// That is, an xn-- label failed Punycode decoding.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            PUNYCODE,
-            /// <summary>
-            /// A label contains a dot=full stop.
-            /// This can occur in an input string for a single-label function.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            LABEL_HAS_DOT,
-            /// <summary>
-            /// An ACE label does not contain a valid label string.
-            /// The label was successfully ACE (Punycode) decoded but the resulting
-            /// string had severe validation errors. For example,
-            /// it might contain characters that are not allowed in ACE labels,
-            /// or it might not be normalized.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            INVALID_ACE_LABEL,
-            /// <summary>
-            /// A label does not meet the IDNA BiDi requirements (for right-to-left characters).
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            BIDI,
-            /// <summary>
-            /// A label does not meet the IDNA CONTEXTJ requirements.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            CONTEXTJ,
-            /// <summary>
-            /// A label does not meet the IDNA CONTEXTO requirements for punctuation characters.
-            /// Some punctuation characters "Would otherwise have been DISALLOWED"
-            /// but are allowed in certain contexts. (RFC 5892)
-            /// </summary>
-            /// <stable>ICU 49</stable>
-            CONTEXTO_PUNCTUATION,
-            /// <summary>
-            /// A label does not meet the IDNA CONTEXTO requirements for digits.
-            /// Arabic-Indic Digits (U+066x) must not be mixed with Extended Arabic-Indic Digits (U+06Fx).
-            /// </summary>
-            /// <stable>ICU 49</stable>
-            CONTEXTO_DIGITS
-        }
+        // ICU4N specific - de-nested Error enum and renamed IDNAError
 
         /// <summary>
         /// Sole constructor. (For invocation by subclass constructors, typically implicit.)

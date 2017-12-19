@@ -107,13 +107,13 @@ namespace ICU4N.Impl
         internal readonly UTS46Options options;
 
         // Severe errors which usually result in a U+FFFD replacement character in the result string.
-        private static readonly ISet<Error> severeErrors = new HashSet<Error>
+        private static readonly ISet<IDNAError> severeErrors = new HashSet<IDNAError>
         {
-            Error.LEADING_COMBINING_MARK,
-            Error.DISALLOWED,
-            Error.PUNYCODE,
-            Error.LABEL_HAS_DOT,
-            Error.INVALID_ACE_LABEL
+            IDNAError.LeadingCombiningMark,
+            IDNAError.Disallowed,
+            IDNAError.Punycode,
+            IDNAError.LabelHasDot,
+            IDNAError.InvalidAceLabel
         };
 
         // ICU4N specific - NIsASCIIString(ICharSequence dest) moved to UTS46Extension.tt
@@ -231,7 +231,7 @@ namespace ICU4N.Impl
                 }
                 catch (StringPrepParseException e)
                 {
-                    AddLabelError(info, Error.PUNYCODE);
+                    AddLabelError(info, IDNAError.Punycode);
                     return MarkBadACELabel(dest, labelStart, labelLength, toASCII, info);
                 }
                 // Check for NFC, and for characters that are not
@@ -244,7 +244,7 @@ namespace ICU4N.Impl
                 bool isValid = uts46Norm2.IsNormalized(fromPunycode);
                 if (!isValid)
                 {
-                    AddLabelError(info, Error.INVALID_ACE_LABEL);
+                    AddLabelError(info, IDNAError.InvalidAceLabel);
                     return MarkBadACELabel(dest, labelStart, labelLength, toASCII, info);
                 }
                 labelString = fromPunycode;
@@ -259,24 +259,24 @@ namespace ICU4N.Impl
             // Validity check
             if (labelLength == 0)
             {
-                AddLabelError(info, Error.EMPTY_LABEL);
+                AddLabelError(info, IDNAError.EmptyLabel);
                 return ReplaceLabel(dest, destLabelStart, destLabelLength, labelString, labelLength);
             }
             // labelLength>0
             if (labelLength >= 4 && labelString[labelStart + 2] == '-' && labelString[labelStart + 3] == '-')
             {
                 // label starts with "??--"
-                AddLabelError(info, Error.HYPHEN_3_4);
+                AddLabelError(info, IDNAError.Hyphen_3_4);
             }
             if (labelString[labelStart] == '-')
             {
                 // label starts with "-"
-                AddLabelError(info, Error.LEADING_HYPHEN);
+                AddLabelError(info, IDNAError.LeadingHyphen);
             }
             if (labelString[labelStart + labelLength - 1] == '-')
             {
                 // label ends with "-"
-                AddLabelError(info, Error.TRAILING_HYPHEN);
+                AddLabelError(info, IDNAError.TrailingHyphen);
             }
             // If the label was not a Punycode label, then it was the result of
             // mapping, normalization and label segmentation.
@@ -299,12 +299,12 @@ namespace ICU4N.Impl
                 {
                     if (c == '.')
                     {
-                        AddLabelError(info, Error.LABEL_HAS_DOT);
+                        AddLabelError(info, IDNAError.LabelHasDot);
                         labelString[i] = '\ufffd';
                     }
                     else if (disallowNonLDHDot && asciiData[c] < 0)
                     {
-                        AddLabelError(info, Error.DISALLOWED);
+                        AddLabelError(info, IDNAError.Disallowed);
                         labelString[i] = '\ufffd';
                     }
                 }
@@ -313,12 +313,12 @@ namespace ICU4N.Impl
                     oredChars |= c;
                     if (disallowNonLDHDot && IsNonASCIIDisallowedSTD3Valid(c))
                     {
-                        AddLabelError(info, Error.DISALLOWED);
+                        AddLabelError(info, IDNAError.Disallowed);
                         labelString[i] = '\ufffd';
                     }
                     else if (c == 0xfffd)
                     {
-                        AddLabelError(info, Error.DISALLOWED);
+                        AddLabelError(info, IDNAError.Disallowed);
                     }
                 }
                 ++i;
@@ -330,7 +330,7 @@ namespace ICU4N.Impl
             c2 = labelString.CodePointAt(labelStart);
             if ((U_GET_GC_MASK(c2) & U_GC_M_MASK) != 0)
             {
-                AddLabelError(info, Error.LEADING_COMBINING_MARK);
+                AddLabelError(info, IDNAError.LeadingCombiningMark);
                 labelString[labelStart] = '\ufffd';
                 if (c2 > 0xffff)
                 {
@@ -355,7 +355,7 @@ namespace ICU4N.Impl
                     !IsLabelOkContextJ(labelString, labelStart, labelLength)
                 )
                 {
-                    AddLabelError(info, Error.CONTEXTJ);
+                    AddLabelError(info, IDNAError.ContextJ);
                 }
                 if ((options & UTS46Options.CheckContextO) != 0 && oredChars >= 0xb7)
                 {
@@ -368,7 +368,7 @@ namespace ICU4N.Impl
                         // Leave a Punycode label unchanged if it has no severe errors.
                         if (destLabelLength > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         return destLabelLength;
                     }
@@ -387,7 +387,7 @@ namespace ICU4N.Impl
                         punycode.Insert(0, "xn--");
                         if (punycode.Length > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         return ReplaceLabel(dest, destLabelStart, destLabelLength,
                                             punycode, punycode.Length);
@@ -397,7 +397,7 @@ namespace ICU4N.Impl
                         // all-ASCII label
                         if (labelLength > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                     }
                 }
@@ -408,7 +408,7 @@ namespace ICU4N.Impl
                 // then leave it but make sure it does not look valid.
                 if (wasPunycode)
                 {
-                    AddLabelError(info, Error.INVALID_ACE_LABEL);
+                    AddLabelError(info, IDNAError.InvalidAceLabel);
                     return MarkBadACELabel(dest, destLabelStart, destLabelLength, toASCII, info);
                 }
             }
@@ -430,7 +430,7 @@ namespace ICU4N.Impl
                 {
                     if (c == '.')
                     {
-                        AddLabelError(info, Error.LABEL_HAS_DOT);
+                        AddLabelError(info, IDNAError.LabelHasDot);
                         dest[i] = '\ufffd';
                         isASCII = onlyLDH = false;
                     }
@@ -458,7 +458,7 @@ namespace ICU4N.Impl
             {
                 if (toASCII && isASCII && labelLength > 63)
                 {
-                    AddLabelError(info, Error.LABEL_TOO_LONG);
+                    AddLabelError(info, IDNAError.LabelTooLong);
                 }
             }
             return labelLength;

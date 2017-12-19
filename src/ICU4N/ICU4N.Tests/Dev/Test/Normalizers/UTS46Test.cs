@@ -45,7 +45,7 @@ namespace ICU4N.Dev.Test.Normalizers
             input = "xn--bcher.de-65a";
             expected = "xn--bcher\uFFFDde-65a";
             nontrans.LabelToASCII(input, result, info);
-            if (!info.Errors.SetEquals(new HashSet<IDNA.Error> { IDNA.Error.LABEL_HAS_DOT, IDNA.Error.INVALID_ACE_LABEL }) ||
+            if (!info.Errors.SetEquals(new HashSet<IDNAError> { IDNAError.LabelHasDot, IDNAError.InvalidAceLabel }) ||
                 !UTF16Plus.Equal(result, expected)
             )
             {
@@ -88,7 +88,7 @@ namespace ICU4N.Dev.Test.Normalizers
             // A space (BiDi class WS) is not allowed in a BiDi domain name.
             input = "a z.xn--4db.edu";
             not3.NameToASCII(input, result, info);
-            if (!UTF16Plus.Equal(result, input) || !info.Errors.SetEquals(new HashSet<IDNA.Error> { IDNA.Error.BIDI }))
+            if (!UTF16Plus.Equal(result, input) || !info.Errors.SetEquals(new HashSet<IDNAError> { IDNAError.BiDi }))
             {
                 Errln("notSTD3.nameToASCII(ASCII-with-space.alef.edu) failed");
             }
@@ -102,26 +102,26 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-        private static readonly IDictionary<string, IDNA.Error> errorNamesToErrors;
+        private static readonly IDictionary<string, IDNAError> errorNamesToErrors;
         static UTS46Test()
         {
-            errorNamesToErrors = new SortedDictionary<string, IDNA.Error>(StringComparer.Ordinal)
+            errorNamesToErrors = new SortedDictionary<string, IDNAError>(StringComparer.Ordinal)
             {
-                { "UIDNA_ERROR_EMPTY_LABEL", IDNA.Error.EMPTY_LABEL },
-                { "UIDNA_ERROR_LABEL_TOO_LONG", IDNA.Error.LABEL_TOO_LONG },
-                { "UIDNA_ERROR_DOMAIN_NAME_TOO_LONG", IDNA.Error.DOMAIN_NAME_TOO_LONG },
-                { "UIDNA_ERROR_LEADING_HYPHEN", IDNA.Error.LEADING_HYPHEN },
-                { "UIDNA_ERROR_TRAILING_HYPHEN", IDNA.Error.TRAILING_HYPHEN },
-                { "UIDNA_ERROR_HYPHEN_3_4", IDNA.Error.HYPHEN_3_4 },
-                { "UIDNA_ERROR_LEADING_COMBINING_MARK", IDNA.Error.LEADING_COMBINING_MARK },
-                { "UIDNA_ERROR_DISALLOWED", IDNA.Error.DISALLOWED },
-                { "UIDNA_ERROR_PUNYCODE", IDNA.Error.PUNYCODE },
-                { "UIDNA_ERROR_LABEL_HAS_DOT", IDNA.Error.LABEL_HAS_DOT },
-                { "UIDNA_ERROR_INVALID_ACE_LABEL", IDNA.Error.INVALID_ACE_LABEL },
-                { "UIDNA_ERROR_BIDI", IDNA.Error.BIDI },
-                { "UIDNA_ERROR_CONTEXTJ", IDNA.Error.CONTEXTJ },
-                { "UIDNA_ERROR_CONTEXTO_PUNCTUATION", IDNA.Error.CONTEXTO_PUNCTUATION },
-                { "UIDNA_ERROR_CONTEXTO_DIGITS", IDNA.Error.CONTEXTO_DIGITS },
+                { "UIDNA_ERROR_EMPTY_LABEL", IDNAError.EmptyLabel },
+                { "UIDNA_ERROR_LABEL_TOO_LONG", IDNAError.LabelTooLong },
+                { "UIDNA_ERROR_DOMAIN_NAME_TOO_LONG", IDNAError.DomainNameTooLong },
+                { "UIDNA_ERROR_LEADING_HYPHEN", IDNAError.LeadingHyphen },
+                { "UIDNA_ERROR_TRAILING_HYPHEN", IDNAError.TrailingHyphen },
+                { "UIDNA_ERROR_HYPHEN_3_4", IDNAError.Hyphen_3_4 },
+                { "UIDNA_ERROR_LEADING_COMBINING_MARK", IDNAError.LeadingCombiningMark },
+                { "UIDNA_ERROR_DISALLOWED", IDNAError.Disallowed },
+                { "UIDNA_ERROR_PUNYCODE", IDNAError.Punycode },
+                { "UIDNA_ERROR_LABEL_HAS_DOT", IDNAError.LabelHasDot },
+                { "UIDNA_ERROR_INVALID_ACE_LABEL", IDNAError.InvalidAceLabel },
+                { "UIDNA_ERROR_BIDI", IDNAError.BiDi },
+                { "UIDNA_ERROR_CONTEXTJ", IDNAError.ContextJ },
+                { "UIDNA_ERROR_CONTEXTO_PUNCTUATION", IDNAError.ContextOPunctuation },
+                { "UIDNA_ERROR_CONTEXTO_DIGITS", IDNAError.ContextODigits },
             };
         }
 
@@ -129,7 +129,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             internal TestCase()
             {
-                errors = new HashSet<IDNA.Error>();
+                errors = new HashSet<IDNAError>();
             }
             internal void Set(string[] data)
             {
@@ -149,7 +149,7 @@ namespace ICU4N.Dev.Test.Normalizers
             internal string s, o;
             // Expected Unicode result string.
             internal string u;
-            internal ISet<IDNA.Error> errors;
+            internal ISet<IDNAError> errors;
         };
 
         private static readonly string[][] testCases ={
@@ -498,7 +498,7 @@ namespace ICU4N.Dev.Test.Normalizers
             IDNA.Info aTLInfo = new IDNA.Info(), uTLInfo = new IDNA.Info();
             IDNA.Info aNLInfo = new IDNA.Info(), uNLInfo = new IDNA.Info();
 
-            ISet<IDNA.Error> uniErrors = new HashSet<IDNA.Error>();
+            ISet<IDNAError> uniErrors = new HashSet<IDNAError>();
 
             TestCase testCase = new TestCase();
             int i;
@@ -664,7 +664,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 else
                 {
-                    if (!hasError(aNLInfo, IDNA.Error.LABEL_HAS_DOT))
+                    if (!hasError(aNLInfo, IDNAError.LabelHasDot))
                     {
                         Errln(String.Format("N.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
                                             i, testCase.s, CollectionUtil.ToString(aNLInfo.Errors)));
@@ -684,7 +684,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 else
                 {
-                    if (!hasError(aTLInfo, IDNA.Error.LABEL_HAS_DOT))
+                    if (!hasError(aTLInfo, IDNAError.LabelHasDot))
                     {
                         Errln(String.Format("T.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
                                             i, testCase.s, CollectionUtil.ToString(aTLInfo.Errors)));
@@ -704,7 +704,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 else
                 {
-                    if (!hasError(uNLInfo, IDNA.Error.LABEL_HAS_DOT))
+                    if (!hasError(uNLInfo, IDNAError.LabelHasDot))
                     {
                         Errln(String.Format("N.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
                                             i, testCase.s, CollectionUtil.ToString(uNLInfo.Errors)));
@@ -724,7 +724,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 else
                 {
-                    if (!hasError(uTLInfo, IDNA.Error.LABEL_HAS_DOT))
+                    if (!hasError(uTLInfo, IDNAError.LabelHasDot))
                     {
                         Errln(String.Format("T.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
                                             i, testCase.s, CollectionUtil.ToString(uTLInfo.Errors)));
@@ -885,34 +885,34 @@ namespace ICU4N.Dev.Test.Normalizers
 
         private readonly IDNA trans, nontrans;
 
-        private static readonly ISet<IDNA.Error> severeErrors = new HashSet<IDNA.Error>
-{
-    IDNA.Error.LEADING_COMBINING_MARK,
-    IDNA.Error.DISALLOWED,
-    IDNA.Error.PUNYCODE,
-    IDNA.Error.LABEL_HAS_DOT,
-    IDNA.Error.INVALID_ACE_LABEL
-    };
-        private static readonly ISet<IDNA.Error> lengthOverflowErrors = new HashSet<IDNA.Error>
+        private static readonly ISet<IDNAError> severeErrors = new HashSet<IDNAError>
         {
-        IDNA.Error.LABEL_TOO_LONG,
-        IDNA.Error.DOMAIN_NAME_TOO_LONG
-    };
+            IDNAError.LeadingCombiningMark,
+            IDNAError.Disallowed,
+            IDNAError.Punycode,
+            IDNAError.LabelHasDot,
+            IDNAError.InvalidAceLabel
+        };
+        private static readonly ISet<IDNAError> lengthOverflowErrors = new HashSet<IDNAError>
+        {
+            IDNAError.LabelTooLong,
+            IDNAError.DomainNameTooLong
+        };
 
-        private bool hasError(IDNA.Info info, IDNA.Error error)
+        private bool hasError(IDNA.Info info, IDNAError error)
         {
             return info.Errors.Contains(error);
         }
         // assumes that certainErrors is not empty
-        private bool hasCertainErrors(ISet<IDNA.Error> errors, ISet<IDNA.Error> certainErrors)
+        private bool hasCertainErrors(ISet<IDNAError> errors, ISet<IDNAError> certainErrors)
         {
             return errors.Count > 0 && errors.Overlaps(certainErrors);
         }
-        private bool hasCertainErrors(IDNA.Info info, ISet<IDNA.Error> certainErrors)
+        private bool hasCertainErrors(IDNA.Info info, ISet<IDNAError> certainErrors)
         {
             return hasCertainErrors(info.Errors, certainErrors);
         }
-        private bool sameErrors(ISet<IDNA.Error> a, ISet<IDNA.Error> b)
+        private bool sameErrors(ISet<IDNAError> a, ISet<IDNAError> b)
         {
             return a.SetEquals(b);
         }
@@ -920,7 +920,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             return sameErrors(a.Errors, b.Errors);
         }
-        private bool sameErrors(IDNA.Info a, ISet<IDNA.Error> b)
+        private bool sameErrors(IDNA.Info a, ISet<IDNAError> b)
         {
             return sameErrors(a.Errors, b);
         }

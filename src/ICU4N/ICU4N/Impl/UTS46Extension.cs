@@ -60,12 +60,12 @@ namespace ICU4N.Impl
         public override StringBuilder NameToASCII(string name, StringBuilder dest, Info info)
         {
             Process(name, false, true, dest, info);
-            if (dest.Length >= 254 && !info.Errors.Contains(Error.DOMAIN_NAME_TOO_LONG) &&
+            if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
                 IsASCIIString(dest) &&
                 (dest.Length > 254 || dest[253] != '.')
             )
             {
-                AddError(info, Error.DOMAIN_NAME_TOO_LONG);
+                AddError(info, IDNAError.DomainNameTooLong);
             }
             return dest;
         }
@@ -73,12 +73,12 @@ namespace ICU4N.Impl
         public override StringBuilder NameToASCII(StringBuilder name, StringBuilder dest, Info info)
         {
             Process(name, false, true, dest, info);
-            if (dest.Length >= 254 && !info.Errors.Contains(Error.DOMAIN_NAME_TOO_LONG) &&
+            if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
                 IsASCIIString(dest) &&
                 (dest.Length > 254 || dest[253] != '.')
             )
             {
-                AddError(info, Error.DOMAIN_NAME_TOO_LONG);
+                AddError(info, IDNAError.DomainNameTooLong);
             }
             return dest;
         }
@@ -86,12 +86,12 @@ namespace ICU4N.Impl
         public override StringBuilder NameToASCII(char[] name, StringBuilder dest, Info info)
         {
             Process(name, false, true, dest, info);
-            if (dest.Length >= 254 && !info.Errors.Contains(Error.DOMAIN_NAME_TOO_LONG) &&
+            if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
                 IsASCIIString(dest) &&
                 (dest.Length > 254 || dest[253] != '.')
             )
             {
-                AddError(info, Error.DOMAIN_NAME_TOO_LONG);
+                AddError(info, IDNAError.DomainNameTooLong);
             }
             return dest;
         }
@@ -99,12 +99,12 @@ namespace ICU4N.Impl
         internal override StringBuilder NameToASCII(ICharSequence name, StringBuilder dest, Info info)
         {
             Process(name, false, true, dest, info);
-            if (dest.Length >= 254 && !info.Errors.Contains(Error.DOMAIN_NAME_TOO_LONG) &&
+            if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
                 IsASCIIString(dest) &&
                 (dest.Length > 254 || dest[253] != '.')
             )
             {
-                AddError(info, Error.DOMAIN_NAME_TOO_LONG);
+                AddError(info, IDNAError.DomainNameTooLong);
             }
             return dest;
         }
@@ -192,11 +192,11 @@ namespace ICU4N.Impl
             int srcLength = src.Length;
             if (srcLength == 0)
             {
-                AddError(info, Error.EMPTY_LABEL);
+                AddError(info, IDNAError.EmptyLabel);
                 return dest;
             }
             // ASCII fastpath
-            bool disallowNonLDHDot = (options & UTS46Options.UseStd3Rules) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
             int labelStart = 0;
             int i;
             for (i = 0; ; ++i)
@@ -207,12 +207,12 @@ namespace ICU4N.Impl
                     {
                         if ((i - labelStart) > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         // There is a trailing dot if labelStart==i.
                         if (!isLabel && i >= 254 && (i > 254 || labelStart < i))
                         {
-                            AddError(info, Error.DOMAIN_NAME_TOO_LONG);
+                            AddError(info, IDNAError.DomainNameTooLong);
                         }
                     }
                     PromoteAndResetLabelErrors(info);
@@ -246,12 +246,12 @@ namespace ICU4N.Impl
                         if (i == labelStart)
                         {
                             // label starts with "-"
-                            AddLabelError(info, Error.LEADING_HYPHEN);
+                            AddLabelError(info, IDNAError.LeadingHyphen);
                         }
                         if ((i + 1) == srcLength || src[i + 1] == '.')
                         {
                             // label ends with "-"
-                            AddLabelError(info, Error.TRAILING_HYPHEN);
+                            AddLabelError(info, IDNAError.TrailingHyphen);
                         }
                     }
                     else if (c == '.')
@@ -264,11 +264,11 @@ namespace ICU4N.Impl
                         }
                         if (i == labelStart)
                         {
-                            AddLabelError(info, Error.EMPTY_LABEL);
+                            AddLabelError(info, IDNAError.EmptyLabel);
                         }
                         if (toASCII && (i - labelStart) > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         PromoteAndResetLabelErrors(info);
                         labelStart = i + 1;
@@ -281,7 +281,7 @@ namespace ICU4N.Impl
                 (!IsOkBiDi(info) || (labelStart > 0 && !IsASCIIOkBiDi(dest, labelStart)))
             )
             {
-                AddError(info, Error.BIDI);
+                AddError(info, IDNAError.BiDi);
             }
             return dest;
         }
@@ -304,11 +304,11 @@ namespace ICU4N.Impl
             int srcLength = src.Length;
             if (srcLength == 0)
             {
-                AddError(info, Error.EMPTY_LABEL);
+                AddError(info, IDNAError.EmptyLabel);
                 return dest;
             }
             // ASCII fastpath
-            bool disallowNonLDHDot = (options & UTS46Options.UseStd3Rules) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
             int labelStart = 0;
             int i;
             for (i = 0; ; ++i)
@@ -319,12 +319,12 @@ namespace ICU4N.Impl
                     {
                         if ((i - labelStart) > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         // There is a trailing dot if labelStart==i.
                         if (!isLabel && i >= 254 && (i > 254 || labelStart < i))
                         {
-                            AddError(info, Error.DOMAIN_NAME_TOO_LONG);
+                            AddError(info, IDNAError.DomainNameTooLong);
                         }
                     }
                     PromoteAndResetLabelErrors(info);
@@ -358,12 +358,12 @@ namespace ICU4N.Impl
                         if (i == labelStart)
                         {
                             // label starts with "-"
-                            AddLabelError(info, Error.LEADING_HYPHEN);
+                            AddLabelError(info, IDNAError.LeadingHyphen);
                         }
                         if ((i + 1) == srcLength || src[i + 1] == '.')
                         {
                             // label ends with "-"
-                            AddLabelError(info, Error.TRAILING_HYPHEN);
+                            AddLabelError(info, IDNAError.TrailingHyphen);
                         }
                     }
                     else if (c == '.')
@@ -376,11 +376,11 @@ namespace ICU4N.Impl
                         }
                         if (i == labelStart)
                         {
-                            AddLabelError(info, Error.EMPTY_LABEL);
+                            AddLabelError(info, IDNAError.EmptyLabel);
                         }
                         if (toASCII && (i - labelStart) > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         PromoteAndResetLabelErrors(info);
                         labelStart = i + 1;
@@ -393,7 +393,7 @@ namespace ICU4N.Impl
                 (!IsOkBiDi(info) || (labelStart > 0 && !IsASCIIOkBiDi(dest, labelStart)))
             )
             {
-                AddError(info, Error.BIDI);
+                AddError(info, IDNAError.BiDi);
             }
             return dest;
         }
@@ -409,11 +409,11 @@ namespace ICU4N.Impl
             int srcLength = src.Length;
             if (srcLength == 0)
             {
-                AddError(info, Error.EMPTY_LABEL);
+                AddError(info, IDNAError.EmptyLabel);
                 return dest;
             }
             // ASCII fastpath
-            bool disallowNonLDHDot = (options & UTS46Options.UseStd3Rules) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
             int labelStart = 0;
             int i;
             for (i = 0; ; ++i)
@@ -424,12 +424,12 @@ namespace ICU4N.Impl
                     {
                         if ((i - labelStart) > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         // There is a trailing dot if labelStart==i.
                         if (!isLabel && i >= 254 && (i > 254 || labelStart < i))
                         {
-                            AddError(info, Error.DOMAIN_NAME_TOO_LONG);
+                            AddError(info, IDNAError.DomainNameTooLong);
                         }
                     }
                     PromoteAndResetLabelErrors(info);
@@ -463,12 +463,12 @@ namespace ICU4N.Impl
                         if (i == labelStart)
                         {
                             // label starts with "-"
-                            AddLabelError(info, Error.LEADING_HYPHEN);
+                            AddLabelError(info, IDNAError.LeadingHyphen);
                         }
                         if ((i + 1) == srcLength || src[i + 1] == '.')
                         {
                             // label ends with "-"
-                            AddLabelError(info, Error.TRAILING_HYPHEN);
+                            AddLabelError(info, IDNAError.TrailingHyphen);
                         }
                     }
                     else if (c == '.')
@@ -481,11 +481,11 @@ namespace ICU4N.Impl
                         }
                         if (i == labelStart)
                         {
-                            AddLabelError(info, Error.EMPTY_LABEL);
+                            AddLabelError(info, IDNAError.EmptyLabel);
                         }
                         if (toASCII && (i - labelStart) > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         PromoteAndResetLabelErrors(info);
                         labelStart = i + 1;
@@ -498,7 +498,7 @@ namespace ICU4N.Impl
                 (!IsOkBiDi(info) || (labelStart > 0 && !IsASCIIOkBiDi(dest, labelStart)))
             )
             {
-                AddError(info, Error.BIDI);
+                AddError(info, IDNAError.BiDi);
             }
             return dest;
         }
@@ -521,11 +521,11 @@ namespace ICU4N.Impl
             int srcLength = src.Length;
             if (srcLength == 0)
             {
-                AddError(info, Error.EMPTY_LABEL);
+                AddError(info, IDNAError.EmptyLabel);
                 return dest;
             }
             // ASCII fastpath
-            bool disallowNonLDHDot = (options & UTS46Options.UseStd3Rules) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
             int labelStart = 0;
             int i;
             for (i = 0; ; ++i)
@@ -536,12 +536,12 @@ namespace ICU4N.Impl
                     {
                         if ((i - labelStart) > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         // There is a trailing dot if labelStart==i.
                         if (!isLabel && i >= 254 && (i > 254 || labelStart < i))
                         {
-                            AddError(info, Error.DOMAIN_NAME_TOO_LONG);
+                            AddError(info, IDNAError.DomainNameTooLong);
                         }
                     }
                     PromoteAndResetLabelErrors(info);
@@ -575,12 +575,12 @@ namespace ICU4N.Impl
                         if (i == labelStart)
                         {
                             // label starts with "-"
-                            AddLabelError(info, Error.LEADING_HYPHEN);
+                            AddLabelError(info, IDNAError.LeadingHyphen);
                         }
                         if ((i + 1) == srcLength || src[i + 1] == '.')
                         {
                             // label ends with "-"
-                            AddLabelError(info, Error.TRAILING_HYPHEN);
+                            AddLabelError(info, IDNAError.TrailingHyphen);
                         }
                     }
                     else if (c == '.')
@@ -593,11 +593,11 @@ namespace ICU4N.Impl
                         }
                         if (i == labelStart)
                         {
-                            AddLabelError(info, Error.EMPTY_LABEL);
+                            AddLabelError(info, IDNAError.EmptyLabel);
                         }
                         if (toASCII && (i - labelStart) > 63)
                         {
-                            AddLabelError(info, Error.LABEL_TOO_LONG);
+                            AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         PromoteAndResetLabelErrors(info);
                         labelStart = i + 1;
@@ -610,7 +610,7 @@ namespace ICU4N.Impl
                 (!IsOkBiDi(info) || (labelStart > 0 && !IsASCIIOkBiDi(dest, labelStart)))
             )
             {
-                AddError(info, Error.BIDI);
+                AddError(info, IDNAError.BiDi);
             }
             return dest;
         }
@@ -1928,7 +1928,7 @@ namespace ICU4N.Impl
                         if (!(labelStart < i && label[i - 1] == 'l' &&
                              i < labelEnd && label[i + 1] == 'l'))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (c == 0x375)
@@ -1940,7 +1940,7 @@ namespace ICU4N.Impl
                         if (!(i < labelEnd &&
                              UScript.GREEK == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (c == 0x5f3 || c == 0x5f4)
@@ -1957,7 +1957,7 @@ namespace ICU4N.Impl
                         if (!(labelStart < i &&
                              UScript.HEBREW == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (0x660 <= c /* && c<=0x6f9 */)
@@ -1979,7 +1979,7 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits > 0)
                             {
-                                AddLabelError(info, Error.CONTEXTO_DIGITS);
+                                AddLabelError(info, IDNAError.ContextODigits);
                             }
                             arabicDigits = -1;
                         }
@@ -1987,7 +1987,7 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits < 0)
                             {
-                                AddLabelError(info, Error.CONTEXTO_DIGITS);
+                                AddLabelError(info, IDNAError.ContextODigits);
                             }
                             arabicDigits = 1;
                         }
@@ -2005,7 +2005,7 @@ namespace ICU4N.Impl
                     {
                         if (j > labelEnd)
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                             break;
                         }
                         c = Character.CodePointAt(label, j);
@@ -2042,7 +2042,7 @@ namespace ICU4N.Impl
                         if (!(labelStart < i && label[i - 1] == 'l' &&
                              i < labelEnd && label[i + 1] == 'l'))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (c == 0x375)
@@ -2054,7 +2054,7 @@ namespace ICU4N.Impl
                         if (!(i < labelEnd &&
                              UScript.GREEK == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (c == 0x5f3 || c == 0x5f4)
@@ -2071,7 +2071,7 @@ namespace ICU4N.Impl
                         if (!(labelStart < i &&
                              UScript.HEBREW == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (0x660 <= c /* && c<=0x6f9 */)
@@ -2093,7 +2093,7 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits > 0)
                             {
-                                AddLabelError(info, Error.CONTEXTO_DIGITS);
+                                AddLabelError(info, IDNAError.ContextODigits);
                             }
                             arabicDigits = -1;
                         }
@@ -2101,7 +2101,7 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits < 0)
                             {
-                                AddLabelError(info, Error.CONTEXTO_DIGITS);
+                                AddLabelError(info, IDNAError.ContextODigits);
                             }
                             arabicDigits = 1;
                         }
@@ -2119,7 +2119,7 @@ namespace ICU4N.Impl
                     {
                         if (j > labelEnd)
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                             break;
                         }
                         c = Character.CodePointAt(label, j);
@@ -2156,7 +2156,7 @@ namespace ICU4N.Impl
                         if (!(labelStart < i && label[i - 1] == 'l' &&
                              i < labelEnd && label[i + 1] == 'l'))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (c == 0x375)
@@ -2168,7 +2168,7 @@ namespace ICU4N.Impl
                         if (!(i < labelEnd &&
                              UScript.GREEK == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (c == 0x5f3 || c == 0x5f4)
@@ -2185,7 +2185,7 @@ namespace ICU4N.Impl
                         if (!(labelStart < i &&
                              UScript.HEBREW == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (0x660 <= c /* && c<=0x6f9 */)
@@ -2207,7 +2207,7 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits > 0)
                             {
-                                AddLabelError(info, Error.CONTEXTO_DIGITS);
+                                AddLabelError(info, IDNAError.ContextODigits);
                             }
                             arabicDigits = -1;
                         }
@@ -2215,7 +2215,7 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits < 0)
                             {
-                                AddLabelError(info, Error.CONTEXTO_DIGITS);
+                                AddLabelError(info, IDNAError.ContextODigits);
                             }
                             arabicDigits = 1;
                         }
@@ -2233,7 +2233,7 @@ namespace ICU4N.Impl
                     {
                         if (j > labelEnd)
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                             break;
                         }
                         c = Character.CodePointAt(label, j);
@@ -2270,7 +2270,7 @@ namespace ICU4N.Impl
                         if (!(labelStart < i && label[i - 1] == 'l' &&
                              i < labelEnd && label[i + 1] == 'l'))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (c == 0x375)
@@ -2282,7 +2282,7 @@ namespace ICU4N.Impl
                         if (!(i < labelEnd &&
                              UScript.GREEK == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (c == 0x5f3 || c == 0x5f4)
@@ -2299,7 +2299,7 @@ namespace ICU4N.Impl
                         if (!(labelStart < i &&
                              UScript.HEBREW == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
                     }
                     else if (0x660 <= c /* && c<=0x6f9 */)
@@ -2321,7 +2321,7 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits > 0)
                             {
-                                AddLabelError(info, Error.CONTEXTO_DIGITS);
+                                AddLabelError(info, IDNAError.ContextODigits);
                             }
                             arabicDigits = -1;
                         }
@@ -2329,7 +2329,7 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits < 0)
                             {
-                                AddLabelError(info, Error.CONTEXTO_DIGITS);
+                                AddLabelError(info, IDNAError.ContextODigits);
                             }
                             arabicDigits = 1;
                         }
@@ -2347,7 +2347,7 @@ namespace ICU4N.Impl
                     {
                         if (j > labelEnd)
                         {
-                            AddLabelError(info, Error.CONTEXTO_PUNCTUATION);
+                            AddLabelError(info, IDNAError.ContextOPunctuation);
                             break;
                         }
                         c = Character.CodePointAt(label, j);
