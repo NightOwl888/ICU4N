@@ -18,10 +18,10 @@ namespace ICU4N.Dev.Test.StringPrep
             for (int i = 0; i < TestData.asciiIn.Length; i++)
             {
                 // test StringBuffer toUnicode
-                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA.DEFAULT, null);
-                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA.ALLOW_UNASSIGNED, null);
-                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA.USE_STD3_RULES, null);
-                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA.USE_STD3_RULES | IDNA.ALLOW_UNASSIGNED, null);
+                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA2003Options.Default, null);
+                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA2003Options.AllowUnassigned, null);
+                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA2003Options.UseSTD3Rules, null);
+                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA2003Options.UseSTD3Rules | IDNA2003Options.AllowUnassigned, null);
 
             }
         }
@@ -32,10 +32,10 @@ namespace ICU4N.Dev.Test.StringPrep
             for (int i = 0; i < TestData.asciiIn.Length; i++)
             {
                 // test StringBuffer toUnicode
-                DoTestToASCII(new String(TestData.unicodeIn[i]), TestData.asciiIn[i], IDNA.DEFAULT, null);
-                DoTestToASCII(new String(TestData.unicodeIn[i]), TestData.asciiIn[i], IDNA.ALLOW_UNASSIGNED, null);
-                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA.USE_STD3_RULES, null);
-                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA.USE_STD3_RULES | IDNA.ALLOW_UNASSIGNED, null);
+                DoTestToASCII(new String(TestData.unicodeIn[i]), TestData.asciiIn[i], IDNA2003Options.Default, null);
+                DoTestToASCII(new String(TestData.unicodeIn[i]), TestData.asciiIn[i], IDNA2003Options.AllowUnassigned, null);
+                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA2003Options.UseSTD3Rules, null);
+                DoTestToUnicode(TestData.asciiIn[i], new String(TestData.unicodeIn[i]), IDNA2003Options.UseSTD3Rules | IDNA2003Options.AllowUnassigned, null);
 
             }
         }
@@ -45,16 +45,16 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             for (int i = 0; i < TestData.domainNames.Length; i++)
             {
-                DoTestIDNToASCII(TestData.domainNames[i], TestData.domainNames[i], IDNA.DEFAULT, null);
-                DoTestIDNToASCII(TestData.domainNames[i], TestData.domainNames[i], IDNA.ALLOW_UNASSIGNED, null);
-                DoTestIDNToASCII(TestData.domainNames[i], TestData.domainNames[i], IDNA.USE_STD3_RULES, null);
-                DoTestIDNToASCII(TestData.domainNames[i], TestData.domainNames[i], IDNA.ALLOW_UNASSIGNED | IDNA.USE_STD3_RULES, null);
+                DoTestIDNToASCII(TestData.domainNames[i], TestData.domainNames[i], IDNA2003Options.Default, null);
+                DoTestIDNToASCII(TestData.domainNames[i], TestData.domainNames[i], IDNA2003Options.AllowUnassigned, null);
+                DoTestIDNToASCII(TestData.domainNames[i], TestData.domainNames[i], IDNA2003Options.UseSTD3Rules, null);
+                DoTestIDNToASCII(TestData.domainNames[i], TestData.domainNames[i], IDNA2003Options.AllowUnassigned | IDNA2003Options.UseSTD3Rules, null);
             }
 
             for (int i = 0; i < TestData.domainNames1Uni.Length; i++)
             {
-                DoTestIDNToASCII(TestData.domainNames1Uni[i], TestData.domainNamesToASCIIOut[i], IDNA.DEFAULT, null);
-                DoTestIDNToASCII(TestData.domainNames1Uni[i], TestData.domainNamesToASCIIOut[i], IDNA.ALLOW_UNASSIGNED, null);
+                DoTestIDNToASCII(TestData.domainNames1Uni[i], TestData.domainNamesToASCIIOut[i], IDNA2003Options.Default, null);
+                DoTestIDNToASCII(TestData.domainNames1Uni[i], TestData.domainNamesToASCIIOut[i], IDNA2003Options.AllowUnassigned, null);
             }
         }
         [Test]
@@ -62,19 +62,19 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             for (int i = 0; i < TestData.domainNames.Length; i++)
             {
-                DoTestIDNToUnicode(TestData.domainNames[i], TestData.domainNames[i], IDNA.DEFAULT, null);
-                DoTestIDNToUnicode(TestData.domainNames[i], TestData.domainNames[i], IDNA.ALLOW_UNASSIGNED, null);
-                DoTestIDNToUnicode(TestData.domainNames[i], TestData.domainNames[i], IDNA.USE_STD3_RULES, null);
-                DoTestIDNToUnicode(TestData.domainNames[i], TestData.domainNames[i], IDNA.ALLOW_UNASSIGNED | IDNA.USE_STD3_RULES, null);
+                DoTestIDNToUnicode(TestData.domainNames[i], TestData.domainNames[i], IDNA2003Options.Default, null);
+                DoTestIDNToUnicode(TestData.domainNames[i], TestData.domainNames[i], IDNA2003Options.AllowUnassigned, null);
+                DoTestIDNToUnicode(TestData.domainNames[i], TestData.domainNames[i], IDNA2003Options.UseSTD3Rules, null);
+                DoTestIDNToUnicode(TestData.domainNames[i], TestData.domainNames[i], IDNA2003Options.AllowUnassigned | IDNA2003Options.UseSTD3Rules, null);
             }
             for (int i = 0; i < TestData.domainNamesToASCIIOut.Length; i++)
             {
-                DoTestIDNToUnicode(TestData.domainNamesToASCIIOut[i], TestData.domainNamesToUnicodeOut[i], IDNA.DEFAULT, null);
-                DoTestIDNToUnicode(TestData.domainNamesToASCIIOut[i], TestData.domainNamesToUnicodeOut[i], IDNA.ALLOW_UNASSIGNED, null);
+                DoTestIDNToUnicode(TestData.domainNamesToASCIIOut[i], TestData.domainNamesToUnicodeOut[i], IDNA2003Options.Default, null);
+                DoTestIDNToUnicode(TestData.domainNamesToASCIIOut[i], TestData.domainNamesToUnicodeOut[i], IDNA2003Options.AllowUnassigned, null);
             }
         }
 
-        private void DoTestToUnicode(String src, String expected, int options, Object expectedException)
+        private void DoTestToUnicode(String src, String expected, IDNA2003Options options, Object expectedException)
         {
             StringBuffer inBuf = new StringBuffer(src);
             UCharacterIterator inIter = UCharacterIterator.GetInstance(src);
@@ -143,7 +143,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
         }
 
-        private void DoTestIDNToUnicode(String src, String expected, int options, Object expectedException)
+        private void DoTestIDNToUnicode(String src, String expected, IDNA2003Options options, Object expectedException)
         {
             StringBuffer inBuf = new StringBuffer(src);
             UCharacterIterator inIter = UCharacterIterator.GetInstance(src);
@@ -210,7 +210,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
             }
         }
-        private void DoTestToASCII(String src, String expected, int options, Object expectedException)
+        private void DoTestToASCII(String src, String expected, IDNA2003Options options, Object expectedException)
         {
             StringBuffer inBuf = new StringBuffer(src);
             UCharacterIterator inIter = UCharacterIterator.GetInstance(src);
@@ -278,7 +278,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
             }
         }
-        private void DoTestIDNToASCII(String src, String expected, int options, Object expectedException)
+        private void DoTestIDNToASCII(String src, String expected, IDNA2003Options options, Object expectedException)
         {
             StringBuffer inBuf = new StringBuffer(src);
             UCharacterIterator inIter = UCharacterIterator.GetInstance(src);
@@ -356,11 +356,11 @@ namespace ICU4N.Dev.Test.StringPrep
                 if (testCase.expected != null)
                 {
                     //Test toASCII
-                    DoTestToASCII(testCase.input, testCase.output, IDNA.DEFAULT, testCase.expected);
-                    DoTestToASCII(testCase.input, testCase.output, IDNA.ALLOW_UNASSIGNED, testCase.expected);
+                    DoTestToASCII(testCase.input, testCase.output, IDNA2003Options.Default, testCase.expected);
+                    DoTestToASCII(testCase.input, testCase.output, IDNA2003Options.AllowUnassigned, testCase.expected);
                 }
                 //Test toUnicode
-                //doTestToUnicode(testCase.input,testCase.output,IDNA.DEFAULT,testCase.expected);
+                //doTestToUnicode(testCase.input,testCase.output,IDNAOptions.Default,testCase.expected);
             }
         }
         [Test]
@@ -373,7 +373,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 UCharacterIterator iter = UCharacterIterator.GetInstance(testCase.input);
                 try
                 {
-                    StringBuffer output = namePrep.Prepare(iter, Text.StringPrep.DEFAULT);
+                    StringBuffer output = namePrep.Prepare(iter, StringPrepOptions.Default);
                     if (testCase.output != null && output != null && !testCase.output.Equals(output.ToString()))
                     {
                         Errln("Did not get the expected output. Expected: " + Prettify(testCase.output) +
@@ -395,7 +395,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 try
                 {
                     iter.SetToStart();
-                    StringBuffer output = namePrep.Prepare(iter, Text.StringPrep.ALLOW_UNASSIGNED);
+                    StringBuffer output = namePrep.Prepare(iter, StringPrepOptions.AllowUnassigned);
                     if (testCase.output != null && output != null && !testCase.output.Equals(output.ToString()))
                     {
                         Errln("Did not get the expected output. Expected: " + Prettify(testCase.output) +
@@ -425,24 +425,24 @@ namespace ICU4N.Dev.Test.StringPrep
                 if (errCase.testLabel == true)
                 {
                     // Test ToASCII
-                    DoTestToASCII(new String(errCase.unicode), errCase.ascii, IDNA.DEFAULT, errCase.expected);
-                    DoTestToASCII(new String(errCase.unicode), errCase.ascii, IDNA.ALLOW_UNASSIGNED, errCase.expected);
+                    DoTestToASCII(new String(errCase.unicode), errCase.ascii, IDNA2003Options.Default, errCase.expected);
+                    DoTestToASCII(new String(errCase.unicode), errCase.ascii, IDNA2003Options.AllowUnassigned, errCase.expected);
                     if (errCase.useSTD3ASCIIRules)
                     {
-                        DoTestToASCII(new String(errCase.unicode), errCase.ascii, IDNA.USE_STD3_RULES, errCase.expected);
+                        DoTestToASCII(new String(errCase.unicode), errCase.ascii, IDNA2003Options.UseSTD3Rules, errCase.expected);
                     }
                 }
                 if (errCase.useSTD3ASCIIRules != true)
                 {
 
                     // Test IDNToASCII
-                    DoTestIDNToASCII(new String(errCase.unicode), errCase.ascii, IDNA.DEFAULT, errCase.expected);
-                    DoTestIDNToASCII(new String(errCase.unicode), errCase.ascii, IDNA.ALLOW_UNASSIGNED, errCase.expected);
+                    DoTestIDNToASCII(new String(errCase.unicode), errCase.ascii, IDNA2003Options.Default, errCase.expected);
+                    DoTestIDNToASCII(new String(errCase.unicode), errCase.ascii, IDNA2003Options.AllowUnassigned, errCase.expected);
 
                 }
                 else
                 {
-                    DoTestIDNToASCII(new String(errCase.unicode), errCase.ascii, IDNA.USE_STD3_RULES, errCase.expected);
+                    DoTestIDNToASCII(new String(errCase.unicode), errCase.ascii, IDNA2003Options.UseSTD3Rules, errCase.expected);
                 }
                 //TestToUnicode
                 if (errCase.testToUnicode == true)
@@ -450,13 +450,13 @@ namespace ICU4N.Dev.Test.StringPrep
                     if (errCase.useSTD3ASCIIRules != true)
                     {
                         // Test IDNToUnicode
-                        DoTestIDNToUnicode(errCase.ascii, new String(errCase.unicode), IDNA.DEFAULT, errCase.expected);
-                        DoTestIDNToUnicode(errCase.ascii, new String(errCase.unicode), IDNA.ALLOW_UNASSIGNED, errCase.expected);
+                        DoTestIDNToUnicode(errCase.ascii, new String(errCase.unicode), IDNA2003Options.Default, errCase.expected);
+                        DoTestIDNToUnicode(errCase.ascii, new String(errCase.unicode), IDNA2003Options.AllowUnassigned, errCase.expected);
 
                     }
                     else
                     {
-                        DoTestIDNToUnicode(errCase.ascii, new String(errCase.unicode), IDNA.USE_STD3_RULES, errCase.expected);
+                        DoTestIDNToUnicode(errCase.ascii, new String(errCase.unicode), IDNA2003Options.UseSTD3Rules, errCase.expected);
                     }
                 }
             }
@@ -465,19 +465,19 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             try
             {
-                int retVal = IDNA.Compare(s1, s2, IDNA.DEFAULT);
+                int retVal = IDNA.Compare(s1, s2, IDNA2003Options.Default);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                           " s2: " + Prettify(s2));
                 }
-                retVal = IDNA.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA.DEFAULT);
+                retVal = IDNA.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA2003Options.Default);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                          " s2: " + Prettify(s2));
                 }
-                retVal = IDNA.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA.DEFAULT);
+                retVal = IDNA.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA2003Options.Default);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
@@ -492,19 +492,19 @@ namespace ICU4N.Dev.Test.StringPrep
 
             try
             {
-                int retVal = IDNA.Compare(s1, s2, IDNA.ALLOW_UNASSIGNED);
+                int retVal = IDNA.Compare(s1, s2, IDNA2003Options.AllowUnassigned);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                           " s2: " + Prettify(s2));
                 }
-                retVal = IDNA.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA.ALLOW_UNASSIGNED);
+                retVal = IDNA.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA2003Options.AllowUnassigned);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                          " s2: " + Prettify(s2));
                 }
-                retVal = IDNA.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA.ALLOW_UNASSIGNED);
+                retVal = IDNA.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA2003Options.AllowUnassigned);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
@@ -584,22 +584,22 @@ namespace ICU4N.Dev.Test.StringPrep
             StringBuffer chained;
 
             // test convertIDNToASCII
-            expected = IDNA.ConvertIDNToASCII(source, IDNA.DEFAULT);
+            expected = IDNA.ConvertIDNToASCII(source, IDNA2003Options.Default);
             chained = expected;
             for (int i = 0; i < 4; i++)
             {
-                chained = IDNA.ConvertIDNToASCII(chained, IDNA.DEFAULT);
+                chained = IDNA.ConvertIDNToASCII(chained, IDNA2003Options.Default);
             }
             if (!expected.ToString().Equals(chained.ToString()))
             {
                 Errln("Chaining test failed for convertIDNToASCII");
             }
             // test convertIDNToA
-            expected = IDNA.ConvertToASCII(source, IDNA.DEFAULT);
+            expected = IDNA.ConvertToASCII(source, IDNA2003Options.Default);
             chained = expected;
             for (int i = 0; i < 4; i++)
             {
-                chained = IDNA.ConvertToASCII(chained, IDNA.DEFAULT);
+                chained = IDNA.ConvertToASCII(chained, IDNA2003Options.Default);
             }
             if (!expected.ToString().Equals(chained.ToString()))
             {
@@ -615,22 +615,22 @@ namespace ICU4N.Dev.Test.StringPrep
             StringBuffer chained;
 
             // test convertIDNToUnicode
-            expected = IDNA.ConvertIDNToUnicode(source, IDNA.DEFAULT);
+            expected = IDNA.ConvertIDNToUnicode(source, IDNA2003Options.Default);
             chained = expected;
             for (int i = 0; i < 4; i++)
             {
-                chained = IDNA.ConvertIDNToUnicode(chained, IDNA.DEFAULT);
+                chained = IDNA.ConvertIDNToUnicode(chained, IDNA2003Options.Default);
             }
             if (!expected.ToString().Equals(chained.ToString()))
             {
                 Errln("Chaining test failed for convertIDNToUnicode");
             }
             // test convertIDNToA
-            expected = IDNA.ConvertToUnicode(source, IDNA.DEFAULT);
+            expected = IDNA.ConvertToUnicode(source, IDNA2003Options.Default);
             chained = expected;
             for (int i = 0; i < 4; i++)
             {
-                chained = IDNA.ConvertToUnicode(chained, IDNA.DEFAULT);
+                chained = IDNA.ConvertToUnicode(chained, IDNA2003Options.Default);
             }
             if (!expected.ToString().Equals(chained.ToString()))
             {
@@ -795,10 +795,10 @@ namespace ICU4N.Dev.Test.StringPrep
             source = new StringBuffer(Utility.Unescape("\\u043f\\u00AD\\u034f\\u043e\\u0447\\u0435\\u043c\\u0443\\u0436\\u0435\\u043e\\u043d\\u0438\\u043d\\u0435\\u0433\\u043e\\u0432\\u043e\\u0440\\u044f\\u0442\\u043f\\u043e\\u0440\\u0443\\u0441\\u0441\\u043a\\u0438"));
             StringBuffer expected = new StringBuffer("xn--b1abfaaepdrnnbgefbadotcwatmq2g4l");
             DoTestCompareReferenceImpl(source);
-            DoTestToASCII(source.ToString(), expected.ToString(), IDNA.DEFAULT, null);
+            DoTestToASCII(source.ToString(), expected.ToString(), IDNA2003Options.Default, null);
         }
 
-        private StringBuffer _doTestCompareReferenceImpl(StringBuffer src, bool toASCII, int options)
+        private StringBuffer _doTestCompareReferenceImpl(StringBuffer src, bool toASCII, IDNA2003Options options)
         {
             String refIDNAName = toASCII ? "IDNAReference.convertToASCII" : "IDNAReference.convertToUnicode";
             String uIDNAName = toASCII ? "IDNA.convertToASCII" : "IDNA.convertToUnicode";
@@ -864,18 +864,18 @@ namespace ICU4N.Dev.Test.StringPrep
         private void DoTestCompareReferenceImpl(StringBuffer src)
         {
             // test toASCII
-            StringBuffer asciiLabel = _doTestCompareReferenceImpl(src, true, IDNA.ALLOW_UNASSIGNED);
-            _doTestCompareReferenceImpl(src, true, IDNA.DEFAULT);
-            _doTestCompareReferenceImpl(src, true, IDNA.USE_STD3_RULES);
-            _doTestCompareReferenceImpl(src, true, IDNA.USE_STD3_RULES | IDNA.ALLOW_UNASSIGNED);
+            StringBuffer asciiLabel = _doTestCompareReferenceImpl(src, true, IDNA2003Options.AllowUnassigned);
+            _doTestCompareReferenceImpl(src, true, IDNA2003Options.Default);
+            _doTestCompareReferenceImpl(src, true, IDNA2003Options.UseSTD3Rules);
+            _doTestCompareReferenceImpl(src, true, IDNA2003Options.UseSTD3Rules | IDNA2003Options.AllowUnassigned);
 
             if (asciiLabel != null)
             {
                 // test toUnicode
-                _doTestCompareReferenceImpl(src, false, IDNA.ALLOW_UNASSIGNED);
-                _doTestCompareReferenceImpl(src, false, IDNA.DEFAULT);
-                _doTestCompareReferenceImpl(src, false, IDNA.USE_STD3_RULES);
-                _doTestCompareReferenceImpl(src, false, IDNA.USE_STD3_RULES | IDNA.ALLOW_UNASSIGNED);
+                _doTestCompareReferenceImpl(src, false, IDNA2003Options.AllowUnassigned);
+                _doTestCompareReferenceImpl(src, false, IDNA2003Options.Default);
+                _doTestCompareReferenceImpl(src, false, IDNA2003Options.UseSTD3Rules);
+                _doTestCompareReferenceImpl(src, false, IDNA2003Options.UseSTD3Rules | IDNA2003Options.AllowUnassigned);
             }
         }
 
@@ -890,10 +890,10 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 try
                 {
-                    String ascii = IDNA.ConvertToASCII(@in[i], IDNA.DEFAULT).ToString();
+                    String ascii = IDNA.ConvertToASCII(@in[i], IDNA2003Options.Default).ToString();
                     try
                     {
-                        String unicode = IDNA.ConvertToUnicode(ascii, IDNA.DEFAULT).ToString();
+                        String unicode = IDNA.ConvertToUnicode(ascii, IDNA2003Options.Default).ToString();
                         Logln("result " + unicode);
                     }
                     catch (StringPrepParseException ex)
@@ -919,7 +919,7 @@ namespace ICU4N.Dev.Test.StringPrep
 
                 try
                 {
-                    String ascii = IDNA.ConvertToASCII(@in[i], IDNA.DEFAULT).ToString();
+                    String ascii = IDNA.ConvertToASCII(@in[i], IDNA2003Options.Default).ToString();
                     if (!ascii.Equals(@in[i]))
                     {
                         Errln("Did not get the expected string for convertToASCII. Expected: " + @in[i] + " Got: " + ascii);
@@ -939,7 +939,7 @@ namespace ICU4N.Dev.Test.StringPrep
             try
             {
                 String src = "\u00ED4dn";
-                String uni = IDNA.ConvertToUnicode(src, IDNA.DEFAULT).ToString();
+                String uni = IDNA.ConvertToUnicode(src, IDNA2003Options.Default).ToString();
                 if (!uni.Equals(src))
                 {
                     Errln("Did not get the expected result. Expected: " + Prettify(src) + " Got: " + uni);
@@ -951,7 +951,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             try
             {
-                String ascii = IDNA.ConvertToASCII("\u00AD", IDNA.DEFAULT).ToString();
+                String ascii = IDNA.ConvertToASCII("\u00AD", IDNA2003Options.Default).ToString();
                 if (ascii != null)
                 {
                     Errln("Did not get the expected exception");
@@ -968,8 +968,8 @@ namespace ICU4N.Dev.Test.StringPrep
             String INVALID_DOMAIN_NAME = "xn--m\u00FCller.de";
             try
             {
-                IDNA.ConvertIDNToUnicode(INVALID_DOMAIN_NAME, IDNA.DEFAULT);
-                IDNA.ConvertIDNToUnicode(INVALID_DOMAIN_NAME, IDNA.USE_STD3_RULES);
+                IDNA.ConvertIDNToUnicode(INVALID_DOMAIN_NAME, IDNA2003Options.Default);
+                IDNA.ConvertIDNToUnicode(INVALID_DOMAIN_NAME, IDNA2003Options.UseSTD3Rules);
 
             }
             catch (StringPrepParseException ex)
@@ -984,7 +984,7 @@ namespace ICU4N.Dev.Test.StringPrep
             String domain = "xn--m\u00FCller.de";
             try
             {
-                IDNA.ConvertIDNToUnicode(domain, IDNA.DEFAULT);
+                IDNA.ConvertIDNToUnicode(domain, IDNA2003Options.Default);
             }
             catch (StringPrepParseException ex)
             {
@@ -996,7 +996,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             try
             {
-                IDNA.ConvertIDNToUnicode(domain, IDNA.USE_STD3_RULES);
+                IDNA.ConvertIDNToUnicode(domain, IDNA2003Options.UseSTD3Rules);
             }
             catch (StringPrepParseException ex)
             {
@@ -1008,7 +1008,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             try
             {
-                IDNA.ConvertToUnicode("xn--m\u00FCller", IDNA.DEFAULT);
+                IDNA.ConvertToUnicode("xn--m\u00FCller", IDNA2003Options.Default);
             }
             catch (Exception ex)
             {
@@ -1016,7 +1016,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             try
             {
-                IDNA.ConvertToUnicode("xn--m\u00FCller", IDNA.USE_STD3_RULES);
+                IDNA.ConvertToUnicode("xn--m\u00FCller", IDNA2003Options.UseSTD3Rules);
             }
             catch (Exception ex)
             {
@@ -1024,7 +1024,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             try
             {
-                IDNA.ConvertIDNToUnicode("xn--m\u1234ller", IDNA.USE_STD3_RULES);
+                IDNA.ConvertIDNToUnicode("xn--m\u1234ller", IDNA2003Options.UseSTD3Rules);
             }
             catch (StringPrepParseException ex)
             {
@@ -1056,7 +1056,7 @@ namespace ICU4N.Dev.Test.StringPrep
                         "\uFE0F\uFEFF";
             try
             {
-                IDNA.ConvertToASCII(ul, IDNA.DEFAULT);
+                IDNA.ConvertToASCII(ul, IDNA2003Options.Default);
                 Errln("IDNA.convertToUnicode did not fail!");
             }
             catch (StringPrepParseException ex)
@@ -1067,12 +1067,12 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
                 else
                 {
-                    Logln("IDNA.ConvertToASCII(ul, IDNA.DEFAULT) Succeeded");
+                    Logln("IDNA.ConvertToASCII(ul, IDNAOptions.Default) Succeeded");
                 }
             }
             try
             {
-                IDNA.ConvertToASCII(ul1, IDNA.DEFAULT);
+                IDNA.ConvertToASCII(ul1, IDNA2003Options.Default);
             }
             catch (StringPrepParseException ex)
             {
@@ -1080,7 +1080,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             try
             {
-                IDNA.ConvertToUnicode(ul1, IDNA.DEFAULT);
+                IDNA.ConvertToUnicode(ul1, IDNA2003Options.Default);
             }
             catch (StringPrepParseException ex)
             {
@@ -1088,7 +1088,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             try
             {
-                IDNA.ConvertToUnicode(ul, IDNA.DEFAULT);
+                IDNA.ConvertToUnicode(ul, IDNA2003Options.Default);
             }
             catch (StringPrepParseException ex)
             {
@@ -1098,7 +1098,7 @@ namespace ICU4N.Dev.Test.StringPrep
             String idn = "my_very_very_long_and_incredibly_uncreative_domain_label.my_very_very_long_and_incredibly_uncreative_domain_label.my_very_very_long_and_incredibly_uncreative_domain_label.my_very_very_long_and_incredibly_uncreative_domain_label.my_very_very_long_and_incredibly_uncreative_domain_label.my_very_very_long_and_incredibly_uncreative_domain_label.ibm.com";
             try
             {
-                IDNA.ConvertIDNToASCII(idn, IDNA.DEFAULT);
+                IDNA.ConvertIDNToASCII(idn, IDNA2003Options.Default);
                 Errln("IDNA.convertToUnicode did not fail!");
             }
             catch (StringPrepParseException ex)
@@ -1109,12 +1109,12 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
                 else
                 {
-                    Logln("IDNA.ConvertToASCII(idn, IDNA.DEFAULT) Succeeded");
+                    Logln("IDNA.ConvertToASCII(idn, IDNAOptions.Default) Succeeded");
                 }
             }
             try
             {
-                IDNA.ConvertIDNToUnicode(idn, IDNA.DEFAULT);
+                IDNA.ConvertIDNToUnicode(idn, IDNA2003Options.Default);
                 Errln("IDNA.convertToUnicode did not fail!");
             }
             catch (StringPrepParseException ex)
@@ -1125,7 +1125,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
                 else
                 {
-                    Logln("IDNA.ConvertToUnicode(idn, IDNA.DEFAULT) Succeeded");
+                    Logln("IDNA.ConvertToUnicode(idn, IDNAOptions.Default) Succeeded");
                 }
             }
         }

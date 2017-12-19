@@ -179,7 +179,7 @@ namespace ICU4N.Dev.Test.StringPrep
                         expected = testCases[i][++j];
                         try
                         {
-                            result = sprep.Prepare(src, StringPrep.ALLOW_UNASSIGNED);
+                            result = sprep.Prepare(src, StringPrepOptions.AllowUnassigned);
                             if (src.StartsWith("FAIL", StringComparison.Ordinal))
                             {
                                 Errln("Failed: Expected error for Test[" + i + "] Profile: " + profileName);

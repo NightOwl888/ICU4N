@@ -1,4 +1,5 @@
-﻿using ICU4N.Support;
+﻿using ICU4N.Impl;
+using ICU4N.Support;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
@@ -122,7 +123,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
         }
 
-        private void DoTestToUnicode(String src, String expected, int options, Object expectedException)
+        private void DoTestToUnicode(String src, String expected, IDNA2003Options options, Object expectedException)
         {
 
             if (!IDNAReference.IsReady)
@@ -198,7 +199,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
         }
 
-        private void DoTestIDNToUnicode(String src, String expected, int options, Object expectedException)
+        private void DoTestIDNToUnicode(String src, String expected, IDNA2003Options options, Object expectedException)
         {
 
             if (!IDNAReference.IsReady)
@@ -272,7 +273,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
             }
         }
-        private void DoTestToASCII(String src, String expected, int options, Object expectedException)
+        private void DoTestToASCII(String src, String expected, IDNA2003Options options, Object expectedException)
         {
 
             if (!IDNAReference.IsReady)
@@ -347,7 +348,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
             }
         }
-        private void DoTestIDNToASCII(String src, String expected, int options, Object expectedException)
+        private void DoTestIDNToASCII(String src, String expected, IDNA2003Options options, Object expectedException)
         {
 
             if (!IDNAReference.IsReady)
@@ -587,19 +588,19 @@ namespace ICU4N.Dev.Test.StringPrep
 
             try
             {
-                int retVal = IDNAReference.Compare(s1, s2, IDNAReference.DEFAULT);
+                int retVal = IDNAReference.Compare(s1, s2, IDNA2003Options.Default);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                           " s2: " + Prettify(s2));
                 }
-                retVal = IDNAReference.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNAReference.DEFAULT);
+                retVal = IDNAReference.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA2003Options.Default);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                          " s2: " + Prettify(s2));
                 }
-                retVal = IDNAReference.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNAReference.DEFAULT);
+                retVal = IDNAReference.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA2003Options.Default);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
@@ -614,19 +615,19 @@ namespace ICU4N.Dev.Test.StringPrep
 
             try
             {
-                int retVal = IDNAReference.Compare(s1, s2, IDNAReference.ALLOW_UNASSIGNED);
+                int retVal = IDNAReference.Compare(s1, s2, IDNA2003Options.AllowUnassigned);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                           " s2: " + Prettify(s2));
                 }
-                retVal = IDNAReference.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNAReference.ALLOW_UNASSIGNED);
+                retVal = IDNAReference.Compare(new StringBuffer(s1), new StringBuffer(s2), IDNA2003Options.AllowUnassigned);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +
                          " s2: " + Prettify(s2));
                 }
-                retVal = IDNAReference.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNAReference.ALLOW_UNASSIGNED);
+                retVal = IDNAReference.Compare(UCharacterIterator.GetInstance(s1), UCharacterIterator.GetInstance(s2), IDNA2003Options.AllowUnassigned);
                 if (isEqual == true && retVal != 0)
                 {
                     Errln("Did not get the expected result for s1: " + Prettify(s1) +

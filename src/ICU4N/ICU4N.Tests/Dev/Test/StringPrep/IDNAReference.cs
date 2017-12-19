@@ -1,4 +1,5 @@
-﻿using ICU4N.Text;
+﻿using ICU4N.Impl;
+using ICU4N.Text;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,10 +20,9 @@ namespace ICU4N.Dev.Test.StringPrep
         private static readonly int LOWER_CASE_DELTA = 0x0020;
         private static readonly int FULL_STOP = 0x002E;
 
-
-        public static readonly int DEFAULT = 0x0000;
-        public static readonly int ALLOW_UNASSIGNED = 0x0001;
-        public static readonly int USE_STD3_RULES = 0x0002;
+        public const IDNA2003Options DEFAULT = IDNA2003Options.Default; // 0x0000;
+        public const IDNA2003Options ALLOW_UNASSIGNED = IDNA2003Options.AllowUnassigned; // 0x0001;
+        public const IDNA2003Options USE_STD3_RULES = IDNA2003Options.UseSTD3Rules; // 0x0002;
         public static readonly NamePrepTransform transform = NamePrepTransform.GetInstance();
 
         public static bool IsReady
@@ -126,17 +126,17 @@ namespace ICU4N.Dev.Test.StringPrep
             return false;
         }
 
-        public static StringBuffer ConvertToASCII(String src, int options)
+        public static StringBuffer ConvertToASCII(String src, IDNA2003Options options)
         {
             UCharacterIterator iter = UCharacterIterator.GetInstance(src);
             return ConvertToASCII(iter, options);
         }
-        public static StringBuffer ConvertToASCII(StringBuffer src, int options)
+        public static StringBuffer ConvertToASCII(StringBuffer src, IDNA2003Options options)
         {
             UCharacterIterator iter = UCharacterIterator.GetInstance(src);
             return ConvertToASCII(iter, options);
         }
-        public static StringBuffer ConvertToASCII(UCharacterIterator srcIter, int options)
+        public static StringBuffer ConvertToASCII(UCharacterIterator srcIter, IDNA2003Options options)
         {
 
             char[]
@@ -166,7 +166,7 @@ namespace ICU4N.Dev.Test.StringPrep
             if (!srcIsASCII)
             {
                 // step 2
-                processOut = transform.Prepare(srcIter, options);
+                processOut = transform.Prepare(srcIter, (StringPrepOptions)options);
             }
             else
             {
@@ -267,18 +267,17 @@ namespace ICU4N.Dev.Test.StringPrep
             return dest;
         }
 
-        public static StringBuffer ConvertIDNtoASCII(UCharacterIterator iter, int options)
+        public static StringBuffer ConvertIDNtoASCII(UCharacterIterator iter, IDNA2003Options options)
         {
             return ConvertIDNToASCII(iter.GetText(), options);
         }
-        public static StringBuffer ConvertIDNtoASCII(StringBuffer str, int options)
+        public static StringBuffer ConvertIDNtoASCII(StringBuffer str, IDNA2003Options options)
         {
             return ConvertIDNToASCII(str.ToString(), options);
         }
-        public static StringBuffer ConvertIDNToASCII(String src, int options)
+        public static StringBuffer ConvertIDNToASCII(String src, IDNA2003Options options)
         {
-            char[]
-        srcArr = src.ToCharArray();
+            char[] srcArr = src.ToCharArray();
             StringBuffer result = new StringBuffer();
             int sepIndex = 0;
             int oldSepIndex = 0;
@@ -304,17 +303,17 @@ namespace ICU4N.Dev.Test.StringPrep
             return result;
         }
 
-        public static StringBuffer ConvertToUnicode(String src, int options)
+        public static StringBuffer ConvertToUnicode(String src, IDNA2003Options options)
         {
             UCharacterIterator iter = UCharacterIterator.GetInstance(src);
             return ConvertToUnicode(iter, options);
         }
-        public static StringBuffer ConvertToUnicode(StringBuffer src, int options)
+        public static StringBuffer ConvertToUnicode(StringBuffer src, IDNA2003Options options)
         {
             UCharacterIterator iter = UCharacterIterator.GetInstance(src);
             return ConvertToUnicode(iter, options);
         }
-        public static StringBuffer ConvertToUnicode(UCharacterIterator iter, int options)
+        public static StringBuffer ConvertToUnicode(UCharacterIterator iter, IDNA2003Options options)
         {
 
             // the source contains all ascii codepoints
@@ -346,7 +345,7 @@ namespace ICU4N.Dev.Test.StringPrep
                     iter.Index = (saveIndex);
                     try
                     {
-                        processOut = transform.Prepare(iter, options);
+                        processOut = transform.Prepare(iter, (StringPrepOptions)options);
                     }
                     catch (StringPrepParseException e)
                     {
@@ -393,19 +392,18 @@ namespace ICU4N.Dev.Test.StringPrep
             return new StringBuffer(iter.GetText());
         }
 
-        public static StringBuffer ConvertIDNToUnicode(UCharacterIterator iter, int options)
+        public static StringBuffer ConvertIDNToUnicode(UCharacterIterator iter, IDNA2003Options options)
         {
             return ConvertIDNToUnicode(iter.GetText(), options);
         }
-        public static StringBuffer ConvertIDNToUnicode(StringBuffer str, int options)
+        public static StringBuffer ConvertIDNToUnicode(StringBuffer str, IDNA2003Options options)
         {
             return ConvertIDNToUnicode(str.ToString(), options);
         }
-        public static StringBuffer ConvertIDNToUnicode(String src, int options)
+        public static StringBuffer ConvertIDNToUnicode(String src, IDNA2003Options options)
         {
 
-            char[]
-        srcArr = src.ToCharArray();
+            char[] srcArr = src.ToCharArray();
             StringBuffer result = new StringBuffer();
             int sepIndex = 0;
             int oldSepIndex = 0;
@@ -431,7 +429,7 @@ namespace ICU4N.Dev.Test.StringPrep
             return result;
         }
         //  TODO: optimize
-        public static int Compare(StringBuffer s1, StringBuffer s2, int options)
+        public static int Compare(StringBuffer s1, StringBuffer s2, IDNA2003Options options)
         {
             if (s1 == null || s2 == null)
             {
@@ -442,7 +440,7 @@ namespace ICU4N.Dev.Test.StringPrep
             return CompareCaseInsensitiveASCII(s1Out, s2Out);
         }
         //  TODO: optimize
-        public static int Compare(String s1, String s2, int options)
+        public static int Compare(String s1, String s2, IDNA2003Options options)
         {
             if (s1 == null || s2 == null)
             {
@@ -453,7 +451,7 @@ namespace ICU4N.Dev.Test.StringPrep
             return CompareCaseInsensitiveASCII(s1Out, s2Out);
         }
         //  TODO: optimize
-        public static int Compare(UCharacterIterator i1, UCharacterIterator i2, int options)
+        public static int Compare(UCharacterIterator i1, UCharacterIterator i2, IDNA2003Options options)
         {
             if (i1 == null || i2 == null)
             {

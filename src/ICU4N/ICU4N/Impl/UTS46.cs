@@ -9,6 +9,65 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
+    /// <summary>
+    /// Options for <see cref="UTS46"/>/<see cref="IDNA"/>.
+    /// </summary>
+    [Flags]
+    public enum UTS46Options
+    {
+        /// <summary>
+        /// Default options value: None of the other options are set.
+        /// For use in static worker and factory methods.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        Default = 0,
+        /// <summary>
+        /// Option to check whether the input conforms to the STD3 ASCII rules,
+        /// for example the restriction of labels to LDH characters
+        /// (ASCII Letters, Digits and Hyphen-Minus).
+        /// For use in static worker and factory methods.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        UseSTD3Rules = 2,
+        /// <summary>
+        /// IDNA option to check for whether the input conforms to the BiDi rules.
+        /// For use in static worker and factory methods.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        CheckBiDi = 4,
+        /// <summary>
+        /// IDNA option to check for whether the input conforms to the CONTEXTJ rules.
+        /// For use in static worker and factory methods.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        CheckContextJ = 8,
+        /// <summary>
+        /// IDNA option for nontransitional processing in ToASCII().
+        /// For use in static worker and factory methods.
+        /// <para/>
+        /// By default, ToASCII() uses transitional processing.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        NontransitionalToASCII = 0x10,
+        /// <summary>
+        /// IDNA option for nontransitional processing in ToUnicode().
+        /// For use in static worker and factory methods.
+        /// <para/>
+        /// By default, ToUnicode() uses transitional processing.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        NontransitionalToUnicode = 0x20,
+        /// <summary>
+        /// IDNA option to check for whether the input conforms to the CONTEXTO rules.
+        /// For use in static worker and factory methods.
+        /// <para/>
+        /// This is for use by registries for IDNA2008 conformance.
+        /// UTS #46 does not require the CONTEXTO check.
+        /// </summary>
+        /// <stable>ICU 49</stable>
+        CheckContextO = 0x40,
+    }
+
     // Note about tests for IDNA.Error.DOMAIN_NAME_TOO_LONG:
     //
     // The domain name length limit is 255 octets in an internal DNS representation
@@ -24,7 +83,7 @@ namespace ICU4N.Impl
     /// <since>2010jul09</since>
     public sealed partial class UTS46 : IDNA
     {
-        public UTS46(int options)
+        public UTS46(UTS46Options options)
 #pragma warning disable 612, 618
             : base()
 #pragma warning restore 612, 618
@@ -45,7 +104,7 @@ namespace ICU4N.Impl
 
         private static readonly Normalizer2 uts46Norm2 =
             Normalizer2.GetInstance(null, "uts46", Normalizer2Mode.Compose);  // uts46.nrm
-        internal readonly int options;
+        internal readonly UTS46Options options;
 
         // Severe errors which usually result in a U+FFFD replacement character in the result string.
         private static readonly ISet<Error> severeErrors = new HashSet<Error>
@@ -232,7 +291,7 @@ namespace ICU4N.Impl
             int limit = labelStart + labelLength;
             char oredChars = (char)0;
             // If we enforce STD3 rules, then ASCII characters other than LDH and dot are disallowed.
-            bool disallowNonLDHDot = (options & USE_STD3_RULES) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
             do
             {
                 char c = labelString[i];
@@ -288,17 +347,17 @@ namespace ICU4N.Impl
             {
                 // Do contextual checks only if we do not have U+FFFD from a severe error
                 // because U+FFFD can make these checks fail.
-                if ((options & CHECK_BIDI) != 0 && (!IsBiDi(info) || IsOkBiDi(info)))
+                if ((options & UTS46Options.CheckBiDi) != 0 && (!IsBiDi(info) || IsOkBiDi(info)))
                 {
                     CheckLabelBiDi(labelString, labelStart, labelLength, info);
                 }
-                if ((options & CHECK_CONTEXTJ) != 0 && (oredChars & 0x200c) == 0x200c &&
+                if ((options & UTS46Options.CheckContextJ) != 0 && (oredChars & 0x200c) == 0x200c &&
                     !IsLabelOkContextJ(labelString, labelStart, labelLength)
                 )
                 {
                     AddLabelError(info, Error.CONTEXTJ);
                 }
-                if ((options & CHECK_CONTEXTO) != 0 && oredChars >= 0xb7)
+                if ((options & UTS46Options.CheckContextO) != 0 && oredChars >= 0xb7)
                 {
                     CheckLabelContextO(labelString, labelStart, labelLength, info);
                 }
@@ -359,7 +418,7 @@ namespace ICU4N.Impl
                         int labelStart, int labelLength,
                         bool toASCII, Info info)
         {
-            bool disallowNonLDHDot = (options & USE_STD3_RULES) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
             bool isASCII = true;
             bool onlyLDH = true;
             int i = labelStart + 4;  // After the initial "xn--".

@@ -6,6 +6,34 @@ using StringBuffer = System.Text.StringBuilder;
 namespace ICU4N.Impl
 {
     /// <summary>
+    /// Options for <see cref="IDNA2003"/>.
+    /// </summary>
+    [Flags]
+    public enum IDNA2003Options
+    {
+        /// <summary>
+        /// Default options value: None of the other options are set.
+        /// For use in static worker and factory methods.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        Default = 0,
+        /// <summary>
+        /// Option to allow unassigned code points in domain names and labels.
+        /// For use in static worker and factory methods.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        AllowUnassigned = 1,
+        /// <summary>
+        /// Option to check whether the input conforms to the STD3 ASCII rules,
+        /// for example the restriction of labels to LDH characters
+        /// (ASCII Letters, Digits and Hyphen-Minus).
+        /// For use in static worker and factory methods.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        UseSTD3Rules = 2,
+    }
+
+    /// <summary>
     /// IDNA2003 implementation code, moved out of <see cref="Text.IDNA"/>
     /// while extending that class to support IDNA2008/UTS #46 as well.
     /// </summary>
@@ -165,7 +193,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static StringBuffer ConvertToASCII(UCharacterIterator src, int options)
+        public static StringBuffer ConvertToASCII(UCharacterIterator src, IDNA2003Options options)
         {
 
             bool[]
@@ -177,7 +205,7 @@ namespace ICU4N.Impl
             bool srcIsLDH = true;
 
             //get the options
-            bool useSTD3ASCIIRules = ((options & IDNA.USE_STD3_RULES) != 0);
+            bool useSTD3ASCIIRules = ((options & IDNA2003Options.UseSTD3Rules) != 0);
             int ch;
             // step 1
             while ((ch = src.Next()) != UCharacterIterator.DONE)
@@ -194,7 +222,7 @@ namespace ICU4N.Impl
             if (!srcIsASCII)
             {
                 // step 2
-                processOut = namePrep.Prepare(src, options);
+                processOut = namePrep.Prepare(src, (StringPrepOptions)options);
             }
             else
             {
@@ -299,7 +327,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public static StringBuffer ConvertIDNToASCII(string src, int options)
+        public static StringBuffer ConvertIDNToASCII(string src, IDNA2003Options options)
         {
             char[] srcArr = src.ToCharArray();
             StringBuffer result = new StringBuffer();
@@ -332,7 +360,7 @@ namespace ICU4N.Impl
             return result;
         }
 
-        public static StringBuffer ConvertToUnicode(UCharacterIterator src, int options)
+        public static StringBuffer ConvertToUnicode(UCharacterIterator src, IDNA2003Options options)
         {
             bool[] caseFlags = null;
 
@@ -365,7 +393,7 @@ namespace ICU4N.Impl
                 {
                     // step 2: process the string
                     src.Index = saveIndex;
-                    processOut = namePrep.Prepare(src, options);
+                    processOut = namePrep.Prepare(src, (StringPrepOptions)options);
                 }
                 catch (StringPrepParseException ex)
                 {
@@ -456,7 +484,7 @@ namespace ICU4N.Impl
             return new StringBuffer(src.GetText());
         }
 
-        public static StringBuffer ConvertIDNToUnicode(String src, int options)
+        public static StringBuffer ConvertIDNToUnicode(String src, IDNA2003Options options)
         {
             char[] srcArr = src.ToCharArray();
             StringBuffer result = new StringBuffer();
@@ -489,7 +517,7 @@ namespace ICU4N.Impl
             return result;
         }
 
-        public static int Compare(string s1, string s2, int options)
+        public static int Compare(string s1, string s2, IDNA2003Options options)
         {
             StringBuffer s1Out = ConvertIDNToASCII(s1, options);
             StringBuffer s2Out = ConvertIDNToASCII(s2, options);

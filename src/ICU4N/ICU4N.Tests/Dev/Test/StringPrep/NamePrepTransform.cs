@@ -17,8 +17,8 @@ namespace ICU4N.Dev.Test.StringPrep
         private UnicodeSet prohibitedSet;
         private UnicodeSet unassignedSet;
         private MapTransform mapTransform;
-        public static readonly int NONE = 0;
-        public static readonly int ALLOW_UNASSIGNED = 1;
+        public const StringPrepOptions NONE = StringPrepOptions.Default;
+        public const StringPrepOptions ALLOW_UNASSIGNED = StringPrepOptions.AllowUnassigned;
 
         private NamePrepTransform()
         {
@@ -88,12 +88,12 @@ namespace ICU4N.Dev.Test.StringPrep
         }
 
         public StringBuffer Prepare(UCharacterIterator src,
-                                           int options)
+                                           StringPrepOptions options)
         {
             return Prepare(src.GetText(), options);
         }
 
-        private String Map(String src, int options)
+        private String Map(String src, StringPrepOptions options)
         {
             // map 
             bool allowUnassigned = ((options & ALLOW_UNASSIGNED) > 0);
@@ -111,7 +111,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             return caseMapOut;
         }
-        public StringBuffer Prepare(String src, int options)
+        public StringBuffer Prepare(String src, StringPrepOptions options)
         {
 
             int ch;

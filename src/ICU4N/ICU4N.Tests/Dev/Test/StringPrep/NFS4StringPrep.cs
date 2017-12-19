@@ -65,7 +65,7 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             String s = Encoding.UTF8.GetString(src);
             UCharacterIterator iter = UCharacterIterator.GetInstance(s);
-            StringBuffer @out = strprep.Prepare(iter, StringPrep.DEFAULT);
+            StringBuffer @out = strprep.Prepare(iter, StringPrepOptions.Default);
             return Encoding.UTF8.GetBytes(@out.ToString());
         }
 
@@ -149,14 +149,14 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
                 UCharacterIterator prefix = UCharacterIterator.GetInstance(prefixString);
                 UCharacterIterator suffix = UCharacterIterator.GetInstance(suffixString);
-                @out.Append(prep.nfsmxp.Prepare(prefix, StringPrep.DEFAULT));
+                @out.Append(prep.nfsmxp.Prepare(prefix, StringPrepOptions.Default));
                 @out.Append(AT_SIGN); // add the delimiter
-                @out.Append(prep.nfsmxs.Prepare(suffix, StringPrep.DEFAULT));
+                @out.Append(prep.nfsmxs.Prepare(suffix, StringPrepOptions.Default));
             }
             else
             {
                 UCharacterIterator iter = UCharacterIterator.GetInstance(s);
-                @out.Append(prep.nfsmxp.Prepare(iter, StringPrep.DEFAULT));
+                @out.Append(prep.nfsmxp.Prepare(iter, StringPrepOptions.Default));
 
             }
             return Encoding.UTF8.GetBytes(@out.ToString());

@@ -21,12 +21,12 @@ namespace ICU4N.Dev.Test.Normalizers
     {
         public UTS46Test()
         {
-            int commonOptions =
-                IDNA.USE_STD3_RULES | IDNA.CHECK_BIDI |
-                IDNA.CHECK_CONTEXTJ | IDNA.CHECK_CONTEXTO;
+            UTS46Options commonOptions =
+                UTS46Options.UseSTD3Rules | UTS46Options.CheckBiDi |
+                UTS46Options.CheckContextJ | UTS46Options.CheckContextO;
             trans = IDNA.GetUTS46Instance(commonOptions);
             nontrans = IDNA.GetUTS46Instance(commonOptions |
-                                           IDNA.NONTRANSITIONAL_TO_ASCII | IDNA.NONTRANSITIONAL_TO_UNICODE);
+                                           UTS46Options.NontransitionalToASCII | UTS46Options.NontransitionalToUnicode);
         }
 
         [Test]
@@ -74,7 +74,7 @@ namespace ICU4N.Dev.Test.Normalizers
         [Test]
         public void TestNotSTD3()
         {
-            IDNA not3 = IDNA.GetUTS46Instance(IDNA.CHECK_BIDI);
+            IDNA not3 = IDNA.GetUTS46Instance(UTS46Options.CheckBiDi);
             String input = "\u0000A_2+2=4\n.e\u00DFen.net";
             StringBuilder result = new StringBuilder();
             IDNA.Info info = new IDNA.Info();

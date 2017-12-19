@@ -196,7 +196,7 @@ namespace ICU4N.Impl
                 return dest;
             }
             // ASCII fastpath
-            bool disallowNonLDHDot = (options & USE_STD3_RULES) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseStd3Rules) != 0;
             int labelStart = 0;
             int i;
             for (i = 0; ; ++i)
@@ -308,7 +308,7 @@ namespace ICU4N.Impl
                 return dest;
             }
             // ASCII fastpath
-            bool disallowNonLDHDot = (options & USE_STD3_RULES) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseStd3Rules) != 0;
             int labelStart = 0;
             int i;
             for (i = 0; ; ++i)
@@ -413,7 +413,7 @@ namespace ICU4N.Impl
                 return dest;
             }
             // ASCII fastpath
-            bool disallowNonLDHDot = (options & USE_STD3_RULES) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseStd3Rules) != 0;
             int labelStart = 0;
             int i;
             for (i = 0; ; ++i)
@@ -525,7 +525,7 @@ namespace ICU4N.Impl
                 return dest;
             }
             // ASCII fastpath
-            bool disallowNonLDHDot = (options & USE_STD3_RULES) != 0;
+            bool disallowNonLDHDot = (options & UTS46Options.UseStd3Rules) != 0;
             int labelStart = 0;
             int i;
             for (i = 0; ; ++i)
@@ -630,8 +630,8 @@ namespace ICU4N.Impl
                 uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
             }
             bool doMapDevChars =
-                toASCII ? (options & NONTRANSITIONAL_TO_ASCII) == 0 :
-                          (options & NONTRANSITIONAL_TO_UNICODE) == 0;
+                toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
+                          (options & UTS46Options.NontransitionalToUnicode) == 0;
             int destLength = dest.Length;
             int labelLimit = labelStart;
             while (labelLimit < destLength)
@@ -692,8 +692,8 @@ namespace ICU4N.Impl
                 uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
             }
             bool doMapDevChars =
-                toASCII ? (options & NONTRANSITIONAL_TO_ASCII) == 0 :
-                          (options & NONTRANSITIONAL_TO_UNICODE) == 0;
+                toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
+                          (options & UTS46Options.NontransitionalToUnicode) == 0;
             int destLength = dest.Length;
             int labelLimit = labelStart;
             while (labelLimit < destLength)
@@ -754,8 +754,8 @@ namespace ICU4N.Impl
                 uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
             }
             bool doMapDevChars =
-                toASCII ? (options & NONTRANSITIONAL_TO_ASCII) == 0 :
-                          (options & NONTRANSITIONAL_TO_UNICODE) == 0;
+                toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
+                          (options & UTS46Options.NontransitionalToUnicode) == 0;
             int destLength = dest.Length;
             int labelLimit = labelStart;
             while (labelLimit < destLength)
@@ -816,8 +816,8 @@ namespace ICU4N.Impl
                 uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
             }
             bool doMapDevChars =
-                toASCII ? (options & NONTRANSITIONAL_TO_ASCII) == 0 :
-                          (options & NONTRANSITIONAL_TO_UNICODE) == 0;
+                toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
+                          (options & UTS46Options.NontransitionalToUnicode) == 0;
             int destLength = dest.Length;
             int labelLimit = labelStart;
             while (labelLimit < destLength)

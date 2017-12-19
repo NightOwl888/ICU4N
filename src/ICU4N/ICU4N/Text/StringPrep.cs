@@ -10,23 +10,32 @@ using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
+    /// <summary>
+    /// Options for <see cref="StringPrep"/>.
+    /// </summary>
+    [Flags]
+    public enum StringPrepOptions
+    {
+        /// <summary>
+        /// Option to prohibit processing of unassigned code points in the input.
+        /// </summary>
+        /// <see cref="StringPrep.Prepare(string, StringPrepOptions)"/>
+        /// <see cref="StringPrep.Prepare(UCharacterIterator, StringPrepOptions)"/>
+        /// <stable>ICU 2.8</stable>
+        Default = 0x0000,
+
+        /// <summary>
+        /// Option to allow processing of unassigned code points in the input.
+        /// </summary>
+        /// <see cref="StringPrep.Prepare(string, StringPrepOptions)"/>
+        /// <see cref="StringPrep.Prepare(UCharacterIterator, StringPrepOptions)"/>
+        /// <stable>ICU 2.8</stable>
+        AllowUnassigned = 0x0001,
+    }
+
     public sealed class StringPrep
     {
-        /** 
-     * Option to prohibit processing of unassigned code points in the input
-     * 
-     * @see   #prepare
-     * @stable ICU 2.8
-     */
-        public const int DEFAULT = 0x0000;
-
-        /** 
-         * Option to allow processing of unassigned code points in the input
-         * 
-         * @see   #prepare
-         * @stable ICU 2.8
-         */
-        public const int ALLOW_UNASSIGNED = 0x0001;
+        // ICU4N specific - options moved to StringPrepOptions [Flags] enum.
 
         /**
          * Profile type: RFC3491 Nameprep
@@ -40,7 +49,7 @@ namespace ICU4N.Text
          * @see #getInstance(int)
          * @stable ICU 4.2
          */
-        public const int RFC3530_NFS4_CS_PREP = 1;
+        public const int RFC3530_NFS4_CS_PREP = 1; // ICU4N TODO: API De-nest and make enum named StringPrepProfile
 
         /**
          * Profile type: RFC3530 nfs4_cs_prep with case insensitive option
@@ -132,21 +141,21 @@ namespace ICU4N.Text
 
         // Profile names must be aligned to profile type definitions 
         private static readonly string[] PROFILE_NAMES = {
-        "rfc3491",      /* RFC3491_NAMEPREP */
-        "rfc3530cs",    /* RFC3530_NFS4_CS_PREP */
-        "rfc3530csci",  /* RFC3530_NFS4_CS_PREP_CI */
-        "rfc3491",      /* RFC3530_NSF4_CIS_PREP */
-        "rfc3530mixp",  /* RFC3530_NSF4_MIXED_PREP_PREFIX */
-        "rfc3491",      /* RFC3530_NSF4_MIXED_PREP_SUFFIX */
-        "rfc3722",      /* RFC3722_ISCSI */
-        "rfc3920node",  /* RFC3920_NODEPREP */
-        "rfc3920res",   /* RFC3920_RESOURCEPREP */
-        "rfc4011",      /* RFC4011_MIB */
-        "rfc4013",      /* RFC4013_SASLPREP */
-        "rfc4505",      /* RFC4505_TRACE */
-        "rfc4518",      /* RFC4518_LDAP */
-        "rfc4518ci",    /* RFC4518_LDAP_CI */
-    };
+            "rfc3491",      /* RFC3491_NAMEPREP */
+            "rfc3530cs",    /* RFC3530_NFS4_CS_PREP */
+            "rfc3530csci",  /* RFC3530_NFS4_CS_PREP_CI */
+            "rfc3491",      /* RFC3530_NSF4_CIS_PREP */
+            "rfc3530mixp",  /* RFC3530_NSF4_MIXED_PREP_PREFIX */
+            "rfc3491",      /* RFC3530_NSF4_MIXED_PREP_SUFFIX */
+            "rfc3722",      /* RFC3722_ISCSI */
+            "rfc3920node",  /* RFC3920_NODEPREP */
+            "rfc3920res",   /* RFC3920_RESOURCEPREP */
+            "rfc4011",      /* RFC4011_MIB */
+            "rfc4013",      /* RFC4013_SASLPREP */
+            "rfc4505",      /* RFC4505_TRACE */
+            "rfc4518",      /* RFC4518_LDAP */
+            "rfc4518ci",    /* RFC4518_LDAP_CI */
+        };
 
         private static readonly WeakReference<StringPrep>[] CACHE = new WeakReference<StringPrep>[MAX_PROFILE + 1];
 
@@ -373,14 +382,14 @@ namespace ICU4N.Text
 
 
 
-        private StringBuffer Map(UCharacterIterator iter, int options)
+        private StringBuffer Map(UCharacterIterator iter, StringPrepOptions options)
         {
 
             Values val = new Values();
             char result = (char)0;
             int ch = UCharacterIterator.DONE;
             StringBuffer dest = new StringBuffer();
-            bool allowUnassigned = ((options & ALLOW_UNASSIGNED) > 0);
+            bool allowUnassigned = ((options & StringPrepOptions.AllowUnassigned) > 0);
 
             while ((ch = iter.NextCodePoint()) != UCharacterIterator.DONE)
             {
@@ -515,7 +524,7 @@ namespace ICU4N.Text
          * @throws StringPrepParseException An exception occurs when parsing a string is invalid.
          * @stable ICU 2.8
          */
-        public StringBuffer Prepare(UCharacterIterator src, int options)
+        public StringBuffer Prepare(UCharacterIterator src, StringPrepOptions options)
         {
 
             // map 
@@ -533,7 +542,7 @@ namespace ICU4N.Text
             UCharacterIterator iter = UCharacterIterator.GetInstance(normOut);
             Values val = new Values();
             UnicodeDirection direction = UnicodeDirection.CharDirectionCount,
-    firstCharDir = UnicodeDirection.CharDirectionCount;
+                firstCharDir = UnicodeDirection.CharDirectionCount;
             int rtlPos = -1, ltrPos = -1;
             bool rightToLeft = false, leftToRight = false;
 
@@ -608,7 +617,7 @@ namespace ICU4N.Text
          * @throws StringPrepParseException An exception when parsing or preparing a string is invalid.
          * @stable ICU 4.2
          */
-        public string Prepare(string src, int options)
+        public string Prepare(string src, StringPrepOptions options)
         {
             StringBuffer result = Prepare(UCharacterIterator.GetInstance(src), options);
             return result.ToString();

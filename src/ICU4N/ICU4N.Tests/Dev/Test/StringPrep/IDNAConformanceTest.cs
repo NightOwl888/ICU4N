@@ -1,4 +1,5 @@
-﻿using ICU4N.Support.Collections;
+﻿using ICU4N.Impl;
+using ICU4N.Support.Collections;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
@@ -68,12 +69,12 @@ namespace ICU4N.Dev.Test.StringPrep
                                 "UseSTD3ASCIIRules".ToLowerInvariant()) == -1)
                         {
                             result = IDNA.ConvertIDNToASCII(namebase,
-                                    IDNA.ALLOW_UNASSIGNED).ToString();
+                                    IDNA2003Options.AllowUnassigned).ToString();
                         }
                         else
                         {
                             result = IDNA.ConvertIDNToASCII(namebase,
-                                    IDNA.USE_STD3_RULES).ToString();
+                                    IDNA2003Options.UseSTD3Rules).ToString();
                         }
                     }
                     catch (StringPrepParseException e2)
@@ -125,12 +126,12 @@ namespace ICU4N.Dev.Test.StringPrep
                                 "UseSTD3ASCIIRules".ToLowerInvariant()) == -1)
                         {
                             result = IDNA.ConvertIDNToUnicode(namebase,
-                                    IDNA.ALLOW_UNASSIGNED).ToString();
+                                    IDNA2003Options.AllowUnassigned).ToString();
                         }
                         else
                         {
                             result = IDNA.ConvertIDNToUnicode(namebase,
-                                    IDNA.USE_STD3_RULES).ToString();
+                                    IDNA2003Options.UseSTD3Rules).ToString();
                         }
                     }
                     catch (StringPrepParseException e2)

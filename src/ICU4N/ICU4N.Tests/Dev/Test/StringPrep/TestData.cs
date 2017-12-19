@@ -1,4 +1,5 @@
-﻿using ICU4N.Support;
+﻿using ICU4N.Impl;
+using ICU4N.Support;
 using ICU4N.Text;
 using System;
 using System.Text;
@@ -414,7 +415,7 @@ namespace ICU4N.Dev.Test.StringPrep
             internal String input;
             internal String output;
             internal String profile;
-            internal int flags;
+            internal UTS46Options flags;
             internal Exception expected;
             private static byte[] GetBytes(String @in)
             {
@@ -430,7 +431,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 return bytes;
             }
             internal ConformanceTestCase(String comt, String @in, String @out,
-                                 String prof, int flg, Exception ex)
+                                 String prof, UTS46Options flg, Exception ex)
             {
 
                 try
@@ -458,68 +459,68 @@ namespace ICU4N.Dev.Test.StringPrep
                  new ConformanceTestCase(
                    "Case folding ASCII U+0043 U+0041 U+0046 U+0045",
                    "\u0043\u0041\u0046\u0045", "\u0063\u0061\u0066\u0065",
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    null
 
                  ),
                  new ConformanceTestCase(
                    "Case folding 8bit U+00DF (german sharp s)",
                    "\u00C3\u009F", "\u0073\u0073",
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    null
                  ),
                  new ConformanceTestCase(
                    "Non-ASCII multibyte space character U+1680",
                    "\u00E1\u009A\u0080", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Non-ASCII 8bit control character U+0085",
                    "\u00C2\u0085", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Non-ASCII multibyte control character U+180E",
                    "\u00E1\u00A0\u008E", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Non-ASCII control character U+1D175",
                    "\u00F0\u009D\u0085\u00B5", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Plane 0 private use character U+F123",
                    "\u00EF\u0084\u00A3", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Plane 15 private use character U+F1234",
                    "\u00F3\u00B1\u0088\u00B4", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Plane 16 private use character U+10F234",
                    "\u00F4\u008F\u0088\u00B4", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Non-character code point U+8FFFE",
                    "\u00F2\u008F\u00BF\u00BE", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Non-character code point U+10FFFF",
                    "\u00F4\u008F\u00BF\u00BF", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
              /* 
@@ -532,19 +533,19 @@ namespace ICU4N.Dev.Test.StringPrep
                  new ConformanceTestCase(
                    "Non-plain text character U+FFFD",
                    "\u00EF\u00BF\u00BD", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Ideographic description character U+2FF5",
                    "\u00E2\u00BF\u00B5", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Display property character U+0341",
                    "\u00CD\u0081", "\u00CC\u0081",
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    null
 
                  ),
@@ -552,62 +553,62 @@ namespace ICU4N.Dev.Test.StringPrep
                  new ConformanceTestCase(
                    "Left-to-right mark U+200E",
                    "\u00E2\u0080\u008E", "\u00CC\u0081",
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
 
                    "Deprecated U+202A",
                    "\u00E2\u0080\u00AA", "\u00CC\u0081",
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Language tagging character U+E0001",
                    "\u00F3\u00A0\u0080\u0081", "\u00CC\u0081",
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Language tagging character U+E0042",
                    "\u00F3\u00A0\u0081\u0082", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.PROHIBITED_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Bidi: RandALCat character U+05BE and LCat characters",
                    "\u0066\u006F\u006F\u00D6\u00BE\u0062\u0061\u0072", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.CHECK_BIDI_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Bidi: RandALCat character U+FD50 and LCat characters",
                    "\u0066\u006F\u006F\u00EF\u00B5\u0090\u0062\u0061\u0072", null,
-                   "Nameprep", IDNA.DEFAULT ,
+                   "Nameprep", UTS46Options.Default ,
                    new StringPrepParseException("", StringPrepParseException.CHECK_BIDI_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Bidi: RandALCat character U+FB38 and LCat characters",
                    "\u0066\u006F\u006F\u00EF\u00B9\u00B6\u0062\u0061\u0072", "\u0066\u006F\u006F \u00d9\u008e\u0062\u0061\u0072",
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    null
                  ),
                  new ConformanceTestCase(
                    "Bidi: RandALCat without trailing RandALCat U+0627 U+0031",
                    "\u00D8\u00A7\u0031", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.CHECK_BIDI_ERROR)
                  ),
                  new ConformanceTestCase(
                    "Bidi: RandALCat character U+0627 U+0031 U+0628",
                    "\u00D8\u00A7\u0031\u00D8\u00A8", "\u00D8\u00A7\u0031\u00D8\u00A8",
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    null
                  ),
                  new ConformanceTestCase(
                    "Unassigned code point U+E0002",
                    "\u00F3\u00A0\u0080\u0082", null,
-                   "Nameprep", IDNA.DEFAULT,
+                   "Nameprep", UTS46Options.Default,
                    new StringPrepParseException("", StringPrepParseException.UNASSIGNED_ERROR)
                  ),
 
