@@ -33,7 +33,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestAPI()
         {
             StringBuilder result = new StringBuilder();
-            IDNA.Info info = new IDNA.Info();
+            IDNAInfo info = new IDNAInfo();
             String input = "www.eXample.cOm";
             String expected = "www.example.com";
             trans.NameToASCII(input, result, info);
@@ -77,7 +77,7 @@ namespace ICU4N.Dev.Test.Normalizers
             IDNA not3 = IDNA.GetUTS46Instance(UTS46Options.CheckBiDi);
             String input = "\u0000A_2+2=4\n.e\u00DFen.net";
             StringBuilder result = new StringBuilder();
-            IDNA.Info info = new IDNA.Info();
+            IDNAInfo info = new IDNAInfo();
             if (!not3.NameToUnicode(input, result, info).ToString().Equals("\u0000a_2+2=4\n.essen.net") ||
                 info.HasErrors
             )
@@ -485,18 +485,18 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             StringBuilder aT = new StringBuilder(), uT = new StringBuilder();
             StringBuilder aN = new StringBuilder(), uN = new StringBuilder();
-            IDNA.Info aTInfo = new IDNA.Info(), uTInfo = new IDNA.Info();
-            IDNA.Info aNInfo = new IDNA.Info(), uNInfo = new IDNA.Info();
+            IDNAInfo aTInfo = new IDNAInfo(), uTInfo = new IDNAInfo();
+            IDNAInfo aNInfo = new IDNAInfo(), uNInfo = new IDNAInfo();
 
             StringBuilder aTuN = new StringBuilder(), uTaN = new StringBuilder();
             StringBuilder aNuN = new StringBuilder(), uNaN = new StringBuilder();
-            IDNA.Info aTuNInfo = new IDNA.Info(), uTaNInfo = new IDNA.Info();
-            IDNA.Info aNuNInfo = new IDNA.Info(), uNaNInfo = new IDNA.Info();
+            IDNAInfo aTuNInfo = new IDNAInfo(), uTaNInfo = new IDNAInfo();
+            IDNAInfo aNuNInfo = new IDNAInfo(), uNaNInfo = new IDNAInfo();
 
             StringBuilder aTL = new StringBuilder(), uTL = new StringBuilder();
             StringBuilder aNL = new StringBuilder(), uNL = new StringBuilder();
-            IDNA.Info aTLInfo = new IDNA.Info(), uTLInfo = new IDNA.Info();
-            IDNA.Info aNLInfo = new IDNA.Info(), uNLInfo = new IDNA.Info();
+            IDNAInfo aTLInfo = new IDNAInfo(), uTLInfo = new IDNAInfo();
+            IDNAInfo aNLInfo = new IDNAInfo(), uNLInfo = new IDNAInfo();
 
             ISet<IDNAError> uniErrors = new HashSet<IDNAError>();
 
@@ -787,7 +787,7 @@ namespace ICU4N.Dev.Test.Normalizers
         }
 
         private void CheckIdnaTestResult(String line, String type,
-                String expected, StringBuilder result, IDNA.Info info)
+                String expected, StringBuilder result, IDNAInfo info)
         {
             // An error in toUnicode or toASCII is indicated by a value in square brackets,
             // such as "[B5 B6]".
@@ -862,17 +862,17 @@ namespace ICU4N.Dev.Test.Normalizers
 
                     // ToASCII/ToUnicode, transitional/nontransitional
                     StringBuilder uN, aN, aT;
-                    IDNA.Info uNInfo, aNInfo, aTInfo;
-                    nontrans.NameToUnicode(source16, uN = new StringBuilder(), uNInfo = new IDNA.Info());
+                    IDNAInfo uNInfo, aNInfo, aTInfo;
+                    nontrans.NameToUnicode(source16, uN = new StringBuilder(), uNInfo = new IDNAInfo());
                     CheckIdnaTestResult(line, "toUnicodeNontrans", unicode16, uN, uNInfo);
                     if (typeChar == 'T' || typeChar == 'B')
                     {
-                        trans.NameToASCII(source16, aT = new StringBuilder(), aTInfo = new IDNA.Info());
+                        trans.NameToASCII(source16, aT = new StringBuilder(), aTInfo = new IDNAInfo());
                         CheckIdnaTestResult(line, "toASCIITrans", ascii16, aT, aTInfo);
                     }
                     if (typeChar == 'N' || typeChar == 'B')
                     {
-                        nontrans.NameToASCII(source16, aN = new StringBuilder(), aNInfo = new IDNA.Info());
+                        nontrans.NameToASCII(source16, aN = new StringBuilder(), aNInfo = new IDNAInfo());
                         CheckIdnaTestResult(line, "toASCIINontrans", ascii16, aN, aNInfo);
                     }
                 }
@@ -899,7 +899,7 @@ namespace ICU4N.Dev.Test.Normalizers
             IDNAError.DomainNameTooLong
         };
 
-        private bool hasError(IDNA.Info info, IDNAError error)
+        private bool hasError(IDNAInfo info, IDNAError error)
         {
             return info.Errors.Contains(error);
         }
@@ -908,7 +908,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             return errors.Count > 0 && errors.Overlaps(certainErrors);
         }
-        private bool hasCertainErrors(IDNA.Info info, ISet<IDNAError> certainErrors)
+        private bool hasCertainErrors(IDNAInfo info, ISet<IDNAError> certainErrors)
         {
             return hasCertainErrors(info.Errors, certainErrors);
         }
@@ -916,11 +916,11 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             return a.SetEquals(b);
         }
-        private bool sameErrors(IDNA.Info a, IDNA.Info b)
+        private bool sameErrors(IDNAInfo a, IDNAInfo b)
         {
             return sameErrors(a.Errors, b.Errors);
         }
-        private bool sameErrors(IDNA.Info a, ISet<IDNAError> b)
+        private bool sameErrors(IDNAInfo a, ISet<IDNAError> b)
         {
             return sameErrors(a.Errors, b);
         }

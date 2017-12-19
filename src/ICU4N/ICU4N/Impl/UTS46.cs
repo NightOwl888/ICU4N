@@ -211,7 +211,7 @@ namespace ICU4N.Impl
         private int ProcessLabel(StringBuilder dest,
                      int labelStart, int labelLength,
                      bool toASCII,
-                     Info info)
+                     IDNAInfo info)
         {
             StringBuilder fromPunycode;
             StringBuilder labelString;
@@ -416,7 +416,7 @@ namespace ICU4N.Impl
         }
         private int MarkBadACELabel(StringBuilder dest,
                         int labelStart, int labelLength,
-                        bool toASCII, Info info)
+                        bool toASCII, IDNAInfo info)
         {
             bool disallowNonLDHDot = (options & UTS46Options.UseSTD3Rules) != 0;
             bool isASCII = true;

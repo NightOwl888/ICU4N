@@ -104,6 +104,70 @@ namespace ICU4N.Text
     }
 
     /// <summary>
+    /// Output container for IDNA processing errors.
+    /// The <see cref="IDNAInfo"/> class is not suitable for subclassing.
+    /// </summary>
+    /// <stable>ICU 4.6</stable>
+    public sealed class IDNAInfo
+    {
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        public IDNAInfo()
+        {
+            errors = new HashSet<IDNAError>();
+            labelErrors = new HashSet<IDNAError>();
+            isTransDiff = false;
+            isBiDi = false;
+            isOkBiDi = true;
+        }
+
+        /// <summary>
+        /// Were there IDNA processing errors?
+        /// Returns true if there were processing errors.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        public bool HasErrors { get { return errors.Count > 0; } }
+        /// <summary>
+        /// Returns a set indicating IDNA processing errors (modifiable, and not null).
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        public ISet<IDNAError> Errors { get { return errors; } }
+        /// <summary>
+        /// Returns true if transitional and nontransitional processing produce different results.
+        /// This is the case when the input label or domain name contains
+        /// one or more deviation characters outside a Punycode label (see UTS #46).
+        /// <list type="bullet">
+        ///     <item><description>
+        ///         With nontransitional processing, such characters are
+        ///         copied to the destination string.
+        ///     </description></item>
+        ///     <item><description>
+        ///         With transitional processing, such characters are
+        ///         mapped (sharp s/sigma) or removed (joiner/nonjoiner).
+        ///     </description></item>
+        /// </list>
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
+        public bool IsTransitionalDifferent { get { return isTransDiff; } }
+
+        internal void Reset()
+        {
+            errors.Clear();
+            labelErrors.Clear();
+            isTransDiff = false;
+            isBiDi = false;
+            isOkBiDi = true;
+        }
+
+        internal ISet<IDNAError> errors, labelErrors;
+        internal bool isTransDiff;
+        internal bool isBiDi;
+        internal bool isOkBiDi;
+    }
+
+    /// <summary>
     /// Abstract base class for IDNA processing.
     /// See <a href="http://www.unicode.org/reports/tr46/">http://www.unicode.org/reports/tr46/</a>
     /// and <a href="http://www.ietf.org/rfc/rfc3490.txt">http://www.ietf.org/rfc/rfc3490.txt</a>
@@ -186,69 +250,8 @@ namespace ICU4N.Text
 
         // ICU4N specific - NameToUnicode(ICharSequence name, StringBuilder dest, Info info) moved to IDNAExtension.tt
 
-        /// <summary>
-        /// Output container for IDNA processing errors.
-        /// The <see cref="Info"/> class is not suitable for subclassing.
-        /// </summary>
-        /// <stable>ICU 4.6</stable>
-        public sealed class Info // ICU4N TODO: API - de-nest ?
-        {
-            /// <summary>
-            /// Constructor.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            public Info()
-            {
-                errors = new HashSet<IDNAError>();
-                labelErrors = new HashSet<IDNAError>();
-                isTransDiff = false;
-                isBiDi = false;
-                isOkBiDi = true;
-            }
+        // ICU4N specific - De-nested Info class and renamed IDNAInfo
 
-            /// <summary>
-            /// Were there IDNA processing errors?
-            /// Returns true if there were processing errors.
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            public bool HasErrors { get { return errors.Count > 0; } }
-            /// <summary>
-            /// Returns a set indicating IDNA processing errors (modifiable, and not null).
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            public ISet<IDNAError> Errors { get { return errors; } }
-            /// <summary>
-            /// Returns true if transitional and nontransitional processing produce different results.
-            /// This is the case when the input label or domain name contains
-            /// one or more deviation characters outside a Punycode label (see UTS #46).
-            /// <list type="bullet">
-            ///     <item><description>
-            ///         With nontransitional processing, such characters are
-            ///         copied to the destination string.
-            ///     </description></item>
-            ///     <item><description>
-            ///         With transitional processing, such characters are
-            ///         mapped (sharp s/sigma) or removed (joiner/nonjoiner).
-            ///     </description></item>
-            /// </list>
-            /// </summary>
-            /// <stable>ICU 4.6</stable>
-            public bool IsTransitionalDifferent { get { return isTransDiff; } }
-
-            internal void Reset()
-            {
-                errors.Clear();
-                labelErrors.Clear();
-                isTransDiff = false;
-                isBiDi = false;
-                isOkBiDi = true;
-            }
-
-            internal ISet<IDNAError> errors, labelErrors;
-            internal bool isTransDiff;
-            internal bool isBiDi;
-            internal bool isOkBiDi;
-        }
 
         // The following protected methods give IDNA subclasses access to the private IDNAInfo fields.
         // The IDNAInfo also provides intermediate state that is publicly invisible,
@@ -256,31 +259,31 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void ResetInfo(Info info)
+        protected static void ResetInfo(IDNAInfo info)
         {
             info.Reset();
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool HasCertainErrors(Info info, ISet<IDNAError> errors)
+        protected static bool HasCertainErrors(IDNAInfo info, ISet<IDNAError> errors)
         {
             return info.errors.Count > 0 && info.errors.Overlaps(errors);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool HasCertainLabelErrors(Info info, ISet<IDNAError> errors)
+        protected static bool HasCertainLabelErrors(IDNAInfo info, ISet<IDNAError> errors)
         {
             return info.labelErrors.Count > 0 && info.labelErrors.Overlaps(errors);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void AddLabelError(Info info, IDNAError error)
+        protected static void AddLabelError(IDNAInfo info, IDNAError error)
         {
             info.labelErrors.Add(error);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void PromoteAndResetLabelErrors(Info info)
+        protected static void PromoteAndResetLabelErrors(IDNAInfo info)
         {
             if (info.labelErrors.Count > 0)
             {
@@ -290,37 +293,37 @@ namespace ICU4N.Text
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void AddError(Info info, IDNAError error)
+        protected static void AddError(IDNAInfo info, IDNAError error)
         {
             info.errors.Add(error);
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void SetTransitionalDifferent(Info info)
+        protected static void SetTransitionalDifferent(IDNAInfo info)
         {
             info.isTransDiff = true;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void SetBiDi(Info info)
+        protected static void SetBiDi(IDNAInfo info)
         {
             info.isBiDi = true;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool IsBiDi(Info info)
+        protected static bool IsBiDi(IDNAInfo info)
         {
             return info.isBiDi;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static void SetNotOkBiDi(Info info)
+        protected static void SetNotOkBiDi(IDNAInfo info)
         {
             info.isOkBiDi = false;
         }
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected static bool IsOkBiDi(Info info)
+        protected static bool IsOkBiDi(IDNAInfo info)
         {
             return info.isOkBiDi;
         }

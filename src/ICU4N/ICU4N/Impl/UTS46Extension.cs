@@ -17,47 +17,47 @@ namespace ICU4N.Impl
     public sealed partial class UTS46 : IDNA
     {
 
-        public override StringBuilder LabelToASCII(string label, StringBuilder dest, Info info)
+        public override StringBuilder LabelToASCII(string label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
 
-        public override StringBuilder LabelToASCII(StringBuilder label, StringBuilder dest, Info info)
+        public override StringBuilder LabelToASCII(StringBuilder label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
 
-        public override StringBuilder LabelToASCII(char[] label, StringBuilder dest, Info info)
+        public override StringBuilder LabelToASCII(char[] label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
 
-        internal override StringBuilder LabelToASCII(ICharSequence label, StringBuilder dest, Info info)
+        internal override StringBuilder LabelToASCII(ICharSequence label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
 
-        public override StringBuilder LabelToUnicode(string label, StringBuilder dest, Info info)
+        public override StringBuilder LabelToUnicode(string label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
 
-        public override StringBuilder LabelToUnicode(StringBuilder label, StringBuilder dest, Info info)
+        public override StringBuilder LabelToUnicode(StringBuilder label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
 
-        public override StringBuilder LabelToUnicode(char[] label, StringBuilder dest, Info info)
+        public override StringBuilder LabelToUnicode(char[] label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
 
-        internal override StringBuilder LabelToUnicode(ICharSequence label, StringBuilder dest, Info info)
+        internal override StringBuilder LabelToUnicode(ICharSequence label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
 
-        public override StringBuilder NameToASCII(string name, StringBuilder dest, Info info)
+        public override StringBuilder NameToASCII(string name, StringBuilder dest, IDNAInfo info)
         {
             Process(name, false, true, dest, info);
             if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
@@ -70,7 +70,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public override StringBuilder NameToASCII(StringBuilder name, StringBuilder dest, Info info)
+        public override StringBuilder NameToASCII(StringBuilder name, StringBuilder dest, IDNAInfo info)
         {
             Process(name, false, true, dest, info);
             if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
@@ -83,7 +83,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public override StringBuilder NameToASCII(char[] name, StringBuilder dest, Info info)
+        public override StringBuilder NameToASCII(char[] name, StringBuilder dest, IDNAInfo info)
         {
             Process(name, false, true, dest, info);
             if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
@@ -96,7 +96,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        internal override StringBuilder NameToASCII(ICharSequence name, StringBuilder dest, Info info)
+        internal override StringBuilder NameToASCII(ICharSequence name, StringBuilder dest, IDNAInfo info)
         {
             Process(name, false, true, dest, info);
             if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
@@ -109,22 +109,22 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public override StringBuilder NameToUnicode(string name, StringBuilder dest, Info info)
+        public override StringBuilder NameToUnicode(string name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
 
-        public override StringBuilder NameToUnicode(StringBuilder name, StringBuilder dest, Info info)
+        public override StringBuilder NameToUnicode(StringBuilder name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
 
-        public override StringBuilder NameToUnicode(char[] name, StringBuilder dest, Info info)
+        public override StringBuilder NameToUnicode(char[] name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
 
-        internal override StringBuilder NameToUnicode(ICharSequence name, StringBuilder dest, Info info)
+        internal override StringBuilder NameToUnicode(ICharSequence name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
@@ -184,7 +184,7 @@ namespace ICU4N.Impl
         private StringBuilder Process(string src,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
             // Arguments are fine, reset output values.
             dest.Delete(0, 0x7fffffff);
@@ -289,7 +289,7 @@ namespace ICU4N.Impl
         private StringBuilder Process(StringBuilder src,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
             // uts46Norm2.Normalize() would do all of this error checking and setup,
             // but with the ASCII fastpath we do not always call it, and do not
@@ -401,7 +401,7 @@ namespace ICU4N.Impl
         private StringBuilder Process(char[] src,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
             // Arguments are fine, reset output values.
             dest.Delete(0, 0x7fffffff);
@@ -506,7 +506,7 @@ namespace ICU4N.Impl
         private StringBuilder Process(ICharSequence src,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
             // uts46Norm2.Normalize() would do all of this error checking and setup,
             // but with the ASCII fastpath we do not always call it, and do not
@@ -619,7 +619,7 @@ namespace ICU4N.Impl
             int labelStart, int mappingStart,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
             if (mappingStart == 0)
             {
@@ -681,7 +681,7 @@ namespace ICU4N.Impl
             int labelStart, int mappingStart,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
             if (mappingStart == 0)
             {
@@ -743,7 +743,7 @@ namespace ICU4N.Impl
             int labelStart, int mappingStart,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
             if (mappingStart == 0)
             {
@@ -805,7 +805,7 @@ namespace ICU4N.Impl
             int labelStart, int mappingStart,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
             if (mappingStart == 0)
             {
@@ -934,7 +934,7 @@ namespace ICU4N.Impl
         // In a BiDi domain name, all labels must pass the BiDi Rule, but we might find
         // that a domain name is a BiDi domain name (has an RTL label) only after
         // processing several earlier labels.
-        private void CheckLabelBiDi(string label, int labelStart, int labelLength, Info info)
+        private void CheckLabelBiDi(string label, int labelStart, int labelLength, IDNAInfo info)
         {
             // IDNA2008 BiDi rule
             // Get the directionality of the first character.
@@ -1031,7 +1031,7 @@ namespace ICU4N.Impl
         // In a BiDi domain name, all labels must pass the BiDi Rule, but we might find
         // that a domain name is a BiDi domain name (has an RTL label) only after
         // processing several earlier labels.
-        private void CheckLabelBiDi(StringBuilder label, int labelStart, int labelLength, Info info)
+        private void CheckLabelBiDi(StringBuilder label, int labelStart, int labelLength, IDNAInfo info)
         {
             // IDNA2008 BiDi rule
             // Get the directionality of the first character.
@@ -1128,7 +1128,7 @@ namespace ICU4N.Impl
         // In a BiDi domain name, all labels must pass the BiDi Rule, but we might find
         // that a domain name is a BiDi domain name (has an RTL label) only after
         // processing several earlier labels.
-        private void CheckLabelBiDi(char[] label, int labelStart, int labelLength, Info info)
+        private void CheckLabelBiDi(char[] label, int labelStart, int labelLength, IDNAInfo info)
         {
             // IDNA2008 BiDi rule
             // Get the directionality of the first character.
@@ -1225,7 +1225,7 @@ namespace ICU4N.Impl
         // In a BiDi domain name, all labels must pass the BiDi Rule, but we might find
         // that a domain name is a BiDi domain name (has an RTL label) only after
         // processing several earlier labels.
-        private void CheckLabelBiDi(ICharSequence label, int labelStart, int labelLength, Info info)
+        private void CheckLabelBiDi(ICharSequence label, int labelStart, int labelLength, IDNAInfo info)
         {
             // IDNA2008 BiDi rule
             // Get the directionality of the first character.
@@ -1905,7 +1905,7 @@ namespace ICU4N.Impl
             return true;
         }
 
-        private void CheckLabelContextO(string label, int labelStart, int labelLength, Info info)
+        private void CheckLabelContextO(string label, int labelStart, int labelLength, IDNAInfo info)
         {
             int labelEnd = labelStart + labelLength - 1;  // inclusive
             int arabicDigits = 0;  // -1 for 066x, +1 for 06Fx
@@ -2019,7 +2019,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private void CheckLabelContextO(StringBuilder label, int labelStart, int labelLength, Info info)
+        private void CheckLabelContextO(StringBuilder label, int labelStart, int labelLength, IDNAInfo info)
         {
             int labelEnd = labelStart + labelLength - 1;  // inclusive
             int arabicDigits = 0;  // -1 for 066x, +1 for 06Fx
@@ -2133,7 +2133,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private void CheckLabelContextO(char[] label, int labelStart, int labelLength, Info info)
+        private void CheckLabelContextO(char[] label, int labelStart, int labelLength, IDNAInfo info)
         {
             int labelEnd = labelStart + labelLength - 1;  // inclusive
             int arabicDigits = 0;  // -1 for 066x, +1 for 06Fx
@@ -2247,7 +2247,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private void CheckLabelContextO(ICharSequence label, int labelStart, int labelLength, Info info)
+        private void CheckLabelContextO(ICharSequence label, int labelStart, int labelLength, IDNAInfo info)
         {
             int labelEnd = labelStart + labelLength - 1;  // inclusive
             int arabicDigits = 0;  // -1 for 066x, +1 for 06Fx
