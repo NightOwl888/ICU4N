@@ -106,7 +106,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 if (transform.unassignedSet.Contains(ch) == true && allowUnassigned == false)
                 {
                     throw new StringPrepParseException("An unassigned code point was found in the input",
-                                             StringPrepParseException.UNASSIGNED_ERROR);
+                                             StringPrepErrorType.UnassignedError);
                 }
             }
             return caseMapOut;
@@ -130,7 +130,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 if (transform.prohibitedSet.Contains(ch) == true && ch != 0x0020)
                 {
                     throw new StringPrepParseException("A prohibited code point was found in the input",
-                                             StringPrepParseException.PROHIBITED_ERROR,
+                                             StringPrepErrorType.ProhibitedError,
                                              iter.GetText(), iter.Index);
                 }
 
@@ -155,7 +155,7 @@ namespace ICU4N.Dev.Test.StringPrep
             if (leftToRight == true && rightToLeft == true)
             {
                 throw new StringPrepParseException("The input does not conform to the rules for BiDi code points.",
-                                         StringPrepParseException.CHECK_BIDI_ERROR, iter.GetText(), (rtlPos > ltrPos) ? rtlPos : ltrPos);
+                                         StringPrepErrorType.CheckBiDiError, iter.GetText(), (rtlPos > ltrPos) ? rtlPos : ltrPos);
             }
 
             //satisfy 3
@@ -165,7 +165,7 @@ namespace ICU4N.Dev.Test.StringPrep
                )
             {
                 throw new StringPrepParseException("The input does not conform to the rules for BiDi code points.",
-                                          StringPrepParseException.CHECK_BIDI_ERROR, iter.GetText(), (rtlPos > ltrPos) ? rtlPos : ltrPos);
+                                          StringPrepErrorType.CheckBiDiError, iter.GetText(), (rtlPos > ltrPos) ? rtlPos : ltrPos);
             }
 
             return new StringBuffer(mapOut);

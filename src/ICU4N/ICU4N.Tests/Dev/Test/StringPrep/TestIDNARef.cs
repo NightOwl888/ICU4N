@@ -12,7 +12,7 @@ namespace ICU4N.Dev.Test.StringPrep
     /// <author>ram</author>
     public class TestIDNARef : TestFmwk
     {
-        private StringPrepParseException unassignedException = new StringPrepParseException("", StringPrepParseException.UNASSIGNED_ERROR);
+        private StringPrepParseException unassignedException = new StringPrepParseException("", StringPrepErrorType.UnassignedError);
 
         [Test]
         public void TestToUnicode()

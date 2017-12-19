@@ -453,7 +453,7 @@ namespace ICU4N.Text
                 if (val.type == UNASSIGNED && allowUnassigned == false)
                 {
                     throw new StringPrepParseException("An unassigned code point was found in the input",
-                                             StringPrepParseException.UNASSIGNED_ERROR,
+                                             StringPrepErrorType.UnassignedError,
                                              iter.GetText(), iter.Index);
                 }
                 else if ((val.type == MAP))
@@ -606,7 +606,7 @@ namespace ICU4N.Text
                 if (val.type == PROHIBITED)
                 {
                     throw new StringPrepParseException("A prohibited code point was found in the input",
-                                             StringPrepParseException.PROHIBITED_ERROR, iter.GetText(), val.value);
+                                             StringPrepErrorType.ProhibitedError, iter.GetText(), val.value);
                 }
 
                 if (checkBiDi)
@@ -634,7 +634,7 @@ namespace ICU4N.Text
                 if (leftToRight == true && rightToLeft == true)
                 {
                     throw new StringPrepParseException("The input does not conform to the rules for BiDi code points.",
-                                             StringPrepParseException.CHECK_BIDI_ERROR, iter.GetText(),
+                                             StringPrepErrorType.CheckBiDiError, iter.GetText(),
                                              (rtlPos > ltrPos) ? rtlPos : ltrPos);
                 }
 
@@ -645,7 +645,7 @@ namespace ICU4N.Text
                   )
                 {
                     throw new StringPrepParseException("The input does not conform to the rules for BiDi code points.",
-                                             StringPrepParseException.CHECK_BIDI_ERROR, iter.GetText(),
+                                             StringPrepErrorType.CheckBiDiError, iter.GetText(),
                                              (rtlPos > ltrPos) ? rtlPos : ltrPos);
                 }
             }

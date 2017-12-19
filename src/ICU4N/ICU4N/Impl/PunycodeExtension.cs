@@ -62,7 +62,7 @@ namespace ICU4N.Impl
                     else
                     {
                         /* error: unmatched surrogate */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
                     cpBuffer[srcCPCount++] = n;
                 }
@@ -215,7 +215,7 @@ namespace ICU4N.Impl
                     else
                     {
                         /* error: unmatched surrogate */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
                     cpBuffer[srcCPCount++] = n;
                 }
@@ -368,7 +368,7 @@ namespace ICU4N.Impl
                     else
                     {
                         /* error: unmatched surrogate */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
                     cpBuffer[srcCPCount++] = n;
                 }
@@ -521,7 +521,7 @@ namespace ICU4N.Impl
                     else
                     {
                         /* error: unmatched surrogate */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
                     cpBuffer[srcCPCount++] = n;
                 }
@@ -666,7 +666,7 @@ namespace ICU4N.Impl
                 b = src[j];
                 if (!IsBasic(b))
                 {
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.INVALID_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.InvalidCharFound);
                 }
                 dest.Append(b);
 
@@ -702,18 +702,18 @@ namespace ICU4N.Impl
                 {
                     if (input >= srcLength)
                     {
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
 
                     digit = basicToDigit[src[input++] & 0xFF];
                     if (digit < 0)
                     {
-                        throw new StringPrepParseException("Invalid char found", StringPrepParseException.INVALID_CHAR_FOUND);
+                        throw new StringPrepParseException("Invalid char found", StringPrepErrorType.InvalidCharFound);
                     }
                     if (digit > (0x7fffffff - i) / w)
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
 
                     i += digit * w;
@@ -734,7 +734,7 @@ namespace ICU4N.Impl
                     if (w > 0x7fffffff / (BASE - t))
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
                     w *= BASE - t;
                 }
@@ -754,7 +754,7 @@ namespace ICU4N.Impl
                 if (i / destCPCount > (0x7fffffff - n))
                 {
                     /* integer overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                 }
 
                 n += i / destCPCount;
@@ -765,7 +765,7 @@ namespace ICU4N.Impl
                 if (n > 0x10ffff || IsSurrogate(n))
                 {
                     /* Unicode code point overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                 }
 
                 /* Insert n at position i of the output: */
@@ -868,7 +868,7 @@ namespace ICU4N.Impl
                 b = src[j];
                 if (!IsBasic(b))
                 {
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.INVALID_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.InvalidCharFound);
                 }
                 dest.Append(b);
 
@@ -904,18 +904,18 @@ namespace ICU4N.Impl
                 {
                     if (input >= srcLength)
                     {
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
 
                     digit = basicToDigit[src[input++] & 0xFF];
                     if (digit < 0)
                     {
-                        throw new StringPrepParseException("Invalid char found", StringPrepParseException.INVALID_CHAR_FOUND);
+                        throw new StringPrepParseException("Invalid char found", StringPrepErrorType.InvalidCharFound);
                     }
                     if (digit > (0x7fffffff - i) / w)
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
 
                     i += digit * w;
@@ -936,7 +936,7 @@ namespace ICU4N.Impl
                     if (w > 0x7fffffff / (BASE - t))
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
                     w *= BASE - t;
                 }
@@ -956,7 +956,7 @@ namespace ICU4N.Impl
                 if (i / destCPCount > (0x7fffffff - n))
                 {
                     /* integer overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                 }
 
                 n += i / destCPCount;
@@ -967,7 +967,7 @@ namespace ICU4N.Impl
                 if (n > 0x10ffff || IsSurrogate(n))
                 {
                     /* Unicode code point overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                 }
 
                 /* Insert n at position i of the output: */
@@ -1070,7 +1070,7 @@ namespace ICU4N.Impl
                 b = src[j];
                 if (!IsBasic(b))
                 {
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.INVALID_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.InvalidCharFound);
                 }
                 dest.Append(b);
 
@@ -1106,18 +1106,18 @@ namespace ICU4N.Impl
                 {
                     if (input >= srcLength)
                     {
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
 
                     digit = basicToDigit[src[input++] & 0xFF];
                     if (digit < 0)
                     {
-                        throw new StringPrepParseException("Invalid char found", StringPrepParseException.INVALID_CHAR_FOUND);
+                        throw new StringPrepParseException("Invalid char found", StringPrepErrorType.InvalidCharFound);
                     }
                     if (digit > (0x7fffffff - i) / w)
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
 
                     i += digit * w;
@@ -1138,7 +1138,7 @@ namespace ICU4N.Impl
                     if (w > 0x7fffffff / (BASE - t))
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
                     w *= BASE - t;
                 }
@@ -1158,7 +1158,7 @@ namespace ICU4N.Impl
                 if (i / destCPCount > (0x7fffffff - n))
                 {
                     /* integer overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                 }
 
                 n += i / destCPCount;
@@ -1169,7 +1169,7 @@ namespace ICU4N.Impl
                 if (n > 0x10ffff || IsSurrogate(n))
                 {
                     /* Unicode code point overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                 }
 
                 /* Insert n at position i of the output: */
@@ -1272,7 +1272,7 @@ namespace ICU4N.Impl
                 b = src[j];
                 if (!IsBasic(b))
                 {
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.INVALID_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.InvalidCharFound);
                 }
                 dest.Append(b);
 
@@ -1308,18 +1308,18 @@ namespace ICU4N.Impl
                 {
                     if (input >= srcLength)
                     {
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
 
                     digit = basicToDigit[src[input++] & 0xFF];
                     if (digit < 0)
                     {
-                        throw new StringPrepParseException("Invalid char found", StringPrepParseException.INVALID_CHAR_FOUND);
+                        throw new StringPrepParseException("Invalid char found", StringPrepErrorType.InvalidCharFound);
                     }
                     if (digit > (0x7fffffff - i) / w)
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
 
                     i += digit * w;
@@ -1340,7 +1340,7 @@ namespace ICU4N.Impl
                     if (w > 0x7fffffff / (BASE - t))
                     {
                         /* integer overflow */
-                        throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                        throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                     }
                     w *= BASE - t;
                 }
@@ -1360,7 +1360,7 @@ namespace ICU4N.Impl
                 if (i / destCPCount > (0x7fffffff - n))
                 {
                     /* integer overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                 }
 
                 n += i / destCPCount;
@@ -1371,7 +1371,7 @@ namespace ICU4N.Impl
                 if (n > 0x10ffff || IsSurrogate(n))
                 {
                     /* Unicode code point overflow */
-                    throw new StringPrepParseException("Illegal char found", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found", StringPrepErrorType.IllegalCharFound);
                 }
 
                 /* Insert n at position i of the output: */

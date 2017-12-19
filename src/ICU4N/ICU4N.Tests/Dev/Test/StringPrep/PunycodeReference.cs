@@ -269,11 +269,11 @@ namespace ICU4N.Dev.Test.StringPrep
             switch (rc)
             {
                 case punycode_big_output:
-                    throw new StringPrepParseException("The output capacity was not sufficient.", StringPrepParseException.BUFFER_OVERFLOW_ERROR);
+                    throw new StringPrepParseException("The output capacity was not sufficient.", StringPrepErrorType.BufferOverflowError);
                 case punycode_bad_input:
-                    throw new StringPrepParseException("Illegal char found in the input", StringPrepParseException.ILLEGAL_CHAR_FOUND);
+                    throw new StringPrepParseException("Illegal char found in the input", StringPrepErrorType.IllegalCharFound);
                 case punycode_overflow:
-                    throw new StringPrepParseException("Invalid char found in the input", StringPrepParseException.INVALID_CHAR_FOUND);
+                    throw new StringPrepParseException("Invalid char found in the input", StringPrepErrorType.InvalidCharFound);
             }
 
         }

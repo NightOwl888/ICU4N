@@ -10,7 +10,7 @@ namespace ICU4N.Dev.Test.StringPrep
     /// <author>ram</author>
     public class TestIDNA : TestFmwk
     {
-        private StringPrepParseException unassignedException = new StringPrepParseException("", StringPrepParseException.UNASSIGNED_ERROR);
+        private StringPrepParseException unassignedException = new StringPrepParseException("", StringPrepErrorType.UnassignedError);
 
         [Test]
         public void TestToUnicode()
@@ -814,7 +814,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             catch (StringPrepParseException e)
             {
-                expStatus = e.Error;
+                expStatus = (int)e.Error;
             }
 
             StringBuffer got = null;
@@ -825,7 +825,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             catch (StringPrepParseException e)
             {
-                gotStatus = e.Error;
+                gotStatus = (int)e.Error;
             }
 
             if (expStatus != gotStatus)
@@ -1061,7 +1061,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             catch (StringPrepParseException ex)
             {
-                if (ex.Error != StringPrepParseException.LABEL_TOO_LONG_ERROR)
+                if (ex.Error != StringPrepErrorType.LabelTooLongError)
                 {
                     Errln("IDNA.convertToASCII failed with error: " + ex.ToString());
                 }
@@ -1103,7 +1103,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             catch (StringPrepParseException ex)
             {
-                if (ex.Error != StringPrepParseException.DOMAIN_NAME_TOO_LONG_ERROR)
+                if (ex.Error != StringPrepErrorType.DomainNameTooLongError)
                 {
                     Errln("IDNA.convertToASCII failed with error: " + ex.ToString());
                 }
@@ -1119,7 +1119,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             catch (StringPrepParseException ex)
             {
-                if (ex.Error != StringPrepParseException.DOMAIN_NAME_TOO_LONG_ERROR)
+                if (ex.Error != StringPrepErrorType.DomainNameTooLongError)
                 {
                     Errln("IDNA.convertToUnicode failed with error: " + ex.ToString());
                 }

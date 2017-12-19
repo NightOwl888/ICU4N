@@ -145,7 +145,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 String suffixString = s.Substring(index + 1, s.Length - (index + 1)); // ICU4N: Corrected 2nd parameter
                 if (i > -1 && !suffixString.Equals(""))
                 {
-                    throw new StringPrepParseException("Suffix following a special index", StringPrepParseException.INVALID_CHAR_FOUND);
+                    throw new StringPrepParseException("Suffix following a special index", StringPrepErrorType.InvalidCharFound);
                 }
                 UCharacterIterator prefix = UCharacterIterator.GetInstance(prefixString);
                 UCharacterIterator suffix = UCharacterIterator.GetInstance(suffixString);

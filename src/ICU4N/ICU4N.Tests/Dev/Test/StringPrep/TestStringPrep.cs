@@ -315,7 +315,7 @@ namespace ICU4N.Dev.Test.StringPrep
 
             for (int i = 0; i < locales.Length; i += 1)
             {
-                exceptions[i] = new StringPrepParseException(locales[i].ToString(), i, rules, i, i);
+                exceptions[i] = new StringPrepParseException(locales[i].ToString(), (StringPrepErrorType)i, rules, i, i);
             }
         }
 
@@ -325,7 +325,7 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             StringPrepParseException sppe = new StringPrepParseException("dummy", 0, "dummy", 0, 0);
             StringPrepParseException sppe_clone = new StringPrepParseException("dummy", 0, "dummy", 0, 0);
-            StringPrepParseException sppe1 = new StringPrepParseException("dummy1", 1, "dummy1", 0, 0);
+            StringPrepParseException sppe1 = new StringPrepParseException("dummy1", (StringPrepErrorType)1, "dummy1", 0, 0);
 
             // Tests when "if(!(other instanceof StringPrepParseException))" is true
             if (sppe.Equals(0))
@@ -368,8 +368,8 @@ namespace ICU4N.Dev.Test.StringPrep
         {
             for (int i = 0; i < 5; i++)
             {
-                StringPrepParseException sppe = new StringPrepParseException("dummy", i, "dummy", 0, 0);
-                if (sppe.Error != i)
+                StringPrepParseException sppe = new StringPrepParseException("dummy", (StringPrepErrorType)i, "dummy", 0, 0);
+                if ((int)sppe.Error != i)
                 {
                     Errln("StringPrepParseExcpetion.getError() was suppose to return " + i + " but got " + sppe.Error);
                 }
@@ -385,8 +385,8 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 try
                 {
-                    StringPrepParseException sppe = new StringPrepParseException("dummy", i, WordAtLeast16Characters, 0, 0);
-                    sppe = new StringPrepParseException(WordAtLeast16Characters, i, "dummy", 0, 0);
+                    StringPrepParseException sppe = new StringPrepParseException("dummy", (StringPrepErrorType)i, WordAtLeast16Characters, 0, 0);
+                    sppe = new StringPrepParseException(WordAtLeast16Characters, (StringPrepErrorType)i, "dummy", 0, 0);
                 }
                 catch (Exception e)
                 {
