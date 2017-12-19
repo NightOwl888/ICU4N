@@ -164,7 +164,7 @@ namespace ICU4N.Util
         [Obsolete("This API is ICU internal only.")]
         protected override int MaxLinearMatchLength /*const*/{ get { return CharsTrie.kMaxLinearMatchLength; } }
 
-        private void ensureCapacity(int length)
+        private void EnsureCapacity(int length)
         {
             if (length > chars.Length)
             {
@@ -184,7 +184,7 @@ namespace ICU4N.Util
         protected override int Write(int unit)
         {
             int newLength = charsLength + 1;
-            ensureCapacity(newLength);
+            EnsureCapacity(newLength);
             charsLength = newLength;
             chars[chars.Length - charsLength] = (char)unit;
             return charsLength;
@@ -194,7 +194,7 @@ namespace ICU4N.Util
         protected override int Write(int offset, int length)
         {
             int newLength = charsLength + length;
-            ensureCapacity(newLength);
+            EnsureCapacity(newLength);
             charsLength = newLength;
             int charsOffset = chars.Length - charsLength;
             while (length > 0)
@@ -207,7 +207,7 @@ namespace ICU4N.Util
         private int Write(char[] s, int length)
         {
             int newLength = charsLength + length;
-            ensureCapacity(newLength);
+            EnsureCapacity(newLength);
             charsLength = newLength;
             System.Array.Copy(s, 0, chars, chars.Length - charsLength, length);
             return charsLength;
