@@ -44,14 +44,13 @@ namespace ICU4N.Text
     /// <stable>ICU 2.8</stable>
     public class StringPrepParseException : FormatException
     {
-        /**
-         * Construct a ParseException object with the given message
-         * and error code
-         *
-         * @param message A string describing the type of error that occurred
-         * @param error   The error that has occurred
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Construct a ParseException object with the given message
+        /// and error code
+        /// </summary>
+        /// <param name="message">A string describing the type of error that occurred.</param>
+        /// <param name="error">The error that has occurred.</param>
+        /// <stable>ICU 2.8</stable>
         public StringPrepParseException(string message, StringPrepErrorType error)
             : base(message)
         {
@@ -59,16 +58,15 @@ namespace ICU4N.Text
             this.line = 0;
         }
 
-        /**
-         * Construct a ParseException object with the given message and
-         * error code
-         *
-         * @param message A string describing the type of error that occurred
-         * @param error   The error that has occurred
-         * @param rules   The input rules string
-         * @param pos     The position of error in the rules string
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Construct a ParseException object with the given message and
+        /// error code.
+        /// </summary>
+        /// <param name="message">A string describing the type of error that occurred.</param>
+        /// <param name="error">The error that has occurred.</param>
+        /// <param name="rules">The input rules string.</param>
+        /// <param name="pos">The position of error in the rules string.</param>
+        /// <stable>ICU 2.8</stable>
         public StringPrepParseException(string message, StringPrepErrorType error, string rules, int pos)
             : base(message)
         {
@@ -76,20 +74,22 @@ namespace ICU4N.Text
             SetContext(rules, pos);
             this.line = 0;
         }
-        /**
-         * Construct  a ParseException object with the given message and error code
-         *
-         * @param message    A string describing the type of error that occurred
-         * @param error      The error that has occurred
-         * @param rules      The input rules string
-         * @param pos        The position of error in the rules string
-         * @param lineNumber The line number at which the error has occurred.
-         *                   If the parse engine is not using this field, it should set it to zero.  Otherwise
-         *                   it should be a positive integer. The default value of this field
-         *                   is -1. It will be set to 0 if the code populating this struct is not
-         *                   using line numbers.
-         * @stable ICU 2.8
-         */
+
+        /// <summary>
+        /// Construct  a ParseException object with the given message and error code.
+        /// </summary>
+        /// <param name="message">A string describing the type of error that occurred.</param>
+        /// <param name="error">The error that has occurred.</param>
+        /// <param name="rules">The input rules string.</param>
+        /// <param name="pos">The position of error in the rules string.</param>
+        /// <param name="lineNumber">
+        /// The line number at which the error has occurred.
+        /// If the parse engine is not using this field, it should set it to zero.  Otherwise
+        /// it should be a positive integer. The default value of this field
+        /// is -1. It will be set to 0 if the code populating this struct is not
+        /// using line numbers.
+        /// </param>
+        /// <stable>ICU 2.8</stable>
         public StringPrepParseException(string message, StringPrepErrorType error, string rules, int pos, int lineNumber)
             : base(message)
         {
@@ -97,15 +97,15 @@ namespace ICU4N.Text
             SetContext(rules, pos);
             this.line = lineNumber;
         }
-        /**
-         * Compare this ParseException to another and evaluate if they are equal.
-         * The comparison works only on the type of error and does not compare
-         * the rules strings, if any, for equality.
-         *
-         * @param other The exception that this object should be compared to
-         * @return true if the objects are equal, false if unequal
-         * @stable ICU 2.8
-         */
+
+        /// <summary>
+        /// Compare this ParseException to another and evaluate if they are equal.
+        /// The comparison works only on the type of error and does not compare
+        /// the rules strings, if any, for equality.
+        /// </summary>
+        /// <param name="other">The exception that this object should be compared to.</param>
+        /// <returns>true if the objects are equal, false if unequal.</returns>
+        /// <stable>ICU 2.8</stable>
         public override bool Equals(object other)
         {
             if (!(other is StringPrepParseException))
@@ -116,12 +116,12 @@ namespace ICU4N.Text
 
         }
 
-        /**
-         * Mock implementation of hashCode(). This implementation always returns a constant
-         * value. When Java assertion is enabled, this method triggers an assertion failure.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Mock implementation of <see cref="GetHashCode()"/>. This implementation always returns a constant
+        /// value. When .NET assertion is enabled, this method triggers an assertion failure.
+        /// </summary>
+        /// <returns>This API is ICU internal only.</returns>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         public override int GetHashCode()
         {
@@ -129,12 +129,11 @@ namespace ICU4N.Text
             return 42;
         }
 
-        /**
-         * Returns the position of error in the rules string
-         *
-         * @return String
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Returns the position of error in the rules string.
+        /// </summary>
+        /// <returns>String.</returns>
+        /// <stable>ICU 2.8</stable>
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();
@@ -151,26 +150,25 @@ namespace ICU4N.Text
 
         private StringPrepErrorType error;
 
-        /**
-         * The line on which the error occurred.  If the parse engine
-         * is not using this field, it should set it to zero.  Otherwise
-         * it should be a positive integer. The default value of this field
-         * is -1. It will be set to 0 if the code populating this struct is not
-         * using line numbers.
-         */
+        /// <summary>
+        /// The line on which the error occurred.  If the parse engine
+        /// is not using this field, it should set it to zero.  Otherwise
+        /// it should be a positive integer. The default value of this field
+        /// is -1. It will be set to 0 if the code populating this struct is not
+        /// using line numbers.
+        /// </summary>
         private int line;
 
-
-        /**
-         * Textual context before the error.  Null-terminated.
-         * May be the empty string if not implemented by parser.
-         */
+        /// <summary>
+        /// Textual context before the error.  Null-terminated.
+        /// May be the empty string if not implemented by parser.
+        /// </summary>
         private StringBuffer preContext = new StringBuffer();
 
-        /**
-         * Textual context after the error.  Null-terminated.
-         * May be the empty string if not implemented by parser.
-         */
+        /// <summary>
+        /// Textual context after the error.  Null-terminated.
+        /// May be the empty string if not implemented by parser.
+        /// </summary>
         private StringBuffer postContext = new StringBuffer();
 
         private static readonly int PARSE_CONTEXT_LEN = 16;
@@ -207,18 +205,19 @@ namespace ICU4N.Text
             SetPostContext(str, pos);
         }
 
-        /**
-         * Returns the error code of this exception.
-         * This method is only used for testing to verify the error.
-         * @return The error code
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Returns the error code of this exception.
+        /// This method is only used for testing to verify the error.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
         public virtual StringPrepErrorType Error
         {
             get { return error; }
         }
 
-
+        /// <summary>
+        /// Gets the line on which the error occurred.
+        /// </summary>
         public virtual int Line // ICU4N specific - FormatException doesn't have a line number
         {
             get { return line; }
