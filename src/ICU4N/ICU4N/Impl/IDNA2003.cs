@@ -53,7 +53,7 @@ namespace ICU4N.Impl
         private static readonly int MAX_DOMAIN_NAME_LENGTH = 255;
 
         // The NamePrep profile object
-        private static readonly StringPrep namePrep = StringPrep.GetInstance(StringPrep.RFC3491_NAMEPREP);
+        private static readonly StringPrep namePrep = StringPrep.GetInstance(StringPrepProfile.Rfc3491NamePrep);
 
         private static bool StartsWithPrefix(StringBuffer src)
         {

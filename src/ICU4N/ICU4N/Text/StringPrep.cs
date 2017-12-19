@@ -3,9 +3,7 @@ using ICU4N.Lang;
 using ICU4N.Support.IO;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -33,111 +31,167 @@ namespace ICU4N.Text
         AllowUnassigned = 0x0001,
     }
 
+    /// <summary>
+    /// Profiles for <see cref="StringPrep.GetInstance(StringPrepProfile)"/>.
+    /// </summary>
+    public enum StringPrepProfile
+    {
+        /// <summary>
+        /// Profile type: RFC3491 Nameprep
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc3491NamePrep = 0,
+
+        /// <summary>
+        /// Profile type: RFC3530 nfs4_cs_prep
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc3530Nfs4CsPrep = 1,
+
+        /// <summary>
+        /// Profile type: RFC3530 nfs4_cs_prep with case insensitive option
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc3530Nfs4CsPrepCaseInsensitive = 2,
+
+        /// <summary>
+        /// Profile type: RFC3530 nfs4_cis_prep
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc3530Nfs4CisPrep = 3,
+
+        /// <summary>
+        /// Profile type: RFC3530 nfs4_mixed_prep for prefix
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc3530Nfs4MixedPrepPrefix = 4,
+
+        /// <summary>
+        /// Profile type: RFC3530 nfs4_mixed_prep for suffix
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc3530Nfs4MixedPrepSuffix = 5,
+
+        /// <summary>
+        /// Profile type: RFC3722 iSCSI
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc3722iSCSI = 6,
+
+        /// <summary>
+        /// Profile type: RFC3920 XMPP Nodeprep
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc3920NodePrep = 7,
+
+        /// <summary>
+        /// Profile type: RFC3920 XMPP Resourceprep
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc3920ResourcePrep = 8,
+
+        /// <summary>
+        /// Profile type: RFC4011 Policy MIB Stringprep
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc4011MIB = 9,
+
+        /// <summary>
+        /// Profile type: RFC4013 SASLprep
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc4013SaslPrep = 10,
+
+        /// <summary>
+        /// Profile type: RFC4505 trace
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc4505Trace = 11,
+
+        /// <summary>
+        /// Profile type: RFC4518 LDAP
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc4518Ldap = 12,
+
+        /// <summary>
+        /// Profile type: RFC4518 LDAP for case ignore, numeric and stored prefix
+        /// matching rules
+        /// </summary>
+        /// <seealso cref="StringPrep.GetInstance(StringPrepProfile)"/>
+        /// <stable>ICU 4.2</stable>
+        Rfc4518LdapCaseInsensitive = 13,
+    }
+
+    /// <summary>
+    /// <see cref="StringPrep"/> API implements the StingPrep framework as described by 
+    /// <a href="http://www.ietf.org/rfc/rfc3454.txt">RFC 3454</a>.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="StringPrep"/> prepares Unicode strings for use in network protocols.
+    /// Profiles of <see cref="StringPrep"/> are set of rules and data according to which the
+    /// Unicode Strings are prepared. Each profiles contains tables which describe
+    /// how a code point should be treated. The tables are broadly classied into
+    /// <list type="table">
+    ///     <item><term>Unassigned Table</term><description>
+    ///         Contains code points that are unassigned in the 
+    ///         Unicode Version supported by <see cref="StringPrep"/>. Currently 
+    ///         RFC 3454 supports Unicode 3.2.
+    ///     </description></item>
+    ///     <item><term>Prohibited Table</term><description>
+    ///         Contains code points that are prohibted from
+    ///         the output of the <see cref="StringPrep"/> processing function.
+    ///     </description></item>
+    ///     <item><term>Mapping Table</term><description>
+    ///         Contains code ponts that are deleted from the output or case mapped.
+    ///     </description></item>
+    /// </list>
+    /// <para/>
+    /// The procedure for preparing Unicode strings:
+    /// <list type="table">
+    ///     <item>Map<term></term><description>
+    ///         For each character in the input, check if it has a mapping
+    ///         and, if so, replace it with its mapping.
+    ///     </description></item>
+    ///     <item>Normalize<term></term><description>
+    ///         Possibly normalize the result of step 1 using Unicode
+    ///         normalization.
+    ///     </description></item>
+    ///     <item>Prohibit<term></term><description>
+    ///         Check for any characters that are not allowed in the
+    ///         output.  If any are found, return an error.
+    ///     </description></item>
+    ///     <item>Check bidi<term></term><description>
+    ///         Possibly check for right-to-left characters, and if
+    ///         any are found, make sure that the whole string satisfies the
+    ///         requirements for bidirectional strings.  If the string does not
+    ///         satisfy the requirements for bidirectional strings, return an
+    ///         error.
+    ///     </description></item>
+    /// </list>
+    /// </remarks>
+    /// <author>Ram Viswanadha</author>
+    /// <stable>ICU 2.8</stable>
     public sealed class StringPrep
     {
         // ICU4N specific - options moved to StringPrepOptions [Flags] enum.
-
-        /**
-         * Profile type: RFC3491 Nameprep
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC3491_NAMEPREP = 0;
-
-        /**
-         * Profile type: RFC3530 nfs4_cs_prep
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC3530_NFS4_CS_PREP = 1; // ICU4N TODO: API De-nest and make enum named StringPrepProfile
-
-        /**
-         * Profile type: RFC3530 nfs4_cs_prep with case insensitive option
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC3530_NFS4_CS_PREP_CI = 2;
-
-        /**
-         * Profile type: RFC3530 nfs4_cis_prep
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC3530_NFS4_CIS_PREP = 3;
-
-        /**
-         * Profile type: RFC3530 nfs4_mixed_prep for prefix
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC3530_NFS4_MIXED_PREP_PREFIX = 4;
-
-        /**
-         * Profile type: RFC3530 nfs4_mixed_prep for suffix
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC3530_NFS4_MIXED_PREP_SUFFIX = 5;
-
-        /**
-         * Profile type: RFC3722 iSCSI
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC3722_ISCSI = 6;
-
-        /**
-         * Profile type: RFC3920 XMPP Nodeprep
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC3920_NODEPREP = 7;
-
-        /**
-         * Profile type: RFC3920 XMPP Resourceprep
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC3920_RESOURCEPREP = 8;
-
-        /**
-         * Profile type: RFC4011 Policy MIB Stringprep
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC4011_MIB = 9;
-
-        /**
-         * Profile type: RFC4013 SASLprep
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC4013_SASLPREP = 10;
-
-        /**
-         * Profile type: RFC4505 trace
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC4505_TRACE = 11;
-
-        /**
-         * Profile type: RFC4518 LDAP
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC4518_LDAP = 12;
-
-        /**
-         * Profile type: RFC4518 LDAP for case ignore, numeric and stored prefix
-         * matching rules
-         * @see #getInstance(int)
-         * @stable ICU 4.2
-         */
-        public const int RFC4518_LDAP_CI = 13;
+        // Profile constants moved to StringPrepProfile enum.
 
         // Last available profile
-        private const int MAX_PROFILE = RFC4518_LDAP_CI;
+        private const StringPrepProfile MAX_PROFILE = StringPrepProfile.Rfc4518LdapCaseInsensitive;
 
         // Profile names must be aligned to profile type definitions 
         private static readonly string[] PROFILE_NAMES = {
@@ -157,7 +211,7 @@ namespace ICU4N.Text
             "rfc4518ci",    /* RFC4518_LDAP_CI */
         };
 
-        private static readonly WeakReference<StringPrep>[] CACHE = new WeakReference<StringPrep>[MAX_PROFILE + 1];
+        private static readonly WeakReference<StringPrep>[] CACHE = new WeakReference<StringPrep>[(int)MAX_PROFILE + 1];
 
         private static readonly int UNASSIGNED = 0x0000;
         private static readonly int MAP = 0x0001;
@@ -226,15 +280,14 @@ namespace ICU4N.Text
             return VersionInfo.GetInstance((int)version[0], (int)version[1], (int)version[2], (int)version[3]);
         }
 
-        /**
-         * Creates an StringPrep object after reading the input stream.
-         * The object does not hold a reference to the input steam, so the stream can be
-         * closed after the method returns.
-         *
-         * @param inputStream The stream for reading the StringPrep profile binarySun
-         * @throws IOException An exception occurs when I/O of the inputstream is invalid
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Creates an <see cref="StringPrep"/> object after reading the input stream.
+        /// The object does not hold a reference to the input steam, so the stream can be
+        /// closed after the method returns.
+        /// </summary>
+        /// <param name="inputStream">The stream for reading the <see cref="StringPrep"/> profile binarySun.</param>
+        /// <exception cref="IOException">An exception occurs when I/O of the inputstream is invalid.</exception>
+        /// <stable>ICU 2.8</stable>
         public StringPrep(Stream inputStream)
             : this(ICUBinary.GetByteBufferFromStreamAndDisposeStream(inputStream))
         {
@@ -274,13 +327,12 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Gets a StringPrep instance for the specified profile
-         * 
-         * @param profile The profile passed to find the StringPrep instance.
-         * @stable ICU 4.2
-         */
-        public static StringPrep GetInstance(int profile)
+        /// <summary>
+        /// Gets a <see cref="StringPrep"/> instance for the specified profile.
+        /// </summary>
+        /// <param name="profile">The profile passed to find the <see cref="StringPrep"/> instance.</param>
+        /// <stable>ICU 4.2</stable>
+        public static StringPrep GetInstance(StringPrepProfile profile)
         {
             if (profile < 0 || profile > MAX_PROFILE)
             {
@@ -293,7 +345,7 @@ namespace ICU4N.Text
             // per type and store it in the internal cache.
             lock (CACHE)
             {
-                WeakReference<StringPrep> @ref = CACHE[profile];
+                WeakReference<StringPrep> @ref = CACHE[(int)profile];
                 if (@ref != null)
                 {
                     //instance = @ref.Get();
@@ -302,7 +354,7 @@ namespace ICU4N.Text
 
                 if (instance == null)
                 {
-                    ByteBuffer bytes = ICUBinary.GetRequiredData(PROFILE_NAMES[profile] + ".spp");
+                    ByteBuffer bytes = ICUBinary.GetRequiredData(PROFILE_NAMES[(int)profile] + ".spp");
                     if (bytes != null)
                     {
                         try
@@ -316,7 +368,7 @@ namespace ICU4N.Text
                     }
                     if (instance != null)
                     {
-                        CACHE[profile] = new WeakReference<StringPrep>(instance);
+                        CACHE[(int)profile] = new WeakReference<StringPrep>(instance);
                     }
                 }
             }
@@ -508,22 +560,22 @@ namespace ICU4N.Text
                  character MUST be the first character of the string, and a
                  RandALCat character MUST be the last character of the string.
         */
-        /**
-         * Prepare the input buffer for use in applications with the given profile. This operation maps, normalizes(NFKC),
-         * checks for prohibited and BiDi characters in the order defined by RFC 3454
-         * depending on the options specified in the profile.
-         *
-         * @param src           A UCharacterIterator object containing the source string
-         * @param options       A bit set of options:
-         *   <ul>
-         *     <li>{@link #DEFAULT} Prohibit processing of unassigned code points in the input</li>
-         *     <li>{@link #ALLOW_UNASSIGNED} Treat the unassigned code points are in the input
-         *          as normal Unicode code points.</li>
-         *   </ul>
-         * @return StringBuffer A StringBuffer containing the output
-         * @throws StringPrepParseException An exception occurs when parsing a string is invalid.
-         * @stable ICU 2.8
-         */
+
+        /// <summary>
+        /// Prepare the input buffer for use in applications with the given profile. This operation maps, normalizes(NFKC),
+        /// checks for prohibited and BiDi characters in the order defined by RFC 3454
+        /// depending on the options specified in the profile.
+        /// </summary>
+        /// <param name="src">A <see cref="UCharacterIterator"/> object containing the source string.</param>
+        /// <param name="options">A bit set of options:
+        /// <list type="bullet">
+        ///     <item><term><see cref="StringPrepOptions.Default"/></term><description>Prohibit processing of unassigned code points in the input.</description></item>
+        ///     <item><term><see cref="StringPrepOptions.AllowUnassigned"/></term><description>Treat the unassigned code points are in the input as normal Unicode code points.</description></item>
+        /// </list>
+        /// </param>
+        /// <returns>A <see cref="StringBuffer"/> containing the output.</returns>
+        /// <exception cref="StringPrepParseException">An exception occurs when parsing a string is invalid.</exception>
+        /// <stable>ICU 2.8</stable>
         public StringBuffer Prepare(UCharacterIterator src, StringPrepOptions options)
         {
 
@@ -601,22 +653,21 @@ namespace ICU4N.Text
 
         }
 
-        /**
-         * Prepare the input String for use in applications with the given profile. This operation maps, normalizes(NFKC),
-         * checks for prohibited and BiDi characters in the order defined by RFC 3454
-         * depending on the options specified in the profile.
-         *
-         * @param src           A string
-         * @param options       A bit set of options:
-         *   <ul>
-         *     <li>{@link #DEFAULT} Prohibit processing of unassigned code points in the input</li>
-         *     <li>{@link #ALLOW_UNASSIGNED} Treat the unassigned code points are in the input
-         *          as normal Unicode code points.</li>
-         *   </ul>
-         * @return String A String containing the output
-         * @throws StringPrepParseException An exception when parsing or preparing a string is invalid.
-         * @stable ICU 4.2
-         */
+        /// <summary>
+        /// Prepare the input String for use in applications with the given profile. This operation maps, normalizes(NFKC),
+        /// checks for prohibited and BiDi characters in the order defined by RFC 3454
+        /// depending on the options specified in the profile.
+        /// </summary>
+        /// <param name="src">A string.</param>
+        /// <param name="options">A bit set of options:
+        /// <list type="bullet">
+        ///     <item><term><see cref="StringPrepOptions.Default"/></term><description>Prohibit processing of unassigned code points in the input.</description></item>
+        ///     <item><term><see cref="StringPrepOptions.AllowUnassigned"/></term><description>Treat the unassigned code points are in the input as normal Unicode code points.</description></item>
+        /// </list>
+        /// </param>
+        /// <returns>A string containing the output.</returns>
+        /// <exception cref="StringPrepParseException">An exception occurs when parsing a string is invalid.</exception>
+        /// <stable>ICU 4.2</stable>
         public string Prepare(string src, StringPrepOptions options)
         {
             StringBuffer result = Prepare(UCharacterIterator.GetInstance(src), options);

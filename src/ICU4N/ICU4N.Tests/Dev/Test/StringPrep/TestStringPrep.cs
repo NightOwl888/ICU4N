@@ -245,7 +245,7 @@ namespace ICU4N.Dev.Test.StringPrep
             {
                 try
                 {
-                    StringPrep.GetInstance(neg_num_cases[i]);
+                    StringPrep.GetInstance((StringPrepProfile)neg_num_cases[i]);
                     Errln("StringPrep.GetInstance(int) expected an exception for " +
                             "an invalid parameter of " + neg_num_cases[i]);
                 }
@@ -254,7 +254,7 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
             }
 
-            int[] max_profile_cases = { StringPrep.RFC4518_LDAP_CI + 1, StringPrep.RFC4518_LDAP_CI + 2, StringPrep.RFC4518_LDAP_CI + 5, StringPrep.RFC4518_LDAP_CI + 10 };
+            StringPrepProfile[] max_profile_cases = { StringPrepProfile.Rfc4518LdapCaseInsensitive + 1, StringPrepProfile.Rfc4518LdapCaseInsensitive + 2, StringPrepProfile.Rfc4518LdapCaseInsensitive + 5, StringPrepProfile.Rfc4518LdapCaseInsensitive + 10 };
             for (int i = 0; i < max_profile_cases.Length; i++)
             {
                 try
@@ -269,12 +269,12 @@ namespace ICU4N.Dev.Test.StringPrep
             }
 
             // Tests when "if (instance == null)", "if (stream != null)", "if (instance != null)", and "if (ref != null)" is true
-            int[] cases = { 0, 1, StringPrep.RFC4518_LDAP_CI };
+            int[] cases = { 0, 1, (int)StringPrepProfile.Rfc4518LdapCaseInsensitive };
             for (int i = 0; i < cases.Length; i++)
             {
                 try
                 {
-                    StringPrep.GetInstance(cases[i]);
+                    StringPrep.GetInstance((StringPrepProfile)cases[i]);
                 }
                 catch (Exception e)
                 {

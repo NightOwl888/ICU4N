@@ -95,63 +95,63 @@ namespace ICU4N.Dev.Test.StringPrep
                 }
             };
 
-        private int GetOptionFromProfileName(String profileName)
+        private StringPrepProfile GetOptionFromProfileName(String profileName)
         {
             if (profileName.Equals("RFC4013_SASLPREP"))
             {
-                return StringPrep.RFC4013_SASLPREP;
+                return StringPrepProfile.Rfc4013SaslPrep;
             }
             else if (profileName.Equals("RFC4011_MIB"))
             {
-                return StringPrep.RFC4011_MIB;
+                return StringPrepProfile.Rfc4011MIB;
             }
             else if (profileName.Equals("RFC4505_TRACE"))
             {
-                return StringPrep.RFC4505_TRACE;
+                return StringPrepProfile.Rfc4505Trace;
             }
             else if (profileName.Equals("RFC4518_LDAP"))
             {
-                return StringPrep.RFC4518_LDAP;
+                return StringPrepProfile.Rfc4518Ldap;
             }
             else if (profileName.Equals("RFC4518_LDAP_CI"))
             {
-                return StringPrep.RFC4518_LDAP_CI;
+                return StringPrepProfile.Rfc4518LdapCaseInsensitive;
             }
             else if (profileName.Equals("RFC3920_RESOURCEPREP"))
             {
-                return StringPrep.RFC3920_RESOURCEPREP;
+                return StringPrepProfile.Rfc3920ResourcePrep;
             }
             else if (profileName.Equals("RFC3920_NODEPREP"))
             {
-                return StringPrep.RFC3920_NODEPREP;
+                return StringPrepProfile.Rfc3920NodePrep;
             }
             else if (profileName.Equals("RFC3722_ISCSI"))
             {
-                return StringPrep.RFC3722_ISCSI;
+                return StringPrepProfile.Rfc3722iSCSI;
             }
             else if (profileName.Equals("RFC3530_NFS4_CS_PREP"))
             {
-                return StringPrep.RFC3530_NFS4_CS_PREP;
+                return StringPrepProfile.Rfc3530Nfs4CsPrep;
             }
             else if (profileName.Equals("RFC3530_NFS4_CS_PREP_CI"))
             {
-                return StringPrep.RFC3530_NFS4_CS_PREP_CI;
+                return StringPrepProfile.Rfc3530Nfs4CsPrepCaseInsensitive;
             }
             else if (profileName.Equals("RFC3530_NFS4_CIS_PREP"))
             {
-                return StringPrep.RFC3530_NFS4_CIS_PREP;
+                return StringPrepProfile.Rfc3530Nfs4CisPrep;
             }
             else if (profileName.Equals("RFC3530_NFS4_MIXED_PREP_PREFIX"))
             {
-                return StringPrep.RFC3530_NFS4_MIXED_PREP_PREFIX;
+                return StringPrepProfile.Rfc3530Nfs4MixedPrepPrefix;
             }
             else if (profileName.Equals("RFC3530_NFS4_MIXED_PREP_SUFFIX"))
             {
-                return StringPrep.RFC3530_NFS4_MIXED_PREP_SUFFIX;
+                return StringPrepProfile.Rfc3530Nfs4MixedPrepSuffix;
             }
 
             // Should not happen.
-            return -1;
+            return (StringPrepProfile)(-1);
         }
 
         [Test]

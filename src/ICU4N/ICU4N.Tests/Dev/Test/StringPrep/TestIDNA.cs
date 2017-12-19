@@ -366,7 +366,7 @@ namespace ICU4N.Dev.Test.StringPrep
         [Test]
         public void TestNamePrepConformance()
         {
-            Text.StringPrep namePrep = Text.StringPrep.GetInstance(Text.StringPrep.RFC3491_NAMEPREP);
+            Text.StringPrep namePrep = Text.StringPrep.GetInstance(StringPrepProfile.Rfc3491NamePrep);
             for (int i = 0; i < TestData.conformanceTestCases.Length; i++)
             {
                 TestData.ConformanceTestCase testCase = TestData.conformanceTestCases[i];
