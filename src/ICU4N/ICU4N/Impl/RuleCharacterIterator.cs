@@ -11,19 +11,19 @@ namespace ICU4N.Impl
     public enum RuleCharacterIteratorOptions
     {
         /// <summary>
-        /// Bitmask option to enable parsing of variable names.  If (options &
+        /// Bitmask option to enable parsing of variable names.  If (options &amp;
         /// <see cref="ParseVariables"/> != 0, then an embedded variable will be expanded to
         /// its value.  Variables are parsed using the <see cref="SymbolTable"/> API.
         /// </summary>
         ParseVariables = 1,
         /// <summary>
-        /// Bitmask option to enable parsing of escape sequences.  If (options &
+        /// Bitmask option to enable parsing of escape sequences.  If (options &amp;
         /// <see cref="ParseEscapes"/> != 0, then an embedded escape sequence will be expanded
         /// to its value.  Escapes are parsed using <see cref="Utility.UnescapeAt(string, int[])"/>.
         /// </summary>
         ParseEscapes = 2,
         /// <summary>
-        /// Bitmask option to enable skipping of whitespace.  If (options &
+        /// Bitmask option to enable skipping of whitespace.  If (options &amp;
         /// <see cref="SkipWhitespace"/> != 0, then Unicode Pattern_White_Space characters will be silently
         /// skipped, as if they were not present in the input.
         /// </summary>
@@ -91,7 +91,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="text">The text to be iterated.</param>
         /// <param name="sym">The symbol table, or null if there is none.  If sym is null,
-        /// then variables will not be deferenced, even if the <see cref="PARSE_VARIABLES"/>
+        /// then variables will not be deferenced, even if the <see cref="RuleCharacterIteratorOptions.ParseVariables"/>
         /// option is set.</param>
         /// <param name="pos">Upon input, the index of the next character to return.  If a
         /// variable has been dereferenced, then pos will <em>not</em> increment as
@@ -123,7 +123,9 @@ namespace ICU4N.Impl
         /// character.
         /// </summary>
         /// <param name="options">One or more of the following options, bitwise-OR-ed
-        /// together: <see cref="PARSE_VARIABLES"/>, <see cref="PARSE_ESCAPES"/>, <see cref="SKIP_WHITESPACE"/>.</param>
+        /// together: <see cref="RuleCharacterIteratorOptions.ParseVariables"/>, 
+        /// <see cref="RuleCharacterIteratorOptions.ParseEscapes"/>, 
+        /// <see cref="RuleCharacterIteratorOptions.SkipWhitespace"/>.</param>
         /// <returns>The current 32-bit code point, or <see cref="DONE"/>.</returns>
         public virtual int Next(RuleCharacterIteratorOptions options)
         {
@@ -185,9 +187,10 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns true if the last character returned by <see cref="Next(int)"/> was
+        /// Returns true if the last character returned by <see cref="Next(RuleCharacterIteratorOptions)"/> was
         /// escaped.  This will only be the case if the option passed in to
-        /// <see cref="Next(int)"/> included <see cref="PARSE_ESCAPED"/> and the next character was an
+        /// <see cref="Next(RuleCharacterIteratorOptions)"/> included 
+        /// <see cref="RuleCharacterIteratorOptions.ParseEscapes"/> and the next character was an
         /// escape sequence.
         /// </summary>
         public virtual bool IsEscaped
@@ -256,10 +259,12 @@ namespace ICU4N.Impl
         /// Skips ahead past any ignored characters, as indicated by the given
         /// options.  This is useful in conjunction with the <see cref="Lookahead()"/> method.
         /// <para/>
-        /// Currently, this only has an effect for <see cref="SKIP_WHITESPACE"/>.
+        /// Currently, this only has an effect for <see cref="RuleCharacterIteratorOptions.SkipWhitespace"/>.
         /// </summary>
         /// <param name="options">One or more of the following options, bitwise-OR-ed
-        /// together: <see cref="PARSE_VARIABLES"/>, <see cref="PARSE_ESCAPES"/>, <see cref="SKIP_WHITESPACE"/>.</param>
+        /// together: <see cref="RuleCharacterIteratorOptions.ParseVariables"/>, 
+        /// <see cref="RuleCharacterIteratorOptions.ParseEscapes"/>, 
+        /// <see cref="RuleCharacterIteratorOptions.SkipWhitespace"/>.</param>
         public virtual void SkipIgnored(RuleCharacterIteratorOptions options)
         {
             if ((options & RuleCharacterIteratorOptions.SkipWhitespace) != 0)
@@ -281,12 +286,12 @@ namespace ICU4N.Impl
         /// If the iterator is currently within a variable expansion, this will only
         /// extend to the end of the variable expansion.  This method is provided
         /// so that iterators may interoperate with string-based APIs.  The typical
-        /// sequence of calls is to call <see cref="SkipIgnored(int)"/>, then call <see cref="Lookahead()"/>, then
+        /// sequence of calls is to call <see cref="SkipIgnored(RuleCharacterIteratorOptions)"/>, then call <see cref="Lookahead()"/>, then
         /// parse the string returned by <see cref="Lookahead()"/>, then call <see cref="Jumpahead(int)"/> to
         /// resynchronize the iterator.
         /// </remarks>
         /// <returns>A string containing the characters to be returned by future
-        /// calls to <see cref="Next(int)"/>.</returns>
+        /// calls to <see cref="Next(RuleCharacterIteratorOptions)"/>.</returns>
         public virtual string Lookahead()
         {
             if (buf != null)

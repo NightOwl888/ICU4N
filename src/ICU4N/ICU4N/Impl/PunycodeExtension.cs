@@ -127,7 +127,7 @@ namespace ICU4N.Impl
                         for (q = delta, k = BASE; /* no condition */; k += BASE)
                         {
 
-                            /** RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
+                            /* RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
 
                             t=k-bias;
                             if(t<TMIN) {
@@ -280,7 +280,7 @@ namespace ICU4N.Impl
                         for (q = delta, k = BASE; /* no condition */; k += BASE)
                         {
 
-                            /** RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
+                            /* RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
 
                             t=k-bias;
                             if(t<TMIN) {
@@ -433,7 +433,7 @@ namespace ICU4N.Impl
                         for (q = delta, k = BASE; /* no condition */; k += BASE)
                         {
 
-                            /** RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
+                            /* RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
 
                             t=k-bias;
                             if(t<TMIN) {
@@ -586,7 +586,7 @@ namespace ICU4N.Impl
                         for (q = delta, k = BASE; /* no condition */; k += BASE)
                         {
 
-                            /** RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
+                            /* RAM: comment out the old code for conformance with draft-ietf-idn-punycode-03.txt   
 
                             t=k-bias;
                             if(t<TMIN) {
