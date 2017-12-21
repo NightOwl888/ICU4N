@@ -1,33 +1,313 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Lang;
+using ICU4N.Support;
+using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Text;
-using System.Collections;
-using ICU4N.Support;
 using System.Linq;
-using ICU4N.Support.Collections;
+using System.Text;
 
 namespace ICU4N.Text
 {
+    /// <summary>
+    /// A mutable set of Unicode characters and multicharacter strings.
+    /// Objects of this class represent <em>character classes</em> used
+    /// in regular expressions. A character specifies a subset of Unicode
+    /// code points.  Legal code points are U+0000 to U+10FFFF, inclusive.
+    /// </summary>
+    /// <remarks>
+    /// Note: method <see cref="Freeze()"/> will not only make the set immutable, but
+    /// also makes important methods much higher performance:
+    /// <see cref="Contains(int)"/>, <see cref="ContainsNone(string)"/>, 
+    /// <see cref="Span(string, int, UnicodeSet.SpanCondition)"/>,
+    /// <see cref="SpanBack(string, int, UnicodeSet.SpanCondition)"/>, etc.
+    /// After the object is frozen, any subsequent call that wants to change
+    /// the object will throw <see cref="NotSupportedException"/>.
+    /// <para/>
+    /// The <see cref="UnicodeSet"/> class is not designed to be subclassed.
+    /// <para/>
+    /// <see cref="UnicodeSet"/> supports two APIs. The first is the
+    /// <em>operand</em> API that allows the caller to modify the value of
+    /// a <code>UnicodeSet</code> object. It conforms to .NET's <see cref="ISet{T}"/>
+    /// interface, although <see cref="UnicodeSet"/> does not actually implement that
+    /// interface. All methods of <see cref="ISet{T}"/> are supported, with the
+    /// modification that they take a character range or single character
+    /// instead of a <see cref="string"/>, and they take a
+    /// <see cref="UnicodeSet"/> instead of a <see cref="ICollection{T}"/>. The
+    /// operand API may be thought of in terms of boolean logic: a boolean
+    /// OR is implemented by <see cref="Add(string)"/>, a boolean AND is implemented
+    /// by <see cref="Retain(string)"/>, a boolean XOR is implemented by
+    /// <see cref="Complement(string)"/> taking an argument, and a boolean NOT is
+    /// implemented by <see cref="Complement()"/> with no argument.  In terms
+    /// of traditional set theory function names, <see cref="Add(string)"/> is a
+    /// union, <see cref="Retain(string)"/> is an intersection, <see cref="Remove(string)"/>
+    /// is an asymmetric difference, and <see cref="Complement()"/> with no
+    /// argument is a set complement with respect to the superset range
+    /// <c><see cref="MIN_VALUE"/>-<see cref="MAX_VALUE"/></c>.
+    /// <para/>
+    /// The second API is the
+    /// <see cref="ApplyPattern(string)"/>/<see cref="ToPattern(StringBuilder, bool)"/> API from the
+    /// <c>java.text.Format</c>-derived classes.  Unlike the
+    /// methods that add characters, add categories, and control the logic
+    /// of the set, the method <see cref="ApplyPattern(string)"/> sets all
+    /// attributes of a <see cref="UnicodeSet"/> at once, based on a
+    /// string pattern.
+    /// 
+    /// <para/>
+    /// <b>Pattern syntax</b>
+    /// 
+    /// <para/>
+    /// Patterns are accepted by the constructors and the
+    /// <see cref="ApplyPattern(string)"/> methods and returned by the
+    /// <see cref="ToPattern(StringBuilder, bool)"/> method.  These patterns follow a syntax
+    /// similar to that employed by .NET regular expression character
+    /// classes.  Here are some simple examples:
+    /// 
+    /// <list type="table">
+    ///     <item>
+    ///         <term><c>[]</c></term>
+    ///         <term>No characters</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[a]</c></term>
+    ///         <term>The character 'a'</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[ae]</c></term>
+    ///         <term>The characters 'a' and 'e'</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[a-e]</c></term>
+    ///         <term>The characters 'a' through 'e' inclusive, in Unicode code
+    ///         point order</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[\\u4E01]</c></term>
+    ///         <term>The character U+4E01</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[a{ab}{ac}]</c></term>
+    ///         <term>The character 'a' and the multicharacter strings &quot;ab&quot; and
+    ///         &quot;ac&quot;</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[\p{Lu}]</c></term>
+    ///         <term>All characters in the general category Uppercase Letter</term>
+    ///     </item>
+    /// </list>
+    /// 
+    /// <para/>
+    /// Any character may be preceded by a backslash in order to remove any special
+    /// meaning.  White space characters, as defined by the Unicode Pattern_White_Space property, are
+    /// ignored, unless they are escaped.
+    /// 
+    /// <para/>
+    /// Property patterns specify a set of characters having a certain
+    /// property as defined by the Unicode standard.  Both the POSIX-like
+    /// "[:Lu:]" and the Perl-like syntax "\p{Lu}" are recognized.  For a
+    /// complete list of supported property patterns, see the User's Guide
+    /// for UnicodeSet at
+    /// <a href="http://www.icu-project.org/userguide/unicodeSet.html">
+    /// http://www.icu-project.org/userguide/unicodeSet.html</a>.
+    /// Actual determination of property data is defined by the underlying
+    /// Unicode database as implemented by <see cref="UCharacter"/>.
+    /// 
+    /// <para/>
+    /// Patterns specify individual characters, ranges of characters, and
+    /// Unicode property sets.  When elements are concatenated, they
+    /// specify their union.  To complement a set, place a '^' immediately
+    /// after the opening '['.  Property patterns are inverted by modifying
+    /// their delimiters; "[:^foo]" and "\P{foo}".  In any other location,
+    /// '^' has no special meaning.
+    /// 
+    /// <para/>
+    /// Ranges are indicated by placing two a '-' between two
+    /// characters, as in "a-z".  This specifies the range of all
+    /// characters from the left to the right, in Unicode order.  If the
+    /// left character is greater than or equal to the
+    /// right character it is a syntax error.  If a '-' occurs as the first
+    /// character after the opening '[' or '[^', or if it occurs as the
+    /// last character before the closing ']', then it is taken as a
+    /// literal.  Thus "[a\\-b]", "[-ab]", and "[ab-]" all indicate the same
+    /// set of three characters, 'a', 'b', and '-'.
+    /// 
+    /// <para/>
+    /// Sets may be intersected using the '&amp;' operator or the asymmetric
+    /// set difference may be taken using the '-' operator, for example,
+    /// "[[:L:]&amp;[\\u0000-\\u0FFF]]" indicates the set of all Unicode letters
+    /// with values less than 4096.  Operators ('&amp;' and '|') have equal
+    /// precedence and bind left-to-right.  Thus
+    /// "[[:L:]-[a-z]-[\\u0100-\\u01FF]]" is equivalent to
+    /// "[[[:L:]-[a-z]]-[\\u0100-\\u01FF]]".  This only really matters for
+    /// difference; intersection is commutative.
+    /// 
+    /// <list type="table">
+    ///     <item>
+    ///         <term><c>[a]</c></term>
+    ///         <term>The set containing 'a'</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[a-z]</c></term>
+    ///         <term>The set containing 'a'
+    ///         through 'z' and all letters in between, in Unicode order</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[^a-z]</c></term>
+    ///         <term>The set containing
+    ///         all characters but 'a' through 'z',
+    ///         that is, U+0000 through 'a'-1 and 'z'+1 through U+10FFFF</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[[<em>pat1</em>][<em>pat2</em>]]</c></term>
+    ///         <term>The union of sets specified by <em>pat1</em> and <em>pat2</em></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[[<em>pat1</em>]&amp;[<em>pat2</em>]]</c></term>
+    ///         <term>The intersection of sets specified by <em>pat1</em> and <em>pat2</em></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[[<em>pat1</em>]-[<em>pat2</em>]]</c></term>
+    ///         <term>The asymmetric difference of sets specified by <em>pat1</em> and <em>pat2</em></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[:Lu:] or \p{Lu}</c></term>
+    ///         <term>The set of characters having the specified
+    ///         Unicode property; in
+    ///         this case, Unicode uppercase letters</term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>[:^Lu:] or \P{Lu}</c></term>
+    ///         <term>The set of characters <em>not</em> having the given
+    ///         Unicode property</term>
+    ///     </item>
+    /// </list>
+    /// 
+    /// <para/>
+    /// <b>Warning</b>: you cannot add an empty string ("") to a UnicodeSet.
+    /// 
+    /// <para/>
+    /// <b>Formal syntax</b>
+    /// 
+    /// <list type="table">
+    ///     <item>
+    ///         <term><c>pattern :=&amp;nbsp; </c></term>
+    ///         <term><c>('[' '^'? item* ']') | property</c></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>item :=&amp;nbsp; </c></term>
+    ///         <term><c>char | (char '-' char) | pattern-expr<br/></c></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>pattern-expr :=&amp;nbsp; </c></term>
+    ///         <term><c>pattern | pattern-expr pattern | pattern-expr op pattern<br/></c></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>op :=&amp;nbsp; </c></term>
+    ///         <term><c>'&amp;' | '-'<br/></c></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>special :=&amp;nbsp; </c></term>
+    ///         <term><c>'[' | ']' | '-'<br/></c></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>char :=&amp;nbsp; </c></term>
+    ///         <term><em>any character that is not</em><c> special<br/>
+    ///         | ('\\' </c><em>any character</em><c>)<br/>
+    ///         | ('&#92;u' hex hex hex hex)<br/>
+    ///         </c></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>hex :=&amp;nbsp; </c></term>
+    ///         <term><em>any character for which
+    ///         </em><c>Character.Digit(c, 16)</c><em>
+    ///         returns a non-negative result</em></term>
+    ///     </item>
+    ///     <item>
+    ///         <term><c>property :=&amp;nbsp; </c></term>
+    ///         <term><em>a Unicode property set pattern</em></term>
+    ///     </item>
+    /// </list>
+    /// 
+    /// <list type="table">
+    ///     <item>
+    ///         <term>Legend:
+    ///             <list type="table">
+    ///                 <item>
+    ///                     <term><c>a := b</c></term>
+    ///                     <term>&#160;</term>
+    ///                     <term><c>a</c> may be replaced by <c>b</c></term>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term><c>a?</c></term>
+    ///                     <term></term>
+    ///                     <term>zero or one instance of <c>a</c></term>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term><c>a*</c></term>
+    ///                     <term></term>
+    ///                     <term>one or more instances of <c>a</c></term>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term><c>a | b</c></term>
+    ///                     <term></term>
+    ///                     <term>either <c>a</c> or <c>b</c></term>
+    ///                 </item>
+    ///                 <item>
+    ///                     <term><c>'a'</c></term>
+    ///                     <term></term>
+    ///                     <term>the literal string between the quotes</term>
+    ///                 </item>
+    ///             </list>
+    ///         </term>
+    ///     </item>
+    /// </list>
+    /// 
+    /// <para/>
+    /// To iterate over contents of <see cref="UnicodeSet"/>, the following are available:
+    /// <list type="bullet">
+    ///     <item><description>
+    ///         <see cref="Ranges"/> to iterate through the ranges
+    ///     </description></item>
+    ///     <item><description>
+    ///         <see cref="Strings"/> to iterate through the strings
+    ///     </description></item>
+    ///     <item><description>
+    ///         <see cref="GetEnumerator()"/> to iterate through the entire contents in a single loop.
+    ///         That method is, however, not particularly efficient, since it "boxes" each code point into a <see cref="string"/>.
+    ///     </description></item>
+    /// </list>
+    /// All of the above can be used in <b>for</b> loops.
+    /// The <see cref="UnicodeSetIterator"/> can also be used, but not in <b>for</b> loops.
+    /// 
+    /// <para/>
+    /// To replace, count elements, or delete spans, see <see cref="UnicodeSetSpanner"/>.
+    /// </remarks>
+    /// <seealso cref="UnicodeSetIterator"/>
+    /// <seealso cref="UnicodeSetSpanner"/>
+    /// <author>Alan Liu</author>
+    /// <stable>ICU 2.0</stable>
+    // ICU4N TODO: API - mark sealed (not sure why this wasn't done)
+    // ICU4N TODO: API - change ToPattern() to ICustomFormatter.Format(string, object, IFormatProvider) ? Need to find corresponding API in .NET and change accordingly (see the "second API") in documentation above
     public partial class UnicodeSet : UnicodeFilter, IEnumerable<string>, IComparable<UnicodeSet>, IFreezable<UnicodeSet>
     {
         private static readonly object syncLock = new object();
 
-        /**
-         * Constant for the empty set.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Constant for the empty set.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public static readonly UnicodeSet EMPTY = new UnicodeSet().Freeze();
-        /**
-         * Constant for the set of all code points. (Since UnicodeSets can include strings, does not include everything that a UnicodeSet can.)
-         * @stable ICU 4.8
-         */
+
+        /// <summary>
+        /// Constant for the set of all code points. (Since <see cref="UnicodeSet"/>s can include strings, 
+        /// does not include everything that a <see cref="UnicodeSet"/> can.)
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public static readonly UnicodeSet ALL_CODE_POINTS = new UnicodeSet(0, 0x10FFFF).Freeze();
 
         private static XSymbolTable XSYMBOL_TABLE = null; // for overriding the the function processing
@@ -36,17 +316,17 @@ namespace ICU4N.Text
         private const int HIGH = 0x110000; // HIGH > all valid values. 10000 for code units.
                                            // 110000 for codepoints
 
-        /**
-         * Minimum value that can be stored in a UnicodeSet.
-         * @stable ICU 2.0
-         */
-        public const int MIN_VALUE = LOW;
+        /// <summary>
+        /// Minimum value that can be stored in a <see cref="UnicodeSet"/>.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public const int MIN_VALUE = LOW; // ICU4N TODO: API - rename pascal case to follow .NET conventions
 
-        /**
-         * Maximum value that can be stored in a UnicodeSet.
-         * @stable ICU 2.0
-         */
-        public const int MAX_VALUE = HIGH - 1;
+        /// <summary>
+        /// Maximum value that can be stored in a <see cref="UnicodeSet"/>.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public const int MAX_VALUE = HIGH - 1; // ICU4N TODO: API - rename pascal case to follow .NET conventions
 
         private int len;      // length used; list may be longer to minimize reallocs
         private int[] list;   // MUST be terminated with HIGH
@@ -57,15 +337,15 @@ namespace ICU4N.Text
         // is not private so that UnicodeSetIterator can get access
         private SortedSet<string> strings = new SortedSet<string>(StringComparer.Ordinal);
 
-        /**
-         * The pattern representation of this set.  This may not be the
-         * most economical pattern.  It is the pattern supplied to
-         * applyPattern(), with variables substituted and whitespace
-         * removed.  For sets constructed without applyPattern(), or
-         * modified using the non-pattern API, this string will be null,
-         * indicating that toPattern() must generate a pattern
-         * representation from the inversion list.
-         */
+        /// <summary>
+        /// The pattern representation of this set.  This may not be the
+        /// most economical pattern.  It is the pattern supplied to
+        /// <see cref="ApplyPattern(string)"/>, with variables substituted and whitespace
+        /// removed.  For sets constructed without <see cref="ApplyPattern(string)"/>, or
+        /// modified using the non-pattern API, this string will be null,
+        /// indicating that <see cref="ToPattern(StringBuilder, bool)"/> must generate a pattern
+        /// representation from the inversion list.
+        /// </summary>
         private string pat = null;
 
         private const int START_EXTRA = 16;         // initial storage. Must be >= 0
@@ -76,12 +356,12 @@ namespace ICU4N.Text
         private const string ASCII_ID = "ASCII"; // [\u0000-\u007F]
         private const string ASSIGNED = "Assigned"; // [:^Cn:]
 
-        /**
-         * A set of all characters _except_ the second through last characters of
-         * certain ranges.  These ranges are ranges of characters whose
-         * properties are all exactly alike, e.g. CJK Ideographs from
-         * U+4E00 to U+9FA5.
-         */
+        /// <summary>
+        /// A set of all characters _except_ the second through last characters of
+        /// certain ranges.  These ranges are ranges of characters whose
+        /// properties are all exactly alike, e.g. CJK Ideographs from
+        /// U+4E00 to U+9FA5.
+        /// </summary>
         private static UnicodeSet[] INCLUSIONS = null;
 
         private volatile BMPSet bmpSet; // The set is frozen if bmpSet or stringSpan is not null.
@@ -91,48 +371,47 @@ namespace ICU4N.Text
         //----------------------------------------------------------------
 #pragma warning disable 612, 618
 
-        /**
-         * Constructs an empty set.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Constructs an empty set.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet()
         {
             list = new int[1 + START_EXTRA];
             list[len++] = HIGH;
         }
 
-        /**
-         * Constructs a copy of an existing set.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Constructs a copy of an existing set.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet(UnicodeSet other)
         {
             Set(other);
         }
 
-        /**
-         * Constructs a set containing the given range. If <code>end &gt;
-         * start</code> then an empty set is created.
-         *
-         * @param start first character, inclusive, of range
-         * @param end last character, inclusive, of range
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Constructs a set containing the given range. If <c><paramref name="end"/> &gt;
+        /// <paramref name="start"/></c> then an empty set is created.
+        /// </summary>
+        /// <param name="start">First character, inclusive, of range.</param>
+        /// <param name="end">Last character, inclusive, of range.</param>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet(int start, int end)
             : this()
         {
             Complement(start, end);
         }
 
-        /**
-         * Quickly constructs a set from a set of ranges &lt;s0, e0, s1, e1, s2, e2, ..., sn, en&gt;.
-         * There must be an even number of integers, and they must be all greater than zero,
-         * all less than or equal to Character.MAX_CODE_POINT.
-         * In each pair (..., si, ei, ...) it must be true that si &lt;= ei
-         * Between adjacent pairs (...ei, sj...), it must be true that ei+1 &lt; sj
-         * @param pairs pairs of character representing ranges
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Quickly constructs a set from a set of ranges &lt;s0, e0, s1, e1, s2, e2, ..., sn, en&gt;.
+        /// There must be an even number of integers, and they must be all greater than zero,
+        /// all less than or equal to <see cref="Character.MAX_CODE_POINT"/>.
+        /// In each pair (..., si, ei, ...) it must be true that si &lt;= ei
+        /// Between adjacent pairs (...ei, sj...), it must be true that ei+1 &lt; sj.
+        /// </summary>
+        /// <param name="pairs">Pairs of character representing ranges.</param>
+        /// <stable>ICU 4.4</stable>
         public UnicodeSet(params int[] pairs)
         {
             if ((pairs.Length & 1) != 0)
@@ -162,97 +441,104 @@ namespace ICU4N.Text
             }
             list[i] = HIGH; // terminate
         }
-#pragma warning restore 612, 618
 
-        /**
-         * Constructs a set from the given pattern.  See the class description
-         * for the syntax of the pattern language.  Whitespace is ignored.
-         * @param pattern a string specifying what characters are in the set
-         * @exception java.lang.ArgumentException if the pattern contains
-         * a syntax error.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Constructs a set from the <paramref name="pattern"/> pattern.  See the 
+        /// <see cref="UnicodeSet"/> class description
+        /// for the syntax of the <paramref name="pattern"/> language.
+        /// Whitespace is ignored.
+        /// </summary>
+        /// <param name="pattern">A string specifying what characters are in the set.</param>
+        /// <exception cref="ArgumentException">If the <paramref name="pattern"/>
+        /// contains a syntax error.</exception>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet(string pattern)
             : this()
         {
             ApplyPattern(pattern, null, null, IGNORE_SPACE);
         }
 
-        /**
-         * Constructs a set from the given pattern.  See the class description
-         * for the syntax of the pattern language.
-         * @param pattern a string specifying what characters are in the set
-         * @param ignoreWhitespace if true, ignore Unicode Pattern_White_Space characters
-         * @exception java.lang.ArgumentException if the pattern contains
-         * a syntax error.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Constructs a set from the <paramref name="pattern"/> pattern.  See the 
+        /// <see cref="UnicodeSet"/> class description
+        /// for the syntax of the <paramref name="pattern"/> language.
+        /// </summary>
+        /// <param name="pattern">A string specifying what characters are in the set.</param>
+        /// <param name="ignoreWhitespace">If true, ignore Unicode Pattern_White_Space characters.</param>
+        /// <exception cref="ArgumentException">If the <paramref name="pattern"/>
+        /// contains a syntax error.</exception>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet(string pattern, bool ignoreWhitespace)
             : this()
         {
             ApplyPattern(pattern, null, null, ignoreWhitespace ? IGNORE_SPACE : 0);
         }
 
-        /**
-         * Constructs a set from the given pattern.  See the class description
-         * for the syntax of the pattern language.
-         * @param pattern a string specifying what characters are in the set
-         * @param options a bitmask indicating which options to apply.
-         * Valid options are IGNORE_SPACE and CASE.
-         * @exception java.lang.ArgumentException if the pattern contains
-         * a syntax error.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Constructs a set from the <paramref name="pattern"/> pattern.  See the 
+        /// <see cref="UnicodeSet"/> class description
+        /// for the syntax of the <paramref name="pattern"/> language.
+        /// </summary>
+        /// <param name="pattern">A string specifying what characters are in the set.</param>
+        /// <param name="options">A bitmask indicating which options to apply.
+        /// Valid options are <see cref="IGNORE_SPACE"/> and <see cref="CASE"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">If the <paramref name="pattern"/>
+        /// contains a syntax error.</exception>
+        /// <stable>ICU 3.8</stable>
         public UnicodeSet(string pattern, int options)
             : this()
         {
             ApplyPattern(pattern, null, null, options);
         }
 
-        /**
-         * Constructs a set from the given pattern.  See the class description
-         * for the syntax of the pattern language.
-         * @param pattern a string specifying what characters are in the set
-         * @param pos on input, the position in pattern at which to start parsing.
-         * On output, the position after the last character parsed.
-         * @param symbols a symbol table mapping variables to char[] arrays
-         * and chars to UnicodeSets
-         * @exception java.lang.ArgumentException if the pattern
-         * contains a syntax error.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Constructs a set from the given <paramref name="pattern"/>.  See the 
+        /// <see cref="UnicodeSet"/> class description
+        /// for the syntax of the <paramref name="pattern"/> language.
+        /// </summary>
+        /// <param name="pattern">A string specifying what characters are in the set.</param>
+        /// <param name="pos">On input, the position in pattern at which to start parsing.
+        /// On output, the position after the last character parsed.</param>
+        /// <param name="symbols">A symbol table mapping variables to char[] arrays
+        /// and chars to <see cref="UnicodeSet"/>s.</param>
+        /// <exception cref="ArgumentException">If the <paramref name="pattern"/>
+        /// contains a syntax error.</exception>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet(string pattern, ParsePosition pos, ISymbolTable symbols)
             : this()
         {
             ApplyPattern(pattern, pos, symbols, IGNORE_SPACE);
         }
 
-        /**
-         * Constructs a set from the given pattern.  See the class description
-         * for the syntax of the pattern language.
-         * @param pattern a string specifying what characters are in the set
-         * @param pos on input, the position in pattern at which to start parsing.
-         * On output, the position after the last character parsed.
-         * @param symbols a symbol table mapping variables to char[] arrays
-         * and chars to UnicodeSets
-         * @param options a bitmask indicating which options to apply.
-         * Valid options are IGNORE_SPACE and CASE.
-         * @exception java.lang.ArgumentException if the pattern
-         * contains a syntax error.
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// Constructs a set from the given <paramref name="pattern"/>.  See the
+        /// <see cref="UnicodeSet"/> class description
+        /// for the syntax of the <paramref name="pattern"/> language.
+        /// </summary>
+        /// <param name="pattern">A string specifying what characters are in the set.</param>
+        /// <param name="pos">On input, the position in pattern at which to start parsing.
+        /// On output, the position after the last character parsed.</param>
+        /// <param name="symbols">A symbol table mapping variables to char[] arrays
+        /// and chars to <see cref="UnicodeSet"/>s.</param>
+        /// <param name="options">A bitmask indicating which options to apply.
+        /// Valid options are <see cref="IGNORE_SPACE"/> and <see cref="CASE"/>.
+        /// </param>
+        /// <exception cref="ArgumentException">If the <paramref name="pattern"/>
+        /// contains a syntax error.</exception>
+        /// <stable>ICU 3.2</stable>
         public UnicodeSet(string pattern, ParsePosition pos, ISymbolTable symbols, int options)
             : this()
         {
             ApplyPattern(pattern, pos, symbols, options);
         }
+#pragma warning restore 612, 618
 
-
-        /**
-         * Return a new set that is equivalent to this one.
-         * @stable ICU 2.0
-         */
-        public object Clone()
+        /// <summary>
+        /// Return a new set that is equivalent to this one.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public virtual object Clone()
         {
             if (IsFrozen)
             {
@@ -264,16 +550,15 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Make this object represent the range <code>start - end</code>.
-         * If <code>end &gt; start</code> then this object is set to an
-         * an empty range.
-         *
-         * @param start first character in the set, inclusive
-         * @param end last character in the set, inclusive
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Set(int start, int end)
+        /// <summary>
+        /// Make this object represent the range <code>start - end</code>.
+        /// If <code>end &gt; start</code> then this object is set to an
+        /// an empty range.
+        /// </summary>
+        /// <param name="start">First character in the set, inclusive.</param>
+        /// <param name="end">Last character in the set, inclusive.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet Set(int start, int end)
         {
             CheckFrozen();
             Clear();
@@ -281,13 +566,13 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Make this object represent the same set as <code>other</code>.
-         * @param other a <code>UnicodeSet</code> whose value will be
-         * copied to this object
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Set(UnicodeSet other)
+        /// <summary>
+        /// Make this object represent the same set as <paramref name="other"/>.
+        /// </summary>
+        /// <param name="other">A <see cref="UnicodeSet"/> whose value will be
+        /// copied to this object.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet Set(UnicodeSet other)
         {
             CheckFrozen();
             list = (int[])other.list.Clone();
@@ -297,60 +582,63 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Modifies this set to represent the set specified by the given pattern.
-         * See the class description for the syntax of the pattern language.
-         * Whitespace is ignored.
-         * @param pattern a string specifying what characters are in the set
-         * @exception java.lang.ArgumentException if the pattern
-         * contains a syntax error.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Modifies this set to represent the set specified by the given <paramref name="pattern"/>.
+        /// See the <see cref="UnicodeSet"/> class description for the syntax of the <paramref name="pattern"/> language.
+        /// Whitespace is ignored.
+        /// </summary>
+        /// <param name="pattern">A string specifying what characters are in the set.</param>
+        /// <exception cref="ArgumentException">If the <paramref name="pattern"/> contains a syntax error.</exception>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet ApplyPattern(string pattern)
         {
             CheckFrozen();
+#pragma warning disable 612, 618
             return ApplyPattern(pattern, null, null, IGNORE_SPACE);
+#pragma warning restore 612, 618
         }
 
-        /**
-         * Modifies this set to represent the set specified by the given pattern,
-         * optionally ignoring whitespace.
-         * See the class description for the syntax of the pattern language.
-         * @param pattern a string specifying what characters are in the set
-         * @param ignoreWhitespace if true then Unicode Pattern_White_Space characters are ignored
-         * @exception java.lang.ArgumentException if the pattern
-         * contains a syntax error.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet ApplyPattern(string pattern, bool ignoreWhitespace)
+        /// <summary>
+        /// Modifies this set to represent the set specified by the given <paramref name="pattern"/>,
+        /// optionally ignoring whitespace.
+        /// See the <see cref="UnicodeSet"/> class description for the syntax of the <paramref name="pattern"/> language.
+        /// </summary>
+        /// <param name="pattern">A string specifying what characters are in the set.</param>
+        /// <param name="ignoreWhitespace">If true then Unicode Pattern_White_Space characters are ignored.</param>
+        /// <exception cref="ArgumentException">If the <paramref name="pattern"/> contains a syntax error.</exception>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet ApplyPattern(string pattern, bool ignoreWhitespace)
         {
             CheckFrozen();
+#pragma warning disable 612, 618
             return ApplyPattern(pattern, null, null, ignoreWhitespace ? IGNORE_SPACE : 0);
+#pragma warning restore 612, 618
         }
 
-        /**
-         * Modifies this set to represent the set specified by the given pattern,
-         * optionally ignoring whitespace.
-         * See the class description for the syntax of the pattern language.
-         * @param pattern a string specifying what characters are in the set
-         * @param options a bitmask indicating which options to apply.
-         * Valid options are IGNORE_SPACE and CASE.
-         * @exception java.lang.ArgumentException if the pattern
-         * contains a syntax error.
-         * @stable ICU 3.8
-         */
-        public UnicodeSet ApplyPattern(String pattern, int options)
+        /// <summary>
+        /// Modifies this set to represent the set specified by the given <paramref name="pattern"/>,
+        /// optionally ignoring whitespace.
+        /// See the class description for the syntax of the pattern language.
+        /// </summary>
+        /// <param name="pattern">A string specifying what characters are in the set.</param>
+        /// <param name="options">A bitmask indicating which options to apply.
+        /// Valid options are <see cref="IGNORE_SPACE"/> and <see cref="CASE"/>.</param>
+        /// <exception cref="ArgumentException">If the <paramref name="pattern"/> contains a syntax error.</exception>
+        /// <stable>ICU 3.8</stable>
+        public virtual UnicodeSet ApplyPattern(string pattern, int options)
         {
             CheckFrozen();
+#pragma warning disable 612, 618
             return ApplyPattern(pattern, null, null, options);
+#pragma warning restore 612, 618
         }
 
-        /**
-         * Return true if the given position, in the given pattern, appears
-         * to be the start of a UnicodeSet pattern.
-         * @stable ICU 2.0
-         */
-        public static bool ResemblesPattern(String pattern, int pos)
+        /// <summary>
+        /// Return true if the given position, in the given <paramref name="pattern"/>, appears
+        /// to be the start of a <see cref="UnicodeSet"/> pattern.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public static bool ResemblesPattern(string pattern, int pos)
         {
             return ((pos + 1) < pattern.Length &&
                     pattern[pos] == '[') ||
@@ -367,7 +655,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns a string representation of this set.  If the result of
-        /// calling this function is passed to a UnicodeSet constructor, it
+        /// calling this function is passed to a <see cref="UnicodeSet"/> constructor, it
         /// will produce another set that is equal to this one.
         /// </summary>
         /// <stable>ICU 2.0</stable>
@@ -383,29 +671,29 @@ namespace ICU4N.Text
 
         // ICU4N specific - ToPattern(IAppendable result, bool escapeUnprintable) moved to UnicodeSetExtension.tt
 
-
-
-        /**
-         * Generate and append a string representation of this set to result.
-         * This does not use this.pat, the cleaned up copy of the string
-         * passed to applyPattern().
-         * @param result the buffer into which to generate the pattern
-         * @param escapeUnprintable escape unprintable characters if true
-         * @stable ICU 2.0
-         */
-        public StringBuilder GeneratePattern(StringBuilder result, bool escapeUnprintable)
+        /// <summary>
+        /// Generate and append a string representation of this set to result.
+        /// This does not use <see cref="pat"/>, the cleaned up copy of the string
+        /// passed to <see cref="ApplyPattern(string)"/>
+        /// </summary>
+        /// <param name="result">The buffer into which to generate the pattern.</param>
+        /// <param name="escapeUnprintable">Escape unprintable characters if true.</param>
+        /// <stable>ICU 3.8</stable>
+        public virtual StringBuilder GeneratePattern(StringBuilder result, bool escapeUnprintable)
         {
             return GeneratePattern(result, escapeUnprintable, true);
         }
 
-        /**
-         * Generate and append a string representation of this set to result.
-         * This does not use this.pat, the cleaned up copy of the string
-         * passed to applyPattern().
-         * @param includeStrings if false, doesn't include the strings.
-         * @stable ICU 3.8
-         */
-        public StringBuilder GeneratePattern(StringBuilder result,
+        /// <summary>
+        /// Generate and append a string representation of this set to <paramref name="result"/>.
+        /// This does not use <see cref="pat"/>, the cleaned up copy of the string
+        /// passed to <see cref="ApplyPattern(string)"/>
+        /// </summary>
+        /// <param name="result">The buffer into which to generate the pattern.</param>
+        /// <param name="escapeUnprintable">Escape unprintable characters if true.</param>
+        /// <param name="includeStrings">If false, doesn't include the strings.</param>
+        /// <stable>ICU 3.8</stable>
+        public virtual StringBuilder GeneratePattern(StringBuilder result,
                 bool escapeUnprintable, bool includeStrings)
         {
             return AppendNewPattern(result, escapeUnprintable, includeStrings);
@@ -413,16 +701,13 @@ namespace ICU4N.Text
 
         // ICU4N specific - AppendNewPattern(IAppendable result, bool escapeUnprintable, bool includeStrings) moved to UnicodeSetExtension.tt
 
-
-        /**
-         * Returns the number of elements in this set (its cardinality)
-         * Note than the elements of a set may include both individual
-         * codepoints and strings.
-         *
-         * @return the number of elements in this set (its cardinality).
-         * @stable ICU 2.0
-         */
-        public int Count // ICU4N TODO: Not the best candidate for a property...
+        /// <summary>
+        /// Returns the number of elements in this set (its cardinality)
+        /// Note than the elements of a set may include both individual
+        /// codepoints and strings.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public virtual int Count // ICU4N TODO: Not the best candidate for a property...
         {
             get
             {
@@ -436,24 +721,22 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns <tt>true</tt> if this set contains no elements.
-         *
-         * @return <tt>true</tt> if this set contains no elements.
-         * @stable ICU 2.0
-         */
-        public bool IsEmpty // ICU4N TODO: API - this is weird in .NET, but Count alone or LINQ Any() doesn't cut it.
+        /// <summary>
+        /// Returns <c>true</c> if this set contains no elements.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public virtual bool IsEmpty // ICU4N TODO: API - this is weird in .NET, but Count alone or LINQ Any() doesn't cut it.
         {
             get { return len == 1 && strings.Count == 0; }
         }
 
-        /**
-         * Implementation of UnicodeMatcher API.  Returns <tt>true</tt> if
-         * this set contains any character whose low byte is the given
-         * value.  This is used by <tt>RuleBasedTransliterator</tt> for
-         * indexing.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Implementation of UnicodeMatcher API.  Returns <c>true</c> if
+        /// this set contains any character whose low byte is the given
+        /// value.  This is used by <c>RuleBasedTransliterator</c> for
+        /// indexing.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public override bool MatchesIndexValue(int v)
         {
             /* The index value v, in the range [0,255], is contained in this set if
@@ -499,11 +782,11 @@ namespace ICU4N.Text
             return false;
         }
 
-        /**
-         * Implementation of UnicodeMatcher.matches().  Always matches the
-         * longest possible multichar string.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Implementation of <see cref="IUnicodeMatcher.Matches(IReplaceable, int[], int, bool)"/>.  Always matches the
+        /// longest possible multichar string.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public override int Matches(IReplaceable text,
                 int[] offset,
                 int limit,
@@ -602,27 +885,31 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the longest match for s in text at the given position.
-         * If limit > start then match forward from start+1 to limit
-         * matching all characters except s.charAt(0).  If limit &lt; start,
-         * go backward starting from start-1 matching all characters
-         * except s.charAt(s.Length()-1).  This method assumes that the
-         * first character, text.charAt(start), matches s, so it does not
-         * check it.
-         * @param text the text to match
-         * @param start the first character to match.  In the forward
-         * direction, text.charAt(start) is matched against s.charAt(0).
-         * In the reverse direction, it is matched against
-         * s.charAt(s.Length()-1).
-         * @param limit the limit offset for matching, either last+1 in
-         * the forward direction, or last-1 in the reverse direction,
-         * where last is the index of the last character to match.
-         * @return If part of s matches up to the limit, return |limit -
-         * start|.  If all of s matches before reaching the limit, return
-         * s.Length().  If there is a mismatch between s and text, return
-         * 0
-         */
+        /// <summary>
+        /// Returns the longest match for <paramref name="s"/> in text at the given position.
+        /// If <paramref name="limit"/> > <paramref name="start"/> then match forward from <paramref name="start"/>+1 to <paramref name="limit"/>
+        /// matching all characters except s[0].  If <paramref name="limit"/> &lt; start,
+        /// go backward starting from <paramref name="start"/>-1 matching all characters
+        /// except s[s.Length-1].  This method assumes that the
+        /// first character, text[<paramref name="start"/>], matches <paramref name="s"/>, so it does not
+        /// check it.
+        /// </summary>
+        /// <param name="text">The text to match.</param>
+        /// <param name="start">The first character to match.  In the forward
+        /// direction, <paramref name="text"/>[<paramref name="start"/>] is matched against <paramref name="s"/>[0].
+        /// In the reverse direction, it is matched against
+        /// <paramref name="s"/>[<paramref name="s"/>.Length-1].
+        /// </param>
+        /// <param name="limit">The limit offset for matching, either last+1 in
+        /// the forward direction, or last-1 in the reverse direction,
+        /// where last is the index of the last character to match.
+        /// </param>
+        /// <param name="s"></param>
+        /// <returns>If part of <paramref name="s"/> matches up to the limit, return |limit -
+        /// start|.  If all of <paramref name="s"/> matches before reaching the limit, return
+        /// <paramref name="s"/>.Length.  If there is a mismatch between <paramref name="s"/> and text, return
+        /// 0.
+        /// </returns>
         private static int MatchRest(IReplaceable text, int start, int limit, string s)
         {
             int maxLen;
@@ -654,7 +941,7 @@ namespace ICU4N.Text
         // ICU4N specific - MatchesAt(ICharSequence text, int offsetInText, ICharSequence substring) moved to UnicodeSetExtension.tt
 
         /// <summary>
-        /// Implementation of UnicodeMatcher API.  Union the set of all
+        /// Implementation of <see cref="IUnicodeMatcher"/> API.  Union the set of all
         /// characters that may be matched by this object into the given
         /// set.
         /// </summary>
@@ -673,7 +960,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>An index from 0..Count-1, or -1.</returns>
         /// <stable>ICU 2.0</stable>
-        public int IndexOf(int c)
+        public virtual int IndexOf(int c)
         {
             if (c < MIN_VALUE || c > MAX_VALUE)
             {
@@ -699,38 +986,19 @@ namespace ICU4N.Text
 
         // ICU4N specific - replaced int CharAt(index) with int this[int index]
 
-        ///**
-        // * Returns the character at the given index within this set, where
-        // * the set is ordered by ascending code point.  If the index is
-        // * out of range, return -1.  The inverse of this method is
-        // * <code>indexOf()</code>.
-        // * @param index an index from 0..size()-1
-        // * @return the character at the given index, or -1.
-        // * @stable ICU 2.0
-        // */
-        //private int CharAt(int index)
-        //{
-        //    if (index >= 0)
-        //    {
-        //        // len2 is the largest even integer <= len, that is, it is len
-        //        // for even values and len-1 for odd values.  With odd values
-        //        // the last entry is UNICODESET_HIGH.
-        //        int len2 = len & ~1;
-        //        for (int i = 0; i < len2;)
-        //        {
-        //            int start = list[i++];
-        //            int count = list[i++] - start;
-        //            if (index < count)
-        //            {
-        //                return start + index;
-        //            }
-        //            index -= count;
-        //        }
-        //    }
-        //    return -1;
-        //}
-
-        public int this[int index]
+        /// <summary>
+        /// Returns the character at the given index within this set, where
+        /// the set is ordered by ascending code point.  If the index is
+        /// out of range, return -1.  The inverse of this method is
+        /// <see cref="IndexOf(int)"/>.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: This is equivalent to CharAt(index) in ICU4J.
+        /// </remarks>
+        /// <param name="index">An index from 0..Count-1.</param>
+        /// <returns>The character at the given index, or -1.</returns>
+        /// <stable>ICU 2.0</stable>
+        public virtual int this[int index]
         {
             get
             {
@@ -755,32 +1023,32 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Adds the specified range to this set if it is not already
-         * present.  If this set already contains the specified range,
-         * the call leaves this set unchanged.  If <code>end &gt; start</code>
-         * then an empty range is added, leaving the set unchanged.
-         *
-         * @param start first character, inclusive, of range to be added
-         * to this set.
-         * @param end last character, inclusive, of range to be added
-         * to this set.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Add(int start, int end)
+        /// <summary>
+        /// Adds the specified range to this set if it is not already
+        /// present.  If this set already contains the specified range,
+        /// the call leaves this set unchanged.  If 
+        /// <c><paramref name="end"/> &gt; <paramref name="start"/></c>
+        /// then an empty range is added, leaving the set unchanged.
+        /// </summary>
+        /// <param name="start">First character, inclusive, of range to be added
+        /// to this set.</param>
+        /// <param name="end">Last character, inclusive, of range to be added
+        /// to this set.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet Add(int start, int end)
         {
             CheckFrozen();
             return AddUnchecked(start, end);
         }
 
-        /**
-         * Adds all characters in range (uses preferred naming convention).
-         * @param start The index of where to start on adding all characters.
-         * @param end The index of where to end on adding all characters.
-         * @return a reference to this object
-         * @stable ICU 4.4
-         */
-        public UnicodeSet AddAll(int start, int end)
+        /// <summary>
+        /// Adds all characters in range (uses preferred naming convention).
+        /// </summary>
+        /// <param name="start">The index of where to start on adding all characters.</param>
+        /// <param name="end">The index of where to end on adding all characters.</param>
+        /// <returns>A reference to this object.</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual UnicodeSet AddAll(int start, int end)
         {
             CheckFrozen();
             return AddUnchecked(start, end);
@@ -827,12 +1095,12 @@ namespace ICU4N.Text
         //        return buf.toString();
         //    }
 
-        /**
-         * Adds the specified character to this set if it is not already
-         * present.  If this set already contains the specified character,
-         * the call leaves this set unchanged.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Adds the specified character to this set if it is not already
+        /// present.  If this set already contains the specified character,
+        /// the call leaves this set unchanged.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet Add(int c)
         {
             CheckFrozen();
@@ -950,7 +1218,7 @@ namespace ICU4N.Text
         // ICU4N specific - RemoveAll(ICharSequence s) moved to UnicodeSetExtension.tt
 
         /// <summary>
-        /// Remove all strings from this UnicodeSet
+        /// Remove all strings from this <see cref="UnicodeSet"/>
         /// </summary>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 4.2</stable>
@@ -969,19 +1237,17 @@ namespace ICU4N.Text
 
         // ICU4N specific - FromAll(ICharSequence s) moved to UnicodeSetExtension.tt
 
-
-        /**
-         * Retain only the elements in this set that are contained in the
-         * specified range.  If <code>end &gt; start</code> then an empty range is
-         * retained, leaving the set empty.
-         *
-         * @param start first character, inclusive, of range to be retained
-         * to this set.
-         * @param end last character, inclusive, of range to be retained
-         * to this set.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Retain(int start, int end)
+        /// <summary>
+        /// Retain only the elements in this set that are contained in the
+        /// specified range.  If <c><paramref name="end"/> &gt; <paramref name="start"/></c> 
+        /// then an empty range is retained, leaving the set empty.
+        /// </summary>
+        /// <param name="start">First character, inclusive, of range to be retained
+        /// to this set.</param>
+        /// <param name="end">Last character, inclusive, of range to be retained
+        /// to this set.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet Retain(int start, int end) // ICU4N TODO: API - rename ?
         {
             CheckFrozen();
             if (start < MIN_VALUE || start > MAX_VALUE)
@@ -1003,35 +1269,33 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Retain the specified character from this set if it is present.
-         * Upon return this set will be empty if it did not contain c, or
-         * will only contain c if it did contain c.
-         * @param c the character to be retained
-         * @return this object, for chaining
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Retain(int c)
+        /// <summary>
+        /// Retain the specified character from this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="c"/>, or
+        /// will only contain c if it did contain <paramref name="c"/>.
+        /// </summary>
+        /// <param name="c">The character to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        public UnicodeSet Retain(int c) // ICU4N TODO: API - rename ?
         {
             return Retain(c, c);
         }
 
         // ICU4N specific - Retain(ICharSequence s) moved to UnicodeSetExtension.tt
 
-
-        /**
-         * Removes the specified range from this set if it is present.
-         * The set will not contain the specified range once the call
-         * returns.  If <code>end &gt; start</code> then an empty range is
-         * removed, leaving the set unchanged.
-         *
-         * @param start first character, inclusive, of range to be removed
-         * from this set.
-         * @param end last character, inclusive, of range to be removed
-         * from this set.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Remove(int start, int end)
+        /// <summary>
+        /// Removes the specified range from this set if it is present.
+        /// The set will not contain the specified range once the call
+        /// returns.  If <c><paramref name="end"/> &gt; <paramref name="start"/></c> 
+        /// then an empty range is removed, leaving the set unchanged.
+        /// </summary>
+        /// <param name="start">First character, inclusive, of range to be removed
+        /// from this set.</param>
+        /// <param name="end">Last character, inclusive, of range to be removed
+        /// from this set.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet Remove(int start, int end)
         {
             CheckFrozen();
             if (start < MIN_VALUE || start > MAX_VALUE)
@@ -1049,14 +1313,14 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Removes the specified character from this set if it is present.
-         * The set will not contain the specified character once the call
-         * returns.
-         * @param c the character to be removed
-         * @return this object, for chaining
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Removes the specified character from this set if it is present.
+        /// The set will not contain the specified character once the call
+        /// returns.
+        /// </summary>
+        /// <param name="c">The character to be removed.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet Remove(int c)
         {
             return Remove(c, c);
@@ -1065,20 +1329,16 @@ namespace ICU4N.Text
         // ICU4N specific - Remove(ICharSequence s) moved to UnicodeSetExtension.tt
 
 
-
-        /**
-         * Complements the specified range in this set.  Any character in
-         * the range will be removed if it is in this set, or will be
-         * added if it is not in this set.  If <code>end &gt; start</code>
-         * then an empty range is complemented, leaving the set unchanged.
-         *
-         * @param start first character, inclusive, of range to be removed
-         * from this set.
-         * @param end last character, inclusive, of range to be removed
-         * from this set.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Complement(int start, int end)
+        /// <summary>
+        /// Complements the specified range in this set.  Any character in
+        /// the range will be removed if it is in this set, or will be
+        /// added if it is not in this set.  If <c><paramref name="end"/> &gt; <paramref name="start"/></c>
+        /// then an empty range is complemented, leaving the set unchanged.
+        /// </summary>
+        /// <param name="start">First character, inclusive, of range to be removed from this set.</param>
+        /// <param name="end">Last character, inclusive, of range to be removed from this set.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet Complement(int start, int end) // ICU4N TODO: API - rename...?
         {
             CheckFrozen();
             if (start < MIN_VALUE || start > MAX_VALUE)
@@ -1097,23 +1357,23 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Complements the specified character in this set.  The character
-         * will be removed if it is in this set, or will be added if it is
-         * not in this set.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Complements the specified character in this set.  The character
+        /// will be removed if it is in this set, or will be added if it is
+        /// not in this set.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSet Complement(int c)
         {
             return Complement(c, c);
         }
 
-        /**
-         * This is equivalent to
-         * <code>complement(MIN_VALUE, MAX_VALUE)</code>.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Complement()
+        /// <summary>
+        /// This is equivalent to
+        /// <c>Complement(<see cref="MIN_VALUE"/>, <see cref="MAX_VALUE"/>)</c>
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet Complement() // ICU4N TODO: API - rename...?
         {
             CheckFrozen();
             if (list[0] == LOW)
@@ -1134,14 +1394,12 @@ namespace ICU4N.Text
 
         // ICU4N specific - Complement(ICharSequence s) moved to UnicodeSetExtension.tt
 
-
-
-        /**
-         * Returns true if this set contains the given character.
-         * @param c character to be checked for containment
-         * @return true if the test condition is met
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns true if this set contains the given character.
+        /// </summary>
+        /// <param name="c">Character to be checked for containment.</param>
+        /// <returns>true if the test condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
         public override bool Contains(int c)
         {
             if (c < MIN_VALUE || c > MAX_VALUE)
@@ -1171,15 +1429,14 @@ namespace ICU4N.Text
             return ((i & 1) != 0); // return true if odd
         }
 
-        /**
-         * Returns the smallest value i such that c &lt; list[i].  Caller
-         * must ensure that c is a legal value or this method will enter
-         * an infinite loop.  This method performs a binary search.
-         * @param c a character in the range MIN_VALUE..MAX_VALUE
-         * inclusive
-         * @return the smallest integer i in the range 0..len-1,
-         * inclusive, such that c &lt; list[i]
-         */
+        /// <summary>
+        /// Returns the smallest value i such that c &lt; list[i].  Caller
+        /// must ensure that <paramref name="c"/> is a legal value or this method will enter
+        /// an infinite loop.  This method performs a binary search.
+        /// </summary>
+        /// <param name="c">A character in the range <see cref="MIN_VALUE"/>..<see cref="MAX_VALUE"/>.</param>
+        /// <returns>The smallest integer i in the range 0..len-1,
+        /// inclusive, such that <paramref name="c"/> &lt; list[i].</returns>
         private int FindCodePoint(int c)
         {
             /* Examples:
@@ -1332,15 +1589,15 @@ namespace ICU4N.Text
         //    //----------------------------------------------------------------
         //    //----------------------------------------------------------------
 
-        /**
-         * Returns true if this set contains every character
-         * of the given range.
-         * @param start first character, inclusive, of the range
-         * @param end last character, inclusive, of the range
-         * @return true if the test condition is met
-         * @stable ICU 2.0
-         */
-        public bool Contains(int start, int end)
+        /// <summary>
+        /// Returns true if this set contains every character
+        /// of the given range.
+        /// </summary>
+        /// <param name="start">First character, inclusive, of the range.</param>
+        /// <param name="end">Last character, inclusive, of the range.</param>
+        /// <returns>true if the test condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        public virtual bool Contains(int start, int end)
         {
             if (start < MIN_VALUE || start > MAX_VALUE)
             {
@@ -1360,15 +1617,14 @@ namespace ICU4N.Text
 
         // ICU4N specific - Contains(ICharSequence s) moved to UnicodeSetExtension.tt
 
-
-        /**
-         * Returns true if this set contains all the characters and strings
-         * of the given set.
-         * @param b set to be checked for containment
-         * @return true if the test condition is met
-         * @stable ICU 2.0
-         */
-        public bool ContainsAll(UnicodeSet b) // ICU4N TODO: API change to IsSupersetOf ?
+        /// <summary>
+        /// Returns true if this set contains all the characters and strings
+        /// of the given set.
+        /// </summary>
+        /// <param name="b">Set to be checked for containment.</param>
+        /// <returns>true if the test condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        public virtual bool ContainsAll(UnicodeSet b) // ICU4N TODO: API change to IsSupersetOf ?
         {
             // The specified set is a subset if all of its pairs are contained in
             // this set. This implementation accesses the lists directly for speed.
@@ -1452,16 +1708,18 @@ namespace ICU4N.Text
         //        return true;
         //    }
 
-        /**
-         * Returns true if there is a partition of the string such that this set contains each of the partitioned strings.
-         * For example, for the Unicode set [a{bc}{cd}]<br>
-         * containsAll is true for each of: "a", "bc", ""cdbca"<br>
-         * containsAll is false for each of: "acb", "bcda", "bcx"<br>
-         * @param s string containing characters to be checked for containment
-         * @return true if the test condition is met
-         * @stable ICU 2.0
-         */
-        public bool ContainsAll(string s)
+        /// <summary>
+        /// Returns true if there is a partition of the string such that this set contains each of the partitioned strings.
+        /// For example, for the Unicode set [a{bc}{cd}]
+        /// <list type="bullet">
+        ///     <item><description><see cref="ContainsAll(string)"/> is true for each of: "a", "bc", ""cdbca"</description></item>
+        ///     <item><description><see cref="ContainsAll(string)"/> is false for each of: "acb", "bcda", "bcx"</description></item>
+        /// </list>
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns>true if the test condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        public virtual bool ContainsAll(string s) // ICU4N TODO: API - rename IsSupersetOf
         {
             int cp;
             for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
@@ -1479,12 +1737,12 @@ namespace ICU4N.Text
             return true;
         }
 
-        /**
-         * Recursive routine called if we fail to find a match in containsAll, and there are strings
-         * @param s source string
-         * @param i point to match to the end on
-         * @return true if ok
-         */
+        /// <summary>
+        /// Recursive routine called if we fail to find a match in <see cref="ContainsAll(string, int)"/>, and there are strings.
+        /// </summary>
+        /// <param name="s">Source string.</param>
+        /// <param name="i">Point to match to the end on.</param>
+        /// <returns>true if ok.</returns>
         private bool ContainsAll(string s, int i)
         {
             if (i >= s.Length)
@@ -1507,13 +1765,12 @@ namespace ICU4N.Text
 
         }
 
-        /**
-         * Get the Regex equivalent for this UnicodeSet
-         * @return regex pattern equivalent to this UnicodeSet
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
-        //@Deprecated
+        /// <summary>
+        /// Get the Regex equivalent for this <see cref="UnicodeSet"/>.
+        /// </summary>
+        /// <returns>Regex pattern equivalent to this <see cref="UnicodeSet"/>.</returns>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
         public string GetRegexEquivalent()
         {
             if (strings.Count == 0)
@@ -1530,15 +1787,15 @@ namespace ICU4N.Text
             return result.Append(")").ToString();
         }
 
-        /**
-         * Returns true if this set contains none of the characters
-         * of the given range.
-         * @param start first character, inclusive, of the range
-         * @param end last character, inclusive, of the range
-         * @return true if the test condition is met
-         * @stable ICU 2.0
-         */
-        public bool ContainsNone(int start, int end)
+        /// <summary>
+        /// Returns true if this set contains none of the characters
+        /// of the given range.
+        /// </summary>
+        /// <param name="start">First character, inclusive, of the range.</param>
+        /// <param name="end">Last character, inclusive, of the range.</param>
+        /// <returns>true if the test condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        public virtual bool ContainsNone(int start, int end) // ICU4N TODO: API Rename ?
         {
             if (start < MIN_VALUE || start > MAX_VALUE)
             {
@@ -1556,16 +1813,18 @@ namespace ICU4N.Text
             return ((i & 1) == 0 && end < list[i]);
         }
 
-        /**
-         * Returns true if none of the characters or strings in this UnicodeSet appears in the string.
-         * For example, for the Unicode set [a{bc}{cd}]<br>
-         * containsNone is true for: "xy", "cb"<br>
-         * containsNone is false for: "a", "bc", "bcd"<br>
-         * @param b set to be checked for containment
-         * @return true if the test condition is met
-         * @stable ICU 2.0
-         */
-        public bool ContainsNone(UnicodeSet b)
+        /// <summary>
+        /// Returns true if none of the characters or strings in this <see cref="UnicodeSet"/> appears in the string.
+        /// For example, for the Unicode set [a{bc}{cd}]
+        /// <list type="bullet">
+        ///     <item><description><see cref="ContainsNone(UnicodeSet)"/> is true for: "xy", "cb"</description></item>
+        ///     <item><description><see cref="ContainsNone(UnicodeSet)"/> is false for: "a", "bc", "bcd"</description></item>
+        /// </list>
+        /// </summary>
+        /// <param name="b">Set to be checked for containment.</param>
+        /// <returns>true if the test condition is met.</returns>
+        /// <stable>2.0</stable>
+        public virtual bool ContainsNone(UnicodeSet b) // ICU4N TODO: API Rename ?
         {
             // The specified set is a subset if some of its pairs overlap with some of this set's pairs.
             // This implementation accesses the lists directly for speed.
@@ -1647,46 +1906,43 @@ namespace ICU4N.Text
 
         // ICU4N specific - ContainsNone(ICharSequence s) moved to UnicodeSetExtension.tt
 
-
-        /**
-         * Returns true if this set contains one or more of the characters
-         * in the given range.
-         * @param start first character, inclusive, of the range
-         * @param end last character, inclusive, of the range
-         * @return true if the condition is met
-         * @stable ICU 2.0
-         */
-        public bool ContainsSome(int start, int end)
+        /// <summary>
+        /// Returns true if this set contains one or more of the characters
+        /// in the given range.
+        /// </summary>
+        /// <param name="start">First character, inclusive, of the range.</param>
+        /// <param name="end">Last character, inclusive, of the range.</param>
+        /// <returns>true if the condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        public bool ContainsSome(int start, int end) // ICU4N TODO: API Rename IsSubsetOf
         {
             return !ContainsNone(start, end);
         }
 
-        /**
-         * Returns true if this set contains one or more of the characters
-         * and strings of the given set.
-         * @param s set to be checked for containment
-         * @return true if the condition is met
-         * @stable ICU 2.0
-         */
-        public bool ContainsSome(UnicodeSet s)
+        /// <summary>
+        /// Returns true if this set contains one or more of the characters
+        /// and strings of the given set.
+        /// </summary>
+        /// <param name="s">Set to be checked for containment.</param>
+        /// <returns>True if the condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        public bool ContainsSome(UnicodeSet s)  // ICU4N TODO: API Rename IsSubsetOf
         {
             return !ContainsNone(s);
         }
 
         // ICU4N specific - ContainsSome(ICharSequence s) moved to UnicodeSetExtension.tt
 
-
-        /**
-         * Adds all of the elements in the specified set to this set if
-         * they're not already present.  This operation effectively
-         * modifies this set so that its value is the <i>union</i> of the two
-         * sets.  The behavior of this operation is unspecified if the specified
-         * collection is modified while the operation is in progress.
-         *
-         * @param c set whose elements are to be added to this set.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet AddAll(UnicodeSet c) // ICU4N TODO: API Rename UnionWith? Or maybe just make an additional function to satisfy the ISet<T> contract ?
+        /// <summary>
+        /// Adds all of the elements in the specified set to this set if
+        /// they're not already present.  This operation effectively
+        /// modifies this set so that its value is the <i>union</i> of the two
+        /// sets.  The behavior of this operation is unspecified if the specified
+        /// collection is modified while the operation is in progress.
+        /// </summary>
+        /// <param name="c">Set whose elements are to be added to this set.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet AddAll(UnicodeSet c) // ICU4N TODO: API Rename UnionWith? Or maybe just make an additional function to satisfy the ISet<T> contract ?
         {
             CheckFrozen();
             Add(c.list, c.len, 0);
@@ -1694,17 +1950,16 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Retains only the elements in this set that are contained in the
-         * specified set.  In other words, removes from this set all of
-         * its elements that are not contained in the specified set.  This
-         * operation effectively modifies this set so that its value is
-         * the <i>intersection</i> of the two sets.
-         *
-         * @param c set that defines which elements this set will retain.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet RetainAll(UnicodeSet c)
+        /// <summary>
+        /// Retains only the elements in this set that are contained in the
+        /// specified set.  In other words, removes from this set all of
+        /// its elements that are not contained in the specified set.  This
+        /// operation effectively modifies this set so that its value is
+        /// the <i>intersection</i> of the two sets.
+        /// </summary>
+        /// <param name="c">Set that defines which elements this set will retain.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet RetainAll(UnicodeSet c) // ICU4N TODO: API - rename IntersectWith
         {
             CheckFrozen();
             Retain(c.list, c.len, 0);
@@ -1712,17 +1967,16 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Removes from this set all of its elements that are contained in the
-         * specified set.  This operation effectively modifies this
-         * set so that its value is the <i>asymmetric set difference</i> of
-         * the two sets.
-         *
-         * @param c set that defines which elements will be removed from
-         *          this set.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet RemoveAll(UnicodeSet c) // ICU4N TODO: API rename ExceptWith or make extra ExceptWith method that calls this
+        /// <summary>
+        /// Removes from this set all of its elements that are contained in the
+        /// specified set.  This operation effectively modifies this
+        /// set so that its value is the <i>asymmetric set difference</i> of
+        /// the two sets.
+        /// </summary>
+        /// <param name="c">Set that defines which elements will be removed from
+        /// this set.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet RemoveAll(UnicodeSet c) // ICU4N TODO: API rename ExceptWith or make extra ExceptWith method that calls this
         {
             CheckFrozen();
             Retain(c.list, c.len, 2);
@@ -1730,16 +1984,15 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Complements in this set all elements contained in the specified
-         * set.  Any character in the other set will be removed if it is
-         * in this set, or will be added if it is not in this set.
-         *
-         * @param c set that defines which elements will be complemented from
-         *          this set.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet ComplementAll(UnicodeSet c)
+        /// <summary>
+        /// Complements in this set all elements contained in the specified
+        /// set.  Any character in the other set will be removed if it is
+        /// in this set, or will be added if it is not in this set.
+        /// </summary>
+        /// <param name="c">Set that defines which elements will be complemented from
+        /// this set.</param>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet ComplementAll(UnicodeSet c) // ICU4N TODO: API - find ISet<T> method that corresponds to this and rename
         {
             CheckFrozen();
             Xor(c.list, c.len, 0);
@@ -1747,12 +2000,12 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Removes all of the elements from this set.  This set will be
-         * empty after this call returns.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Clear()
+        /// <summary>
+        /// Removes all of the elements from this set.  This set will be
+        /// empty after this call returns.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet Clear()
         {
             CheckFrozen();
             list[0] = HIGH;
@@ -1762,52 +2015,50 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Iteration method that returns the number of ranges contained in
-         * this set.
-         * @see #getRangeStart
-         * @see #getRangeEnd
-         * @stable ICU 2.0
-         */
-        public int GetRangeCount()
+        /// <summary>
+        /// Iteration method that returns the number of ranges contained in
+        /// this set.
+        /// </summary>
+        /// <seealso cref="GetRangeStart(int)"/>
+        /// <seealso cref="GetRangeEnd(int)"/>
+        /// <stable>ICU 2.0</stable>
+        public virtual int GetRangeCount() // ICU4N TODO: API - make property
         {
             return len / 2;
         }
 
-        /**
-         * Iteration method that returns the first character in the
-         * specified range of this set.
-         * @exception ArrayIndexOutOfBoundsException if index is outside
-         * the range <code>0..getRangeCount()-1</code>
-         * @see #getRangeCount
-         * @see #getRangeEnd
-         * @stable ICU 2.0
-         */
-        public int GetRangeStart(int index)
+        /// <summary>
+        /// Iteration method that returns the first character in the
+        /// specified range of this set.
+        /// </summary>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="index"/> is outside the range <c>0..<see cref="RangeCount"/>-1</c>.</exception>
+        /// <seealso cref="RangeCount"/>
+        /// <seealso cref="GetRangeEnd(int)"/>
+        /// <stable>ICU 2.0</stable>
+        public virtual int GetRangeStart(int index)
         {
             return list[index * 2];
         }
 
-        /**
-         * Iteration method that returns the last character in the
-         * specified range of this set.
-         * @exception ArrayIndexOutOfBoundsException if index is outside
-         * the range <code>0..getRangeCount()-1</code>
-         * @see #getRangeStart
-         * @see #getRangeEnd
-         * @stable ICU 2.0
-         */
-        public int GetRangeEnd(int index)
+        /// <summary>
+        /// Iteration method that returns the last character in the
+        /// specified range of this set.
+        /// </summary>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="index"/> is outside the range <c>0..<see cref="RangeCount"/>-1</c>.</exception>
+        /// <seealso cref="GetRangeStart(int)"/>
+        /// <seealso cref="RangeCount"/>
+        /// <stable>ICU 2.0</stable>
+        public virtual int GetRangeEnd(int index)
         {
             return (list[index * 2 + 1] - 1);
         }
 
-        /**
-         * Reallocate this objects internal structures to take up the least
-         * possible space, without changing this object's value.
-         * @stable ICU 2.0
-         */
-        public UnicodeSet Compact()
+        /// <summary>
+        /// Reallocate this objects internal structures to take up the least
+        /// possible space, without changing this object's value.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public virtual UnicodeSet Compact()
         {
             CheckFrozen();
             if (len != list.Length)
@@ -1821,17 +2072,16 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Compares the specified object with this set for equality.  Returns
-         * <tt>true</tt> if the specified object is also a set, the two sets
-         * have the same size, and every member of the specified set is
-         * contained in this set (or equivalently, every member of this set is
-         * contained in the specified set).
-         *
-         * @param o Object to be compared for equality with this set.
-         * @return <tt>true</tt> if the specified Object is equal to this set.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Compares the specified object with this set for equality.  Returns
+        /// <c>true</c> if the specified object is also a set, the two sets
+        /// have the same size, and every member of the specified set is
+        /// contained in this set (or equivalently, every member of this set is
+        /// contained in the specified set).
+        /// </summary>
+        /// <param name="o">Object to be compared for equality with this set.</param>
+        /// <returns><c>true</c> if the specified Object is equal to this set.</returns>
+        /// <stable>ICU 2.0</stable>
         public override bool Equals(object o)
         {
             if (o == null)
@@ -1855,20 +2105,19 @@ namespace ICU4N.Text
                 // so we must do a manual check here.
                 if (!strings.SequenceEqual(that.strings)) return false; // ICU4N TODO: This could be optimized so it doesn't create an enumerator by implementing a custom collection
             }
-            catch (Exception e)
+            catch (Exception) // ICU4N TODO: Can we eliminate this exception?
             {
                 return false;
             }
             return true;
         }
 
-        /**
-         * Returns the hash code value for this set.
-         *
-         * @return the hash code value for this set.
-         * @see java.lang.Object#hashCode()
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns the hash code value for this set.
+        /// </summary>
+        /// <returns>The hash code value for this set.</returns>
+        /// <seealso cref="Object.GetHashCode()"/>
+        /// <stable>ICU 2.0</stable>
         public override int GetHashCode()
         {
             int result = len;
@@ -1880,10 +2129,10 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Return a programmer-readable string representation of this object.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Return a programmer-readable string representation of this object.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public override string ToString()
         {
             return ToPattern(true);
@@ -1893,32 +2142,33 @@ namespace ICU4N.Text
         // Implementation: Pattern parsing
         //----------------------------------------------------------------
 
-        /**
-         * Parses the given pattern, starting at the given position.  The character
-         * at pattern.charAt(pos.getIndex()) must be '[', or the parse fails.
-         * Parsing continues until the corresponding closing ']'.  If a syntax error
-         * is encountered between the opening and closing brace, the parse fails.
-         * Upon return from a successful parse, the ParsePosition is updated to
-         * point to the character following the closing ']', and an inversion
-         * list for the parsed pattern is returned.  This method
-         * calls itself recursively to parse embedded subpatterns.
-         *
-         * @param pattern the string containing the pattern to be parsed.  The
-         * portion of the string from pos.getIndex(), which must be a '[', to the
-         * corresponding closing ']', is parsed.
-         * @param pos upon entry, the position at which to being parsing.  The
-         * character at pattern.charAt(pos.getIndex()) must be a '['.  Upon return
-         * from a successful parse, pos.getIndex() is either the character after the
-         * closing ']' of the parsed pattern, or pattern.Length() if the closing ']'
-         * is the last character of the pattern string.
-         * @return an inversion list for the parsed substring
-         * of <code>pattern</code>
-         * @exception java.lang.ArgumentException if the parse fails.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Parses the given pattern, starting at the given position.  The character
+        /// at pattern[pos.Index] must be '[', or the parse fails.
+        /// Parsing continues until the corresponding closing ']'.  If a syntax error
+        /// is encountered between the opening and closing brace, the parse fails.
+        /// Upon return from a successful parse, the ParsePosition is updated to
+        /// point to the character following the closing ']', and an inversion
+        /// list for the parsed pattern is returned.  This method
+        /// calls itself recursively to parse embedded subpatterns.
+        /// </summary>
+        /// <param name="pattern">the string containing the pattern to be parsed.  The
+        /// portion of the string from pos.Index, which must be a '[', to the
+        /// corresponding closing ']', is parsed.
+        /// </param>
+        /// <param name="pos">upon entry, the position at which to being parsing.  The
+        /// character at pattern[pos.Index] must be a '['.  Upon return
+        /// from a successful parse, pos.Index is either the character after the
+        /// closing ']' of the parsed pattern, or pattern.Length if the closing ']'
+        /// is the last character of the pattern string.
+        /// </param>
+        /// <param name="symbols"></param>
+        /// <param name="options"></param>
+        /// <returns>An inversion list for the parsed substring of <paramref name="pattern"/>.</returns>
+        /// <exception cref="ArgumentException">If the parse fails.</exception>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public UnicodeSet ApplyPattern(string pattern,
+        public virtual UnicodeSet ApplyPattern(string pattern,
                 ParsePosition pos,
                 ISymbolTable symbols,
                 int options)
@@ -1976,7 +2226,7 @@ namespace ICU4N.Text
                 SETMODE3_PREPARSED = 3;
 
         /// <summary>
-        /// Parse the pattern from the given RuleCharacterIterator.  The
+        /// Parse the pattern from the given <see cref="RuleCharacterIterator"/>.  The
         /// iterator is advanced over the parsed pattern.
         /// </summary>
         /// <param name="chars">
@@ -1995,7 +2245,7 @@ namespace ICU4N.Text
         /// </param>
         /// <param name="options">
         /// A bit mask of zero or more of the following:
-        /// IGNORE_SPACE, CASE.
+        /// <see cref="IGNORE_SPACE"/>, <see cref="CASE"/>.
         /// </param>
         private void ApplyPattern(RuleCharacterIterator chars, ISymbolTable symbols,
             IAppendable rebuiltPat, int options) // ICU4N TODO: API - Make [Flags] enum for options
@@ -2117,7 +2367,7 @@ namespace ICU4N.Text
                             }
                             catch (InvalidCastException e)
                             {
-                                SyntaxError(chars, "Syntax error");
+                                SyntaxError(chars, "Syntax error", e);
                             }
                         }
                     }
@@ -2436,7 +2686,7 @@ namespace ICU4N.Text
 
             chars.SkipIgnored(opts);
 
-            /**
+            /*
              * Handle global flags (invert, case insensitivity).  If this
              * pattern should be compiled case-insensitive, then we need
              * to close over case BEFORE COMPLEMENTING.  This makes
@@ -2463,6 +2713,13 @@ namespace ICU4N.Text
             }
         }
 
+        private static void SyntaxError(RuleCharacterIterator chars, string msg, Exception innerException)
+        {
+            throw new ArgumentException("Error: " + msg + " at \"" +
+                    Utility.Escape(chars.ToString()) +
+                    '"', innerException);
+        }
+
         private static void SyntaxError(RuleCharacterIterator chars, string msg)
         {
             throw new ArgumentException("Error: " + msg + " at \"" +
@@ -2470,56 +2727,50 @@ namespace ICU4N.Text
                     '"');
         }
 
-        /**
-         * Add the contents of the UnicodeSet (as strings) into a collection.
-         * @param target collection to add into
-         * @stable ICU 4.4
-         */
-        public T AddAllTo<T>(T target) where T : ICollection<string>
+        /// <summary>
+        /// Add the contents of the UnicodeSet (as strings) into a collection.
+        /// </summary>
+        /// <typeparam name="T">Collection type.</typeparam>
+        /// <param name="target">Collection to add into.</param>
+        /// <stable>ICU 4.4</stable>
+        public virtual T AddAllTo<T>(T target) where T : ICollection<string> // ICU4N TODO: API - rename CopyTo...?
         {
             return AddAllTo(this, target);
         }
 
-        // ICU4N NOTE: This overload is redundant since in .NET array implements ICollection<T>
-        ///**
-        // * Add the contents of the UnicodeSet (as strings) into a collection.
-        // * @param target collection to add into
-        // * @stable ICU 4.4
-        // */
-        //public string[] AddAllTo(string[] target)
-        //{
-        //    return AddAllTo(this, target);
-        //}
+        // ICU4N specific: Removed AddAllTo(string[] target) overload because it is redundant as in .NET array implements ICollection<T>
 
-        /**
-         * Add the contents of the UnicodeSet (as strings) into an array.
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Add the contents of the <see cref="UnicodeSet"/> (as strings) into an array.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         public static string[] ToArray(UnicodeSet set)
         {
             return AddAllTo(set, new string[set.Count]);
         }
 
-        /**
-         * Add the contents of the collection (as strings) into this UnicodeSet.
-         * The collection must not contain null.
-         * @param source the collection to add
-         * @return a reference to this object
-         * @stable ICU 4.4
-         */
-        public UnicodeSet Add<T>(IEnumerable<T> source)
+        /// <summary>
+        /// Add the contents of the collection (as strings) into this <see cref="UnicodeSet"/>.
+        /// The collection must not contain null.
+        /// </summary>
+        /// <typeparam name="T">The type of element to add (this method calls ToString() to convert this type to a string).</typeparam>
+        /// <param name="source">The collection to add.</param>
+        /// <returns>A reference to this object.</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual UnicodeSet Add<T>(IEnumerable<T> source)
         {
             return AddAll(source);
         }
 
-        /**
-         * Add a collection (as strings) into this UnicodeSet.
-         * Uses standard naming convention.
-         * @param source collection to add into
-         * @return a reference to this object
-         * @stable ICU 4.4
-         */
-        public UnicodeSet AddAll(IEnumerable<string> source)
+        /// <summary>
+        /// Add a collection (as strings) into this <see cref="UnicodeSet"/>.
+        /// Uses standard naming convention.
+        /// </summary>
+        /// <param name="source">Source collection to add into.</param>
+        /// <returns>A reference to this object.</returns>
+        /// <draft>ICU4N 60</draft>
+        // ICU4N specific overload to optimize for string
+        public virtual UnicodeSet AddAll(IEnumerable<string> source) // ICU4N TODO: API - rename UnionWith
         {
             CheckFrozen();
             foreach (var o in source)
@@ -2533,14 +2784,15 @@ namespace ICU4N.Text
         // we would need to call ToString() on it anyway, so the generic
         // one will suffice.
 
-        /**
-         * Add a collection (as strings) into this UnicodeSet.
-         * Uses standard naming convention.
-         * @param source collection to add into
-         * @return a reference to this object
-         * @stable ICU 4.4
-         */
-        public UnicodeSet AddAll(IEnumerable<char[]> source)
+        /// <summary>
+        /// Add a collection (as strings) into this <see cref="UnicodeSet"/>.
+        /// Uses standard naming convention.
+        /// </summary>
+        /// <param name="source">Source collection to add into.</param>
+        /// <returns>A reference to this object.</returns>
+        /// <draft>ICU4N 60</draft>
+        // ICU4N specific overload to properly convert char array to string
+        public virtual UnicodeSet AddAll(IEnumerable<char[]> source) // ICU4N TODO: API - rename UnionWith
         {
             CheckFrozen();
             foreach (var o in source)
@@ -2550,14 +2802,15 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Add a collection (as strings) into this UnicodeSet.
-         * Uses standard naming convention.
-         * @param source collection to add into
-         * @return a reference to this object
-         * @stable ICU 4.4
-         */
-        public UnicodeSet AddAll<T>(IEnumerable<T> source)
+        /// <summary>
+        /// Add a collection (as strings) into this <see cref="UnicodeSet"/>.
+        /// Uses standard naming convention.
+        /// </summary>
+        /// <typeparam name="T">The type of element to add (this method calls ToString() to convert this type to a string).</typeparam>
+        /// <param name="source">Source collection to add into.</param>
+        /// <returns>A reference to this object.</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual UnicodeSet AddAll<T>(IEnumerable<T> source) // ICU4N TODO: API - rename UnionWith
         {
             CheckFrozen();
             foreach (object o in source)
@@ -2585,9 +2838,9 @@ namespace ICU4N.Text
             buffer = new int[newLen + GROW_EXTRA];
         }
 
-        /**
-         * Assumes start <= end.
-         */
+        /// <summary>
+        /// Assumes start &lt;= end.
+        /// </summary>
         private int[] Range(int start, int end)
         {
             if (rangeList == null)
@@ -2617,7 +2870,7 @@ namespace ICU4N.Text
             int b;
             // TODO: Based on the call hierarchy, polarity of 1 or 2 is never used
             //      so the following if statement will not be called.
-            ///CLOVER:OFF
+            //CLOVER:OFF
             if (polarity == 1 || polarity == 2)
             {
                 b = LOW;
@@ -2626,7 +2879,7 @@ namespace ICU4N.Text
                     ++j;
                     b = other[j];
                 }
-                ///CLOVER:ON
+                //CLOVER:ON
             }
             else
             {
@@ -2913,7 +3166,7 @@ namespace ICU4N.Text
                 this.Value = value;
             }
 
-            public bool Contains(int ch)
+            public virtual bool Contains(int ch)
             {
                 return UCharacter.GetUnicodeNumericValue(ch) == Value;
             }
@@ -2924,7 +3177,7 @@ namespace ICU4N.Text
             public int Mask { get; set; }
             internal GeneralCategoryMaskFilter(int mask) { this.Mask = mask; }
 
-            public bool Contains(int ch)
+            public virtual bool Contains(int ch)
             {
                 return ((1 << UCharacter.GetType(ch).ToIcuValue()) & Mask) != 0;
             }
@@ -2939,7 +3192,7 @@ namespace ICU4N.Text
                 this.Prop = prop;
                 this.Value = value;
             }
-            public bool Contains(int ch)
+            public virtual bool Contains(int ch)
             {
                 return UCharacter.GetInt32PropertyValue(ch, (UProperty)Prop) == Value;
             }
@@ -2950,7 +3203,7 @@ namespace ICU4N.Text
             public int Script { get; set; }
             internal ScriptExtensionsFilter(int script) { this.Script = script; }
 
-            public bool Contains(int c)
+            public virtual bool Contains(int c)
             {
                 return UScript.HasScript(c, Script);
             }
@@ -2964,7 +3217,7 @@ namespace ICU4N.Text
             private VersionInfo version;
             internal VersionFilter(VersionInfo version) { this.version = version; }
 
-            public bool Contains(int ch)
+            public virtual bool Contains(int ch)
             {
                 VersionInfo v = UCharacter.GetAge(ch);
                 // Reference comparison ok; VersionInfo caches and reuses
@@ -3028,9 +3281,9 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Generic filter-based scanning code for UCD property UnicodeSets.
-         */
+        /// <summary>
+        /// Generic filter-based scanning code for UCD property <see cref="UnicodeSet"/>s.
+        /// </summary>
         private UnicodeSet ApplyFilter(IFilter filter, int src)
         {
             // Logically, walk through all Unicode characters, noting the start
@@ -3082,11 +3335,10 @@ namespace ICU4N.Text
             return this;
         }
 
-
-        /**
-         * Remove leading and trailing Pattern_White_Space and compress
-         * internal Pattern_White_Space to a single space character.
-         */
+        /// <summary>
+        /// Remove leading and trailing Pattern_White_Space and compress
+        /// internal Pattern_White_Space to a single space character.
+        /// </summary>
         private static string MungeCharName(string source)
         {
             source = PatternProps.TrimWhiteSpace(source);
@@ -3118,30 +3370,32 @@ namespace ICU4N.Text
         // Property set API
         //----------------------------------------------------------------
 
-        /**
-         * Modifies this set to contain those code points which have the
-         * given value for the given binary or enumerated property, as
-         * returned by UCharacter.getIntPropertyValue.  Prior contents of
-         * this set are lost.
-         *
-         * @param prop a property in the range
-         * UProperty.BIN_START..UProperty.BIN_LIMIT-1 or
-         * UProperty.INT_START..UProperty.INT_LIMIT-1 or.
-         * UProperty.MASK_START..UProperty.MASK_LIMIT-1.
-         *
-         * @param value a value in the range
-         * UCharacter.getIntPropertyMinValue(prop)..
-         * UCharacter.getIntPropertyMaxValue(prop), with one exception.
-         * If prop is UProperty.GENERAL_CATEGORY_MASK, then value should not be
-         * a UCharacter.getType() result, but rather a mask value produced
-         * by logically ORing (1 &lt;&lt; UCharacter.getType()) values together.
-         * This allows grouped categories such as [:L:] to be represented.
-         *
-         * @return a reference to this set
-         *
-         * @stable ICU 2.4
-         */
-        public UnicodeSet ApplyIntPropertyValue(int prop, int value) // ICU4N TODO: API Rename ApplyInt32PropertyValue
+        /// <summary>
+        /// Modifies this set to contain those code points which have the
+        /// given value for the given binary or enumerated property, as
+        /// returned by <see cref="UCharacter.GetInt32PropertyValue(int, UProperty)"/>.  
+        /// Prior contents of this set are lost.
+        /// </summary>
+        /// <param name="prop">
+        /// A property in the range
+        /// <list type="bullet">
+        ///     <item><description><see cref="UProperty.BINARY_START"/>..<see cref="UProperty.BINARY_LIMIT"/>-1 or</description></item>
+        ///     <item><description><see cref="UProperty.INT_START"/>..<see cref="UProperty.INT_LIMIT"/>-1 or</description></item>
+        ///     <item><description><see cref="UProperty.MASK_START"/>..<see cref="UProperty.MASK_LIMIT"/>-1</description></item>
+        /// </list>
+        /// </param>
+        /// <param name="value">
+        /// A value in the range <see cref="UCharacter.GetIntPropertyMinValue(UProperty)"/>..
+        /// <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>, with one exception.
+        /// If prop is <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, then value should not be
+        /// a <see cref="UCharacter.GetType(int)"/> result, but rather a mask value produced
+        /// by logically ORing (1 &lt;&lt; <see cref="UCharacter.GetType(int)"/>) values together.
+        /// <para/>
+        /// This allows grouped categories such as [:L:] to be represented.
+        /// </param>
+        /// <returns>A reference to this set.</returns>
+        /// <stable>ICU 2.4</stable>
+        public virtual UnicodeSet ApplyIntPropertyValue(int prop, int value) // ICU4N TODO: API Rename ApplyInt32PropertyValue
         {
             CheckFrozen();
             if (prop == (int)UProperty.GENERAL_CATEGORY_MASK)
@@ -3159,52 +3413,51 @@ namespace ICU4N.Text
             return this;
         }
 
-
-
-        /**
-         * Modifies this set to contain those code points which have the
-         * given value for the given property.  Prior contents of this
-         * set are lost.
-         *
-         * @param propertyAlias a property alias, either short or long.
-         * The name is matched loosely.  See PropertyAliases.txt for names
-         * and a description of loose matching.  If the value string is
-         * empty, then this string is interpreted as either a
-         * General_Category value alias, a Script value alias, a binary
-         * property alias, or a special ID.  Special IDs are matched
-         * loosely and correspond to the following sets:
-         *
-         * "ANY" = [\\u0000-\\U0010FFFF],
-         * "ASCII" = [\\u0000-\\u007F].
-         *
-         * @param valueAlias a value alias, either short or long.  The
-         * name is matched loosely.  See PropertyValueAliases.txt for
-         * names and a description of loose matching.  In addition to
-         * aliases listed, numeric values and canonical combining classes
-         * may be expressed numerically, e.g., ("nv", "0.5") or ("ccc",
-         * "220").  The value string may also be empty.
-         *
-         * @return a reference to this set
-         *
-         * @stable ICU 2.4
-         */
-        public UnicodeSet ApplyPropertyAlias(string propertyAlias, string valueAlias)
+        /// <summary>
+        /// Modifies this set to contain those code points which have the
+        /// given value for the given property.  Prior contents of this
+        /// set are lost.
+        /// </summary>
+        /// <param name="propertyAlias">
+        /// A property alias, either short or long.
+        /// The name is matched loosely.  See PropertyAliases.txt for names
+        /// and a description of loose matching.  If the value string is
+        /// empty, then this string is interpreted as either a
+        /// General_Category value alias, a Script value alias, a binary
+        /// property alias, or a special ID.  Special IDs are matched
+        /// loosely and correspond to the following sets:
+        /// <list type="bullet">
+        ///     <item><description>"ANY" = [\\u0000-\\U0010FFFF]</description></item>
+        ///     <item><description>"ASCII" = [\\u0000-\\u007F]</description></item>
+        /// </list>
+        /// </param>
+        /// <param name="valueAlias">
+        /// A value alias, either short or long.  The
+        /// name is matched loosely.  See PropertyValueAliases.txt for
+        /// names and a description of loose matching.  In addition to
+        /// aliases listed, numeric values and canonical combining classes
+        /// may be expressed numerically, e.g., ("nv", "0.5") or ("ccc",
+        /// "220").  The value string may also be empty.
+        /// </param>
+        /// <returns>A reference to this set.</returns>
+        /// <stable>ICU 2.4</stable>
+        public virtual UnicodeSet ApplyPropertyAlias(string propertyAlias, string valueAlias)
         {
             return ApplyPropertyAlias(propertyAlias, valueAlias, null);
         }
 
-        /**
-         * Modifies this set to contain those code points which have the
-         * given value for the given property.  Prior contents of this
-         * set are lost.
-         * @param propertyAlias A string of the property alias.
-         * @param valueAlias A string of the value alias.
-         * @param symbols if not null, then symbols are first called to see if a property
-         * is available. If true, then everything else is skipped.
-         * @return this set
-         * @stable ICU 3.2
-         */
-        public UnicodeSet ApplyPropertyAlias(string propertyAlias,
+        /// <summary>
+        /// Modifies this set to contain those code points which have the
+        /// given value for the given property.  Prior contents of this
+        /// set are lost.
+        /// </summary>
+        /// <param name="propertyAlias">A string of the property alias.</param>
+        /// <param name="valueAlias">A string of the value alias.</param>
+        /// <param name="symbols">If not null, then symbols are first called to see if a property
+        /// is available. If true, then everything else is skipped.</param>
+        /// <returns>This set.</returns>
+        /// <stable>ICU 3.2</stable>
+        public virtual UnicodeSet ApplyPropertyAlias(string propertyAlias,
                 string valueAlias, ISymbolTable symbols)
         {
             CheckFrozen();
@@ -3405,9 +3658,6 @@ namespace ICU4N.Text
         /// Return true if the given position, in the given pattern, appears
         /// to be the start of a property set pattern.
         /// </summary>
-        /// <param name="pattern"></param>
-        /// <param name="pos"></param>
-        /// <returns></returns>
         private static bool ResemblesPropertyPattern(string pattern, int pos)
         {
             // Patterns are at least 5 characters long
@@ -3430,7 +3680,6 @@ namespace ICU4N.Text
         /// <param name="chars">Iterator over the pattern characters.  Upon return
         /// it will be unchanged.</param>
         /// <param name="iterOpts"><see cref="RuleCharacterIteratorOptions"/> options.</param>
-        /// <returns></returns>
         private static bool ResemblesPropertyPattern(RuleCharacterIterator chars,
                 RuleCharacterIteratorOptions iterOpts)
         {
@@ -3448,10 +3697,9 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Parse the given property pattern at the given parse position.
-         * @param symbols TODO
-         */
+        /// <summary>
+        /// Parse the given property pattern at the given parse position.
+        /// </summary>
         private UnicodeSet ApplyPropertyPattern(string pattern, ParsePosition ppos, ISymbolTable symbols)
         {
             int pos = ppos.Index;
@@ -3550,16 +3798,17 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Parse a property pattern.
-         * @param chars iterator over the pattern characters.  Upon return
-         * it will be advanced to the first character after the parsed
-         * pattern, or the end of the iteration if all characters are
-         * parsed.
-         * @param rebuiltPat the pattern that was parsed, rebuilt or
-         * copied from the input pattern, as appropriate.
-         * @param symbols TODO
-         */
+        /// <summary>
+        /// Parse a property pattern.
+        /// </summary>
+        /// <param name="chars">Iterator over the pattern characters.  Upon return
+        /// it will be advanced to the first character after the parsed
+        /// pattern, or the end of the iteration if all characters are
+        /// parsed.
+        /// </param>
+        /// <param name="rebuiltPat">The pattern that was parsed, rebuilt or
+        /// copied from the input pattern, as appropriate.</param>
+        /// <param name="symbols">TODO</param>
         private void ApplyPropertyPattern(RuleCharacterIterator chars,
             IAppendable rebuiltPat, ISymbolTable symbols)
         {
@@ -3578,67 +3827,67 @@ namespace ICU4N.Text
         // Case folding API
         //----------------------------------------------------------------
 
-        /**
-         * Bitmask for constructor and applyPattern() indicating that
-         * white space should be ignored.  If set, ignore Unicode Pattern_White_Space characters,
-         * unless they are quoted or escaped.  This may be ORed together
-         * with other selectors.
-         * @stable ICU 3.8
-         */
-        public static readonly int IGNORE_SPACE = 1;
+        /// <summary>
+        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, int)"/> constructor, <see cref="ApplyPattern(string, int)"/>, and <see cref="CloseOver(int)"/>.
+        /// indicating letter case.  This may be ORed together with other
+        /// selectors.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        public static readonly int IGNORE_SPACE = 1; // ICU4N TODO: API - make [Flags] enum
 
-        /**
-         * Bitmask for constructor, applyPattern(), and closeOver()
-         * indicating letter case.  This may be ORed together with other
-         * selectors.
-         *
-         * Enable case insensitive matching.  E.g., "[ab]" with this flag
-         * will match 'a', 'A', 'b', and 'B'.  "[^ab]" with this flag will
-         * match all except 'a', 'A', 'b', and 'B'. This performs a full
-         * closure over case mappings, e.g. U+017F for s.
-         *
-         * The resulting set is a superset of the input for the code points but
-         * not for the strings.
-         * It performs a case mapping closure of the code points and adds
-         * full case folding strings for the code points, and reduces strings of
-         * the original set to their full case folding equivalents.
-         *
-         * This is designed for case-insensitive matches, for example
-         * in regular expressions. The full code point case closure allows checking of
-         * an input character directly against the closure set.
-         * Strings are matched by comparing the case-folded form from the closure
-         * set with an incremental case folding of the string in question.
-         *
-         * The closure set will also contain single code points if the original
-         * set contained case-equivalent strings (like U+00DF for "ss" or "Ss" etc.).
-         * This is not necessary (that is, redundant) for the above matching method
-         * but results in the same closure sets regardless of whether the original
-         * set contained the code point or a string.
-         * @stable ICU 3.8
-         */
-        public static readonly int CASE = 2;
+        /// <summary>
+        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, int)"/> constructor, <see cref="ApplyPattern(string, int)"/>, and <see cref="CloseOver(int)"/>.
+        /// indicating letter case.  This may be ORed together with other
+        /// selectors.
+        /// <para/>
+        /// Enable case insensitive matching.  E.g., "[ab]" with this flag
+        /// will match 'a', 'A', 'b', and 'B'.  "[^ab]" with this flag will
+        /// match all except 'a', 'A', 'b', and 'B'. This performs a full
+        /// closure over case mappings, e.g. U+017F for s.
+        /// <para/>
+        /// The resulting set is a superset of the input for the code points but
+        /// not for the strings.
+        /// It performs a case mapping closure of the code points and adds
+        /// full case folding strings for the code points, and reduces strings of
+        /// the original set to their full case folding equivalents.
+        /// </summary>
+        /// <remarks>
+        /// This is designed for case-insensitive matches, for example
+        /// in regular expressions. The full code point case closure allows checking of
+        /// an input character directly against the closure set.
+        /// Strings are matched by comparing the case-folded form from the closure
+        /// set with an incremental case folding of the string in question.
+        /// <para/>
+        /// The closure set will also contain single code points if the original
+        /// set contained case-equivalent strings (like U+00DF for "ss" or "Ss" etc.).
+        /// This is not necessary (that is, redundant) for the above matching method
+        /// but results in the same closure sets regardless of whether the original
+        /// set contained the code point or a string.
+        /// </remarks>
+        /// <stable>ICU 3.8</stable>
+        public static readonly int CASE = 2; // ICU4N TODO: API - make [Flags] enum
 
-        /**
-         * Alias for UnicodeSet.CASE, for ease of porting from C++ where ICU4C
-         * also has both USET_CASE and USET_CASE_INSENSITIVE (see uset.h).
-         * @see #CASE
-         * @stable ICU 3.4
-         */
-        public static readonly int CASE_INSENSITIVE = 2;
+        /// <summary>
+        /// Alias for <see cref="UnicodeSet.CASE"/>, for ease of porting from C++ where ICU4C
+        /// also has both USET_CASE and USET_CASE_INSENSITIVE (see uset.h).
+        /// </summary>
+        /// <seealso cref="CASE"/>
+        /// <stable>ICU 3.4</stable>
+        public static readonly int CASE_INSENSITIVE = 2; // ICU4N TODO: API - make [Flags] enum
 
-        /**
-         * Bitmask for constructor, applyPattern(), and closeOver()
-         * indicating letter case.  This may be ORed together with other
-         * selectors.
-         *
-         * Enable case insensitive matching.  E.g., "[ab]" with this flag
-         * will match 'a', 'A', 'b', and 'B'.  "[^ab]" with this flag will
-         * match all except 'a', 'A', 'b', and 'B'. This adds the lower-,
-         * title-, and uppercase mappings as well as the case folding
-         * of each existing element in the set.
-         * @stable ICU 3.4
-         */
-        public static readonly int ADD_CASE_MAPPINGS = 4;
+        /// <summary>
+        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, int)"/> constructor, <see cref="ApplyPattern(string, int)"/>, and <see cref="CloseOver(int)"/>.
+        /// indicating letter case.  This may be ORed together with other
+        /// selectors.
+        /// <para/>
+        /// Enable case insensitive matching.  E.g., "[ab]" with this flag
+        /// will match 'a', 'A', 'b', and 'B'.  "[^ab]" with this flag will
+        /// match all except 'a', 'A', 'b', and 'B'. This adds the lower-,
+        /// title-, and uppercase mappings as well as the case folding
+        /// of each existing element in the set.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        public static readonly int ADD_CASE_MAPPINGS = 4; // ICU4N TODO: API - make [Flags] enum
 
         //  add the result of a full case mapping to the set
         //  use str as a temporary string to avoid constructing one
@@ -3662,31 +3911,38 @@ namespace ICU4N.Text
             // see UCaseProps
         }
 
-        /**
-         * Close this set over the given attribute.  For the attribute
-         * CASE, the result is to modify this set so that:
-         *
-         * 1. For each character or string 'a' in this set, all strings
-         * 'b' such that foldCase(a) == foldCase(b) are added to this set.
-         * (For most 'a' that are single characters, 'b' will have
-         * b.Length() == 1.)
-         *
-         * 2. For each string 'e' in the resulting set, if e !=
-         * foldCase(e), 'e' will be removed.
-         *
-         * Example: [aq\u00DF{Bc}{bC}{Fi}] =&gt; [aAqQ\u00DF\uFB01{ss}{bc}{fi}]
-         *
-         * (Here foldCase(x) refers to the operation
-         * UCharacter.foldCase(x, true), and a == b actually denotes
-         * a.equals(b), not pointer comparison.)
-         *
-         * @param attribute bitmask for attributes to close over.
-         * Currently only the CASE bit is supported.  Any undefined bits
-         * are ignored.
-         * @return a reference to this set.
-         * @stable ICU 3.8
-         */
-        public UnicodeSet CloseOver(int attribute)
+        /// <summary>
+        /// Close this set over the given <paramref name="attribute"/>. 
+        /// </summary>
+        /// <remarks>
+        /// For the attribute <see cref="CASE"/>, the result is to modify 
+        /// this set so that:
+        /// <list type="number">
+        ///     <item><description>
+        ///         For each character or string 'a' in this set, all strings
+        ///         'b' such that FoldCase(a) == FoldCase(b) are added to this set.
+        ///         (For most 'a' that are single characters, 'b' will have
+        ///         b.Length == 1.)
+        ///     </description></item>
+        ///     <item><description>
+        ///         For each string 'e' in the resulting set, if e !=
+        ///         FoldCase(e), 'e' will be removed.
+        ///     </description></item>
+        /// </list>
+        /// <para/>
+        /// Example: [aq\u00DF{Bc}{bC}{Fi}] =&gt; [aAqQ\u00DF\uFB01{ss}{bc}{fi}]
+        /// <para/>
+        /// (Here FoldCase(x) refers to the operation
+        /// UCharacter.FoldCase(x, true), and a == b actually denotes
+        /// a.Equals(b), not pointer comparison.)
+        /// </remarks>
+        /// <param name="attribute">Bitmask for attributes to close over.
+        /// Currently only the CASE bit is supported.  Any undefined bits
+        /// are ignored.
+        /// </param>
+        /// <returns>A reference to this set.</returns>
+        /// <stable>ICU 3.8</stable>
+        public virtual UnicodeSet CloseOver(int attribute)
         {
             CheckFrozen();
             if ((attribute & (CASE | ADD_CASE_MAPPINGS)) != 0)
@@ -3771,92 +4027,91 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Internal class for customizing UnicodeSet parsing of properties.
-         * TODO: extend to allow customizing of codepoint ranges
-         * @draft ICU3.8 (retain)
-         * @provisional This API might change or be removed in a future release.
-         * @author medavis
-         */
+        /// <summary>
+        /// Internal class for customizing <see cref="UnicodeSet"/> parsing of properties.
+        /// </summary>
+        /// <author>medavis</author>
+        /// <draft>ICU3.8 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // TODO: extend to allow customizing of codepoint ranges
         abstract public class XSymbolTable : ISymbolTable  // ICU4N TODO: API - de-nest ?
         {
-            /**
-             * Default constructor
-             * @draft ICU3.8 (retain)
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Default constructor.
+            /// </summary>
+            /// <draft>ICU3.8 (retain)</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public XSymbolTable() { }
-            /**
-             * Supplies default implementation for SymbolTable (no action).
-             * @draft ICU3.8 (retain)
-             * @provisional This API might change or be removed in a future release.
-             */
+
+            /// <summary>
+            /// Supplies default implementation for <see cref="ISymbolTable"/> (no action).
+            /// </summary>
+            /// <draft>ICU3.8 (retain)</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public virtual IUnicodeMatcher LookupMatcher(int i)
             {
                 return null;
             }
 
-            /**
-             * Override the interpretation of the sequence [:propertyName=propertyValue:] (and its negated and Perl-style
-             * variant). The propertyName and propertyValue may be existing Unicode aliases, or may not be.
-             * <p>
-             * This routine will be called whenever the parsing of a UnicodeSet pattern finds such a
-             * propertyName+propertyValue combination.
-             *
-             * @param propertyName
-             *            the name of the property
-             * @param propertyValue
-             *            the name of the property value
-             * @param result UnicodeSet value to change
-             *            a set to which the characters having the propertyName+propertyValue are to be added.
-             * @return returns true if the propertyName+propertyValue combination is to be overridden, and the characters
-             *         with that property have been added to the UnicodeSet, and returns false if the
-             *         propertyName+propertyValue combination is not recognized (in which case result is unaltered).
-             * @draft ICU3.8 (retain)
-             * @provisional This API might change or be removed in a future release.
-             */
+            /// <summary>
+            /// Override the interpretation of the sequence [:<paramref name="propertyName"/>=<paramref name="propertyValue"/>:] (and its negated and Perl-style
+            /// variant). The <paramref name="propertyName"/> and <paramref name="propertyValue"/> may be existing Unicode aliases, or may not be.
+            /// <para/>
+            /// This routine will be called whenever the parsing of a UnicodeSet pattern finds such a
+            /// <paramref name="propertyName"/>+<paramref name="propertyValue"/> combination.
+            /// </summary>
+            /// <param name="propertyName">The name of the property.</param>
+            /// <param name="propertyValue">The name of the property value.</param>
+            /// <param name="result"><see cref="UnicodeSet"/> value to change
+            /// a set to which the characters having the <paramref name="propertyName"/>+<paramref name="propertyValue"/> are to be added.
+            /// </param>
+            /// <returns>true if the <paramref name="propertyName"/>+<paramref name="propertyValue"/> combination is to be overridden, and the characters
+            /// with that property have been added to the <see cref="UnicodeSet"/>, and returns false if the
+            /// <paramref name="propertyName"/>+<paramref name="propertyValue"/> combination is not recognized (in which case result is unaltered).
+            /// </returns>
+            /// <draft>ICU3.8 (retain)</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public virtual bool ApplyPropertyAlias(string propertyName, string propertyValue, UnicodeSet result)
             {
                 return false;
             }
-            /**
-             * Supplies default implementation for SymbolTable (no action).
-             * @draft ICU3.8 (retain)
-             * @provisional This API might change or be removed in a future release.
-             */
+
+            /// <summary>
+            /// Supplies default implementation for <see cref="ISymbolTable"/> (no action).
+            /// </summary>
+            /// <draft>ICU3.8 (retain)</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public virtual char[] Lookup(string s)
             {
                 return null;
             }
-            /**
-             * Supplies default implementation for SymbolTable (no action).
-             * @draft ICU3.8 (retain)
-             * @provisional This API might change or be removed in a future release.
-             */
+
+            /// <summary>
+            /// Supplies default implementation for <see cref="ISymbolTable"/> (no action).
+            /// </summary>
+            /// <draft>ICU3.8 (retain)</draft>
+            /// <provisional>This API might change or be removed in a future release.</provisional>
             public virtual string ParseReference(string text, ParsePosition pos, int limit)
             {
                 return null;
             }
         }
 
-        /**
-         * Is this frozen, according to the Freezable interface?
-         *
-         * @return value
-         * @stable ICU 3.8
-         */
-        public virtual bool IsFrozen // ICU4N TODO: This does not implement IFreezable... but the comment suggests it should?
+        /// <summary>
+        /// Is this frozen, according to the <see cref="IFreezable{T}"/> interface?
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        public virtual bool IsFrozen 
         {
             get { return (bmpSet != null || stringSpan != null); }
         }
 
-        /**
-         * Freeze this class, according to the Freezable interface.
-         *
-         * @return this
-         * @stable ICU 4.4
-         */
-        public UnicodeSet Freeze()
+        /// <summary>
+        /// Freeze this class, according to the <see cref="IFreezable{T}"/> interface.
+        /// </summary>
+        /// <returns>This.</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual UnicodeSet Freeze()
         {
             if (!IsFrozen)
             {
@@ -3912,15 +4167,12 @@ namespace ICU4N.Text
         // ICU4N specific - SpanBack(ICharSequence s, int fromIndex, SpanCondition spanCondition) moved to UnicodeSetExtension.tt
 
 
-
-
-
-        /**
-         * Clone a thawed version of this class, according to the Freezable interface.
-         * @return the clone, not frozen
-         * @stable ICU 4.4
-         */
-        public UnicodeSet CloneAsThawed()
+        /// <summary>
+        /// Clone a thawed version of this class, according to the <see cref="IFreezable{T}"/> interface.
+        /// </summary>
+        /// <returns>The clone, not frozen.</returns>
+        /// <stable>ICU 4.4</stable>
+        public virtual UnicodeSet CloneAsThawed()
         {
             UnicodeSet result = new UnicodeSet(this);
             Debug.Assert(!result.IsFrozen);
@@ -3940,25 +4192,23 @@ namespace ICU4N.Text
         // Additional methods for integration with Generics and Collections
         // ************************
 
-        /**
-         * A struct-like class used for iteration through ranges, for faster iteration than by String.
-         * Read about the restrictions on usage in {@link UnicodeSet#ranges()}.
-         *
-         * @stable ICU 54
-         */
+        /// <summary>
+        /// A struct-like class used for iteration through ranges, for faster iteration than by String.
+        /// Read about the restrictions on usage in <see cref="UnicodeSet.Ranges"/>.
+        /// </summary>
+        /// <stable>ICU 54</stable>
         public class EntryRange // ICU4N TODO: API - de-nest ?
         {
-            /**
-             * The starting code point of the range.
-             *
-             * @stable ICU 54
-             */
+            /// <summary>
+            /// The starting code point of the range.
+            /// </summary>
+            /// <stable>ICU 54</stable>
             public int Codepoint { get; set; }
-            /**
-             * The ending code point of the range
-             *
-             * @stable ICU 54
-             */
+
+            /// <summary>
+            /// The ending code point of the range.
+            /// </summary>
+            /// <stable>ICU 54</stable>
             public int CodepointEnd { get; set; }
 
 
@@ -3966,11 +4216,11 @@ namespace ICU4N.Text
             {
             }
 
-            /**
-             * {@inheritDoc}
-             *
-             * @stable ICU 54
-             */
+            /// <summary>
+            /// Returns a string that represents the current object.
+            /// </summary>
+            /// <returns>A string that represents the current object.</returns>
+            /// <stable>ICU 54</stable>
             public override string ToString()
             {
                 StringBuilder b = new StringBuilder();
@@ -4018,7 +4268,7 @@ namespace ICU4N.Text
                 this.outerInstance = outerInstance;
             }
 
-            public IEnumerator<EntryRange> GetEnumerator()
+            public virtual IEnumerator<EntryRange> GetEnumerator()
             {
                 return new EntryRangeEnumerator(this);
             }
@@ -4040,7 +4290,7 @@ namespace ICU4N.Text
                 this.outerInstance = outerInstance;
             }
 
-            public EntryRange Current
+            public virtual EntryRange Current
             {
                 get { return result; }
             }
@@ -4055,14 +4305,14 @@ namespace ICU4N.Text
                 // Nothing to do
             }
 
-            public bool MoveNext()
+            public virtual bool MoveNext()
             {
                 if (!HasNext)
                     return false;
                 return Next() != null;
             }
 
-            public void Reset()
+            public virtual void Reset()
             {
                 throw new NotSupportedException();
             }
@@ -4142,7 +4392,7 @@ namespace ICU4N.Text
                 }
             }
 
-            public string Current
+            public virtual string Current
             {
                 get { return currentElement; }
             }
@@ -4157,7 +4407,7 @@ namespace ICU4N.Text
                 // Nothing to do
             }
 
-            public bool MoveNext()
+            public virtual bool MoveNext()
             {
                 if (sourceList == null)
                 {
@@ -4412,7 +4662,7 @@ namespace ICU4N.Text
         /// </code>
         /// </summary>
         /// <stable>ICU 4.4</stable>
-        public ICollection<string> Strings
+        public virtual ICollection<string> Strings
         {
             get { return strings.ToUnmodifiableSet(); }
         }
@@ -4428,7 +4678,7 @@ namespace ICU4N.Text
         /// <returns>The input set, modified.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public UnicodeSet AddBridges(UnicodeSet dontCare)
+        public virtual UnicodeSet AddBridges(UnicodeSet dontCare)
         {
             UnicodeSet notInInput = new UnicodeSet(this).Complement();
             for (UnicodeSetIterator it = new UnicodeSetIterator(notInInput); it.NextRange();)

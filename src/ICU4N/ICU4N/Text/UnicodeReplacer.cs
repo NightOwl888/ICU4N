@@ -10,14 +10,14 @@
     internal interface IUnicodeReplacer
     {
         /// <summary>
-        /// Replace characters in 'text' from 'start' to 'limit' with the
-        /// output text of this object.  Update the 'cursor' parameter to
+        /// Replace characters in '<paramref name="text"/>' from '<paramref name="start"/>' to '<paramref name="limit"/>' with the
+        /// output text of this object.  Update the '<paramref name="cursor"/>' parameter to
         /// give the cursor position and return the length of the
         /// replacement text.
         /// </summary>
         /// <param name="text">The text to be matched.</param>
-        /// <param name="start">Inclusive start index of text to be replaced.</param>
-        /// <param name="limit">Exclusive end index of text to be replaced;
+        /// <param name="start">Inclusive start index of <paramref name="text"/> to be replaced.</param>
+        /// <param name="limit">Exclusive end index of <paramref name="text"/> to be replaced;
         /// must be greater than or equal to start.</param>
         /// <param name="cursor">Output parameter for the cursor position.
         /// Not all replacer objects will update this, but in a complete
@@ -29,7 +29,7 @@
         int Replace(IReplaceable text,
                                     int start,
                                     int limit,
-                                    int[] cursor);
+                                    int[] cursor); // ICU4N TODO: API Make cursor into out paramter (it is a single int value)
 
         /// <summary>
         /// Returns a string representation of this replacer.  If the

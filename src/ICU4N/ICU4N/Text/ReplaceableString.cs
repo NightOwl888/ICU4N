@@ -19,127 +19,119 @@ namespace ICU4N.Text
     {
         private StringBuffer buf;
 
-        /**
-         * Construct a new object with the given initial contents.
-         * @param str initial contents
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Construct a new object with the given initial contents.
+        /// </summary>
+        /// <param name="str">Initial contents.</param>
+        /// <stable>ICU 2.0</stable>
         public ReplaceableString(string str)
         {
             buf = new StringBuffer(str);
         }
 
-        /**
-         * Construct a new object using <code>buf</code> for internal
-         * storage.  The contents of <code>buf</code> at the time of
-         * construction are used as the initial contents.  <em>Note!
-         * Modifications to <code>buf</code> will modify this object, and
-         * vice versa.</em>
-         * @param buf object to be used as internal storage
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Construct a new object using <paramref name="buf"/> for internal
+        /// storage.  The contents of <paramref name="buf"/> at the time of
+        /// construction are used as the initial contents.  <em>Note!
+        /// Modifications to <paramref name="buf"/> will modify this object, and
+        /// vice versa.</em>
+        /// </summary>
+        /// <param name="buf">Object to be used as internal storage.</param>
+        /// <stable>ICU 2.0</stable>
         public ReplaceableString(StringBuffer buf)
         {
             this.buf = buf;
         }
 
-        /**
-         * Construct a new empty object.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Construct a new empty object.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public ReplaceableString()
         {
             buf = new StringBuffer();
         }
 
-        /**
-         * Return the contents of this object as a <code>String</code>.
-         * @return string contents of this object
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Return the contents of this object as a <see cref="string"/>.
+        /// </summary>
+        /// <returns>String contents of this object.</returns>
+        /// <stable>ICU 2.0</stable>
         public override string ToString()
         {
             return buf.ToString();
         }
 
-        /**
-         * Return a substring of the given string.
-         * @stable ICU 2.0
-         */
-        public string Substring(int start, int count) // ICU4N NOTE: Using .NET semantics here - be vigilant about use
+        /// <summary>
+        /// Return a substring of the given string.
+        /// </summary>
+        /// <remarks>
+        /// Using .NET semantics - that is, the second parameter
+        /// is count rather than end.
+        /// </remarks>
+        /// <stable>ICU 2.0</stable>
+        public virtual string Substring(int start, int count) // ICU4N NOTE: Using .NET semantics here - be vigilant about use
         {
             return buf.ToString(start, count);
         }
 
-        /**
-         * Return the number of characters contained in this object.
-         * <code>Replaceable</code> API.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Return the number of characters contained in this object.
+        /// <see cref="IReplaceable"/> API.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public virtual int Length
         {
             get { return buf.Length; }
         }
 
-        /**
-         * Return the character at the given position in this object.
-         * <code>Replaceable</code> API.
-         * @param offset offset into the contents, from 0 to
-         * <code>length()</code> - 1
-         * @stable ICU 2.0
-         */
-        //    @Override
-        //public char charAt(int offset)
-        //    {
-        //        return buf.charAt(offset);
-        //    }
-        public char this[int index]
+        /// <summary>
+        /// Gets the character at the given position in this object.
+        /// <see cref="IReplaceable"/> API.
+        /// </summary>
+        /// <param name="index">Offset into the contents, from 0 to <c><see cref="Length"/> - 1</c></param>
+        /// <stable>ICU 2.0</stable>
+        public virtual char this[int index]
         {
             get { return buf[index]; }
         }
 
-        /**
-         * Return the 32-bit code point at the given 16-bit offset into
-         * the text.  This assumes the text is stored as 16-bit code units
-         * with surrogate pairs intermixed.  If the offset of a leading or
-         * trailing code unit of a surrogate pair is given, return the
-         * code point of the surrogate pair.
-         * @param offset an integer between 0 and <code>length()</code>-1
-         * inclusive
-         * @return 32-bit code point of text at given offset
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Return the 32-bit code point at the given 16-bit offset into
+        /// the text.  This assumes the text is stored as 16-bit code units
+        /// with surrogate pairs intermixed.  If the offset of a leading or
+        /// trailing code unit of a surrogate pair is given, return the
+        /// code point of the surrogate pair.
+        /// </summary>
+        /// <param name="offset">An integer between 0 and <see cref="Length"/>-1 inclusive.</param>
+        /// <returns>32-bit code point of text at given offset.</returns>
+        /// <stable>ICU 2.0</stable>
         public virtual int Char32At(int offset)
         {
             return UTF16.CharAt(buf, offset);
         }
 
-        /**
-         * Copies characters from this object into the destination
-         * character array.  The first character to be copied is at index
-         * <code>srcStart</code>; the last character to be copied is at
-         * index <code>srcLimit-1</code> (thus the total number of
-         * characters to be copied is <code>srcLimit-srcStart</code>). The
-         * characters are copied into the subarray of <code>dst</code>
-         * starting at index <code>dstStart</code> and ending at index
-         * <code>dstStart + (srcLimit-srcStart) - 1</code>.
-         *
-         * @param srcStart the beginning index to copy, inclusive; <code>0
-         * &lt;= start &lt;= limit</code>.
-         * @param srcLimit the ending index to copy, exclusive;
-         * <code>start &lt;= limit &lt;= length()</code>.
-         * @param dst the destination array.
-         * @param dstStart the start offset in the destination array.
-         * @stable ICU 2.0
-         */
-        //    @Override
-        //public void getChars(int srcStart, int srcLimit, char[] dst, int dstStart)
-        //    {
-        //        if (srcStart != srcLimit)
-        //        {
-        //            buf.getChars(srcStart, srcLimit, dst, dstStart);
-        //        }
-        //    }
+        /// <summary>
+        /// Copies characters from this object into the destination
+        /// character array.  The first character to be copied is at index
+        /// The first character to be copied is at index
+        /// <paramref name="sourceIndex"/>; the last character to be copied is at
+        /// index <paramref name="count"/>-<paramref name="sourceIndex"/>.
+        /// The characters are copied into the subarray of <paramref name="destination"/>
+        /// starting at index <paramref name="destinationIndex"/> and ending at index
+        /// <paramref name="destinationIndex"/>+<paramref name="count"/>.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: This is roughly equivalent to GetChars(int srcStart, int srcLimit, char dst[], int dstStart)
+        /// in ICU4J with one important difference - the final parameter is the total
+        /// count of characters to be copied (srcLimit - srcStart). This is to 
+        /// make the function compatible with the <see cref="string.CopyTo(int, char[], int, int)"/> implementation in .NET.
+        /// </remarks>
+        /// <param name="sourceIndex">The index of the first character in this instance to copy.</param>
+        /// <param name="destination">An array of Unicode characters to which characters in this instance are copied.</param>
+        /// <param name="destinationIndex">The index in <paramref name="destination"/> at which the copy operation begins.</param>
+        /// <param name="count">The number of characters in this instance to copy to <paramref name="destination"/>.</param>
+        /// <stable>ICU 2.0</stable>
         public virtual void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
         {
             if (count > 0)
@@ -148,35 +140,28 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Replace zero or more characters with new characters.
-         * <code>Replaceable</code> API.
-         * @param start the beginning index, inclusive; <code>0 &lt;= start
-         * &lt;= limit</code>.
-         * @param limit the ending index, exclusive; <code>start &lt;= limit
-         * &lt;= length()</code>.
-         * @param text new text to replace characters <code>start</code> to
-         * <code>limit - 1</code>
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Replace zero or more characters with new characters.
+        /// <see cref="IReplaceable"/> API.
+        /// </summary>
+        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
+        /// <param name="text">The text to replace characters <c><paramref name="start"/></c> to <c><paramref name="limit"/> - 1</c>.</param>
+        /// <stable>ICU 2.0</stable>
         public virtual void Replace(int start, int limit, string text)
         {
             buf.Replace(start, limit, text);
         }
 
-        /**
-         * Replace a substring of this object with the given text.
-         * @param start the beginning index, inclusive; <code>0 &lt;= start
-         * &lt;= limit</code>.
-         * @param limit the ending index, exclusive; <code>start &lt;= limit
-         * &lt;= length()</code>.
-         * @param chars the text to replace characters <code>start</code>
-         * to <code>limit - 1</code>
-         * @param charsStart the beginning index into <code>chars</code>,
-         * inclusive; <code>0 &lt;= start &lt;= limit</code>.
-         * @param charsLen the number of characters of <code>chars</code>.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Replace a substring of this object with the given text.
+        /// </summary>
+        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
+        /// <param name="chars">The text to replace characters <paramref name="start"/> to <c><paramref name="limit"/> - 1</c></param>
+        /// <param name="charsStart">The beginning index into <paramref name="chars"/>, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="charsLen">The number of characters of <paramref name="chars"/>.</param>
+        /// <stable>ICU 2.0</stable>
         public virtual void Replace(int start, int limit, char[] chars,
                         int charsStart, int charsLen)
         {
@@ -184,21 +169,19 @@ namespace ICU4N.Text
             buf.Insert(start, chars, charsStart, charsLen);
         }
 
-        /**
-         * Copy a substring of this object, retaining attribute (out-of-band)
-         * information.  This method is used to duplicate or reorder substrings.
-         * The destination index must not overlap the source range.
-         *
-         * @param start the beginning index, inclusive; <code>0 &lt;= start &lt;=
-         * limit</code>.
-         * @param limit the ending index, exclusive; <code>start &lt;= limit &lt;=
-         * length()</code>.
-         * @param dest the destination index.  The characters from
-         * <code>start..limit-1</code> will be copied to <code>dest</code>.
-         * Implementations of this method may assume that <code>dest &lt;= start ||
-         * dest &gt;= limit</code>.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Copy a substring of this object, retaining attribute (out-of-band)
+        /// information.  This method is used to duplicate or reorder substrings.
+        /// The destination index must not overlap the source range.
+        /// </summary>
+        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
+        /// <param name="dest">The destination index.  The characters from
+        /// <c><paramref name="start"/>..<paramref name="limit"/>-1</c> will be copied to <paramref name="dest"/>.
+        /// Implementations of this method may assume that <c><paramref name="dest"/> &lt;= <paramref name="start"/> ||
+        /// <paramref name="dest"/> &gt;= <paramref name="limit"/></c>.
+        /// </param>
+        /// <stable>ICU 2.0</stable>
         public virtual void Copy(int start, int limit, int dest)
         {
             if (start == limit && start >= 0 && start <= buf.Length)
@@ -211,10 +194,10 @@ namespace ICU4N.Text
             Replace(dest, dest, text, 0, limit - start);
         }
 
-        /**
-         * Implements Replaceable
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Implements <see cref="IReplaceable"/>
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public virtual bool HasMetaData
         {
             get { return false; }

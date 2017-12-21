@@ -2,7 +2,6 @@
 using ICU4N.Support;
 using ICU4N.Support.IO;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -131,12 +130,10 @@ namespace ICU4N.Text
             }
         }
 
-
-        /**
-         * RBBI State Table Indexing Function.  Given a state number, return the
-         * array index of the start of the state table row for that state.
-         *
-         */
+        /// <summary>
+        /// RBBI State Table Indexing Function.  Given a <paramref name="state"/> number, return the
+        /// array index of the start of the state table row for that state.
+        /// </summary>
         internal int GetRowIndex(int state)
         {
             return ROW_DATA + state * (fHeader.fCatCount + 4);
@@ -146,10 +143,12 @@ namespace ICU4N.Text
         {
         }
 
-        /*
-         *  Get an RBBIDataWrapper from an InputStream onto a pre-compiled set
-         *  of RBBI rules.
-         */
+        /// <summary>
+        /// Get an <see cref="RBBIDataWrapper"/> from an InputStream onto a pre-compiled set
+        /// of RBBI rules.
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <returns></returns>
         internal static RBBIDataWrapper Get(ByteBuffer bytes)
         {
             RBBIDataWrapper This = new RBBIDataWrapper();
@@ -340,8 +339,8 @@ namespace ICU4N.Text
             return table[isBigEndian ? FLAGS + 1 : FLAGS];
         }
 
-        ///CLOVER:OFF
-        /* Debug function to display the break iterator data. */
+        //CLOVER:OFF
+        /// <summary>Debug function to display the break iterator data.</summary>
         internal void Dump(TextWriter output)
         {
             if (fFTable.Length == 0)
@@ -364,10 +363,10 @@ namespace ICU4N.Text
             output.WriteLine("Source Rules: " + fRuleSource);
 
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
-        ///CLOVER:OFF
-        /* Fixed width int-to-string conversion. */
+        //CLOVER:OFF
+        /// <summary>Fixed width int-to-string conversion.</summary>
         static public string Int32ToString(int n, int width)
         {
             StringBuilder dest = new StringBuilder(width);
@@ -378,10 +377,10 @@ namespace ICU4N.Text
             }
             return dest.ToString();
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
-        ///CLOVER:OFF
-        /* Fixed width int-to-string conversion. */
+        //CLOVER:OFF
+        /// <summary>Fixed width int-to-string conversion.</summary>
         static public string Int32ToHexString(int n, int width)
         {
             StringBuilder dest = new StringBuilder(width);
@@ -392,10 +391,10 @@ namespace ICU4N.Text
             }
             return dest.ToString();
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
-        ///CLOVER:OFF
-        /** Dump a state table.  (A full set of RBBI rules has 4 state tables.)  */
+        //CLOVER:OFF
+        /// <summary>Dump a state table.  (A full set of RBBI rules has 4 state tables.)</summary>
         private void DumpTable(TextWriter output, short[] table)
         {
             if (table == null || table.Length == 0)
@@ -424,14 +423,12 @@ namespace ICU4N.Text
                 output.WriteLine();
             }
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
-        ///CLOVER:OFF
-        /**
-         * Dump (for debug) a single row of an RBBI state table
-         * @param table
-         * @param state
-         */
+        //CLOVER:OFF
+        /// <summary>
+        /// Dump (for debug) a single row of an RBBI state table
+        /// </summary>
         private void DumpRow(TextWriter output, short[] table, int state)
         {
             StringBuilder dest = new StringBuilder(fHeader.fCatCount * 5 + 20);
@@ -528,7 +525,7 @@ namespace ICU4N.Text
             }
             output.WriteLine();
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
         /*static RBBIDataWrapper get(String name) throws IOException {
             String  fullName = "data/" + name;

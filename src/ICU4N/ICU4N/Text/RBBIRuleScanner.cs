@@ -1174,7 +1174,7 @@ namespace ICU4N.Text
             {
                 uset = new UnicodeSet(fRB.fRules, pos, fSymbolTable, UnicodeSet.IGNORE_SPACE);
             }
-            catch (Exception e)
+            catch (Exception)
             { // TODO:  catch fewer exception types.
               // Repackage UnicodeSet errors as RBBI rule builder errors, with location info.
                 Error(RBBIRuleBuilder.U_BRK_MALFORMED_SET);

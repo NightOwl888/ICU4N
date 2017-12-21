@@ -507,11 +507,13 @@ namespace ICU4N.Text
 
         private StringBuffer Normalize(StringBuffer src)
         {
+#pragma warning disable 612, 618
             return new StringBuffer(
                 Normalizer.Normalize(
                     src.ToString(),
                     Normalizer.NFKC,
                     Normalizer.UNICODE_3_2));
+#pragma warning restore 612, 618
         }
         /*
         boolean isLabelSeparator(int ch){
@@ -593,8 +595,10 @@ namespace ICU4N.Text
             char result;
             UCharacterIterator iter = UCharacterIterator.GetInstance(normOut);
             Values val = new Values();
+#pragma warning disable 612, 618
             UnicodeDirection direction = UnicodeDirection.CharDirectionCount,
                 firstCharDir = UnicodeDirection.CharDirectionCount;
+#pragma warning restore 612, 618
             int rtlPos = -1, ltrPos = -1;
             bool rightToLeft = false, leftToRight = false;
 
@@ -612,7 +616,9 @@ namespace ICU4N.Text
                 if (checkBiDi)
                 {
                     direction = (UnicodeDirection)bdp.GetClass(ch);
+#pragma warning disable 612, 618
                     if (firstCharDir == UnicodeDirection.CharDirectionCount)
+#pragma warning restore 612, 618
                     {
                         firstCharDir = direction;
                     }

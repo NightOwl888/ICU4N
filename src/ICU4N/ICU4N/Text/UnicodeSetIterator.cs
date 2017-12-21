@@ -1,88 +1,125 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Text
 {
-    public class UnicodeSetIterator
+    /// <summary>
+    /// <see cref="UnicodeSetIterator"/> iterates over the contents of a <see cref="UnicodeSet"/>.  It
+    /// iterates over either code points or code point ranges.  After all
+    /// code points or ranges have been returned, it returns the
+    /// multicharacter strings of the <see cref="UnicodeSet"/>, if any.
+    /// </summary>
+    /// <remarks>
+    /// To iterate over code points and multicharacter strings,
+    /// use a loop like this:
+    /// <code>
+    /// for (UnicodeSetIterator it = new UnicodeSetIterator(set); it.Next();)
+    /// {
+    ///     ProcessString(it.GetString());
+    /// }
+    /// </code>
+    /// <para/>
+    /// To iterate over code point ranges, use a loop like this:
+    /// <code>
+    /// for (UnicodeSetIterator it = new UnicodeSetIterator(set); it.NextRange();)
+    /// {
+    ///     if (it.Codepoint != UnicodeSetIterator.IS_STRING)
+    ///     {
+    ///         ProcessCodepointRange(it.Codepoint, it.CodepointEnd);
+    ///     }
+    ///     else
+    ///     {
+    ///         ProcessString(it.GetString());
+    ///     }
+    /// }
+    /// </code>
+    /// <para/>
+    /// <b>Warning: </b>For speed, <see cref="UnicodeSet"/> iteration does not check for concurrent modification. 
+    /// Do not alter the <see cref="UnicodeSet"/> while iterating.
+    /// </remarks>
+    /// <author>M. Davis</author>
+    /// <stable>ICU 2.0</stable>
+    public class UnicodeSetIterator // ICU4N TODO: API - refactor into UnicodeSetStringEnumerator and UnicodeSetCodepointEnumerator ?
     {
-        /**
-         * Value of <tt>codepoint</tt> if the iterator points to a string.
-         * If <tt>codepoint == IS_STRING</tt>, then examine
-         * <tt>string</tt> for the current iteration result.
-         * @stable ICU 2.0
-         */
-        public static int IS_STRING = -1;
+        /// <summary>
+        /// Value of <see cref="Codepoint"/> if the iterator points to a string.
+        /// If <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, then examine
+        /// <c>string</c> for the current iteration result.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public const int IS_STRING = -1;
 
-        /**
-         * Current code point, or the special value <tt>IS_STRING</tt>, if
-         * the iterator points to a string.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Current code point, or the special value <tt>IS_STRING</tt>, if
+        /// the iterator points to a string.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public int Codepoint { get; set; }
 
-        /**
-         * When iterating over ranges using <tt>nextRange()</tt>,
-         * <tt>codepointEnd</tt> contains the inclusive end of the
-         * iteration range, if <tt>codepoint != IS_STRING</tt>.  If
-         * iterating over code points using <tt>next()</tt>, or if
-         * <tt>codepoint == IS_STRING</tt>, then the value of
-         * <tt>codepointEnd</tt> is undefined.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// When iterating over ranges using <see cref="NextRange()"/>,
+        /// <see cref="CodepointEnd"/> contains the inclusive end of the
+        /// iteration range, if <c><see cref="Codepoint"/> != <see cref="IS_STRING"/></c>. If
+        /// iterating over code points using <see cref="Next()"/>, or if
+        /// <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, then the value of
+        /// <see cref="CodepointEnd"/> is undefined.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public int CodepointEnd { get; set; }
 
-        /**
-         * If <tt>codepoint == IS_STRING</tt>, then <tt>string</tt> points
-         * to the current string.  If <tt>codepoint != IS_STRING</tt>, the
-         * value of <tt>string</tt> is undefined.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// If <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, then <see cref="String"/> points
+        /// to the current string. If <c><see cref="Codepoint"/> != <see cref="IS_STRING"/></c>, the
+        /// value of <see cref="String"/> is undefined.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public string String { get; set; }
 
-        /**
-         * Create an iterator over the given set.
-         * @param set set to iterate over
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Create an iterator over the given set.
+        /// </summary>
+        /// <param name="set">Set to iterate over.</param>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSetIterator(UnicodeSet set)
         {
             Reset(set);
         }
 
-        /**
-         * Create an iterator over nothing.  <tt>next()</tt> and
-         * <tt>nextRange()</tt> return false. This is a convenience
-         * constructor allowing the target to be set later.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Create an iterator over nothing.  <see cref="Next()"/> and
+        /// <see cref="NextRange()"/> return false. This is a convenience
+        /// constructor allowing the target to be set later.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public UnicodeSetIterator()
         {
             Reset(new UnicodeSet());
         }
 
-        /**
-         * Returns the next element in the set, either a single code point
-         * or a string.  If there are no more elements in the set, return
-         * false.  If <tt>codepoint == IS_STRING</tt>, the value is a
-         * string in the <tt>string</tt> field.  Otherwise the value is a
-         * single code point in the <tt>codepoint</tt> field.
-         * 
-         * <p>The order of iteration is all code points in sorted order,
-         * followed by all strings sorted order.  <tt>codepointEnd</tt> is
-         * undefined after calling this method.  <tt>string</tt> is
-         * undefined unless <tt>codepoint == IS_STRING</tt>.  Do not mix
-         * calls to <tt>next()</tt> and <tt>nextRange()</tt> without
-         * calling <tt>reset()</tt> between them.  The results of doing so
-         * are undefined.
-         * <p><b>Warning: </b>For speed, UnicodeSet iteration does not check for concurrent modification. 
-         * Do not alter the UnicodeSet while iterating.
-         * @return true if there was another element in the set and this
-         * object contains the element.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns the next element in the set, either a single code point
+        /// or a string.  If there are no more elements in the set, return
+        /// false.  If <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, the value is a
+        /// string in the <see cref="String"/> field.  Otherwise the value is a
+        /// single code point in the <see cref="Codepoint"/> field.
+        /// </summary>
+        /// <remarks>
+        /// The order of iteration is all code points in sorted order,
+        /// followed by all strings sorted order.  <see cref="String"/> is
+        /// undefined unless <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>.  Do not mix
+        /// calls to <see cref="Next()"/> and <see cref="NextRange()"/> without
+        /// calling <see cref="Reset()"/> between them.  The results of doing so
+        /// are undefined.
+        /// <para/>
+        /// <b>Warning: </b>For speed, <see cref="UnicodeSet"/> iteration does not check for concurrent modification. 
+        /// Do not alter the <see cref="UnicodeSet"/> while iterating.
+        /// </remarks>
+        /// <returns>true if there was another element in the set and this
+        /// object contains the element.</returns>
+        /// <stable>ICU 2.0</stable>
         public virtual bool Next()
         {
+#pragma warning disable 612, 618
             if (nextElement <= endElement)
             {
                 Codepoint = CodepointEnd = nextElement++;
@@ -94,6 +131,7 @@ namespace ICU4N.Text
                 Codepoint = CodepointEnd = nextElement++;
                 return true;
             }
+#pragma warning restore 612, 618
 
             // stringIterator == null iff there are no string elements remaining
 
@@ -111,28 +149,28 @@ namespace ICU4N.Text
             return true;
         }
 
-        /**
-         * Returns the next element in the set, either a code point range
-         * or a string.  If there are no more elements in the set, return
-         * false.  If <tt>codepoint == IS_STRING</tt>, the value is a
-         * string in the <tt>string</tt> field.  Otherwise the value is a
-         * range of one or more code points from <tt>codepoint</tt> to
-         * <tt>codepointeEnd</tt> inclusive.
-         * 
-         * <p>The order of iteration is all code points ranges in sorted
-         * order, followed by all strings sorted order.  Ranges are
-         * disjoint and non-contiguous.  <tt>string</tt> is undefined
-         * unless <tt>codepoint == IS_STRING</tt>.  Do not mix calls to
-         * <tt>next()</tt> and <tt>nextRange()</tt> without calling
-         * <tt>reset()</tt> between them.  The results of doing so are
-         * undefined.
-         *
-         * @return true if there was another element in the set and this
-         * object contains the element.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns the next element in the set, either a code point range
+        /// or a string.  If there are no more elements in the set, return
+        /// false.  If <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, the value is a
+        /// string in the <see cref="String"/> property.  Otherwise the value is a
+        /// range of one or more code points from <see cref="Codepoint"/> to
+        /// <see cref="CodepointEnd"/> inclusive.
+        /// </summary>
+        /// <remarks>
+        /// The order of iteration is all code points in sorted order,
+        /// followed by all strings sorted order.  <see cref="String"/> is
+        /// undefined unless <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>.  Do not mix
+        /// calls to <see cref="Next()"/> and <see cref="NextRange()"/> without
+        /// calling <see cref="Reset()"/> between them.  The results of doing so
+        /// are undefined.
+        /// </remarks>
+        /// <returns>true if there was another element in the set and this
+        /// object contains the element.</returns>
+        /// <stable>ICU 2.0</stable>
         public virtual bool NextRange()
         {
+#pragma warning disable 612, 618
             if (nextElement <= endElement)
             {
                 CodepointEnd = endElement;
@@ -148,6 +186,7 @@ namespace ICU4N.Text
                 nextElement = endElement + 1;
                 return true;
             }
+#pragma warning restore 612, 618
 
             // stringIterator == null iff there are no string elements remaining
 
@@ -165,33 +204,35 @@ namespace ICU4N.Text
             return true;
         }
 
-        /**
-         * Sets this iterator to visit the elements of the given set and
-         * resets it to the start of that set.  The iterator is valid only
-         * so long as <tt>set</tt> is valid.
-         * @param uset the set to iterate over.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Sets this iterator to visit the elements of the given set and
+        /// resets it to the start of that set.  The iterator is valid only
+        /// so long as <paramref name="uset"/> is valid.
+        /// </summary>
+        /// <param name="uset">The set to iterate over.</param>
+        /// <stable>ICU 2.0</stable>
         public virtual void Reset(UnicodeSet uset)
         {
             set = uset;
             Reset();
         }
 
-        /**
-         * Resets this iterator to the start of the set.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Resets this iterator to the start of the set.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public virtual void Reset()
         {
             endRange = set.GetRangeCount() - 1;
             range = 0;
+#pragma warning disable 612, 618
             endElement = -1;
             nextElement = 0;
             if (endRange >= 0)
             {
                 LoadRange(range);
             }
+#pragma warning restore 612, 618
             stringIterator = null;
             if (set.Strings != null)
             {
@@ -206,11 +247,12 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Gets the current string from the iterator. Only use after calling next(), not nextRange().
-         * @stable ICU 4.0
-         */
-        public virtual string GetString() // ICU4N TODO: String vs GetString() - confusing
+        /// <summary>
+        /// Gets the current string from the iterator. Only use after calling <see cref="Next()"/>,
+        /// not <see cref="NextRange()"/>.
+        /// </summary>
+        /// <stable>ICU 4.0</stable>
+        public virtual string GetString() // ICU4N TODO: API String vs GetString() - confusing. This should be made into String property and the current string property made into a private field.
         {
             if (Codepoint != IS_STRING)
             {
@@ -225,40 +267,27 @@ namespace ICU4N.Text
         private int endRange = 0;
         private int range = 0;
 
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         public virtual UnicodeSet Set
         {
             get { return set; }
         }
 
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected int endElement; // ICU4N specific - made internal because of comment
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        protected int endElement;
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal int nextElement; // ICU4N specific - made internal because of comment
+        protected int nextElement;
+        /// <summary>
+        /// Invariant: stringIterator is null when there are no (more) strings remaining
+        /// </summary>
         private IEnumerator<string> stringIterator = null;
 
-        /**
-         * Invariant: stringIterator is null when there are no (more) strings remaining
-         */
-
-        /**
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        protected virtual void LoadRange(int aRange) // ICU4N specific - made internal because of comment
+        protected virtual void LoadRange(int aRange) 
         {
             nextElement = set.GetRangeStart(aRange);
             endElement = set.GetRangeEnd(aRange);

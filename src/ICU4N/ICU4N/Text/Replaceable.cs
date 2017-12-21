@@ -1,142 +1,185 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ICU4N.Text
+﻿namespace ICU4N.Text
 {
+    /// <summary>
+    /// <see cref="IReplaceable"/> is an interface representing a
+    /// string of characters that supports the replacement of a range of
+    /// itself with a new string of characters.  It is used by APIs that
+    /// change a piece of text while retaining metadata.  Metadata is data
+    /// other than the Unicode characters returned by <see cref="Char32At(int)"/>.  One
+    /// example of metadata is style attributes; another is an edit
+    /// history, marking each character with an author and revision number.
+    /// </summary>
+    /// <remarks>
+    /// An implicit aspect of the <see cref="IReplaceable"/> API is that
+    /// during a replace operation, new characters take on the metadata of
+    /// the old characters.  For example, if the string "the <b>bold</b>
+    /// font" has range (4, 8) replaced with "strong", then it becomes "the
+    /// <b>strong</b> font".
+    /// <para/>
+    /// <see cref="IReplaceable"/> specifies ranges using a start
+    /// offset and a limit offset.  The range of characters thus specified
+    /// includes the characters at offset start..limit-1.  That is, the
+    /// start offset is inclusive, and the limit offset is exclusive.
+    /// <para/>
+    /// <see cref="IReplaceable"/> also includes API to access characters
+    /// in the string: <see cref="Length"/>, <see cref="this[int]"/>,
+    /// and <see cref="Char32At(int)"/>.
+    /// <para/>
+    /// For an implementation to support metadata, typical behavior of
+    /// <see cref="Replace(int, int, char[], int, int)"/> is the following:
+    /// <list type="bullet">
+    ///     <item><description>
+    ///         Set the metadata of the new text to the metadata of the first
+    ///         character replaced
+    ///     </description></item>
+    ///     <item><description>
+    ///         If no characters are replaced, use the metadata of the
+    ///         previous character
+    ///     </description></item>
+    ///     <item><description>
+    ///         If there is no previous character (i.e. start == 0), use the
+    ///         following character
+    ///     </description></item>
+    ///     <item><description>
+    ///         If there is no following character (i.e. the replaceable was
+    ///         empty), use default metadata
+    ///     </description></item>
+    ///     <item><description>
+    ///         If the code point U+FFFF is seen, it should be interpreted as
+    ///         a special marker having no metadata
+    ///     </description></item>
+    /// </list>
+    /// If this is not the behavior, the implementation should document any differences.
+    /// </remarks>
+    /// <author>Alan Liu</author>
+    /// <stable>ICU 2.0</stable>
     public interface IReplaceable
     {
-        /**
-         * Returns the number of 16-bit code units in the text.
-         * @return number of 16-bit code units in text
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets the number of 16-bit code units in the text.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         int Length { get; }
 
-        /**
-         * Returns the 16-bit code unit at the given offset into the text.
-         * @param offset an integer between 0 and <code>length()</code>-1
-         * inclusive
-         * @return 16-bit code unit of text at given offset
-         * @stable ICU 2.0
-         */
-        //char CharAt(int offset); // ICU4N TODO: API Make this into this[index] ?
+        /// <summary>
+        /// Gets the 16-bit code unit at the given offset into the text.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: This is equivalent to charAt(index) in ICU4J.
+        /// </remarks>
+        /// <param name="index">An integer between 0 and <see cref="Length"/>-1 inclusive.</param>
+        /// <returns>16-bit code unit of text at given offset.</returns>
+        /// <stable>ICU 2.0</stable>
         char this[int index] { get; }
 
-        /**
-         * Returns the 32-bit code point at the given 16-bit offset into
-         * the text.  This assumes the text is stored as 16-bit code units
-         * with surrogate pairs intermixed.  If the offset of a leading or
-         * trailing code unit of a surrogate pair is given, return the
-         * code point of the surrogate pair.
-         *
-         * <p>Most subclasses can return
-         * <code>com.ibm.icu.text.UTF16.charAt(this, offset)</code>.
-         * @param offset an integer between 0 and <code>length()</code>-1
-         * inclusive
-         * @return 32-bit code point of text at given offset
-         * @stable ICU 2.0
-         */
-        int Char32At(int offset);
+        /// <summary>
+        /// Returns the 32-bit code point at the given 16-bit offset into
+        /// the text.  This assumes the text is stored as 16-bit code units
+        /// with surrogate pairs intermixed.  If the offset of a leading or
+        /// trailing code unit of a surrogate pair is given, return the
+        /// code point of the surrogate pair.
+        /// <para/>
+        /// Most implementations can return
+        /// <c>UTF16.CharAt(this, offset)</c>.
+        /// </summary>
+        /// <param name="index">An integer between 0 and <see cref="Length"/>-1 inclusive.</param>
+        /// <returns>32-bit code point of text at given offset.</returns>
+        /// <stable>ICU 2.0</stable>
+        int Char32At(int index);
 
-        /**
-         * Copies characters from this object into the destination
-         * character array.  The first character to be copied is at index
-         * <code>srcStart</code>; the last character to be copied is at
-         * index <code>srcLimit-1</code> (thus the total number of
-         * characters to be copied is <code>srcLimit-srcStart</code>). The
-         * characters are copied into the subarray of <code>dst</code>
-         * starting at index <code>dstStart</code> and ending at index
-         * <code>dstStart + (srcLimit-srcStart) - 1</code>.
-         *
-         * @param srcStart the beginning index to copy, inclusive; <code>0
-         * &lt;= start &lt;= limit</code>.
-         * @param srcLimit the ending index to copy, exclusive;
-         * <code>start &lt;= limit &lt;= length()</code>.
-         * @param dst the destination array.
-         * @param dstStart the start offset in the destination array.
-         * @stable ICU 2.0
-         */
-        //void GetChars(int srcStart, int srcLimit, char dst[], int dstStart);
+        /// <summary>
+        /// Copies characters from this object into the destination
+        /// character array.  The first character to be copied is at index
+        /// <paramref name="sourceIndex"/>; the last character to be copied is at
+        /// index <paramref name="count"/>-<paramref name="sourceIndex"/>.
+        /// The characters are copied into the subarray of <paramref name="destination"/>
+        /// starting at index <paramref name="destinationIndex"/> and ending at index
+        /// <paramref name="destinationIndex"/>+<paramref name="count"/>.
+        /// </summary>
+        /// <remarks>
+        /// NOTE: This is roughly equivalent to GetChars(int srcStart, int srcLimit, char dst[], int dstStart)
+        /// in ICU4J with one important difference - the final parameter is the total
+        /// count of characters to be copied (srcLimit - srcStart). This is to 
+        /// make the function compatible with the <see cref="string.CopyTo(int, char[], int, int)"/> implementation in .NET.
+        /// </remarks>
+        /// <param name="sourceIndex">The index of the first character in this instance to copy.</param>
+        /// <param name="destination">An array of Unicode characters to which characters in this instance are copied.</param>
+        /// <param name="destinationIndex">The index in <paramref name="destination"/> at which the copy operation begins.</param>
+        /// <param name="count">The number of characters in this instance to copy to <paramref name="destination"/>.</param>
+        /// <stable>ICU 2.0</stable>
         void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count);
 
-        /**
-         * Replaces a substring of this object with the given text.
-         *
-         * <p>Subclasses must ensure that if the text between start and
-         * limit is equal to the replacement text, that replace has no
-         * effect. That is, any metadata
-         * should be unaffected. In addition, subclasses are encouraged to
-         * check for initial and trailing identical characters, and make a
-         * smaller replacement if possible. This will preserve as much
-         * metadata as possible.
-         * @param start the beginning index, inclusive; <code>0 &lt;= start
-         * &lt;= limit</code>.
-         * @param limit the ending index, exclusive; <code>start &lt;= limit
-         * &lt;= length()</code>.
-         * @param text the text to replace characters <code>start</code>
-         * to <code>limit - 1</code>
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Replaces a substring of this object with the given text.
+        /// <para/>
+        /// Implementations must ensure that if the text between start and
+        /// limit is equal to the replacement text, that replace has no
+        /// effect. That is, any metadata
+        /// should be unaffected. In addition, implementers are encouraged to
+        /// check for initial and trailing identical characters, and make a
+        /// smaller replacement if possible. This will preserve as much
+        /// metadata as possible.
+        /// </summary>
+        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
+        /// <param name="text">The text to replace characters <c><paramref name="start"/></c> to <c><paramref name="limit"/> - 1</c>.</param>
+        /// <stable>ICU 2.0</stable>
         void Replace(int start, int limit, string text);
 
-        /**
-         * Replaces a substring of this object with the given text.
-         *
-         * <p>Subclasses must ensure that if the text between start and
-         * limit is equal to the replacement text, that replace has no
-         * effect. That is, any metadata
-         * should be unaffected. In addition, subclasses are encouraged to
-         * check for initial and trailing identical characters, and make a
-         * smaller replacement if possible. This will preserve as much
-         * metadata as possible.
-         * @param start the beginning index, inclusive; <code>0 &lt;= start
-         * &lt;= limit</code>.
-         * @param limit the ending index, exclusive; <code>start &lt;= limit
-         * &lt;= length()</code>.
-         * @param chars the text to replace characters <code>start</code>
-         * to <code>limit - 1</code>
-         * @param charsStart the beginning index into <code>chars</code>,
-         * inclusive; <code>0 &lt;= start &lt;= limit</code>.
-         * @param charsLen the number of characters of <code>chars</code>.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Replaces a substring of this object with the given text.
+        /// <para/>
+        /// Implementations must ensure that if the text between start and
+        /// limit is equal to the replacement text, that replace has no
+        /// effect. That is, any metadata
+        /// should be unaffected. In addition, implementers are encouraged to
+        /// check for initial and trailing identical characters, and make a
+        /// smaller replacement if possible. This will preserve as much
+        /// metadata as possible.
+        /// </summary>
+        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
+        /// <param name="chars">The text to replace characters <paramref name="start"/> to <c><paramref name="limit"/> - 1</c></param>
+        /// <param name="charsStart">The beginning index into <paramref name="chars"/>, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="charsLen">The number of characters of <paramref name="chars"/>.</param>
+        /// <stable>ICU 2.0</stable>
         void Replace(int start, int limit, char[] chars,
                      int charsStart, int charsLen);
         // Note: We use length rather than limit to conform to StringBuffer
         // and System.arraycopy.
 
-        /**
-         * Copies a substring of this object, retaining metadata.
-         * This method is used to duplicate or reorder substrings.
-         * The destination index must not overlap the source range.
-         * If <code>hasMetaData()</code> returns false, subclasses
-         * may use the naive implementation:
-         *
-         * <pre> char[] text = new char[limit - start];
-         * getChars(start, limit, text, 0);
-         * replace(dest, dest, text, 0, limit - start);</pre>
-         *
-         * @param start the beginning index, inclusive; <code>0 &lt;= start &lt;=
-         * limit</code>.
-         * @param limit the ending index, exclusive; <code>start &lt;= limit &lt;=
-         * length()</code>.
-         * @param dest the destination index.  The characters from
-         * <code>start..limit-1</code> will be copied to <code>dest</code>.
-         * Implementations of this method may assume that <code>dest &lt;= start ||
-         * dest &gt;= limit</code>.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Copies a substring of this object, retaining metadata.
+        /// This method is used to duplicate or reorder substrings.
+        /// The destination index must not overlap the source range.
+        /// </summary>
+        /// <remarks>
+        /// If <see cref="HasMetaData"/> returns false, implementations
+        /// may use the naive implementation:
+        /// 
+        /// <code>
+        /// char[] text = new char[limit - start];
+        /// CopyTo(start, text, 0, limit - start);
+        /// Replace(dest, dest, text, 0, limit - start);
+        /// </code>
+        /// </remarks>
+        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
+        /// <param name="dest">The destination index.  The characters from
+        /// <c><paramref name="start"/>..<paramref name="limit"/>-1</c> will be copied to <paramref name="dest"/>.
+        /// Implementations of this method may assume that <c><paramref name="dest"/> &lt;= <paramref name="start"/> ||
+        /// <paramref name="dest"/> &gt;= <paramref name="limit"/></c>.
+        /// </param>
+        /// <stable>ICU 2.0</stable>
         void Copy(int start, int limit, int dest);
 
-        /**R
-         * Returns true if this object contains metadata.  If a
-         * Replaceable object has metadata, calls to the Replaceable API
-         * must be made so as to preserve metadata.  If it does not, calls
-         * to the Replaceable API may be optimized to improve performance.
-         * @return true if this object contains metadata
-         * @stable ICU 2.2
-         */
+        /// <summary>
+        /// Returns true if this object contains metadata.  If a
+        /// <see cref="IReplaceable"/> object has metadata, calls to the <see cref="IReplaceable"/> API
+        /// must be made so as to preserve metadata.  If it does not, calls
+        /// to the <see cref="IReplaceable"/> API may be optimized to improve performance.
+        /// </summary>
+        /// <stable>ICU 2.2</stable>
         bool HasMetaData { get; }
     }
 }

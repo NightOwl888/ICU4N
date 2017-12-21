@@ -94,13 +94,13 @@ namespace ICU4N.Text
             }
             catch (IOException e)
             {
-                ///CLOVER:OFF
+                //CLOVER:OFF
                 // An IO exception can only arrive here if there is a bug in the RBBI Rule compiler,
                 //  causing bogus compiled rules to be produced, but with no compile error raised.
                 Exception rte = new Exception("RuleBasedBreakIterator rule compilation internal error: "
                         + e.Message, e);
                 throw rte;
-                ///CLOVER:ON
+                //CLOVER:ON
             }
         }
 
@@ -169,7 +169,7 @@ namespace ICU4N.Text
                 }
                 return fPosition == other.fPosition;
             }
-            catch (InvalidCastException e)
+            catch (InvalidCastException)
             {
                 return false;
             }

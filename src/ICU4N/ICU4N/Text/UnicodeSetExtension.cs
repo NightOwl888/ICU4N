@@ -1278,7 +1278,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Utility for getting code point from single code point <see cref="string"/>.
-        /// See the public <see cref="UTF16.GetSingleCodePoint()"/>.
+        /// See the public <see cref="UTF16.GetSingleCodePoint(string)"/>.
         /// </summary>
         /// <param name="s">To test.</param>
         /// <returns>A code point IF the string consists of a single one. Otherwise returns -1.</returns>
@@ -1302,7 +1302,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Utility for getting code point from single code point <see cref="StringBuilder"/>.
-        /// See the public <see cref="UTF16.GetSingleCodePoint()"/>.
+        /// See the public <see cref="UTF16.GetSingleCodePoint(StringBuilder)"/>.
         /// </summary>
         /// <param name="s">To test.</param>
         /// <returns>A code point IF the string consists of a single one. Otherwise returns -1.</returns>
@@ -1325,8 +1325,8 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Utility for getting code point from single code point <see cref="char[]"/>.
-        /// See the public <see cref="UTF16.GetSingleCodePoint()"/>.
+        /// Utility for getting code point from single code point <see cref="T:char[]"/>.
+        /// See the public <see cref="UTF16.GetSingleCodePoint(char[])"/>.
         /// </summary>
         /// <param name="s">To test.</param>
         /// <returns>A code point IF the string consists of a single one. Otherwise returns -1.</returns>
@@ -1350,7 +1350,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Utility for getting code point from single code point <see cref="ICharSequence"/>.
-        /// See the public <see cref="UTF16.GetSingleCodePoint()"/>.
+        /// See the public <see cref="UTF16.GetSingleCodePoint(ICharSequence)"/>.
         /// </summary>
         /// <param name="s">To test.</param>
         /// <returns>A code point IF the string consists of a single one. Otherwise returns -1.</returns>
@@ -3700,7 +3700,7 @@ namespace ICU4N.Text
         /// Strips code points from source. If matches is true, script all that match <i>this</i>. 
         /// If matches is false, then strip all that <i>don't</i> match.
         /// </summary>
-        /// <param name="source">The source of the <see cref="char[]"/> to strip from.</param>
+        /// <param name="source">The source of the <see cref="T:char[]"/> to strip from.</param>
         /// <param name="matches">A bool to either strip all that matches or don't match with the current <see cref="UnicodeSet"/> object.</param>
         /// <returns>The string after it has been stripped.</returns>
         [Obsolete("This API is ICU internal only. Use replaceFrom.")]

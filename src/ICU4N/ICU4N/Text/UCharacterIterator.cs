@@ -1,7 +1,6 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Text;
 using System;
-using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
@@ -9,7 +8,7 @@ namespace ICU4N.Text
     /// <summary>
     /// Abstract class that defines an API for iteration on text objects.This is an interface for forward and backward
     /// iteration and random access into a text object. Forward iteration is done with post-increment and backward iteration
-    /// is done with pre-decrement semantics, while the <code>java.text.CharacterIterator</code> interface methods provided
+    /// is done with pre-decrement semantics, while the <see cref="CharacterIterator"/> interface methods provided
     /// forward iteration with "pre-increment" and backward iteration with pre-decrement semantics. This API is more
     /// efficient for forward iteration over code points. The other major difference is that this API can do both code unit
     /// and code point iteration, <see cref="CharacterIterator"/> can only iterate over code units and is limited to
@@ -17,145 +16,129 @@ namespace ICU4N.Text
     /// </summary>
     /// <author>Ram</author>
     /// <stable>ICU 2.4</stable>
-    public abstract class UCharacterIterator : IUForwardCharacterIterator
+    public abstract class UCharacterIterator : IUForwardCharacterIterator // ICU4N TODO: API Make into enumerator ?
 #if FEATURE_CLONEABLE
         , ICloneable
 #endif
     {
+        /// <summary>
+        /// Indicator that we have reached the ends of the UTF16 text.
+        /// </summary>
+        /// <draft>ICU4N 60</draft>
         // ICU4N specific - copy over the constants, since they are not automatically inherited
         public static readonly int DONE = UForwardCharacterIterator.DONE;
 
-        /**
-         * Protected default constructor for the subclasses
-         *
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Protected default constructor for the subclasses.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         protected UCharacterIterator()
         {
         }
 
         // static final methods ----------------------------------------------------
 
-        /**
-         * Returns a <code>UCharacterIterator</code> object given a <code>Replaceable</code> object.
-         *
-         * @param source
-         *            a valid source as a <code>Replaceable</code> object
-         * @return UCharacterIterator object
-         * @exception IllegalArgumentException
-         *                if the argument is null
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a <see cref="IReplaceable"/> object.
+        /// </summary>
+        /// <param name="source">A valid source as a <see cref="IReplaceable"/> object.</param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <stable>ICU 2.4</stable>
         public static UCharacterIterator GetInstance(IReplaceable source)
         {
             return new ReplaceableUCharacterIterator(source);
         }
 
-        /**
-         * Returns a <code>UCharacterIterator</code> object given a source string.
-         *
-         * @param source
-         *            a string
-         * @return UCharacterIterator object
-         * @exception IllegalArgumentException
-         *                if the argument is null
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a source string.
+        /// </summary>
+        /// <param name="source">A string.</param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <stable>ICU 2.4</stable>
         public static UCharacterIterator GetInstance(string source)
         {
             return new ReplaceableUCharacterIterator(source);
         }
 
-        /**
-         * Returns a <code>UCharacterIterator</code> object given a source character array.
-         *
-         * @param source
-         *            an array of UTF-16 code units
-         * @return UCharacterIterator object
-         * @exception IllegalArgumentException
-         *                if the argument is null
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a source character array.
+        /// </summary>
+        /// <param name="source">An array of UTF-16 code units.</param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <stable>ICU 2.4</stable>
         public static UCharacterIterator GetInstance(char[] source)
         {
             return GetInstance(source, 0, source.Length);
         }
 
-        /**
-         * Returns a <code>UCharacterIterator</code> object given a source character array.
-         *
-         * @param source
-         *            an array of UTF-16 code units
-         * @return UCharacterIterator object
-         * @exception IllegalArgumentException
-         *                if the argument is null
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a source character array.
+        /// </summary>
+        /// <param name="source">An array of UTF-16 code units.</param>
+        /// <param name="start"></param>
+        /// <param name="limit"></param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <stable>ICU 2.4</stable>
         public static UCharacterIterator GetInstance(char[] source, int start, int limit)
         {
             return new UCharArrayIterator(source, start, limit);
         }
 
-        /**
-         * Returns a <code>UCharacterIterator</code> object given a source StringBuffer.
-         *
-         * @param source
-         *            an string buffer of UTF-16 code units
-         * @return UCharacterIterator object
-         * @exception IllegalArgumentException
-         *                if the argument is null
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a source <see cref="StringBuffer"/>.
+        /// </summary>
+        /// <param name="source">A string buffer of UTF-16 code units.</param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <stable>ICU 2.4</stable>
         public static UCharacterIterator GetInstance(StringBuffer source)
         {
             return new ReplaceableUCharacterIterator(source);
         }
 
-        /**
-         * Returns a <code>UCharacterIterator</code> object given a CharacterIterator.
-         *
-         * @param source
-         *            a valid CharacterIterator object.
-         * @return UCharacterIterator object
-         * @exception IllegalArgumentException
-         *                if the argument is null
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns a <see cref="UCharacterIterator"/> object given a <see cref="CharacterIterator"/>.
+        /// </summary>
+        /// <param name="source">A valid <see cref="CharacterIterator"/> object.</param>
+        /// <returns><see cref="UCharacterIterator"/> object.</returns>
+        /// <exception cref="ArgumentException">If the argument is null.</exception>
+        /// <stable>ICU 2.4</stable>
         public static UCharacterIterator GetInstance(CharacterIterator source)
         {
             return new CharacterIteratorWrapper(source);
         }
 
         // public methods ----------------------------------------------------------
-        /**
-         * Returns a <code>java.text.CharacterIterator</code> object for the underlying text of this iterator. The returned
-         * iterator is independent of this iterator.
-         *
-         * @return java.text.CharacterIterator object
-         * @stable ICU 2.4
-         */
+
+        /// <summary>
+        /// Returns a <see cref="CharacterIterator"/> object for the underlying text of this iterator. The returned
+        /// iterator is independent of this iterator.
+        /// </summary>
+        /// <returns><see cref="CharacterIterator"/> object.</returns>
+        /// <stable>ICU 2.4</stable>
         public virtual CharacterIterator GetCharacterIterator()
         {
             return new UCharacterIteratorWrapper(this);
         }
 
-        /**
-         * Returns the code unit at the current index. If index is out of range, returns DONE. Index is not changed.
-         *
-         * @return current code unit
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns the code unit at the current index. If index is out of range, returns <see cref="UForwardCharacterIterator.DONE"/>. Index is not changed.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         public abstract int Current { get; }
 
-        /**
-         * Returns the codepoint at the current index. If the current index is invalid, DONE is returned. If the current
-         * index points to a lead surrogate, and there is a following trail surrogate, then the code point is returned.
-         * Otherwise, the code unit at index is returned. Index is not changed.
-         *
-         * @return current codepoint
-         * @stable ICU 2.4
-         */
-        public virtual int CurrentCodePoint()
+        /// <summary>
+        /// Returns the codepoint at the current index. If the current index is invalid, <see cref="UForwardCharacterIterator.DONE"/> is returned. If the current
+        /// index points to a lead surrogate, and there is a following trail surrogate, then the code point is returned.
+        /// Otherwise, the code unit at index is returned. Index is not changed.
+        /// </summary>
+        /// <returns>Current codepoint.</returns>
+        /// <stable>ICU 2.4</stable>
+        public virtual int CurrentCodePoint() // ICU4N TODO: API Make property
         {
             int ch = Current;
             if (UTF16.IsLeadSurrogate((char)ch))
@@ -181,39 +164,34 @@ namespace ICU4N.Text
             return ch;
         }
 
-        /**
-         * Returns the length of the text
-         *
-         * @return length of the text
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns the length of the text.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         public abstract int Length { get; }
 
-        /**
-         * Gets the current index in text.
-         *
-         * @return current index in text.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Gets or Sets the current index in text.
+        /// </summary>
+        /// <exception cref="IndexOutOfRangeException">Is thrown if an invalid index is supplied.</exception>
+        /// <stable>ICU 2.4</stable>
         public abstract int Index { get; set; }
 
-        /**
-         * Returns the UTF16 code unit at index, and increments to the next code unit (post-increment semantics). If index
-         * is out of range, DONE is returned, and the iterator is reset to the limit of the text.
-         *
-         * @return the next UTF16 code unit, or DONE if the index is at the limit of the text.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns the UTF16 code unit at index, and increments to the next code unit (post-increment semantics). If index
+        /// is out of range, <see cref="UForwardCharacterIterator.DONE"/> is returned, and the iterator is reset to the limit of the text.
+        /// </summary>
+        /// <returns>The next UTF16 code unit, or <see cref="UForwardCharacterIterator.DONE"/> if the index is at the limit of the text.</returns>
+        /// <stable>ICU 2.4</stable>
         public abstract int Next();
 
-        /**
-         * Returns the code point at index, and increments to the next code point (post-increment semantics). If index does
-         * not point to a valid surrogate pair, the behavior is the same as <code>next()</code>. Otherwise the iterator is
-         * incremented past the surrogate pair, and the code point represented by the pair is returned.
-         *
-         * @return the next codepoint in text, or DONE if the index is at the limit of the text.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Returns the code point at index, and increments to the next code point (post-increment semantics). If index does
+        /// not point to a valid surrogate pair, the behavior is the same as <see cref="Next()"/>. Otherwise the iterator is
+        /// incremented past the surrogate pair, and the code point represented by the pair is returned.
+        /// </summary>
+        /// <returns>The next codepoint in text, or <see cref="UForwardCharacterIterator.DONE"/> if the index is at the limit of the text.</returns>
+        /// <stable>ICU 2.4</stable>
         public virtual int NextCodePoint()
         {
             int ch1 = Next();
@@ -233,24 +211,22 @@ namespace ICU4N.Text
             return ch1;
         }
 
-        /**
-         * Decrement to the position of the previous code unit in the text, and return it (pre-decrement semantics). If the
-         * resulting index is less than 0, the index is reset to 0 and DONE is returned.
-         *
-         * @return the previous code unit in the text, or DONE if the new index is before the start of the text.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Decrement to the position of the previous code unit in the text, and return it (pre-decrement semantics). If the
+        /// resulting index is less than 0, the index is reset to 0 and <see cref="UForwardCharacterIterator.DONE"/> is returned.
+        /// </summary>
+        /// <returns>The previous code unit in the text, or <see cref="UForwardCharacterIterator.DONE"/> if the new index is before the start of the text.</returns>
+        /// <stable>ICU 2.4</stable>
         public abstract int Previous();
 
-        /**
-         * Retreat to the start of the previous code point in the text, and return it (pre-decrement semantics). If the
-         * index is not preceeded by a valid surrogate pair, the behavior is the same as <code>previous()</code>. Otherwise
-         * the iterator is decremented to the start of the surrogate pair, and the code point represented by the pair is
-         * returned.
-         *
-         * @return the previous code point in the text, or DONE if the new index is before the start of the text.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Retreat to the start of the previous code point in the text, and return it (pre-decrement semantics). If the
+        /// index is not preceeded by a valid surrogate pair, the behavior is the same as <see cref="Previous()"/>. Otherwise
+        /// the iterator is decremented to the start of the surrogate pair, and the code point represented by the pair is
+        /// returned.
+        /// </summary>
+        /// <returns>The previous code point in the text, or <see cref="UForwardCharacterIterator.DONE"/> if the new index is before the start of the text.</returns>
+        /// <stable>ICU 2.4</stable>
         public virtual int PreviousCodePoint()
         {
             int ch1 = Previous();
@@ -270,93 +246,78 @@ namespace ICU4N.Text
             return ch1;
         }
 
-        // ICU4N NOTE: Setter made into property
-        ///**
-        // * Sets the index to the specified index in the text.
-        // *
-        // * @param index
-        // *            the index within the text.
-        // * @exception IndexOutOfBoundsException
-        // *                is thrown if an invalid index is supplied
-        // * @stable ICU 2.4
-        // */
-        //public abstract void SetIndex(int index);
-
-        /**
-         * Sets the current index to the limit.
-         *
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Sets the current index to the limit.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         public virtual void SetToLimit()
         {
             Index = Length;
         }
 
-        /**
-         * Sets the current index to the start.
-         *
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Sets the current index to the start.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         public virtual void SetToStart()
         {
             Index = 0;
         }
 
-        /**
-         * Fills the buffer with the underlying text storage of the iterator If the buffer capacity is not enough a
-         * exception is thrown. The capacity of the fill in buffer should at least be equal to length of text in the
-         * iterator obtained by calling <code>getLength()</code>). <b>Usage:</b>
-         *
-         * <pre>
-         *         UChacterIterator iter = new UCharacterIterator.getInstance(text);
-         *         char[] buf = new char[iter.getLength()];
-         *         iter.getText(buf);
-         *
-         *         OR
-         *         char[] buf= new char[1];
-         *         int len = 0;
-         *         for(;;){
-         *             try{
-         *                 len = iter.getText(buf);
-         *                 break;
-         *             }catch(IndexOutOfBoundsException e){
-         *                 buf = new char[iter.getLength()];
-         *             }
-         *         }
-         * </pre>
-         *
-         * @param fillIn
-         *            an array of chars to fill with the underlying UTF-16 code units.
-         * @param offset
-         *            the position within the array to start putting the data.
-         * @return the number of code units added to fillIn, as a convenience
-         * @exception IndexOutOfBoundsException
-         *                exception if there is not enough room after offset in the array, or if offset &lt; 0.
-         * @stable ICU 2.4
-         */
-        public abstract int GetText(char[] fillIn, int offset);
+        /// <summary>
+        /// Fills the buffer with the underlying text storage of the iterator. If the buffer capacity is not enough a
+        /// exception is thrown. The capacity of the fill in buffer should at least be equal to length of text in the
+        /// iterator obtained by getting <see cref="Length"/>.
+        /// </summary>
+        /// <remarks>
+        /// <b>Usage:</b>
+        /// <code>
+        /// UChacterIterator iter = new UCharacterIterator.GetInstance(text);
+        /// char[] buf = new char[iter.Length];
+        /// iter.GetText(buf);
+        /// </code>
+        /// OR
+        /// <code>
+        /// char[] buf= new char[1];
+        /// int len = 0;
+        /// while (true)
+        /// {
+        ///     try
+        ///     {
+        ///         len = iter.GetText(buf);
+        ///         break;
+        ///     }
+        ///     catch (IndexOutOfRangeException)
+        ///     {
+        ///         buf = new char[iter.Length];
+        ///     }
+        /// }
+        /// </code>
+        /// </remarks>
+        /// <param name="fillIn">An array of chars to fill with the underlying UTF-16 code units.</param>
+        /// <param name="offset">The position within the array to start putting the data.</param>
+        /// <returns>The number of code units added to fillIn, as a convenience.</returns>
+        /// <exception cref="IndexOutOfRangeException">Exception if there is not enough room after offset in the array, or if offset &lt; 0.</exception>
+        /// <stable>ICU 2.4</stable>
+        public abstract int GetText(char[] fillIn, int offset); // ICU4N TODO: API - try to work out how to check for an invalid state rather than rely on exception to be thrown
 
-        /**
-         * Convenience override for <code>getText(char[], int)</code> that provides an offset of 0.
-         *
-         * @param fillIn
-         *            an array of chars to fill with the underlying UTF-16 code units.
-         * @return the number of code units added to fillIn, as a convenience
-         * @exception IndexOutOfBoundsException
-         *                exception if there is not enough room in the array.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Convenience override for <see cref="GetText(char[], int)"/> that provides an offset of 0.
+        /// </summary>
+        /// <param name="fillIn">An array of chars to fill with the underlying UTF-16 code units.</param>
+        /// <returns>The number of code units added to fillIn, as a convenience.</returns>
+        /// <exception cref="IndexOutOfRangeException">If there is not enough room in the array.</exception>
+        /// <stable>ICU 2.4</stable>
         public int GetText(char[] fillIn)
         {
             return GetText(fillIn, 0);
         }
 
-        /**
-         * Convenience method for returning the underlying text storage as as string
-         *
-         * @return the underlying text storage in the iterator as a string
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Convenience method for returning the underlying text storage as as string.
+        /// </summary>
+        /// <returns>The underlying text storage in the iterator as a string.</returns>
+        /// <stable>ICU 2.4</stable>
         public virtual string GetText()
         {
             char[] text = new char[Length];
@@ -364,19 +325,15 @@ namespace ICU4N.Text
             return new string(text);
         }
 
-        /**
-         * Moves the current position by the number of code units specified, either forward or backward depending on the
-         * sign of delta (positive or negative respectively). If the resulting index would be less than zero, the index is
-         * set to zero, and if the resulting index would be greater than limit, the index is set to limit.
-         *
-         * @param delta
-         *            the number of code units to move the current index.
-         * @return the new index.
-         * @exception IndexOutOfBoundsException
-         *                is thrown if an invalid index is supplied
-         * @stable ICU 2.4
-         *
-         */
+        /// <summary>
+        /// Moves the current position by the number of code units specified, either forward or backward depending on the
+        /// sign of delta (positive or negative respectively). If the resulting index would be less than zero, the index is
+        /// set to zero, and if the resulting index would be greater than limit, the index is set to limit.
+        /// </summary>
+        /// <param name="delta">The number of code units to move the current index.</param>
+        /// <returns>The new index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown if an invalid index is supplied.</exception>
+        /// <stable>ICU 2.4</stable>
         public virtual int MoveIndex(int delta)
         {
             int x = Math.Max(0, Math.Min(Index + delta, Length));
@@ -384,20 +341,17 @@ namespace ICU4N.Text
             return x;
         }
 
-        /**
-         * Moves the current position by the number of code points specified, either forward or backward depending on the
-         * sign of delta (positive or negative respectively). If the current index is at a trail surrogate then the first
-         * adjustment is by code unit, and the remaining adjustments are by code points. If the resulting index would be
-         * less than zero, the index is set to zero, and if the resulting index would be greater than limit, the index is
-         * set to limit.
-         *
-         * @param delta
-         *            the number of code units to move the current index.
-         * @return the new index
-         * @exception IndexOutOfBoundsException
-         *                is thrown if an invalid delta is supplied
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Moves the current position by the number of code points specified, either forward or backward depending on the
+        /// sign of delta (positive or negative respectively). If the current index is at a trail surrogate then the first
+        /// adjustment is by code unit, and the remaining adjustments are by code points. If the resulting index would be
+        /// less than zero, the index is set to zero, and if the resulting index would be greater than limit, the index is
+        /// set to limit.
+        /// </summary>
+        /// <param name="delta">The number of code units to move the current index.</param>
+        /// <returns>The new index.</returns>
+        /// <exception cref="IndexOutOfRangeException">Thrown if an invalid index is supplied.</exception>
+        /// <stable>ICU 2.4</stable>
         public virtual int MoveCodePointIndex(int delta)
         {
             if (delta > 0)
@@ -422,14 +376,12 @@ namespace ICU4N.Text
             return Index;
         }
 
-        /**
-         * Creates a copy of this iterator, independent from other iterators. If it is not possible to clone the iterator,
-         * returns null.
-         *
-         * @return copy of this iterator
-         * @stable ICU 2.4
-         */
-
+        /// <summary>
+        /// Creates a copy of this iterator, independent from other iterators. If it is not possible to clone the iterator,
+        /// returns null.
+        /// </summary>
+        /// <returns>Copy of this iterator.</returns>
+        /// <stable>ICU 2.4</stable>
         public virtual object Clone()
         {
             return base.MemberwiseClone();

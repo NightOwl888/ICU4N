@@ -1,10 +1,10 @@
 ﻿using ICU4N.Lang;
+using ICU4N.Support.Globalization;
 using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
-using System.Text;
 
 namespace ICU4N.Text
 {
@@ -16,59 +16,60 @@ namespace ICU4N.Text
     /// <stable>ICU 4.4</stable>
     public abstract class LocaleDisplayNames
     {
-        /**
-     * Enum used in {@link #getInstance(ULocale, DialectHandling)}.
-     * @stable ICU 4.4
-     */
+        /// <summary>
+        /// Enumerator used in <see cref="GetInstance(ULocale, DialectHandling)"/>.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         public enum DialectHandling // ICU4N TODO: API - de-nest and rename LocaleDisplayNamesDialectHandling
         {
-            /**
-             * Use standard names when generating a locale name,
-             * e.g. en_GB displays as 'English (United Kingdom)'.
-             * @stable ICU 4.4
-             */
+            /// <summary>
+            /// Use standard names when generating a locale name,
+            /// e.g. en_GB displays as 'English (United Kingdom)'.
+            /// </summary>
+            /// <stable>ICU 4.4</stable>
             STANDARD_NAMES,
-            /**
-             * Use dialect names when generating a locale name,
-             * e.g. en_GB displays as 'British English'.
-             * @stable ICU 4.4
-             */
+
+            /// <summary>
+            /// Use dialect names when generating a locale name,
+            /// e.g. en_GB displays as 'British English'.
+            /// </summary>
+            /// <stable>ICU 4.4</stable>
             DIALECT_NAMES
         }
 
         // factory methods
-        /**
-         * Convenience overload of {@link #getInstance(ULocale, DialectHandling)} that specifies
-         * STANDARD dialect handling.
-         * @param locale the display locale
-         * @return a LocaleDisplayNames instance
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Convenience overload of <see cref="GetInstance(ULocale, DialectHandling)"/> that specifies
+        /// <see cref="DialectHandling.STANDARD_NAMES"/> dialect handling.
+        /// </summary>
+        /// <param name="locale">The display locale.</param>
+        /// <returns>A <see cref="LocaleDisplayNames"/> instance.</returns>
+        /// <stable>ICU 4.4</stable>
         public static LocaleDisplayNames GetInstance(ULocale locale)
         {
             return GetInstance(locale, DialectHandling.STANDARD_NAMES);
         }
 
-        /**
-         * Convenience overload of {@link #getInstance(Locale, DisplayContext...)} that specifies
-         * {@link DisplayContext#STANDARD_NAMES}.
-         * @param locale the display {@link java.util.Locale}
-         * @return a LocaleDisplayNames instance
-         * @stable ICU 54
-         */
+        /// <summary>
+        /// Convenience overload of <see cref="GetInstance(CultureInfo, DisplayContext[])"/> that specifies
+        /// <see cref="DisplayContext.STANDARD_NAMES"/>.
+        /// </summary>
+        /// <param name="locale">The display <see cref="CultureInfo"/>.</param>
+        /// <returns>A <see cref="LocaleDisplayNames"/> instance.</returns>
+        /// <stable>ICU 54</stable>
         public static LocaleDisplayNames GetInstance(CultureInfo locale)
         {
             return GetInstance(ULocale.ForLocale(locale));
         }
 
-        /**
-         * Returns an instance of LocaleDisplayNames that returns names formatted for the provided locale,
-         * using the provided dialectHandling.
-         * @param locale the display locale
-         * @param dialectHandling how to select names for locales
-         * @return a LocaleDisplayNames instance
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Returns an instance of <see cref="LocaleDisplayNames"/> that returns names formatted for the provided <paramref name="locale"/>,
+        /// using the provided <paramref name="dialectHandling"/>.
+        /// </summary>
+        /// <param name="locale">The display locale.</param>
+        /// <param name="dialectHandling">How to select names for locales.</param>
+        /// <returns>A <see cref="LocaleDisplayNames"/> instance.</returns>
+        /// <stable>ICU 4.4</stable>
         public static LocaleDisplayNames GetInstance(ULocale locale, DialectHandling dialectHandling)
         {
             LocaleDisplayNames result = null;
@@ -95,15 +96,14 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Returns an instance of LocaleDisplayNames that returns names formatted for the provided locale,
-         * using the provided DisplayContext settings
-         * @param locale the display locale
-         * @param contexts one or more context settings (e.g. for dialect
-         *              handling, capitalization, etc.
-         * @return a LocaleDisplayNames instance
-         * @stable ICU 51
-         */
+        /// <summary>
+        /// Returns an instance of <see cref="LocaleDisplayNames"/> that returns names formatted for the provided <paramref name="locale"/>,
+        /// using the provided <see cref="DisplayContext"/> settings.
+        /// </summary>
+        /// <param name="locale">The display locale.</param>
+        /// <param name="contexts">One or more context settings (e.g. for dialect handling, capitalization, etc.)</param>
+        /// <returns>A <see cref="LocaleDisplayNames"/> instance.</returns>
+        /// <stable>ICU 51</stable>
         public static LocaleDisplayNames GetInstance(ULocale locale, params DisplayContext[] contexts)
         {
             LocaleDisplayNames result = null;
@@ -130,219 +130,239 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Returns an instance of LocaleDisplayNames that returns names formatted for the provided
-         * {@link java.util.Locale}, using the provided DisplayContext settings
-         * @param locale the display {@link java.util.Locale}
-         * @param contexts one or more context settings (e.g. for dialect
-         *              handling, capitalization, etc.
-         * @return a LocaleDisplayNames instance
-         * @stable ICU 54
-         */
+        /// <summary>
+        /// Returns an instance of <see cref="LocaleDisplayNames"/> that returns names formatted for the provided
+        /// <see cref="CultureInfo"/>, using the provided <see cref="DisplayContext"/> settings.
+        /// </summary>
+        /// <param name="locale">The display <see cref="CultureInfo"/>.</param>
+        /// <param name="contexts">One or more context settings (e.g. for dialect handling, capitalization, etc.)</param>
+        /// <returns>A <see cref="LocaleDisplayNames"/> instance.</returns>
+        /// <stable>ICU 54</stable>
         public static LocaleDisplayNames GetInstance(CultureInfo locale, params DisplayContext[] contexts)
         {
             return GetInstance(ULocale.ForLocale(locale), contexts);
         }
 
         // getters for state
-        /**
-         * Returns the locale used to determine the display names. This is not necessarily the same
-         * locale passed to {@link #getInstance}.
-         * @return the display locale
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Returns the locale used to determine the display names. This is not necessarily the same
+        /// locale passed to <see cref="GetInstance(ULocale)"/>.
+        /// </summary>
+        /// <returns>The display locale.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract ULocale GetLocale(); // ICU4N TODO: API - make property, rename Culture ?
 
-        /**
-         * Returns the dialect handling used in the display names.
-         * @return the dialect handling enum
-         * @stable ICU 4.4
-         */
-        public abstract DialectHandling GetDialectHandling();
+        /// <summary>
+        /// Returns the dialect handling used in the display names.
+        /// </summary>
+        /// <returns>The dialect handling enumeration.</returns>
+        /// <stable>ICU 4.4</stable>
+        public abstract DialectHandling GetDialectHandling(); // ICU4N TODO: API - make property
 
-        /**
-         * Returns the current value for a specified DisplayContext.Type.
-         * @param type the DisplayContext.Type whose value to return
-         * @return the current DisplayContext setting for the specified type
-         * @stable ICU 51
-         */
+        /// <summary>
+        /// Returns the current value for a specified <see cref="DisplayContextType"/>.
+        /// </summary>
+        /// <param name="type">The <see cref="DisplayContextType"/> whose value to return.</param>
+        /// <returns>The current DisplayContext setting for the specified type.</returns>
+        /// <stable>ICU 51</stable>
         public abstract DisplayContext GetContext(DisplayContextType type);
 
         // names for entire locales
-        /**
-         * Returns the display name of the provided ulocale.
-         * When no display names are available for all or portions
-         * of the original locale ID, those portions may be
-         * used directly (possibly in a more canonical form) as
-         * part of the  returned display name.
-         * @param locale the locale whose display name to return
-         * @return the display name of the provided locale
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Returns the display name of the provided <paramref name="locale"/>.
+        /// When no display names are available for all or portions
+        /// of the original locale ID, those portions may be
+        /// used directly (possibly in a more canonical form) as
+        /// part of the  returned display name.
+        /// </summary>
+        /// <param name="locale">The locale whose display name to return.</param>
+        /// <returns>The display name of the provided <paramref name="locale"/>.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string LocaleDisplayName(ULocale locale);
 
-        /**
-         * Returns the display name of the provided locale.
-         * When no display names are available for all or portions
-         * of the original locale ID, those portions may be
-         * used directly (possibly in a more canonical form) as
-         * part of the  returned display name.
-         * @param locale the locale whose display name to return
-         * @return the display name of the provided locale
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Returns the display name of the provided <paramref name="locale"/>.
+        /// When no display names are available for all or portions
+        /// of the original locale ID, those portions may be
+        /// used directly (possibly in a more canonical form) as
+        /// part of the  returned display name.
+        /// </summary>
+        /// <param name="locale">The locale whose display name to return.</param>
+        /// <returns>The display name of the provided <paramref name="locale"/>.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string LocaleDisplayName(CultureInfo locale);
 
-        /**
-         * Returns the display name of the provided locale id.
-         * When no display names are available for all or portions
-         * of the original locale ID, those portions may be
-         * used directly (possibly in a more canonical form) as
-         * part of the  returned display name.
-         * @param localeId the id of the locale whose display name to return
-         * @return the display name of the provided locale
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Returns the display name of the provided <paramref name="localeId"/>.
+        /// When no display names are available for all or portions
+        /// of the original locale ID, those portions may be
+        /// used directly (possibly in a more canonical form) as
+        /// part of the  returned display name.
+        /// </summary>
+        /// <param name="localeId">The id of the locale whose display name to return.</param>
+        /// <returns>The display name of the provided locale.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string LocaleDisplayName(string localeId);
 
         // names for components of a locale id
-        /**
-         * Returns the display name of the provided language code.
-         * @param lang the language code
-         * @return the display name of the provided language code
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Returns the display name of the provided language code.
+        /// </summary>
+        /// <param name="lang">The language code.</param>
+        /// <returns>The display name of the provided language code.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string LanguageDisplayName(string lang);
 
-        /**
-         * Returns the display name of the provided script code.
-         * @param script the script code
-         * @return the display name of the provided script code
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Returns the display name of the provided script code.
+        /// </summary>
+        /// <param name="script">The script code.</param>
+        /// <returns>The display name of the provided script code.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string ScriptDisplayName(string script);
 
-        /**
-         * Returns the display name of the provided script code
-         * when used in the context of a full locale name.
-         * @param script the script code
-         * @return the display name of the provided script code
-         * @internal ICU 49
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Returns the display name of the provided script code
+        /// when used in the context of a full locale name.
+        /// </summary>
+        /// <param name="script">The script code.</param>
+        /// <returns>The display name of the provided script code.</returns>
+        /// <stable>ICU 49</stable>
         [Obsolete("This API is ICU internal only.")]
         public virtual string ScriptDisplayNameInContext(string script)
         {
             return ScriptDisplayName(script);
         }
 
-        /**
-         * Returns the display name of the provided script code.  See
-         * {@link com.ibm.icu.lang.UScript} for recognized script codes.
-         * @param scriptCode the script code number
-         * @return the display name of the provided script code
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Returns the display name of the provided script code.  See
+        /// <see cref="UScript"/> for recognized script codes.
+        /// </summary>
+        /// <param name="scriptCode">The script code number.</param>
+        /// <returns>The display name of the provided script code.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string ScriptDisplayName(int scriptCode);
-
-        /**
-         * Returns the display name of the provided region code.
-         * @param region the region code
-         * @return the display name of the provided region code
-         * @stable ICU 4.4
-         */
+ 
+        /// <summary>
+        /// Returns the display name of the provided region code.
+        /// </summary>
+        /// <param name="region">The region code.</param>
+        /// <returns>The display name of the provided region code.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string RegionDisplayName(string region);
 
-        /**
-         * Returns the display name of the provided variant.
-         * @param variant the variant string
-         * @return the display name of the provided variant
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Returns the display name of the provided variant.
+        /// </summary>
+        /// <param name="variant">The variant string.</param>
+        /// <returns>The display name of the provided variant.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string VariantDisplayName(string variant);
 
-        /**
-         * Returns the display name of the provided locale key.
-         * @param key the locale key name
-         * @return the display name of the provided locale key
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Returns the display name of the provided locale key.
+        /// </summary>
+        /// <param name="key">The locale key name.</param>
+        /// <returns>The display name of the provided locale key.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string KeyDisplayName(string key);
 
-        /**
-         * Returns the display name of the provided value (used with the provided key).
-         * @param key the locale key name
-         * @param value the locale key's value
-         * @return the display name of the provided value
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Returns the display name of the provided value (used with the provided key).
+        /// </summary>
+        /// <param name="key">The locale key name.</param>
+        /// <param name="value">The locale key's value.</param>
+        /// <returns>The display name of the provided value.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract string KeyValueDisplayName(string key, string value);
 
-
-        /**
-         * Return a list of information used to construct a UI list of locale names.
-         * @param collator how to collate—should normally be Collator.getInstance(getDisplayLocale())
-         * @param inSelf if true, compares the nameInSelf, otherwise the nameInDisplayLocale.
-         * Set depending on which field (displayLocale vs self) is to show up in the UI.
-         * If both are to show up in the UI, then it should be the one used for the primary sort order.
-         * @param localeSet a list of locales to present in a UI list. The casing uses the settings in the LocaleDisplayNames instance.
-         * @return an ordered list of UiListItems.
-         * @throws IllformedLocaleException if any of the locales in localeSet are malformed.
-         * @stable ICU 55
-         */
-        public virtual IList<UiListItem> GetUiList(ISet<ULocale> localeSet, bool inSelf, IComparer<object> collator)
+        /// <summary>
+        /// Return a list of information used to construct a UI list of locale names.
+        /// </summary>
+        /// <param name="localeSet">A list of locales to present in a UI list. The casing uses the settings in the <see cref="LocaleDisplayNames"/> instance.</param>
+        /// <param name="inSelf">
+        /// If true, compares the nameInSelf, otherwise the nameInDisplayLocale.
+        /// Set depending on which field (displayLocale vs self) is to show up in the UI.
+        /// If both are to show up in the UI, then it should be the one used for the primary sort order.
+        /// </param>
+        /// <param name="collator">How to collate—should normally be <c>Collator.GetInstance(GetDisplayLocale())</c>.</param>
+        /// <returns>An ordered list of <see cref="UiListItem"/>s.</returns>
+        /// <exception cref="IllformedLocaleException">If any of the locales in localeSet are malformed.</exception>
+        /// <stable>ICU 55</stable>
+        public virtual IList<UiListItem> GetUiList(ISet<ULocale> localeSet, bool inSelf, IComparer<string> collator) // ICU4N specific - changed from IComparer<object> to IComparer<string>
         {
             return GetUiListCompareWholeItems(localeSet, UiListItem.GetComparer(collator, inSelf));
         }
 
-        /**
-         * Return a list of information used to construct a UI list of locale names, providing more access to control the sorting.
-         * Normally use getUiList instead.
-         * @param comparator how to sort the UiListItems in the result.
-         * @param localeSet a list of locales to present in a UI list. The casing uses the settings in the LocaleDisplayNames instance.
-         * @return an ordered list of UiListItems.
-         * @throws IllformedLocaleException if any of the locales in localeSet are malformed.
-         * @stable ICU 55
-         */
-        public abstract IList<UiListItem> GetUiListCompareWholeItems(ISet<ULocale> localeSet, IComparer<UiListItem> comparator);
+        /// <summary>
+        /// Return a list of information used to construct a UI list of locale names.
+        /// </summary>
+        /// <param name="localeSet">A list of locales to present in a UI list. The casing uses the settings in the <see cref="LocaleDisplayNames"/> instance.</param>
+        /// <param name="inSelf">
+        /// If true, compares the nameInSelf, otherwise the nameInDisplayLocale.
+        /// Set depending on which field (displayLocale vs self) is to show up in the UI.
+        /// If both are to show up in the UI, then it should be the one used for the primary sort order.
+        /// </param>
+        /// <param name="collator">How to collate—should normally be <c>Collator.GetInstance(GetDisplayLocale())</c>.</param>
+        /// <returns>An ordered list of <see cref="UiListItem"/>s.</returns>
+        /// <exception cref="IllformedLocaleException">If any of the locales in localeSet are malformed.</exception>
+        /// <draft>ICU4N 60</draft>
+        public virtual IList<UiListItem> GetUiList(ISet<ULocale> localeSet, bool inSelf, CompareInfo collator) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
+        {
+            return GetUiListCompareWholeItems(localeSet, UiListItem.GetComparer(collator, inSelf));
+        }
 
-        /**
-         * Struct-like class used to return information for constructing a UI list, each corresponding to a locale.
-         * @stable ICU 55
-         */
+        /// <summary>
+        /// Return a list of information used to construct a UI list of locale names, providing more access to control the sorting.
+        /// Normally use <see cref="GetUiList(ISet{ULocale}, bool, IComparer{string})"/> instead.
+        /// </summary>
+        /// <param name="localeSet">A list of locales to present in a UI list. The casing uses the settings in the <see cref="LocaleDisplayNames"/> instance.</param>
+        /// <param name="comparer">How to sort the UiListItems in the result.</param>
+        /// <returns>An ordered list of <see cref="UiListItem"/>s.</returns>
+        /// <exception cref="IllformedLocaleException">If any of the locales in localeSet are malformed.</exception>
+        /// <stable>ICU 55</stable>
+        public abstract IList<UiListItem> GetUiListCompareWholeItems(ISet<ULocale> localeSet, IComparer<UiListItem> comparer);
+
+        /// <summary>
+        /// Struct-like class used to return information for constructing a UI list, each corresponding to a locale.
+        /// </summary>
+        /// <stable>ICU 55</stable>
         public class UiListItem
         {
             // ICU4N TODO: API - make into properties
 
-            /**
-             * Returns the minimized locale for an input locale, such as sr-Cyrl → sr
-             * @stable ICU 55
-             */
+            /// <summary>
+            /// Returns the minimized locale for an input locale, such as sr-Cyrl → sr
+            /// </summary>
+            /// <stable>ICU 55</stable>
             public readonly ULocale minimized;
-            /**
-             * Returns the modified locale for an input locale, such as sr → sr-Cyrl, where there is also an sr-Latn in the list
-             * @stable ICU 55
-             */
+            /// <summary>
+            /// Returns the modified locale for an input locale, such as sr → sr-Cyrl, where there is also an sr-Latn in the list
+            /// </summary>
+            /// <stable>ICU 55</stable>
             public readonly ULocale modified;
-            /**
-             * Returns the name of the modified locale in the display locale, such as "Englisch (VS)" (for 'en-US', where the display locale is 'de').
-             * @stable ICU 55
-             */
+            /// <summary>
+            /// Returns the name of the modified locale in the display locale, such as "Englisch (VS)" (for 'en-US', where the display locale is 'de').
+            /// </summary>
+            /// <stable>ICU 55</stable>
             public readonly string nameInDisplayLocale;
-            /**
-             * Returns the name of the modified locale in itself, such as "English (US)" (for 'en-US').
-             * @stable ICU 55
-             */
+            /// <summary>
+            /// Returns the name of the modified locale in itself, such as "English (US)" (for 'en-US').
+            /// </summary>
+            /// <stable>ICU 55</stable>
             public readonly string nameInSelf;
 
-            /**
-             * Constructor, normally only called internally.
-             * @param minimized locale for an input locale
-             * @param modified modified for an input locale
-             * @param nameInDisplayLocale name of the modified locale in the display locale
-             * @param nameInSelf name of the modified locale in itself
-             * @stable ICU 55
-             */
+            /// <summary>
+            /// Constructor, normally only called internally.
+            /// </summary>
+            /// <param name="minimized">Locale for an input locale.</param>
+            /// <param name="modified">Modified for an input locale.</param>
+            /// <param name="nameInDisplayLocale">Name of the modified locale in the display locale.</param>
+            /// <param name="nameInSelf">Name of the modified locale in itself.</param>
+            /// <stable>ICU 55</stable>
             public UiListItem(ULocale minimized, ULocale modified, string nameInDisplayLocale, string nameInSelf)
             {
                 this.minimized = minimized;
@@ -351,12 +371,13 @@ namespace ICU4N.Text
                 this.nameInSelf = nameInSelf;
             }
 
-            /**
-             * {@inheritDoc}
-             *
-             * @stable ICU 55
-             */
-            public override bool Equals(Object obj)
+            /// <summary>
+            /// Determines whether the specified object is equal to the current object.
+            /// </summary>
+            /// <param name="obj">The object to compare with the current object.</param>
+            /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+            /// <stable>ICU 55</stable>
+            public override bool Equals(object obj)
             {
                 if (this == obj)
                 {
@@ -373,44 +394,63 @@ namespace ICU4N.Text
                         && modified.Equals(other.modified);
             }
 
-            /**
-             * {@inheritDoc}
-             *
-             * @stable ICU 55
-             */
+            /// <summary>
+            /// Gets the hash code for this instance.
+            /// </summary>
+            /// <returns>A hash code for the current object.</returns>
+            /// <stable>ICU 55</stable>
             public override int GetHashCode()
             {
                 return modified.GetHashCode() ^ nameInDisplayLocale.GetHashCode();
             }
 
-            /**
-             * {@inheritDoc}
-             *
-             * @stable ICU 55
-             */
+            /// <summary>
+            /// Returns a string that represents the current object.
+            /// </summary>
+            /// <returns>A string that represents the current object.</returns>
+            /// <stable>ICU 55</stable>
             public override string ToString()
             {
                 return "{" + minimized + ", " + modified + ", " + nameInDisplayLocale + ", " + nameInSelf + "}";
             }
 
-            /**
-             * Return a comparator that compares the locale names for the display locale or the in-self names,
-             * depending on an input parameter.
-             * @param inSelf if true, compares the nameInSelf, otherwise the nameInDisplayLocale
-             * @param comparator (meant for strings, but because Java Collator doesn't have &lt;string&gt;...)
-             * @return UiListItem comparator
-             * @stable ICU 55
-             */
-            public static IComparer<UiListItem> GetComparer(IComparer<object> comparer, bool inSelf)
+            /// <summary>
+            /// Return a comparator that compares the locale names for the display locale or the in-self names,
+            /// depending on an input parameter.
+            /// </summary>
+            /// <param name="comparer">The string <see cref="IComparer{T}"/> to order the <see cref="UiListItem"/>s.</param>
+            /// <param name="inSelf">If true, compares the nameInSelf, otherwise the nameInDisplayLocale.</param>
+            /// <returns><see cref="UiListItem"/> comparer.</returns>
+            /// <stable>ICU 55</stable>
+            public static IComparer<UiListItem> GetComparer(IComparer<string> comparer, bool inSelf)
+            {
+                return new UiListItemComparator(comparer, inSelf);
+            }
+
+            /// <summary>
+            /// Return a comparator that compares the locale names for the display locale or the in-self names,
+            /// depending on an input parameter.
+            /// </summary>
+            /// <param name="comparer">The string <see cref="IComparer{T}"/> to order the <see cref="UiListItem"/>s.</param>
+            /// <param name="inSelf">If true, compares the nameInSelf, otherwise the nameInDisplayLocale.</param>
+            /// <returns><see cref="UiListItem"/> comparer.</returns>
+            /// <stable>ICU4N 60</stable>
+            public static IComparer<UiListItem> GetComparer(CompareInfo comparer, bool inSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
             {
                 return new UiListItemComparator(comparer, inSelf);
             }
 
             private class UiListItemComparator : IComparer<UiListItem>
             {
-                private readonly IComparer<object> collator;
+                private readonly IComparer<string> collator;
                 private readonly bool useSelf;
-                internal UiListItemComparator(IComparer<Object> collator, bool useSelf)
+
+                internal UiListItemComparator(CompareInfo collator, bool useSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
+                    : this(collator.ToComparer(), useSelf)
+                {
+                }
+
+                internal UiListItemComparator(IComparer<string> collator, bool useSelf)
                 {
                     this.collator = collator;
                     this.useSelf = useSelf;
@@ -424,12 +464,12 @@ namespace ICU4N.Text
                 }
             }
         }
-        /**
-         * Sole constructor.  (For invocation by subclass constructors,
-         * typically implicit.)
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+
+        /// <summary>
+        /// Sole constructor.  (For invocation by subclass constructors,
+        /// typically implicit.)
+        /// </summary>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected LocaleDisplayNames()
         {

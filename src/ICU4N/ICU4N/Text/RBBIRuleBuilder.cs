@@ -57,67 +57,67 @@ namespace ICU4N.Text
                                                                                              //  Map Value is the runtime array index.
 
         internal List<int> fRuleStatusVals;        // List of Integer objects.  Has same layout as the
-                                                    //   runtime array of status (tag) values -
-                                                    //     number of values in group 1
-                                                    //        first status value in group 1
-                                                    //        2nd status value in group 1
-                                                    //        ...
-                                                    //     number of values in group 2
-                                                    //        first status value in group 2
-                                                    //        etc.
-                                                    //
-                                                    // Error codes from ICU4C.
-                                                    //    using these simplified the porting, and consolidated the
-                                                    //    creation of Java exceptions
-                                                    //
+                                                   //   runtime array of status (tag) values -
+                                                   //     number of values in group 1
+                                                   //        first status value in group 1
+                                                   //        2nd status value in group 1
+                                                   //        ...
+                                                   //     number of values in group 2
+                                                   //        first status value in group 2
+                                                   //        etc.
+                                                   //
+                                                   // Error codes from ICU4C.
+                                                   //    using these simplified the porting, and consolidated the
+                                                   //    creation of Java exceptions
+                                                   //
+        /// <summary>Start of codes indicating Break Iterator failures</summary>
         internal static readonly int U_BRK_ERROR_START = 0x10200;
-        /**< Start of codes indicating Break Iterator failures */
 
+        /// <summary>An internal error (bug) was detected.</summary>
         internal static readonly int U_BRK_INTERNAL_ERROR = 0x10201;
-        /**< An internal error (bug) was detected.             */
 
+        /// <summary>Hex digits expected as part of a escaped char in a rule.</summary>
         internal static readonly int U_BRK_HEX_DIGITS_EXPECTED = 0x10202;
-        /**< Hex digits expected as part of a escaped char in a rule. */
 
+        /// <summary>Missing ';' at the end of a RBBI rule.</summary>
         internal static readonly int U_BRK_SEMICOLON_EXPECTED = 0x10203;
-        /**< Missing ';' at the end of a RBBI rule.            */
 
+        /// <summary>Syntax error in RBBI rule.</summary>
         internal static readonly int U_BRK_RULE_SYNTAX = 0x10204;
-        /**< Syntax error in RBBI rule.                        */
 
+        /// <summary>UnicodeSet witing an RBBI rule missing a closing ']'.</summary>
         internal static readonly int U_BRK_UNCLOSED_SET = 0x10205;
-        /**< UnicodeSet witing an RBBI rule missing a closing ']'.  */
 
+        /// <summary>Syntax error in RBBI rule assignment statement.</summary>
         internal static readonly int U_BRK_ASSIGN_ERROR = 0x10206;
-        /**< Syntax error in RBBI rule assignment statement.   */
 
+        /// <summary>RBBI rule $Variable redefined.</summary>
         internal static readonly int U_BRK_VARIABLE_REDFINITION = 0x10207;
-        /**< RBBI rule $Variable redefined.                    */
 
+        /// <summary>Mis-matched parentheses in an RBBI rule.</summary>
         internal static readonly int U_BRK_MISMATCHED_PAREN = 0x10208;
-        /**< Mis-matched parentheses in an RBBI rule.          */
 
+        /// <summary>Missing closing quote in an RBBI rule.</summary>
         internal static readonly int U_BRK_NEW_LINE_IN_QUOTED_STRING = 0x10209;
-        /**< Missing closing quote in an RBBI rule.            */
 
+        /// <summary>Use of an undefined $Variable in an RBBI rule. </summary>
         internal static readonly int U_BRK_UNDEFINED_VARIABLE = 0x1020a;
-        /**< Use of an undefined $Variable in an RBBI rule.    */
 
+        /// <summary>Initialization failure.  Probable missing ICU Data.</summary>
         internal static readonly int U_BRK_INIT_ERROR = 0x1020b;
-        /**< Initialization failure.  Probable missing ICU Data. */
 
+        /// <summary>Rule contains an empty Unicode Set.</summary>
         internal static readonly int U_BRK_RULE_EMPTY_SET = 0x1020c;
-        /**< Rule contains an empty Unicode Set.               */
 
+        /// <summary>!!option in RBBI rules not recognized.</summary>
         internal static readonly int U_BRK_UNRECOGNIZED_OPTION = 0x1020d;
-        /**< !!option in RBBI rules not recognized.            */
 
+        /// <summary>The {nnn} tag on a rule is mal formed</summary>
         internal static readonly int U_BRK_MALFORMED_RULE_TAG = 0x1020e;
-        /**< The {nnn} tag on a rule is mal formed             */
-        internal static readonly int U_BRK_MALFORMED_SET = 0x1020f;
 
+        internal static readonly int U_BRK_MALFORMED_SET = 0x1020f;
+        /// <summary>This must always be the last value to indicate the limit for Break Iterator failures</summary>
         internal static readonly int U_BRK_ERROR_LIMIT = 0x10210;
-        /**< This must always be the last value to indicate the limit for Break Iterator failures */
 
 
         //----------------------------------------------------------------------------------------

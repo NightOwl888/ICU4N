@@ -34,7 +34,112 @@ namespace ICU4N.Text
         Maybe = 2
     }
 
-
+    /// <summary>
+    /// Old Unicode normalization API.
+    /// <para/>
+    /// This API has been replaced by the <see cref="Normalizer2"/> class and is only available
+    /// for backward compatibility. This class simply delegates to the Normalizer2 class.
+    /// There are two exceptions: The new API does not provide a replacement for
+    /// <see cref="NormalizerQuickCheckResult"/> and <see cref="Compare(string, string, int)"/>.
+    /// </summary>
+    /// <remarks>
+    /// <see cref="Normalize(string, Normalizer.Mode, int)"/> transforms Unicode text into an equivalent composed or
+    /// decomposed form, allowing for easier sorting and searching of text.
+    /// <see cref="Normalize(string, Normalizer.Mode, int)"/> supports the standard normalization forms described in
+    /// <a href="http://www.unicode.org/unicode/reports/tr15/" target="unicode">
+    /// Unicode Standard Annex #15 &amp;mdash; Unicode Normalization Forms</a>.
+    /// <para/>
+    /// Characters with accents or other adornments can be encoded in
+    /// several different ways in Unicode.  For example, take the character A-acute.
+    /// In Unicode, this can be encoded as a single character (the
+    /// "composed" form):
+    /// <code>
+    ///      00C1    LATIN CAPITAL LETTER A WITH ACUTE
+    /// </code>
+    /// or as two separate characters (the "decomposed" form):
+    /// <code>
+    ///      0041    LATIN CAPITAL LETTER A
+    ///      0301    COMBINING ACUTE ACCENT
+    /// </code>
+    /// <para/>
+    /// To a user of your program, however, both of these sequences should be
+    /// treated as the same "user-level" character "A with acute accent".  When you
+    /// are searching or comparing text, you must ensure that these two sequences are
+    /// treated equivalently.  In addition, you must handle characters with more than
+    /// one accent.  Sometimes the order of a character's combining accents is
+    /// significant, while in other cases accent sequences in different orders are
+    /// really equivalent.
+    /// <para/>
+    /// Similarly, the string "ffi" can be encoded as three separate letters:
+    /// <code>
+    ///      0066    LATIN SMALL LETTER F
+    ///      0066    LATIN SMALL LETTER F
+    ///      0069    LATIN SMALL LETTER I
+    /// </code>
+    /// or as the single character
+    /// <code>
+    ///      FB03    LATIN SMALL LIGATURE FFI
+    /// </code>
+    /// <para/>
+    /// The ffi ligature is not a distinct semantic character, and strictly speaking
+    /// it shouldn't be in Unicode at all, but it was included for compatibility
+    /// with existing character sets that already provided it.  The Unicode standard
+    /// identifies such characters by giving them "compatibility" decompositions
+    /// into the corresponding semantic characters.  When sorting and searching, you
+    /// will often want to use these mappings.
+    /// <para/>
+    /// <see cref="Normalize(string, Normalizer.Mode, int)"/> helps solve these problems by transforming text into
+    /// the canonical composed and decomposed forms as shown in the first example
+    /// above. In addition, you can have it perform compatibility decompositions so
+    /// that you can treat compatibility characters the same as their equivalents.
+    /// Finally, <see cref="Normalize(string, Normalizer.Mode, int)"/> rearranges accents into the proper canonical
+    /// order, so that you do not have to worry about accent rearrangement on your
+    /// own.
+    /// <para/>
+    /// Form FCD, "Fast C or D", is also designed for collation.
+    /// It allows to work on strings that are not necessarily normalized
+    /// with an algorithm (like in collation) that works under "canonical closure",
+    /// i.e., it treats precomposed characters and their decomposed equivalents the
+    /// same.
+    /// <para/>
+    /// It is not a normalization form because it does not provide for uniqueness of
+    /// representation. Multiple strings may be canonically equivalent (their NFDs
+    /// are identical) and may all conform to FCD without being identical themselves.
+    /// The form is defined such that the "raw decomposition", the recursive
+    /// canonical decomposition of each character, results in a string that is
+    /// canonically ordered. This means that precomposed characters are allowed for
+    /// as long as their decompositions do not need canonical reordering.
+    /// <para/>
+    /// Its advantage for a process like collation is that all NFD and most NFC texts
+    /// - and many unnormalized texts - already conform to FCD and do not need to be
+    /// normalized (NFD) for such a process. The FCD quick check will return YES for
+    /// most strings in practice.
+    /// <para/>
+    /// Normalize(FCD) may be implemented with NFD.
+    /// <para/>
+    /// For more details on FCD see Unicode Technical Note #5 (Canonical Equivalence in Applications):
+    /// <a href="http://www.unicode.org/notes/tn5/#FCD">http://www.unicode.org/notes/tn5/#FCD</a>
+    /// <para/>
+    /// ICU collation performs either NFD or FCD normalization automatically if
+    /// normalization is turned on for the collator object. Beyond collation and
+    /// string search, normalized strings may be useful for string equivalence
+    /// comparisons, transliteration/transcription, unique representations, etc.
+    /// <para/>
+    /// The W3C generally recommends to exchange texts in NFC.
+    /// Note also that most legacy character encodings use only precomposed forms and
+    /// often do not encode any combining marks by themselves. For conversion to such
+    /// character encodings the Unicode text needs to be normalized to NFC.
+    /// For more usage examples, see the Unicode Standard Annex.
+    /// <para/>
+    /// Note: The <see cref="Normalizer"/> class also provides API for iterative normalization.
+    /// While the <see cref="SetIndex(int)"/> and <see cref="Index"/> refer to indices in the
+    /// underlying Unicode input text, the <see cref="Next()"/> and <see cref="Previous()"/> methods
+    /// iterate through characters in the normalized output.
+    /// This means that there is not necessarily a one-to-one correspondence
+    /// between characters returned by <see cref="Next()"/> and <see cref="Previous()"/> and the indices
+    /// passed to and returned from <see cref="SetIndex(int)"/> and <see cref="Index"/>.
+    /// It is for this reason that <see cref="Normalizer"/> does not implement the <see cref="CharacterIterator"/> interface.
+    /// </remarks>
     public sealed partial class Normalizer
 #if FEATURE_CLONEABLE
         : ICloneable
@@ -121,55 +226,46 @@ namespace ICU4N.Text
                                                  Unicode32.INSTANCE));
         }
 
-        /**
-         * Options bit set value to select Unicode 3.2 normalization
-         * (except NormalizationCorrections).
-         * At most one Unicode version can be selected at a time.
-         *
-         * @deprecated ICU 56 Use {@link FilteredNormalizer2} instead.
-         */
+        /// <summary>
+        /// Options bit set value to select Unicode 3.2 normalization
+        /// (except NormalizationCorrections).
+        /// At most one Unicode version can be selected at a time.
+        /// </summary>
         [Obsolete("ICU 56 Use FilteredNormalizer2 instead.")]
         public static readonly int UNICODE_3_2 = 0x20;
 
-        /**
-         * Constant indicating that the end of the iteration has been reached.
-         * This is guaranteed to have the same value as {@link UCharacterIterator#DONE}.
-         *
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Constant indicating that the end of the iteration has been reached.
+        /// This is guaranteed to have the same value as <see cref="UCharacterIterator.DONE"/>.
+        /// </summary>
         [Obsolete("ICU 56")]
         public static readonly int DONE = UForwardCharacterIterator.DONE;
 
-        /**
-         * Constants for normalization modes.
-         * <p>
-         * The Mode class is not intended for public subclassing.
-         * Only the Mode constants provided by the Normalizer class should be used,
-         * and any fields or methods should not be called or overridden by users.
-         *
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Constants for normalization modes.
+        /// <para/>
+        /// The <see cref="Mode"/> class is not intended for public subclassing.
+        /// Only the <see cref="Mode"/> constants provided by the Normalizer class should be used,
+        /// and any fields or methods should not be called or overridden by users.
+        /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public abstract class Mode
         {
-            /**
-             * Sole constructor
-             * @internal
-             * @deprecated This API is ICU internal only.
-             */
-            //[Obsolete("This API is ICU internal only.")]
+            /// <summary>
+            /// Sole constructor.
+            /// </summary>
+            /// <internal/>
+            [Obsolete("This API is ICU internal only.")]
             protected Mode()
             {
             }
 
-            /**
-             * @internal
-             * @deprecated This API is ICU internal only.
-             */
-            //[Obsolete("This API is ICU internal only.")]
+            /// <internal/>
+            [Obsolete("This API is ICU internal only.")]
             protected internal abstract Normalizer2 GetNormalizer2(int options);
         }
 
+#pragma warning disable 612, 618, 672
         private sealed class NONEMode : Mode
         {
             protected internal override Normalizer2 GetNormalizer2(int options) { return Norm2AllModes.NOOP_NORMALIZER2; }
@@ -215,261 +311,219 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * No decomposition/composition.
-         *
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// No decomposition/composition.
+        /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static readonly Mode NONE = new NONEMode();
 
-        /**
-         * Canonical decomposition.
-         *
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Canonical decomposition.
+        /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static readonly Mode NFD = new NFDMode();
 
-        /**
-         * Compatibility decomposition.
-         *
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Compatibility decomposition.
+        /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static readonly Mode NFKD = new NFKDMode();
 
-        /**
-         * Canonical decomposition followed by canonical composition.
-         *
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Canonical decomposition followed by canonical composition.
+        /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static readonly Mode NFC = new NFCMode();
 
-        /**
-         * Default normalization.
-         *
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Default normalization.
+        /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static readonly Mode DEFAULT = NFC;
 
-        /**
-         * Compatibility decomposition followed by canonical composition.
-         *
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Compatibility decomposition followed by canonical composition.
+        /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static readonly Mode NFKC = new NFKCMode();
 
-        /**
-         * "Fast C or D" form.
-         *
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// "Fast C or D" form.
+        /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static readonly Mode FCD = new FCDMode();
 
-        /**
-         * Null operation for use with the {@link com.ibm.icu.text.Normalizer constructors}
-         * and the static {@link #normalize normalize} method.  This value tells
-         * the <tt>Normalizer</tt> to do nothing but return unprocessed characters
-         * from the underlying string or CharacterIterator.  If you have code which
-         * requires raw text at some times and normalized text at others, you can
-         * use <tt>NO_OP</tt> for the cases where you want raw text, rather
-         * than having a separate code path that bypasses <tt>Normalizer</tt>
-         * altogether.
-         * <p>
-         * @see #setMode
-         * @deprecated ICU 2.8. Use Nomalizer.NONE
-         * @see #NONE
-         */
+        /// <summary>
+        /// Null operation for use with the <see cref="Normalizer(string, Mode, int)"/> constructors.
+        /// and the static <see cref="Normalize(string, Mode, int)"/> method.  This value tells
+        /// the <see cref="Normalizer"/> to do nothing but return unprocessed characters
+        /// from the underlying string or <see cref="CharacterIterator"/>.  If you have code which
+        /// requires raw text at some times and normalized text at others, you can
+        /// use <c>NO_OP</c> for the cases where you want raw text, rather
+        /// than having a separate code path that bypasses <see cref="Normalizer"/>
+        /// altogether.
+        /// </summary>
+        /// <seealso cref="SetMode(Mode)"/>
+        /// <seealso cref="NONE"/>
         [Obsolete("ICU 2.8. Use Nomalizer.NONE")]
         public static readonly Mode NO_OP = NONE;
 
-        /**
-         * Canonical decomposition followed by canonical composition.  Used with the
-         * {@link com.ibm.icu.text.Normalizer constructors} and the static
-         * {@link #normalize normalize} method to determine the operation to be
-         * performed.
-         * <p>
-         * If all optional features (<i>e.g.</i> {@link #IGNORE_HANGUL}) are turned
-         * off, this operation produces output that is in
-         * <a href=http://www.unicode.org/unicode/reports/tr15/>Unicode Canonical
-         * Form</a>
-         * <b>C</b>.
-         * <p>
-         * @see #setMode
-         * @deprecated ICU 2.8. Use Normalier.NFC
-         * @see #NFC
-         */
+        /// <summary>
+        /// Canonical decomposition followed by canonical composition.  Used 
+        /// with the <see cref="Normalizer(string, Mode, int)"/> constructors.
+        /// and the static <see cref="Normalize(string, Mode, int)"/> method
+        /// to determine the operation to be performed.
+        /// <para/>
+        /// If all optional features (<i>e.g.</i> <see cref="IGNORE_HANGUL"/>) are turned
+        /// off, this operation produces output that is in
+        /// <a href="http://www.unicode.org/unicode/reports/tr15/">Unicode Canonical
+        /// Form</a> <b>C</b>.
+        /// </summary>
+        /// <seealso cref="SetMode(Mode)"/>
+        /// <seealso cref="NFC"/>
         [Obsolete("ICU 2.8. Use Normalier.NFC")]
-        public static readonly Mode COMPOSE = NFC;
+        public static readonly Mode COMPOSE = NFC; // ICU4N TODO: API - This conflicts with Compose() method. Best to move it out of this class.
 
-        /**
-         * Compatibility decomposition followed by canonical composition.
-         * Used with the {@link com.ibm.icu.text.Normalizer constructors} and the static
-         * {@link #normalize normalize} method to determine the operation to be
-         * performed.
-         * <p>
-         * If all optional features (<i>e.g.</i> {@link #IGNORE_HANGUL}) are turned
-         * off, this operation produces output that is in
-         * <a href=http://www.unicode.org/unicode/reports/tr15/>Unicode Canonical
-         * Form</a>
-         * <b>KC</b>.
-         * <p>
-         * @see #setMode
-         * @deprecated ICU 2.8. Use Normalizer.NFKC
-         * @see #NFKC
-         */
+        /// <summary>
+        /// Compatibility decomposition followed by canonical composition.
+        /// Used 
+        /// with the <see cref="Normalizer(string, Mode, int)"/> constructors.
+        /// and the static <see cref="Normalize(string, Mode, int)"/> method
+        /// to determine the operation to be performed.
+        /// <para/>
+        /// If all optional features (<i>e.g.</i> <see cref="IGNORE_HANGUL"/>) are turned
+        /// off, this operation produces output that is in
+        /// <a href="http://www.unicode.org/unicode/reports/tr15/">Unicode Canonical
+        /// Form</a> <b>KC</b>.
+        /// </summary>
+        /// <seealso cref="SetMode(Mode)"/>
+        /// <seealso cref="NFKC"/>
         [Obsolete("ICU 2.8. Use Normalier.NFKC")]
         public static readonly Mode COMPOSE_COMPAT = NFKC;
 
-        /**
-         * Canonical decomposition.  This value is passed to the
-         * {@link com.ibm.icu.text.Normalizer constructors} and the static
-         * {@link #normalize normalize}
-         * method to determine the operation to be performed.
-         * <p>
-         * If all optional features (<i>e.g.</i> {@link #IGNORE_HANGUL}) are turned
-         * off, this operation produces output that is in
-         * <a href=http://www.unicode.org/unicode/reports/tr15/>Unicode Canonical
-         * Form</a>
-         * <b>D</b>.
-         * <p>
-         * @see #setMode
-         * @deprecated ICU 2.8. Use Normalizer.NFD
-         * @see #NFD
-         */
+        /// <summary>
+        /// Canonical decomposition.  This value is passed to the
+        /// <see cref="Normalizer(string, Mode, int)"/> constructors.
+        /// and the static <see cref="Normalize(string, Mode, int)"/> method
+        /// to determine the operation to be performed.
+        /// <para/>
+        /// If all optional features (<i>e.g.</i> <see cref="IGNORE_HANGUL"/>) are turned
+        /// off, this operation produces output that is in
+        /// <a href="http://www.unicode.org/unicode/reports/tr15/">Unicode Canonical
+        /// Form</a> <b>D</b>.
+        /// </summary>
+        /// <seealso cref="SetMode(Mode)"/>
+        /// <seealso cref="NFD"/>
         [Obsolete("ICU 2.8. Use Normalier.NFD")]
         public static readonly Mode DECOMP = NFD;
 
-        /**
-         * Compatibility decomposition.  This value is passed to the
-         * {@link com.ibm.icu.text.Normalizer constructors} and the static
-         * {@link #normalize normalize}
-         * method to determine the operation to be performed.
-         * <p>
-         * If all optional features (<i>e.g.</i> {@link #IGNORE_HANGUL}) are turned
-         * off, this operation produces output that is in
-         * <a href=http://www.unicode.org/unicode/reports/tr15/>Unicode Canonical
-         * Form</a>
-         * <b>KD</b>.
-         * <p>
-         * @see #setMode
-         * @deprecated ICU 2.8. Use Normalizer.NFKD
-         * @see #NFKD
-         */
+        /// <summary>
+        /// Compatibility decomposition.  This value is passed to the
+        /// <see cref="Normalizer(string, Mode, int)"/> constructors.
+        /// and the static <see cref="Normalize(string, Mode, int)"/> method
+        /// to determine the operation to be performed.
+        /// <para/>
+        /// If all optional features (<i>e.g.</i> <see cref="IGNORE_HANGUL"/>) are turned
+        /// off, this operation produces output that is in
+        /// <a href="http://www.unicode.org/unicode/reports/tr15/">Unicode Canonical
+        /// Form</a> <b>KD</b>.
+        /// </summary>
+        /// <seealso cref="SetMode(Mode)"/>
+        /// <seealso cref="NFKD"/>
         [Obsolete("ICU 2.8. Use Normalier.NFKD")]
         public static readonly Mode DECOMP_COMPAT = NFKD;
+#pragma warning restore 612, 618, 672
 
-        /**
-         * Option to disable Hangul/Jamo composition and decomposition.
-         * This option applies to Korean text,
-         * which can be represented either in the Jamo alphabet or in Hangul
-         * characters, which are really just two or three Jamo combined
-         * into one visual glyph.  Since Jamo takes up more storage space than
-         * Hangul, applications that process only Hangul text may wish to turn
-         * this option on when decomposing text.
-         * <p>
-         * The Unicode standard treates Hangul to Jamo conversion as a
-         * canonical decomposition, so this option must be turned <b>off</b> if you
-         * wish to transform strings into one of the standard
-         * <a href="http://www.unicode.org/unicode/reports/tr15/" target="unicode">
-         * Unicode Normalization Forms</a>.
-         * <p>
-         * @see #setOption
-         * @deprecated ICU 2.8. This option is no longer supported.
-         */
+        /// <summary>
+        /// Option to disable Hangul/Jamo composition and decomposition.
+        /// This option applies to Korean text,
+        /// which can be represented either in the Jamo alphabet or in Hangul
+        /// characters, which are really just two or three Jamo combined
+        /// into one visual glyph.  Since Jamo takes up more storage space than
+        /// Hangul, applications that process only Hangul text may wish to turn
+        /// this option on when decomposing text.
+        /// <para/>
+        /// The Unicode standard treates Hangul to Jamo conversion as a
+        /// canonical decomposition, so this option must be turned <b>off</b> if you
+        /// wish to transform strings into one of the standard
+        /// <a href="http://www.unicode.org/unicode/reports/tr15/" target="unicode">
+        /// Unicode Normalization Forms</a>.
+        /// </summary>
+        /// <see cref="SetOption(int, bool)"/>
         [Obsolete("ICU 2.8. This option is no longer supported.")]
         public static readonly int IGNORE_HANGUL = 0x0001;
 
-        // ICU4N specific - de-nested and renamed NormalizerQuickCheckResult
-        ///**
-        // * Result values for quickCheck().
-        // * For details see Unicode Technical Report 15.
-        // * @stable ICU 2.8
-        // */
-        //public sealed class QuickCheckResult
-        //{
-        //    //private int resultValue;
-        //    internal QuickCheckResult(int value)
-        //    {
-        //        //resultValue=value;
-        //    }
-        //}
-        /**
-         * Indicates that string is not in the normalized format
-         * @stable ICU 2.8
-         */
+        // ICU4N specific - de-nested QuickCheckResult and renamed NormalizerQuickCheckResult
+
+        /// <summary>
+        /// Indicates that string is not in the normalized format
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         internal static readonly NormalizerQuickCheckResult NO = NormalizerQuickCheckResult.No; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
-        /**
-         * Indicates that string is in the normalized format
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Indicates that string is in the normalized format
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         internal static readonly NormalizerQuickCheckResult YES = NormalizerQuickCheckResult.Yes; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
-        /**
-         * Indicates it cannot be determined if string is in the normalized
-         * format without further thorough checks.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Indicates it cannot be determined if string is in the normalized
+        /// format without further thorough checks.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         internal static readonly NormalizerQuickCheckResult MAYBE = NormalizerQuickCheckResult.Maybe; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
-        /**
-         * Option bit for compare:
-         * Case sensitively compare the strings
-         * @stable ICU 2.8
-         */
-        public static readonly int FOLD_CASE_DEFAULT = UCharacter.FOLD_CASE_DEFAULT;
+        /// <summary>
+        /// Option bit for compare:
+        /// Case sensitively compare the strings
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        public static readonly int FOLD_CASE_DEFAULT = UCharacter.FOLD_CASE_DEFAULT; // ICU4N TODO: API - make into [Flags] enum ?
 
-        /**
-         * Option bit for compare:
-         * Both input strings are assumed to fulfill FCD conditions.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Option bit for compare:
+        /// Both input strings are assumed to fulfill FCD conditions.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         public static readonly int INPUT_IS_FCD = 0x20000;
 
-        /**
-         * Option bit for compare:
-         * Perform case-insensitive comparison.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Option bit for compare:
+        /// Perform case-insensitive comparison.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         public static readonly int COMPARE_IGNORE_CASE = 0x10000;
 
-        /**
-         * Option bit for compare:
-         * Compare strings in code point order instead of code unit order.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Option bit for compare:
+        /// Compare strings in code point order instead of code unit order.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         public static readonly int COMPARE_CODE_POINT_ORDER = 0x8000;
 
-        /**
-         * Option value for case folding:
-         * Use the modified set of mappings provided in CaseFolding.txt to handle dotted I
-         * and dotless i appropriately for Turkic languages (tr, az).
-         * @see UCharacter#FOLD_CASE_EXCLUDE_SPECIAL_I
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Option value for case folding:
+        /// Use the modified set of mappings provided in CaseFolding.txt to handle dotted I
+        /// and dotless i appropriately for Turkic languages (tr, az).
+        /// </summary>
+        /// <seealso cref="UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I"/>
+        /// <stable>ICU 2.8</stable>
         public static readonly int FOLD_CASE_EXCLUDE_SPECIAL_I = UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I;
 
-        /**
-         * Lowest-order bit number of compare() options bits corresponding to
-         * normalization options bits.
-         *
-         * The options parameter for compare() uses most bits for
-         * itself and for various comparison and folding flags.
-         * The most significant bits, however, are shifted down and passed on
-         * to the normalization implementation.
-         * (That is, from compare(..., options, ...),
-         * options&gt;&gt;COMPARE_NORM_OPTIONS_SHIFT will be passed on to the
-         * internal normalization functions.)
-         *
-         * @see #compare
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Lowest-order bit number of <see cref="Compare(string, string, int)"/> options bits corresponding to
+        /// normalization options bits.
+        /// <para/>
+        /// The options parameter for <see cref="Compare(string, string, int)"/> uses most bits for
+        /// itself and for various comparison and folding flags.
+        /// The most significant bits, however, are shifted down and passed on
+        /// to the normalization implementation.
+        /// (That is, from compare(..., options, ...),
+        /// options&gt;&gt;COMPARE_NORM_OPTIONS_SHIFT will be passed on to the
+        /// internal normalization functions.)
+        /// </summary>
+        /// <seealso cref="Compare(string, string, int)"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static readonly int COMPARE_NORM_OPTIONS_SHIFT = 20;
 
@@ -477,24 +531,21 @@ namespace ICU4N.Text
         // Iterator constructors
         //-------------------------------------------------------------------------
 
-        /**
-         * Creates a new <tt>Normalizer</tt> object for iterating over the
-         * normalized form of a given string.
-         * <p>
-         * The <tt>options</tt> parameter specifies which optional
-         * <tt>Normalizer</tt> features are to be enabled for this object.
-         * <p>
-         * @param str  The string to be normalized.  The normalization
-         *              will start at the beginning of the string.
-         *
-         * @param mode The normalization mode.
-         *
-         * @param opt Any optional features to be enabled.
-         *            Currently the only available option is {@link #UNICODE_3_2}.
-         *            If you want the default behavior corresponding to one of the
-         *            standard Unicode Normalization Forms, use 0 for this argument.
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of a given string.
+        /// <para/>
+        /// The <paramref name="opt"/> parameter specifies which optional
+        /// <see cref="Normalizer"/> features are to be enabled for this object.
+        /// </summary>
+        /// <param name="str">The string to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="opt">Any optional features to be enabled.
+        /// Currently the only available option is <see cref="UNICODE_3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use 0 for this argument.
+        /// </param>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public Normalizer(string str, Mode mode, int opt)
         {
@@ -505,21 +556,18 @@ namespace ICU4N.Text
             buffer = new StringBuilder();
         }
 
-        /**
-         * Creates a new <tt>Normalizer</tt> object for iterating over the
-         * normalized form of the given text.
-         * <p>
-         * @param iter  The input text to be normalized.  The normalization
-         *              will start at the beginning of the string.
-         *
-         * @param mode  The normalization mode.
-         *
-         * @param opt Any optional features to be enabled.
-         *            Currently the only available option is {@link #UNICODE_3_2}.
-         *            If you want the default behavior corresponding to one of the
-         *            standard Unicode Normalization Forms, use 0 for this argument.
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of the given text.
+        /// </summary>
+        /// <param name="iter">The input text to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="opt">Any optional features to be enabled.
+        /// Currently the only available option is <see cref="UNICODE_3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use 0 for this argument.
+        /// </param>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public Normalizer(CharacterIterator iter, Mode mode, int opt)
         {
@@ -530,17 +578,14 @@ namespace ICU4N.Text
             buffer = new StringBuilder();
         }
 
-        /**
-         * Creates a new <tt>Normalizer</tt> object for iterating over the
-         * normalized form of the given text.
-         * <p>
-         * @param iter  The input text to be normalized.  The normalization
-         *              will start at the beginning of the string.
-         *
-         * @param mode  The normalization mode.
-         * @param options The normalization options, ORed together (0 for no options).
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of the given text.
+        /// </summary>
+        /// <param name="iter">The input text to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public Normalizer(UCharacterIterator iter, Mode mode, int options)
         {
@@ -558,17 +603,16 @@ namespace ICU4N.Text
             //}
         }
 
-        /**
-         * Clones this <tt>Normalizer</tt> object.  All properties of this
-         * object are duplicated in the new object, including the cloning of any
-         * {@link CharacterIterator} that was passed in to the constructor
-         * or to {@link #setText(CharacterIterator) setText}.
-         * However, the text storage underlying
-         * the <tt>CharacterIterator</tt> is not duplicated unless the
-         * iterator's <tt>clone</tt> method does so.
-         *
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Clones this <see cref="Normalizer"/> object.  All properties of this
+        /// object are duplicated in the new object, including the cloning of any
+        /// <see cref="CharacterIterator"/> that was passed in to the constructor
+        /// or to <see cref="SetText(CharacterIterator)"/>.
+        /// However, the text storage underlying
+        /// the <see cref="CharacterIterator"/> is not duplicated unless the
+        /// <see cref="CharacterIterator.Clone()"/> method does so.
+        /// </summary>
+        /// <returns></returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public object Clone()
         {
@@ -604,79 +648,76 @@ namespace ICU4N.Text
             return (compat ? NFKD : NFD).GetNormalizer2(options);
         }
 
-        /**
-         * Compose a string.
-         * The string will be composed to according to the specified mode.
-         * @param str        The string to compose.
-         * @param compat     If true the string will be composed according to
-         *                    NFKC rules and if false will be composed according to
-         *                    NFC rules.
-         * @return string    The composed string
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Compose a string.
+        /// The string will be composed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to compose.</param>
+        /// <param name="compat">If true the string will be composed according to
+        /// NFKC rules and if false will be composed according to
+        /// NFC rules.</param>
+        /// <returns>The composed string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Compose(string str, bool compat)
         {
             return Compose(str, compat, 0);
         }
 
-        /**
-         * Compose a string.
-         * The string will be composed to according to the specified mode.
-         * @param str        The string to compose.
-         * @param compat     If true the string will be composed according to
-         *                    NFKC rules and if false will be composed according to
-         *                    NFC rules.
-         * @param options    The only recognized option is UNICODE_3_2
-         * @return string    The composed string
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Compose a string.
+        /// The string will be composed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to compose.</param>
+        /// <param name="compat">If true the string will be composed according to
+        /// NFKC rules and if false will be composed according to
+        /// NFC rules.
+        /// </param>
+        /// <param name="options">The only recognized option is <see cref="UNICODE_3_2"/>.</param>
+        /// <returns>The composed string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Compose(string str, bool compat, int options)
         {
             return GetComposeNormalizer2(compat, options).Normalize(str);
         }
 
-        /**
-         * Compose a string.
-         * The string will be composed to according to the specified mode.
-         * @param source The char array to compose.
-         * @param target A char buffer to receive the normalized text.
-         * @param compat If true the char array will be composed according to
-         *                NFKC rules and if false will be composed according to
-         *                NFC rules.
-         * @param options The normalization options, ORed together (0 for no options).
-         * @return int   The total buffer size needed;if greater than length of
-         *                result, the output was truncated.
-         * @exception IndexOutOfBoundsException if target.length is less than the
-         *             required length
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Compose a string.
+        /// The string will be composed to according to the specified mode.
+        /// </summary>
+        /// <param name="source">The char array to compose.</param>
+        /// <param name="target">A char buffer to receive the normalized text.</param>
+        /// <param name="compat">If true the char array will be composed according to
+        /// NFKC rules and if false will be composed according to
+        /// NFC rules.
+        /// </param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>The total buffer size needed;if greater than length of
+        /// result, the output was truncated.</returns>
+        /// <exception cref="IndexOutOfRangeException">If target.Length is less than the required length.</exception>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static int Compose(char[] source, char[] target, bool compat, int options)
         {
             return Compose(source, 0, source.Length, target, 0, target.Length, compat, options);
         }
 
-        /**
-         * Compose a string.
-         * The string will be composed to according to the specified mode.
-         * @param src       The char array to compose.
-         * @param srcStart  Start index of the source
-         * @param srcLimit  Limit index of the source
-         * @param dest      The char buffer to fill in
-         * @param destStart Start index of the destination buffer
-         * @param destLimit End index of the destination buffer
-         * @param compat If true the char array will be composed according to
-         *                NFKC rules and if false will be composed according to
-         *                NFC rules.
-         * @param options The normalization options, ORed together (0 for no options).
-         * @return int   The total buffer size needed;if greater than length of
-         *                result, the output was truncated.
-         * @exception IndexOutOfBoundsException if target.length is less than the
-         *             required length
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Compose a string.
+        /// The string will be composed to according to the specified mode.
+        /// </summary>
+        /// <param name="src">The char array to compose.</param>
+        /// <param name="srcStart">Start index of the source.</param>
+        /// <param name="srcLimit">Limit index of the source.</param>
+        /// <param name="dest">The char buffer to fill in.</param>
+        /// <param name="destStart">Start index of the destination buffer.</param>
+        /// <param name="destLimit">End index of the destination buffer.</param>
+        /// <param name="compat">If true the char array will be composed according to
+        /// NFKC rules and if false will be composed according to
+        /// NFC rules.
+        /// </param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>The total buffer size needed;if greater than length of
+        /// result, the output was truncated.</returns>
+        /// <exception cref="IndexOutOfRangeException">If target.Length is less than the required length.</exception>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static int Compose(char[] src, int srcStart, int srcLimit,
                               char[] dest, int destStart, int destLimit,
@@ -688,79 +729,79 @@ namespace ICU4N.Text
             return app.Length;
         }
 
-        /**
-         * Decompose a string.
-         * The string will be decomposed to according to the specified mode.
-         * @param str       The string to decompose.
-         * @param compat    If true the string will be decomposed according to NFKD
-         *                   rules and if false will be decomposed according to NFD
-         *                   rules.
-         * @return string   The decomposed string
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to decompose.</param>
+        /// <param name="compat">If true the string will be decomposed according to NFKD
+        /// rules and if false will be decomposed according to NFD
+        /// rules.
+        /// </param>
+        /// <returns>The decomposed string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Decompose(string str, bool compat)
         {
             return Decompose(str, compat, 0);
         }
 
-        /**
-         * Decompose a string.
-         * The string will be decomposed to according to the specified mode.
-         * @param str     The string to decompose.
-         * @param compat  If true the string will be decomposed according to NFKD
-         *                 rules and if false will be decomposed according to NFD
-         *                 rules.
-         * @param options The normalization options, ORed together (0 for no options).
-         * @return string The decomposed string
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="str">The string to decompose.</param>
+        /// <param name="compat">If true the string will be decomposed according to NFKD
+        /// rules and if false will be decomposed according to NFD
+        /// rules.
+        /// </param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>The decomposed string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Decompose(string str, bool compat, int options)
         {
             return GetDecomposeNormalizer2(compat, options).Normalize(str);
         }
 
-        /**
-         * Decompose a string.
-         * The string will be decomposed to according to the specified mode.
-         * @param source The char array to decompose.
-         * @param target A char buffer to receive the normalized text.
-         * @param compat If true the char array will be decomposed according to NFKD
-         *                rules and if false will be decomposed according to
-         *                NFD rules.
-         * @return int   The total buffer size needed;if greater than length of
-         *                result,the output was truncated.
-         * @param options The normalization options, ORed together (0 for no options).
-         * @exception IndexOutOfBoundsException if the target capacity is less than
-         *             the required length
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="source">The char array to decompose.</param>
+        /// <param name="target">A char buffer to receive the normalized text.</param>
+        /// <param name="compat">If true the char array will be decomposed according to NFKD
+        /// rules and if false will be decomposed according to
+        /// NFD rules.
+        /// </param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>The total buffer size needed;if greater than length of
+        /// result,the output was truncated.</returns>
+        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
+        /// the required length.</exception>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static int Decompose(char[] source, char[] target, bool compat, int options)
         {
             return Decompose(source, 0, source.Length, target, 0, target.Length, compat, options);
         }
 
-        /**
-         * Decompose a string.
-         * The string will be decomposed to according to the specified mode.
-         * @param src       The char array to compose.
-         * @param srcStart  Start index of the source
-         * @param srcLimit  Limit index of the source
-         * @param dest      The char buffer to fill in
-         * @param destStart Start index of the destination buffer
-         * @param destLimit End index of the destination buffer
-         * @param compat If true the char array will be decomposed according to NFKD
-         *                rules and if false will be decomposed according to
-         *                NFD rules.
-         * @param options The normalization options, ORed together (0 for no options).
-         * @return int   The total buffer size needed;if greater than length of
-         *                result,the output was truncated.
-         * @exception IndexOutOfBoundsException if the target capacity is less than
-         *             the required length
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Decompose a string.
+        /// The string will be decomposed to according to the specified mode.
+        /// </summary>
+        /// <param name="src">The char array to compose.</param>
+        /// <param name="srcStart">Start index of the source.</param>
+        /// <param name="srcLimit">Limit index of the source.</param>
+        /// <param name="dest">The char buffer to fill in.</param>
+        /// <param name="destStart">Start index of the destination buffer.</param>
+        /// <param name="destLimit">End index of the destination buffer.</param>
+        /// <param name="compat">If true the char array will be decomposed according to NFKD
+        /// rules and if false will be decomposed according to
+        /// NFD rules.
+        /// </param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>The total buffer size needed;if greater than length of
+        /// result,the output was truncated.</returns>
+        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
+        /// the required length.</exception>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static int Decompose(char[] src, int srcStart, int srcLimit,
                                 char[] dest, int destStart, int destLimit,
@@ -772,85 +813,83 @@ namespace ICU4N.Text
             return app.Length;
         }
 
-        /**
-         * Normalizes a <tt>string</tt> using the given normalization operation.
-         * <p>
-         * The <tt>options</tt> parameter specifies which optional
-         * <tt>Normalizer</tt> features are to be enabled for this operation.
-         * Currently the only available option is {@link #UNICODE_3_2}.
-         * If you want the default behavior corresponding to one of the standard
-         * Unicode Normalization Forms, use 0 for this argument.
-         * <p>
-         * @param str       the input string to be normalized.
-         * @param mode      the normalization mode
-         * @param options   the optional features to be enabled.
-         * @return string   the normalized string
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Normalizes a <see cref="string"/> using the given normalization operation.
+        /// The <paramref name="options"/> parameter specifies which optional
+        /// <see cref="Normalizer"/> features are to be enabled for this operation.
+        /// Currently the only available option is <see cref="UNICODE_3_2"/>.
+        /// If you want the default behavior corresponding to one of the standard
+        /// Unicode Normalization Forms, use 0 for this argument.
+        /// </summary>
+        /// <param name="str">The input string to be normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="options">The optional features to be enabled.</param>
+        /// <returns>The normalized string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Normalize(string str, Mode mode, int options)
         {
             return mode.GetNormalizer2(options).Normalize(str);
         }
 
-        /**
-         * Normalize a string.
-         * The string will be normalized according to the specified normalization
-         * mode and options.
-         * @param src        The string to normalize.
-         * @param mode       The normalization mode; one of Normalizer.NONE,
-         *                    Normalizer.NFD, Normalizer.NFC, Normalizer.NFKC,
-         *                    Normalizer.NFKD, Normalizer.DEFAULT
-         * @return the normalized string
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Normalize a string.
+        /// The string will be normalized according to the specified normalization
+        /// mode and options.
+        /// </summary>
+        /// <param name="src">The string to normalize.</param>
+        /// <param name="mode">The normalization mode; one of <see cref="Normalizer.NONE"/>,
+        /// <see cref="Normalizer.NFD"/>, <see cref="Normalizer.NFC"/>, <see cref="Normalizer.NFKC"/>,
+        /// <see cref="Normalizer.NFKD"/>, <see cref="Normalizer.DEFAULT"/>.
+        /// </param>
+        /// <returns>The normalized string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Normalize(string src, Mode mode)
         {
             return Normalize(src, mode, 0);
         }
-        /**
-         * Normalize a string.
-         * The string will be normalized according to the specified normalization
-         * mode and options.
-         * @param source The char array to normalize.
-         * @param target A char buffer to receive the normalized text.
-         * @param mode   The normalization mode; one of Normalizer.NONE,
-         *                Normalizer.NFD, Normalizer.NFC, Normalizer.NFKC,
-         *                Normalizer.NFKD, Normalizer.DEFAULT
-         * @param options The normalization options, ORed together (0 for no options).
-         * @return int   The total buffer size needed;if greater than length of
-         *                result, the output was truncated.
-         * @exception    IndexOutOfBoundsException if the target capacity is less
-         *                than the required length
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+
+        /// <summary>
+        /// Normalize a string.
+        /// The string will be normalized according to the specified normalization
+        /// mode and options.
+        /// </summary>
+        /// <param name="source">The char array to normalize.</param>
+        /// <param name="target">A char buffer to receive the normalized text.</param>
+        /// <param name="mode">The normalization mode; one of <see cref="Normalizer.NONE"/>,
+        /// <see cref="Normalizer.NFD"/>, <see cref="Normalizer.NFC"/>, <see cref="Normalizer.NFKC"/>,
+        /// <see cref="Normalizer.NFKD"/>, <see cref="Normalizer.DEFAULT"/>.
+        /// </param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>The total buffer size needed;if greater than length of
+        /// than the required length.</returns>
+        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
+        /// the required length.</exception>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static int Normalize(char[] source, char[] target, Mode mode, int options)
         {
             return Normalize(source, 0, source.Length, target, 0, target.Length, mode, options);
         }
 
-        /**
-         * Normalize a string.
-         * The string will be normalized according to the specified normalization
-         * mode and options.
-         * @param src       The char array to compose.
-         * @param srcStart  Start index of the source
-         * @param srcLimit  Limit index of the source
-         * @param dest      The char buffer to fill in
-         * @param destStart Start index of the destination buffer
-         * @param destLimit End index of the destination buffer
-         * @param mode      The normalization mode; one of Normalizer.NONE,
-         *                   Normalizer.NFD, Normalizer.NFC, Normalizer.NFKC,
-         *                   Normalizer.NFKD, Normalizer.DEFAULT
-         * @param options The normalization options, ORed together (0 for no options).
-         * @return int      The total buffer size needed;if greater than length of
-         *                   result, the output was truncated.
-         * @exception       IndexOutOfBoundsException if the target capacity is
-         *                   less than the required length
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Normalize a string.
+        /// The string will be normalized according to the specified normalization
+        /// mode and options.
+        /// </summary>
+        /// <param name="src">The char array to compose.</param>
+        /// <param name="srcStart">Start index of the source.</param>
+        /// <param name="srcLimit">Limit index of the source.</param>
+        /// <param name="dest">The char buffer to fill in.</param>
+        /// <param name="destStart">Start index of the destination buffer.</param>
+        /// <param name="destLimit">End index of the destination buffer.</param>
+        /// <param name="mode">The normalization mode; one of <see cref="Normalizer.NONE"/>,
+        /// <see cref="Normalizer.NFD"/>, <see cref="Normalizer.NFC"/>, <see cref="Normalizer.NFKC"/>,
+        /// <see cref="Normalizer.NFKD"/>, <see cref="Normalizer.DEFAULT"/>.
+        /// </param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>The total buffer size needed;if greater than length of
+        /// less than the required length.</returns>
+        /// <exception cref="IndexOutOfRangeException">If the target capacity is less than
+        /// the required length.</exception>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static int Normalize(char[] src, int srcStart, int srcLimit,
                                 char[] dest, int destStart, int destLimit,
@@ -862,16 +901,14 @@ namespace ICU4N.Text
             return app.Length;
         }
 
-        /**
-         * Normalize a codepoint according to the given mode
-         * @param char32    The input string to be normalized.
-         * @param mode      The normalization mode
-         * @param options   Options for use with exclusion set and tailored Normalization
-         *                                   The only option that is currently recognized is UNICODE_3_2
-         * @return string   The normalized string
-         * @see #UNICODE_3_2
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Normalize a codepoint according to the given mode.
+        /// </summary>
+        /// <param name="char32">The input string to be normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="options">Options for use with exclusion set and tailored Normalization
+        /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
+        /// <returns>The normalized string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Normalize(int char32, Mode mode, int options)
         {
@@ -887,103 +924,93 @@ namespace ICU4N.Text
             return Normalize(UTF16.ValueOf(char32), mode, options);
         }
 
-        /**
-         * Convenience method to normalize a codepoint according to the given mode
-         * @param char32    The input string to be normalized.
-         * @param mode      The normalization mode
-         * @return string   The normalized string
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Convenience method to normalize a codepoint according to the given mode.
+        /// </summary>
+        /// <param name="char32">The input string to be normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <returns>The normalized string.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Normalize(int char32, Mode mode)
         {
             return Normalize(char32, mode, 0);
         }
 
-        /**
-         * Convenience method.
-         *
-         * @param source   string for determining if it is in a normalized format
-         * @param mode     normalization format (Normalizer.NFC,Normalizer.NFD,
-         *                  Normalizer.NFKC,Normalizer.NFKD)
-         * @return         Return code to specify if the text is normalized or not
-         *                     (Normalizer.YES, Normalizer.NO or Normalizer.MAYBE)
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Convenience method.
+        /// </summary>
+        /// <param name="source">String for determining if it is in a normalized format.</param>
+        /// <param name="mode">Normalization format (<see cref="Normalizer.NFC"/>,<see cref="Normalizer.NFD"/>,
+        /// <see cref="Normalizer.NFKC"/>,<see cref="Normalizer.NFKD"/>).</param>
+        /// <returns>Return code to specify if the text is normalized or not
+        /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static NormalizerQuickCheckResult QuickCheck(string source, Mode mode)
         {
             return QuickCheck(source, mode, 0);
         }
 
-        /**
-         * Performing quick check on a string, to quickly determine if the string is
-         * in a particular normalization format.
-         * Three types of result can be returned Normalizer.YES, Normalizer.NO or
-         * Normalizer.MAYBE. Result Normalizer.YES indicates that the argument
-         * string is in the desired normalized format, Normalizer.NO determines that
-         * argument string is not in the desired normalized format. A
-         * Normalizer.MAYBE result indicates that a more thorough check is required,
-         * the user may have to put the string in its normalized form and compare
-         * the results.
-         *
-         * @param source   string for determining if it is in a normalized format
-         * @param mode     normalization format (Normalizer.NFC,Normalizer.NFD,
-         *                  Normalizer.NFKC,Normalizer.NFKD)
-         * @param options   Options for use with exclusion set and tailored Normalization
-         *                                   The only option that is currently recognized is UNICODE_3_2
-         * @return         Return code to specify if the text is normalized or not
-         *                     (Normalizer.YES, Normalizer.NO or Normalizer.MAYBE)
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Performing quick check on a string, to quickly determine if the string is
+        /// in a particular normalization format.
+        /// Three types of result can be returned <see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or
+        /// <see cref="Normalizer.MAYBE"/>. Result <see cref="Normalizer.YES"/> indicates that the argument
+        /// string is in the desired normalized format, <see cref="Normalizer.NO"/> determines that
+        /// argument string is not in the desired normalized format. A
+        /// <see cref="Normalizer.MAYBE"/> result indicates that a more thorough check is required,
+        /// the user may have to put the string in its normalized form and compare
+        /// the results.
+        /// </summary>
+        /// <param name="source">String for determining if it is in a normalized format.</param>
+        /// <param name="mode">Normalization format (<see cref="Normalizer.NFC"/>,<see cref="Normalizer.NFD"/>,
+        /// <see cref="Normalizer.NFKC"/>,<see cref="Normalizer.NFKD"/>).</param>
+        /// <param name="options">Options for use with exclusion set and tailored Normalization
+        /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
+        /// <returns>Return code to specify if the text is normalized or not
+        /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static NormalizerQuickCheckResult QuickCheck(string source, Mode mode, int options)
         {
             return mode.GetNormalizer2(options).QuickCheck(source);
         }
 
-        /**
-         * Convenience method.
-         *
-         * @param source Array of characters for determining if it is in a
-         *                normalized format
-         * @param mode   normalization format (Normalizer.NFC,Normalizer.NFD,
-         *                Normalizer.NFKC,Normalizer.NFKD)
-         * @param options   Options for use with exclusion set and tailored Normalization
-         *                                   The only option that is currently recognized is UNICODE_3_2
-         * @return       Return code to specify if the text is normalized or not
-         *                (Normalizer.YES, Normalizer.NO or Normalizer.MAYBE)
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Convenience method.
+        /// </summary>
+        /// <param name="source">Array of characters for determining if it is in a
+        /// normalized format.</param>
+        /// <param name="mode">Normalization format (<see cref="Normalizer.NFC"/>,<see cref="Normalizer.NFD"/>,
+        /// <see cref="Normalizer.NFKC"/>,<see cref="Normalizer.NFKD"/>).</param>
+        /// <param name="options">Options for use with exclusion set and tailored Normalization
+        /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
+        /// <returns>Return code to specify if the text is normalized or not
+        /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static NormalizerQuickCheckResult QuickCheck(char[] source, Mode mode, int options)
         {
             return QuickCheck(source, 0, source.Length, mode, options);
         }
 
-        /**
-         * Performing quick check on a string, to quickly determine if the string is
-         * in a particular normalization format.
-         * Three types of result can be returned Normalizer.YES, Normalizer.NO or
-         * Normalizer.MAYBE. Result Normalizer.YES indicates that the argument
-         * string is in the desired normalized format, Normalizer.NO determines that
-         * argument string is not in the desired normalized format. A
-         * Normalizer.MAYBE result indicates that a more thorough check is required,
-         * the user may have to put the string in its normalized form and compare
-         * the results.
-         *
-         * @param source    string for determining if it is in a normalized format
-         * @param start     the start index of the source
-         * @param limit     the limit index of the source it is equal to the length
-         * @param mode      normalization format (Normalizer.NFC,Normalizer.NFD,
-         *                   Normalizer.NFKC,Normalizer.NFKD)
-         * @param options   Options for use with exclusion set and tailored Normalization
-         *                                   The only option that is currently recognized is UNICODE_3_2
-         * @return          Return code to specify if the text is normalized or not
-         *                   (Normalizer.YES, Normalizer.NO or
-         *                   Normalizer.MAYBE)
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Performing quick check on a string, to quickly determine if the string is
+        /// in a particular normalization format.
+        /// Three types of result can be returned <see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or
+        /// <see cref="Normalizer.MAYBE"/>. Result <see cref="Normalizer.YES"/> indicates that the argument
+        /// string is in the desired normalized format, <see cref="Normalizer.NO"/> determines that
+        /// argument string is not in the desired normalized format. A
+        /// <see cref="Normalizer.MAYBE"/> result indicates that a more thorough check is required,
+        /// the user may have to put the string in its normalized form and compare
+        /// the results.
+        /// </summary>
+        /// <param name="source">String for determining if it is in a normalized format.</param>
+        /// <param name="start">The start index of the source.</param>
+        /// <param name="limit">The limit index of the source it is equal to the length.</param>
+        /// <param name="mode">Normalization format (<see cref="Normalizer.NFC"/>,<see cref="Normalizer.NFD"/>,
+        /// <see cref="Normalizer.NFKC"/>,<see cref="Normalizer.NFKD"/>).</param>
+        /// <param name="options">Options for use with exclusion set and tailored Normalization
+        /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
+        /// <returns>Return code to specify if the text is normalized or not
+        /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static NormalizerQuickCheckResult QuickCheck(char[] source, int start,
                                               int limit, Mode mode, int options)
@@ -992,26 +1019,24 @@ namespace ICU4N.Text
             return mode.GetNormalizer2(options).QuickCheck(srcBuffer);
         }
 
-        /**
-         * Test if a string is in a given normalization form.
-         * This is semantically equivalent to source.equals(normalize(source, mode)).
-         *
-         * Unlike quickCheck(), this function returns a definitive result,
-         * never a "maybe".
-         * For NFD, NFKD, and FCD, both functions work exactly the same.
-         * For NFC and NFKC where quickCheck may return "maybe", this function will
-         * perform further tests to arrive at a true/false result.
-         * @param src       The input array of characters to be checked to see if
-         *                   it is normalized
-         * @param start     The strart index in the source
-         * @param limit     The limit index in the source
-         * @param mode      the normalization mode
-         * @param options   Options for use with exclusion set and tailored Normalization
-         *                                   The only option that is currently recognized is UNICODE_3_2
-         * @return Boolean value indicating whether the source string is in the
-         *         "mode" normalization form
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Test if a string is in a given normalization form.
+        /// This is semantically equivalent to <c>source.Equals(Normalize(source, mode))</c>.
+        /// Unlike <see cref="QuickCheck(string, Mode)"/>, this function returns a definitive result,
+        /// never a "maybe".
+        /// For NFD, NFKD, and FCD, both functions work exactly the same.
+        /// For NFC and NFKC where quickCheck may return "maybe", this function will
+        /// perform further tests to arrive at a true/false result.
+        /// </summary>
+        /// <param name="src">The input array of characters to be checked to see if
+        /// it is normalized.</param>
+        /// <param name="start">The strart index in the source.</param>
+        /// <param name="limit">The limit index in the source.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="options">Options for use with exclusion set and tailored Normalization
+        /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
+        /// <returns>Boolean value indicating whether the source string is in the
+        /// "<paramref name="mode"/>" normalization form.</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static bool IsNormalized(char[] src, int start,
                                        int limit, Mode mode,
@@ -1021,40 +1046,38 @@ namespace ICU4N.Text
             return mode.GetNormalizer2(options).IsNormalized(srcBuffer);
         }
 
-        /**
-         * Test if a string is in a given normalization form.
-         * This is semantically equivalent to source.equals(normalize(source, mode)).
-         *
-         * Unlike quickCheck(), this function returns a definitive result,
-         * never a "maybe".
-         * For NFD, NFKD, and FCD, both functions work exactly the same.
-         * For NFC and NFKC where quickCheck may return "maybe", this function will
-         * perform further tests to arrive at a true/false result.
-         * @param str       the input string to be checked to see if it is
-         *                   normalized
-         * @param mode      the normalization mode
-         * @param options   Options for use with exclusion set and tailored Normalization
-         *                  The only option that is currently recognized is UNICODE_3_2
-         * @see #isNormalized
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Test if a string is in a given normalization form.
+        /// This is semantically equivalent to source.Equals(Normalize(source, mode)).
+        /// Unlike <see cref="QuickCheck(string, Mode)"/>, this function returns a definitive result,
+        /// never a "maybe".
+        /// For NFD, NFKD, and FCD, both functions work exactly the same.
+        /// For NFC and NFKC where quickCheck may return "maybe", this function will
+        /// perform further tests to arrive at a true/false result.
+        /// </summary>
+        /// <param name="str">The input string to be checked to see if it is normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="options">Options for use with exclusion set and tailored Normalization
+        /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
+        /// <returns>Boolean value indicating whether the source string is in the
+        /// "<paramref name="mode"/>" normalization form.</returns>
+        /// <seealso cref="IsNormalized(char[], int, int, Mode, int)"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static bool IsNormalized(string str, Mode mode, int options)
         {
             return mode.GetNormalizer2(options).IsNormalized(str);
         }
 
-        /**
-         * Convenience Method
-         * @param char32    the input code point to be checked to see if it is
-         *                   normalized
-         * @param mode      the normalization mode
-         * @param options   Options for use with exclusion set and tailored Normalization
-         *                  The only option that is currently recognized is UNICODE_3_2
-         *
-         * @see #isNormalized
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Convenience Method.
+        /// </summary>
+        /// <param name="char32">The input code point to be checked to see if it is normalized.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="options">Options for use with exclusion set and tailored Normalization
+        /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
+        /// <returns>Boolean value indicating whether the source string is in the
+        /// "<paramref name="mode"/>" normalization form.</returns>
+        /// <seealso cref="IsNormalized(string, Mode, int)"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static bool IsNormalized(int char32, Mode mode, int options)
         {
@@ -1130,166 +1153,163 @@ namespace ICU4N.Text
                                    options);
         }
 
-        /**
-         * Compare two strings for canonical equivalence.
-         * Further options include case-insensitive comparison and
-         * code point order (as opposed to code unit order).
-         *
-         * Canonical equivalence between two strings is defined as their normalized
-         * forms (NFD or NFC) being identical.
-         * This function compares strings incrementally instead of normalizing
-         * (and optionally case-folding) both strings entirely,
-         * improving performance significantly.
-         *
-         * Bulk normalization is only necessary if the strings do not fulfill the
-         * FCD conditions. Only in this case, and only if the strings are relatively
-         * long, is memory allocated temporarily.
-         * For FCD strings and short non-FCD strings there is no memory allocation.
-         *
-         * Semantically, this is equivalent to
-         *   strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))
-         * where code point order and foldCase are all optional.
-         *
-         * @param s1 First source string.
-         * @param s2 Second source string.
-         *
-         * @param options A bit set of options:
-         *   - FOLD_CASE_DEFAULT or 0 is used for default options:
-         *     Case-sensitive comparison in code unit order, and the input strings
-         *     are quick-checked for FCD.
-         *
-         *   - INPUT_IS_FCD
-         *     Set if the caller knows that both s1 and s2 fulfill the FCD
-         *     conditions. If not set, the function will quickCheck for FCD
-         *     and normalize if necessary.
-         *
-         *   - COMPARE_CODE_POINT_ORDER
-         *     Set to choose code point order instead of code unit order
-         *
-         *   - COMPARE_IGNORE_CASE
-         *     Set to compare strings case-insensitively using case folding,
-         *     instead of case-sensitively.
-         *     If set, then the following case folding options are used.
-         *
-         * @return &lt;0 or 0 or &gt;0 as usual for string comparisons
-         *
-         * @see #normalize
-         * @see #FCD
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Compare two strings for canonical equivalence.
+        /// Further options include case-insensitive comparison and
+        /// code point order (as opposed to code unit order).
+        /// </summary>
+        /// <remarks>
+        /// Canonical equivalence between two strings is defined as their normalized
+        /// forms (NFD or NFC) being identical.
+        /// This function compares strings incrementally instead of normalizing
+        /// (and optionally case-folding) both strings entirely,
+        /// improving performance significantly.
+        /// <para/>
+        /// Bulk normalization is only necessary if the strings do not fulfill the
+        /// FCD conditions. Only in this case, and only if the strings are relatively
+        /// long, is memory allocated temporarily.
+        /// For FCD strings and short non-FCD strings there is no memory allocation.
+        /// <para/>
+        /// Semantically, this is equivalent to
+        ///   strcmp[CodePointOrder](FoldCase(NFD(s1)), FoldCase(NFD(s2)))
+        /// where code point order and foldCase are all optional.
+        /// </remarks>
+        /// <param name="s1">First source string.</param>
+        /// <param name="s2">Second source string.</param>
+        /// <param name="options">A bit set of options:
+        /// <list type="table">
+        ///     <item><term><see cref="FOLD_CASE_DEFAULT"/> or 0 is used for default options</term><description>
+        ///         Case-sensitive comparison in code unit order, and the input strings
+        ///         are quick-checked for FCD.
+        ///     </description></item>
+        ///     <item><see cref="INPUT_IS_FCD"/><term></term><description>
+        ///         Set if the caller knows that both <paramref name="s1"/> and <paramref name="s2"/> fulfill the FCD
+        ///         conditions. If not set, the function will quickCheck for FCD
+        ///         and normalize if necessary.
+        ///     </description></item>
+        ///     <item><term><see cref="COMPARE_CODE_POINT_ORDER"/></term><description>
+        ///         Set to choose code point order instead of code unit order.
+        ///     </description></item>
+        ///     <item><term><see cref="COMPARE_IGNORE_CASE"/></term><description>
+        ///         Set to compare strings case-insensitively using case folding,
+        ///         instead of case-sensitively.
+        ///         If set, then the following case folding options are used.
+        ///     </description></item>
+        /// </list>
+        /// </param>
+        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons.</returns>
+        /// <seealso cref="Normalize(string, Mode, int)"/>
+        /// <seealso cref="FCD"/>
+        /// <stable>ICU 2.8</stable>
         public static int Compare(string s1, string s2, int options)
         {
             return InternalCompare(s1.ToCharSequence(), s2.ToCharSequence(), options);
         }
 
-        /**
-         * Compare two strings for canonical equivalence.
-         * Further options include case-insensitive comparison and
-         * code point order (as opposed to code unit order).
-         * Convenience method.
-         *
-         * @param s1 First source string.
-         * @param s2 Second source string.
-         *
-         * @param options A bit set of options:
-         *   - FOLD_CASE_DEFAULT or 0 is used for default options:
-         *     Case-sensitive comparison in code unit order, and the input strings
-         *     are quick-checked for FCD.
-         *
-         *   - INPUT_IS_FCD
-         *     Set if the caller knows that both s1 and s2 fulfill the FCD
-         *     conditions. If not set, the function will quickCheck for FCD
-         *     and normalize if necessary.
-         *
-         *   - COMPARE_CODE_POINT_ORDER
-         *     Set to choose code point order instead of code unit order
-         *
-         *   - COMPARE_IGNORE_CASE
-         *     Set to compare strings case-insensitively using case folding,
-         *     instead of case-sensitively.
-         *     If set, then the following case folding options are used.
-         *
-         * @return &lt;0 or 0 or &gt;0 as usual for string comparisons
-         *
-         * @see #normalize
-         * @see #FCD
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Compare two strings for canonical equivalence.
+        /// Further options include case-insensitive comparison and
+        /// code point order (as opposed to code unit order).
+        /// Convenience method.
+        /// </summary>
+        /// <param name="s1">First source string.</param>
+        /// <param name="s2">Second source string.</param>
+        /// <param name="options">A bit set of options:
+        /// <list type="table">
+        ///     <item><term><see cref="FOLD_CASE_DEFAULT"/> or 0 is used for default options</term><description>
+        ///         Case-sensitive comparison in code unit order, and the input strings
+        ///         are quick-checked for FCD.
+        ///     </description></item>
+        ///     <item><see cref="INPUT_IS_FCD"/><term></term><description>
+        ///         Set if the caller knows that both <paramref name="s1"/> and <paramref name="s2"/> fulfill the FCD
+        ///         conditions. If not set, the function will quickCheck for FCD
+        ///         and normalize if necessary.
+        ///     </description></item>
+        ///     <item><term><see cref="COMPARE_CODE_POINT_ORDER"/></term><description>
+        ///         Set to choose code point order instead of code unit order.
+        ///     </description></item>
+        ///     <item><term><see cref="COMPARE_IGNORE_CASE"/></term><description>
+        ///         Set to compare strings case-insensitively using case folding,
+        ///         instead of case-sensitively.
+        ///         If set, then the following case folding options are used.
+        ///     </description></item>
+        /// </list>
+        /// </param>
+        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons.</returns>
+        /// <seealso cref="Normalize(string, Mode, int)"/>
+        /// <seealso cref="FCD"/>
+        /// <stable>ICU 2.8</stable>
         public static int Compare(char[] s1, char[] s2, int options)
         {
             return InternalCompare(CharBuffer.Wrap(s1), CharBuffer.Wrap(s2), options);
         }
 
-        /**
-         * Convenience method that can have faster implementation
-         * by not allocating buffers.
-         * @param char32a    the first code point to be checked against the
-         * @param char32b    the second code point
-         * @param options    A bit set of options
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="char32b">The second code point.</param>
+        /// <param name="options">A bit set of options.</param>
+        /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, int char32b, int options)
         {
             return InternalCompare(UTF16.ValueOf(char32a).ToCharSequence(), UTF16.ValueOf(char32b).ToCharSequence(), options | INPUT_IS_FCD);
         }
 
-        /**
-         * Convenience method that can have faster implementation
-         * by not allocating buffers.
-         * @param char32a   the first code point to be checked against
-         * @param str2      the second string
-         * @param options   A bit set of options
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Convenience method that can have faster implementation
+        /// by not allocating buffers.
+        /// </summary>
+        /// <param name="char32a">The first code point to be checked against the.</param>
+        /// <param name="str2">The second string.</param>
+        /// <param name="options">A bit set of options.</param>
+        /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, string str2, int options)
         {
             return InternalCompare(UTF16.ValueOf(char32a).ToCharSequence(), str2.ToCharSequence(), options);
         }
 
         /* Concatenation of normalized strings --------------------------------- */
-        /**
-         * Concatenate normalized strings, making sure that the result is normalized
-         * as well.
-         *
-         * If both the left and the right strings are in
-         * the normalization form according to "mode",
-         * then the result will be
-         *
-         * <code>
-         *     dest=normalize(left+right, mode)
-         * </code>
-         *
-         * With the input strings already being normalized,
-         * this function will use next() and previous()
-         * to find the adjacent end pieces of the input strings.
-         * Only the concatenation of these end pieces will be normalized and
-         * then concatenated with the remaining parts of the input strings.
-         *
-         * It is allowed to have dest==left to avoid copying the entire left string.
-         *
-         * @param left Left source array, may be same as dest.
-         * @param leftStart start in the left array.
-         * @param leftLimit limit in the left array (==length)
-         * @param right Right source array.
-         * @param rightStart start in the right array.
-         * @param rightLimit limit in the right array (==length)
-         * @param dest The output buffer; can be null if destStart==destLimit==0
-         *              for pure preflighting.
-         * @param destStart start in the destination array
-         * @param destLimit limit in the destination array (==length)
-         * @param mode The normalization mode.
-         * @param options The normalization options, ORed together (0 for no options).
-         * @return Length of output (number of chars) when successful or
-         *          IndexOutOfBoundsException
-         * @exception IndexOutOfBoundsException whose message has the string
-         *             representation of destination capacity required.
-         * @see #normalize
-         * @see #next
-         * @see #previous
-         * @exception IndexOutOfBoundsException if target capacity is less than the
-         *             required length
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+
+        /// <summary>
+        /// Concatenate normalized strings, making sure that the result is normalized
+        /// as well.
+        /// </summary>
+        /// <remarks>
+        /// If both the left and the right strings are in
+        /// the normalization form according to "mode",
+        /// then the result will be
+        ///
+        /// <code>
+        ///     dest=Normalize(left+right, mode)
+        /// </code>
+        ///
+        /// With the input strings already being normalized,
+        /// this function will use <see cref="Next()"/> and <see cref="Previous()"/>
+        /// to find the adjacent end pieces of the input strings.
+        /// Only the concatenation of these end pieces will be normalized and
+        /// then concatenated with the remaining parts of the input strings.
+        /// <para/>
+        /// It is allowed to have dest==left to avoid copying the entire left string.
+        /// </remarks>
+        /// <param name="left">Left source array, may be same as dest.</param>
+        /// <param name="leftStart">Start in the left array.</param>
+        /// <param name="leftLimit">Limit in the left array (==length).</param>
+        /// <param name="right">Right source array.</param>
+        /// <param name="rightStart">Start in the right array.</param>
+        /// <param name="rightLimit">Limit in the right array (==length).</param>
+        /// <param name="dest">The output buffer; can be null if destStart==destLimit==0
+        /// for pure preflighting.</param>
+        /// <param name="destStart">Start in the destination array.</param>
+        /// <param name="destLimit">Limit in the destination array (==length).</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>Length of output (number of chars) when successful or <see cref="IndexOutOfRangeException"/>.</returns>
+        /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
+        /// <see cref="Normalize(string, Mode, int)"/>
+        /// <see cref="Next()"/>
+        /// <see cref="Previous()"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static int Concatenate(char[] left, int leftStart, int leftLimit,
                                   char[] right, int rightStart, int rightLimit,
@@ -1325,33 +1345,32 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Concatenate normalized strings, making sure that the result is normalized
-         * as well.
-         *
-         * If both the left and the right strings are in
-         * the normalization form according to "mode",
-         * then the result will be
-         *
-         * <code>
-         *     dest=normalize(left+right, mode)
-         * </code>
-         *
-         * For details see concatenate
-         *
-         * @param left Left source string.
-         * @param right Right source string.
-         * @param mode The normalization mode.
-         * @param options The normalization options, ORed together (0 for no options).
-         * @return result
-         *
-         * @see #concatenate
-         * @see #normalize
-         * @see #next
-         * @see #previous
-         * @see #concatenate
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Concatenate normalized strings, making sure that the result is normalized
+        /// as well.
+        /// </summary>
+        /// <remarks>
+        /// If both the left and the right strings are in
+        /// the normalization form according to "mode",
+        /// then the result will be
+        ///
+        /// <code>
+        ///     dest=Normalize(left+right, mode)
+        /// </code>
+        /// 
+        /// <para/>
+        /// For details see <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, Mode, int)"/>.
+        /// </remarks>
+        /// <param name="left">Left source string.</param>
+        /// <param name="right">Right source string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>Result.</returns>
+        /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
+        /// <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, Mode, int)"/>
+        /// <see cref="Normalize(string, Mode, int)"/>
+        /// <see cref="Next()"/>
+        /// <see cref="Previous()"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Concatenate(char[] left, char[] right, Mode mode, int options)
         {
@@ -1359,37 +1378,36 @@ namespace ICU4N.Text
             return mode.GetNormalizer2(options).Append(dest, CharBuffer.Wrap(right)).ToString();
         }
 
-        /**
-         * Concatenate normalized strings, making sure that the result is normalized
-         * as well.
-         *
-         * If both the left and the right strings are in
-         * the normalization form according to "mode",
-         * then the result will be
-         *
-         * <code>
-         *     dest=normalize(left+right, mode)
-         * </code>
-         *
-         * With the input strings already being normalized,
-         * this function will use next() and previous()
-         * to find the adjacent end pieces of the input strings.
-         * Only the concatenation of these end pieces will be normalized and
-         * then concatenated with the remaining parts of the input strings.
-         *
-         * @param left Left source string.
-         * @param right Right source string.
-         * @param mode The normalization mode.
-         * @param options The normalization options, ORed together (0 for no options).
-         * @return result
-         *
-         * @see #concatenate
-         * @see #normalize
-         * @see #next
-         * @see #previous
-         * @see #concatenate
-         * @deprecated ICU 56 Use {@link Normalizer2} instead.
-         */
+        /// <summary>
+        /// Concatenate normalized strings, making sure that the result is normalized
+        /// as well.
+        /// </summary>
+        /// <remarks>
+        /// If both the left and the right strings are in
+        /// the normalization form according to "mode",
+        /// then the result will be
+        ///
+        /// <code>
+        ///     dest=Normalize(left+right, mode)
+        /// </code>
+        ///
+        /// With the input strings already being normalized,
+        /// this function will use <see cref="Next()"/> and <see cref="Previous()"/>
+        /// to find the adjacent end pieces of the input strings.
+        /// Only the concatenation of these end pieces will be normalized and
+        /// then concatenated with the remaining parts of the input strings.
+        /// </remarks>
+        /// <param name="left">Left source string.</param>
+        /// <param name="right">Right source string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <returns>Result.</returns>
+        /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
+        /// <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, Mode, int)"/>
+        /// <see cref="Normalize(string, Mode, int)"/>
+        /// <see cref="Next()"/>
+        /// <see cref="Previous()"/>
+        /// <see cref="Concatenate(char[], char[], Mode, int)"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Concatenate(string left, string right, Mode mode, int options)
         {
@@ -1397,13 +1415,12 @@ namespace ICU4N.Text
             return mode.GetNormalizer2(options).Append(dest, right).ToString();
         }
 
-        /**
-         * Gets the FC_NFKC closure value.
-         * @param c The code point whose closure value is to be retrieved
-         * @param dest The char array to receive the closure value
-         * @return the length of the closure value; 0 if there is none
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Gets the FC_NFKC closure value.
+        /// </summary>
+        /// <param name="c">The code point whose closure value is to be retrieved.</param>
+        /// <param name="dest">The char array to receive the closure value.</param>
+        /// <returns>The length of the closure value; 0 if there is none.</returns>
         [Obsolete("ICU 56")]
         public static int GetFC_NFKC_Closure(int c, char[] dest)
         {
@@ -1416,12 +1433,12 @@ namespace ICU4N.Text
             }
             return length;
         }
-        /**
-         * Gets the FC_NFKC closure value.
-         * @param c The code point whose closure value is to be retrieved
-         * @return string representation of the closure value; "" if there is none
-         * @deprecated ICU 56
-         */
+
+        /// <summary>
+        /// Gets the FC_NFKC closure value.
+        /// </summary>
+        /// <param name="c">The code point whose closure value is to be retrieved.</param>
+        /// <returns>String representation of the closure value; "" if there is none.</returns>
         [Obsolete("ICU 56")]
         public static string GetFC_NFKC_Closure(int c)
         {
@@ -1470,11 +1487,10 @@ namespace ICU4N.Text
         // Iteration API
         //-------------------------------------------------------------------------
 
-        /**
-         * Return the current character in the normalized text.
-         * @return The codepoint as an int
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Gets the current character in the normalized text.
+        /// Returns the codepoint as an int.
+        /// </summary>
         [Obsolete("ICU 56")]
         public int Current
         {
@@ -1491,15 +1507,14 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Return the next character in the normalized text and advance
-         * the iteration position by one.  If the end
-         * of the text has already been reached, {@link #DONE} is returned.
-         * @return The codepoint as an int
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Return the next character in the normalized text and advance
+        /// the iteration position by one.  If the end
+        /// of the text has already been reached, <see cref="DONE"/> is returned.
+        /// </summary>
+        /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
-        public int Next()
+        public int Next() // ICU4N TODO: API - rename MoveNext() ?
         {
             if (bufferPos < buffer.Length || NextNormalize())
             {
@@ -1513,14 +1528,12 @@ namespace ICU4N.Text
             }
         }
 
-
-        /**
-         * Return the previous character in the normalized text and decrement
-         * the iteration position by one.  If the beginning
-         * of the text has already been reached, {@link #DONE} is returned.
-         * @return The codepoint as an int
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Return the previous character in the normalized text and decrement
+        /// the iteration position by one.  If the beginning
+        /// of the text has already been reached, <see cref="DONE"/> is returned.
+        /// </summary>
+        /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
         public int Previous()
         {
@@ -1536,11 +1549,10 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Reset the index to the beginning of the text.
-         * This is equivalent to setIndexOnly(startIndex)).
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Reset the index to the beginning of the text.
+        /// This is equivalent to <c>SetIndexOnly(startIndex)</c>.
+        /// </summary>
         [Obsolete("ICU 56")]
         public void Reset()
         {
@@ -1549,15 +1561,13 @@ namespace ICU4N.Text
             ClearBuffer();
         }
 
-        /**
-         * Set the iteration position in the input text that is being normalized,
-         * without any immediate normalization.
-         * After setIndexOnly(), getIndex() will return the same index that is
-         * specified here.
-         *
-         * @param index the desired index in the input text.
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Set the iteration position in the input text that is being normalized,
+        /// without any immediate normalization.
+        /// After <see cref="SetIndexOnly(int)"/>, <see cref="Index"/> will return the same index that is
+        /// specified here.
+        /// </summary>
+        /// <param name="index">The desired index in the input text.</param>
         [Obsolete("ICU 56")]
         public void SetIndexOnly(int index)
         {
@@ -1566,68 +1576,62 @@ namespace ICU4N.Text
             ClearBuffer();
         }
 
-        /**
-         * Set the iteration position in the input text that is being normalized
-         * and return the first normalized character at that position.
-         * <p>
-         * <b>Note:</b> This method sets the position in the <em>input</em> text,
-         * while {@link #next} and {@link #previous} iterate through characters
-         * in the normalized <em>output</em>.  This means that there is not
-         * necessarily a one-to-one correspondence between characters returned
-         * by <tt>next</tt> and <tt>previous</tt> and the indices passed to and
-         * returned from <tt>setIndex</tt> and {@link #getIndex}.
-         * <p>
-         * @param index the desired index in the input text.
-         *
-         * @return   the first normalized character that is the result of iterating
-         *            forward starting at the given index.
-         *
-         * @throws IllegalArgumentException if the given index is less than
-         *          {@link #getBeginIndex} or greater than {@link #getEndIndex}.
-         * @deprecated ICU 3.2
-         * @obsolete ICU 3.2
-         */
+        /// <summary>
+        /// Set the iteration position in the input text that is being normalized
+        /// and return the first normalized character at that position.
+        /// <para/>
+        /// <b>Note:</b> This method sets the position in the <em>input</em> text,
+        /// while <see cref="Next()"/> and <see cref="Previous()"/> iterate through characters
+        /// in the normalized <em>output</em>.  This means that there is not
+        /// necessarily a one-to-one correspondence between characters returned
+        /// by see <see cref="Next()"/> and <see cref="Previous()"/> and the indices passed to and
+        /// returned from <see cref="SetIndex(int)"/> and <see cref="Index"/>.
+        /// </summary>
+        /// <param name="index">The desired index in the input text.</param>
+        /// <returns>The first normalized character that is the result of iterating
+        /// forward starting at the given index.</returns>
+        /// <exception cref="ArgumentException">if the given index is less than
+        /// <see cref="GetBeginIndex()"/> or greater than <see cref="GetEndIndex()"/>.</exception>
         [Obsolete("ICU 3.2")]
-        ///CLOVER:OFF
+        //CLOVER:OFF
         public int SetIndex(int index)
         {
             SetIndexOnly(index);
             return Current;
         }
-        ///CLOVER:ON
-        /**
-         * Retrieve the index of the start of the input text. This is the begin
-         * index of the <tt>CharacterIterator</tt> or the start (i.e. 0) of the
-         * <tt>string</tt> over which this <tt>Normalizer</tt> is iterating
-         * @deprecated ICU 2.2. Use startIndex() instead.
-         * @return The codepoint as an int
-         * @see #startIndex
-         */
-        [Obsolete("ICU 2.2. Use StartIndex() instead.")]
+        //CLOVER:ON
+
+        /// <summary>
+        /// Retrieve the index of the start of the input text. This is the begin
+        /// index of the <see cref="CharacterIterator"/> or the start (i.e. 0) of the
+        /// <see cref="string"/> over which this <see cref="Normalizer"/> is iterating.
+        /// </summary>
+        /// <returns>The codepoint as an int.</returns>
+        /// <seealso cref="StartIndex"/>
+        [Obsolete("ICU 2.2. Use StartIndex instead.")]
         public int GetBeginIndex()
         {
             return 0;
         }
 
-        /**
-         * Retrieve the index of the end of the input text.  This is the end index
-         * of the <tt>CharacterIterator</tt> or the length of the <tt>string</tt>
-         * over which this <tt>Normalizer</tt> is iterating
-         * @deprecated ICU 2.2. Use endIndex() instead.
-         * @return The codepoint as an int
-         * @see #endIndex
-         */
-        [Obsolete("ICU 2.2. Use EndIndex() instead.")]
+        /// <summary>
+        /// Retrieve the index of the end of the input text.  This is the end index
+        /// of the <see cref="CharacterIterator"/> or the length of the <see cref="string"/>
+        /// over which this <see cref="Normalizer"/> is iterating.
+        /// </summary>
+        /// <returns>The codepoint as an int.</returns>
+        /// <seealso cref="EndIndex"/>
+        [Obsolete("ICU 2.2. Use EndIndex instead.")]
         public int GetEndIndex()
         {
             return EndIndex;
         }
-        /**
-         * Return the first character in the normalized text.  This resets
-         * the <tt>Normalizer's</tt> position to the beginning of the text.
-         * @return The codepoint as an int
-         * @deprecated ICU 56
-         */
+
+        /// <summary>
+        /// Return the first character in the normalized text.  This resets
+        /// the <see cref="Normalizer"/>'s position to the beginning of the text.
+        /// </summary>
+        /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
         public int First()
         {
@@ -1635,13 +1639,12 @@ namespace ICU4N.Text
             return Next();
         }
 
-        /**
-         * Return the last character in the normalized text.  This resets
-         * the <tt>Normalizer's</tt> position to be just before the
-         * the input text corresponding to that normalized character.
-         * @return The codepoint as an int
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Return the last character in the normalized text.  This resets
+        /// the <see cref="Normalizer"/>'s position to be just before the
+        /// the input text corresponding to that normalized character.
+        /// </summary>
+        /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
         public int Last()
         {
@@ -1651,21 +1654,19 @@ namespace ICU4N.Text
             return Previous();
         }
 
-        /**
-         * Retrieve the current iteration position in the input text that is
-         * being normalized.  This method is useful in applications such as
-         * searching, where you need to be able to determine the position in
-         * the input text that corresponds to a given normalized output character.
-         * <p>
-         * <b>Note:</b> This method sets the position in the <em>input</em>, while
-         * {@link #next} and {@link #previous} iterate through characters in the
-         * <em>output</em>.  This means that there is not necessarily a one-to-one
-         * correspondence between characters returned by <tt>next</tt> and
-         * <tt>previous</tt> and the indices passed to and returned from
-         * <tt>setIndex</tt> and {@link #getIndex}.
-         * @return The current iteration position
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Retrieve the current iteration position in the input text that is
+        /// being normalized.  This method is useful in applications such as
+        /// searching, where you need to be able to determine the position in
+        /// the input text that corresponds to a given normalized output character.
+        /// <para/>
+        /// <b>Note:</b> This method sets the position in the <em>input</em>, while
+        /// <see cref="Next()"/> and <see cref="Previous()"/> iterate through characters in the
+        /// <em>output</em>.  This means that there is not necessarily a one-to-one
+        /// correspondence between characters returned by <see cref="Next()"/> and <see cref="Previous()"/>
+        /// and the indices passed to and returned from <see cref="SetIndex(int)"/> and <see cref="Index"/>.
+        /// </summary>
+        /// <returns>The current iteration position.</returns>
         [Obsolete("ICU 56")]
         public int Index
         {
@@ -1682,26 +1683,24 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Retrieve the index of the start of the input text. This is the begin
-         * index of the <tt>CharacterIterator</tt> or the start (i.e. 0) of the
-         * <tt>string</tt> over which this <tt>Normalizer</tt> is iterating
-         * @return The current iteration position
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Retrieve the index of the start of the input text. This is the begin
+        /// index of the <see cref="CharacterIterator"/> or the start (i.e. 0) of the
+        /// <see cref="string"/> over which this <see cref="Normalizer"/> is iterating.
+        /// </summary>
+        /// <returns>The current iteration position.</returns>
         [Obsolete("ICU 56")]
         public int StartIndex
         {
             get { return 0; }
         }
 
-        /**
-         * Retrieve the index of the end of the input text.  This is the end index
-         * of the <tt>CharacterIterator</tt> or the length of the <tt>string</tt>
-         * over which this <tt>Normalizer</tt> is iterating
-         * @return The current iteration position
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Retrieve the index of the end of the input text.  This is the end index
+        /// of the <see cref="CharacterIterator"/> or the length of the <see cref="string"/>
+        /// over which this <see cref="Normalizer"/> is iterating.
+        /// </summary>
+        /// <returns>The current iteration position.</returns>
         [Obsolete("ICU 56")]
         public int EndIndex
         {
@@ -1711,67 +1710,59 @@ namespace ICU4N.Text
         //-------------------------------------------------------------------------
         // Iterator attributes
         //-------------------------------------------------------------------------
-        /**
-         * Set the normalization mode for this object.
-         * <p>
-         * <b>Note:</b>If the normalization mode is changed while iterating
-         * over a string, calls to {@link #next} and {@link #previous} may
-         * return previously buffers characters in the old normalization mode
-         * until the iteration is able to re-sync at the next base character.
-         * It is safest to call {@link #setText setText()}, {@link #first},
-         * {@link #last}, etc. after calling <tt>setMode</tt>.
-         * <p>
-         * @param newMode the new mode for this <tt>Normalizer</tt>.
-         * The supported modes are:
-         * <ul>
-         *  <li>{@link #NFC}    - Unicode canonical decompositiion
-         *                        followed by canonical composition.
-         *  <li>{@link #NFKC}   - Unicode compatibility decompositiion
-         *                        follwed by canonical composition.
-         *  <li>{@link #NFD}    - Unicode canonical decomposition
-         *  <li>{@link #NFKD}   - Unicode compatibility decomposition.
-         *  <li>{@link #NONE}   - Do nothing but return characters
-         *                        from the underlying input text.
-         * </ul>
-         *
-         * @see #getMode
-         * @deprecated ICU 56
-         */
+
+        /// <summary>
+        /// Set the normalization mode for this object.
+        /// <para/>
+        /// <b>Note:</b>If the normalization mode is changed while iterating
+        /// over a string, calls to <see cref="Next()"/> and <see cref="Previous()"/> may
+        /// return previously buffers characters in the old normalization mode
+        /// until the iteration is able to re-sync at the next base character.
+        /// It is safest to call <see cref="SetText(string)"/>, <see cref="First()"/>,
+        /// <see cref="Last()"/>, etc. after calling <see cref="SetMode(Mode)"/>.
+        /// </summary>
+        /// <param name="newMode">The new mode for this <see cref="Normalizer"/>.
+        /// The supported modes are:
+        /// <list type="table">
+        ///     <item><term><see cref="NFC"/></term><description>Unicode canonical decompositiion followed by canonical composition.</description></item>
+        ///     <item><term><see cref="NFKC"/></term><description>Unicode compatibility decompositiion follwed by canonical composition.</description></item>
+        ///     <item><term><see cref="NFD"/></term><description>Unicode canonical decomposition.</description></item>
+        ///     <item><term><see cref="NFKD"/></term><description>Unicode compatibility decomposition.</description></item>
+        ///     <item><term><see cref="NONE"/></term><description>Do nothing but return characters from the underlying input text.</description></item>
+        /// </list>
+        /// </param>
+        /// <see cref="GetMode()"/>
         [Obsolete("ICU 56")]
         public void SetMode(Mode newMode)
         {
             mode = newMode;
             norm2 = mode.GetNormalizer2(options);
         }
-        /**
-         * Return the basic operation performed by this <tt>Normalizer</tt>
-         *
-         * @see #setMode
-         * @deprecated ICU 56
-         */
+
+        /// <summary>
+        /// Return the basic operation performed by this <see cref="Normalizer"/>.
+        /// </summary>
+        /// <seealso cref="SetMode(Mode)"/>
         [Obsolete("ICU 56")]
-        public Mode GetMode()
+        public Mode GetMode() // ICU4N TODO: API - make property
         {
             return mode;
         }
-        /**
-         * Set options that affect this <tt>Normalizer</tt>'s operation.
-         * Options do not change the basic composition or decomposition operation
-         * that is being performed , but they control whether
-         * certain optional portions of the operation are done.
-         * Currently the only available option is:
-         *
-         * <ul>
-         *   <li>{@link #UNICODE_3_2} - Use Normalization conforming to Unicode version 3.2.
-         * </ul>
-         *
-         * @param   option  the option whose value is to be set.
-         * @param   value   the new setting for the option.  Use <tt>true</tt> to
-         *                  turn the option on and <tt>false</tt> to turn it off.
-         *
-         * @see #getOption
-         * @deprecated ICU 56
-         */
+
+        /// <summary>
+        /// Set options that affect this <tt>Normalizer</tt>'s operation.
+        /// Options do not change the basic composition or decomposition operation
+        /// that is being performed , but they control whether
+        /// certain optional portions of the operation are done.
+        /// Currently the only available option is:
+        /// <list type="table">
+        ///     <item><term><see cref="UNICODE_3_2"/></term><description>Use Normalization conforming to Unicode version 3.2.</description></item>
+        /// </list>
+        /// </summary>
+        /// <param name="option">The option whose value is to be set.</param>
+        /// <param name="value">the new setting for the option.  Use <c>true</c> to
+        /// turn the option on and <c>false</c> to turn it off.</param>
+        /// <seealso cref="GetOption(int)"/>
         [Obsolete("ICU 56")]
         public void SetOption(int option, bool value)
         {
@@ -1786,12 +1777,10 @@ namespace ICU4N.Text
             norm2 = mode.GetNormalizer2(options);
         }
 
-        /**
-         * Determine whether an option is turned on or off.
-         * <p>
-         * @see #setOption
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Determine whether an option is turned on or off.
+        /// </summary>
+        /// <seealso cref="SetOption(int, bool)"/>
         [Obsolete("ICU 56")]
         public int GetOption(int option)
         {
@@ -1805,49 +1794,44 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Gets the underlying text storage
-         * @param fillIn the char buffer to fill the UTF-16 units.
-         *         The length of the buffer should be equal to the length of the
-         *         underlying text storage
-         * @throws IndexOutOfBoundsException If the index passed for the array is invalid.
-         * @see   #getLength
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Gets the underlying text storage.
+        /// </summary>
+        /// <param name="fillIn">the char buffer to fill the UTF-16 units.
+        /// The length of the buffer should be equal to the length of the
+        /// underlying text storage.</param>
+        /// <exception cref="IndexOutOfRangeException">If the index passed for the array is invalid.</exception>
+        /// <seealso cref="Length"/>
         [Obsolete("ICU 56")]
         public int GetText(char[] fillIn)
         {
             return text.GetText(fillIn);
         }
 
-        /**
-         * Gets the length of underlying text storage
-         * @return the length
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Gets the length of underlying text storage.
+        /// </summary>
         [Obsolete("ICU 56")]
         public int Length
         {
             get { return text.Length; }
         }
 
-        /**
-         * Returns the text under iteration as a string
-         * @return a copy of the text under iteration.
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Returns the text under iteration as a string.
+        /// </summary>
+        /// <returns>A copy of the text under iteration.</returns>
         [Obsolete("ICU 56")]
         public string GetText()
         {
             return text.GetText();
         }
 
-        /**
-         * Set the input text over which this <tt>Normalizer</tt> will iterate.
-         * The iteration position is set to the beginning of the input text.
-         * @param newText   The new string to be normalized.
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Set the input text over which this <see cref="Normalizer"/> will iterate.
+        /// The iteration position is set to the beginning of the input text.
+        /// </summary>
+        /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
         public void SetText(StringBuffer newText)
         {
@@ -1860,12 +1844,11 @@ namespace ICU4N.Text
             Reset();
         }
 
-        /**
-         * Set the input text over which this <tt>Normalizer</tt> will iterate.
-         * The iteration position is set to the beginning of the input text.
-         * @param newText   The new string to be normalized.
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Set the input text over which this <see cref="Normalizer"/> will iterate.
+        /// The iteration position is set to the beginning of the input text.
+        /// </summary>
+        /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
         public void SetText(char[] newText)
         {
@@ -1878,12 +1861,11 @@ namespace ICU4N.Text
             Reset();
         }
 
-        /**
-         * Set the input text over which this <tt>Normalizer</tt> will iterate.
-         * The iteration position is set to the beginning of the input text.
-         * @param newText   The new string to be normalized.
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Set the input text over which this <see cref="Normalizer"/> will iterate.
+        /// The iteration position is set to the beginning of the input text.
+        /// </summary>
+        /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
         public void SetText(string newText)
         {
@@ -1896,12 +1878,11 @@ namespace ICU4N.Text
             Reset();
         }
 
-        /**
-         * Set the input text over which this <tt>Normalizer</tt> will iterate.
-         * The iteration position is set to the beginning of the input text.
-         * @param newText   The new string to be normalized.
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Set the input text over which this <see cref="Normalizer"/> will iterate.
+        /// The iteration position is set to the beginning of the input text.
+        /// </summary>
+        /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
         public void SetText(CharacterIterator newText)
         {
@@ -1914,12 +1895,11 @@ namespace ICU4N.Text
             Reset();
         }
 
-        /**
-         * Set the input text over which this <tt>Normalizer</tt> will iterate.
-         * The iteration position is set to the beginning of the string.
-         * @param newText   The new string to be normalized.
-         * @deprecated ICU 56
-         */
+        /// <summary>
+        /// Set the input text over which this <see cref="Normalizer"/> will iterate.
+        /// The iteration position is set to the beginning of the string.
+        /// </summary>
+        /// <param name="newText">The new string to be normalized.</param>
         [Obsolete("ICU 56")]
         public void SetText(UCharacterIterator newText)
         {
@@ -2171,10 +2151,10 @@ namespace ICU4N.Text
         };
         }
 
-        /**
-         * Internal option for unorm_cmpEquivFold() for decomposing.
-         * If not set, just do strcasecmp().
-         */
+        /// <summary>
+        /// Internal option for unorm_cmpEquivFold() for decomposing.
+        /// If not set, just do strcasecmp().
+        /// </summary>
         private static readonly int COMPARE_EQUIV = 0x80000;
 
         /// <summary>

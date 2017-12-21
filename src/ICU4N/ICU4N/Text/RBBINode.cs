@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace ICU4N.Text
 {
@@ -328,12 +327,12 @@ namespace ICU4N.Text
             }
             Console.Out.WriteLine("");
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
 
         // Print a String in a fixed field size.
         // Debugging function.
-        ///CLOVER:OFF
+        //CLOVER:OFF
         internal static void PrintString(String s, int minWidth)
         {
             for (int i = minWidth; i < 0; i++)
@@ -347,21 +346,21 @@ namespace ICU4N.Text
             }
             Console.Out.Write(s);
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
         //
         //  Print an int in a fixed size field.
         //  Debugging function.
         //
-        ///CLOVER:OFF
+        //CLOVER:OFF
         internal static void PrintInt32(int i, int minWidth)
         {
             string s = i.ToString(CultureInfo.InvariantCulture);
             PrintString(s, Math.Max(minWidth, s.Length + 1));
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
-        ///CLOVER:OFF
+        //CLOVER:OFF
         internal static void PrintHex(int i, int minWidth)
         {
             string s = Convert.ToString(i, 16); // ICU4N TODO: Check this conversion
@@ -370,7 +369,7 @@ namespace ICU4N.Text
             s = leadingZeroes + s;
             PrintString(s, minWidth);
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
 
         // -------------------------------------------------------------------------
@@ -378,7 +377,7 @@ namespace ICU4N.Text
         //        print. Print out the tree of nodes rooted at "this"
         //
         // -------------------------------------------------------------------------
-        ///CLOVER:OFF
+        //CLOVER:OFF
         internal virtual void PrintTree(bool printHeading)
         {
             if (printHeading)
@@ -402,6 +401,6 @@ namespace ICU4N.Text
                 }
             }
         }
-        ///CLOVER:ON
+        //CLOVER:ON
     }
 }

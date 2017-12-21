@@ -8,12 +8,7 @@
     /// <author>markdavis</author>
     public interface IStringTransform : ITransform<string, string>
     {
-        /// <summary>
-        /// Transform the text in some way, to be determined by the subclass.
-        /// </summary>
-        /// <param name="source">Text to be transformed (eg lowercased).</param>
-        /// <returns>Result.</returns>
-        /// <stable>ICU 3.8</stable>
-        //string Transform(string source);
+        // ICU4N specific - we don't provide a Transform method definition because
+        // our inherited interface does that already.
     }
 }

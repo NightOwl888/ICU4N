@@ -411,8 +411,8 @@ namespace ICU4N.Text
 <# foreach (var charSequence in charSequences) { #>
 
         /// <summary>
-        /// Utility for getting code point from single code point <see cref="<#=charSequence#>"/>.
-        /// See the public <see cref="UTF16.GetSingleCodePoint()"/>.
+        /// Utility for getting code point from single code point <see cref="<#=(charSequence == "char[]" ? "T:" : "") + charSequence#>"/>.
+        /// See the public <see cref="UTF16.GetSingleCodePoint(<#=charSequence#>)"/>.
         /// </summary>
         /// <param name="s">To test.</param>
         /// <returns>A code point IF the string consists of a single one. Otherwise returns -1.</returns>
@@ -1090,7 +1090,7 @@ namespace ICU4N.Text
         /// Strips code points from source. If matches is true, script all that match <i>this</i>. 
         /// If matches is false, then strip all that <i>don't</i> match.
         /// </summary>
-        /// <param name="source">The source of the <see cref="<#=charSequence#>"/> to strip from.</param>
+        /// <param name="source">The source of the <see cref="<#=(charSequence == "char[]" ? "T:" : "") + charSequence#>"/> to strip from.</param>
         /// <param name="matches">A bool to either strip all that matches or don't match with the current <see cref="UnicodeSet"/> object.</param>
         /// <returns>The string after it has been stripped.</returns>
         [Obsolete("This API is ICU internal only. Use replaceFrom.")]

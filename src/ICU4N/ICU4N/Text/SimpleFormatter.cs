@@ -11,6 +11,10 @@ namespace ICU4N.Text
     // ICU4N TODO: If we do keep this, this and all other formatters should implement IFormatProvider so they can be used directly
     // with string.Format()
 
+    // ICU4N TODO: API - The format methods should replace ICharSequence with object so we can mix different types
+    // in the same array. Internally, we can just call ToString() on each of the objects (including ICharSequence) to get an array of strings.
+    // Without doing this, we have no way of passing string and StringBuilder in the same array as was done in Java.
+
     /// <summary>
     /// Formats simple patterns like "{1} was born in {0}".
     /// </summary>
@@ -82,12 +86,6 @@ namespace ICU4N.Text
         /// Can be null, or can be shorter or longer than values.
         /// If there is no {i} in the pattern, then offsets[i] is set to -1.
         /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value must not be the same object as appendTo.
-        /// values.Length must be at least <see cref="ArgumentLimit"/>.
-        /// Can be null if <see cref="ArgumentLimit"/>==0.
-        /// </param>
         /// <returns><paramref name="appendTo"/></returns>
         /// <stable>ICU4N 60.1</stable>
         public StringBuilder FormatAndAppend(
@@ -110,11 +108,6 @@ namespace ICU4N.Text
         /// values[i] replaced pattern argument {i}.
         /// Can be null, or can be shorter or longer than values.
         /// If there is no {i} in the pattern, then offsets[i] is set to -1.
-        /// </param>
-        /// <param name="values">
-        /// The argument values.
-        /// An argument value may be the same object as result.
-        /// values.Length must be at least <see cref="ArgumentLimit"/>.
         /// </param>
         /// <returns><paramref name="result"/></returns>
         /// <stable>ICU4N 60.1</stable>

@@ -343,7 +343,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Delete all matching spans in sequence, according to the spanCondition.
-        /// The code alternates spans; see the class doc for {@link UnicodeSetSpanner} for a note about boundary conditions.
+        /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
         /// 
         /// </summary>
         /// <param name="sequence">Character sequence to replace matching spans in.</param>
@@ -359,7 +359,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Delete all matching spans in sequence, according to the spanCondition.
-        /// The code alternates spans; see the class doc for {@link UnicodeSetSpanner} for a note about boundary conditions.
+        /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
         /// 
         /// </summary>
         /// <param name="sequence">Character sequence to replace matching spans in.</param>
@@ -375,7 +375,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Delete all matching spans in sequence, according to the spanCondition.
-        /// The code alternates spans; see the class doc for {@link UnicodeSetSpanner} for a note about boundary conditions.
+        /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
         /// 
         /// </summary>
         /// <param name="sequence">Character sequence to replace matching spans in.</param>
@@ -391,7 +391,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Delete all matching spans in sequence, according to the spanCondition.
-        /// The code alternates spans; see the class doc for {@link UnicodeSetSpanner} for a note about boundary conditions.
+        /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
         /// 
         /// </summary>
         /// <param name="sequence">Character sequence to replace matching spans in.</param>

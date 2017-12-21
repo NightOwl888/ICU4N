@@ -2,9 +2,6 @@
 using ICU4N.Lang;
 using ICU4N.Support;
 using ICU4N.Support.Text;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Text
 {
@@ -58,12 +55,12 @@ namespace ICU4N.Text
             return 0;
         }
 
-        /**
-         * Update the set of unhandled characters for the specified breakType to include
-         * all that have the same script as c.
-         * May be called concurrently with handles() or findBreaks().
-         * Must not be called concurrently with itself.
-         */
+        /// <summary>
+        /// Update the set of unhandled characters for the specified breakType to include
+        /// all that have the same script as <paramref name="c"/>.
+        /// May be called concurrently with <see cref="Handles(int, int)"/> or <see cref="FindBreaks(CharacterIterator, int, int, int, DictionaryBreakEngine.DequeI)"/>.
+        /// Must not be called concurrently with itself.
+        /// </summary>
         public void HandleChar(int c, int breakType)
         {
             if (breakType >= 0 && breakType < fHandled.Length && c != CharacterIteration.DONE32)

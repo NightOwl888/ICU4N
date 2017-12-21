@@ -3,7 +3,6 @@ using ICU4N.Support.Collections;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ICU4N.Text
 {
@@ -470,7 +469,7 @@ namespace ICU4N.Text
                 Console.Out.WriteLine("");
             }
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
 
         //------------------------------------------------------------------------
@@ -534,7 +533,7 @@ namespace ICU4N.Text
             }
             Console.Out.Write("\n");
         }
-        ///CLOVER:ON
+        //CLOVER:ON
 
 
         //------------------------------------------------------------------------
@@ -580,6 +579,6 @@ namespace ICU4N.Text
             }
             Console.Out.Write("\n");
         }
-        ///CLOVER:ON
+        //CLOVER:ON
     }
 }

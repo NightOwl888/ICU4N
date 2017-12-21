@@ -122,8 +122,10 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>This API is ICU internal only.</returns>
         /// <internal/>
+#pragma warning disable 809
         [Obsolete("This API is ICU internal only.")]
         public override int GetHashCode()
+#pragma warning disable 809
         {
             Debug.Assert(false, "hashCode not designed");
             return 42;
