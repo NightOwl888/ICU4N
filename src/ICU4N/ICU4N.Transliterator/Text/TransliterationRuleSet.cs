@@ -207,10 +207,10 @@ namespace ICU4N.Text
             int indexByte = text.Char32At(pos.Start) & 0xFF;
             for (int i = index[indexByte]; i < index[indexByte + 1]; ++i)
             {
-                int m = rules[i].MatchAndReplace(text, pos, incremental);
+                MatchDegree m = rules[i].MatchAndReplace(text, pos, incremental);
                 switch (m)
                 {
-                    case UnicodeMatcher.U_MATCH:
+                    case MatchDegree.Match:
                         if (Transliterator.DEBUG)
                         {
                             Console.Out.WriteLine((incremental ? "Rule.i: match " : "Rule: match ") +
@@ -218,7 +218,7 @@ namespace ICU4N.Text
                                                UtilityExtensions.FormatInput(text, pos));
                         }
                         return true;
-                    case UnicodeMatcher.U_PARTIAL_MATCH:
+                    case MatchDegree.PartialMatch:
                         if (Transliterator.DEBUG)
                         {
                             Console.Out.WriteLine((incremental ? "Rule.i: partial match " : "Rule: partial match ") +

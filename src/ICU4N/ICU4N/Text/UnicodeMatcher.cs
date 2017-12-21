@@ -8,7 +8,7 @@
     public interface IUnicodeMatcher
     {
         /// <summary>
-        /// Return a <see cref="UMatchDegree"/> value indicating the degree of match for
+        /// Return a <see cref="MatchDegree"/> value indicating the degree of match for
         /// the given text at the given offset.  Zero, one, or more
         /// characters may be matched.
         /// </summary>
@@ -24,7 +24,7 @@
         /// If <paramref name="limit"/> == <paramref name="offset"/> then the only match possible is a zero
         /// character match (which subclasses may implement if desired).
         /// <para/>
-        /// If <see cref="UnicodeMatcher.U_MATCH"/> is returned, then as a side effect, advance the
+        /// If <see cref="MatchDegree.Match"/> is returned, then as a side effect, advance the
         /// <paramref name="offset"/> parameter to the limit of the matched substring.  In the
         /// forward direction, this will be the index of the last matched
         /// character plus one.  In the reverse direction, this will be the
@@ -51,12 +51,12 @@
         /// </param>
         /// <returns>a match degree value indicating a full match, a partial
         /// match, or a mismatch.  If incremental is FALSE then
-        /// <see cref="UnicodeMatcher.U_PARTIAL_MATCH"/> should never be returned.</returns>
+        /// <see cref="MatchDegree.PartialMatch"/> should never be returned.</returns>
         /// <stable>ICU 2.0</stable>
-        int Matches(IReplaceable text,
+        MatchDegree Matches(IReplaceable text,
                                     int[] offset,
                                     int limit,
-                                    bool incremental); // ICU4N TODO: API - make return value into enum UMatchDegree
+                                    bool incremental);
 
         /// <summary>
         /// Returns a string representation of this matcher.  If the result of
@@ -97,7 +97,27 @@
     /// <summary>
     /// Constants for <see cref="IUnicodeMatcher"/>.
     /// </summary>
-    public static class UnicodeMatcher // ICU4N TODO: API - make internal when constants are converted to enum
+    internal static class UnicodeMatcher
+    {
+        /// <summary>
+        /// The character at index i, where i &lt; contextStart || i &gt;= contextLimit,
+        /// is <see cref="ETHER"/>.  This allows explicit matching by rules and <see cref="UnicodeSet"/>s
+        /// of text outside the context.  In traditional terms, this allows anchoring
+        /// at the start and/or end.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        internal const char ETHER = '\uFFFF';
+    }
+
+    /// <summary>
+    /// Constants returned by <see cref="IUnicodeMatcher.Matches(IReplaceable, int[], int, bool)"/>
+    /// indicating the degree of match.
+    /// </summary>
+    /// <remarks>
+    /// Ported from icu4c/source/common/unicode/unimatch.h
+    /// </remarks>
+    /// <stable>ICU 2.4</stable>
+    public enum MatchDegree
     {
         /// <summary>
         /// Indicates a mismatch between the text and the <see cref="IUnicodeMatcher"/>.  
@@ -105,7 +125,7 @@
         /// all desired characters for a non-incremental match.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const int U_MISMATCH = 0; // ICU4N TODO: API - make into enum UMatchDegree (returned from IUnicodeMatcher.Matches())
+        Mismatch = 0,
 
         /// <summary>
         /// Indicates a partial match between the text and the <see cref="IUnicodeMatcher"/>.  This value is
@@ -116,7 +136,7 @@
         /// supplied at limit, they might also match.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const int U_PARTIAL_MATCH = 1; // ICU4N TODO: API - make into enum UMatchDegree (returned from IUnicodeMatcher.Matches())
+        PartialMatch = 1,
 
         /// <summary>
         /// Indicates a complete match between the text and the <see cref="IUnicodeMatcher"/>.  For an
@@ -125,15 +145,6 @@
         /// characters would not alter the extent of the match.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const int U_MATCH = 2; // ICU4N TODO: API - make into enum UMatchDegree (returned from IUnicodeMatcher.Matches())
-
-        /// <summary>
-        /// The character at index i, where i &lt; contextStart || i &gt;= contextLimit,
-        /// is <see cref="ETHER"/>.  This allows explicit matching by rules and <see cref="UnicodeSet"/>s
-        /// of text outside the context.  In traditional terms, this allows anchoring
-        /// at the start and/or end.
-        /// </summary>
-        /// <stable>ICU 2.0</stable>
-        internal const char ETHER = '\uFFFF';
+        Match = 2,
     }
 }

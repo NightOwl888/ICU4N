@@ -26,7 +26,7 @@ namespace ICU4N.Text
         /// filters.  Matches a single 16-bit code unit at offset.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public virtual int Matches(IReplaceable text,
+        public virtual MatchDegree Matches(IReplaceable text,
                        int[] offset,
                        int limit,
                        bool incremental)
@@ -36,7 +36,7 @@ namespace ICU4N.Text
                 Contains(c = text.Char32At(offset[0])))
             {
                 offset[0] += UTF16.GetCharCount(c);
-                return UnicodeMatcher.U_MATCH;
+                return MatchDegree.Match;
             }
             if (offset[0] > limit && Contains(text.Char32At(offset[0])))
             {
@@ -48,13 +48,13 @@ namespace ICU4N.Text
                 {
                     offset[0] -= UTF16.GetCharCount(text.Char32At(offset[0])) - 1;
                 }
-                return UnicodeMatcher.U_MATCH;
+                return MatchDegree.Match;
             }
             if (incremental && offset[0] == limit)
             {
-                return UnicodeMatcher.U_PARTIAL_MATCH;
+                return MatchDegree.PartialMatch;
             }
-            return UnicodeMatcher.U_MISMATCH;
+            return MatchDegree.Mismatch;
         }
 
         public abstract string ToPattern(bool escapeUnprintable);

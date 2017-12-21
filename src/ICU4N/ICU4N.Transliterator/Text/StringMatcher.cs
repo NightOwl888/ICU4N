@@ -91,7 +91,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Implement <see cref="IUnicodeMatcher"/>
         /// </summary>
-        public virtual int Matches(IReplaceable text,
+        public virtual MatchDegree Matches(IReplaceable text,
                            int[] offset,
                            int limit,
                            bool incremental)
@@ -118,14 +118,14 @@ namespace ICU4N.Text
                         }
                         else
                         {
-                            return UnicodeMatcher.U_MISMATCH;
+                            return MatchDegree.Mismatch;
                         }
                     }
                     else
                     {
-                        int m =
+                        MatchDegree m =
                             subm.Matches(text, cursor, limit, incremental);
-                        if (m != UnicodeMatcher.U_MATCH)
+                        if (m != MatchDegree.Match)
                         {
                             return m;
                         }
@@ -148,7 +148,7 @@ namespace ICU4N.Text
                     {
                         // We've reached the context limit without a mismatch and
                         // without completing our match.
-                        return UnicodeMatcher.U_PARTIAL_MATCH;
+                        return MatchDegree.PartialMatch;
                     }
                     char keyChar = pattern[i]; // OK; see note (1) above
                     IUnicodeMatcher subm = data.LookupMatcher(keyChar);
@@ -164,14 +164,14 @@ namespace ICU4N.Text
                         }
                         else
                         {
-                            return UnicodeMatcher.U_MISMATCH;
+                            return MatchDegree.Mismatch;
                         }
                     }
                     else
                     {
-                        int m =
+                        MatchDegree m =
                             subm.Matches(text, cursor, limit, incremental);
-                        if (m != UnicodeMatcher.U_MATCH)
+                        if (m != MatchDegree.Match)
                         {
                             return m;
                         }
@@ -183,7 +183,7 @@ namespace ICU4N.Text
             }
 
             offset[0] = cursor[0];
-            return UnicodeMatcher.U_MATCH;
+            return MatchDegree.Match;
         }
 
         /// <summary>

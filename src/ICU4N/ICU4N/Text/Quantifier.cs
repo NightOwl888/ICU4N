@@ -32,7 +32,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Implement <see cref="IUnicodeMatcher"/> API.
         /// </summary>
-        public virtual int Matches(IReplaceable text,
+        public virtual MatchDegree Matches(IReplaceable text,
                            int[] offset,
                            int limit,
                            bool incremental)
@@ -42,8 +42,8 @@ namespace ICU4N.Text
             while (count < maxCount)
             {
                 int pos = offset[0];
-                int m = matcher.Matches(text, offset, limit, incremental);
-                if (m == UnicodeMatcher.U_MATCH)
+                MatchDegree m = matcher.Matches(text, offset, limit, incremental);
+                if (m == MatchDegree.Match)
                 {
                     ++count;
                     if (pos == offset[0])
@@ -53,9 +53,9 @@ namespace ICU4N.Text
                         break;
                     }
                 }
-                else if (incremental && m == UnicodeMatcher.U_PARTIAL_MATCH)
+                else if (incremental && m == MatchDegree.PartialMatch)
                 {
-                    return UnicodeMatcher.U_PARTIAL_MATCH;
+                    return MatchDegree.PartialMatch;
                 }
                 else
                 {
@@ -64,14 +64,14 @@ namespace ICU4N.Text
             }
             if (incremental && offset[0] == limit)
             {
-                return UnicodeMatcher.U_PARTIAL_MATCH;
+                return MatchDegree.PartialMatch;
             }
             if (count >= minCount)
             {
-                return UnicodeMatcher.U_MATCH;
+                return MatchDegree.Match;
             }
             offset[0] = start;
-            return UnicodeMatcher.U_MISMATCH;
+            return MatchDegree.Mismatch;
         }
 
         /// <summary>

@@ -353,7 +353,7 @@ namespace ICU4N.Text
          * <code>U_PARTIAL_MATCH</code>, or <code>U_MATCH</code>.  If
          * incremental is FALSE then U_PARTIAL_MATCH will not be returned.
          */
-        public virtual int MatchAndReplace(IReplaceable text,
+        public virtual MatchDegree MatchAndReplace(IReplaceable text,
                                    Transliterator.Position pos,
                                    bool incremental)
         {
@@ -392,7 +392,7 @@ namespace ICU4N.Text
 
             int anteLimit = PosBefore(text, pos.ContextStart);
 
-            int match;
+            MatchDegree match;
 
             // Start reverse match at char before pos.start
             intRef[0] = PosBefore(text, pos.Start);
@@ -400,9 +400,9 @@ namespace ICU4N.Text
             if (anteContext != null)
             {
                 match = anteContext.Matches(text, intRef, anteLimit, false);
-                if (match != UnicodeMatcher.U_MATCH)
+                if (match != MatchDegree.Match)
                 {
-                    return UnicodeMatcher.U_MISMATCH;
+                    return MatchDegree.Mismatch;
                 }
             }
 
@@ -414,7 +414,7 @@ namespace ICU4N.Text
 
             if (((flags & ANCHOR_START) != 0) && oText != anteLimit)
             {
-                return UnicodeMatcher.U_MISMATCH;
+                return MatchDegree.Mismatch;
             }
 
             // -------------------- Key and Post Context --------------------
@@ -424,7 +424,7 @@ namespace ICU4N.Text
             if (key != null)
             {
                 match = key.Matches(text, intRef, pos.Limit, incremental);
-                if (match != UnicodeMatcher.U_MATCH)
+                if (match != MatchDegree.Match)
                 {
                     return match;
                 }
@@ -440,11 +440,11 @@ namespace ICU4N.Text
                     // a postContext.  Since we are in incremental mode,
                     // we must assume more characters may be inserted at
                     // pos.limit -- this is a partial match.
-                    return UnicodeMatcher.U_PARTIAL_MATCH;
+                    return MatchDegree.PartialMatch;
                 }
 
                 match = postContext.Matches(text, intRef, pos.ContextLimit, incremental);
-                if (match != UnicodeMatcher.U_MATCH)
+                if (match != MatchDegree.Match)
                 {
                     return match;
                 }
@@ -458,11 +458,11 @@ namespace ICU4N.Text
             {
                 if (oText != pos.ContextLimit)
                 {
-                    return UnicodeMatcher.U_MISMATCH;
+                    return MatchDegree.Mismatch;
                 }
                 if (incremental)
                 {
-                    return UnicodeMatcher.U_PARTIAL_MATCH;
+                    return MatchDegree.PartialMatch;
                 }
             }
 
@@ -480,7 +480,7 @@ namespace ICU4N.Text
             pos.ContextLimit += lenDelta;
             // Restrict new value of start to [minOText, min(oText, pos.limit)].
             pos.Start = Math.Max(minOText, Math.Min(Math.Min(oText, pos.Limit), newStart));
-            return UnicodeMatcher.U_MATCH;
+            return MatchDegree.Match;
         }
 
         /// <summary>

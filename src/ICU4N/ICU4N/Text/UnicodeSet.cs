@@ -787,7 +787,7 @@ namespace ICU4N.Text
         /// longest possible multichar string.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public override int Matches(IReplaceable text,
+        public override MatchDegree Matches(IReplaceable text,
                 int[] offset,
                 int limit,
                 bool incremental)
@@ -800,11 +800,11 @@ namespace ICU4N.Text
                 // we much check for them here.
                 if (Contains(UnicodeMatcher.ETHER))
                 {
-                    return incremental ? UnicodeMatcher.U_PARTIAL_MATCH : UnicodeMatcher.U_MATCH;
+                    return incremental ? MatchDegree.PartialMatch : MatchDegree.Match;
                 }
                 else
                 {
-                    return UnicodeMatcher.U_MISMATCH;
+                    return MatchDegree.Mismatch;
                 }
             }
             else
@@ -852,7 +852,7 @@ namespace ICU4N.Text
                             if (length == maxLen)
                             {
                                 // We have successfully matched but only up to limit.
-                                return UnicodeMatcher.U_PARTIAL_MATCH;
+                                return MatchDegree.PartialMatch;
                             }
                         }
 
@@ -878,7 +878,7 @@ namespace ICU4N.Text
                     if (highWaterLength != 0)
                     {
                         offset[0] += forward ? highWaterLength : -highWaterLength;
-                        return UnicodeMatcher.U_MATCH;
+                        return MatchDegree.Match;
                     }
                 }
                 return base.Matches(text, offset, limit, incremental);
