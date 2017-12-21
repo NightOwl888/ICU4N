@@ -105,7 +105,7 @@ namespace ICU4N.Impl.Coll
                     cne.ranges = new UnicodeSet();
                 }
                 cne.ranges.Set(start, end).RemoveAll(cne.tailored);
-                int count = cne.ranges.GetRangeCount();
+                int count = cne.ranges.RangeCount;
                 for (int i = 0; i < count; ++i)
                 {
                     cne.HandleCE32(cne.ranges.GetRangeStart(i), cne.ranges.GetRangeEnd(i), ce32);

@@ -174,7 +174,7 @@ namespace ICU4N.Text
             foreach (RBBINode usetNode in fRB.fUSetNodes)
             {
                 UnicodeSet inputSet = usetNode.fInputSet;
-                int inputSetRangeCount = inputSet.GetRangeCount();
+                int inputSetRangeCount = inputSet.RangeCount;
                 int inputSetRangeIndex = 0;
                 rlRange = fRangeList;
 

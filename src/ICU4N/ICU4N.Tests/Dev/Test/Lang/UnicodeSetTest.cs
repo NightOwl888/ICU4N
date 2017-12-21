@@ -583,7 +583,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             // default ct
             UnicodeSet set = new UnicodeSet();
-            if (!set.IsEmpty || set.GetRangeCount() != 0)
+            if (!set.IsEmpty || set.RangeCount != 0)
             {
                 Errln("FAIL, set should be empty but isn't: " +
                         set);
@@ -632,7 +632,7 @@ namespace ICU4N.Dev.Test.Lang
             // contains(first, last)
             set.Clear();
             set.ApplyPattern("[A-Y 1-8 b-d l-y]");
-            for (int i = 0; i < set.GetRangeCount(); ++i)
+            for (int i = 0; i < set.RangeCount; ++i)
             {
                 int a2 = set.GetRangeStart(i);
                 int b2 = set.GetRangeEnd(i);
@@ -1540,7 +1540,7 @@ namespace ICU4N.Dev.Test.Lang
                     Errln("FAIL: " + Utility.Escape(pat) + " => " + newpat);
                 }
 
-                for (int i = 0; i < set.GetRangeCount(); ++i)
+                for (int i = 0; i < set.RangeCount; ++i)
                 {
                     StringBuffer str = new StringBuffer("Range ");
                     str.Append((char)(0x30 + i))
@@ -1956,7 +1956,7 @@ namespace ICU4N.Dev.Test.Lang
             testSet.Complement().Complement();
             String testPattern = testSet.ToString();
             // fill a set of pairs from the pattern
-            int[] pairs = new int[testSet.GetRangeCount() * 2];
+            int[] pairs = new int[testSet.RangeCount * 2];
             int j = 0;
             for (UnicodeSetIterator it = new UnicodeSetIterator(testSet); it.NextRange();)
             {
@@ -2351,7 +2351,7 @@ namespace ICU4N.Dev.Test.Lang
          */
         void checkCanonicalRep(UnicodeSet set, String msg)
         {
-            int n = set.GetRangeCount();
+            int n = set.RangeCount;
             if (n < 0)
             {
                 Errln("FAIL result of " + msg +
@@ -2424,14 +2424,14 @@ namespace ICU4N.Dev.Test.Lang
         static String getPairs(UnicodeSet set)
         {
             StringBuffer pairs = new StringBuffer();
-            for (int i = 0; i < set.GetRangeCount(); ++i)
+            for (int i = 0; i < set.RangeCount; ++i)
             {
                 int start = set.GetRangeStart(i);
                 int end = set.GetRangeEnd(i);
                 if (end > 0xFFFF)
                 {
                     end = 0xFFFF;
-                    i = set.GetRangeCount(); // Should be unnecessary
+                    i = set.RangeCount; // Should be unnecessary
                 }
                 pairs.Append((char)start).Append((char)end);
             }

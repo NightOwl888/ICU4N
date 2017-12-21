@@ -430,7 +430,7 @@ namespace ICU4N.Text
             {
                 result.Append('[');
 
-                int count = GetRangeCount();
+                int count = RangeCount;
 
                 // If the set contains at least 2 intervals and includes both
                 // MIN_VALUE and MAX_VALUE, then the inverse representation will
@@ -502,7 +502,7 @@ namespace ICU4N.Text
             {
                 result.Append('[');
 
-                int count = GetRangeCount();
+                int count = RangeCount;
 
                 // If the set contains at least 2 intervals and includes both
                 // MIN_VALUE and MAX_VALUE, then the inverse representation will

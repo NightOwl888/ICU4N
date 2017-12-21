@@ -223,7 +223,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual void Reset()
         {
-            endRange = set.GetRangeCount() - 1;
+            endRange = set.RangeCount - 1;
             range = 0;
 #pragma warning disable 612, 618
             endElement = -1;

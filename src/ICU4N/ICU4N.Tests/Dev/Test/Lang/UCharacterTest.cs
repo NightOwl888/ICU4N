@@ -2805,7 +2805,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             int i, start, end;
             bool equal = true;
-            for (i = 0; i < a.GetRangeCount(); ++i)
+            for (i = 0; i < a.RangeCount; ++i)
             {
                 start = a.GetRangeStart(i);
                 end = a.GetRangeEnd(i);
@@ -2930,7 +2930,7 @@ namespace ICU4N.Dev.Test.Lang
                 //               }
                 start = set1.GetRangeStart(i);
                 end = set1.GetRangeEnd(i);
-                length = i < set1.GetRangeCount() ? set1.GetRangeCount() : 0;
+                length = i < set1.RangeCount ? set1.RangeCount : 0;
                 if (length != 0)
                 {
                     break; /* done with code points, got a string or -1 */

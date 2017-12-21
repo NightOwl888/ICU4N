@@ -712,7 +712,7 @@ namespace ICU4N.Text
             get
             {
                 int n = 0;
-                int count = GetRangeCount();
+                int count = RangeCount;
                 for (int i = 0; i < count; ++i)
                 {
                     n += GetRangeEnd(i) - GetRangeStart(i) + 1;
@@ -747,7 +747,7 @@ namespace ICU4N.Text
              * Then v is contained if xx <= v || v <= yy.  (This is identical to the
              * time zone month containment logic.)
              */
-            for (int i = 0; i < GetRangeCount(); ++i)
+            for (int i = 0; i < RangeCount; ++i)
             {
                 int low = GetRangeStart(i);
                 int high = GetRangeEnd(i);
@@ -2022,9 +2022,9 @@ namespace ICU4N.Text
         /// <seealso cref="GetRangeStart(int)"/>
         /// <seealso cref="GetRangeEnd(int)"/>
         /// <stable>ICU 2.0</stable>
-        public virtual int GetRangeCount() // ICU4N TODO: API - make property
+        public virtual int RangeCount
         {
-            return len / 2;
+            get { return len / 2; }
         }
 
         /// <summary>
@@ -3300,7 +3300,7 @@ namespace ICU4N.Text
 
             int startHasProperty = -1;
             UnicodeSet inclusions = GetInclusions(src);
-            int limitRange = inclusions.GetRangeCount();
+            int limitRange = inclusions.RangeCount;
 
             for (int j = 0; j < limitRange; ++j)
             {
@@ -3959,7 +3959,7 @@ namespace ICU4N.Text
                     foldSet.strings.Clear();
                 }
 
-                int n = GetRangeCount();
+                int n = RangeCount;
                 int result;
                 StringBuilder full = new StringBuilder();
 

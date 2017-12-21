@@ -86,7 +86,7 @@ namespace ICU4N.Dev.Test.Translit
             {
                 base.Reset(newSet);
                 abbreviated = abb;
-                perRange = newSet.GetRangeCount();
+                perRange = newSet.RangeCount;
                 if (perRange != 0)
                 {
                     perRange = density / perRange;
