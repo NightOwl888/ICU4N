@@ -2553,7 +2553,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Cover JDK 1.5 API. Create a string from an array of <paramref name="codePoints"/>.
+        /// Create a string from an array of <paramref name="codePoints"/>.
         /// </summary>
         /// <param name="codePoints">The code point array.</param>
         /// <param name="offset">The start of the text in the code point array.</param>
@@ -2562,46 +2562,51 @@ namespace ICU4N.Text
         /// <exception cref="ArgumentException">If an invalid code point is encountered.</exception>
         /// <exception cref="IndexOutOfRangeException">If the <paramref name="offset"/> or <paramref name="count"/> are out of bounds.</exception>
         /// <stable>ICU 3.0</stable>
-        public static string NewString(int[] codePoints, int offset, int count) // ICU4N TODO: API - Do we need this in .NET ?
+        public static string NewString(int[] codePoints, int offset, int count)
         {
             if (count < 0)
             {
                 throw new ArgumentException();
             }
-            char[] chars = new char[count];
+            // ICU4N specific - refactored to eliminate the potential exceptions during normal operation, which
+            // can significantly impact performance.
+            int countThreashold = 1024; // If the number of chars exceeds this, we count them instead of allocating count * 2
+            // as a first approximation, assume each codepoint 
+            // is 2 characters (since it cannot be longer than this)
+            int arrayLength = count * 2;
+            // if we go over the threashold, count the number of 
+            // chars we will need so we can allocate the precise amount of memory
+            if (count > countThreashold)
+            {
+                arrayLength = 0;
+                for (int r = offset, e = offset + count; r < e; ++r)
+                {
+                    arrayLength += codePoints[r] < 0x010000 ? 1 : 2;
+                }
+                if (arrayLength < 1)
+                {
+                    arrayLength = count * 2;
+                }
+            }
+            // Initialize our array to our exact or oversized length.
+            // It is now safe to assume we have enough space for all of the characters.
+            char[] chars = new char[arrayLength];
             int w = 0;
             for (int r = offset, e = offset + count; r < e; ++r)
             {
                 int cp = codePoints[r];
                 if (cp < 0 || cp > 0x10ffff)
                 {
-                    throw new ArgumentException();
+                    throw new System.ArgumentException();
                 }
-                while (true)
+                if (cp < 0x010000)
                 {
-                    try
-                    {
-                        if (cp < 0x010000)
-                        {
-                            chars[w] = (char)cp;
-                            w++;
-                        }
-                        else
-                        {
-                            chars[w] = (char)(LEAD_SURROGATE_OFFSET_ + (cp >> LEAD_SURROGATE_SHIFT_));
-                            chars[w + 1] = (char)(TRAIL_SURROGATE_MIN_VALUE + (cp & TRAIL_SURROGATE_MASK_));
-                            w += 2;
-                        }
-                        break;
-                    }
-                    catch (IndexOutOfRangeException) // ICU4N TODO: This is very inefficient - need to remove the exception if we decide to keep this
-                    {
-                        int newlen = (int)(Math.Ceiling((double)codePoints.Length * (w + 2)
-                                / (r - offset + 1)));
-                        char[] temp = new char[newlen];
-                        System.Array.Copy(chars, 0, temp, 0, w);
-                        chars = temp;
-                    }
+                    chars[w++] = (char)cp;
+                }
+                else
+                {
+                    chars[w++] = (char)(LEAD_SURROGATE_OFFSET_ + (cp >> LEAD_SURROGATE_SHIFT_));
+                    chars[w++] = (char)(TRAIL_SURROGATE_MIN_VALUE + (cp & TRAIL_SURROGATE_MASK_));
                 }
             }
             return new string(chars, 0, w);
