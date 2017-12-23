@@ -101,7 +101,7 @@ namespace ICU4N.Util
         /// </remarks>
         /// <param name="start">First integer in the range to iterate.</param>
         /// <param name="limit">One more than the last integer in the range.</param>
-        /// <exception cref="ArgumentException">Thrown when attempting to set an
+        /// <exception cref="System.ArgumentException">Thrown when attempting to set an
         /// illegal range. E.g limit &lt;= start.</exception>
         /// <stable>ICU 2.6</stable>
         void SetRange(int start, int limit);

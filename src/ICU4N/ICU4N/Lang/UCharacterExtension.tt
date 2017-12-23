@@ -184,7 +184,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static bool TryGetPropertyValueEnum(UProperty property, <#=charSequence#> valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum((int)property, valueAlias, out result);
+            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>

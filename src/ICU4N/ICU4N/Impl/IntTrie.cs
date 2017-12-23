@@ -286,11 +286,11 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Gets the value at the argument index.
-        /// For use internally in <see cref="TrieIterator"/>
+        /// For use internally in <see cref="TrieEnumerator"/>
         /// </summary>
         /// <param name="index">Value at index will be retrieved.</param>
         /// <returns>32 bit value</returns>
-        /// <seealso cref="TrieIterator"/>
+        /// <seealso cref="TrieEnumerator"/>
         protected internal override sealed int this[int index]
         {
             get { return m_data_[index]; }

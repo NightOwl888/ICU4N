@@ -4900,10 +4900,10 @@ namespace ICU4N.Lang
         // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence valueAlias) moved to UCharacterExtension.tt
 
         /// <summary>
-        /// Same as <see cref="GetPropertyValueEnum(int, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UProperty.UNDEFINED"/>.
+        /// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UProperty.UNDEFINED"/>.
         /// </summary>
-        /// <param name="property">Same as <see cref="GetPropertyValueEnum(int, ICharSequence)"/>.</param>
-        /// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(int, ICharSequence)"/>.</param>
+        /// <param name="property">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
+        /// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
         /// <returns>Returns <see cref="UProperty.UNDEFINED"/> if the value is not valid, otherwise the value.</returns>
         [Obsolete("ICU4N 60.1.0 Use TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias) instead.")]
         internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias)

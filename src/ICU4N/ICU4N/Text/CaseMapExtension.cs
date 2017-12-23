@@ -42,7 +42,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(StringBuilder src)
@@ -58,7 +58,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(char[] src)
@@ -74,7 +74,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal string Apply(ICharSequence src)
@@ -106,7 +106,7 @@ namespace ICU4N.Text
             /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(CultureInfo locale, StringBuilder src)
@@ -122,7 +122,7 @@ namespace ICU4N.Text
             /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(CultureInfo locale, char[] src)
@@ -138,7 +138,7 @@ namespace ICU4N.Text
             /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal string Apply(CultureInfo locale, ICharSequence src)
@@ -181,7 +181,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -203,7 +203,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -225,7 +225,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal StringBuilder Apply(
@@ -269,7 +269,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -291,7 +291,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -313,7 +313,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -357,7 +357,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -379,7 +379,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -401,7 +401,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal StringBuilder Apply(
@@ -445,7 +445,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -467,7 +467,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -489,7 +489,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -526,7 +526,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(StringBuilder src)
@@ -542,7 +542,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(char[] src)
@@ -558,7 +558,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal string Apply(ICharSequence src)
@@ -590,7 +590,7 @@ namespace ICU4N.Text
             /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(CultureInfo locale, StringBuilder src)
@@ -606,7 +606,7 @@ namespace ICU4N.Text
             /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(CultureInfo locale, char[] src)
@@ -622,7 +622,7 @@ namespace ICU4N.Text
             /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal string Apply(CultureInfo locale, ICharSequence src)
@@ -665,7 +665,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -687,7 +687,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -709,7 +709,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal StringBuilder Apply(
@@ -753,7 +753,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -775,7 +775,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -797,7 +797,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -841,7 +841,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -863,7 +863,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -885,7 +885,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal StringBuilder Apply(
@@ -929,7 +929,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, StringBuilder)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -951,7 +951,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, char[])"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -973,7 +973,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, ICharSequence)"/>
+            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -1006,7 +1006,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(string, String)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(BreakIterator iter, string src)
@@ -1037,7 +1037,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(StringBuilder, String)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(BreakIterator iter, StringBuilder src)
@@ -1068,7 +1068,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(char[], String)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(BreakIterator iter, char[] src)
@@ -1099,7 +1099,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(ICharSequence, String)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal string Apply(BreakIterator iter, ICharSequence src)
@@ -1130,7 +1130,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(string, String)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(CultureInfo locale, BreakIterator iter, string src)
@@ -1164,7 +1164,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(StringBuilder, String)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(CultureInfo locale, BreakIterator iter, StringBuilder src)
@@ -1198,7 +1198,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(char[], String)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(CultureInfo locale, BreakIterator iter, char[] src)
@@ -1232,7 +1232,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(ICharSequence, String)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal string Apply(CultureInfo locale, BreakIterator iter, ICharSequence src)
@@ -1257,7 +1257,6 @@ namespace ICU4N.Text
             /// that are to be titlecased. It titlecases those characters and lowercases
             /// all others. (This can be modified with options bits.)
             /// </remarks>
-            /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="iter">
             /// A break iterator to find the first characters of words that are to be titlecased.
             /// It is set to the source string (SetText())
@@ -1273,7 +1272,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -1298,7 +1297,6 @@ namespace ICU4N.Text
             /// that are to be titlecased. It titlecases those characters and lowercases
             /// all others. (This can be modified with options bits.)
             /// </remarks>
-            /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="iter">
             /// A break iterator to find the first characters of words that are to be titlecased.
             /// It is set to the source string (SetText())
@@ -1314,7 +1312,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -1339,7 +1337,6 @@ namespace ICU4N.Text
             /// that are to be titlecased. It titlecases those characters and lowercases
             /// all others. (This can be modified with options bits.)
             /// </remarks>
-            /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="iter">
             /// A break iterator to find the first characters of words that are to be titlecased.
             /// It is set to the source string (SetText())
@@ -1355,7 +1352,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -1380,7 +1377,6 @@ namespace ICU4N.Text
             /// that are to be titlecased. It titlecases those characters and lowercases
             /// all others. (This can be modified with options bits.)
             /// </remarks>
-            /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="iter">
             /// A break iterator to find the first characters of words that are to be titlecased.
             /// It is set to the source string (SetText())
@@ -1396,7 +1392,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal StringBuilder Apply(
@@ -1421,7 +1417,6 @@ namespace ICU4N.Text
             /// that are to be titlecased. It titlecases those characters and lowercases
             /// all others. (This can be modified with options bits.)
             /// </remarks>
-            /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="iter">
             /// A break iterator to find the first characters of words that are to be titlecased.
             /// It is set to the source string (SetText())
@@ -1437,7 +1432,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -1462,7 +1457,6 @@ namespace ICU4N.Text
             /// that are to be titlecased. It titlecases those characters and lowercases
             /// all others. (This can be modified with options bits.)
             /// </remarks>
-            /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="iter">
             /// A break iterator to find the first characters of words that are to be titlecased.
             /// It is set to the source string (SetText())
@@ -1478,7 +1472,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -1503,7 +1497,6 @@ namespace ICU4N.Text
             /// that are to be titlecased. It titlecases those characters and lowercases
             /// all others. (This can be modified with options bits.)
             /// </remarks>
-            /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="iter">
             /// A break iterator to find the first characters of words that are to be titlecased.
             /// It is set to the source string (SetText())
@@ -1519,7 +1512,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -1544,7 +1537,6 @@ namespace ICU4N.Text
             /// that are to be titlecased. It titlecases those characters and lowercases
             /// all others. (This can be modified with options bits.)
             /// </remarks>
-            /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="iter">
             /// A break iterator to find the first characters of words that are to be titlecased.
             /// It is set to the source string (SetText())
@@ -1560,7 +1552,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -1600,7 +1592,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -1643,7 +1635,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -1686,7 +1678,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			public StringBuilder Apply(
@@ -1729,7 +1721,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal StringBuilder Apply(
@@ -1772,7 +1764,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -1815,7 +1807,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -1858,7 +1850,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(
@@ -1901,7 +1893,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, ICharSequence, BreakIterator, int)"/>
+            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 			internal T Apply<T>(

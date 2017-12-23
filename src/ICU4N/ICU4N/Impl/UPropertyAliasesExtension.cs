@@ -304,12 +304,12 @@ namespace ICU4N.Impl
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
 		/// <seealso cref="GetPropertyValueEnum(UProperty, string)"/>
-        public bool TryGetPropertyValueEnum(int property, string alias, out int result)
+        public bool TryGetPropertyValueEnum(UProperty property, string alias, out int result)
         {
 #pragma warning disable 612, 618
             result = (int)UProperty.UNDEFINED;
 #pragma warning restore 612, 618
-            int valueMapIndex = FindProperty(property);
+            int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
             {
                 return false;
@@ -331,12 +331,12 @@ namespace ICU4N.Impl
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
 		/// <seealso cref="GetPropertyValueEnum(UProperty, StringBuilder)"/>
-        public bool TryGetPropertyValueEnum(int property, StringBuilder alias, out int result)
+        public bool TryGetPropertyValueEnum(UProperty property, StringBuilder alias, out int result)
         {
 #pragma warning disable 612, 618
             result = (int)UProperty.UNDEFINED;
 #pragma warning restore 612, 618
-            int valueMapIndex = FindProperty(property);
+            int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
             {
                 return false;
@@ -358,12 +358,12 @@ namespace ICU4N.Impl
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
 		/// <seealso cref="GetPropertyValueEnum(UProperty, char[])"/>
-        public bool TryGetPropertyValueEnum(int property, char[] alias, out int result)
+        public bool TryGetPropertyValueEnum(UProperty property, char[] alias, out int result)
         {
 #pragma warning disable 612, 618
             result = (int)UProperty.UNDEFINED;
 #pragma warning restore 612, 618
-            int valueMapIndex = FindProperty(property);
+            int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
             {
                 return false;
@@ -385,12 +385,12 @@ namespace ICU4N.Impl
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
 		/// <seealso cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>
-        internal bool TryGetPropertyValueEnum(int property, ICharSequence alias, out int result)
+        internal bool TryGetPropertyValueEnum(UProperty property, ICharSequence alias, out int result)
         {
 #pragma warning disable 612, 618
             result = (int)UProperty.UNDEFINED;
 #pragma warning restore 612, 618
-            int valueMapIndex = FindProperty(property);
+            int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
             {
                 return false;

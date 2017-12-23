@@ -470,7 +470,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         public static bool TryGetPropertyValueEnum(UProperty property, string valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum((int)property, valueAlias, out result);
+            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
         /// <summary>
@@ -511,7 +511,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         public static bool TryGetPropertyValueEnum(UProperty property, StringBuilder valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum((int)property, valueAlias, out result);
+            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
         /// <summary>
@@ -552,7 +552,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         public static bool TryGetPropertyValueEnum(UProperty property, char[] valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum((int)property, valueAlias, out result);
+            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
         /// <summary>
@@ -593,7 +593,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         internal static bool TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum((int)property, valueAlias, out result);
+            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
         /// <summary>

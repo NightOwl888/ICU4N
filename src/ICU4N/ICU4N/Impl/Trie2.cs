@@ -379,8 +379,8 @@ namespace ICU4N.Impl
         /// The iterator will return one item for each contiguous range of codepoints  having the same value.
         /// </summary>
         /// <remarks>
-        /// When iterating, the same <see cref="Trie2EnumRange"/> object will be reused and returned for each range.
-        /// If you need to retain complete iteration results, clone each returned <see cref="Trie2EnumRange"/>,
+        /// When iterating, the same <see cref="Range"/> object will be reused and returned for each range.
+        /// If you need to retain complete iteration results, clone each returned <see cref="Range"/>,
         /// or save the range in some other way, before advancing to the next iteration step.
         /// </remarks>
         public class Range // ICU4N TODO: API De-nest ?

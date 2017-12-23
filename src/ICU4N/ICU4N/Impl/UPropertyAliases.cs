@@ -315,10 +315,10 @@ namespace ICU4N.Impl
         /// Multiple names may be available for each value;
         /// the <paramref name="nameChoice"/> selects among them.
         /// <para/>
-        /// This method is equivalent to <see cref="GetPropertyValueName(UnicodeProperty, int, NameChoice)"/>
+        /// This method is equivalent to <see cref="GetPropertyValueName(UProperty, int, NameChoice)"/>
         /// but will return a true/false result rather than throwing exceptions.
         /// </summary>
-        /// <seealso cref="GetPropertyValueName(UnicodeProperty, int, NameChoice)"/>
+        /// <seealso cref="GetPropertyValueName(UProperty, int, NameChoice)"/>
          // ICU4N TODO: API - make value into enum ?
         public bool TryGetPropertyValueName(UProperty property, int value, NameChoice nameChoice, out string result) // ICU4N TODO: Tests
         {

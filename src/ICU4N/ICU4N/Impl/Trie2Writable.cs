@@ -344,7 +344,7 @@ namespace ICU4N.Impl
         /// Uncompact a compacted <see cref="Trie2Writable"/>.
         /// </summary>
         /// <remarks>
-        /// This is needed if a the <see cref="WritableTrie2"/> was compacted in preparation for creating a read-only
+        /// This is needed if a the <see cref="Trie2Writable"/> was compacted in preparation for creating a read-only
         /// <see cref="Trie2"/>, and then is subsequently altered.
         /// <para/>
         /// The structure is a bit awkward - it would be cleaner to leave the original

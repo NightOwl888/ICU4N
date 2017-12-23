@@ -121,12 +121,12 @@ namespace ICU4N.Impl
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
 		/// <seealso cref="GetPropertyValueEnum(UProperty, <#=charSequence#>)"/>
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> bool TryGetPropertyValueEnum(int property, <#=charSequence#> alias, out int result)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> bool TryGetPropertyValueEnum(UProperty property, <#=charSequence#> alias, out int result)
         {
 #pragma warning disable 612, 618
             result = (int)UProperty.UNDEFINED;
 #pragma warning restore 612, 618
-            int valueMapIndex = FindProperty(property);
+            int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
             {
                 return false;
