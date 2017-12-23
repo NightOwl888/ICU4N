@@ -249,7 +249,7 @@ namespace ICU4N.Text
         /// and any fields or methods should not be called or overridden by users.
         /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public abstract class Mode
+        public abstract class Mode // ICU4N TODO: API - de-nest?
         {
             /// <summary>
             /// Sole constructor.
