@@ -1,6 +1,4 @@
-﻿using ICU4N.Impl;
-using ICU4N.Impl.Coll;
-using ICU4N.Lang;
+﻿using ICU4N.Lang;
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Text;
@@ -99,7 +97,7 @@ namespace ICU4N.Impl.Coll
             return tailoring;
         }
 
-        /** Implements CollationRuleParser.Sink. */
+        /// <summary>Implements CollationRuleParser.Sink.</summary>
         internal override void AddReset(CollationStrength strength, ICharSequence str)
         {
             Debug.Assert(str.Length != 0);
@@ -252,10 +250,10 @@ namespace ICU4N.Impl.Coll
             ces[cesLength - 1] = TempCEFromIndexAndStrength(index, strength);
         }
 
-        /**
-         * Returns the secondary or tertiary weight preceding the current node's weight.
-         * node=nodes[index].
-         */
+        /// <summary>
+        /// Returns the secondary or tertiary weight preceding the current node's weight.
+        /// node=nodes[index].
+        /// </summary>
         private int GetWeight16Before(int index, long node, CollationStrength level)
         {
             Debug.Assert(StrengthFromNode(node) < level || !IsTailoredNode(node));
@@ -493,7 +491,7 @@ namespace ICU4N.Impl.Coll
             return ce;
         }
 
-        /** Implements CollationRuleParser.Sink. */
+        /// <summary>Implements CollationRuleParser.Sink.</summary>
         internal override void AddRelation(CollationStrength strength, ICharSequence prefix, ICharSequence str, string extension) // ICU4N specific - changed extension from ICharSequence to string
         {
             StringCharSequence nfdPrefix;
@@ -593,10 +591,10 @@ namespace ICU4N.Impl.Coll
             cesLength = cesLengthBeforeExtension;
         }
 
-        /**
-         * Picks one of the current CEs and finds or inserts a node in the graph
-         * for the CE + strength.
-         */
+        /// <summary>
+        /// Picks one of the current CEs and finds or inserts a node in the graph
+        /// for the CE + strength.
+        /// </summary>
         private int FindOrInsertNodeForCEs(CollationStrength strength)
         {
             Debug.Assert(CollationStrength.Primary <= strength && strength <= CollationStrength.Quaternary);
@@ -657,13 +655,12 @@ namespace ICU4N.Impl.Coll
             return index;
         }
 
-        /**
-         * Like Java Collections.binarySearch(List, key, Comparator).
-         *
-         * @return the index>=0 where the item was found,
-         *         or the index&lt;0 for inserting the string at ~index in sorted order
-         *         (index into rootPrimaryIndexes)
-         */
+        /// <summary>
+        /// Like Java Collections.binarySearch(List, key, Comparator).
+        /// </summary>
+        /// <returns>The index>=0 where the item was found,
+        /// or the index&lt;0 for inserting the string at ~index in sorted order
+        /// (index into rootPrimaryIndexes)</returns>
         private static int BinarySearchForRootPrimaryNode(
                 IList<int> rootPrimaryIndexes, int length, IList<long> nodes, long p)
         {
@@ -698,7 +695,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /** Finds or inserts the node for a root CE's primary weight. */
+        /// <summary>Finds or inserts the node for a root CE's primary weight.</summary>
         private int FindOrInsertNodeForPrimary(long p)
         {
             int rootIndex = BinarySearchForRootPrimaryNode(
@@ -717,7 +714,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /** Finds or inserts the node for a secondary or tertiary weight. */
+        /// <summary>Finds or inserts the node for a secondary or tertiary weight.</summary>
         private int FindOrInsertWeakNode(int index, int weight16, CollationStrength level)
         {
             Debug.Assert(0 <= index && index < nodes.Count);
@@ -792,12 +789,12 @@ namespace ICU4N.Impl.Coll
             return InsertNodeBetween(index, nextIndex, node);
         }
 
-        /**
-         * Makes and inserts a new tailored node into the list, after the one at index.
-         * Skips over nodes of weaker strength to maintain collation order
-         * ("postpone insertion").
-         * @return the new node's index
-         */
+        /// <summary>
+        /// Makes and inserts a new tailored node into the list, after the one at <paramref name="index"/>.
+        /// Skips over nodes of weaker strength to maintain collation order
+        /// ("postpone insertion").
+        /// </summary>
+        /// <returns>The new node's index.</returns>
         private int InsertTailoredNodeAfter(int index, CollationStrength strength)
         {
             Debug.Assert(0 <= index && index < nodes.Count);
@@ -824,11 +821,11 @@ namespace ICU4N.Impl.Coll
             return InsertNodeBetween(index, nextIndex, node);
         }
 
-        /**
-         * Inserts a new node into the list, between list-adjacent items.
-         * The node's previous and next indexes must not be set yet.
-         * @return the new node's index
-         */
+        /// <summary>
+        /// Inserts a new node into the list, between list-adjacent items.
+        /// The node's previous and next indexes must not be set yet.
+        /// </summary>
+        /// <returns>The new node's index.</returns>
         private int InsertNodeBetween(int index, int nextIndex, long node)
         {
             Debug.Assert(PreviousIndexFromNode(node) == 0);
@@ -850,13 +847,13 @@ namespace ICU4N.Impl.Coll
             return newIndex;
         }
 
-        /**
-         * Finds the node which implies or contains a common=05 weight of the given strength
-         * (secondary or tertiary), if the current node is stronger.
-         * Skips weaker nodes and tailored nodes if the current node is stronger
-         * and is followed by an explicit-common-weight node.
-         * Always returns the input index if that node is no stronger than the given strength.
-         */
+        /// <summary>
+        /// Finds the node which implies or contains a common=05 weight of the given <paramref name="strength"/>
+        /// (secondary or tertiary), if the current node is stronger.
+        /// Skips weaker nodes and tailored nodes if the current node is stronger
+        /// and is followed by an explicit-common-weight node.
+        /// Always returns the input <paramref name="index"/> if that node is no stronger than the given <paramref name="strength"/>.
+        /// </summary>
         private int FindCommonNode(int index, CollationStrength strength)
         {
             Debug.Assert(CollationStrength.Secondary <= strength && strength <= CollationStrength.Tertiary);
@@ -966,23 +963,23 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /** Implements CollationRuleParser.Sink. */
+        /// <summary>Implements <see cref="CollationRuleParser.Sink"/>.</summary>
         internal override void SuppressContractions(UnicodeSet set)
         {
             dataBuilder.SuppressContractions(set);
         }
 
-        /** Implements CollationRuleParser.Sink. */
+        /// <summary>Implements <see cref="CollationRuleParser.Sink"/>.</summary>
         internal override void Optimize(UnicodeSet set)
         {
             optimizeSet.AddAll(set);
         }
 
-        /**
-         * Adds the mapping and its canonical closure.
-         * Takes ce32=dataBuilder.encodeCEs(...) so that the data builder
-         * need not re-encode the CEs multiple times.
-         */
+        /// <summary>
+        /// Adds the mapping and its canonical closure.
+        /// Takes ce32=dataBuilder.EncodeCEs(...) so that the data builder
+        /// need not re-encode the CEs multiple times.
+        /// </summary>
         private int AddWithClosure(ICharSequence nfdPrefix, ICharSequence nfdString,
                     long[] newCEs, int newCEsLength, int ce32)
         {
@@ -1324,11 +1321,11 @@ namespace ICU4N.Impl.Coll
             return w;
         }
 
-        /**
-         * Walks the tailoring graph and overwrites tailored nodes with new CEs.
-         * After this, the graph is destroyed.
-         * The nodes array can then be used only as a source of tailored CEs.
-         */
+        /// <summary>
+        /// Walks the tailoring graph and overwrites tailored nodes with new CEs.
+        /// After this, the graph is destroyed.
+        /// The nodes array can then be used only as a source of tailored CEs.
+        /// </summary>
         private void MakeTailoredCEs()
         {
             CollationWeights primaries = new CollationWeights();
@@ -1551,10 +1548,10 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Counts the tailored nodes of the given strength up to the next node
-         * which is either stronger or has an explicit weight of this strength.
-         */
+        /// <summary>
+        /// Counts the tailored nodes of the given strength up to the next node
+        /// which is either stronger or has an explicit weight of this <paramref name="strength"/>.
+        /// </summary>
         private static int CountTailoredNodes(IList<long> nodesArray, int i, CollationStrength strength)
         {
             int count = 0;
@@ -1614,7 +1611,7 @@ namespace ICU4N.Impl.Coll
             private IList<long> finalCEs;
         };
 
-        /** Replaces temporary CEs with the final CEs they point to. */
+        /// <summary>Replaces temporary CEs with the final CEs they point to.</summary>
         private void FinalizeCEs()
         {
             CollationDataBuilder newBuilder = new CollationDataBuilder();
@@ -1624,19 +1621,19 @@ namespace ICU4N.Impl.Coll
             dataBuilder = newBuilder;
         }
 
-        /**
-         * Encodes "temporary CE" data into a CE that fits into the CE32 data structure,
-         * with 2-byte primary, 1-byte secondary and 6-bit tertiary,
-         * with valid CE byte values.
-         *
-         * The index must not exceed 20 bits (0xfffff).
-         * The strength must fit into 2 bits (Collator.PRIMARY..Collator.QUATERNARY).
-         *
-         * Temporary CEs are distinguished from real CEs by their use of
-         * secondary weights 06..45 which are otherwise reserved for compressed sort keys.
-         *
-         * The case bits are unused and available.
-         */
+        /// <summary>
+        /// Encodes "temporary CE" data into a CE that fits into the CE32 data structure,
+        /// with 2-byte primary, 1-byte secondary and 6-bit tertiary,
+        /// with valid CE byte values.
+        /// <para/>
+        /// The index must not exceed 20 bits (0xfffff).
+        /// The strength must fit into 2 bits (<see cref="CollationStrength.Primary"/>..<see cref="CollationStrength.Quaternary"/>).
+        /// <para/>
+        /// Temporary CEs are distinguished from real CEs by their use of
+        /// secondary weights 06..45 which are otherwise reserved for compressed sort keys.
+        /// <para/>
+        /// The case bits are unused and available.
+        /// </summary>
         private static long TempCEFromIndexAndStrength(int index, CollationStrength strength)
         {
             return
@@ -1694,22 +1691,22 @@ namespace ICU4N.Impl.Coll
                 CollationStrength.Identical;
         }
 
-        /** At most 1M nodes, limited by the 20 bits in node bit fields. */
+        /// <summary>At most 1M nodes, limited by the 20 bits in node bit fields.</summary>
         private const int MAX_INDEX = 0xfffff;
-        /**
-         * Node bit 6 is set on a primary node if there are nodes
-         * with secondary values below the common secondary weight (05).
-         */
+        /// <summary>
+        /// Node bit 6 is set on a primary node if there are nodes
+        /// with secondary values below the common secondary weight (05).
+        /// </summary>
         private const int HAS_BEFORE2 = 0x40;
-        /**
-         * Node bit 5 is set on a primary or secondary node if there are nodes
-         * with tertiary values below the common tertiary weight (05).
-         */
+        /// <summary>
+        /// Node bit 5 is set on a primary or secondary node if there are nodes
+        /// with tertiary values below the common tertiary weight (05).
+        /// </summary>
         private const int HAS_BEFORE3 = 0x20;
-        /**
-         * Node bit 3 distinguishes a tailored node, which has no weight value,
-         * from a node with an explicit (root or default) weight.
-         */
+        /// <summary>
+        /// Node bit 3 distinguishes a tailored node, which has no weight value,
+        /// from a node with an explicit (root or default) weight.
+        /// </summary>
         private const int IS_TAILORED = 8;
 
         private static long NodeFromWeight32(long weight32)
@@ -1795,98 +1792,99 @@ namespace ICU4N.Impl.Coll
         private long[] ces = new long[Collation.MAX_EXPANSION_LENGTH];
         private int cesLength;
 
-        /**
-         * Indexes of nodes with root primary weights, sorted by primary.
-         * Compact form of a TreeMap from root primary to node index.
-         *
-         * This is a performance optimization for finding reset positions.
-         * Without this, we would have to search through the entire nodes list.
-         * It also allows storing root primary weights in list head nodes,
-         * without previous index, leaving room in root primary nodes for 32-bit primary weights.
-         */
+        /// <summary>
+        /// Indexes of nodes with root primary weights, sorted by primary.
+        /// Compact form of a <see cref="SortedDictionary{TKey, TValue}"/> from root primary to node index.
+        /// <para/>
+        /// This is a performance optimization for finding reset positions.
+        /// Without this, we would have to search through the entire nodes list.
+        /// It also allows storing root primary weights in list head nodes,
+        /// without previous index, leaving room in root primary nodes for 32-bit primary weights.
+        /// </summary>
         private IList<int> rootPrimaryIndexes;
-        /**
-         * Data structure for assigning tailored weights and CEs.
-         * Doubly-linked lists of nodes in mostly collation order.
-         * Each list starts with a root primary node and ends with a nextIndex of 0.
-         *
-         * When there are any nodes in the list, then there is always a root primary node at index 0.
-         * This allows some code not to have to check explicitly for nextIndex==0.
-         *
-         * Root primary nodes have 32-bit weights but do not have previous indexes.
-         * All other nodes have at most 16-bit weights and do have previous indexes.
-         *
-         * Nodes with explicit weights store root collator weights,
-         * or default weak weights (e.g., secondary 05) for stronger nodes.
-         * "Tailored" nodes, with the IS_TAILORED bit set,
-         * do not store explicit weights but rather
-         * create a difference of a certain strength from the preceding node.
-         *
-         * A root node is followed by either
-         * - a root/default node of the same strength, or
-         * - a root/default node of the next-weaker strength, or
-         * - a tailored node of the same strength.
-         *
-         * A node of a given strength normally implies "common" weights on weaker levels.
-         *
-         * A node with HAS_BEFORE2 must be immediately followed by
-         * a secondary node with an explicit below-common weight, then a secondary tailored node,
-         * and later an explicit common-secondary node.
-         * The below-common weight can be a root weight,
-         * or it can be BEFORE_WEIGHT16 for tailoring before an implied common weight
-         * or before the lowest root weight.
-         * (&[before 2] resets to an explicit secondary node so that
-         * the following addRelation(secondary) tailors right after that.
-         * If we did not have this node and instead were to reset on the primary node,
-         * then addRelation(secondary) would skip forward to the the COMMON_WEIGHT16 node.)
-         *
-         * If the flag is not set, then there are no explicit secondary nodes
-         * with the common or lower weights.
-         *
-         * Same for HAS_BEFORE3 for tertiary nodes and weights.
-         * A node must not have both flags set.
-         *
-         * Tailored CEs are initially represented in a CollationDataBuilder as temporary CEs
-         * which point to stable indexes in this list,
-         * and temporary CEs stored in a CollationDataBuilder only point to tailored nodes.
-         *
-         * A temporary CE in the ces[] array may point to a non-tailored reset-before-position node,
-         * until the next relation is added.
-         *
-         * At the end, the tailored weights are allocated as necessary,
-         * then the tailored nodes are replaced with final CEs,
-         * and the CollationData is rewritten by replacing temporary CEs with final ones.
-         *
-         * We cannot simply insert new nodes in the middle of the array
-         * because that would invalidate the indexes stored in existing temporary CEs.
-         * We need to use a linked graph with stable indexes to existing nodes.
-         * A doubly-linked list seems easiest to maintain.
-         *
-         * Each node is stored as an long, with its fields stored as bit fields.
-         *
-         * Root primary node:
-         * - primary weight: 32 bits 63..32
-         * - reserved/unused/zero: 4 bits 31..28
-         *
-         * Weaker root nodes & tailored nodes:
-         * - a weight: 16 bits 63..48
-         *   + a root or default weight for a non-tailored node
-         *   + unused/zero for a tailored node
-         * - index to the previous node: 20 bits 47..28
-         *
-         * All types of nodes:
-         * - index to the next node: 20 bits 27..8
-         *   + nextIndex=0 in last node per root-primary list
-         * - reserved/unused/zero bits: bits 7, 4, 2
-         * - HAS_BEFORE2: bit 6
-         * - HAS_BEFORE3: bit 5
-         * - IS_TAILORED: bit 3
-         * - the difference strength (primary/secondary/tertiary/quaternary): 2 bits 1..0
-         *
-         * We could allocate structs with pointers, but we would have to store them
-         * in a pointer list so that they can be indexed from temporary CEs,
-         * and they would require more memory allocations.
-         */
+        /// <summary>
+        /// Data structure for assigning tailored weights and CEs.
+        /// Doubly-linked lists of nodes in mostly collation order.
+        /// Each list starts with a root primary node and ends with a nextIndex of 0.
+        /// </summary>
+        /// <remarks>
+        /// When there are any nodes in the list, then there is always a root primary node at index 0.
+        /// This allows some code not to have to check explicitly for nextIndex==0.
+        /// <para/>
+        /// Root primary nodes have 32-bit weights but do not have previous indexes.
+        /// All other nodes have at most 16-bit weights and do have previous indexes.
+        /// <para/>
+        /// Nodes with explicit weights store root collator weights,
+        /// or default weak weights (e.g., secondary 05) for stronger nodes.
+        /// "Tailored" nodes, with the IS_TAILORED bit set,
+        /// do not store explicit weights but rather
+        /// create a difference of a certain strength from the preceding node.
+        /// <para/>
+        /// A root node is followed by either
+        /// - a root/default node of the same strength, or
+        /// - a root/default node of the next-weaker strength, or
+        /// - a tailored node of the same strength.
+        /// <para/>
+        /// A node of a given strength normally implies "common" weights on weaker levels.
+        /// <para/>
+        /// A node with HAS_BEFORE2 must be immediately followed by
+        /// a secondary node with an explicit below-common weight, then a secondary tailored node,
+        /// and later an explicit common-secondary node.
+        /// The below-common weight can be a root weight,
+        /// or it can be BEFORE_WEIGHT16 for tailoring before an implied common weight
+        /// or before the lowest root weight.
+        /// (&amp;[before 2] resets to an explicit secondary node so that
+        /// the following addRelation(secondary) tailors right after that.
+        /// If we did not have this node and instead were to reset on the primary node,
+        /// then addRelation(secondary) would skip forward to the the COMMON_WEIGHT16 node.)
+        /// <para/>
+        /// If the flag is not set, then there are no explicit secondary nodes
+        /// with the common or lower weights.
+        /// <para/>
+        /// Same for HAS_BEFORE3 for tertiary nodes and weights.
+        /// A node must not have both flags set.
+        /// <para/>
+        /// Tailored CEs are initially represented in a CollationDataBuilder as temporary CEs
+        /// which point to stable indexes in this list,
+        /// and temporary CEs stored in a CollationDataBuilder only point to tailored nodes.
+        /// <para/>
+        /// A temporary CE in the ces[] array may point to a non-tailored reset-before-position node,
+        /// until the next relation is added.
+        /// <para/>
+        /// At the end, the tailored weights are allocated as necessary,
+        /// then the tailored nodes are replaced with final CEs,
+        /// and the CollationData is rewritten by replacing temporary CEs with final ones.
+        /// <para/>
+        /// We cannot simply insert new nodes in the middle of the array
+        /// because that would invalidate the indexes stored in existing temporary CEs.
+        /// We need to use a linked graph with stable indexes to existing nodes.
+        /// A doubly-linked list seems easiest to maintain.
+        /// <para/>
+        /// Each node is stored as an long, with its fields stored as bit fields.
+        /// <para/>
+        /// Root primary node:
+        /// - primary weight: 32 bits 63..32
+        /// - reserved/unused/zero: 4 bits 31..28
+        /// <para/>
+        /// Weaker root nodes &amp; tailored nodes:
+        /// - a weight: 16 bits 63..48
+        ///   + a root or default weight for a non-tailored node
+        ///   + unused/zero for a tailored node
+        /// - index to the previous node: 20 bits 47..28
+        /// <para/>
+        /// All types of nodes:
+        /// - index to the next node: 20 bits 27..8
+        ///   + nextIndex=0 in last node per root-primary list
+        /// - reserved/unused/zero bits: bits 7, 4, 2
+        /// - HAS_BEFORE2: bit 6
+        /// - HAS_BEFORE3: bit 5
+        /// - IS_TAILORED: bit 3
+        /// - the difference strength (primary/secondary/tertiary/quaternary): 2 bits 1..0
+        /// <para/>
+        /// We could allocate structs with pointers, but we would have to store them
+        /// in a pointer list so that they can be indexed from temporary CEs,
+        /// and they would require more memory allocations.
+        /// </remarks>
         private IList<long> nodes;
     }
 }

@@ -13,7 +13,7 @@ namespace ICU4N.Impl.Coll
 {
     /// <summary>
     /// Collation data container.
-    /// Immutable data created by a CollationDataBuilder, or loaded from a file,
+    /// Immutable data created by a <see cref="CollationDataBuilder"/>, or loaded from a file,
     /// or deserialized from API-provided binary data.
     /// <para/>
     /// Includes data for the collation base (root/default), aliased if this is not the base.
@@ -67,19 +67,19 @@ namespace ICU4N.Impl.Coll
             return IsCompressibleLeadByte(((int)p).TripleShift(24));
         }
 
-        /**
-         * Returns the CE32 from two contexts words.
-         * Access to the defaultCE32 for contraction and prefix matching.
-         */
+        /// <summary>
+        /// Returns the CE32 from two contexts words.
+        /// Access to the defaultCE32 for contraction and prefix matching.
+        /// </summary>
         internal int GetCE32FromContexts(int index)
         {
             return ((int)contexts[index] << 16) | contexts[index + 1];
         }
 
-        /**
-         * Returns the CE32 for an indirect special CE32 (e.g., with DIGIT_TAG).
-         * Requires that ce32 is special.
-         */
+        /// <summary>
+        /// Returns the CE32 for an indirect special CE32 (e.g., with DIGIT_TAG).
+        /// Requires that <paramref name="ce32"/> is special.
+        /// </summary>
         internal int GetIndirectCE32(int ce32)
         {
             Debug.Assert(Collation.IsSpecialCE32(ce32));
@@ -101,10 +101,10 @@ namespace ICU4N.Impl.Coll
             return ce32;
         }
 
-        /**
-         * Returns the CE32 for an indirect special CE32 (e.g., with DIGIT_TAG),
-         * if ce32 is special.
-         */
+        /// <summary>
+        /// Returns the CE32 for an indirect special CE32 (e.g., with DIGIT_TAG),
+        /// if <paramref name="ce32"/> is special.
+        /// </summary>
         internal int GetFinalCE32(int ce32)
         {
             if (Collation.IsSpecialCE32(ce32))
@@ -114,19 +114,19 @@ namespace ICU4N.Impl.Coll
             return ce32;
         }
 
-        /**
-         * Computes a CE from c's ce32 which has the OFFSET_TAG.
-         */
+        /// <summary>
+        /// Computes a CE from <paramref name="c"/>'s <paramref name="ce32"/> which has the <see cref="Collation.OFFSET_TAG"/>.
+        /// </summary>
         internal long GetCEFromOffsetCE32(int c, int ce32)
         {
             long dataCE = ces[Collation.IndexFromCE32(ce32)];
             return Collation.MakeCE(Collation.GetThreeBytePrimaryForOffsetData(c, dataCE));
         }
 
-        /**
-         * Returns the single CE that c maps to.
-         * Throws UnsupportedOperationException if c does not map to a single CE.
-         */
+        /// <summary>
+        /// Returns the single CE that c maps to.
+        /// Throws <see cref="NotSupportedException"/> if <paramref name="c"/> does not map to a single CE.
+        /// </summary>
         internal long GetSingleCE(int c)
         {
             CollationData d;
@@ -204,32 +204,34 @@ namespace ICU4N.Impl.Coll
             return Collation.CeFromSimpleCE32(ce32);
         }
 
-        /**
-         * Returns the FCD16 value for code point c. c must be >= 0.
-         */
+        /// <summary>
+        /// Returns the FCD16 value for code point <paramref name="c"/>. <paramref name="c"/> must be >= 0.
+        /// </summary>
         internal int GetFCD16(int c)
         {
             return nfcImpl.GetFCD16(c);
         }
 
-        /**
-         * Returns the first primary for the script's reordering group.
-         * @return the primary with only the first primary lead byte of the group
-         *         (not necessarily an actual root collator primary weight),
-         *         or 0 if the script is unknown
-         */
+        /// <summary>
+        /// Returns the first primary for the <paramref name="script"/>'s reordering group.
+        /// </summary>
+        /// <returns>The primary with only the first primary lead byte of the group
+        /// (not necessarily an actual root collator primary weight),
+        /// or 0 if the <paramref name="script"/> is unknown
+        /// </returns>
         internal long GetFirstPrimaryForGroup(int script)
         {
             int index = GetScriptIndex(script);
             return index == 0 ? 0 : (long)scriptStarts[index] << 16;
         }
 
-        /**
-         * Returns the last primary for the script's reordering group.
-         * @return the last primary of the group
-         *         (not an actual root collator primary weight),
-         *         or 0 if the script is unknown
-         */
+        /// <summary>
+        /// Returns the last primary for the <paramref name="script"/>'s reordering group.
+        /// </summary>
+        /// <returns>The last primary of the group
+        /// (not an actual root collator primary weight),
+        /// or 0 if the <paramref name="script"/> is unknown.
+        /// </returns>
         public long GetLastPrimaryForGroup(int script)
         {
             int index = GetScriptIndex(script);
@@ -241,10 +243,10 @@ namespace ICU4N.Impl.Coll
             return (limit << 16) - 1;
         }
 
-        /**
-         * Finds the reordering group which contains the primary weight.
-         * @return the first script of the group, or -1 if the weight is beyond the last group
-         */
+        /// <summary>
+        /// Finds the reordering group which contains the primary weight.
+        /// </summary>
+        /// <returns>The first script of the group, or -1 if the weight is beyond the last group.</returns>
         public int GetGroupForPrimary(long p)
         {
             p >>= 16;
@@ -334,16 +336,18 @@ namespace ICU4N.Impl.Coll
             return dest;
         }
 
-        /**
-         * Writes the permutation of primary-weight ranges
-         * for the given reordering of scripts and groups.
-         * The caller checks for illegal arguments and
-         * takes care of [DEFAULT] and memory allocation.
-         *
-         * <p>Each list element will be a (limit, offset) pair as described
-         * for the CollationSettings.reorderRanges.
-         * The list will be empty if no ranges are reordered.
-         */
+        /// <summary>
+        /// Writes the permutation of primary-weight ranges
+        /// for the given reordering of scripts and groups.
+        /// The caller checks for illegal arguments and
+        /// takes care of [DEFAULT] and memory allocation.
+        /// <para/>
+        /// Each list element will be a (limit, offset) pair as described
+        /// for the <see cref="CollationSettings.reorderRanges"/>.
+        /// The list will be empty if no ranges are reordered.
+        /// </summary>
+        /// <param name="reorder"></param>
+        /// <param name="ranges"></param>
         internal void MakeReorderRanges(int[] reorder, IList<int> ranges)
         {
             MakeReorderRanges(reorder, false, ranges);
@@ -564,24 +568,25 @@ namespace ICU4N.Impl.Coll
 
         private static readonly int[] EMPTY_INT_ARRAY = new int[0];
 
-        /** @see jamoCE32s */
+        /// <seealso cref="jamoCE32s"/>
         internal static readonly int JAMO_CE32S_LENGTH = 19 + 21 + 27;
 
-        /** Main lookup trie. */
+        /// <summary>Main lookup trie.</summary>
         internal Trie2_32 trie;
-        /**
-         * Array of CE32 values.
-         * At index 0 there must be CE32(U+0000)
-         * to support U+0000's special-tag for NUL-termination handling.
-         */
+        /// <summary>
+        /// Array of CE32 values.
+        /// At index 0 there must be CE32(U+0000)
+        /// to support U+0000's special-tag for NUL-termination handling.
+        /// </summary>
         internal IList<int> ce32s;
-        /** Array of CE values for expansions and OFFSET_TAG. */
+        /// <summary>Array of CE values for expansions and <see cref="Collation.OFFSET_TAG"/>.</summary>
         internal IList<long> ces;
-        /** Array of prefix and contraction-suffix matching data. */
+        /// <summary>Array of prefix and contraction-suffix matching data.</summary>
         internal string contexts;
-        /** Base collation data, or null if this data itself is a base. */
+        /// <summary>Base collation data, or null if this data itself is a base.</summary>
         private CollationData base_;
 
+        /// <summary>Base collation data, or null if this data itself is a base.</summary>
         public CollationData Base
         {
             get { return base_; }
@@ -590,65 +595,69 @@ namespace ICU4N.Impl.Coll
 
         // ICU4N TODO: API Make fields into properties
 
-        /**
-         * Simple array of JAMO_CE32S_LENGTH=19+21+27 CE32s, one per canonical Jamo L/V/T.
-         * They are normally simple CE32s, rarely expansions.
-         * For fast handling of HANGUL_TAG.
-         */
+        /// <summary>
+        /// Simple array of <see cref="JAMO_CE32S_LENGTH"/>=19+21+27 CE32s, one per canonical Jamo L/V/T.
+        /// They are normally simple CE32s, rarely expansions.
+        /// For fast handling of <see cref="Collation.HANGUL_TAG"/>.
+        /// </summary>
         internal int[] jamoCE32s = new int[JAMO_CE32S_LENGTH];
         public Normalizer2Impl nfcImpl;
-        /** The single-byte primary weight (xx000000) for numeric collation. */
+        /// <summary>The single-byte primary weight (xx000000) for numeric collation.</summary>
         internal long numericPrimary = 0x12000000;
 
-        /** 256 flags for which primary-weight lead bytes are compressible. */
+        /// <summary>256 flags for which primary-weight lead bytes are compressible.</summary>
         public bool[] compressibleBytes;
-        /**
-         * Set of code points that are unsafe for starting string comparison after an identical prefix,
-         * or in backwards CE iteration.
-         */
+
+        /// <summary>
+        /// Set of code points that are unsafe for starting string comparison after an identical prefix,
+        /// or in backwards CE iteration.
+        /// </summary>
         internal UnicodeSet unsafeBackwardSet;
 
-        /**
-         * Fast Latin table for common-Latin-text string comparisons.
-         * Data structure see class CollationFastLatin.
-         */
+        /// <summary>
+        /// Fast Latin table for common-Latin-text string comparisons.
+        /// Data structure see class <see cref="CollationFastLatin"/>.
+        /// </summary>
         public char[] fastLatinTable;
-        /**
-         * Header portion of the fastLatinTable.
-         * In C++, these are one array, and the header is skipped for mapping characters.
-         * In Java, two arrays work better.
-         */
+
+        /// <summary>
+        /// Header portion of the <see cref="fastLatinTable"/>.
+        /// In C++, these are one array, and the header is skipped for mapping characters.
+        /// In .NET, two arrays work better.
+        /// </summary>
         internal char[] fastLatinTableHeader;
 
-        /**
-         * Data for scripts and reordering groups.
-         * Uses include building a reordering permutation table and
-         * providing script boundaries to AlphabeticIndex.
-         */
+        /// <summary>
+        /// Data for scripts and reordering groups.
+        /// Uses include building a reordering permutation table and
+        /// providing script boundaries to <see cref="Text.AlphabeticIndex{T}"/>.
+        /// </summary>
         internal int numScripts;
-        /**
-         * The length of scriptsIndex is numScripts+16.
-         * It maps from a UScriptCode or a special reorder code to an entry in scriptStarts.
-         * 16 special reorder codes (not all used) are mapped starting at numScripts.
-         * Up to MAX_NUM_SPECIAL_REORDER_CODES are codes for special groups like space/punct/digit.
-         * There are special codes at the end for reorder-reserved primary ranges.
-         *
-         * <p>Multiple scripts may share a range and index, for example Hira & Kana.
-         */
+
+        /// <summary>
+        /// The length of scriptsIndex is <see cref="numScripts"/>+16.
+        /// It maps from a UScriptCode or a special reorder code to an entry in <see cref="scriptStarts"/>.
+        /// 16 special reorder codes (not all used) are mapped starting at <see cref="numScripts"/>.
+        /// Up to <see cref="MAX_NUM_SPECIAL_REORDER_CODES"/> are codes for special groups like space/punct/digit.
+        /// There are special codes at the end for reorder-reserved primary ranges.
+        /// <para/>
+        /// Multiple scripts may share a range and index, for example Hira &amp; Kana.
+        /// </summary>
         internal char[] scriptsIndex;
-        /**
-         * Start primary weight (top 16 bits only) for a group/script/reserved range
-         * indexed by scriptsIndex.
-         * The first range (separators & terminators) and the last range (trailing weights)
-         * are not reorderable, and no scriptsIndex entry points to them.
-         */
+
+        /// <summary>
+        /// Start primary weight (top 16 bits only) for a group/script/reserved range
+        /// indexed by <see cref="scriptsIndex"/>.
+        /// The first range (separators &amp; terminators) and the last range (trailing weights)
+        /// are not reorderable, and no <see cref="scriptsIndex"/> entry points to them.
+        /// </summary>
         internal char[] scriptStarts;
 
-        /**
-         * Collation elements in the root collator.
-         * Used by the CollationRootElements class. The data structure is described there.
-         * null in a tailoring.
-         */
+        /// <summary>
+        /// Collation elements in the root collator.
+        /// Used by the <see cref="CollationRootElements"/> class. The data structure is described there.
+        /// null in a tailoring.
+        /// </summary>
         public long[] rootElements;
     }
 }
