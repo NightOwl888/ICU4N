@@ -4,7 +4,6 @@ using ICU4N.Support.Text;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
-using ScriptUsage = ICU4N.Lang.UScript.ScriptUsage; // ICU4N TODO: De-nest ?
 
 namespace ICU4N.Dev.Test.Lang
 {
@@ -142,14 +141,14 @@ namespace ICU4N.Dev.Test.Lang
                 Errln("UScript.getSampleString(invalid) failed");
             }
 
-            if (UScript.GetUsage(UScript.LATIN) != ScriptUsage.RECOMMENDED ||
+            if (UScript.GetUsage(UScript.LATIN) != ScriptUsage.Recommended ||
                     // Unicode 10 gives up on "aspirational".
-                    UScript.GetUsage(UScript.YI) != ScriptUsage.LIMITED_USE ||
-                    UScript.GetUsage(UScript.CHEROKEE) != ScriptUsage.LIMITED_USE ||
-                    UScript.GetUsage(UScript.COPTIC) != ScriptUsage.EXCLUDED ||
-                    UScript.GetUsage(UScript.CIRTH) != ScriptUsage.NOT_ENCODED ||
-                    UScript.GetUsage(UScript.INVALID_CODE) != ScriptUsage.NOT_ENCODED ||
-                    UScript.GetUsage(UScript.CODE_LIMIT) != ScriptUsage.NOT_ENCODED)
+                    UScript.GetUsage(UScript.YI) != ScriptUsage.LimitedUse ||
+                    UScript.GetUsage(UScript.CHEROKEE) != ScriptUsage.LimitedUse ||
+                    UScript.GetUsage(UScript.COPTIC) != ScriptUsage.Excluded ||
+                    UScript.GetUsage(UScript.CIRTH) != ScriptUsage.NotEncoded ||
+                    UScript.GetUsage(UScript.INVALID_CODE) != ScriptUsage.NotEncoded ||
+                    UScript.GetUsage(UScript.CODE_LIMIT) != ScriptUsage.NotEncoded)
             {
                 Errln("UScript.getUsage() failed");
             }
@@ -216,7 +215,7 @@ namespace ICU4N.Dev.Test.Lang
                 String sample = UScript.GetSampleString(sc);
                 UnicodeSet scriptSet = new UnicodeSet();
                 scriptSet.ApplyIntPropertyValue((int)UProperty.SCRIPT, sc); // ICU4N TODO: API - eliminate the cast ?
-                if (usage == ScriptUsage.NOT_ENCODED)
+                if (usage == ScriptUsage.NotEncoded)
                 {
                     assertTrue(sn + " not encoded, no sample", sample.Length == 0);  // Java 6: sample.isEmpty()
                     assertFalse(sn + " not encoded, not RTL", UScript.IsRightToLeft(sc));

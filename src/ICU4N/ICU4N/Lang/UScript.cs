@@ -1545,46 +1545,8 @@ namespace ICU4N.Lang
             }
         }
 
-        /**
-         * Script usage constants.
-         * See UAX #31 Unicode Identifier and Pattern Syntax.
-         * http://www.unicode.org/reports/tr31/#Table_Candidate_Characters_for_Exclusion_from_Identifiers
-         *
-         * @stable ICU 51
-         */
-        public enum ScriptUsage
-        {
-            /**
-             * Not encoded in Unicode.
-             * @stable ICU 51
-             */
-            NOT_ENCODED,
-            /**
-             * Unknown script usage.
-             * @stable ICU 51
-             */
-            UNKNOWN,
-            /**
-             * Candidate for Exclusion from Identifiers.
-             * @stable ICU 51
-             */
-            EXCLUDED,
-            /**
-             * Limited Use script.
-             * @stable ICU 51
-             */
-            LIMITED_USE,
-            /**
-             * Aspirational Use script.
-             * @stable ICU 51
-             */
-            ASPIRATIONAL,
-            /**
-             * Recommended script.
-             * @stable ICU 51
-             */
-            RECOMMENDED
-        }
+        // ICU4N specific - de-nested ScriptUsage enum
+
         private static readonly ScriptUsage[] usageValues = (ScriptUsage[])Enum.GetValues(typeof(ScriptUsage));
 
     /**
@@ -1608,7 +1570,7 @@ namespace ICU4N.Lang
 
         /**
          * Returns the script usage according to UAX #31 Unicode Identifier and Pattern Syntax.
-         * Returns {@link ScriptUsage#NOT_ENCODED} if the script is not encoded in Unicode.
+         * Returns <see cref="ScriptUsage.NotEncoded"/> if the script is not encoded in Unicode.
          *
          * @param script script code
          * @return script usage
@@ -1660,11 +1622,52 @@ namespace ICU4N.Lang
             return (ScriptMetadata.GetScriptProps(script) & ScriptMetadata.CASED) != 0;
         }
 
-        ///CLOVER:OFF
+        //CLOVER:OFF
         /**
          *  Private Constructor. Never default construct
          */
         private UScript() { }
-        ///CLOVER:ON
+        //CLOVER:ON
+    }
+
+    /// <summary>
+    /// Script usage constants.
+    /// See UAX #31 Unicode Identifier and Pattern Syntax.
+    /// <a href="http://www.unicode.org/reports/tr31/#Table_Candidate_Characters_for_Exclusion_from_Identifiers">
+    /// http://www.unicode.org/reports/tr31/#Table_Candidate_Characters_for_Exclusion_from_Identifiers</a>
+    /// </summary>
+    /// <stable>ICU 51</stable>
+    public enum ScriptUsage
+    {
+        /// <summary>
+        /// Not encoded in Unicode.
+        /// </summary>
+        /// <stable>ICU 51</stable>
+        NotEncoded,
+        /// <summary>
+        /// Unknown script usage.
+        /// </summary>
+        /// <stable>ICU 51</stable>
+        Unknown,
+        /// <summary>
+        /// Candidate for Exclusion from Identifiers.
+        /// </summary>
+        /// <stable>ICU 51</stable>
+        Excluded,
+        /// <summary>
+        /// Limited Use script.
+        /// </summary>
+        /// <stable>ICU 51</stable>
+        LimitedUse,
+        /// <summary>
+        /// Aspirational Use script.
+        /// </summary>
+        /// <stable>ICU 51</stable>
+        Aspirational,
+        /// <summary>
+        /// Recommended script.
+        /// </summary>
+        /// <stable>ICU 51</stable>
+        Recommended
     }
 }
