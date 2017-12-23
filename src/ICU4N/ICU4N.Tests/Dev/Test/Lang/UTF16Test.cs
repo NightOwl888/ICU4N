@@ -1604,7 +1604,7 @@ namespace ICU4N.Dev.Test.Lang
         public void TestStringComparator()
         {
             UTF16.StringComparer compare = new UTF16.StringComparer();
-            if (compare.GetCodePointCompare() != false)
+            if (compare.CodePointCompare != false)
             {
                 Errln("Default string comparator should be code unit compare");
             }
@@ -1617,13 +1617,13 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("Default string comparator should have fold case default compare");
             }
-            compare.SetCodePointCompare(true);
-            if (compare.GetCodePointCompare() != true)
+            compare.CodePointCompare = true;
+            if (compare.CodePointCompare != true)
             {
                 Errln("Error setting code point compare");
             }
-            compare.SetCodePointCompare(false);
-            if (compare.GetCodePointCompare() != false)
+            compare.CodePointCompare = false;
+            if (compare.CodePointCompare != false)
             {
                 Errln("Error setting code point compare");
             }

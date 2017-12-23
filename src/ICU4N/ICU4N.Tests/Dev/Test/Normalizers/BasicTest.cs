@@ -2265,7 +2265,7 @@ namespace ICU4N.Dev.Test.Normalizers
                                 comp.SetIgnoreCase(true, UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I);
                             }
 
-                            comp.SetCodePointCompare((opt[k].options & Normalizer.COMPARE_CODE_POINT_ORDER) != 0);
+                            comp.CodePointCompare = (opt[k].options & Normalizer.COMPARE_CODE_POINT_ORDER) != 0;
                             // result=comp.caseCompare(s[i],s[j], opt[k].options);
                             result = comp.Compare(s[i], s[j]);
                             refResult = ref_case_compare(s[i], s[j], opt[k].options);
@@ -2327,7 +2327,7 @@ namespace ICU4N.Dev.Test.Normalizers
                             comp.SetIgnoreCase(true, UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I);
                         }
 
-                        comp.SetCodePointCompare((opt[k].options & Normalizer.COMPARE_CODE_POINT_ORDER) != 0);
+                        comp.CodePointCompare = (opt[k].options & Normalizer.COMPARE_CODE_POINT_ORDER) != 0;
 
                         result = comp.Compare(s1, s2);
                         refResult = ref_case_compare(s1, s2, opt[k].options);

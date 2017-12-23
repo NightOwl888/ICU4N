@@ -2634,6 +2634,11 @@ namespace ICU4N.Text
         /// <seealso cref="FOLD_CASE_DEFAULT"/>
         /// <seealso cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/>
         /// <stable>ICU 2.1</stable>
+        // ICU4N TODO: API - This design needs to be reworked to fit into the .NET world:
+        // 1. Look into subclassing System.StringComparer
+        // 2. Rather than "foldcaseoption", this should be made culture aware, so the "special i" casing works in the applicable cultures
+        // 3. Look into making constants similar to System.StringComparer.Ordinal, System.StringComparer.OrdinalIgnoreCase, System.StringComparer.CurrentCulture, etc.
+        // Note that it seems that the only feature available here is that is not available in .NET's StringComparer is the ability to use "codepointcompare" mode
         public sealed class StringComparer : IComparer<string> // ICU4N TODO: De-nest and rename UTF16StringComparer ?
         {
             // public constructor ------------------------------------------------
@@ -2643,7 +2648,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <stable>ICU 2.1</stable>
             public StringComparer()
-                    : this(false, false, FOLD_CASE_DEFAULT)
+                : this(false, false, FOLD_CASE_DEFAULT)
             {
             }
 
@@ -2662,7 +2667,7 @@ namespace ICU4N.Text
             /// <stable>ICU 2.4</stable>
             public StringComparer(bool codepointcompare, bool ignorecase, int foldcaseoption)
             {
-                SetCodePointCompare(codepointcompare);
+                CodePointCompare = codepointcompare;
                 m_ignoreCase_ = ignorecase;
                 if (foldcaseoption < FOLD_CASE_DEFAULT || foldcaseoption > FOLD_CASE_EXCLUDE_SPECIAL_I)
                 {
@@ -2698,24 +2703,7 @@ namespace ICU4N.Text
 
             // public setters ----------------------------------------------------
 
-            /**
-             * Sets the comparison mode to code point compare if flag is true. Otherwise comparison mode
-             * is set to code unit compare
-             *
-             * @param flag True for code point compare, false for code unit compare
-             * @stable ICU 2.4
-             */
-            public void SetCodePointCompare(bool flag) // ICU4N TODO: API: Property?
-            {
-                if (flag)
-                {
-                    m_codePointCompare_ = Normalizer.COMPARE_CODE_POINT_ORDER;
-                }
-                else
-                {
-                    m_codePointCompare_ = 0;
-                }
-            }
+            // ICU4N specific - SetCodePointCompare(bool) made into setter of CodePointCompare
 
             /**
              * Sets the Comparator to case-insensitive comparison mode if argument is true, otherwise
@@ -2741,15 +2729,25 @@ namespace ICU4N.Text
 
             // public getters ----------------------------------------------------
 
-            /**
-             * Checks if the comparison mode is code point compare.
-             *
-             * @return true for code point compare, false for code unit compare
-             * @stable ICU 2.4
-             */
-            public bool GetCodePointCompare() // ICU4N TODO: API: Property
+            /// <summary>
+            /// Gets or Sets the comparison mode to code point compare if flag is true. 
+            /// Default comparison mode is set to code unit compare (false).
+            /// </summary>
+            /// <stable>ICU 2.4</stable>
+            public bool CodePointCompare
             {
-                return m_codePointCompare_ == Normalizer.COMPARE_CODE_POINT_ORDER;
+                get { return m_codePointCompare_ == Normalizer.COMPARE_CODE_POINT_ORDER; }
+                set
+                {
+                    if (value)
+                    {
+                        m_codePointCompare_ = Normalizer.COMPARE_CODE_POINT_ORDER;
+                    }
+                    else
+                    {
+                        m_codePointCompare_ = 0;
+                    }
+                }
             }
 
             /**
@@ -2777,7 +2775,7 @@ namespace ICU4N.Text
             }
 
             // public other methods ----------------------------------------------
- 
+
             /// <summary>
             /// Compare two strings depending on the options selected during construction.
             /// </summary>
