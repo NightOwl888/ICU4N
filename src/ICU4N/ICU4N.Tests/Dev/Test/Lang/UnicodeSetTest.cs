@@ -2842,13 +2842,13 @@ namespace ICU4N.Dev.Test.Lang
             assertEquals("", "_.__.__.__._", m.DeleteFrom("_._a_._b_._c_._", SpanCondition.NOT_CONTAINED));
 
             assertEquals("", "a_._b_._c", m.Trim("_._a_._b_._c_._"));
-            assertEquals("", "a_._b_._c_._", m.Trim("_._a_._b_._c_._", TrimOption.LEADING));
-            assertEquals("", "_._a_._b_._c", m.Trim("_._a_._b_._c_._", TrimOption.TRAILING));
+            assertEquals("", "a_._b_._c_._", m.Trim("_._a_._b_._c_._", TrimOption.Leading));
+            assertEquals("", "_._a_._b_._c", m.Trim("_._a_._b_._c_._", TrimOption.Trailing));
 
-            assertEquals("", "a??b??c", m.ReplaceFrom("a_._b_._c", "??", CountMethod.WHOLE_SPAN));
-            assertEquals("", "a??b??c", m.ReplaceFrom(m.Trim("_._a_._b_._c_._"), "??", CountMethod.WHOLE_SPAN));
+            assertEquals("", "a??b??c", m.ReplaceFrom("a_._b_._c", "??", CountMethod.WholeSpan));
+            assertEquals("", "a??b??c", m.ReplaceFrom(m.Trim("_._a_._b_._c_._"), "??", CountMethod.WholeSpan));
             assertEquals("", "XYXYXYaXYXYXYbXYXYXYcXYXYXY", m.ReplaceFrom("_._a_._b_._c_._", "XY"));
-            assertEquals("", "XYaXYbXYcXY", m.ReplaceFrom("_._a_._b_._c_._", "XY", CountMethod.WHOLE_SPAN));
+            assertEquals("", "XYaXYbXYcXY", m.ReplaceFrom("_._a_._b_._c_._", "XY", CountMethod.WholeSpan));
 
             m = new UnicodeSetSpanner(new UnicodeSet("\\p{uppercase}"));
             assertEquals("", "TQBF", m.DeleteFrom("The Quick Brown Fox.", SpanCondition.NOT_CONTAINED));
@@ -2858,17 +2858,17 @@ namespace ICU4N.Dev.Test.Lang
 
             m = new UnicodeSetSpanner(new UnicodeSet("[{ab}]"));
             assertEquals("", "XXc acb", m.ReplaceFrom("ababc acb", "X"));
-            assertEquals("", "Xc acb", m.ReplaceFrom("ababc acb", "X", CountMethod.WHOLE_SPAN));
-            assertEquals("", "ababX", m.ReplaceFrom("ababc acb", "X", CountMethod.WHOLE_SPAN, SpanCondition.NOT_CONTAINED));
+            assertEquals("", "Xc acb", m.ReplaceFrom("ababc acb", "X", CountMethod.WholeSpan));
+            assertEquals("", "ababX", m.ReplaceFrom("ababc acb", "X", CountMethod.WholeSpan, SpanCondition.NOT_CONTAINED));
         }
 
         [Test]
         public void TestCodePoints()
         {
             // test supplemental code points and strings clusters
-            checkCodePoints("x\u0308", "z\u0308", CountMethod.MIN_ELEMENTS, SpanCondition.SIMPLE, null, 1);
-            checkCodePoints("𣿡", "𣿢", CountMethod.MIN_ELEMENTS, SpanCondition.SIMPLE, null, 1);
-            checkCodePoints("👦", "👧", CountMethod.MIN_ELEMENTS, SpanCondition.SIMPLE, null, 1);
+            checkCodePoints("x\u0308", "z\u0308", CountMethod.MinElements, SpanCondition.SIMPLE, null, 1);
+            checkCodePoints("𣿡", "𣿢", CountMethod.MinElements, SpanCondition.SIMPLE, null, 1);
+            checkCodePoints("👦", "👧", CountMethod.MinElements, SpanCondition.SIMPLE, null, 1);
         }
 
         private void checkCodePoints(String a, String b, CountMethod quantifier, SpanCondition spanCondition,
@@ -2893,9 +2893,9 @@ namespace ICU4N.Dev.Test.Lang
         public void TestCountIn()
         {
             UnicodeSetSpanner m = new UnicodeSetSpanner(new UnicodeSet("[ab]"));
-            checkCountIn(m, CountMethod.MIN_ELEMENTS, SpanCondition.SIMPLE, "abc", 2);
-            checkCountIn(m, CountMethod.WHOLE_SPAN, SpanCondition.SIMPLE, "abc", 1);
-            checkCountIn(m, CountMethod.MIN_ELEMENTS, SpanCondition.NOT_CONTAINED, "acccb", 3);
+            checkCountIn(m, CountMethod.MinElements, SpanCondition.SIMPLE, "abc", 2);
+            checkCountIn(m, CountMethod.WholeSpan, SpanCondition.SIMPLE, "abc", 1);
+            checkCountIn(m, CountMethod.MinElements, SpanCondition.NOT_CONTAINED, "acccb", 3);
         }
 
         internal void checkCountIn(UnicodeSetSpanner m, CountMethod countMethod, SpanCondition spanCondition, String target, int expected)
@@ -2907,7 +2907,7 @@ namespace ICU4N.Dev.Test.Lang
         internal int callCountIn(UnicodeSetSpanner m, String ab, CountMethod countMethod, SpanCondition spanCondition)
         {
             return spanCondition != SpanCondition.SIMPLE ? m.CountIn(ab, countMethod, spanCondition)
-                    : countMethod != CountMethod.MIN_ELEMENTS ? m.CountIn(ab, countMethod)
+                    : countMethod != CountMethod.MinElements ? m.CountIn(ab, countMethod)
                             : m.CountIn(ab);
         }
 

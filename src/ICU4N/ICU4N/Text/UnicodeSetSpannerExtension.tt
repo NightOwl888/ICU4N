@@ -39,7 +39,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns the number of matching characters found in a character sequence, 
-        /// counting by <see cref="CountMethod.MIN_ELEMENTS"/> using <see cref="SpanCondition.SIMPLE"/>.
+        /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.SIMPLE"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
         /// </summary>
         /// <param name="sequence">The sequence to count characters in.</param>
@@ -47,7 +47,7 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual int CountIn(<#=charSequence#> sequence)
         {
-            return CountIn(sequence, CountMethod.MIN_ELEMENTS, SpanCondition.SIMPLE);
+            return CountIn(sequence, CountMethod.MinElements, SpanCondition.SIMPLE);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -96,7 +96,7 @@ namespace ICU4N.Text
                 {
                     break;
                 }
-                if (countMethod == CountMethod.WHOLE_SPAN)
+                if (countMethod == CountMethod.WholeSpan)
                 {
                     start = unicodeSet.Span(sequence, endOfSpan, spanCondition);
                     count += 1;
@@ -121,7 +121,7 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual string DeleteFrom(<#=charSequence#> sequence)
         {
-            return ReplaceFrom(sequence, "", CountMethod.WHOLE_SPAN, SpanCondition.SIMPLE);
+            return ReplaceFrom(sequence, "", CountMethod.WholeSpan, SpanCondition.SIMPLE);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -139,7 +139,7 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual string DeleteFrom(<#=charSequence#> sequence, SpanCondition spanCondition)
         {
-            return ReplaceFrom(sequence, "", CountMethod.WHOLE_SPAN, spanCondition);
+            return ReplaceFrom(sequence, "", CountMethod.WholeSpan, spanCondition);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -147,7 +147,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Replace all matching spans in sequence by the replacement,
-        /// counting by <see cref="CountMethod.MIN_ELEMENTS"/> using <see cref="SpanCondition.SIMPLE"/>.
+        /// counting by <see cref="CountMethod.MinElements"/> using <see cref="SpanCondition.SIMPLE"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
         /// </summary>
         /// <param name="sequence">Character sequence to replace matching spans in.</param>
@@ -156,7 +156,7 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         <#=charSequence=="ICharSequence" || charSequence2=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual string ReplaceFrom(<#=charSequence#> sequence, <#=charSequence2#> replacement)
         {
-            return ReplaceFrom(sequence, replacement, CountMethod.MIN_ELEMENTS, SpanCondition.SIMPLE);
+            return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.SIMPLE);
         }
 	<# } #>
 <# } #>
@@ -182,7 +182,7 @@ namespace ICU4N.Text
 	<# foreach (var charSequence2 in charSequences) { #>
 
         /// <summary>
-        /// Replace all matching spans in sequence by replacement, according to the countMethod and spanCondition.
+        /// Replace all matching spans in sequence by replacement, according to the <paramref name="countMethod"/> and <paramref name="spanCondition"/>.
         /// The code alternates spans; see the class doc for <see cref="UnicodeSetSpanner"/> for a note about boundary conditions.
         /// </summary>
         /// <param name="sequence">Character sequence to replace matching spans in.</param>
@@ -207,7 +207,7 @@ namespace ICU4N.Text
             for (int endCopy = 0; endCopy != length;)
             {
                 int endModify;
-                if (countMethod == CountMethod.WHOLE_SPAN)
+                if (countMethod == CountMethod.WholeSpan)
                 {
                     endModify = unicodeSet.Span(sequence, endCopy, spanCondition);
                 }
@@ -219,7 +219,7 @@ namespace ICU4N.Text
                 {
                     // do nothing
                 }
-                else if (countMethod == CountMethod.WHOLE_SPAN)
+                else if (countMethod == CountMethod.WholeSpan)
                 {
                     result.Append(replacement);
                 }
@@ -245,7 +245,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start and
-        /// end of the string, using <see cref="TrimOption.BOTH"/> and <see cref="SpanCondition.SIMPLE"/>. For example:
+        /// end of the string, using <see cref="TrimOption.Both"/> and <see cref="SpanCondition.SIMPLE"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab")
         /// </code>
@@ -256,7 +256,7 @@ namespace ICU4N.Text
         /// <stable>ICU 54</stable>
         <#=charSequenceAccessibility#> virtual ICharSequence Trim(<#=charSequence#> sequence) // ICU4N TODO: API - return string? or return the same datatype that is passed?
         {
-            return Trim(sequence, TrimOption.BOTH, SpanCondition.SIMPLE);
+            return Trim(sequence, TrimOption.Both, SpanCondition.SIMPLE);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -265,13 +265,13 @@ namespace ICU4N.Text
         /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, using the <paramref name="trimOption"/> and <see cref="SpanCondition.SIMPLE"/>. For example:
         /// <code>
-        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.LEADING)
+        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading)
         /// </code>
         /// ... returns <c>"catbab"</c>.
         /// </summary>
         /// <param name="sequence">The sequence to trim.</param>
-        /// <param name="trimOption"><see cref="TrimOption.LEADING"/>, <see cref="TrimOption.TRAILING"/>, 
-        /// or <see cref="TrimOption.BOTH"/>.</param>
+        /// <param name="trimOption"><see cref="TrimOption.Leading"/>, <see cref="TrimOption.Trailing"/>, 
+        /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
         <#=charSequenceAccessibility#> virtual ICharSequence Trim(<#=charSequence#> sequence, TrimOption trimOption) // ICU4N TODO: API - return string? or return the same datatype that is passed?
@@ -285,13 +285,13 @@ namespace ICU4N.Text
         /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
         /// <code>
-        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.LEADING, SpanCondition.SIMPLE)
+        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.SIMPLE)
         /// </code>
         /// ... returns <c>"catbab"</c>.
         /// </summary>
         /// <param name="sequence">The sequence to trim.</param>
-        /// <param name="trimOption"><see cref="TrimOption.LEADING"/>, <see cref="TrimOption.TRAILING"/>, 
-        /// or <see cref="TrimOption.BOTH"/>.</param>
+        /// <param name="trimOption"><see cref="TrimOption.Leading"/>, <see cref="TrimOption.Trailing"/>, 
+        /// or <see cref="TrimOption.Both"/>.</param>
         /// <param name="spanCondition"><see cref="SpanCondition.SIMPLE"/>, <see cref="SpanCondition.CONTAINED"/> or 
         /// <see cref="SpanCondition.NOT_CONTAINED"/>.</param>
         /// <returns>A subsequence.</returns>
@@ -300,7 +300,7 @@ namespace ICU4N.Text
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
-            if (trimOption != TrimOption.TRAILING)
+            if (trimOption != TrimOption.Trailing)
             {
                 endLeadContained = unicodeSet.Span(sequence, spanCondition);
                 if (endLeadContained == length)
@@ -312,7 +312,7 @@ namespace ICU4N.Text
             {
                 endLeadContained = 0;
             }
-            if (trimOption != TrimOption.LEADING)
+            if (trimOption != TrimOption.Leading)
             {
                 startTrailContained = unicodeSet.SpanBack(sequence, spanCondition);
             }

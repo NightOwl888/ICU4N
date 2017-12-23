@@ -80,63 +80,67 @@ namespace ICU4N.Text
             return unicodeSet.GetHashCode();
         }
 
-        /// <summary>
-        /// Options for <see cref="UnicodeSetSpanner.ReplaceFrom(ICharSequence, ICharSequence, CountMethod)"/> 
-        /// and <see cref="UnicodeSetSpanner.CountIn(ICharSequence, CountMethod)"/> to control how to treat each matched span. 
-        /// It is similar to whether one is replacing [abc] by x, or [abc]* by x.
-        /// </summary>
-        /// <stable>ICU 54</stable>
-        public enum CountMethod // ICU4N TODO: API De-nest
-        {
-            /// <summary>
-            /// Collapse spans. That is, modify/count the entire matching span as a single item, instead of separate
-            /// set elements.
-            /// </summary>
-            /// <stable>ICU 54</stable>
-            WHOLE_SPAN,
-
-            /// <summary>
-            /// Use the smallest number of elements in the spanned range for counting and modification,
-            /// based on the <see cref="UnicodeSet.SpanCondition"/>.
-            /// If the set has no strings, this will be the same as the number of spanned code points.
-            /// <para/>
-            /// For example, in the string "abab" with <see cref="UnicodeSet.SpanCondition.SIMPLE"/>:
-            /// <list type="bullet">
-            ///     <item><description>spanning with [ab] will count four <see cref="MIN_ELEMENTS"/>.</description></item>
-            ///     <item><description>spanning with [{ab}] will count two <see cref="MIN_ELEMENTS"/>.</description></item>
-            ///     <item><description>spanning with [ab{ab}] will also count two <see cref="MIN_ELEMENTS"/>.</description></item>
-            /// </list>
-            /// </summary>
-            /// <stable>ICU 54</stable>
-            MIN_ELEMENTS,
-            // Note: could in the future have an additional option MAX_ELEMENTS
-        }
+        // ICU4N specific - de-nested CountMethod enum
 
         // ICU4N specific - moved all methods to UnicodeSetSpannerExtension.tt
         // so overloads for each of the charcter sequence types can be automatically
         // generated.
 
+        // ICU4N specific - de-nested TrimOption enum
+    }
+
+    /// <summary>
+    /// Options for <see cref="UnicodeSetSpanner.ReplaceFrom(ICharSequence, ICharSequence, CountMethod)"/> 
+    /// and <see cref="UnicodeSetSpanner.CountIn(ICharSequence, CountMethod)"/> to control how to treat each matched span. 
+    /// It is similar to whether one is replacing [abc] by x, or [abc]* by x.
+    /// </summary>
+    /// <stable>ICU 54</stable>
+    public enum CountMethod
+    {
         /// <summary>
-        /// Options for the <see cref="UnicodeSetSpanner.Trim(ICharSequence, TrimOption, UnicodeSet.SpanCondition)"/> method.
+        /// Collapse spans. That is, modify/count the entire matching span as a single item, instead of separate
+        /// set elements.
         /// </summary>
         /// <stable>ICU 54</stable>
-        public enum TrimOption // ICU4N TODO: API De-nest
-        {
-            /// <summary>
-            /// Trim leading spans.
-            /// </summary>
-            /// <stable>ICU 54</stable>
-            LEADING,
-            /// <summary>
-            /// Trim leading and trailing spans.
-            /// </summary>
-            /// <stable>ICU 54</stable>
-            BOTH,
-            /// <summary>
-            /// Trim trailing spans.
-            /// </summary>
-            /// <stable>ICU 54</stable>
-            TRAILING
-        }
+        WholeSpan,
+
+        /// <summary>
+        /// Use the smallest number of elements in the spanned range for counting and modification,
+        /// based on the <see cref="UnicodeSet.SpanCondition"/>.
+        /// If the set has no strings, this will be the same as the number of spanned code points.
+        /// <para/>
+        /// For example, in the string "abab" with <see cref="UnicodeSet.SpanCondition.SIMPLE"/>:
+        /// <list type="bullet">
+        ///     <item><description>spanning with [ab] will count four <see cref="MinElements"/>.</description></item>
+        ///     <item><description>spanning with [{ab}] will count two <see cref="MinElements"/>.</description></item>
+        ///     <item><description>spanning with [ab{ab}] will also count two <see cref="MinElements"/>.</description></item>
+        /// </list>
+        /// </summary>
+        /// <stable>ICU 54</stable>
+        MinElements,
+        // Note: could in the future have an additional option MAX_ELEMENTS
+    }
+
+    /// <summary>
+    /// Options for the <see cref="UnicodeSetSpanner.Trim(ICharSequence, TrimOption, UnicodeSet.SpanCondition)"/> method.
+    /// </summary>
+    /// <stable>ICU 54</stable>
+    public enum TrimOption
+    {
+        /// <summary>
+        /// Trim leading spans.
+        /// </summary>
+        /// <stable>ICU 54</stable>
+        Leading,
+        /// <summary>
+        /// Trim leading and trailing spans.
+        /// </summary>
+        /// <stable>ICU 54</stable>
+        Both,
+        /// <summary>
+        /// Trim trailing spans.
+        /// </summary>
+        /// <stable>ICU 54</stable>
+        Trailing
     }
 }
