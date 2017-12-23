@@ -866,7 +866,7 @@ namespace ICU4N.Dev.Test.Lang
             }
         }
 
-        private static String PrintOneEdit(Edits.Iterator ei)
+        private static String PrintOneEdit(Edits.Enumerator ei)
         {
             if (ei.HasChange)
             {
@@ -956,12 +956,12 @@ namespace ICU4N.Dev.Test.Lang
 
         private void CheckEqualEdits(String name, Edits e1, Edits e2)
         {
-            Edits.Iterator ei1 = e1.GetFineIterator();
-            Edits.Iterator ei2 = e2.GetFineIterator();
+            Edits.Enumerator ei1 = e1.GetFineEnumerator();
+            Edits.Enumerator ei2 = e2.GetFineEnumerator();
             for (int i = 0; ; ++i)
             {
-                bool ei1HasNext = ei1.Next();
-                bool ei2HasNext = ei2.Next();
+                bool ei1HasNext = ei1.MoveNext();
+                bool ei2HasNext = ei2.MoveNext();
                 assertEquals(name + " next()[" + i + "]", ei1HasNext, ei2HasNext);
                 assertEquals(name + " edit[" + i + "]", PrintOneEdit(ei1), PrintOneEdit(ei2));
                 if (!ei1HasNext || !ei2HasNext)
@@ -972,7 +972,7 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         private static void CheckEditsIter(
-                String name, Edits.Iterator ei1, Edits.Iterator ei2,  // two equal iterators
+                String name, Edits.Enumerator ei1, Edits.Enumerator ei2,  // two equal iterators
                 EditChange[] expected, bool withUnchanged)
         {
             assertFalse(name, ei2.FindSourceIndex(-1));
@@ -987,7 +987,7 @@ namespace ICU4N.Dev.Test.Lang
                 String msg = name + ' ' + expIndex;
                 if (withUnchanged || expect.Change)
                 {
-                    assertTrue(msg, ei1.Next());
+                    assertTrue(msg, ei1.MoveNext());
                     assertEquals(msg, expect.Change, ei1.HasChange);
                     assertEquals(msg, expect.OldLength, ei1.OldLength);
                     assertEquals(msg, expect.NewLength, ei1.NewLength);
@@ -1009,8 +1009,8 @@ namespace ICU4N.Dev.Test.Lang
                     {
                         // For some iterators, move past the current range
                         // so that findSourceIndex() has to look before the current index.
-                        ei2.Next();
-                        ei2.Next();
+                        ei2.MoveNext();
+                        ei2.MoveNext();
                     }
                 }
 
@@ -1027,8 +1027,8 @@ namespace ICU4N.Dev.Test.Lang
                     {
                         // For some iterators, move past the current range
                         // so that findSourceIndex() has to look before the current index.
-                        ei2.Next();
-                        ei2.Next();
+                        ei2.MoveNext();
+                        ei2.MoveNext();
                     }
                 }
 
@@ -1042,7 +1042,7 @@ namespace ICU4N.Dev.Test.Lang
 
             {
                 String msg = name + " end";
-                assertFalse(msg, ei1.Next());
+                assertFalse(msg, ei1.MoveNext());
                 assertFalse(msg, ei1.HasChange);
                 assertEquals(msg, 0, ei1.OldLength);
                 assertEquals(msg, 0, ei1.NewLength);
@@ -1161,10 +1161,10 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(true, 103106, 104013)
         };
             CheckEditsIter("coarse",
-                    edits.GetCoarseIterator(), edits.GetCoarseIterator(),
+                    edits.GetCoarseEnumerator(), edits.GetCoarseEnumerator(),
                     coarseExpectedChanges, true);
             CheckEditsIter("coarse changes",
-                    edits.GetCoarseChangesIterator(), edits.GetCoarseChangesIterator(),
+                    edits.GetCoarseChangesEnumerator(), edits.GetCoarseChangesEnumerator(),
                     coarseExpectedChanges, false);
 
             EditChange[] fineExpectedChanges = new EditChange[] {
@@ -1178,18 +1178,18 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(true, 100000, 100000)
         };
             CheckEditsIter("fine",
-                    edits.GetFineIterator(), edits.GetFineIterator(),
+                    edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     fineExpectedChanges, true);
             CheckEditsIter("fine changes",
-                    edits.GetFineChangesIterator(), edits.GetFineChangesIterator(),
+                    edits.GetFineChangesEnumerator(), edits.GetFineChangesEnumerator(),
                     fineExpectedChanges, false);
 
             edits.Reset();
             assertFalse("reset hasChanges", edits.HasChanges);
             assertEquals("reset numberOfChanges", 0, edits.NumberOfChanges);
             assertEquals("reset", 0, edits.LengthDelta);
-            Edits.Iterator ei = edits.GetCoarseChangesIterator();
-            assertFalse("reset then iterator", ei.Next());
+            Edits.Enumerator ei = edits.GetCoarseChangesEnumerator();
+            assertFalse("reset then iterator", ei.MoveNext());
         }
 
         [Test]
@@ -1204,7 +1204,7 @@ namespace ICU4N.Dev.Test.Lang
                 e.AddUnchanged(1);
                 e.AddReplace(3, 1);
             }
-            Edits.Iterator iter = e.GetFineIterator();
+            Edits.Enumerator iter = e.GetFineEnumerator();
             for (int i = 0; i <= N; i += 2)
             {
                 assertEquals("ascending", i * 2, iter.SourceIndexFromDestinationIndex(i));
@@ -1400,7 +1400,7 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(false, 2, 2)
         };
             CheckEditsIter("toLower(Istanbul)",
-                    edits.GetFineIterator(), edits.GetFineIterator(),
+                    edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     lowerExpectedChanges, true);
 
             sb.Delete(0, sb.Length);
@@ -1416,7 +1416,7 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(true, 1, 1)
         };
             CheckEditsIter("toUpper(Πατάτα)",
-                    edits.GetFineIterator(), edits.GetFineIterator(),
+                    edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     upperExpectedChanges, true);
 
             sb.Delete(0, sb.Length);
@@ -1430,7 +1430,7 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(false, 10, 10)
         };
             CheckEditsIter("toTitle(IjssEL IglOo)",
-                    edits.GetFineIterator(), edits.GetFineIterator(),
+                    edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     titleExpectedChanges, true);
 
             sb.Delete(0, sb.Length);
@@ -1445,7 +1445,7 @@ namespace ICU4N.Dev.Test.Lang
                 new EditChange(false, 2, 2)
         };
             CheckEditsIter("fold(IßtanBul)",
-                    edits.GetFineIterator(), edits.GetFineIterator(),
+                    edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     foldExpectedChanges, true);
         }
 

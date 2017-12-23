@@ -258,11 +258,11 @@ namespace ICU4N.Text
         /// <summary>
         /// Access to the list of edits.
         /// </summary>
-        /// <seealso cref="GetCoarseIterator()"/>
-        /// <seealso cref="GetFineIterator()"/>
+        /// <seealso cref="GetCoarseEnumerator()"/>
+        /// <seealso cref="GetFineEnumerator()"/>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public sealed class Iterator // ICU4N TODO: API - change to Enumerator ?
+        public sealed class Enumerator
         {
             private readonly char[] array;
             private int index;
@@ -279,7 +279,7 @@ namespace ICU4N.Text
             private int oldLength_, newLength_;
             private int srcIndex, replIndex, destIndex;
 
-            internal Iterator(char[] a, int len, bool oc, bool crs)
+            internal Enumerator(char[] a, int len, bool oc, bool crs)
             {
                 array = a;
                 length = len;
@@ -347,12 +347,12 @@ namespace ICU4N.Text
             /// <returns>true if there is another edit.</returns>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
-            public bool Next() // ICU4N TODO: Rename MoveNext() ? Already has .NET semantics, just not the right name.
+            public bool MoveNext()
             {
-                return Next(onlyChanges_);
+                return MoveNext(onlyChanges_);
             }
 
-            private bool Next(bool onlyChanges)
+            private bool MoveNext(bool onlyChanges)
             {
                 // Forward iteration: Update the string indexes to the limit of the current span,
                 // and post-increment-read array units to assemble a new span.
@@ -710,7 +710,7 @@ namespace ICU4N.Text
                     // The index is in the current span.
                     return 0;
                 }
-                while (Next(false))
+                while (MoveNext(false))
                 {
                     if (findSource)
                     {
@@ -886,48 +886,48 @@ namespace ICU4N.Text
         };
 
         /// <summary>
-        /// Returns an <see cref="Iterator"/> for coarse-grained changes for simple string updates.
+        /// Returns an <see cref="Enumerator"/> for coarse-grained changes for simple string updates.
         /// Skips non-changes.
         /// </summary>
-        /// <returns>An <see cref="Iterator"/> that merges adjacent changes.</returns>
+        /// <returns>An <see cref="Enumerator"/> that merges adjacent changes.</returns>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public Iterator GetCoarseChangesIterator() // ICU4N TODO: API Rename GetCoarseChangesEnumerator
+        public Enumerator GetCoarseChangesEnumerator()
         {
-            return new Iterator(array, length, true, true);
+            return new Enumerator(array, length, true, true);
         }
         /// <summary>
-        /// Returns an <see cref="Iterator"/> for coarse-grained changes and non-changes for simple string updates.
+        /// Returns an <see cref="Enumerator"/> for coarse-grained changes and non-changes for simple string updates.
         /// </summary>
-        /// <returns>An <see cref="Iterator"/> that merges adjacent changes.</returns>
+        /// <returns>An <see cref="Enumerator"/> that merges adjacent changes.</returns>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public Iterator GetCoarseIterator() // ICU4N TODO: API Rename GetCoarseEnumerator
+        public Enumerator GetCoarseEnumerator()
         {
-            return new Iterator(array, length, false, true);
+            return new Enumerator(array, length, false, true);
         }
 
         /// <summary>
-        /// Returns an <see cref="Iterator"/> for fine-grained changes for modifying styled text.
+        /// Returns an <see cref="Enumerator"/> for fine-grained changes for modifying styled text.
         /// Skips non-changes.
         /// </summary>
-        /// <returns>An <see cref="Iterator"/> that separates adjacent changes.</returns>
+        /// <returns>An <see cref="Enumerator"/> that separates adjacent changes.</returns>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public Iterator GetFineChangesIterator() // ICU4N TODO: API Rename GetFineChangesEnumerator
+        public Enumerator GetFineChangesEnumerator()
         {
-            return new Iterator(array, length, true, false);
+            return new Enumerator(array, length, true, false);
         }
 
         /// <summary>
-        /// Returns an <see cref="Iterator"/> for fine-grained changes and non-changes for modifying styled text.
+        /// Returns an <see cref="Enumerator"/> for fine-grained changes and non-changes for modifying styled text.
         /// </summary>
-        /// <returns>An <see cref="Iterator"/> that separates adjacent changes.</returns>
+        /// <returns>An <see cref="Enumerator"/> that separates adjacent changes.</returns>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public Iterator GetFineIterator() // ICU4N TODO: API Rename GetFineEnumerator
+        public Enumerator GetFineEnumerator()
         {
-            return new Iterator(array, length, false, false);
+            return new Enumerator(array, length, false, false);
         }
 
         /// <summary>
@@ -962,8 +962,8 @@ namespace ICU4N.Text
         {
             // Picture string a --(Edits ab)--> string b --(Edits bc)--> string c.
             // Parallel iteration over both Edits.
-            Iterator abIter = ab.GetFineIterator();
-            Iterator bcIter = bc.GetFineIterator();
+            Enumerator abIter = ab.GetFineEnumerator();
+            Enumerator bcIter = bc.GetFineEnumerator();
             bool abHasNext = true, bcHasNext = true;
             // Copy iterator state into local variables, so that we can modify and subdivide spans.
             // ab old & new length, bc old & new length
@@ -986,7 +986,7 @@ namespace ICU4N.Text
                 // Some users expect the bc insertions to come first, so we fetch from bc first.
                 if (bc_bLength == 0)
                 {
-                    if (bcHasNext && (bcHasNext = bcIter.Next()))
+                    if (bcHasNext && (bcHasNext = bcIter.MoveNext()))
                     {
                         bc_bLength = bcIter.OldLength;
                         cLength = bcIter.NewLength;
@@ -1009,7 +1009,7 @@ namespace ICU4N.Text
                 }
                 if (ab_bLength == 0)
                 {
-                    if (abHasNext && (abHasNext = abIter.Next()))
+                    if (abHasNext && (abHasNext = abIter.MoveNext()))
                     {
                         aLength = abIter.OldLength;
                         ab_bLength = abIter.NewLength;

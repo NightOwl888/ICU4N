@@ -274,7 +274,7 @@ namespace ICU4N.Impl
                 return src.ToString();
             }
             StringBuilder result = new StringBuilder(src.Length + edits.LengthDelta);
-            for (Edits.Iterator ei = edits.GetCoarseIterator(); ei.Next();)
+            for (Edits.Enumerator ei = edits.GetCoarseEnumerator(); ei.MoveNext();)
             {
                 if (ei.HasChange)
                 {
@@ -297,7 +297,7 @@ namespace ICU4N.Impl
                 return src.ToString();
             }
             StringBuilder result = new StringBuilder(src.Length + edits.LengthDelta);
-            for (Edits.Iterator ei = edits.GetCoarseIterator(); ei.Next();)
+            for (Edits.Enumerator ei = edits.GetCoarseEnumerator(); ei.MoveNext();)
             {
                 if (ei.HasChange)
                 {
@@ -320,7 +320,7 @@ namespace ICU4N.Impl
                 return src.ToString();
             }
             StringBuilder result = new StringBuilder(src.Length + edits.LengthDelta);
-            for (Edits.Iterator ei = edits.GetCoarseIterator(); ei.Next();)
+            for (Edits.Enumerator ei = edits.GetCoarseEnumerator(); ei.MoveNext();)
             {
                 if (ei.HasChange)
                 {
@@ -343,7 +343,7 @@ namespace ICU4N.Impl
                 return src.ToString();
             }
             StringBuilder result = new StringBuilder(src.Length + edits.LengthDelta);
-            for (Edits.Iterator ei = edits.GetCoarseIterator(); ei.Next();)
+            for (Edits.Enumerator ei = edits.GetCoarseEnumerator(); ei.MoveNext();)
             {
                 if (ei.HasChange)
                 {
