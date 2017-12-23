@@ -174,14 +174,14 @@ namespace ICU4N.Impl
                 return fallback ? isoCode : null;
             }
 
-            public override IDictionary<string, string> SymbolMap()
+            public override IDictionary<string, string> SymbolMap
             {
-                return new Dictionary<string, string>();
+                get { return new Dictionary<string, string>(); }
             }
 
-            public override IDictionary<string, string> NameMap()
+            public override IDictionary<string, string> NameMap
             {
-                return new Dictionary<string, string>();
+                get { return new Dictionary<string, string>(); }
             }
 
             public override ULocale ULocale // ICU4N TODO: API - rename UCultureInfo

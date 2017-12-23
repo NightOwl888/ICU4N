@@ -135,7 +135,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The map.</returns>
         /// <stable>ICU 4.4</stable>
-        public abstract IDictionary<string, string> SymbolMap(); // ICU4N TODO: API - property ?
+        public abstract IDictionary<string, string> SymbolMap { get; }
 
         /// <summary>
         /// Returns a mapping from localized names (standard and plural) to currency codes.
@@ -143,7 +143,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The map.</returns>
         /// <stable>ICU 4.4</stable>
-        public abstract IDictionary<string, string> NameMap(); // ICU4N TODO: API - property ?
+        public abstract IDictionary<string, string> NameMap { get; }
 
         /// <summary>
         /// Sole constructor.  (For invocation by subclass constructors,

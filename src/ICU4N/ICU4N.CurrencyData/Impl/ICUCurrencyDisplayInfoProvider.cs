@@ -218,16 +218,22 @@ namespace ICU4N.Impl
                 return result;
             }
 
-            public override IDictionary<string, string> SymbolMap()
+            public override IDictionary<string, string> SymbolMap
             {
-                ParsingData parsingData = FetchParsingData();
-                return parsingData.symbolToIsoCode;
+                get
+                {
+                    ParsingData parsingData = FetchParsingData();
+                    return parsingData.symbolToIsoCode;
+                }
             }
 
-            public override IDictionary<string, string> NameMap()
+            public override IDictionary<string, string> NameMap
             {
-                ParsingData parsingData = FetchParsingData();
-                return parsingData.nameToIsoCode;
+                get
+                {
+                    ParsingData parsingData = FetchParsingData();
+                    return parsingData.nameToIsoCode;
+                }
             }
 
             public override IDictionary<string, string> GetUnitPatterns()
