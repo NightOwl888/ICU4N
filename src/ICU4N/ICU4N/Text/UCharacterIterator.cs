@@ -138,30 +138,33 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>Current codepoint.</returns>
         /// <stable>ICU 2.4</stable>
-        public virtual int CurrentCodePoint() // ICU4N TODO: API Make property
+        public virtual int CurrentCodePoint
         {
-            int ch = Current;
-            if (UTF16.IsLeadSurrogate((char)ch))
+            get
             {
-                // advance the index to get the
-                // next code point
-                Next();
-                // due to post increment semantics
-                // current() after next() actually
-                // returns the char we want
-                int ch2 = Current;
-                // current should never change
-                // the current index so back off
-                Previous();
-
-                if (UTF16.IsTrailSurrogate((char)ch2))
+                int ch = Current;
+                if (UTF16.IsLeadSurrogate((char)ch))
                 {
-                    // we found a surrogate pair
-                    // return the codepoint
-                    return Character.ToCodePoint((char)ch, (char)ch2);
+                    // advance the index to get the
+                    // next code point
+                    Next();
+                    // due to post increment semantics
+                    // current() after next() actually
+                    // returns the char we want
+                    int ch2 = Current;
+                    // current should never change
+                    // the current index so back off
+                    Previous();
+
+                    if (UTF16.IsTrailSurrogate((char)ch2))
+                    {
+                        // we found a surrogate pair
+                        // return the codepoint
+                        return Character.ToCodePoint((char)ch, (char)ch2);
+                    }
                 }
+                return ch;
             }
-            return ch;
         }
 
         /// <summary>

@@ -151,35 +151,35 @@ namespace ICU4N.Dev.Test.Iterator
                     Errln("iter.getText() failed");
 
                 iter.Index = (1);
-                if (iter.CurrentCodePoint() != UTF16.CharAt(text, 1))
+                if (iter.CurrentCodePoint != UTF16.CharAt(text, 1))
                     Errln("Iterator didn't start out in the right place.");
 
                 iter.SetToStart();
-                c = iter.CurrentCodePoint();
+                c = iter.CurrentCodePoint;
                 i = 0;
                 i = iter.MoveCodePointIndex(1);
-                c = iter.CurrentCodePoint();
+                c = iter.CurrentCodePoint;
                 if (c != UTF16.CharAt(text, 1) || i != 1)
                     Errln("moveCodePointIndex(1) didn't work correctly expected " + Hex(c) + " got " + Hex(UTF16.CharAt(text, 1)) + " i= " + i);
 
                 i = iter.MoveCodePointIndex(2);
-                c = iter.CurrentCodePoint();
+                c = iter.CurrentCodePoint;
                 if (c != UTF16.CharAt(text, 4) || i != 4)
                     Errln("moveCodePointIndex(2) didn't work correctly expected " + Hex(c) + " got " + Hex(UTF16.CharAt(text, 4)) + " i= " + i);
 
                 i = iter.MoveCodePointIndex(-2);
-                c = iter.CurrentCodePoint();
+                c = iter.CurrentCodePoint;
                 if (c != UTF16.CharAt(text, 1) || i != 1)
                     Errln("moveCodePointIndex(-2) didn't work correctly expected " + Hex(c) + " got " + Hex(UTF16.CharAt(text, 1)) + " i= " + i);
 
                 iter.SetToLimit();
                 i = iter.MoveCodePointIndex(-2);
-                c = iter.CurrentCodePoint();
+                c = iter.CurrentCodePoint;
                 if (c != UTF16.CharAt(text, (text.Length - 3)) || i != (text.Length - 3))
                     Errln("moveCodePointIndex(-2) didn't work correctly expected " + Hex(c) + " got " + Hex(UTF16.CharAt(text, (text.Length - 3))) + " i= " + i);
 
                 iter.SetToStart();
-                c = iter.CurrentCodePoint();
+                c = iter.CurrentCodePoint;
                 i = 0;
 
                 //testing first32PostInc, nextCodePointPostInc, setTostart
@@ -208,7 +208,7 @@ namespace ICU4N.Dev.Test.Iterator
                     i += UTF16.GetCharCount(c);
                     if (iter.Index != i)
                         Errln("getIndex() aftr nextCodePointPostInc() isn't working right");
-                    c = iter.CurrentCodePoint();
+                    c = iter.CurrentCodePoint;
                     if (c != UCharacterIterator.DONE && c != UTF16.CharAt(text, i))
                         Errln("current() after nextCodePointPostInc() isn't working right");
 
@@ -394,7 +394,7 @@ namespace ICU4N.Dev.Test.Iterator
                 }
                 else if (m == '0')
                 {
-                    c1 = iter.CurrentCodePoint();
+                    c1 = iter.CurrentCodePoint;
                     c2 = iter32.Current;
                 }
                 else

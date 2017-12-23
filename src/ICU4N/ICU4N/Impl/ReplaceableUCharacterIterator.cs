@@ -90,30 +90,33 @@ namespace ICU4N.Impl
         /// Returns the current codepoint.
         /// </summary>
         /// <returns>Current codepoint.</returns>
-        public override int CurrentCodePoint()
+        public override int CurrentCodePoint
         {
-            // cannot use charAt due to it different
-            // behaviour when index is pointing at a
-            // trail surrogate, check for surrogates
-
-            int ch = Current;
-            if (UTF16.IsLeadSurrogate((char)ch))
+            get
             {
-                // advance the index to get the next code point
-                Next();
-                // due to post increment semantics current() after next()
-                // actually returns the next char which is what we want
-                int ch2 = Current;
-                // current should never change the current index so back off
-                Previous();
+                // cannot use charAt due to it different
+                // behaviour when index is pointing at a
+                // trail surrogate, check for surrogates
 
-                if (UTF16.IsTrailSurrogate((char)ch2))
+                int ch = Current;
+                if (UTF16.IsLeadSurrogate((char)ch))
                 {
-                    // we found a surrogate pair
-                    return Character.ToCodePoint((char)ch, (char)ch2);
+                    // advance the index to get the next code point
+                    Next();
+                    // due to post increment semantics current() after next()
+                    // actually returns the next char which is what we want
+                    int ch2 = Current;
+                    // current should never change the current index so back off
+                    Previous();
+
+                    if (UTF16.IsTrailSurrogate((char)ch2))
+                    {
+                        // we found a surrogate pair
+                        return Character.ToCodePoint((char)ch, (char)ch2);
+                    }
                 }
+                return ch;
             }
-            return ch;
         }
 
         /// <summary>
