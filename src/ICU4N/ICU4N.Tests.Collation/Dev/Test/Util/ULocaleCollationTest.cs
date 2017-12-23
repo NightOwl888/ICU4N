@@ -333,7 +333,7 @@ namespace ICU4N.Dev.Test.Util
                 };
             ULocale french = ULocale.FRENCH;
             LocaleDisplayNames names = LocaleDisplayNames.GetInstance(french,
-                    DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU);
+                    DisplayContext.CapitalizationForUIListOrMenu);
             foreach (DisplayContextType type in Enum.GetValues(typeof(DisplayContextType)))
             {
                 Logln("Contexts: " + names.GetContext(type).ToString());
@@ -383,7 +383,7 @@ namespace ICU4N.Dev.Test.Util
             ULocale french = ULocale.FRENCH;
             Collator collator = Collator.GetInstance(french);
             LocaleDisplayNames names = LocaleDisplayNames.GetInstance(french,
-                    DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU);
+                    DisplayContext.CapitalizationForUIListOrMenu);
             foreach (String malformed in new string[] { "en-a", "$", "ü--a", "en--US" })
             {
                 try

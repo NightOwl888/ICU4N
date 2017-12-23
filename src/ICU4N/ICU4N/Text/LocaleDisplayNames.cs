@@ -52,7 +52,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Convenience overload of <see cref="GetInstance(CultureInfo, DisplayContext[])"/> that specifies
-        /// <see cref="DisplayContext.STANDARD_NAMES"/>.
+        /// <see cref="DisplayContext.StandardNames"/>.
         /// </summary>
         /// <param name="locale">The display <see cref="CultureInfo"/>.</param>
         /// <returns>A <see cref="LocaleDisplayNames"/> instance.</returns>
@@ -524,7 +524,7 @@ namespace ICU4N.Text
             {
                 this.locale = locale;
                 DisplayContext context = (dialectHandling == DialectHandling.DIALECT_NAMES) ?
-                        DisplayContext.DIALECT_NAMES : DisplayContext.STANDARD_NAMES;
+                        DisplayContext.DialectNames : DisplayContext.StandardNames;
                 this.contexts = new DisplayContext[] { context };
             }
 
@@ -548,9 +548,9 @@ namespace ICU4N.Text
                 DialectHandling result = DialectHandling.STANDARD_NAMES;
                 foreach (DisplayContext context in contexts)
                 {
-                    if (context.Type() == DisplayContextType.DIALECT_HANDLING)
+                    if (context.Type() == DisplayContextType.DialectHandling)
                     {
-                        if (context.Value() == (int)DisplayContext.DIALECT_NAMES)
+                        if (context.Value() == (int)DisplayContext.DialectNames)
                         {
                             result = DialectHandling.DIALECT_NAMES;
                             break;
@@ -562,7 +562,7 @@ namespace ICU4N.Text
 
             public override DisplayContext GetContext(DisplayContextType type)
             {
-                DisplayContext result = DisplayContext.STANDARD_NAMES;  // final fallback
+                DisplayContext result = DisplayContext.StandardNames;  // final fallback
                 foreach (DisplayContext context in contexts)
                 {
                     if (context.Type() == type)

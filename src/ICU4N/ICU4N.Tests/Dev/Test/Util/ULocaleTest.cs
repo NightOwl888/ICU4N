@@ -858,7 +858,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void TestUldnWithGarbage()
         {
-            LocaleDisplayNames ldn = LocaleDisplayNames.GetInstance(new CultureInfo("en-US"), DisplayContext.DIALECT_NAMES);
+            LocaleDisplayNames ldn = LocaleDisplayNames.GetInstance(new CultureInfo("en-US"), DisplayContext.DialectNames);
             String badLocaleID = "english (United States) [w";
             String expectedResult = "english [united states] [w"; // case changed from input
             String result = ldn.LocaleDisplayName(badLocaleID);
@@ -1230,17 +1230,17 @@ namespace ICU4N.Dev.Test.Util
             }
             // test use of context
             {
-                DisplayContext NM_STD = DisplayContext.STANDARD_NAMES;
-                DisplayContext NM_DIA = DisplayContext.DIALECT_NAMES;
-                DisplayContext CAP_BEG = DisplayContext.CAPITALIZATION_FOR_BEGINNING_OF_SENTENCE;
-                DisplayContext CAP_MID = DisplayContext.CAPITALIZATION_FOR_MIDDLE_OF_SENTENCE;
-                DisplayContext CAP_UIL = DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU;
-                DisplayContext CAP_STA = DisplayContext.CAPITALIZATION_FOR_STANDALONE;
-                DisplayContext CAP_NON = DisplayContext.CAPITALIZATION_NONE;
-                DisplayContext LEN_FU = DisplayContext.LENGTH_FULL;
-                DisplayContext LEN_SH = DisplayContext.LENGTH_SHORT;
-                DisplayContext SUB_SU = DisplayContext.SUBSTITUTE;
-                DisplayContext SUB_NO = DisplayContext.NO_SUBSTITUTE;
+                DisplayContext NM_STD = DisplayContext.StandardNames;
+                DisplayContext NM_DIA = DisplayContext.DialectNames;
+                DisplayContext CAP_BEG = DisplayContext.CapitalizationForBeginningOfSentence;
+                DisplayContext CAP_MID = DisplayContext.CapitalizationForMiddleOfSentence;
+                DisplayContext CAP_UIL = DisplayContext.CapitalizationForUIListOrMenu;
+                DisplayContext CAP_STA = DisplayContext.CapitalizationForStandalone;
+                DisplayContext CAP_NON = DisplayContext.CapitalizationNone;
+                DisplayContext LEN_FU = DisplayContext.LengthFull;
+                DisplayContext LEN_SH = DisplayContext.LengthShort;
+                DisplayContext SUB_SU = DisplayContext.Substitute;
+                DisplayContext SUB_NO = DisplayContext.NoSubstitute;
 
 
                 DisplayNamesItem[] items = {
@@ -1294,13 +1294,13 @@ namespace ICU4N.Dev.Test.Util
                 {
                     ULocale locale = new ULocale(item.displayLocale);
                     LocaleDisplayNames ldn = LocaleDisplayNames.GetInstance(locale, item.dialectHandling, item.capitalization, item.nameLength, item.substituteHandling);
-                    DisplayContext dialectHandling = ldn.GetContext(DisplayContextType.DIALECT_HANDLING);
+                    DisplayContext dialectHandling = ldn.GetContext(DisplayContextType.DialectHandling);
                     assertEquals("consistent dialect handling",
-                            dialectHandling == DisplayContext.DIALECT_NAMES,
+                            dialectHandling == DisplayContext.DialectNames,
                             ldn.GetDialectHandling() == LocaleDisplayNames.DialectHandling.DIALECT_NAMES);
-                    DisplayContext capitalization = ldn.GetContext(DisplayContextType.CAPITALIZATION);
-                    DisplayContext nameLength = ldn.GetContext(DisplayContextType.DISPLAY_LENGTH);
-                    DisplayContext substituteHandling = ldn.GetContext(DisplayContextType.SUBSTITUTE_HANDLING);
+                    DisplayContext capitalization = ldn.GetContext(DisplayContextType.Capitalization);
+                    DisplayContext nameLength = ldn.GetContext(DisplayContextType.DisplayLength);
+                    DisplayContext substituteHandling = ldn.GetContext(DisplayContextType.SubstituteHandling);
                     if (dialectHandling != item.dialectHandling || capitalization != item.capitalization || nameLength != item.nameLength || substituteHandling != item.substituteHandling)
                     {
                         Errln("FAIL: displayLoc: " + item.displayLocale + ", dialectNam?: " + item.dialectHandling +

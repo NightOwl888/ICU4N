@@ -124,7 +124,7 @@ namespace ICU4N.Impl
                     int[] intVector = value.GetInt32Vector();
                     if (intVector.Length < 2) { continue; }
 
-                    int titlecaseInt = (outerInstance.capitalization == DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU)
+                    int titlecaseInt = (outerInstance.capitalization == DisplayContext.CapitalizationForUIListOrMenu)
                             ? intVector[0] : intVector[1];
                     if (titlecaseInt == 0) { continue; }
 
@@ -135,8 +135,8 @@ namespace ICU4N.Impl
         }
 
         public LocaleDisplayNamesImpl(ULocale locale, DialectHandling dialectHandling)
-                    : this(locale, (dialectHandling == DialectHandling.STANDARD_NAMES) ? DisplayContext.STANDARD_NAMES : DisplayContext.DIALECT_NAMES,
-                    DisplayContext.CAPITALIZATION_NONE)
+                    : this(locale, (dialectHandling == DialectHandling.STANDARD_NAMES) ? DisplayContext.StandardNames : DisplayContext.DialectNames,
+                    DisplayContext.CapitalizationNone)
         {
         }
 
@@ -146,24 +146,24 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
         {
             DialectHandling dialectHandling = DialectHandling.STANDARD_NAMES;
-            DisplayContext capitalization = DisplayContext.CAPITALIZATION_NONE;
-            DisplayContext nameLength = DisplayContext.LENGTH_FULL;
-            DisplayContext substituteHandling = DisplayContext.SUBSTITUTE;
+            DisplayContext capitalization = DisplayContext.CapitalizationNone;
+            DisplayContext nameLength = DisplayContext.LengthFull;
+            DisplayContext substituteHandling = DisplayContext.Substitute;
             foreach (DisplayContext contextItem in contexts)
             {
                 switch (contextItem.Type())
                 {
-                    case DisplayContextType.DIALECT_HANDLING:
-                        dialectHandling = (contextItem.Value() == DisplayContext.STANDARD_NAMES.Value()) ?
+                    case DisplayContextType.DialectHandling:
+                        dialectHandling = (contextItem.Value() == DisplayContext.StandardNames.Value()) ?
                                 DialectHandling.STANDARD_NAMES : DialectHandling.DIALECT_NAMES;
                         break;
-                    case DisplayContextType.CAPITALIZATION:
+                    case DisplayContextType.Capitalization:
                         capitalization = contextItem;
                         break;
-                    case DisplayContextType.DISPLAY_LENGTH:
+                    case DisplayContextType.DisplayLength:
                         nameLength = contextItem;
                         break;
-                    case DisplayContextType.SUBSTITUTE_HANDLING:
+                    case DisplayContextType.SubstituteHandling:
                         substituteHandling = contextItem;
                         break;
                     default:
@@ -175,8 +175,8 @@ namespace ICU4N.Impl
             this.capitalization = capitalization;
             this.nameLength = nameLength;
             this.substituteHandling = substituteHandling;
-            this.langData = LangDataTables.impl.Get(locale, substituteHandling == DisplayContext.NO_SUBSTITUTE);
-            this.regionData = RegionDataTables.impl.Get(locale, substituteHandling == DisplayContext.NO_SUBSTITUTE);
+            this.langData = LangDataTables.impl.Get(locale, substituteHandling == DisplayContext.NoSubstitute);
+            this.regionData = RegionDataTables.impl.Get(locale, substituteHandling == DisplayContext.NoSubstitute);
             this.locale = ULocale.ROOT.Equals(langData.GetLocale()) ? regionData.GetLocale() :
                 langData.GetLocale();
 
@@ -224,8 +224,8 @@ namespace ICU4N.Impl
             // Get values from the contextTransforms data if we need them
             // Also check whether we will need a break iterator (depends on the data)
             bool needBrkIter = false;
-            if (capitalization == DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU ||
-                    capitalization == DisplayContext.CAPITALIZATION_FOR_STANDALONE)
+            if (capitalization == DisplayContext.CapitalizationForUIListOrMenu ||
+                    capitalization == DisplayContext.CapitalizationForStandalone)
             {
                 capitalizationUsage = new bool[Enum.GetValues(typeof(CapitalizationContextUsage)).Length]; // initialized to all false
                 ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, locale);
@@ -241,7 +241,7 @@ namespace ICU4N.Impl
                 needBrkIter = sink.hasCapitalizationUsage;
             }
             // Get a sentence break iterator if we will need it
-            if (needBrkIter || capitalization == DisplayContext.CAPITALIZATION_FOR_BEGINNING_OF_SENTENCE)
+            if (needBrkIter || capitalization == DisplayContext.CapitalizationForBeginningOfSentence)
             {
                 capitalizationBrkIter = BreakIterator.GetSentenceInstance(locale);
             }
@@ -264,20 +264,20 @@ namespace ICU4N.Impl
             DisplayContext result;
             switch (type)
             {
-                case DisplayContextType.DIALECT_HANDLING:
-                    result = (dialectHandling == DialectHandling.STANDARD_NAMES) ? DisplayContext.STANDARD_NAMES : DisplayContext.DIALECT_NAMES;
+                case DisplayContextType.DialectHandling:
+                    result = (dialectHandling == DialectHandling.STANDARD_NAMES) ? DisplayContext.StandardNames : DisplayContext.DialectNames;
                     break;
-                case DisplayContextType.CAPITALIZATION:
+                case DisplayContextType.Capitalization:
                     result = capitalization;
                     break;
-                case DisplayContextType.DISPLAY_LENGTH:
+                case DisplayContextType.DisplayLength:
                     result = nameLength;
                     break;
-                case DisplayContextType.SUBSTITUTE_HANDLING:
+                case DisplayContextType.SubstituteHandling:
                     result = substituteHandling;
                     break;
                 default:
-                    result = DisplayContext.STANDARD_NAMES; // hmm, we should do something else here
+                    result = DisplayContext.StandardNames; // hmm, we should do something else here
                     break;
             }
             return result;
@@ -286,7 +286,7 @@ namespace ICU4N.Impl
         private string AdjustForUsageAndContext(CapitalizationContextUsage usage, String name)
         {
             if (name != null && name.Length > 0 && UCharacter.IsLowerCase(name.CodePointAt(0)) &&
-                    (capitalization == DisplayContext.CAPITALIZATION_FOR_BEGINNING_OF_SENTENCE ||
+                    (capitalization == DisplayContext.CapitalizationForBeginningOfSentence ||
                     (capitalizationUsage != null && capitalizationUsage[(int)usage])))
             {
                 // Note, won't have capitalizationUsage != null && capitalizationUsage[usage.ordinal()]
@@ -478,7 +478,7 @@ namespace ICU4N.Impl
 
         private string LocaleIdName(string localeId)
         {
-            if (nameLength == DisplayContext.LENGTH_SHORT)
+            if (nameLength == DisplayContext.LengthShort)
             {
                 string locIdName = langData.Get("Languages%short", localeId);
                 if (locIdName != null && !locIdName.Equals(localeId))
@@ -494,9 +494,9 @@ namespace ICU4N.Impl
             // Special case to eliminate non-languages, which pollute our data.
             if (lang.Equals("root") || lang.IndexOf('_') != -1)
             {
-                return substituteHandling == DisplayContext.SUBSTITUTE ? lang : null;
+                return substituteHandling == DisplayContext.Substitute ? lang : null;
             }
-            if (nameLength == DisplayContext.LENGTH_SHORT)
+            if (nameLength == DisplayContext.LengthShort)
             {
                 string langName = langData.Get("Languages%short", lang);
                 if (langName != null && !langName.Equals(lang))
@@ -512,7 +512,7 @@ namespace ICU4N.Impl
             string str = langData.Get("Scripts%stand-alone", script);
             if (str == null || str.Equals(script))
             {
-                if (nameLength == DisplayContext.LENGTH_SHORT)
+                if (nameLength == DisplayContext.LengthShort)
                 {
                     str = langData.Get("Scripts%short", script);
                     if (str != null && !str.Equals(script))
@@ -527,7 +527,7 @@ namespace ICU4N.Impl
 
         private string ScriptDisplayNameInContext(string script, bool skipAdjust)
         {
-            if (nameLength == DisplayContext.LENGTH_SHORT)
+            if (nameLength == DisplayContext.LengthShort)
             {
                 string scriptName2 = langData.Get("Scripts%short", script);
                 if (scriptName2 != null && !scriptName2.Equals(script))
@@ -551,7 +551,7 @@ namespace ICU4N.Impl
 
         private string RegionDisplayName(string region, bool skipAdjust)
         {
-            if (nameLength == DisplayContext.LENGTH_SHORT)
+            if (nameLength == DisplayContext.LengthShort)
             {
                 string regionName2 = regionData.Get("Countries%short", region);
                 if (regionName2 != null && !regionName2.Equals(region))
@@ -606,7 +606,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                if (nameLength == DisplayContext.LENGTH_SHORT)
+                if (nameLength == DisplayContext.LengthShort)
                 {
                     string tmp = langData.Get("Types%short", key, value);
                     if (tmp != null && !tmp.Equals(value))
@@ -630,7 +630,7 @@ namespace ICU4N.Impl
 
         public override IList<UiListItem> GetUiListCompareWholeItems(ISet<ULocale> localeSet, IComparer<UiListItem> comparer)
         {
-            DisplayContext capContext = GetContext(DisplayContextType.CAPITALIZATION);
+            DisplayContext capContext = GetContext(DisplayContextType.Capitalization);
 
             List<UiListItem> result = new List<UiListItem>();
             IDictionary<ULocale, ISet<ULocale>> baseToLocales = new Dictionary<ULocale, ISet<ULocale>>();
@@ -694,12 +694,12 @@ namespace ICU4N.Impl
         {
             ULocale minimized = ULocale.MinimizeSubtags(modified, ULocale.Minimize.FAVOR_SCRIPT);
             string tempName = modified.GetDisplayName(locale);
-            bool titlecase = capContext == DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU;
+            bool titlecase = capContext == DisplayContext.CapitalizationForUIListOrMenu;
             string nameInDisplayLocale =
             titlecase ? ToTitleWholeStringNoLowercase(locale, tempName) : tempName;
             tempName = modified.GetDisplayName(modified);
             string nameInSelf = capContext ==
-            DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU ?
+            DisplayContext.CapitalizationForUIListOrMenu ?
                     ToTitleWholeStringNoLowercase(modified, tempName) : tempName;
             return new UiListItem(minimized, modified, nameInDisplayLocale, nameInSelf);
         }
@@ -846,15 +846,15 @@ namespace ICU4N.Impl
             private LocaleDisplayNames cache;
             public LocaleDisplayNames Get(ULocale locale, DialectHandling dialectHandling)
             {
-                if (!(dialectHandling == this.dialectHandling && DisplayContext.CAPITALIZATION_NONE == this.capitalization &&
-                        DisplayContext.LENGTH_FULL == this.nameLength && DisplayContext.SUBSTITUTE == this.substituteHandling &&
+                if (!(dialectHandling == this.dialectHandling && DisplayContext.CapitalizationNone == this.capitalization &&
+                        DisplayContext.LengthFull == this.nameLength && DisplayContext.Substitute == this.substituteHandling &&
                         locale.Equals(this.locale)))
                 {
                     this.locale = locale;
                     this.dialectHandling = dialectHandling;
-                    this.capitalization = DisplayContext.CAPITALIZATION_NONE;
-                    this.nameLength = DisplayContext.LENGTH_FULL;
-                    this.substituteHandling = DisplayContext.SUBSTITUTE;
+                    this.capitalization = DisplayContext.CapitalizationNone;
+                    this.nameLength = DisplayContext.LengthFull;
+                    this.substituteHandling = DisplayContext.Substitute;
                     this.cache = new LocaleDisplayNamesImpl(locale, dialectHandling);
                 }
                 return cache;
@@ -862,24 +862,24 @@ namespace ICU4N.Impl
             public LocaleDisplayNames Get(ULocale locale, params DisplayContext[] contexts)
             {
                 DialectHandling dialectHandlingIn = DialectHandling.STANDARD_NAMES;
-                DisplayContext capitalizationIn = DisplayContext.CAPITALIZATION_NONE;
-                DisplayContext nameLengthIn = DisplayContext.LENGTH_FULL;
-                DisplayContext substituteHandling = DisplayContext.SUBSTITUTE;
+                DisplayContext capitalizationIn = DisplayContext.CapitalizationNone;
+                DisplayContext nameLengthIn = DisplayContext.LengthFull;
+                DisplayContext substituteHandling = DisplayContext.Substitute;
                 foreach (DisplayContext contextItem in contexts)
                 {
                     switch (contextItem.Type())
                     {
-                        case DisplayContextType.DIALECT_HANDLING:
-                            dialectHandlingIn = (contextItem.Value() == DisplayContext.STANDARD_NAMES.Value()) ?
+                        case DisplayContextType.DialectHandling:
+                            dialectHandlingIn = (contextItem.Value() == DisplayContext.StandardNames.Value()) ?
                                     DialectHandling.STANDARD_NAMES : DialectHandling.DIALECT_NAMES;
                             break;
-                        case DisplayContextType.CAPITALIZATION:
+                        case DisplayContextType.Capitalization:
                             capitalizationIn = contextItem;
                             break;
-                        case DisplayContextType.DISPLAY_LENGTH:
+                        case DisplayContextType.DisplayLength:
                             nameLengthIn = contextItem;
                             break;
-                        case DisplayContextType.SUBSTITUTE_HANDLING:
+                        case DisplayContextType.SubstituteHandling:
                             substituteHandling = contextItem;
                             break;
                         default:

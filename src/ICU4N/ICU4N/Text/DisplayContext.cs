@@ -9,7 +9,7 @@ namespace ICU4N.Text
     /// Note, the specific numeric values are internal and may change.
     /// </summary>
     /// <stable>ICU 51</stable>
-    public enum DisplayContext // ICU4N TODO: API - Change case to follow .NET Conventions
+    public enum DisplayContext
     {
         // ICU4N TODO: update docs below from en_GB to en-GB ?
         /**
@@ -17,125 +17,125 @@ namespace ICU4N.Text
          * Settings for DIALECT_HANDLING (use one)
          */
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.DIALECT_HANDLING"/>:
+        /// A possible setting for <see cref="DisplayContextType.DialectHandling"/>:
         /// use standard names when generating a locale name,
         /// e.g. en_GB displays as 'English (United Kingdom)'.
         /// </summary>
         /// <stable>ICU 51</stable>
-        STANDARD_NAMES,
+        StandardNames,
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.DIALECT_HANDLING"/>:
+        /// A possible setting for <see cref="DisplayContextType.DialectHandling"/>:
         /// use dialect names, when generating a locale name,
         /// e.g. en_GB displays as 'British English'.
         /// </summary>
         /// <stable>ICU 51</stable>
-        DIALECT_NAMES,
+        DialectNames,
         /**
          * ================================
          * Settings for CAPITALIZATION (use one)
          */
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.CAPITALIZATION"/>:
+        /// A possible setting for <see cref="DisplayContextType.Capitalization"/>:
         /// The capitalization context to be used is unknown (this is the default value).
         /// </summary>
         /// <stable>ICU 51</stable>
-        CAPITALIZATION_NONE,
+        CapitalizationNone,
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.CAPITALIZATION"/>:
+        /// A possible setting for <see cref="DisplayContextType.Capitalization"/>:
         /// The capitalization context if a date, date symbol or display name is to be
         /// formatted with capitalization appropriate for the middle of a sentence.
         /// </summary>
         /// <stable>ICU 51</stable>
-        CAPITALIZATION_FOR_MIDDLE_OF_SENTENCE,
+        CapitalizationForMiddleOfSentence,
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.CAPITALIZATION"/>:
+        /// A possible setting for <see cref="DisplayContextType.Capitalization"/>:
         /// The capitalization context if a date, date symbol or display name is to be
         /// formatted with capitalization appropriate for the beginning of a sentence.
         /// </summary>
         /// <stable>ICU 51</stable>
-        CAPITALIZATION_FOR_BEGINNING_OF_SENTENCE,
+        CapitalizationForBeginningOfSentence,
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.CAPITALIZATION"/>:
+        /// A possible setting for <see cref="DisplayContextType.Capitalization"/>:
         /// The capitalization context if a date, date symbol or display name is to be
         /// formatted with capitalization appropriate for a user-interface list or menu item.
         /// </summary>
         /// <stable>ICU 51</stable>
-        CAPITALIZATION_FOR_UI_LIST_OR_MENU,
+        CapitalizationForUIListOrMenu,
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.CAPITALIZATION"/>:
+        /// A possible setting for <see cref="DisplayContextType.Capitalization"/>:
         /// The capitalization context if a date, date symbol or display name is to be
         /// formatted with capitalization appropriate for stand-alone usage such as an
         /// isolated name on a calendar page.
         /// </summary>
         /// <stable>ICU 51</stable>
-        CAPITALIZATION_FOR_STANDALONE,
+        CapitalizationForStandalone,
         /**
          * ================================
          * Settings for DISPLAY_LENGTH (use one)
          */
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.DISPLAY_LENGTH"/>:
+        /// A possible setting for <see cref="DisplayContextType.DisplayLength"/>:
         /// use full names when generating a locale name,
         /// e.g. "United States" for US.
         /// </summary>
         /// <stable>ICU 54</stable>
-        LENGTH_FULL,
+        LengthFull,
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.DISPLAY_LENGTH"/>:
+        /// A possible setting for <see cref="DisplayContextType.DisplayLength"/>:
         /// use short names when generating a locale name,
         /// e.g. "U.S." for US.
         /// </summary>
         /// <stable>ICU 54</stable>
-        LENGTH_SHORT,
+        LengthShort,
         /**
          * ================================
          * Settings for SUBSTITUTE_HANDLING (choose one)
          */
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.SUBSTITUTE_HANDLING"/>:
+        /// A possible setting for <see cref="DisplayContextType.SubstituteHandling"/>:
         /// Returns a fallback value (e.g., the input code) when no data is available.
         /// This is the default behavior.
         /// </summary>
         /// <stable>ICU 58</stable>
-        SUBSTITUTE,
+        Substitute,
         /// <summary>
-        /// A possible setting for <see cref="DisplayContextType.SUBSTITUTE_HANDLING"/>:
+        /// A possible setting for <see cref="DisplayContextType.SubstituteHandling"/>:
         /// Returns a null value when no data is available.
         /// </summary>
         /// <stable>ICU 58</stable>
-        NO_SUBSTITUTE
+        NoSubstitute
     }
 
     /// <summary>
     /// Type values for <see cref="DisplayContext"/>.
     /// </summary>
     /// <stable>ICU 51</stable>
-    public enum DisplayContextType // ICU4N TODO: API - change case to follow .NET Conventions
+    public enum DisplayContextType
     {
         /// <summary>
-        /// <see cref="DIALECT_HANDLING"/> can be set to <see cref="DisplayContext.STANDARD_NAMES"/> 
-        /// or <see cref="DisplayContext.DIALECT_NAMES"/>.
+        /// <see cref="DialectHandling"/> can be set to <see cref="DisplayContext.StandardNames"/> 
+        /// or <see cref="DisplayContext.DialectNames"/>.
         /// </summary>
         /// <stable>ICU 51</stable>
-        DIALECT_HANDLING,
+        DialectHandling,
         /// <summary>
-        /// <see cref="CAPITALIZATION"/> can be set to one of <see cref="DisplayContext.CAPITALIZATION_NONE"/> through
-        /// <see cref="DisplayContext.CAPITALIZATION_FOR_STANDALONE"/>.
+        /// <see cref="Capitalization"/> can be set to one of <see cref="DisplayContext.CapitalizationNone"/> through
+        /// <see cref="DisplayContext.CapitalizationForStandalone"/>.
         /// </summary>
         /// <stable>ICU 51</stable>
-        CAPITALIZATION,
+        Capitalization,
         /// <summary>
-        /// <see cref="DISPLAY_LENGTH"/> can be set to <see cref="DisplayContext.LENGTH_FULL"/> 
-        /// or <see cref="DisplayContext.LENGTH_SHORT"/>.
+        /// <see cref="DisplayLength"/> can be set to <see cref="DisplayContext.LengthFull"/> 
+        /// or <see cref="DisplayContext.LengthShort"/>.
         /// </summary>
         /// <stable>ICU 54</stable>
-        DISPLAY_LENGTH,
+        DisplayLength,
         /// <summary>
-        /// <see cref="SUBSTITUTE_HANDLING"/> can be set to <see cref="DisplayContext.SUBSTITUTE"/> 
-        /// or <see cref="DisplayContext.NO_SUBSTITUTE"/>.
+        /// <see cref="SubstituteHandling"/> can be set to <see cref="DisplayContext.Substitute"/> 
+        /// or <see cref="DisplayContext.NoSubstitute"/>.
         /// </summary>
         /// <stable>ICU 58</stable>
-        SUBSTITUTE_HANDLING
+        SubstituteHandling
     }
 
     /// <summary>
@@ -146,25 +146,25 @@ namespace ICU4N.Text
     {
         private static IDictionary<DisplayContext, DisplayContextImpl> map = new Dictionary<DisplayContext, DisplayContextImpl>
         {
-            { DisplayContext.STANDARD_NAMES, new DisplayContextImpl(DisplayContextType.DIALECT_HANDLING, 0) },
-            { DisplayContext.DIALECT_NAMES, new DisplayContextImpl(DisplayContextType.DIALECT_HANDLING, 1) },
+            { DisplayContext.StandardNames, new DisplayContextImpl(DisplayContextType.DialectHandling, 0) },
+            { DisplayContext.DialectNames, new DisplayContextImpl(DisplayContextType.DialectHandling, 1) },
 
-            { DisplayContext.CAPITALIZATION_NONE, new DisplayContextImpl(DisplayContextType.CAPITALIZATION, 0) },
-            { DisplayContext.CAPITALIZATION_FOR_MIDDLE_OF_SENTENCE, new DisplayContextImpl(DisplayContextType.CAPITALIZATION, 1) },
-            { DisplayContext.CAPITALIZATION_FOR_BEGINNING_OF_SENTENCE, new DisplayContextImpl(DisplayContextType.CAPITALIZATION, 2) },
-            { DisplayContext.CAPITALIZATION_FOR_UI_LIST_OR_MENU, new DisplayContextImpl(DisplayContextType.CAPITALIZATION, 3) },
-            { DisplayContext.CAPITALIZATION_FOR_STANDALONE, new DisplayContextImpl(DisplayContextType.CAPITALIZATION, 4) },
+            { DisplayContext.CapitalizationNone, new DisplayContextImpl(DisplayContextType.Capitalization, 0) },
+            { DisplayContext.CapitalizationForMiddleOfSentence, new DisplayContextImpl(DisplayContextType.Capitalization, 1) },
+            { DisplayContext.CapitalizationForBeginningOfSentence, new DisplayContextImpl(DisplayContextType.Capitalization, 2) },
+            { DisplayContext.CapitalizationForUIListOrMenu, new DisplayContextImpl(DisplayContextType.Capitalization, 3) },
+            { DisplayContext.CapitalizationForStandalone, new DisplayContextImpl(DisplayContextType.Capitalization, 4) },
 
-            { DisplayContext.LENGTH_FULL, new DisplayContextImpl(DisplayContextType.DISPLAY_LENGTH, 0) },
-            { DisplayContext.LENGTH_SHORT, new DisplayContextImpl(DisplayContextType.DISPLAY_LENGTH, 1) },
+            { DisplayContext.LengthFull, new DisplayContextImpl(DisplayContextType.DisplayLength, 0) },
+            { DisplayContext.LengthShort, new DisplayContextImpl(DisplayContextType.DisplayLength, 1) },
 
-            { DisplayContext.SUBSTITUTE, new DisplayContextImpl(DisplayContextType.SUBSTITUTE_HANDLING, 0) },
-            { DisplayContext.NO_SUBSTITUTE, new DisplayContextImpl(DisplayContextType.SUBSTITUTE_HANDLING, 1) },
+            { DisplayContext.Substitute, new DisplayContextImpl(DisplayContextType.SubstituteHandling, 0) },
+            { DisplayContext.NoSubstitute, new DisplayContextImpl(DisplayContextType.SubstituteHandling, 1) },
         };
 
         /// <summary>
         /// Get the <see cref="DisplayContextType"/> part of the enum item
-        /// (e.g. <see cref="DisplayContextType.CAPITALIZATION"/>)
+        /// (e.g. <see cref="DisplayContextType.Capitalization"/>)
         /// </summary>
         /// <param name="displayContext">This <see cref="DisplayContext"/>.</param>
         /// <returns>The <see cref="DisplayContextType"/> part of the enum item.</returns>
@@ -176,7 +176,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Get the value part of the enum item
-        /// (e.g. <see cref="DisplayContext.CAPITALIZATION_FOR_STANDALONE"/>)
+        /// (e.g. <see cref="DisplayContext.CapitalizationForStandalone"/>)
         /// </summary>
         /// <param name="displayContext">This <see cref="DisplayContext"/>.</param>
         /// <returns>The value part of the enum item.</returns>
