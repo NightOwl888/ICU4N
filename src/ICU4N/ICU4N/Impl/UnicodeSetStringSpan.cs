@@ -107,7 +107,7 @@ namespace ICU4N.Impl
             {
                 string str = strings[i];
                 int length16 = str.Length;
-                spanLength = spanSet.Span(str, SpanCondition.CONTAINED);
+                spanLength = spanSet.Span(str, SpanCondition.Contained);
                 if (spanLength < length16)
                 { // Relevant string.
                     someRelevant = true;
@@ -162,7 +162,7 @@ namespace ICU4N.Impl
             {
                 string str = strings[i];
                 int length16 = str.Length;
-                spanLength = spanSet.Span(str, SpanCondition.CONTAINED);
+                spanLength = spanSet.Span(str, SpanCondition.Contained);
                 if (spanLength < length16)
                 { // Relevant string.
                     if (true /* 0 != (which & UTF16) */)
@@ -176,7 +176,7 @@ namespace ICU4N.Impl
                             if (0 != (which & BACK))
                             {
                                 spanLength = length16
-                                        - spanSet.SpanBack(str, length16, SpanCondition.CONTAINED);
+                                        - spanSet.SpanBack(str, length16, SpanCondition.Contained);
                                 spanLengths[spanBackLengthsOffset + i] = MakeSpanLengthByte(spanLength);
                             }
                         }

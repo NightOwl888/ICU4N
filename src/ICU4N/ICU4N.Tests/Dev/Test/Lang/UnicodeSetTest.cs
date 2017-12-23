@@ -2839,7 +2839,7 @@ namespace ICU4N.Dev.Test.Lang
 
             m = new UnicodeSetSpanner(new UnicodeSet("[._]"));
             assertEquals("", "abc", m.DeleteFrom("_._a_._b_._c_._"));
-            assertEquals("", "_.__.__.__._", m.DeleteFrom("_._a_._b_._c_._", SpanCondition.NOT_CONTAINED));
+            assertEquals("", "_.__.__.__._", m.DeleteFrom("_._a_._b_._c_._", SpanCondition.NotContained));
 
             assertEquals("", "a_._b_._c", m.Trim("_._a_._b_._c_._"));
             assertEquals("", "a_._b_._c_._", m.Trim("_._a_._b_._c_._", TrimOption.Leading));
@@ -2851,24 +2851,24 @@ namespace ICU4N.Dev.Test.Lang
             assertEquals("", "XYaXYbXYcXY", m.ReplaceFrom("_._a_._b_._c_._", "XY", CountMethod.WholeSpan));
 
             m = new UnicodeSetSpanner(new UnicodeSet("\\p{uppercase}"));
-            assertEquals("", "TQBF", m.DeleteFrom("The Quick Brown Fox.", SpanCondition.NOT_CONTAINED));
+            assertEquals("", "TQBF", m.DeleteFrom("The Quick Brown Fox.", SpanCondition.NotContained));
 
             m = new UnicodeSetSpanner(m.UnicodeSet.AddAll(new UnicodeSet("\\p{lowercase}")));
-            assertEquals("", "TheQuickBrownFox", m.DeleteFrom("The Quick Brown Fox.", SpanCondition.NOT_CONTAINED));
+            assertEquals("", "TheQuickBrownFox", m.DeleteFrom("The Quick Brown Fox.", SpanCondition.NotContained));
 
             m = new UnicodeSetSpanner(new UnicodeSet("[{ab}]"));
             assertEquals("", "XXc acb", m.ReplaceFrom("ababc acb", "X"));
             assertEquals("", "Xc acb", m.ReplaceFrom("ababc acb", "X", CountMethod.WholeSpan));
-            assertEquals("", "ababX", m.ReplaceFrom("ababc acb", "X", CountMethod.WholeSpan, SpanCondition.NOT_CONTAINED));
+            assertEquals("", "ababX", m.ReplaceFrom("ababc acb", "X", CountMethod.WholeSpan, SpanCondition.NotContained));
         }
 
         [Test]
         public void TestCodePoints()
         {
             // test supplemental code points and strings clusters
-            checkCodePoints("x\u0308", "z\u0308", CountMethod.MinElements, SpanCondition.SIMPLE, null, 1);
-            checkCodePoints("𣿡", "𣿢", CountMethod.MinElements, SpanCondition.SIMPLE, null, 1);
-            checkCodePoints("👦", "👧", CountMethod.MinElements, SpanCondition.SIMPLE, null, 1);
+            checkCodePoints("x\u0308", "z\u0308", CountMethod.MinElements, SpanCondition.Simple, null, 1);
+            checkCodePoints("𣿡", "𣿢", CountMethod.MinElements, SpanCondition.Simple, null, 1);
+            checkCodePoints("👦", "👧", CountMethod.MinElements, SpanCondition.Simple, null, 1);
         }
 
         private void checkCodePoints(String a, String b, CountMethod quantifier, SpanCondition spanCondition,
@@ -2893,9 +2893,9 @@ namespace ICU4N.Dev.Test.Lang
         public void TestCountIn()
         {
             UnicodeSetSpanner m = new UnicodeSetSpanner(new UnicodeSet("[ab]"));
-            checkCountIn(m, CountMethod.MinElements, SpanCondition.SIMPLE, "abc", 2);
-            checkCountIn(m, CountMethod.WholeSpan, SpanCondition.SIMPLE, "abc", 1);
-            checkCountIn(m, CountMethod.MinElements, SpanCondition.NOT_CONTAINED, "acccb", 3);
+            checkCountIn(m, CountMethod.MinElements, SpanCondition.Simple, "abc", 2);
+            checkCountIn(m, CountMethod.WholeSpan, SpanCondition.Simple, "abc", 1);
+            checkCountIn(m, CountMethod.MinElements, SpanCondition.NotContained, "acccb", 3);
         }
 
         internal void checkCountIn(UnicodeSetSpanner m, CountMethod countMethod, SpanCondition spanCondition, String target, int expected)
@@ -2906,7 +2906,7 @@ namespace ICU4N.Dev.Test.Lang
 
         internal int callCountIn(UnicodeSetSpanner m, String ab, CountMethod countMethod, SpanCondition spanCondition)
         {
-            return spanCondition != SpanCondition.SIMPLE ? m.CountIn(ab, countMethod, spanCondition)
+            return spanCondition != SpanCondition.Simple ? m.CountIn(ab, countMethod, spanCondition)
                     : countMethod != CountMethod.MinElements ? m.CountIn(ab, countMethod)
                             : m.CountIn(ab);
         }
@@ -2930,7 +2930,7 @@ namespace ICU4N.Dev.Test.Lang
             for (int i = 1; i < limit; ++i)
             {
                 UnicodeSet us = new UnicodeSet("[" + getCombinations(items, i) + "]");
-                int problemFound = checkSpan(longString, us, SpanCondition.SIMPLE);
+                int problemFound = checkSpan(longString, us, SpanCondition.Simple);
                 if (problemFound >= 0)
                 {
                     assertEquals("Testing " + longString + ", found gap at", -1, problemFound);
@@ -2943,7 +2943,7 @@ namespace ICU4N.Dev.Test.Lang
             for (int i = 1; i < limit; ++i)
             {
                 UnicodeSet us = new UnicodeSet("[" + getCombinations(items, i) + "]");
-                int problemFound = checkSpan(longString, us, SpanCondition.CONTAINED);
+                int problemFound = checkSpan(longString, us, SpanCondition.Contained);
                 if (problemFound >= 0)
                 {
                     assertEquals("Testing " + longString + ", found gap at", -1, problemFound);
@@ -2973,7 +2973,7 @@ namespace ICU4N.Dev.Test.Lang
                     return start;
                 }
                 start = limit;
-                limit = us.Span(longString, start, SpanCondition.NOT_CONTAINED);
+                limit = us.Span(longString, start, SpanCondition.NotContained);
                 if (limit == start)
                 {
                     return start;
@@ -3040,15 +3040,15 @@ namespace ICU4N.Dev.Test.Lang
             assertEquals("CharSequence containsSome", true, new UnicodeSet("[a-cA{ab}]").ContainsSome(new StringBuilder("ab")));
 
             // spanning
-            assertEquals("CharSequence span", 3, new UnicodeSet("[a-cA]").Span(new StringBuilder("abc"), SpanCondition.SIMPLE));
-            assertEquals("CharSequence span", 3, new UnicodeSet("[a-cA]").Span(new StringBuilder("abc"), 1, SpanCondition.SIMPLE));
-            assertEquals("CharSequence spanBack", 0, new UnicodeSet("[a-cA]").SpanBack(new StringBuilder("abc"), SpanCondition.SIMPLE));
-            assertEquals("CharSequence spanBack", 0, new UnicodeSet("[a-cA]").SpanBack(new StringBuilder("abc"), 1, SpanCondition.SIMPLE));
+            assertEquals("CharSequence span", 3, new UnicodeSet("[a-cA]").Span(new StringBuilder("abc"), SpanCondition.Simple));
+            assertEquals("CharSequence span", 3, new UnicodeSet("[a-cA]").Span(new StringBuilder("abc"), 1, SpanCondition.Simple));
+            assertEquals("CharSequence spanBack", 0, new UnicodeSet("[a-cA]").SpanBack(new StringBuilder("abc"), SpanCondition.Simple));
+            assertEquals("CharSequence spanBack", 0, new UnicodeSet("[a-cA]").SpanBack(new StringBuilder("abc"), 1, SpanCondition.Simple));
 
             // internal
             int outCount;
             assertEquals("CharSequence matchesAt", 2, new UnicodeSet("[a-cA]").MatchesAt(new StringBuilder("abc"), 1));
-            assertEquals("CharSequence spanAndCount", 3, new UnicodeSet("[a-cA]").SpanAndCount(new StringBuilder("abc"), 1, SpanCondition.SIMPLE, out outCount));
+            assertEquals("CharSequence spanAndCount", 3, new UnicodeSet("[a-cA]").SpanAndCount(new StringBuilder("abc"), 1, SpanCondition.Simple, out outCount));
             assertEquals("CharSequence findIn", 3, new UnicodeSet("[a-cA]").FindIn(new StringBuilder("abc"), 1, true));
             assertEquals("CharSequence findLastIn", -1, new UnicodeSet("[a-cA]").FindLastIn(new StringBuilder("abc"), 1, true));
             assertEquals("CharSequence add", "c", new UnicodeSet("[abA]").StripFrom(new StringBuilder("abc"), true));

@@ -28,7 +28,7 @@ namespace ICU4N.Text
         public override StringBuilder Normalize(string src, StringBuilder dest)
         {
             dest.Length = 0;
-            Normalize(src, dest, UnicodeSet.SpanCondition.SIMPLE);
+            Normalize(src, dest, SpanCondition.Simple);
             return dest;
         }
 
@@ -47,7 +47,7 @@ namespace ICU4N.Text
                 throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
             }
             dest.Length = 0;
-            Normalize(src, dest, UnicodeSet.SpanCondition.SIMPLE);
+            Normalize(src, dest, SpanCondition.Simple);
             return dest;
         }
 
@@ -62,7 +62,7 @@ namespace ICU4N.Text
         public override StringBuilder Normalize(char[] src, StringBuilder dest)
         {
             dest.Length = 0;
-            Normalize(src, dest, UnicodeSet.SpanCondition.SIMPLE);
+            Normalize(src, dest, SpanCondition.Simple);
             return dest;
         }
 
@@ -81,7 +81,7 @@ namespace ICU4N.Text
                 throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
             }
             dest.Length = 0;
-            Normalize(src, dest, UnicodeSet.SpanCondition.SIMPLE);
+            Normalize(src, dest, SpanCondition.Simple);
             return dest;
         }
 
@@ -217,13 +217,13 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public override bool IsNormalized(string s)
         {
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -231,7 +231,7 @@ namespace ICU4N.Text
                     {
                         return false;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -250,13 +250,13 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public override bool IsNormalized(StringBuilder s)
         {
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -264,7 +264,7 @@ namespace ICU4N.Text
                     {
                         return false;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -283,13 +283,13 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public override bool IsNormalized(char[] s)
         {
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -297,7 +297,7 @@ namespace ICU4N.Text
                     {
                         return false;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -316,13 +316,13 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         internal override bool IsNormalized(ICharSequence s)
         {
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -330,7 +330,7 @@ namespace ICU4N.Text
                     {
                         return false;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -352,13 +352,13 @@ namespace ICU4N.Text
         public override NormalizerQuickCheckResult QuickCheck(string s)
         {
             NormalizerQuickCheckResult result = NormalizerQuickCheckResult.Yes;
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -372,7 +372,7 @@ namespace ICU4N.Text
                     {
                         result = qcResult;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -394,13 +394,13 @@ namespace ICU4N.Text
         public override NormalizerQuickCheckResult QuickCheck(StringBuilder s)
         {
             NormalizerQuickCheckResult result = NormalizerQuickCheckResult.Yes;
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -414,7 +414,7 @@ namespace ICU4N.Text
                     {
                         result = qcResult;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -436,13 +436,13 @@ namespace ICU4N.Text
         public override NormalizerQuickCheckResult QuickCheck(char[] s)
         {
             NormalizerQuickCheckResult result = NormalizerQuickCheckResult.Yes;
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -456,7 +456,7 @@ namespace ICU4N.Text
                     {
                         result = qcResult;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -478,13 +478,13 @@ namespace ICU4N.Text
         internal override NormalizerQuickCheckResult QuickCheck(ICharSequence s)
         {
             NormalizerQuickCheckResult result = NormalizerQuickCheckResult.Yes;
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -498,7 +498,7 @@ namespace ICU4N.Text
                     {
                         result = qcResult;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -526,13 +526,13 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public override int SpanQuickCheckYes(string s)
         {
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -543,7 +543,7 @@ namespace ICU4N.Text
                     {
                         return yesLimit;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -571,13 +571,13 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public override int SpanQuickCheckYes(StringBuilder s)
         {
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -588,7 +588,7 @@ namespace ICU4N.Text
                     {
                         return yesLimit;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -616,13 +616,13 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public override int SpanQuickCheckYes(char[] s)
         {
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -633,7 +633,7 @@ namespace ICU4N.Text
                     {
                         return yesLimit;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -661,13 +661,13 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         internal override int SpanQuickCheckYes(ICharSequence s)
         {
-            UnicodeSet.SpanCondition spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+            SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
                 int spanLimit = set.Span(s, prevSpanLimit, spanCondition);
-                if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
-                    spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                    spanCondition = SpanCondition.Simple;
                 }
                 else
                 {
@@ -678,7 +678,7 @@ namespace ICU4N.Text
                     {
                         return yesLimit;
                     }
-                    spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                    spanCondition = SpanCondition.NotContained;
                 }
                 prevSpanLimit = spanLimit;
             }
@@ -689,11 +689,11 @@ namespace ICU4N.Text
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
         // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // UnicodeSet.SpanCondition.SIMPLE should be passed in for the start of src
-        // and UnicodeSet.SpanCondition.NOT_CONTAINED should be passed in if we continue after
+        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
+        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
         private StringBuilder Normalize(string src, StringBuilder dest,
-                                     UnicodeSet.SpanCondition spanCondition)
+                                     SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -703,13 +703,13 @@ namespace ICU4N.Text
                 {
                     int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
                     int spanLength = spanLimit - prevSpanLimit;
-                    if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                    if (spanCondition == SpanCondition.NotContained)
                     {
                         if (spanLength != 0)
                         {
                             dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
                         }
-                        spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                        spanCondition = SpanCondition.Simple;
                     }
                     else
                     {
@@ -719,7 +719,7 @@ namespace ICU4N.Text
                             // to modify the non-filter part of dest.
                             dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
                         }
-                        spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                        spanCondition = SpanCondition.NotContained;
                     }
                     prevSpanLimit = spanLimit;
                 }
@@ -735,11 +735,11 @@ namespace ICU4N.Text
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
         // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // UnicodeSet.SpanCondition.SIMPLE should be passed in for the start of src
-        // and UnicodeSet.SpanCondition.NOT_CONTAINED should be passed in if we continue after
+        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
+        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
         private StringBuilder Normalize(StringBuilder src, StringBuilder dest,
-                                     UnicodeSet.SpanCondition spanCondition)
+                                     SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -749,13 +749,13 @@ namespace ICU4N.Text
                 {
                     int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
                     int spanLength = spanLimit - prevSpanLimit;
-                    if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                    if (spanCondition == SpanCondition.NotContained)
                     {
                         if (spanLength != 0)
                         {
                             dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
                         }
-                        spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                        spanCondition = SpanCondition.Simple;
                     }
                     else
                     {
@@ -765,7 +765,7 @@ namespace ICU4N.Text
                             // to modify the non-filter part of dest.
                             dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
                         }
-                        spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                        spanCondition = SpanCondition.NotContained;
                     }
                     prevSpanLimit = spanLimit;
                 }
@@ -781,11 +781,11 @@ namespace ICU4N.Text
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
         // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // UnicodeSet.SpanCondition.SIMPLE should be passed in for the start of src
-        // and UnicodeSet.SpanCondition.NOT_CONTAINED should be passed in if we continue after
+        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
+        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
         private StringBuilder Normalize(char[] src, StringBuilder dest,
-                                     UnicodeSet.SpanCondition spanCondition)
+                                     SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -795,13 +795,13 @@ namespace ICU4N.Text
                 {
                     int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
                     int spanLength = spanLimit - prevSpanLimit;
-                    if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                    if (spanCondition == SpanCondition.NotContained)
                     {
                         if (spanLength != 0)
                         {
                             dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
                         }
-                        spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                        spanCondition = SpanCondition.Simple;
                     }
                     else
                     {
@@ -811,7 +811,7 @@ namespace ICU4N.Text
                             // to modify the non-filter part of dest.
                             dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
                         }
-                        spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                        spanCondition = SpanCondition.NotContained;
                     }
                     prevSpanLimit = spanLimit;
                 }
@@ -827,11 +827,11 @@ namespace ICU4N.Text
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
         // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // UnicodeSet.SpanCondition.SIMPLE should be passed in for the start of src
-        // and UnicodeSet.SpanCondition.NOT_CONTAINED should be passed in if we continue after
+        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
+        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
         private StringBuilder Normalize(ICharSequence src, StringBuilder dest,
-                                     UnicodeSet.SpanCondition spanCondition)
+                                     SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -841,13 +841,13 @@ namespace ICU4N.Text
                 {
                     int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
                     int spanLength = spanLimit - prevSpanLimit;
-                    if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                    if (spanCondition == SpanCondition.NotContained)
                     {
                         if (spanLength != 0)
                         {
                             dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
                         }
-                        spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                        spanCondition = SpanCondition.Simple;
                     }
                     else
                     {
@@ -857,7 +857,7 @@ namespace ICU4N.Text
                             // to modify the non-filter part of dest.
                             dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
                         }
-                        spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                        spanCondition = SpanCondition.NotContained;
                     }
                     prevSpanLimit = spanLimit;
                 }
@@ -873,11 +873,11 @@ namespace ICU4N.Text
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
         // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // UnicodeSet.SpanCondition.SIMPLE should be passed in for the start of src
-        // and UnicodeSet.SpanCondition.NOT_CONTAINED should be passed in if we continue after
+        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
+        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
         private IAppendable Normalize(string src, IAppendable dest,
-                                     UnicodeSet.SpanCondition spanCondition)
+                                     SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -887,13 +887,13 @@ namespace ICU4N.Text
                 {
                     int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
                     int spanLength = spanLimit - prevSpanLimit;
-                    if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                    if (spanCondition == SpanCondition.NotContained)
                     {
                         if (spanLength != 0)
                         {
 							dest.Append(src, prevSpanLimit, spanLimit);
                         }
-                        spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                        spanCondition = SpanCondition.Simple;
                     }
                     else
                     {
@@ -903,7 +903,7 @@ namespace ICU4N.Text
                             // to modify the non-filter part of dest.
                             dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
                         }
-                        spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                        spanCondition = SpanCondition.NotContained;
                     }
                     prevSpanLimit = spanLimit;
                 }
@@ -919,11 +919,11 @@ namespace ICU4N.Text
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
         // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // UnicodeSet.SpanCondition.SIMPLE should be passed in for the start of src
-        // and UnicodeSet.SpanCondition.NOT_CONTAINED should be passed in if we continue after
+        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
+        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
         private IAppendable Normalize(StringBuilder src, IAppendable dest,
-                                     UnicodeSet.SpanCondition spanCondition)
+                                     SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -933,13 +933,13 @@ namespace ICU4N.Text
                 {
                     int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
                     int spanLength = spanLimit - prevSpanLimit;
-                    if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                    if (spanCondition == SpanCondition.NotContained)
                     {
                         if (spanLength != 0)
                         {
 							dest.Append(src, prevSpanLimit, spanLimit);
                         }
-                        spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                        spanCondition = SpanCondition.Simple;
                     }
                     else
                     {
@@ -949,7 +949,7 @@ namespace ICU4N.Text
                             // to modify the non-filter part of dest.
                             dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
                         }
-                        spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                        spanCondition = SpanCondition.NotContained;
                     }
                     prevSpanLimit = spanLimit;
                 }
@@ -965,11 +965,11 @@ namespace ICU4N.Text
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
         // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // UnicodeSet.SpanCondition.SIMPLE should be passed in for the start of src
-        // and UnicodeSet.SpanCondition.NOT_CONTAINED should be passed in if we continue after
+        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
+        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
         private IAppendable Normalize(char[] src, IAppendable dest,
-                                     UnicodeSet.SpanCondition spanCondition)
+                                     SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -979,13 +979,13 @@ namespace ICU4N.Text
                 {
                     int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
                     int spanLength = spanLimit - prevSpanLimit;
-                    if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                    if (spanCondition == SpanCondition.NotContained)
                     {
                         if (spanLength != 0)
                         {
 							dest.Append(src, prevSpanLimit, spanLimit);
                         }
-                        spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                        spanCondition = SpanCondition.Simple;
                     }
                     else
                     {
@@ -995,7 +995,7 @@ namespace ICU4N.Text
                             // to modify the non-filter part of dest.
                             dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
                         }
-                        spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                        spanCondition = SpanCondition.NotContained;
                     }
                     prevSpanLimit = spanLimit;
                 }
@@ -1011,11 +1011,11 @@ namespace ICU4N.Text
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
         // For set=[:age=3.2:], since almost all common characters were in Unicode 3.2,
-        // UnicodeSet.SpanCondition.SIMPLE should be passed in for the start of src
-        // and UnicodeSet.SpanCondition.NOT_CONTAINED should be passed in if we continue after
+        // <see cref="SpanCondition.Simple"/> should be passed in for the start of src
+        // and <see cref="SpanCondition.NotContained"/> should be passed in if we continue after
         // an in-filter prefix.
         private IAppendable Normalize(ICharSequence src, IAppendable dest,
-                                     UnicodeSet.SpanCondition spanCondition)
+                                     SpanCondition spanCondition)
         {
             // Don't throw away destination buffer between iterations.
             StringBuilder tempDest = new StringBuilder();
@@ -1025,13 +1025,13 @@ namespace ICU4N.Text
                 {
                     int spanLimit = set.Span(src, prevSpanLimit, spanCondition);
                     int spanLength = spanLimit - prevSpanLimit;
-                    if (spanCondition == UnicodeSet.SpanCondition.NOT_CONTAINED)
+                    if (spanCondition == SpanCondition.NotContained)
                     {
                         if (spanLength != 0)
                         {
 							dest.Append(src, prevSpanLimit, spanLimit);
                         }
-                        spanCondition = UnicodeSet.SpanCondition.SIMPLE;
+                        spanCondition = SpanCondition.Simple;
                     }
                     else
                     {
@@ -1041,7 +1041,7 @@ namespace ICU4N.Text
                             // to modify the non-filter part of dest.
                             dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
                         }
-                        spanCondition = UnicodeSet.SpanCondition.NOT_CONTAINED;
+                        spanCondition = SpanCondition.NotContained;
                     }
                     prevSpanLimit = spanLimit;
                 }
@@ -1068,11 +1068,11 @@ namespace ICU4N.Text
                 }
             }
             // merge the in-filter suffix of the first string with the in-filter prefix of the second
-            int prefixLimit = set.Span(second, 0, UnicodeSet.SpanCondition.SIMPLE);
+            int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
             if (prefixLimit != 0)
             {
                 ICharSequence prefix = second.SubSequence(0, prefixLimit);
-                int suffixStart = set.SpanBack(first, 0x7fffffff, UnicodeSet.SpanCondition.SIMPLE);
+                int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
                 if (suffixStart == 0)
                 {
                     if (doNormalize)
@@ -1104,7 +1104,7 @@ namespace ICU4N.Text
                 ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
                 if (doNormalize)
                 {
-                    Normalize(rest, first.ToAppendable(), UnicodeSet.SpanCondition.NOT_CONTAINED);
+                    Normalize(rest, first.ToAppendable(), SpanCondition.NotContained);
                 }
                 else
                 {
@@ -1133,11 +1133,11 @@ namespace ICU4N.Text
                 }
             }
             // merge the in-filter suffix of the first string with the in-filter prefix of the second
-            int prefixLimit = set.Span(second, 0, UnicodeSet.SpanCondition.SIMPLE);
+            int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
             if (prefixLimit != 0)
             {
                 ICharSequence prefix = second.SubSequence(0, prefixLimit);
-                int suffixStart = set.SpanBack(first, 0x7fffffff, UnicodeSet.SpanCondition.SIMPLE);
+                int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
                 if (suffixStart == 0)
                 {
                     if (doNormalize)
@@ -1169,7 +1169,7 @@ namespace ICU4N.Text
                 ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
                 if (doNormalize)
                 {
-                    Normalize(rest, first.ToAppendable(), UnicodeSet.SpanCondition.NOT_CONTAINED);
+                    Normalize(rest, first.ToAppendable(), SpanCondition.NotContained);
                 }
                 else
                 {
@@ -1194,11 +1194,11 @@ namespace ICU4N.Text
                 }
             }
             // merge the in-filter suffix of the first string with the in-filter prefix of the second
-            int prefixLimit = set.Span(second, 0, UnicodeSet.SpanCondition.SIMPLE);
+            int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
             if (prefixLimit != 0)
             {
                 ICharSequence prefix = second.SubSequence(0, prefixLimit);
-                int suffixStart = set.SpanBack(first, 0x7fffffff, UnicodeSet.SpanCondition.SIMPLE);
+                int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
                 if (suffixStart == 0)
                 {
                     if (doNormalize)
@@ -1230,7 +1230,7 @@ namespace ICU4N.Text
                 ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
                 if (doNormalize)
                 {
-                    Normalize(rest, first.ToAppendable(), UnicodeSet.SpanCondition.NOT_CONTAINED);
+                    Normalize(rest, first.ToAppendable(), SpanCondition.NotContained);
                 }
                 else
                 {
@@ -1259,11 +1259,11 @@ namespace ICU4N.Text
                 }
             }
             // merge the in-filter suffix of the first string with the in-filter prefix of the second
-            int prefixLimit = set.Span(second, 0, UnicodeSet.SpanCondition.SIMPLE);
+            int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
             if (prefixLimit != 0)
             {
                 ICharSequence prefix = second.SubSequence(0, prefixLimit);
-                int suffixStart = set.SpanBack(first, 0x7fffffff, UnicodeSet.SpanCondition.SIMPLE);
+                int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
                 if (suffixStart == 0)
                 {
                     if (doNormalize)
@@ -1295,7 +1295,7 @@ namespace ICU4N.Text
                 ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
                 if (doNormalize)
                 {
-                    Normalize(rest, first.ToAppendable(), UnicodeSet.SpanCondition.NOT_CONTAINED);
+                    Normalize(rest, first.ToAppendable(), SpanCondition.NotContained);
                 }
                 else
                 {

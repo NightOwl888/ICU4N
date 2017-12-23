@@ -7,7 +7,7 @@ namespace ICU4N.Text
 	/// Normalization filtered by a <see cref="UnicodeSet"/>.
 	/// Normalizes portions of the text contained in the filter set and leaves
 	/// portions not contained in the filter set unchanged.
-	/// Filtering is done via UnicodeSet.Span(..., UnicodeSet.SpanCondition.SIMPLE).
+	/// Filtering is done via <c>UnicodeSet.Span(..., SpanCondition.Simple)</c>.
 	/// Not-in-the-filter text is treated as "is normalized" and "quick check yes".
 	/// This class implements all of (and only) the <see cref="Normalizer2"/> API.
 	/// An instance of this class is unmodifiable/immutable.
@@ -49,7 +49,7 @@ namespace ICU4N.Text
             {
                 throw new ArgumentException();
             }
-            return Normalize(src, dest, UnicodeSet.SpanCondition.SIMPLE);
+            return Normalize(src, dest, SpanCondition.Simple);
         }
 
         // ICU4N specific - NormalizeSecondAndAppend(
@@ -200,7 +200,7 @@ namespace ICU4N.Text
         }
 
         // ICU4N specific - Normalize(ICharSequence src, IAppendable dest,
-        //    UnicodeSet.SpanCondition spanCondition) moved to FilteredNormalizerExtension.tt
+        //    SpanCondition spanCondition) moved to FilteredNormalizerExtension.tt
 
         // ICU4N specific - NormalizeSecondAndAppend(StringBuilder first, ICharSequence second,
         //    bool doNormalize) moved to FilteredNormalizerExtension.tt

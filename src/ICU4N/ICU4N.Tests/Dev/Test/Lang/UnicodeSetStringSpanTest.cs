@@ -4,7 +4,6 @@ using ICU4N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using SpanCondition = ICU4N.Text.UnicodeSet.SpanCondition; // ICU4N TODO: De-nest?
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Lang
@@ -22,19 +21,19 @@ namespace ICU4N.Dev.Test.Lang
             String str = "abc";
             UnicodeSet set = new UnicodeSet(pattern);
             set.Complement();
-            int pos = set.SpanBack(str, 3, SpanCondition.SIMPLE);
+            int pos = set.SpanBack(str, 3, SpanCondition.Simple);
             if (pos != 1)
             {
                 Errln(string.Format("FAIL: UnicodeSet({0}).SpanBack({1}) returns the wrong value pos {2} (!= 1)",
                         set.ToString(), str, pos));
             }
-            pos = set.Span(str, SpanCondition.SIMPLE);
+            pos = set.Span(str, SpanCondition.Simple);
             if (pos != 3)
             {
                 Errln(string.Format("FAIL: UnicodeSet({0}).Span({1}) returns the wrong value pos {2} (!= 3)",
                         set.ToString(), str, pos));
             }
-            pos = set.Span(str, 1, SpanCondition.SIMPLE);
+            pos = set.Span(str, 1, SpanCondition.Simple);
             if (pos != 3)
             {
                 Errln(string.Format("FAIL: UnicodeSet({0}).Span({1}, 1) returns the wrong value pos {2} (!= 3)",
@@ -52,19 +51,19 @@ namespace ICU4N.Dev.Test.Lang
             uset.Complement();
             UnicodeSetWithStrings set = new UnicodeSetWithStrings(uset);
 
-            int length = ContainsSpanBackUTF16(set, str, 3, SpanCondition.SIMPLE);
+            int length = ContainsSpanBackUTF16(set, str, 3, SpanCondition.Simple);
             if (length != 1)
             {
                 Errln(string.Format("FAIL: UnicodeSet({0}) containsSpanBackUTF16({1}) returns the wrong value length {2} (!= 1)",
                         set.ToString(), str, length));
             }
-            length = ContainsSpanUTF16(set, str, SpanCondition.SIMPLE);
+            length = ContainsSpanUTF16(set, str, SpanCondition.Simple);
             if (length != 3)
             {
                 Errln(string.Format("FAIL: UnicodeSet({0}) containsSpanUTF16({1}) returns the wrong value length {2} (!= 3)",
                         set.ToString(), str, length));
             }
-            length = ContainsSpanUTF16(set, str.Substring(1), SpanCondition.SIMPLE);
+            length = ContainsSpanUTF16(set, str.Substring(1), SpanCondition.Simple);
             if (length != 2)
             {
                 Errln(string.Format("FAIL: UnicodeSet({0}) containsSpanUTF16({1}) returns the wrong value length {2} (!= 2)",
@@ -96,12 +95,12 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             String s16 = "byayaxya";
-            if (set.Span(s16.Substring(0, 8), SpanCondition.NOT_CONTAINED) != 4 // ICU4N: Checked 2nd substring parameter
-                || set.Span(s16.Substring(0, 7), SpanCondition.NOT_CONTAINED) != 4 // ICU4N: Checked 2nd substring parameter
-                || set.Span(s16.Substring(0, 6), SpanCondition.NOT_CONTAINED) != 4 // ICU4N: Checked 2nd substring parameter
-                || set.Span(s16.Substring(0, 5), SpanCondition.NOT_CONTAINED) != 5 // ICU4N: Checked 2nd substring parameter
-                || set.Span(s16.Substring(0, 4), SpanCondition.NOT_CONTAINED) != 4 // ICU4N: Checked 2nd substring parameter
-                || set.Span(s16.Substring(0, 3), SpanCondition.NOT_CONTAINED) != 3) // ICU4N: Checked 2nd substring parameter
+            if (set.Span(s16.Substring(0, 8), SpanCondition.NotContained) != 4 // ICU4N: Checked 2nd substring parameter
+                || set.Span(s16.Substring(0, 7), SpanCondition.NotContained) != 4 // ICU4N: Checked 2nd substring parameter
+                || set.Span(s16.Substring(0, 6), SpanCondition.NotContained) != 4 // ICU4N: Checked 2nd substring parameter
+                || set.Span(s16.Substring(0, 5), SpanCondition.NotContained) != 5 // ICU4N: Checked 2nd substring parameter
+                || set.Span(s16.Substring(0, 4), SpanCondition.NotContained) != 4 // ICU4N: Checked 2nd substring parameter
+                || set.Span(s16.Substring(0, 3), SpanCondition.NotContained) != 3) // ICU4N: Checked 2nd substring parameter
             {
                 Errln("FAIL: UnicodeSet(" + pattern + ").Span(while not) returns the wrong value");
             }
@@ -109,16 +108,16 @@ namespace ICU4N.Dev.Test.Lang
             pattern = "[a{ab}{abc}{cd}]";
             set.ApplyPattern(pattern);
             s16 = "acdabcdabccd";
-            if (set.Span(s16.Substring(0, 12), SpanCondition.CONTAINED) != 12 // ICU4N: Checked 2nd substring parameter
-                || set.Span(s16.Substring(0, 12), SpanCondition.SIMPLE) != 6 // ICU4N: Checked 2nd substring parameter
-                || set.Span(s16.Substring(7), SpanCondition.SIMPLE) != 5)
+            if (set.Span(s16.Substring(0, 12), SpanCondition.Contained) != 12 // ICU4N: Checked 2nd substring parameter
+                || set.Span(s16.Substring(0, 12), SpanCondition.Simple) != 6 // ICU4N: Checked 2nd substring parameter
+                || set.Span(s16.Substring(7), SpanCondition.Simple) != 5)
             {
                 Errln("FAIL: UnicodeSet(" + pattern + ").Span(while longest match) returns the wrong value");
             }
             set.Freeze();
-            if (set.Span(s16.Substring(0, 12), SpanCondition.CONTAINED) != 12 // ICU4N: Checked 2nd substring parameter
-                || set.Span(s16.Substring(0, 12), SpanCondition.SIMPLE) != 6 // ICU4N: Checked 2nd substring parameter
-                || set.Span(s16.Substring(7), SpanCondition.SIMPLE) != 5)
+            if (set.Span(s16.Substring(0, 12), SpanCondition.Contained) != 12 // ICU4N: Checked 2nd substring parameter
+                || set.Span(s16.Substring(0, 12), SpanCondition.Simple) != 6 // ICU4N: Checked 2nd substring parameter
+                || set.Span(s16.Substring(7), SpanCondition.Simple) != 5)
             {
                 Errln("FAIL: UnicodeSet(" + pattern + ").Span(while longest match) returns the wrong value");
             }
@@ -127,9 +126,9 @@ namespace ICU4N.Dev.Test.Lang
             set = set.CloneAsThawed();
             set.ApplyPattern(pattern).Freeze();
             s16 = "abbcdabcdabd";
-            if (set.SpanBack(s16, 12, SpanCondition.CONTAINED) != 0
-                || set.SpanBack(s16, 12, SpanCondition.SIMPLE) != 6
-                || set.SpanBack(s16, 5, SpanCondition.SIMPLE) != 0)
+            if (set.SpanBack(s16, 12, SpanCondition.Contained) != 0
+                || set.SpanBack(s16, 12, SpanCondition.Simple) != 6
+                || set.SpanBack(s16, 5, SpanCondition.Simple) != 0)
             {
                 Errln("FAIL: UnicodeSet(" + pattern + ").SpanBack(while longest match) returns the wrong value");
             }
@@ -190,7 +189,7 @@ namespace ICU4N.Dev.Test.Lang
             if (!set.HasStrings)
             {
                 bool spanContained = false;
-                if (spanCondition != SpanCondition.NOT_CONTAINED)
+                if (spanCondition != SpanCondition.NotContained)
                 {
                     spanContained = true; // Pin to 0/1 values.
                 }
@@ -208,7 +207,7 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 return prev;
             }
-            else if (spanCondition == SpanCondition.NOT_CONTAINED)
+            else if (spanCondition == SpanCondition.NotContained)
             {
                 int c;
                 int start, next;
@@ -254,7 +253,7 @@ namespace ICU4N.Dev.Test.Lang
                             {
                                 return length;
                             }
-                            if (spanCondition == SpanCondition.CONTAINED)
+                            if (spanCondition == SpanCondition.Contained)
                             {
                                 // Iterate for the shortest match at each position.
                                 // Recurse for each but the shortest match.
@@ -273,7 +272,7 @@ namespace ICU4N.Dev.Test.Lang
                                     }
                                     // Recurse for non-shortest match from start.
                                     int spanLength = ContainsSpanUTF16(set, s.Substring(matchLimit),
-                                            SpanCondition.CONTAINED);
+                                            SpanCondition.Contained);
                                     if ((matchLimit + spanLength) > maxSpanLimit)
                                     {
                                         maxSpanLimit = matchLimit + spanLength;
@@ -322,7 +321,7 @@ namespace ICU4N.Dev.Test.Lang
             if (!set.HasStrings)
             {
                 bool spanContained = false;
-                if (spanCondition != SpanCondition.NOT_CONTAINED)
+                if (spanCondition != SpanCondition.NotContained)
                 {
                     spanContained = true; // Pin to 0/1 values.
                 }
@@ -340,7 +339,7 @@ namespace ICU4N.Dev.Test.Lang
                 } while (prev > 0);
                 return prev;
             }
-            else if (spanCondition == SpanCondition.NOT_CONTAINED)
+            else if (spanCondition == SpanCondition.NotContained)
             {
                 int c;
                 int prev = length, length0 = length;
@@ -385,7 +384,7 @@ namespace ICU4N.Dev.Test.Lang
                             {
                                 return 0;
                             }
-                            if (spanCondition == SpanCondition.CONTAINED)
+                            if (spanCondition == SpanCondition.Contained)
                             {
                                 // Iterate for the shortest match at each position.
                                 // Recurse for each but the shortest match.
@@ -404,7 +403,7 @@ namespace ICU4N.Dev.Test.Lang
                                     }
                                     // Recurse for non-shortest match from prev.
                                     int spanStart = ContainsSpanBackUTF16(set, s, matchStart,
-                                            SpanCondition.CONTAINED);
+                                            SpanCondition.Contained);
                                     if (spanStart < minSpanStart)
                                     {
                                         minSpanStart = spanStart;
@@ -462,8 +461,8 @@ namespace ICU4N.Dev.Test.Lang
 
         internal static SpanCondition InvertSpanCondition(SpanCondition spanCondition, SpanCondition contained)
         {
-            return spanCondition == SpanCondition.NOT_CONTAINED ? contained
-                    : SpanCondition.NOT_CONTAINED;
+            return spanCondition == SpanCondition.NotContained ? contained
+                    : SpanCondition.NotContained;
         }
 
         /*
@@ -526,7 +525,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     return -1;
                 }
-                contained = SpanCondition.CONTAINED;
+                contained = SpanCondition.Contained;
             }
             else
             {
@@ -535,11 +534,11 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     return -1;
                 }
-                contained = SpanCondition.SIMPLE;
+                contained = SpanCondition.Simple;
             }
 
             // Default first span condition for going forward with an uncomplemented set.
-            spanCondition = SpanCondition.NOT_CONTAINED;
+            spanCondition = SpanCondition.NotContained;
             if (isComplement)
             {
                 spanCondition = InvertSpanCondition(spanCondition, contained);
@@ -889,7 +888,7 @@ namespace ICU4N.Dev.Test.Lang
         public void TestInterestingStringSpan()
         {
             UnicodeSet uset = new UnicodeSet(Utility.Unescape(unicodeSet1));
-            SpanCondition spanCondition = SpanCondition.NOT_CONTAINED;
+            SpanCondition spanCondition = SpanCondition.NotContained;
             int expect = 2;
             int start = 14;
 
@@ -972,7 +971,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             String str = Utility.Unescape(stringWithUnpairedSurrogate);
             UnicodeSet uset = new UnicodeSet(Utility.Unescape(patternWithUnpairedSurrogate));
-            SpanCondition spanCondition = SpanCondition.NOT_CONTAINED;
+            SpanCondition spanCondition = SpanCondition.NotContained;
             int start = 17;
             int expect = 5;
 
@@ -1271,44 +1270,44 @@ namespace ICU4N.Dev.Test.Lang
             String s = "ab\n\r\r\n" + UTF16.ValueOf(0x50000) + "abcde";
             int count = 0;
             assertEquals("abc span[8, 11[", 11,
-                    abc.SpanAndCount(s, 8, SpanCondition.SIMPLE, out count));
+                    abc.SpanAndCount(s, 8, SpanCondition.Simple, out count));
             assertEquals("abc count=3", 3, count);
             assertEquals("no abc span[2, 8[", 8,
-                    abc.SpanAndCount(s, 2, SpanCondition.NOT_CONTAINED, out count));
+                    abc.SpanAndCount(s, 2, SpanCondition.NotContained, out count));
             assertEquals("no abc count=5", 5, count);
             assertEquals("line endings span[2, 6[", 6,
-                    crlf.SpanAndCount(s, 2, SpanCondition.CONTAINED, out count));
+                    crlf.SpanAndCount(s, 2, SpanCondition.Contained, out count));
             assertEquals("line endings count=3", 3, count);
             assertEquals("no ab+cd span[2, 8[", 8,
-                    ab_cd.SpanAndCount(s, 2, SpanCondition.NOT_CONTAINED, out count));
+                    ab_cd.SpanAndCount(s, 2, SpanCondition.NotContained, out count));
             assertEquals("no ab+cd count=5", 5, count);
             assertEquals("ab+cd span[8, 12[", 12,
-                    ab_cd.SpanAndCount(s, 8, SpanCondition.CONTAINED, out count));
+                    ab_cd.SpanAndCount(s, 8, SpanCondition.Contained, out count));
             assertEquals("ab+cd count=2", 2, count);
             assertEquals("1x abc span[8, 11[", 11,
-                    ab_cd.SpanAndCount(s, 8, SpanCondition.SIMPLE, out count));
+                    ab_cd.SpanAndCount(s, 8, SpanCondition.Simple, out count));
             assertEquals("1x abc count=1", 1, count);
 
             abc.Freeze();
             crlf.Freeze();
             ab_cd.Freeze();
             assertEquals("abc span[8, 11[ (frozen)", 11,
-                    abc.SpanAndCount(s, 8, SpanCondition.SIMPLE, out count));
+                    abc.SpanAndCount(s, 8, SpanCondition.Simple, out count));
             assertEquals("abc count=3 (frozen)", 3, count);
             assertEquals("no abc span[2, 8[ (frozen)", 8,
-                    abc.SpanAndCount(s, 2, SpanCondition.NOT_CONTAINED, out count));
+                    abc.SpanAndCount(s, 2, SpanCondition.NotContained, out count));
             assertEquals("no abc count=5 (frozen)", 5, count);
             assertEquals("line endings span[2, 6[ (frozen)", 6,
-                    crlf.SpanAndCount(s, 2, SpanCondition.CONTAINED, out count));
+                    crlf.SpanAndCount(s, 2, SpanCondition.Contained, out count));
             assertEquals("line endings count=3 (frozen)", 3, count);
             assertEquals("no ab+cd span[2, 8[ (frozen)", 8,
-                    ab_cd.SpanAndCount(s, 2, SpanCondition.NOT_CONTAINED, out count));
+                    ab_cd.SpanAndCount(s, 2, SpanCondition.NotContained, out count));
             assertEquals("no ab+cd count=5 (frozen)", 5, count);
             assertEquals("ab+cd span[8, 12[ (frozen)", 12,
-                    ab_cd.SpanAndCount(s, 8, SpanCondition.CONTAINED, out count));
+                    ab_cd.SpanAndCount(s, 8, SpanCondition.Contained, out count));
             assertEquals("ab+cd count=2 (frozen)", 2, count);
             assertEquals("1x abc span[8, 11[ (frozen)", 11,
-                    ab_cd.SpanAndCount(s, 8, SpanCondition.SIMPLE, out count));
+                    ab_cd.SpanAndCount(s, 8, SpanCondition.Simple, out count));
             assertEquals("1x abc count=1 (frozen)", 1, count);
         }
     }

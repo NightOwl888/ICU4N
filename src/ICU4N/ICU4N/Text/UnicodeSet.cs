@@ -24,8 +24,8 @@ namespace ICU4N.Text
     /// Note: method <see cref="Freeze()"/> will not only make the set immutable, but
     /// also makes important methods much higher performance:
     /// <see cref="Contains(int)"/>, <see cref="ContainsNone(string)"/>, 
-    /// <see cref="Span(string, int, UnicodeSet.SpanCondition)"/>,
-    /// <see cref="SpanBack(string, int, UnicodeSet.SpanCondition)"/>, etc.
+    /// <see cref="Span(string, int, SpanCondition)"/>,
+    /// <see cref="SpanBack(string, int, SpanCondition)"/>, etc.
     /// After the object is frozen, any subsequent call that wants to change
     /// the object will throw <see cref="NotSupportedException"/>.
     /// <para/>
@@ -4697,109 +4697,7 @@ namespace ICU4N.Text
 
         // ICU4N specific - StripFrom(ICharSequence source, bool matches) moved to UnicodeSetExtension.tt
 
-        /// <summary>
-        /// Argument values for whether <see cref="Span(string, int, SpanCondition)"/> and similar functions continue while the current character is contained vs.
-        /// not contained in the set.
-        /// </summary>
-        /// <remarks>
-        /// The functionality is straightforward for sets with only single code points, without strings (which is the common
-        /// case):
-        /// <list type="bullet">
-        ///     <item><description><see cref="CONTAINED"/> and <see cref="SIMPLE"/> work the same.</description></item>
-        ///     <item><description><see cref="CONTAINED"/> and <see cref="SIMPLE"/> are inverses of <see cref="NOT_CONTAINED"/>.</description></item>
-        ///     <item><description><see cref="Span(string, int, SpanCondition)"/> and <see cref="SpanBack(string, int, SpanCondition)"/> partition any string the
-        ///         same way when alternating between Span(<see cref="NOT_CONTAINED"/>) and Span(either "contained" condition).</description></item>
-        ///     <item><description>Using a complemented (inverted) set and the opposite span conditions yields the same results.</description></item>
-        /// </list>
-        /// When a set contains multi-code point strings, then these statements may not be true, depending on the strings in
-        /// the set (for example, whether they overlap with each other) and the string that is processed. For a set with
-        /// strings:
-        /// <list type="bullet">
-        ///     <item><description>
-        ///         The complement of the set contains the opposite set of code points, but the same set of strings.
-        ///         Therefore, complementing both the set and the span conditions may yield different results.
-        ///     </description></item>
-        ///     <item><description>
-        ///         When starting spans at different positions in a string (span(s, ...) vs. span(s+1, ...)) the 
-        ///         ends of the spans may be different because a set string may start before the later position.
-        ///     </description></item>
-        ///     <item><description>
-        ///         Span(<see cref="SIMPLE"/>) may be shorter than Span(<see cref="CONTAINED"/>) because it will 
-        ///         not recursively try all possible paths. For example, with a set which
-        ///         contains the three strings "xy", "xya" and "ax", Span("xyax", <see cref="CONTAINED"/>) will return 4 but span("xyax",
-        ///         <see cref="SIMPLE"/>) will return 3. Span(<see cref="SIMPLE"/>) will never be longer than Span(<see cref="CONTAINED"/>).
-        ///     </description></item>
-        ///     <item><description>
-        ///         With either "contained" condition, Span() and SpanBack() may partition a string in different ways. For example,
-        ///         with a set which contains the two strings "ab" and "ba", and when processing the string "aba", Span() will yield
-        ///         contained/not-contained boundaries of { 0, 2, 3 } while SpanBack() will yield boundaries of { 0, 1, 3 }.
-        ///     </description></item>
-        /// </list>
-        /// Note: If it is important to get the same boundaries whether iterating forward or backward through a string, then
-        /// either only Span() should be used and the boundaries cached for backward operation, or an ICU <see cref="BreakIterator"/> could
-        /// be used.
-        /// <para/>
-        /// Note: Unpaired surrogates are treated like surrogate code points. Similarly, set strings match only on code point
-        /// boundaries, never in the middle of a surrogate pair.
-        /// </remarks>
-        /// <stable>ICU 4.4</stable>
-        public enum SpanCondition // ICU4N TODO: API - de-nest and name according to .NET conventions
-        {
-            /// <summary>
-            /// Continues a <see cref="Span(string, int, SpanCondition)"/> while there is no set element at the current position.
-            /// Increments by one code point at a time.
-            /// Stops before the first set element (character or string).
-            /// (For code points only, this is like while Contains(current)==false).
-            /// </summary>
-            /// <remarks>
-            /// When <see cref="Span(string, int, SpanCondition)"/> returns, the substring between where it started and the position it returned consists only of
-            /// characters that are not in the set, and none of its strings overlap with the span.
-            /// </remarks>
-            /// <stable>ICU 4.4</stable>
-            NOT_CONTAINED,
-
-            /// <summary>
-            /// Spans the longest substring that is a concatenation of set elements (characters or strings).
-            /// (For characters only, this is like while Contains(current)==true).
-            /// </summary>
-            /// <remarks>
-            /// When <see cref="Span(string, int, SpanCondition)"/> returns, the substring between where it started and the position it returned consists only of set
-            /// elements (characters or strings) that are in the set.
-            /// <para/>
-            /// If a set contains strings, then the span will be the longest substring for which there
-            /// exists at least one non-overlapping concatenation of set elements (characters or strings).
-            /// This is equivalent to a POSIX regular expression for <c>(OR of each set element)*</c>.
-            /// (.NET/ICU/Perl regex stops at the first match of an OR.)
-            /// </remarks>
-            /// <stable>ICU 4.4</stable>
-            CONTAINED,
-
-            /// <summary>
-            /// Continues a <see cref="Span(string, int, SpanCondition)"/> while there is a set element at the current position.
-            /// Increments by the longest matching element at each position.
-            /// (For characters only, this is like while Contains(current)==true).
-            /// </summary>
-            /// <remarks>
-            /// When <see cref="Span(string, int, SpanCondition)"/> returns, the substring between where it started and the position it returned consists only of set
-            /// elements (characters or strings) that are in the set.
-            /// <para/>
-            /// If a set only contains single characters, then this is the same as <see cref="CONTAINED"/>.
-            /// <para/>
-            /// If a set contains strings, then the span will be the longest substring with a match at each position with the
-            /// longest single set element (character or string).
-            /// <para/>
-            /// Use this span condition together with other longest-match algorithms, such as ICU converters
-            /// (ucnv_getUnicodeSet()).
-            /// </remarks>
-            /// <stable>ICU 4.4</stable>
-            SIMPLE,
-
-            /// <summary>
-            /// One more than the last span condition.
-            /// </summary>
-            /// <stable>ICU 4.4</stable>
-            CONDITION_COUNT
-        }
+        // ICU4N specific - De-nested SpanCondition
 
         /// <summary>
         /// Get the default symbol table. Null means ordinary processing. For internal use only.
@@ -4828,5 +4726,109 @@ namespace ICU4N.Text
             INCLUSIONS = null; // If the properties override inclusions, these have to be regenerated.
             XSYMBOL_TABLE = xSymbolTable;
         }
+    }
+
+    /// <summary>
+    /// Argument values for whether <see cref="UnicodeSet.Span(string, int, SpanCondition)"/> and similar functions continue while the current character is contained vs.
+    /// not contained in the set.
+    /// </summary>
+    /// <remarks>
+    /// The functionality is straightforward for sets with only single code points, without strings (which is the common
+    /// case):
+    /// <list type="bullet">
+    ///     <item><description><see cref="Contained"/> and <see cref="Simple"/> work the same.</description></item>
+    ///     <item><description><see cref="Contained"/> and <see cref="Simple"/> are inverses of <see cref="NotContained"/>.</description></item>
+    ///     <item><description><see cref="UnicodeSet.Span(string, int, SpanCondition)"/> and <see cref="UnicodeSet.SpanBack(string, int, SpanCondition)"/> partition any string the
+    ///         same way when alternating between Span(<see cref="NotContained"/>) and Span(either "contained" condition).</description></item>
+    ///     <item><description>Using a complemented (inverted) set and the opposite span conditions yields the same results.</description></item>
+    /// </list>
+    /// When a set contains multi-code point strings, then these statements may not be true, depending on the strings in
+    /// the set (for example, whether they overlap with each other) and the string that is processed. For a set with
+    /// strings:
+    /// <list type="bullet">
+    ///     <item><description>
+    ///         The complement of the set contains the opposite set of code points, but the same set of strings.
+    ///         Therefore, complementing both the set and the span conditions may yield different results.
+    ///     </description></item>
+    ///     <item><description>
+    ///         When starting spans at different positions in a string (span(s, ...) vs. span(s+1, ...)) the 
+    ///         ends of the spans may be different because a set string may start before the later position.
+    ///     </description></item>
+    ///     <item><description>
+    ///         Span(<see cref="Simple"/>) may be shorter than Span(<see cref="Contained"/>) because it will 
+    ///         not recursively try all possible paths. For example, with a set which
+    ///         contains the three strings "xy", "xya" and "ax", Span("xyax", <see cref="Contained"/>) will return 4 but span("xyax",
+    ///         <see cref="Simple"/>) will return 3. Span(<see cref="Simple"/>) will never be longer than Span(<see cref="Contained"/>).
+    ///     </description></item>
+    ///     <item><description>
+    ///         With either "contained" condition, Span() and SpanBack() may partition a string in different ways. For example,
+    ///         with a set which contains the two strings "ab" and "ba", and when processing the string "aba", Span() will yield
+    ///         contained/not-contained boundaries of { 0, 2, 3 } while SpanBack() will yield boundaries of { 0, 1, 3 }.
+    ///     </description></item>
+    /// </list>
+    /// Note: If it is important to get the same boundaries whether iterating forward or backward through a string, then
+    /// either only Span() should be used and the boundaries cached for backward operation, or an ICU <see cref="BreakIterator"/> could
+    /// be used.
+    /// <para/>
+    /// Note: Unpaired surrogates are treated like surrogate code points. Similarly, set strings match only on code point
+    /// boundaries, never in the middle of a surrogate pair.
+    /// </remarks>
+    /// <stable>ICU 4.4</stable>
+    public enum SpanCondition // ICU4N TODO: API - de-nest and name according to .NET conventions
+    {
+        /// <summary>
+        /// Continues a <see cref="UnicodeSet.Span(string, int, SpanCondition)"/> while there is no set element at the current position.
+        /// Increments by one code point at a time.
+        /// Stops before the first set element (character or string).
+        /// (For code points only, this is like while Contains(current)==false).
+        /// </summary>
+        /// <remarks>
+        /// When <see cref="UnicodeSet.Span(string, int, SpanCondition)"/> returns, the substring between where it started and the position it returned consists only of
+        /// characters that are not in the set, and none of its strings overlap with the span.
+        /// </remarks>
+        /// <stable>ICU 4.4</stable>
+        NotContained,
+
+        /// <summary>
+        /// Spans the longest substring that is a concatenation of set elements (characters or strings).
+        /// (For characters only, this is like while Contains(current)==true).
+        /// </summary>
+        /// <remarks>
+        /// When <see cref="UnicodeSet.Span(string, int, SpanCondition)"/> returns, the substring between where it started and the position it returned consists only of set
+        /// elements (characters or strings) that are in the set.
+        /// <para/>
+        /// If a set contains strings, then the span will be the longest substring for which there
+        /// exists at least one non-overlapping concatenation of set elements (characters or strings).
+        /// This is equivalent to a POSIX regular expression for <c>(OR of each set element)*</c>.
+        /// (.NET/ICU/Perl regex stops at the first match of an OR.)
+        /// </remarks>
+        /// <stable>ICU 4.4</stable>
+        Contained,
+
+        /// <summary>
+        /// Continues a <see cref="UnicodeSet.Span(string, int, SpanCondition)"/> while there is a set element at the current position.
+        /// Increments by the longest matching element at each position.
+        /// (For characters only, this is like while Contains(current)==true).
+        /// </summary>
+        /// <remarks>
+        /// When <see cref="UnicodeSet.Span(string, int, SpanCondition)"/> returns, the substring between where it started and the position it returned consists only of set
+        /// elements (characters or strings) that are in the set.
+        /// <para/>
+        /// If a set only contains single characters, then this is the same as <see cref="Contained"/>.
+        /// <para/>
+        /// If a set contains strings, then the span will be the longest substring with a match at each position with the
+        /// longest single set element (character or string).
+        /// <para/>
+        /// Use this span condition together with other longest-match algorithms, such as ICU converters
+        /// (ucnv_getUnicodeSet()).
+        /// </remarks>
+        /// <stable>ICU 4.4</stable>
+        Simple,
+
+        /// <summary>
+        /// One more than the last span condition.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        ConditionCount
     }
 }

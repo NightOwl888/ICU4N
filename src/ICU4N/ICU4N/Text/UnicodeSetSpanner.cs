@@ -8,27 +8,27 @@ namespace ICU4N.Text
     /// <remarks>
     /// An instance is immutable (and thus thread-safe) iff the source UnicodeSet is frozen.
     /// <para/>
-    /// <b>Note:</b> The counting, deletion, and replacement depend on alternating a <see cref="Text.UnicodeSet.SpanCondition"/> with
+    /// <b>Note:</b> The counting, deletion, and replacement depend on alternating a <see cref="Text.SpanCondition"/> with
     /// its inverse. That is, the code spans, then spans for the inverse, then spans, and so on.
     /// For the inverse, the following mapping is used:
     /// <list type="table">
-    ///     <item><term><see cref="Text.UnicodeSet.SpanCondition.SIMPLE"/></term><description><see cref="Text.UnicodeSet.SpanCondition.NOT_CONTAINED"/></description></item>
-    ///     <item><term><see cref="Text.UnicodeSet.SpanCondition.CONTAINED"/></term><description><see cref="Text.UnicodeSet.SpanCondition.NOT_CONTAINED"/></description></item>
-    ///     <item><term><see cref="Text.UnicodeSet.SpanCondition.NOT_CONTAINED"/></term><description><see cref="Text.UnicodeSet.SpanCondition.SIMPLE"/></description></item>
+    ///     <item><term><see cref="Text.SpanCondition.Simple"/></term><description><see cref="Text.SpanCondition.NotContained"/></description></item>
+    ///     <item><term><see cref="Text.SpanCondition.Contained"/></term><description><see cref="Text.SpanCondition.NotContained"/></description></item>
+    ///     <item><term><see cref="Text.SpanCondition.NotContained"/></term><description><see cref="Text.SpanCondition.Simple"/></description></item>
     /// </list>
     /// These are actually not complete inverses. However, the alternating works because there are no gaps.
     /// For example, with [a{ab}{bc}], you get the following behavior when scanning forward:
     /// <list type="table">
-    ///     <item><term><see cref="Text.UnicodeSet.SpanCondition.SIMPLE"/></term><description>xxx[ab]cyyy</description></item>
-    ///     <item><term><see cref="Text.UnicodeSet.SpanCondition.CONTAINED"/></term><description>xxx[abc]yyy</description></item>
-    ///     <item><term><see cref="Text.UnicodeSet.SpanCondition.NOT_CONTAINED"/></term><description>[xxx]ab[cyyy]</description></item>
+    ///     <item><term><see cref="Text.SpanCondition.Simple"/></term><description>xxx[ab]cyyy</description></item>
+    ///     <item><term><see cref="Text.SpanCondition.Contained"/></term><description>xxx[abc]yyy</description></item>
+    ///     <item><term><see cref="Text.SpanCondition.NotContained"/></term><description>[xxx]ab[cyyy]</description></item>
     /// </list>
     /// <para/>
     /// So here is what happens when you alternate:
     /// <list type="table">
-    ///     <item><term><see cref="Text.UnicodeSet.SpanCondition.NOT_CONTAINED"/></term><description>|xxxabcyyy</description></item>
-    ///     <item><term><see cref="Text.UnicodeSet.SpanCondition.CONTAINED"/></term><description>xxx|abcyyy</description></item>
-    ///     <item><term><see cref="Text.UnicodeSet.SpanCondition.NOT_CONTAINED"/></term><description>xxxabcyyy|</description></item>
+    ///     <item><term><see cref="Text.SpanCondition.NotContained"/></term><description>|xxxabcyyy</description></item>
+    ///     <item><term><see cref="Text.SpanCondition.Contained"/></term><description>xxx|abcyyy</description></item>
+    ///     <item><term><see cref="Text.SpanCondition.NotContained"/></term><description>xxxabcyyy|</description></item>
     /// </list>
     /// <para/>
     /// The entire string is traversed.
@@ -106,10 +106,10 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Use the smallest number of elements in the spanned range for counting and modification,
-        /// based on the <see cref="UnicodeSet.SpanCondition"/>.
+        /// based on the <see cref="SpanCondition"/>.
         /// If the set has no strings, this will be the same as the number of spanned code points.
         /// <para/>
-        /// For example, in the string "abab" with <see cref="UnicodeSet.SpanCondition.SIMPLE"/>:
+        /// For example, in the string "abab" with <see cref="SpanCondition.Simple"/>:
         /// <list type="bullet">
         ///     <item><description>spanning with [ab] will count four <see cref="MinElements"/>.</description></item>
         ///     <item><description>spanning with [{ab}] will count two <see cref="MinElements"/>.</description></item>
@@ -122,7 +122,7 @@ namespace ICU4N.Text
     }
 
     /// <summary>
-    /// Options for the <see cref="UnicodeSetSpanner.Trim(ICharSequence, TrimOption, UnicodeSet.SpanCondition)"/> method.
+    /// Options for the <see cref="UnicodeSetSpanner.Trim(ICharSequence, TrimOption, SpanCondition)"/> method.
     /// </summary>
     /// <stable>ICU 54</stable>
     public enum TrimOption

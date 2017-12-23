@@ -7,8 +7,8 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using ICU4N.Support.Text;
+using ICU4N.Text;
 using System.Text;
-using SpanCondition = ICU4N.Text.UnicodeSet.SpanCondition;
 
 namespace ICU4N.Impl
 {
@@ -36,7 +36,7 @@ namespace ICU4N.Impl
             int i = start;
             int limit = s.Length;
             int numSupplementary = 0;
-            if (SpanCondition.NOT_CONTAINED != spanCondition)
+            if (SpanCondition.NotContained != spanCondition)
             {
                 // span
                 while (i < limit)
@@ -176,7 +176,7 @@ namespace ICU4N.Impl
             int i = start;
             int limit = s.Length;
             int numSupplementary = 0;
-            if (SpanCondition.NOT_CONTAINED != spanCondition)
+            if (SpanCondition.NotContained != spanCondition)
             {
                 // span
                 while (i < limit)
@@ -316,7 +316,7 @@ namespace ICU4N.Impl
             int i = start;
             int limit = s.Length;
             int numSupplementary = 0;
-            if (SpanCondition.NOT_CONTAINED != spanCondition)
+            if (SpanCondition.NotContained != spanCondition)
             {
                 // span
                 while (i < limit)
@@ -456,7 +456,7 @@ namespace ICU4N.Impl
             int i = start;
             int limit = s.Length;
             int numSupplementary = 0;
-            if (SpanCondition.NOT_CONTAINED != spanCondition)
+            if (SpanCondition.NotContained != spanCondition)
             {
                 // span
                 while (i < limit)
@@ -585,7 +585,7 @@ namespace ICU4N.Impl
         {
             char c, c2;
 
-            if (SpanCondition.NOT_CONTAINED != spanCondition)
+            if (SpanCondition.NotContained != spanCondition)
             {
                 // span
                 for (; ; )
@@ -716,7 +716,7 @@ namespace ICU4N.Impl
         {
             char c, c2;
 
-            if (SpanCondition.NOT_CONTAINED != spanCondition)
+            if (SpanCondition.NotContained != spanCondition)
             {
                 // span
                 for (; ; )
@@ -847,7 +847,7 @@ namespace ICU4N.Impl
         {
             char c, c2;
 
-            if (SpanCondition.NOT_CONTAINED != spanCondition)
+            if (SpanCondition.NotContained != spanCondition)
             {
                 // span
                 for (; ; )
@@ -978,7 +978,7 @@ namespace ICU4N.Impl
         {
             char c, c2;
 
-            if (SpanCondition.NOT_CONTAINED != spanCondition)
+            if (SpanCondition.NotContained != spanCondition)
             {
                 // span
                 for (; ; )

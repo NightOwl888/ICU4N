@@ -5,7 +5,7 @@ namespace ICU4N.Impl
 {
     /// <summary>
     /// Helper class for frozen <see cref="Text.UnicodeSet"/>s, implements <see cref="Contains(int)"/> and 
-    /// <see cref="Span(string, int, Text.UnicodeSet.SpanCondition, out int)"/> optimized for BMP code points.
+    /// <see cref="Span(string, int, Text.SpanCondition, out int)"/> optimized for BMP code points.
     /// <para/>
     /// Latin-1: Look up bytes.
     /// 2-byte characters: Bits organized vertically.

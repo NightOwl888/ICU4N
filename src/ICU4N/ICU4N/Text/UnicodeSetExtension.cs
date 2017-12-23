@@ -2125,7 +2125,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual bool ContainsNone(string s)
         {
-            return Span(s, SpanCondition.NOT_CONTAINED) == s.Length;
+            return Span(s, SpanCondition.NotContained) == s.Length;
         }
 
         /// <summary>
@@ -2137,7 +2137,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual bool ContainsNone(StringBuilder s)
         {
-            return Span(s, SpanCondition.NOT_CONTAINED) == s.Length;
+            return Span(s, SpanCondition.NotContained) == s.Length;
         }
 
         /// <summary>
@@ -2149,7 +2149,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual bool ContainsNone(char[] s)
         {
-            return Span(s, SpanCondition.NOT_CONTAINED) == s.Length;
+            return Span(s, SpanCondition.NotContained) == s.Length;
         }
 
         /// <summary>
@@ -2161,7 +2161,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         internal virtual bool ContainsNone(ICharSequence s)
         {
-            return Span(s, SpanCondition.NOT_CONTAINED) == s.Length;
+            return Span(s, SpanCondition.NotContained) == s.Length;
         }
 
         /// <summary>
@@ -2305,7 +2305,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = spanCondition == SpanCondition.NOT_CONTAINED ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
                         : UnicodeSetStringSpan.FWD_UTF16_CONTAINED;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
                 if (strSpan.NeedsStringSpanUTF16)
@@ -2354,7 +2354,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = spanCondition == SpanCondition.NOT_CONTAINED ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
                         : UnicodeSetStringSpan.FWD_UTF16_CONTAINED;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
                 if (strSpan.NeedsStringSpanUTF16)
@@ -2403,7 +2403,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = spanCondition == SpanCondition.NOT_CONTAINED ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
                         : UnicodeSetStringSpan.FWD_UTF16_CONTAINED;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
                 if (strSpan.NeedsStringSpanUTF16)
@@ -2452,7 +2452,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = spanCondition == SpanCondition.NOT_CONTAINED ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
                         : UnicodeSetStringSpan.FWD_UTF16_CONTAINED;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
                 if (strSpan.NeedsStringSpanUTF16)
@@ -2499,7 +2499,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = spanCondition == SpanCondition.NOT_CONTAINED ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
                         : UnicodeSetStringSpan.FWD_UTF16_CONTAINED;
                 which |= UnicodeSetStringSpan.WITH_COUNT;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
@@ -2544,7 +2544,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = spanCondition == SpanCondition.NOT_CONTAINED ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
                         : UnicodeSetStringSpan.FWD_UTF16_CONTAINED;
                 which |= UnicodeSetStringSpan.WITH_COUNT;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
@@ -2589,7 +2589,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = spanCondition == SpanCondition.NOT_CONTAINED ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
                         : UnicodeSetStringSpan.FWD_UTF16_CONTAINED;
                 which |= UnicodeSetStringSpan.WITH_COUNT;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
@@ -2634,7 +2634,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = spanCondition == SpanCondition.NOT_CONTAINED ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
+                int which = spanCondition == SpanCondition.NotContained ? UnicodeSetStringSpan.FWD_UTF16_NOT_CONTAINED
                         : UnicodeSetStringSpan.FWD_UTF16_CONTAINED;
                 which |= UnicodeSetStringSpan.WITH_COUNT;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
@@ -2648,7 +2648,7 @@ namespace ICU4N.Text
             SpanCondition spanCondition, out int outCount)
         {
             // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NOT_CONTAINED);
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
 
             int c;
             int next = start;
@@ -2672,7 +2672,7 @@ namespace ICU4N.Text
             SpanCondition spanCondition, out int outCount)
         {
             // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NOT_CONTAINED);
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
 
             int c;
             int next = start;
@@ -2696,7 +2696,7 @@ namespace ICU4N.Text
             SpanCondition spanCondition, out int outCount)
         {
             // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NOT_CONTAINED);
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
 
             int c;
             int next = start;
@@ -2720,7 +2720,7 @@ namespace ICU4N.Text
             SpanCondition spanCondition, out int outCount)
         {
             // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NOT_CONTAINED);
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
 
             int c;
             int next = start;
@@ -2829,7 +2829,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = (spanCondition == SpanCondition.NOT_CONTAINED)
+                int which = (spanCondition == SpanCondition.NotContained)
                         ? UnicodeSetStringSpan.BACK_UTF16_NOT_CONTAINED
                                 : UnicodeSetStringSpan.BACK_UTF16_CONTAINED;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
@@ -2840,7 +2840,7 @@ namespace ICU4N.Text
             }
 
             // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NOT_CONTAINED);
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
 
             int c;
             int prev = fromIndex;
@@ -2889,7 +2889,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = (spanCondition == SpanCondition.NOT_CONTAINED)
+                int which = (spanCondition == SpanCondition.NotContained)
                         ? UnicodeSetStringSpan.BACK_UTF16_NOT_CONTAINED
                                 : UnicodeSetStringSpan.BACK_UTF16_CONTAINED;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
@@ -2900,7 +2900,7 @@ namespace ICU4N.Text
             }
 
             // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NOT_CONTAINED);
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
 
             int c;
             int prev = fromIndex;
@@ -2949,7 +2949,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = (spanCondition == SpanCondition.NOT_CONTAINED)
+                int which = (spanCondition == SpanCondition.NotContained)
                         ? UnicodeSetStringSpan.BACK_UTF16_NOT_CONTAINED
                                 : UnicodeSetStringSpan.BACK_UTF16_CONTAINED;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
@@ -2960,7 +2960,7 @@ namespace ICU4N.Text
             }
 
             // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NOT_CONTAINED);
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
 
             int c;
             int prev = fromIndex;
@@ -3009,7 +3009,7 @@ namespace ICU4N.Text
             }
             else if (strings.Count > 0)
             {
-                int which = (spanCondition == SpanCondition.NOT_CONTAINED)
+                int which = (spanCondition == SpanCondition.NotContained)
                         ? UnicodeSetStringSpan.BACK_UTF16_NOT_CONTAINED
                                 : UnicodeSetStringSpan.BACK_UTF16_CONTAINED;
                 UnicodeSetStringSpan strSpan = new UnicodeSetStringSpan(this, new List<string>(strings), which);
@@ -3020,7 +3020,7 @@ namespace ICU4N.Text
             }
 
             // Pin to 0/1 values.
-            bool spanContained = (spanCondition != SpanCondition.NOT_CONTAINED);
+            bool spanContained = (spanCondition != SpanCondition.NotContained);
 
             int c;
             int prev = fromIndex;

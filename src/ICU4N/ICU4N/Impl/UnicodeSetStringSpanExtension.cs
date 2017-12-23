@@ -10,7 +10,6 @@ using ICU4N.Support.Text;
 using ICU4N.Text;
 using System.IO;
 using System.Text;
-using SpanCondition = ICU4N.Text.UnicodeSet.SpanCondition;
 
 namespace ICU4N.Impl
 {
@@ -26,11 +25,11 @@ namespace ICU4N.Impl
         /// <returns>The limit (exclusive end) of the span.</returns>
         public int Span(string s, int start, SpanCondition spanCondition)
         {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
+            if (spanCondition == SpanCondition.NotContained)
             {
                 return SpanNot(s, start);
             }
-            int spanLimit = spanSet.Span(s, start, SpanCondition.CONTAINED);
+            int spanLimit = spanSet.Span(s, start, SpanCondition.Contained);
             if (spanLimit == s.Length)
             {
                 return spanLimit;
@@ -47,11 +46,11 @@ namespace ICU4N.Impl
         /// <returns>The limit (exclusive end) of the span.</returns>
         public int Span(StringBuilder s, int start, SpanCondition spanCondition)
         {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
+            if (spanCondition == SpanCondition.NotContained)
             {
                 return SpanNot(s, start);
             }
-            int spanLimit = spanSet.Span(s, start, SpanCondition.CONTAINED);
+            int spanLimit = spanSet.Span(s, start, SpanCondition.Contained);
             if (spanLimit == s.Length)
             {
                 return spanLimit;
@@ -68,11 +67,11 @@ namespace ICU4N.Impl
         /// <returns>The limit (exclusive end) of the span.</returns>
         public int Span(char[] s, int start, SpanCondition spanCondition)
         {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
+            if (spanCondition == SpanCondition.NotContained)
             {
                 return SpanNot(s, start);
             }
-            int spanLimit = spanSet.Span(s, start, SpanCondition.CONTAINED);
+            int spanLimit = spanSet.Span(s, start, SpanCondition.Contained);
             if (spanLimit == s.Length)
             {
                 return spanLimit;
@@ -89,11 +88,11 @@ namespace ICU4N.Impl
         /// <returns>The limit (exclusive end) of the span.</returns>
         internal int Span(ICharSequence s, int start, SpanCondition spanCondition)
         {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
+            if (spanCondition == SpanCondition.NotContained)
             {
                 return SpanNot(s, start);
             }
-            int spanLimit = spanSet.Span(s, start, SpanCondition.CONTAINED);
+            int spanLimit = spanSet.Span(s, start, SpanCondition.Contained);
             if (spanLimit == s.Length)
             {
                 return spanLimit;
@@ -107,7 +106,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="s"></param>
         /// <param name="start"></param>
-        /// <param name="spanLimit">= SpanSet.Span(s, start, CONTAINED)</param>
+        /// <param name="spanLimit">= SpanSet.Span(s, start, Contained)</param>
         /// <param name="spanCondition"></param>
         /// <returns></returns>
         private int SpanWithStrings(string s, int start, int spanLimit,
@@ -117,7 +116,7 @@ namespace ICU4N.Impl
             {
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
+                if (spanCondition == SpanCondition.Contained)
                 {
                     // Use offset list to try all possibilities.
                     initSize = maxLength16;
@@ -129,7 +128,7 @@ namespace ICU4N.Impl
                 int i, stringsLength = strings.Count;
                 for (; ; )
                 {
-                    if (spanCondition == SpanCondition.CONTAINED)
+                    if (spanCondition == SpanCondition.Contained)
                     {
                         for (i = 0; i < stringsLength; ++i)
                         {
@@ -259,7 +258,7 @@ namespace ICU4N.Impl
                         {
                             // No more strings matched after a previous string match.
                             // Try another code point span from after the last string match.
-                            spanLimit = spanSet.Span(s, pos, SpanCondition.CONTAINED);
+                            spanLimit = spanSet.Span(s, pos, SpanCondition.Contained);
                             spanLength = spanLimit - pos;
                             if (spanLength == rest || // Reached the end of the string, or
                                     spanLength == 0 // neither strings nor span progressed.
@@ -310,7 +309,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="s"></param>
         /// <param name="start"></param>
-        /// <param name="spanLimit">= SpanSet.Span(s, start, CONTAINED)</param>
+        /// <param name="spanLimit">= SpanSet.Span(s, start, Contained)</param>
         /// <param name="spanCondition"></param>
         /// <returns></returns>
         private int SpanWithStrings(StringBuilder s, int start, int spanLimit,
@@ -320,7 +319,7 @@ namespace ICU4N.Impl
             {
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
+                if (spanCondition == SpanCondition.Contained)
                 {
                     // Use offset list to try all possibilities.
                     initSize = maxLength16;
@@ -332,7 +331,7 @@ namespace ICU4N.Impl
                 int i, stringsLength = strings.Count;
                 for (; ; )
                 {
-                    if (spanCondition == SpanCondition.CONTAINED)
+                    if (spanCondition == SpanCondition.Contained)
                     {
                         for (i = 0; i < stringsLength; ++i)
                         {
@@ -462,7 +461,7 @@ namespace ICU4N.Impl
                         {
                             // No more strings matched after a previous string match.
                             // Try another code point span from after the last string match.
-                            spanLimit = spanSet.Span(s, pos, SpanCondition.CONTAINED);
+                            spanLimit = spanSet.Span(s, pos, SpanCondition.Contained);
                             spanLength = spanLimit - pos;
                             if (spanLength == rest || // Reached the end of the string, or
                                     spanLength == 0 // neither strings nor span progressed.
@@ -513,7 +512,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="s"></param>
         /// <param name="start"></param>
-        /// <param name="spanLimit">= SpanSet.Span(s, start, CONTAINED)</param>
+        /// <param name="spanLimit">= SpanSet.Span(s, start, Contained)</param>
         /// <param name="spanCondition"></param>
         /// <returns></returns>
         private int SpanWithStrings(char[] s, int start, int spanLimit,
@@ -523,7 +522,7 @@ namespace ICU4N.Impl
             {
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
+                if (spanCondition == SpanCondition.Contained)
                 {
                     // Use offset list to try all possibilities.
                     initSize = maxLength16;
@@ -535,7 +534,7 @@ namespace ICU4N.Impl
                 int i, stringsLength = strings.Count;
                 for (; ; )
                 {
-                    if (spanCondition == SpanCondition.CONTAINED)
+                    if (spanCondition == SpanCondition.Contained)
                     {
                         for (i = 0; i < stringsLength; ++i)
                         {
@@ -665,7 +664,7 @@ namespace ICU4N.Impl
                         {
                             // No more strings matched after a previous string match.
                             // Try another code point span from after the last string match.
-                            spanLimit = spanSet.Span(s, pos, SpanCondition.CONTAINED);
+                            spanLimit = spanSet.Span(s, pos, SpanCondition.Contained);
                             spanLength = spanLimit - pos;
                             if (spanLength == rest || // Reached the end of the string, or
                                     spanLength == 0 // neither strings nor span progressed.
@@ -716,7 +715,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="s"></param>
         /// <param name="start"></param>
-        /// <param name="spanLimit">= SpanSet.Span(s, start, CONTAINED)</param>
+        /// <param name="spanLimit">= SpanSet.Span(s, start, Contained)</param>
         /// <param name="spanCondition"></param>
         /// <returns></returns>
         private int SpanWithStrings(ICharSequence s, int start, int spanLimit,
@@ -726,7 +725,7 @@ namespace ICU4N.Impl
             {
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
+                if (spanCondition == SpanCondition.Contained)
                 {
                     // Use offset list to try all possibilities.
                     initSize = maxLength16;
@@ -738,7 +737,7 @@ namespace ICU4N.Impl
                 int i, stringsLength = strings.Count;
                 for (; ; )
                 {
-                    if (spanCondition == SpanCondition.CONTAINED)
+                    if (spanCondition == SpanCondition.Contained)
                     {
                         for (i = 0; i < stringsLength; ++i)
                         {
@@ -868,7 +867,7 @@ namespace ICU4N.Impl
                         {
                             // No more strings matched after a previous string match.
                             // Try another code point span from after the last string match.
-                            spanLimit = spanSet.Span(s, pos, SpanCondition.CONTAINED);
+                            spanLimit = spanSet.Span(s, pos, SpanCondition.Contained);
                             spanLength = spanLimit - pos;
                             if (spanLength == rest || // Reached the end of the string, or
                                     spanLength == 0 // neither strings nor span progressed.
@@ -930,13 +929,13 @@ namespace ICU4N.Impl
         public int SpanAndCount(string s, int start, SpanCondition spanCondition,
             out int outCount)
         {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
+            if (spanCondition == SpanCondition.NotContained)
             {
                 return SpanNot(s, start, out outCount);
             }
             // Consider strings; they may overlap with the span,
             // and they may result in a smaller count that with just code points.
-            if (spanCondition == SpanCondition.CONTAINED)
+            if (spanCondition == SpanCondition.Contained)
             {
                 return SpanContainedAndCount(s, start, out outCount);
             }
@@ -994,13 +993,13 @@ namespace ICU4N.Impl
         public int SpanAndCount(StringBuilder s, int start, SpanCondition spanCondition,
             out int outCount)
         {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
+            if (spanCondition == SpanCondition.NotContained)
             {
                 return SpanNot(s, start, out outCount);
             }
             // Consider strings; they may overlap with the span,
             // and they may result in a smaller count that with just code points.
-            if (spanCondition == SpanCondition.CONTAINED)
+            if (spanCondition == SpanCondition.Contained)
             {
                 return SpanContainedAndCount(s, start, out outCount);
             }
@@ -1058,13 +1057,13 @@ namespace ICU4N.Impl
         public int SpanAndCount(char[] s, int start, SpanCondition spanCondition,
             out int outCount)
         {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
+            if (spanCondition == SpanCondition.NotContained)
             {
                 return SpanNot(s, start, out outCount);
             }
             // Consider strings; they may overlap with the span,
             // and they may result in a smaller count that with just code points.
-            if (spanCondition == SpanCondition.CONTAINED)
+            if (spanCondition == SpanCondition.Contained)
             {
                 return SpanContainedAndCount(s, start, out outCount);
             }
@@ -1122,13 +1121,13 @@ namespace ICU4N.Impl
         internal int SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition,
             out int outCount)
         {
-            if (spanCondition == SpanCondition.NOT_CONTAINED)
+            if (spanCondition == SpanCondition.NotContained)
             {
                 return SpanNot(s, start, out outCount);
             }
             // Consider strings; they may overlap with the span,
             // and they may result in a smaller count that with just code points.
-            if (spanCondition == SpanCondition.CONTAINED)
+            if (spanCondition == SpanCondition.Contained)
             {
                 return SpanContainedAndCount(s, start, out outCount);
             }
@@ -1376,11 +1375,11 @@ namespace ICU4N.Impl
         {
             lock (this)
             {
-                if (spanCondition == SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
                     return SpanNotBack(s, length);
                 }
-                int pos = spanSet.SpanBack(s, length, SpanCondition.CONTAINED);
+                int pos = spanSet.SpanBack(s, length, SpanCondition.Contained);
                 if (pos == 0)
                 {
                     return 0;
@@ -1389,7 +1388,7 @@ namespace ICU4N.Impl
 
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
+                if (spanCondition == SpanCondition.Contained)
                 {
                     // Use offset list to try all possibilities.
                     initSize = maxLength16;
@@ -1403,7 +1402,7 @@ namespace ICU4N.Impl
                 }
                 for (; ; )
                 {
-                    if (spanCondition == SpanCondition.CONTAINED)
+                    if (spanCondition == SpanCondition.Contained)
                     {
                         for (i = 0; i < stringsLength; ++i)
                         {
@@ -1534,7 +1533,7 @@ namespace ICU4N.Impl
                             // No more strings matched before a previous string match.
                             // Try another code point span from before the last string match.
                             int oldPos = pos;
-                            pos = spanSet.SpanBack(s, oldPos, SpanCondition.CONTAINED);
+                            pos = spanSet.SpanBack(s, oldPos, SpanCondition.Contained);
                             spanLength = oldPos - pos;
                             if (pos == 0 || // Reached the start of the string, or
                                     spanLength == 0 // neither strings nor span progressed.
@@ -1585,11 +1584,11 @@ namespace ICU4N.Impl
         {
             lock (this)
             {
-                if (spanCondition == SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
                     return SpanNotBack(s, length);
                 }
-                int pos = spanSet.SpanBack(s, length, SpanCondition.CONTAINED);
+                int pos = spanSet.SpanBack(s, length, SpanCondition.Contained);
                 if (pos == 0)
                 {
                     return 0;
@@ -1598,7 +1597,7 @@ namespace ICU4N.Impl
 
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
+                if (spanCondition == SpanCondition.Contained)
                 {
                     // Use offset list to try all possibilities.
                     initSize = maxLength16;
@@ -1612,7 +1611,7 @@ namespace ICU4N.Impl
                 }
                 for (; ; )
                 {
-                    if (spanCondition == SpanCondition.CONTAINED)
+                    if (spanCondition == SpanCondition.Contained)
                     {
                         for (i = 0; i < stringsLength; ++i)
                         {
@@ -1743,7 +1742,7 @@ namespace ICU4N.Impl
                             // No more strings matched before a previous string match.
                             // Try another code point span from before the last string match.
                             int oldPos = pos;
-                            pos = spanSet.SpanBack(s, oldPos, SpanCondition.CONTAINED);
+                            pos = spanSet.SpanBack(s, oldPos, SpanCondition.Contained);
                             spanLength = oldPos - pos;
                             if (pos == 0 || // Reached the start of the string, or
                                     spanLength == 0 // neither strings nor span progressed.
@@ -1794,11 +1793,11 @@ namespace ICU4N.Impl
         {
             lock (this)
             {
-                if (spanCondition == SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
                     return SpanNotBack(s, length);
                 }
-                int pos = spanSet.SpanBack(s, length, SpanCondition.CONTAINED);
+                int pos = spanSet.SpanBack(s, length, SpanCondition.Contained);
                 if (pos == 0)
                 {
                     return 0;
@@ -1807,7 +1806,7 @@ namespace ICU4N.Impl
 
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
+                if (spanCondition == SpanCondition.Contained)
                 {
                     // Use offset list to try all possibilities.
                     initSize = maxLength16;
@@ -1821,7 +1820,7 @@ namespace ICU4N.Impl
                 }
                 for (; ; )
                 {
-                    if (spanCondition == SpanCondition.CONTAINED)
+                    if (spanCondition == SpanCondition.Contained)
                     {
                         for (i = 0; i < stringsLength; ++i)
                         {
@@ -1952,7 +1951,7 @@ namespace ICU4N.Impl
                             // No more strings matched before a previous string match.
                             // Try another code point span from before the last string match.
                             int oldPos = pos;
-                            pos = spanSet.SpanBack(s, oldPos, SpanCondition.CONTAINED);
+                            pos = spanSet.SpanBack(s, oldPos, SpanCondition.Contained);
                             spanLength = oldPos - pos;
                             if (pos == 0 || // Reached the start of the string, or
                                     spanLength == 0 // neither strings nor span progressed.
@@ -2003,11 +2002,11 @@ namespace ICU4N.Impl
         {
             lock (this)
             {
-                if (spanCondition == SpanCondition.NOT_CONTAINED)
+                if (spanCondition == SpanCondition.NotContained)
                 {
                     return SpanNotBack(s, length);
                 }
-                int pos = spanSet.SpanBack(s, length, SpanCondition.CONTAINED);
+                int pos = spanSet.SpanBack(s, length, SpanCondition.Contained);
                 if (pos == 0)
                 {
                     return 0;
@@ -2016,7 +2015,7 @@ namespace ICU4N.Impl
 
                 // Consider strings; they may overlap with the span.
                 int initSize = 0;
-                if (spanCondition == SpanCondition.CONTAINED)
+                if (spanCondition == SpanCondition.Contained)
                 {
                     // Use offset list to try all possibilities.
                     initSize = maxLength16;
@@ -2030,7 +2029,7 @@ namespace ICU4N.Impl
                 }
                 for (; ; )
                 {
-                    if (spanCondition == SpanCondition.CONTAINED)
+                    if (spanCondition == SpanCondition.Contained)
                     {
                         for (i = 0; i < stringsLength; ++i)
                         {
@@ -2161,7 +2160,7 @@ namespace ICU4N.Impl
                             // No more strings matched before a previous string match.
                             // Try another code point span from before the last string match.
                             int oldPos = pos;
-                            pos = spanSet.SpanBack(s, oldPos, SpanCondition.CONTAINED);
+                            pos = spanSet.SpanBack(s, oldPos, SpanCondition.Contained);
                             spanLength = oldPos - pos;
                             if (pos == 0 || // Reached the start of the string, or
                                     spanLength == 0 // neither strings nor span progressed.
@@ -2262,7 +2261,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Algorithm for <c>SpanNot()==Span(SpanCondition.NOT_CONTAINED)</c>
+        /// Algorithm for <c>SpanNot()==Span(SpanCondition.Contained)</c>
         /// </summary>
         /// <remarks>
         /// Theoretical algorithm:
@@ -2280,7 +2279,7 @@ namespace ICU4N.Impl
         /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
         /// <para/>
         /// - Loop:
-        ///   + Do spanLength=spanNotSet.Span(SpanCondition.NOT_CONTAINED).
+        ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
         ///   + If the current code point is in the original set, then return the current position.
         ///   + If any set string matches at the current position, then return the current position.
         ///   + If there is no match at the current position, neither for the code point
@@ -2311,11 +2310,11 @@ namespace ICU4N.Impl
                 int spanLimit;
                 if (!includeCount)
                 {
-                    spanLimit = spanNotSet.Span(s, pos, SpanCondition.NOT_CONTAINED);
+                    spanLimit = spanNotSet.Span(s, pos, SpanCondition.NotContained);
                 }
                 else
                 {
-                    spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NOT_CONTAINED, out outCount);
+                    spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NotContained, out outCount);
                     outCount = count = count + outCount;
                 }
                 if (spanLimit == length)
@@ -2364,7 +2363,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Algorithm for <c>SpanNot()==Span(SpanCondition.NOT_CONTAINED)</c>
+        /// Algorithm for <c>SpanNot()==Span(SpanCondition.Contained)</c>
         /// </summary>
         /// <remarks>
         /// Theoretical algorithm:
@@ -2382,7 +2381,7 @@ namespace ICU4N.Impl
         /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
         /// <para/>
         /// - Loop:
-        ///   + Do spanLength=spanNotSet.Span(SpanCondition.NOT_CONTAINED).
+        ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
         ///   + If the current code point is in the original set, then return the current position.
         ///   + If any set string matches at the current position, then return the current position.
         ///   + If there is no match at the current position, neither for the code point
@@ -2413,11 +2412,11 @@ namespace ICU4N.Impl
                 int spanLimit;
                 if (!includeCount)
                 {
-                    spanLimit = spanNotSet.Span(s, pos, SpanCondition.NOT_CONTAINED);
+                    spanLimit = spanNotSet.Span(s, pos, SpanCondition.NotContained);
                 }
                 else
                 {
-                    spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NOT_CONTAINED, out outCount);
+                    spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NotContained, out outCount);
                     outCount = count = count + outCount;
                 }
                 if (spanLimit == length)
@@ -2466,7 +2465,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Algorithm for <c>SpanNot()==Span(SpanCondition.NOT_CONTAINED)</c>
+        /// Algorithm for <c>SpanNot()==Span(SpanCondition.Contained)</c>
         /// </summary>
         /// <remarks>
         /// Theoretical algorithm:
@@ -2484,7 +2483,7 @@ namespace ICU4N.Impl
         /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
         /// <para/>
         /// - Loop:
-        ///   + Do spanLength=spanNotSet.Span(SpanCondition.NOT_CONTAINED).
+        ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
         ///   + If the current code point is in the original set, then return the current position.
         ///   + If any set string matches at the current position, then return the current position.
         ///   + If there is no match at the current position, neither for the code point
@@ -2515,11 +2514,11 @@ namespace ICU4N.Impl
                 int spanLimit;
                 if (!includeCount)
                 {
-                    spanLimit = spanNotSet.Span(s, pos, SpanCondition.NOT_CONTAINED);
+                    spanLimit = spanNotSet.Span(s, pos, SpanCondition.NotContained);
                 }
                 else
                 {
-                    spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NOT_CONTAINED, out outCount);
+                    spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NotContained, out outCount);
                     outCount = count = count + outCount;
                 }
                 if (spanLimit == length)
@@ -2568,7 +2567,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Algorithm for <c>SpanNot()==Span(SpanCondition.NOT_CONTAINED)</c>
+        /// Algorithm for <c>SpanNot()==Span(SpanCondition.Contained)</c>
         /// </summary>
         /// <remarks>
         /// Theoretical algorithm:
@@ -2586,7 +2585,7 @@ namespace ICU4N.Impl
         /// (Also add its final code point for <see cref="SpanNotBack(ICharSequence, int)"/>.)
         /// <para/>
         /// - Loop:
-        ///   + Do spanLength=spanNotSet.Span(SpanCondition.NOT_CONTAINED).
+        ///   + Do spanLength=spanNotSet.Span(SpanCondition.Contained).
         ///   + If the current code point is in the original set, then return the current position.
         ///   + If any set string matches at the current position, then return the current position.
         ///   + If there is no match at the current position, neither for the code point
@@ -2617,11 +2616,11 @@ namespace ICU4N.Impl
                 int spanLimit;
                 if (!includeCount)
                 {
-                    spanLimit = spanNotSet.Span(s, pos, SpanCondition.NOT_CONTAINED);
+                    spanLimit = spanNotSet.Span(s, pos, SpanCondition.NotContained);
                 }
                 else
                 {
-                    spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NOT_CONTAINED, out outCount);
+                    spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NotContained, out outCount);
                     outCount = count = count + outCount;
                 }
                 if (spanLimit == length)
@@ -2677,7 +2676,7 @@ namespace ICU4N.Impl
             {
                 // Span until we find a code point from the set,
                 // or a code point that starts or ends some string.
-                pos = spanNotSet.SpanBack(s, pos, SpanCondition.NOT_CONTAINED);
+                pos = spanNotSet.SpanBack(s, pos, SpanCondition.NotContained);
                 if (pos == 0)
                 {
                     return 0; // Reached the start of the string.
@@ -2726,7 +2725,7 @@ namespace ICU4N.Impl
             {
                 // Span until we find a code point from the set,
                 // or a code point that starts or ends some string.
-                pos = spanNotSet.SpanBack(s, pos, SpanCondition.NOT_CONTAINED);
+                pos = spanNotSet.SpanBack(s, pos, SpanCondition.NotContained);
                 if (pos == 0)
                 {
                     return 0; // Reached the start of the string.
@@ -2775,7 +2774,7 @@ namespace ICU4N.Impl
             {
                 // Span until we find a code point from the set,
                 // or a code point that starts or ends some string.
-                pos = spanNotSet.SpanBack(s, pos, SpanCondition.NOT_CONTAINED);
+                pos = spanNotSet.SpanBack(s, pos, SpanCondition.NotContained);
                 if (pos == 0)
                 {
                     return 0; // Reached the start of the string.
@@ -2824,7 +2823,7 @@ namespace ICU4N.Impl
             {
                 // Span until we find a code point from the set,
                 // or a code point that starts or ends some string.
-                pos = spanNotSet.SpanBack(s, pos, SpanCondition.NOT_CONTAINED);
+                pos = spanNotSet.SpanBack(s, pos, SpanCondition.NotContained);
                 if (pos == 0)
                 {
                     return 0; // Reached the start of the string.
