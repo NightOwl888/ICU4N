@@ -72,14 +72,28 @@ namespace ICU4N.Dev.Test
         {
         }
 
+        // ICU4N: Helper property to set the current culture (since it is done differently in .NET Standard and .NET Framework,
+        // and this centralizes the branching logic in one place).
+        public virtual CultureInfo CurrentCulture
+        {
+            get
+            {
+                return CultureInfo.CurrentCulture;
+            }
+            set
+            {
+#if NETSTANDARD
+                CultureInfo.CurrentCulture = value;
+#else
+                System.Threading.Thread.CurrentThread.CurrentCulture = value;
+#endif
+            }
+        }
+
         [SetUp]
         public virtual void TestInitialize()
         {
-#if NETSTANDARD
-            CultureInfo.CurrentCulture = defaultLocale;
-#else
-            System.Threading.Thread.CurrentThread.CurrentCulture = defaultLocale;
-#endif
+            this.CurrentCulture = defaultLocale;
 
             //TimeZone.setDefault(defaultTimeZone);
 
