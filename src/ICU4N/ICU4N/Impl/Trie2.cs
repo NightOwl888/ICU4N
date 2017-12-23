@@ -54,7 +54,7 @@ namespace ICU4N.Impl
         /// Reads from the current position and leaves the buffer after the end of the trie.
         /// <para/>
         /// The serialized format is identical between ICU4C, ICU4J, and ICU4N, so this function
-        /// will work with serialized <see cref="Trie2s"/> from any.
+        /// will work with serialized <see cref="Trie2"/>s from any.
         /// <para/>
         /// The actual type of the returned <see cref="Trie2"/> will be either <see cref="Trie2_16"/> or <see cref="Trie2_32"/>, depending
         /// on the width of the data.

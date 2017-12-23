@@ -54,7 +54,7 @@ namespace ICU4N.Util
         }
 
         /// <summary>
-        /// Builds a <see cref="BytesTrie"/> for the <see cref="Add(byte[], int, int))"/> appended data.
+        /// Builds a <see cref="BytesTrie"/> for the <see cref="Add(byte[], int, int)"/> appended data.
         /// Once built, no further data can be added until <see cref="Clear()"/> is called.
         ///
         /// <para/>A <see cref="BytesTrie"/> cannot be empty. At least one (byte sequence, value) pair

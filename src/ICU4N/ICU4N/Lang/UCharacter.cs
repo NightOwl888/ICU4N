@@ -4741,7 +4741,7 @@ namespace ICU4N.Lang
         /// <list type="number">
         ///     <item><desription>
         ///         <see cref="UProperty.BLOCK"/> values begin at the
-        ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN.ID"/>.
+        ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN_ID"/>.
         ///     </desription></item>
         ///     <item><desription>
         ///         <see cref="UProperty.CANONICAL_COMBINING_CLASS"/> values are not contiguous
@@ -4835,7 +4835,7 @@ namespace ICU4N.Lang
         /// <list type="number">
         ///     <item><desription>
         ///         <see cref="UProperty.BLOCK"/> values begin at the
-        ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN.ID"/>.
+        ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN_ID"/>.
         ///     </desription></item>
         ///     <item><desription>
         ///         <see cref="UProperty.CANONICAL_COMBINING_CLASS"/> values are not contiguous

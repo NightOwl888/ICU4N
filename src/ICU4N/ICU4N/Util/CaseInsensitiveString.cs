@@ -3,8 +3,8 @@
 namespace ICU4N.Util
 {
     /// <summary>
-    /// A string used as a key in <see cref="Dictionary{TKey, TValue}"/> and other
-    /// collections.  It retains case information, but its <see cref="Equals()"/> and
+    /// A string used as a key in <see cref="System.Collections.Generic.Dictionary{TKey, TValue}"/> and other
+    /// collections.  It retains case information, but its <see cref="Equals(object)"/> and
     /// <see cref="GetHashCode()"/> methods ignore case.
     /// </summary>
     /// <stable>ICU 2.0</stable>
@@ -28,7 +28,7 @@ namespace ICU4N.Util
         }
 
         /// <summary>
-        /// Constructs an <see cref="CaseInsentiveString"/> object from the given string
+        /// Constructs an <see cref="CaseInsensitiveString"/> object from the given string
         /// </summary>
         /// <param name="s">The string to construct this object from.</param>
         /// <stable>ICU 2.0</stable>
