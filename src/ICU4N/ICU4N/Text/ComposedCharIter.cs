@@ -6,7 +6,7 @@ namespace ICU4N.Text
     /// <summary>
     /// This class has been deprecated since ICU 2.2.
     /// One problem is that this class is not designed to return supplementary characters.
-    /// Use the Normalizer2 and UCharacter classes instead.
+    /// Use the <see cref="Normalizer2"/> and <see cref="Lang.UCharacter"/> classes instead.
     /// </summary>
     /// <remarks>
     /// <see cref="ComposedCharIter"/> is an iterator class that returns all
@@ -95,13 +95,16 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns></returns>
         [Obsolete("ICU 2.2")]
-        public bool HasNext() // ICU4N TODO: API - make property
+        public bool HasNext
         {
-            if (nextChar == Normalizer.DONE)
+            get
             {
-                FindNextChar();
+                if (nextChar == Normalizer.DONE)
+                {
+                    FindNextChar();
+                }
+                return nextChar != Normalizer.DONE;
             }
-            return nextChar != Normalizer.DONE;
         }
 
         /// <summary>

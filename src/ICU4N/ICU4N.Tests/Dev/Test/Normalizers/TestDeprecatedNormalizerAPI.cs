@@ -4,8 +4,6 @@ using ICU4N.Support.Text;
 using ICU4N.Text;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Normalizers
@@ -85,7 +83,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             char lastChar = (char)0;
 
-            while (iter.HasNext())
+            while (iter.HasNext)
             {
                 char ch = iter.Next();
 
@@ -135,7 +133,7 @@ namespace ICU4N.Dev.Test.Normalizers
             bool compat = false;
 
             ComposedCharIter iter = new ComposedCharIter(false, options);
-            while (iter.HasNext())
+            while (iter.HasNext)
             {
                 char ch = iter.Next();
 
