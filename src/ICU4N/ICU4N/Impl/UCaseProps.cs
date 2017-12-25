@@ -1095,21 +1095,21 @@ namespace ICU4N.Impl
         /// </summary>
         public static StringBuilder DummyStringBuilder { get { return dummyStringBuilder; } }
 
-        public bool HasBinaryProperty(int c, int which)
+        public bool HasBinaryProperty(int c, UProperty which)
         {
             switch (which)
             {
-                case (int)UProperty.Lowercase:
+                case UProperty.Lowercase:
                     return LOWER == GetType(c);
-                case (int)UProperty.Uppercase:
+                case UProperty.Uppercase:
                     return UPPER == GetType(c);
-                case (int)UProperty.Soft_Dotted:
+                case UProperty.Soft_Dotted:
                     return IsSoftDotted(c);
-                case (int)UProperty.Case_Sensitive:
+                case UProperty.Case_Sensitive:
                     return IsCaseSensitive(c);
-                case (int)UProperty.Cased:
+                case UProperty.Cased:
                     return NONE != GetType(c);
-                case (int)UProperty.Case_Ignorable:
+                case UProperty.Case_Ignorable:
                     return (GetTypeOrIgnorable(c) >> 2) != 0;
                 /*
                  * Note: The following Changes_When_Xyz are defined as testing whether
@@ -1123,17 +1123,17 @@ namespace ICU4N.Impl
                  * and the property starts set needs to be the union of the
                  * start sets for normalization and case mappings.
                  */
-                case (int)UProperty.Changes_When_Lowercased:
+                case UProperty.Changes_When_Lowercased:
                     dummyStringBuilder.Length = 0;
                     return ToFullLower(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
-                case (int)UProperty.Changes_When_Uppercased:
+                case UProperty.Changes_When_Uppercased:
                     dummyStringBuilder.Length = 0;
                     return ToFullUpper(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
-                case (int)UProperty.Changes_When_Titlecased:
+                case UProperty.Changes_When_Titlecased:
                     dummyStringBuilder.Length = 0;
                     return ToFullTitle(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
                 /* case UProperty.CHANGES_WHEN_CASEFOLDED: -- in UCharacterProperty.java */
-                case (int)UProperty.Changes_When_Casemapped:
+                case UProperty.Changes_When_Casemapped:
                     dummyStringBuilder.Length = 0;
                     return
                 ToFullLower(c, null, dummyStringBuilder, LOC_ROOT) >= 0 ||

@@ -230,7 +230,7 @@ namespace ICU4N.Impl
             }
             internal override bool Contains(int c)
             {
-                return UCaseProps.INSTANCE.HasBinaryProperty(c, which);
+                return UCaseProps.INSTANCE.HasBinaryProperty(c, (UProperty)which);
             }
         }
 
