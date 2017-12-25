@@ -98,6 +98,8 @@ namespace ICU4N.Lang
     }
 
 
+    // ICU4N TODO: API - revert back to this enum so we are decoupled from the .NET framework
+    // and we have the correct documentation
     //public enum ECharacterCategory : byte
     //{
     //    /**
@@ -315,310 +317,280 @@ namespace ICU4N.Lang
     //    CharCategoryCount = 30
     //}
 
-    public enum UnicodeDirection
+    /// <summary>
+    /// <see cref="Enum"/> for the CharacterDirection constants. Some constants are
+    /// compatible in name <b>but not in value</b> with those defined in
+    /// <see cref="Support.Text.Character"/>.
+    /// </summary>
+    /// <see cref="UCharacterDirection"/>
+    public enum UnicodeDirection 
     {
-        /**
- * Directional type L
- * @stable ICU 2.1
- */
+        /// <summary>
+        /// Directional type L
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         LeftToRight = 0,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_LEFT_TO_RIGHT}.
-         * Synonym of {@link #LEFT_TO_RIGHT}.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Synonym of <see cref="LeftToRight"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         DirectionalityLeftToRight = LeftToRight,
 
-        /**
-         * Directional type R
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type R
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         RightToLeft = 1,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_RIGHT_TO_LEFT}.
-         * Synonym of {@link #RIGHT_TO_LEFT}.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Synonym of <see cref="RightToLeft"/>
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         DirectionalityRightToLeft = RightToLeft,
 
-        /**
-         * Directional type EN
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type EN
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         EuropeanNumber = 2,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_EUROPEAN_NUMBER}.
-         * Synonym of {@link #EUROPEAN_NUMBER}.
-         * @stable ICU 3.0
-         */
-        DirectionalityEuropeanNumber = (byte)EuropeanNumber,
+        /// <summary>
+        /// Synonym of <see cref="EuropeanNumber"/>
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityEuropeanNumber = EuropeanNumber,
 
-        /**
-         * Directional type ES
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type ES
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         EuropeanNumberSeparator = 3,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_EUROPEAN_NUMBER_SEPARATOR}.
-         * Synonym of {@link #EUROPEAN_NUMBER_SEPARATOR}.
-         * @stable ICU 3.0
-         */
-        DirectionalityEuropeanNumberSeparator = (byte)EuropeanNumberSeparator,
+        /// <summary>
+        /// Synonym of <see cref="EuropeanNumberSeparator"/>
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityEuropeanNumberSeparator = EuropeanNumberSeparator,
 
-        /**
-         * Directional type ET
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type ET
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         EuropeanNumberTerminator = 4,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_EUROPEAN_NUMBER_TERMINATOR}.
-         * Synonym of {@link #EUROPEAN_NUMBER_TERMINATOR}.
-         * @stable ICU 3.0
-         */
-        DirectionalityEuropeanNumberTerminator = (byte)EuropeanNumberTerminator,
+        /// <summary>
+        /// Synonym of <see cref="EuropeanNumberTerminator"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityEuropeanNumberTerminator = EuropeanNumberTerminator,
 
-        /**
-         * Directional type AN
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type AN
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         ArabicNumber = 5,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_ARABIC_NUMBER}.
-         * Synonym of {@link #ARABIC_NUMBER}.
-         * @stable ICU 3.0
-         */
-        DirectionalityArabicNumber = (byte)ArabicNumber,
+        /// <summary>
+        /// Synonym of <see cref="ArabicNumber"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityArabicNumber = ArabicNumber,
 
-        /**
-         * Directional type CS
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type CS
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         CommonNumberSeparator = 6,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_COMMON_NUMBER_SEPARATOR}.
-         * Synonym of {@link #COMMON_NUMBER_SEPARATOR}.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Synonym of <see cref="CommonNumberSeparator"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         DirectionalityCommonNumberSeparator = (byte)CommonNumberSeparator,
 
-        /**
-         * Directional type B
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type B
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         BlockSeparator = 7,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_PARAGRAPH_SEPARATOR}.
-         * Synonym of {@link #BLOCK_SEPARATOR}.
-         * @stable ICU 3.0
-         */
-        DirectionalityParagraphSeparator = (byte)BlockSeparator,
+        /// <summary>
+        /// Synonym of <see cref="BlockSeparator"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityParagraphSeparator = BlockSeparator,
 
-        /**
-         * Directional type S
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type S
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         SegmentSeparator = 8,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_SEGMENT_SEPARATOR}.
-         * Synonym of {@link #SEGMENT_SEPARATOR}.
-         * @stable ICU 3.0
-         */
-        DirectionalitySegmentSeparator = (byte)SegmentSeparator,
+        /// <summary>
+        /// Synonym of <see cref="SegmentSeparator"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalitySegmentSeparator = SegmentSeparator,
 
-        /**
-         * Directional type WS
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type WS
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         WhiteSpaceNeutral = 9,
 
-        /**
-         * Equivalent to {@link java.lang.Character#DIRECTIONALITY_WHITESPACE}.
-         * Synonym of {@link #WHITE_SPACE_NEUTRAL}.
-         * @stable ICU 3.0
-         */
-        DirectionalityWhiteSpace = (byte)WhiteSpaceNeutral,
+        /// <summary>
+        /// Synonym of <see cref="WhiteSpaceNeutral"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityWhiteSpace = WhiteSpaceNeutral,
 
-        /**
-         * Directional type ON
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type ON
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         OtherNeutral = 10,
 
-        /**
-         * Equivalent to {@link java.lang.Character#DIRECTIONALITY_OTHER_NEUTRALS}.
-         * Synonym of {@link #OTHER_NEUTRAL}.
-         * @stable ICU 3.0
-         */
-        DirectionalityOtherNeutrals = (byte)OtherNeutral,
+        /// <summary>
+        /// Synonym of <see cref="OtherNeutral"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityOtherNeutrals = OtherNeutral,
 
-        /**
-         * Directional type LRE
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type LRE
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         LeftToRightEmbedding = 11,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_LEFT_TO_RIGHT_EMBEDDING}.
-         * Synonym of {@link #LEFT_TO_RIGHT_EMBEDDING}.
-         * @stable ICU 3.0
-         */
-        DirectionalityLeftToRightEmbedding = (byte)LeftToRightEmbedding,
+        /// <summary>
+        /// Synonym of <see cref="LeftToRightEmbedding"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityLeftToRightEmbedding = LeftToRightEmbedding,
 
-        /**
-         * Directional type LRO
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type LRO
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         LeftToRightOverride = 12,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_LEFT_TO_RIGHT_OVERRIDE}.
-         * Synonym of {@link #LEFT_TO_RIGHT_OVERRIDE}.
-         * @stable ICU 3.0
-         */
-        DirectionalityLeftToRightOverride = (byte)LeftToRightOverride,
+        /// <summary>
+        /// Synonym of <see cref="LeftToRightOverride"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityLeftToRightOverride = LeftToRightOverride,
 
-        /**
-         * Directional type AL
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type AL
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         RightToLeftArabic = 13,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_RIGHT_TO_LEFT_ARABIC}.
-         * Synonym of {@link #RIGHT_TO_LEFT_ARABIC}.
-         * @stable ICU 3.0
-         */
-        DirectionalityRightToLeftArabic = (byte)RightToLeftArabic,
+        /// <summary>
+        /// Synonym of <see cref="RightToLeftArabic"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        DirectionalityRightToLeftArabic = RightToLeftArabic,
 
-        /**
-         * Directional type RLE
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type RLE
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         RightToLeftEmbedding = 14,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_RIGHT_TO_LEFT_EMBEDDING}.
-         * Synonym of {@link #RIGHT_TO_LEFT_EMBEDDING}.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Synonym of <see cref="RightToLeftEmbedding"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         DirectionalityRightToLeftEmbedding = (byte)RightToLeftEmbedding,
 
-        /**
-         * Directional type RLO
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type RLO
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         RightToLeftOverride = 15,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_RIGHT_TO_LEFT_OVERRIDE}.
-         * Synonym of {@link #RIGHT_TO_LEFT_OVERRIDE}.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Synonym of <see cref="RightToLeftOverride"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         DirectionalityRightToLeftOverride = (byte)RightToLeftOverride,
 
-        /**
-         * Directional type PDF
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type PDF
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         PopDirectionalFormat = 16,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_POP_DIRECTIONAL_FORMAT}.
-         * Synonym of {@link #POP_DIRECTIONAL_FORMAT}.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Synonym of <see cref="PopDirectionalFormat"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         DirectionalityPopDirectionalFormat = (byte)PopDirectionalFormat,
 
-        /**
-         * Directional type NSM
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type NSM
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         DirNonSpacingMark = 17,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_NONSPACING_MARK}.
-         * Synonym of {@link #DIR_NON_SPACING_MARK}.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Synonym of <see cref="DirNonSpacingMark"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         DirectionalityNonSpacingMark = (byte)DirNonSpacingMark,
 
-        /**
-         * Directional type BN
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Directional type BN
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
         BoundaryNeutral = 18,
 
-        /**
-         * Equivalent to {@link
-         * java.lang.Character#DIRECTIONALITY_BOUNDARY_NEUTRAL}.
-         * Synonym of {@link #BOUNDARY_NEUTRAL}.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Synonym of <see cref="BoundaryNeutral"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         DirectionalityBoundaryNeutral = (byte)BoundaryNeutral,
 
-        /**
-         * Directional type FSI
-         * @stable ICU 52
-         */
+        /// <summary>
+        /// Directional type FSI
+        /// </summary>
+        /// <stable>ICU 52</stable>
         FirstStrongIsolate = 19,
 
-        /**
-         * Directional type LRI
-         * @stable ICU 52
-         */
+        /// <summary>
+        /// Directional type LRI
+        /// </summary>
+        /// <stable>ICU 52</stable>
         LeftToRightIsolate = 20,
 
-        /**
-         * Directional type RLI
-         * @stable ICU 52
-         */
+        /// <summary>
+        /// Directional type RLI
+        /// </summary>
+        /// <stable>ICU 52</stable>
         RightToLeftIsolate = 21,
 
-        /**
-         * Directional type PDI
-         * @stable ICU 52
-         */
+        /// <summary>
+        /// Directional type PDI
+        /// </summary>
+        /// <stable>ICU 52</stable>
         PopDirectionalIsolate = 22,
 
-        /**
-         * One more than the highest normal ECharacterDirection value.
-         * The highest value is available via UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS).
-         *
-         * @deprecated 
-         */
+        /// <summary>
+        /// One more than the highest normal <see cref="UnicodeDirection"/> value.
+        /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.BiDi_Class"/>.
+        /// </summary>
+        /// <stable>ICU 52</stable>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         CharDirectionCount = 23,
 
-        /**
-         * Undefined bidirectional character type. Undefined <code>char</code>
-         * values have undefined directionality in the Unicode specification.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Undefined bidirectional character type. Undefined <see cref="char"/>
+        /// values have undefined directionality in the Unicode specification.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         DirectionalityUndefined = -1,
     }
 }
