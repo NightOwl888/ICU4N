@@ -234,21 +234,29 @@ namespace ICU4N.Impl
         //----------------------------------------------------------------
         // Public API
 
-        public static readonly UPropertyAliases INSTANCE;
+        private static readonly UPropertyAliases instance;
+
+        /// <summary>
+        /// public singleton instance
+        /// </summary>
+        public static UPropertyAliases Instance
+        {
+            get { return instance;}
+        }
 
         static UPropertyAliases()
         {
             try
             {
-                INSTANCE = new UPropertyAliases();
+                instance = new UPropertyAliases();
             }
             catch (IOException e)
             {
-                ///CLOVER:OFF
+                //CLOVER:OFF
                 MissingManifestResourceException mre = new MissingManifestResourceException(
                         "Could not construct UPropertyAliases. Missing pnames.icu", e);
                 throw mre;
-                ///CLOVER:ON
+                //CLOVER:ON
             }
         }
 

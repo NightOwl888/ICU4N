@@ -36,7 +36,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyEnum(string propertyAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
@@ -64,7 +64,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyEnum(StringBuilder propertyAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
@@ -92,7 +92,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyEnum(char[] propertyAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
@@ -120,7 +120,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         internal static int GetPropertyEnum(ICharSequence propertyAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
@@ -151,7 +151,7 @@ namespace ICU4N.Lang
         public static bool TryGetPropertyEnum(string propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 return false;
@@ -183,7 +183,7 @@ namespace ICU4N.Lang
         public static bool TryGetPropertyEnum(StringBuilder propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 return false;
@@ -215,7 +215,7 @@ namespace ICU4N.Lang
         public static bool TryGetPropertyEnum(char[] propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 return false;
@@ -247,7 +247,7 @@ namespace ICU4N.Lang
         internal static bool TryGetPropertyEnum(ICharSequence propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 return false;
@@ -292,7 +292,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyValueEnum(UProperty property, string valueAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyValueEnum(property, valueAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
@@ -336,7 +336,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyValueEnum(UProperty property, StringBuilder valueAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyValueEnum(property, valueAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
@@ -380,7 +380,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyValueEnum(UProperty property, char[] valueAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyValueEnum(property, valueAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
@@ -424,7 +424,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         internal static int GetPropertyValueEnum(UProperty property, ICharSequence valueAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyValueEnum(property, valueAlias);
+            int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
             if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
@@ -470,7 +470,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         public static bool TryGetPropertyValueEnum(UProperty property, string valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
+            return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
         /// <summary>
@@ -511,7 +511,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         public static bool TryGetPropertyValueEnum(UProperty property, StringBuilder valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
+            return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
         /// <summary>
@@ -552,7 +552,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         public static bool TryGetPropertyValueEnum(UProperty property, char[] valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
+            return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
         /// <summary>
@@ -593,7 +593,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         internal static bool TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
+            return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 
         /// <summary>

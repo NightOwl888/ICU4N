@@ -365,7 +365,7 @@ namespace ICU4N.Impl
             int c;
             while ((c = iter.NextCaseMapCP()) >= 0)
             {
-                c = UCaseProps.INSTANCE.ToFullLower(c, iter, dest, caseLocale);
+                c = UCaseProps.Instance.ToFullLower(c, iter, dest, caseLocale);
                 AppendResult(c, dest, iter.CPLength, options, edits);
             }
         }
@@ -376,7 +376,7 @@ namespace ICU4N.Impl
             int c;
             while ((c = iter.NextCaseMapCP()) >= 0)
             {
-                c = UCaseProps.INSTANCE.ToFullLower(c, iter, dest, caseLocale);
+                c = UCaseProps.Instance.ToFullLower(c, iter, dest, caseLocale);
                 AppendResult(c, dest, iter.CPLength, options, edits);
             }
         }
@@ -726,7 +726,7 @@ namespace ICU4N.Impl
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
-                    c = UCaseProps.INSTANCE.ToFullUpper(c, iter, dest, caseLocale);
+                    c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
                 }
                 return dest;
@@ -754,7 +754,7 @@ namespace ICU4N.Impl
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
-                    c = UCaseProps.INSTANCE.ToFullUpper(c, iter, dest, caseLocale);
+                    c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
                 }
                 return dest;
@@ -782,7 +782,7 @@ namespace ICU4N.Impl
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
-                    c = UCaseProps.INSTANCE.ToFullUpper(c, iter, dest, caseLocale);
+                    c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
                 }
                 return dest;
@@ -810,7 +810,7 @@ namespace ICU4N.Impl
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
-                    c = UCaseProps.INSTANCE.ToFullUpper(c, iter, dest, caseLocale);
+                    c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
                 }
                 return dest;
@@ -838,7 +838,7 @@ namespace ICU4N.Impl
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
-                    c = UCaseProps.INSTANCE.ToFullUpper(c, iter, dest, caseLocale);
+                    c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
                 }
                 return dest;
@@ -866,7 +866,7 @@ namespace ICU4N.Impl
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
-                    c = UCaseProps.INSTANCE.ToFullUpper(c, iter, dest, caseLocale);
+                    c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
                 }
                 return dest;
@@ -894,7 +894,7 @@ namespace ICU4N.Impl
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
-                    c = UCaseProps.INSTANCE.ToFullUpper(c, iter, dest, caseLocale);
+                    c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
                 }
                 return dest;
@@ -922,7 +922,7 @@ namespace ICU4N.Impl
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
-                    c = UCaseProps.INSTANCE.ToFullUpper(c, iter, dest, caseLocale);
+                    c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
                 }
                 return dest;
@@ -1082,7 +1082,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.INSTANCE.GetType(c) :
+                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1098,7 +1098,7 @@ namespace ICU4N.Impl
                         {
                             int titleLimit = iter.CPLimit;
                             // titlecase c which is from [titleStart..titleLimit[
-                            c = UCaseProps.INSTANCE.ToFullTitle(c, iter, dest, caseLocale);
+                            c = UCaseProps.Instance.ToFullTitle(c, iter, dest, caseLocale);
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
@@ -1217,7 +1217,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.INSTANCE.GetType(c) :
+                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1233,7 +1233,7 @@ namespace ICU4N.Impl
                         {
                             int titleLimit = iter.CPLimit;
                             // titlecase c which is from [titleStart..titleLimit[
-                            c = UCaseProps.INSTANCE.ToFullTitle(c, iter, dest, caseLocale);
+                            c = UCaseProps.Instance.ToFullTitle(c, iter, dest, caseLocale);
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
@@ -1352,7 +1352,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.INSTANCE.GetType(c) :
+                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1368,7 +1368,7 @@ namespace ICU4N.Impl
                         {
                             int titleLimit = iter.CPLimit;
                             // titlecase c which is from [titleStart..titleLimit[
-                            c = UCaseProps.INSTANCE.ToFullTitle(c, iter, dest, caseLocale);
+                            c = UCaseProps.Instance.ToFullTitle(c, iter, dest, caseLocale);
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
@@ -1487,7 +1487,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.INSTANCE.GetType(c) :
+                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1503,7 +1503,7 @@ namespace ICU4N.Impl
                         {
                             int titleLimit = iter.CPLimit;
                             // titlecase c which is from [titleStart..titleLimit[
-                            c = UCaseProps.INSTANCE.ToFullTitle(c, iter, dest, caseLocale);
+                            c = UCaseProps.Instance.ToFullTitle(c, iter, dest, caseLocale);
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
@@ -1622,7 +1622,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.INSTANCE.GetType(c) :
+                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1638,7 +1638,7 @@ namespace ICU4N.Impl
                         {
                             int titleLimit = iter.CPLimit;
                             // titlecase c which is from [titleStart..titleLimit[
-                            c = UCaseProps.INSTANCE.ToFullTitle(c, iter, dest, caseLocale);
+                            c = UCaseProps.Instance.ToFullTitle(c, iter, dest, caseLocale);
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
@@ -1757,7 +1757,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.INSTANCE.GetType(c) :
+                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1773,7 +1773,7 @@ namespace ICU4N.Impl
                         {
                             int titleLimit = iter.CPLimit;
                             // titlecase c which is from [titleStart..titleLimit[
-                            c = UCaseProps.INSTANCE.ToFullTitle(c, iter, dest, caseLocale);
+                            c = UCaseProps.Instance.ToFullTitle(c, iter, dest, caseLocale);
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
@@ -1892,7 +1892,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.INSTANCE.GetType(c) :
+                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1908,7 +1908,7 @@ namespace ICU4N.Impl
                         {
                             int titleLimit = iter.CPLimit;
                             // titlecase c which is from [titleStart..titleLimit[
-                            c = UCaseProps.INSTANCE.ToFullTitle(c, iter, dest, caseLocale);
+                            c = UCaseProps.Instance.ToFullTitle(c, iter, dest, caseLocale);
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
@@ -2027,7 +2027,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.INSTANCE.GetType(c) :
+                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -2043,7 +2043,7 @@ namespace ICU4N.Impl
                         {
                             int titleLimit = iter.CPLimit;
                             // titlecase c which is from [titleStart..titleLimit[
-                            c = UCaseProps.INSTANCE.ToFullTitle(c, iter, dest, caseLocale);
+                            c = UCaseProps.Instance.ToFullTitle(c, iter, dest, caseLocale);
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
@@ -2204,7 +2204,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int cpLength = Character.CharCount(c);
                     i += cpLength;
-                    c = UCaseProps.INSTANCE.ToFullFolding(c, dest, options);
+                    c = UCaseProps.Instance.ToFullFolding(c, dest, options);
                     AppendResult(c, dest, cpLength, options, edits);
                 }
                 return dest;
@@ -2230,7 +2230,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int cpLength = Character.CharCount(c);
                     i += cpLength;
-                    c = UCaseProps.INSTANCE.ToFullFolding(c, dest, options);
+                    c = UCaseProps.Instance.ToFullFolding(c, dest, options);
                     AppendResult(c, dest, cpLength, options, edits);
                 }
                 return dest;
@@ -2256,7 +2256,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int cpLength = Character.CharCount(c);
                     i += cpLength;
-                    c = UCaseProps.INSTANCE.ToFullFolding(c, dest, options);
+                    c = UCaseProps.Instance.ToFullFolding(c, dest, options);
                     AppendResult(c, dest, cpLength, options, edits);
                 }
                 return dest;
@@ -2282,7 +2282,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int cpLength = Character.CharCount(c);
                     i += cpLength;
-                    c = UCaseProps.INSTANCE.ToFullFolding(c, dest, options);
+                    c = UCaseProps.Instance.ToFullFolding(c, dest, options);
                     AppendResult(c, dest, cpLength, options, edits);
                 }
                 return dest;
@@ -2308,7 +2308,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int cpLength = Character.CharCount(c);
                     i += cpLength;
-                    c = UCaseProps.INSTANCE.ToFullFolding(c, dest, options);
+                    c = UCaseProps.Instance.ToFullFolding(c, dest, options);
                     AppendResult(c, dest, cpLength, options, edits);
                 }
                 return dest;
@@ -2334,7 +2334,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int cpLength = Character.CharCount(c);
                     i += cpLength;
-                    c = UCaseProps.INSTANCE.ToFullFolding(c, dest, options);
+                    c = UCaseProps.Instance.ToFullFolding(c, dest, options);
                     AppendResult(c, dest, cpLength, options, edits);
                 }
                 return dest;
@@ -2360,7 +2360,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int cpLength = Character.CharCount(c);
                     i += cpLength;
-                    c = UCaseProps.INSTANCE.ToFullFolding(c, dest, options);
+                    c = UCaseProps.Instance.ToFullFolding(c, dest, options);
                     AppendResult(c, dest, cpLength, options, edits);
                 }
                 return dest;
@@ -2386,7 +2386,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int cpLength = Character.CharCount(c);
                     i += cpLength;
-                    c = UCaseProps.INSTANCE.ToFullFolding(c, dest, options);
+                    c = UCaseProps.Instance.ToFullFolding(c, dest, options);
                     AppendResult(c, dest, cpLength, options, edits);
                 }
                 return dest;
@@ -2405,7 +2405,7 @@ namespace ICU4N.Impl
                 while (i < s.Length)
                 {
                     int c = Character.CodePointAt(s, i);
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // Case-ignorable, continue with the loop.
@@ -2428,7 +2428,7 @@ namespace ICU4N.Impl
                 while (i < s.Length)
                 {
                     int c = Character.CodePointAt(s, i);
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // Case-ignorable, continue with the loop.
@@ -2451,7 +2451,7 @@ namespace ICU4N.Impl
                 while (i < s.Length)
                 {
                     int c = Character.CodePointAt(s, i);
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // Case-ignorable, continue with the loop.
@@ -2474,7 +2474,7 @@ namespace ICU4N.Impl
                 while (i < s.Length)
                 {
                     int c = Character.CodePointAt(s, i);
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // Case-ignorable, continue with the loop.
@@ -2512,7 +2512,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // c is case-ignorable
@@ -2660,7 +2660,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.INSTANCE.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -2688,7 +2688,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // c is case-ignorable
@@ -2836,7 +2836,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.INSTANCE.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -2864,7 +2864,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // c is case-ignorable
@@ -3012,7 +3012,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.INSTANCE.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3040,7 +3040,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // c is case-ignorable
@@ -3188,7 +3188,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.INSTANCE.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3216,7 +3216,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // c is case-ignorable
@@ -3364,7 +3364,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.INSTANCE.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3392,7 +3392,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // c is case-ignorable
@@ -3540,7 +3540,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.INSTANCE.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3568,7 +3568,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // c is case-ignorable
@@ -3716,7 +3716,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.INSTANCE.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3744,7 +3744,7 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.INSTANCE.GetTypeOrIgnorable(c);
+                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
                     if ((type & UCaseProps.IGNORABLE) != 0)
                     {
                         // c is case-ignorable
@@ -3892,7 +3892,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.INSTANCE.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;

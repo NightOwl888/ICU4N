@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace ICU4N.Lang
+namespace ICU4N.Lang 
 {
-    public sealed partial class UCharacter
+    public sealed partial class UCharacter // ICU4N TODO: API Move to root namespace and rename UChar (in .NET the type we are emulating is System.Char).
     {
         // ICU4N specific - copy UNASSIGNED from UCharacterEnums.ECharacterCategory (since we cannot inherit via interface)
         /**
@@ -2377,7 +2377,7 @@ namespace ICU4N.Lang
                 }
 
                 return UnicodeBlock.GetInstance(
-                        UCharacterProperty.INSTANCE.GetInt32PropertyValue(ch, (int)UProperty.Block));
+                        UCharacterProperty.Instance.GetInt32PropertyValue(ch, (int)UProperty.Block));
             }
 
             /**
@@ -3672,7 +3672,7 @@ namespace ICU4N.Lang
          */
         public static int Digit(int ch)
         {
-            return UCharacterProperty.INSTANCE.Digit(ch);
+            return UCharacterProperty.Instance.Digit(ch);
         }
 
         /**
@@ -3691,7 +3691,7 @@ namespace ICU4N.Lang
          */
         public static int GetNumericValue(int ch)
         {
-            return UCharacterProperty.INSTANCE.GetNumericValue(ch);
+            return UCharacterProperty.Instance.GetNumericValue(ch);
         }
 
         /**
@@ -3713,7 +3713,7 @@ namespace ICU4N.Lang
          */
         public static double GetUnicodeNumericValue(int ch)
         {
-            return UCharacterProperty.INSTANCE.GetUnicodeNumericValue(ch);
+            return UCharacterProperty.Instance.GetUnicodeNumericValue(ch);
         }
 
         /**
@@ -3749,7 +3749,7 @@ namespace ICU4N.Lang
          */
         public static UnicodeCategory GetType(int ch)
         {
-            return UnicodeCategoryConvert.FromIcuValue(UCharacterProperty.INSTANCE.GetType(ch));
+            return UnicodeCategoryConvert.FromIcuValue(UCharacterProperty.Instance.GetType(ch));
         }
 
         /**
@@ -4147,7 +4147,7 @@ namespace ICU4N.Lang
          */
         public static int ToLower(int ch)
         {
-            return UCaseProps.INSTANCE.ToLower(ch);
+            return UCaseProps.Instance.ToLower(ch);
         }
 
         /**
@@ -4199,7 +4199,7 @@ namespace ICU4N.Lang
          */
         public static int ToTitleCase(int ch)
         {
-            return UCaseProps.INSTANCE.ToTitle(ch);
+            return UCaseProps.Instance.ToTitle(ch);
         }
 
         /**
@@ -4223,7 +4223,7 @@ namespace ICU4N.Lang
          */
         public static int ToUpper(int ch)
         {
-            return UCaseProps.INSTANCE.ToUpper(ch);
+            return UCaseProps.Instance.ToUpper(ch);
         }
 
         // extra methods not in java.lang.Character --------------------------
@@ -4310,7 +4310,7 @@ namespace ICU4N.Lang
          */
         public static int GetDirection(int ch)
         {
-            return UBiDiProps.INSTANCE.GetClass(ch);
+            return UBiDiProps.Instance.GetClass(ch);
         }
 
         /**
@@ -4324,7 +4324,7 @@ namespace ICU4N.Lang
          */
         public static bool IsMirrored(int ch)
         {
-            return UBiDiProps.INSTANCE.IsMirrored(ch);
+            return UBiDiProps.Instance.IsMirrored(ch);
         }
 
         /**
@@ -4343,7 +4343,7 @@ namespace ICU4N.Lang
          */
         public static int GetMirror(int ch)
         {
-            return UBiDiProps.INSTANCE.GetMirror(ch);
+            return UBiDiProps.Instance.GetMirror(ch);
         }
 
         /**
@@ -4364,7 +4364,7 @@ namespace ICU4N.Lang
          */
         public static int GetBidiPairedBracket(int c)
         {
-            return UBiDiProps.INSTANCE.GetPairedBracket(c);
+            return UBiDiProps.Instance.GetPairedBracket(c);
         }
 
         /**
@@ -4446,7 +4446,7 @@ namespace ICU4N.Lang
          */
         public static VersionInfo UnicodeVersion
         {
-            get { return UCharacterProperty.INSTANCE.UnicodeVersion; }
+            get { return UCharacterProperty.Instance.UnicodeVersion; }
         }
 
         /**
@@ -4667,7 +4667,7 @@ namespace ICU4N.Lang
         public static string GetPropertyName(UProperty property,
                 NameChoice nameChoice)
         {
-            return UPropertyAliases.INSTANCE.GetPropertyName(property, nameChoice);
+            return UPropertyAliases.Instance.GetPropertyName(property, nameChoice);
         }
 
         /// <summary>
@@ -4709,7 +4709,7 @@ namespace ICU4N.Lang
         public static bool TryGetPropertyName(UProperty property,
                 NameChoice nameChoice, out string result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyName(property, nameChoice, out result);
+            return UPropertyAliases.Instance.TryGetPropertyName(property, nameChoice, out result);
         }
 
         // ICU4N specific - GetPropertyEnum(ICharSequence propertyAlias) moved to UCharacterExtension.tt
@@ -4793,7 +4793,7 @@ namespace ICU4N.Lang
                 // because PropertyValueAliases.txt does not contain all of them
                 try
                 {
-                    return UPropertyAliases.INSTANCE.GetPropertyValueName(property, value,
+                    return UPropertyAliases.Instance.GetPropertyValueName(property, value,
                             nameChoice);
                 }
                 catch (ArgumentException e)
@@ -4801,7 +4801,7 @@ namespace ICU4N.Lang
                     return null;
                 }
             }
-            return UPropertyAliases.INSTANCE.GetPropertyValueName(property, value, nameChoice);
+            return UPropertyAliases.Instance.GetPropertyValueName(property, value, nameChoice);
         }
 
         /// <summary>
@@ -4888,13 +4888,13 @@ namespace ICU4N.Lang
             {
                 // this is hard coded for the valid cc
                 // because PropertyValueAliases.txt does not contain all of them
-                if (!UPropertyAliases.INSTANCE.TryGetPropertyValueName(property, value, nameChoice, out result))
+                if (!UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out result))
                 {
                     result = null;
                 }
                 return true;
             }
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueName(property, value, nameChoice, out result);
+            return UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out result);
         }
 
         // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence valueAlias) moved to UCharacterExtension.tt
@@ -4908,7 +4908,7 @@ namespace ICU4N.Lang
         [Obsolete("ICU4N 60.1.0 Use TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias) instead.")]
         internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias)
         {
-            return UPropertyAliases.INSTANCE.GetPropertyValueEnumNoThrow((int)property, valueAlias);
+            return UPropertyAliases.Instance.GetPropertyValueEnumNoThrow((int)property, valueAlias);
         }
 
 
@@ -5320,7 +5320,7 @@ namespace ICU4N.Lang
          */
         public static int FoldCase(int ch, int options)
         {
-            return UCaseProps.INSTANCE.Fold(ch, options);
+            return UCaseProps.Instance.Fold(ch, options);
         }
 
         /**
@@ -5460,7 +5460,7 @@ namespace ICU4N.Lang
             // implements IRangeValueEnumerator
             public void Reset()
             {
-                trieIterator = UCharacterProperty.INSTANCE.Trie.GetEnumerator(MASK_TYPE);
+                trieIterator = UCharacterProperty.Instance.Trie.GetEnumerator(MASK_TYPE);
             }
 
             // implements IRangeValueEnumerator
@@ -5620,7 +5620,7 @@ namespace ICU4N.Lang
             {
                 throw new ArgumentException("Codepoint out of bounds");
             }
-            return UCharacterProperty.INSTANCE.GetAge(ch);
+            return UCharacterProperty.Instance.GetAge(ch);
         }
 
         /**
@@ -5650,7 +5650,7 @@ namespace ICU4N.Lang
          */
         public static bool HasBinaryProperty(int ch, UProperty property)
         {
-            return UCharacterProperty.INSTANCE.HasBinaryProperty(ch, (int)property);
+            return UCharacterProperty.Instance.HasBinaryProperty(ch, (int)property);
         }
 
         /**
@@ -5743,7 +5743,7 @@ namespace ICU4N.Lang
          */
         public static int GetInt32PropertyValue(int ch, UProperty type)
         {
-            return UCharacterProperty.INSTANCE.GetInt32PropertyValue(ch, (int)type);
+            return UCharacterProperty.Instance.GetInt32PropertyValue(ch, (int)type);
         }
         /**
          * {@icu} Returns a string version of the property value.
@@ -5841,7 +5841,7 @@ namespace ICU4N.Lang
          */
         public static int GetIntPropertyMaxValue(UProperty type) // ICU4N TODO: API Rename GetInt32PropertyMaxValue
         {
-            return UCharacterProperty.INSTANCE.GetIntPropertyMaxValue((int)type);
+            return UCharacterProperty.Instance.GetIntPropertyMaxValue((int)type);
         }
 
         /**

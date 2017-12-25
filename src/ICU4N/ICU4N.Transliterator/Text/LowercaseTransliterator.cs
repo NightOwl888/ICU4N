@@ -47,7 +47,7 @@ namespace ICU4N.Text
                 : base(_ID, null)
         {
             locale = loc;
-            csp = UCaseProps.INSTANCE;
+            csp = UCaseProps.Instance;
             iter = new ReplaceableContextIterator();
             result = new StringBuilder();
             caseLocale = UCaseProps.GetCaseLocale(locale);

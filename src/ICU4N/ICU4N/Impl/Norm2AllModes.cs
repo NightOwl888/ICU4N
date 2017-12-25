@@ -783,15 +783,15 @@ namespace ICU4N.Impl
         }
         public static Norm2AllModes GetNFCInstance()
         {
-            return GetInstanceFromSingleton(NFCSingleton.INSTANCE);
+            return GetInstanceFromSingleton(NFCSingleton.Instance);
         }
         public static Norm2AllModes GetNFKCInstance()
         {
-            return GetInstanceFromSingleton(NFKCSingleton.INSTANCE);
+            return GetInstanceFromSingleton(NFKCSingleton.Instance);
         }
         public static Norm2AllModes GetNFKC_CFInstance()
         {
-            return GetInstanceFromSingleton(NFKC_CFSingleton.INSTANCE);
+            return GetInstanceFromSingleton(NFKC_CFSingleton.Instance);
         }
         // For use in properties APIs.
         public static Normalizer2WithImpl GetN2WithImpl(int index)
@@ -812,15 +812,15 @@ namespace ICU4N.Impl
                 Norm2AllModesSingleton singleton;
                 if (name.Equals("nfc", StringComparison.OrdinalIgnoreCase))
                 {
-                    singleton = NFCSingleton.INSTANCE;
+                    singleton = NFCSingleton.Instance;
                 }
                 else if (name.Equals("nfkc", StringComparison.OrdinalIgnoreCase))
                 {
-                    singleton = NFKCSingleton.INSTANCE;
+                    singleton = NFKCSingleton.Instance;
                 }
                 else if (name.Equals("nfkc_cf", StringComparison.OrdinalIgnoreCase))
                 {
-                    singleton = NFKC_CFSingleton.INSTANCE;
+                    singleton = NFKC_CFSingleton.Instance;
                 }
                 else
                 {
@@ -888,15 +888,27 @@ namespace ICU4N.Impl
         }
         internal sealed class NFCSingleton
         {
-            public static readonly Norm2AllModesSingleton INSTANCE = new Norm2AllModesSingleton("nfc");
+            private static readonly Norm2AllModesSingleton instance = new Norm2AllModesSingleton("nfc");
+            public static Norm2AllModesSingleton Instance
+            {
+                get { return instance; }
+            }
         }
         internal sealed class NFKCSingleton
         {
-            public static readonly Norm2AllModesSingleton INSTANCE = new Norm2AllModesSingleton("nfkc");
+            private static readonly Norm2AllModesSingleton instance = new Norm2AllModesSingleton("nfkc");
+            public static Norm2AllModesSingleton Instance
+            {
+                get { return instance; }
+            }
         }
         internal sealed class NFKC_CFSingleton
         {
-            public static readonly Norm2AllModesSingleton INSTANCE = new Norm2AllModesSingleton("nfkc_cf");
+            private static readonly Norm2AllModesSingleton instance = new Norm2AllModesSingleton("nfkc_cf");
+            public static Norm2AllModesSingleton Instance
+            {
+                get { return instance; }
+            }
         }
     }
 }

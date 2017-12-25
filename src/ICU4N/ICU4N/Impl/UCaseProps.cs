@@ -1266,10 +1266,15 @@ namespace ICU4N.Impl
         private static readonly int UNFOLD_ROW_WIDTH = 1;
         private static readonly int UNFOLD_STRING_WIDTH = 2;
 
+        private static readonly UCaseProps instance;
+
         /// <summary>
         /// Public singleton instance.
         /// </summary>
-        public static readonly UCaseProps INSTANCE;
+        public static UCaseProps Instance
+        {
+            get { return instance; }
+        }
 
         // This static initializer block must be placed after
         // other static member initialization
@@ -1277,7 +1282,7 @@ namespace ICU4N.Impl
         {
             try
             {
-                INSTANCE = new UCaseProps();
+                instance = new UCaseProps();
             }
             catch (IOException e)
             {

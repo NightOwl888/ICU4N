@@ -359,12 +359,16 @@ namespace ICU4N.Impl
         {
             return m.TripleShift(MIRROR_INDEX_SHIFT);
         }
-
+        
+        private static readonly UBiDiProps instance;
 
         /// <summary>
         /// public singleton instance
         /// </summary>
-        public static readonly UBiDiProps INSTANCE;
+        public static UBiDiProps Instance
+        {
+            get { return instance; }
+        }
 
         // This static initializer block must be placed after
         // other static member initialization
@@ -372,7 +376,7 @@ namespace ICU4N.Impl
         {
             try
             {
-                INSTANCE = new UBiDiProps();
+                instance = new UBiDiProps();
             }
             catch (IOException e)
             {

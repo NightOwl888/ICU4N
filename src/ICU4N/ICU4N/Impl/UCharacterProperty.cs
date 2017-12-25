@@ -37,11 +37,15 @@ namespace ICU4N.Impl
     {
         // public data members -----------------------------------------------
 
+        private static readonly UCharacterProperty instance;
+
         /// <summary>
         /// Public singleton instance.
         /// </summary>
-        public static readonly UCharacterProperty INSTANCE; // ICU4N TODO: API Make property Instance to wrap this
-
+        public static UCharacterProperty Instance
+        {
+            get { return instance; }
+        }
 
         private Trie2_16 m_trie_;
         /// <summary>
@@ -230,7 +234,7 @@ namespace ICU4N.Impl
             }
             internal override bool Contains(int c)
             {
-                return UCaseProps.INSTANCE.HasBinaryProperty(c, (UProperty)which);
+                return UCaseProps.Instance.HasBinaryProperty(c, (UProperty)which);
             }
         }
 
@@ -276,11 +280,11 @@ namespace ICU4N.Impl
                 new BinaryProperty(this, 1, (1 << ASCII_HEX_DIGIT_PROPERTY_)),
                 new AnonymousBinaryProperty(this, SRC_BIDI, contains: (c) =>
                     {
-                        return UBiDiProps.INSTANCE.IsBidiControl(c);
+                        return UBiDiProps.Instance.IsBidiControl(c);
                     }),
                 new AnonymousBinaryProperty(this, SRC_BIDI, contains: (c) =>
                     {
-                        return UBiDiProps.INSTANCE.IsMirrored(c);
+                        return UBiDiProps.Instance.IsMirrored(c);
                     }),
                 new BinaryProperty(this, 1, (1<<DASH_PROPERTY_)),
                 new BinaryProperty(this, 1, (1<<DEFAULT_IGNORABLE_CODE_POINT_PROPERTY_)),
@@ -305,7 +309,7 @@ namespace ICU4N.Impl
                 new BinaryProperty(this,1, (1<<IDS_TRINARY_OPERATOR_PROPERTY_)),
                 new AnonymousBinaryProperty(this, SRC_BIDI, contains: (c) =>
                     { // UCHAR_JOIN_CONTROL
-                        return UBiDiProps.INSTANCE.IsJoinControl(c);
+                        return UBiDiProps.Instance.IsJoinControl(c);
                     }),
                 new BinaryProperty(this,1, (1<<LOGICAL_ORDER_EXCEPTION_PROPERTY_)),
                 new CaseBinaryProperty(this, (int)UProperty.Lowercase),
@@ -402,7 +406,7 @@ namespace ICU4N.Impl
                         if (c >= 0)
                         {
                             /* single code point */
-                            UCaseProps csp = UCaseProps.INSTANCE;
+                            UCaseProps csp = UCaseProps.Instance;
                             UCaseProps.DummyStringBuilder.Length = 0;
                             return csp.ToFullFolding(c, UCaseProps.DummyStringBuilder,
                                                         UCharacter.FOLD_CASE_DEFAULT) >= 0;
@@ -441,7 +445,7 @@ namespace ICU4N.Impl
             {
                 new BiDiIntProperty(this, getValue: (c) =>
                     {
-                        return UBiDiProps.INSTANCE.GetClass(c);
+                        return UBiDiProps.Instance.GetClass(c);
                     }),
                 new IntProperty(this, 0, BLOCK_MASK_, BLOCK_SHIFT_),
                 new CombiningClassIntProperty(this, SRC_NFC, getValue: (c) =>
@@ -459,11 +463,11 @@ namespace ICU4N.Impl
                     }),
                 new BiDiIntProperty(this, getValue: (c) =>
                     {  // JOINING_GROUP
-                        return UBiDiProps.INSTANCE.GetJoiningGroup(c);
+                        return UBiDiProps.Instance.GetJoiningGroup(c);
                     }),
                 new BiDiIntProperty(this, getValue: (c) =>
                     {  // JOINING_TYPE
-                        return UBiDiProps.INSTANCE.GetJoiningType(c);
+                        return UBiDiProps.Instance.GetJoiningType(c);
                     }),
                 new IntProperty(this, 2, LB_MASK, LB_SHIFT),  // LINE_BREAK
                 new AnonymousIntProperty(this, SRC_CHAR, getValue: (c) =>
@@ -512,7 +516,7 @@ namespace ICU4N.Impl
                 new IntProperty(this, 2, WB_MASK, WB_SHIFT),  // WORD_BREAK
                 new BiDiIntProperty(this, getValue: (c) =>
                     {  // BIDI_PAIRED_BRACKET_TYPE
-                        return UBiDiProps.INSTANCE.GetPairedBracketType(c);
+                        return UBiDiProps.Instance.GetPairedBracketType(c);
                     }),
             };
         }
@@ -644,7 +648,7 @@ namespace ICU4N.Impl
 
             internal override int GetMaxValue(int which)
             {
-                return UBiDiProps.INSTANCE.GetMaxValue(which);
+                return UBiDiProps.Instance.GetMaxValue(which);
             }
         }
 
@@ -713,7 +717,7 @@ namespace ICU4N.Impl
             return 0; // undefined
         }
 
-        public int GetIntPropertyMaxValue(int which)
+        public int GetIntPropertyMaxValue(int which) // ICU4N TODO API - rename GetInt32PropertyMaxValue()
         {
             if (which < (int)UProperty.Int_Start)
             {
@@ -1167,7 +1171,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Script_Extensions data
         /// </summary>
-        public char[] m_scriptExtensions_;
+        public char[] m_scriptExtensions_; // ICU4N TODO: API - make property
 
         // private variables -------------------------------------------------
 
@@ -1278,12 +1282,12 @@ namespace ICU4N.Impl
         /// Integer properties mask and shift values for scripts.
         /// Equivalent to icu4c UPROPS_SHIFT_MASK
         /// </summary>
-        public static readonly int SCRIPT_MASK_ = 0x000000ff;
+        public static readonly int SCRIPT_MASK_ = 0x000000ff; // ICU4N TODO: API - rename according to .NET conventions
 
         /* SCRIPT_X_WITH_COMMON must be the lowest value that involves Script_Extensions. */
-        public static readonly int SCRIPT_X_WITH_COMMON = 0x400000;
-        public static readonly int SCRIPT_X_WITH_INHERITED = 0x800000;
-        public static readonly int SCRIPT_X_WITH_OTHER = 0xc00000;
+        public static readonly int SCRIPT_X_WITH_COMMON = 0x400000; // ICU4N TODO: API - rename according to .NET conventions
+        public static readonly int SCRIPT_X_WITH_INHERITED = 0x800000; // ICU4N TODO: API - rename according to .NET conventions
+        public static readonly int SCRIPT_X_WITH_OTHER = 0xc00000; // ICU4N TODO: API - rename according to .NET conventions
 
         /**
          * Additional properties used in internal trie data
@@ -1638,7 +1642,7 @@ namespace ICU4N.Impl
         {
             try
             {
-                INSTANCE = new UCharacterProperty();
+                instance = new UCharacterProperty();
             }
             catch (IOException e)
             {

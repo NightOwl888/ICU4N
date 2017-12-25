@@ -41,7 +41,7 @@ namespace ICU4N.Text
         public CaseFoldTransliterator()
                 : base(_ID, null)
         {
-            csp = UCaseProps.INSTANCE;
+            csp = UCaseProps.Instance;
             iter = new ReplaceableContextIterator();
             result = new StringBuilder();
         }

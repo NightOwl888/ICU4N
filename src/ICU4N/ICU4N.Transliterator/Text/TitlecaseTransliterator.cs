@@ -46,7 +46,7 @@ namespace ICU4N.Text
             locale = loc;
             // Need to look back 2 characters in the case of "can't"
             MaximumContextLength = 2;
-            csp = UCaseProps.INSTANCE;
+            csp = UCaseProps.Instance;
             iter = new ReplaceableContextIterator();
             result = new StringBuilder();
             caseLocale = UCaseProps.GetCaseLocale(locale);

@@ -3241,18 +3241,18 @@ namespace ICU4N.Text
                     switch (src)
                     {
                         case UCharacterProperty.SRC_CHAR:
-                            UCharacterProperty.INSTANCE.AddPropertyStarts(incl);
+                            UCharacterProperty.Instance.AddPropertyStarts(incl);
                             break;
                         case UCharacterProperty.SRC_PROPSVEC:
-                            UCharacterProperty.INSTANCE.upropsvec_addPropertyStarts(incl);
+                            UCharacterProperty.Instance.upropsvec_addPropertyStarts(incl);
                             break;
                         case UCharacterProperty.SRC_CHAR_AND_PROPSVEC:
-                            UCharacterProperty.INSTANCE.AddPropertyStarts(incl);
-                            UCharacterProperty.INSTANCE.upropsvec_addPropertyStarts(incl);
+                            UCharacterProperty.Instance.AddPropertyStarts(incl);
+                            UCharacterProperty.Instance.upropsvec_addPropertyStarts(incl);
                             break;
                         case UCharacterProperty.SRC_CASE_AND_NORM:
                             Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
-                            UCaseProps.INSTANCE.AddPropertyStarts(incl);
+                            UCaseProps.Instance.AddPropertyStarts(incl);
                             break;
                         case UCharacterProperty.SRC_NFC:
                             Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
@@ -3267,10 +3267,10 @@ namespace ICU4N.Text
                             Norm2AllModes.GetNFCInstance().Impl.AddCanonIterPropertyStarts(incl);
                             break;
                         case UCharacterProperty.SRC_CASE:
-                            UCaseProps.INSTANCE.AddPropertyStarts(incl);
+                            UCaseProps.Instance.AddPropertyStarts(incl);
                             break;
                         case UCharacterProperty.SRC_BIDI:
-                            UBiDiProps.INSTANCE.AddPropertyStarts(incl);
+                            UBiDiProps.Instance.AddPropertyStarts(incl);
                             break;
                         default:
                             throw new InvalidOperationException("UnicodeSet.getInclusions(unknown src " + src + ")");
@@ -3408,7 +3408,7 @@ namespace ICU4N.Text
             }
             else
             {
-                ApplyFilter(new Int32PropertyFilter(prop, value), UCharacterProperty.INSTANCE.GetSource(prop));
+                ApplyFilter(new Int32PropertyFilter(prop, value), UCharacterProperty.Instance.GetSource(prop));
             }
             return this;
         }
@@ -3586,7 +3586,7 @@ namespace ICU4N.Text
                 // valueAlias is empty.  Interpret as General Category, Script,
                 // Binary property, or ANY or ASCII.  Upon success, p and v will
                 // be set.
-                UPropertyAliases pnames = UPropertyAliases.INSTANCE;
+                UPropertyAliases pnames = UPropertyAliases.Instance;
                 p = UProperty.General_Category_Mask;
                 v = (UProperty)pnames.GetPropertyValueEnum(p, propertyAlias);
 #pragma warning disable 612, 618
@@ -3947,7 +3947,7 @@ namespace ICU4N.Text
             CheckFrozen();
             if ((attribute & (CASE | ADD_CASE_MAPPINGS)) != 0)
             {
-                UCaseProps csp = UCaseProps.INSTANCE;
+                UCaseProps csp = UCaseProps.Instance;
                 UnicodeSet foldSet = new UnicodeSet(this);
                 ULocale root = ULocale.ROOT;
 

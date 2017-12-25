@@ -1431,7 +1431,7 @@ namespace ICU4N.Lang
         {
             if (codepoint >= UCharacter.MIN_VALUE & codepoint <= UCharacter.MAX_VALUE)
             {
-                int scriptX = UCharacterProperty.INSTANCE.GetAdditional(codepoint, 0) & UCharacterProperty.SCRIPT_X_MASK;
+                int scriptX = UCharacterProperty.Instance.GetAdditional(codepoint, 0) & UCharacterProperty.SCRIPT_X_MASK;
                 if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)
                 {
                     return scriptX;
@@ -1446,7 +1446,7 @@ namespace ICU4N.Lang
                 }
                 else
                 {
-                    return UCharacterProperty.INSTANCE.m_scriptExtensions_[scriptX & UCharacterProperty.SCRIPT_MASK_];
+                    return UCharacterProperty.Instance.m_scriptExtensions_[scriptX & UCharacterProperty.SCRIPT_MASK_];
                 }
             }
             else
@@ -1469,13 +1469,13 @@ namespace ICU4N.Lang
         /// <stable>ICU 49</stable>
         public static bool HasScript(int c, int sc)
         {
-            int scriptX = UCharacterProperty.INSTANCE.GetAdditional(c, 0) & UCharacterProperty.SCRIPT_X_MASK;
+            int scriptX = UCharacterProperty.Instance.GetAdditional(c, 0) & UCharacterProperty.SCRIPT_X_MASK;
             if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)
             {
                 return sc == scriptX;
             }
 
-            char[] scriptExtensions = UCharacterProperty.INSTANCE.m_scriptExtensions_;
+            char[] scriptExtensions = UCharacterProperty.Instance.m_scriptExtensions_;
             int scx = scriptX & UCharacterProperty.SCRIPT_MASK_;  // index into scriptExtensions
             if (scriptX >= UCharacterProperty.SCRIPT_X_WITH_OTHER)
             {
@@ -1530,14 +1530,14 @@ namespace ICU4N.Lang
         public static int GetScriptExtensions(int c, BitSet set) // ICU4N TODO: API - can we put these in BitArray?
         {
             set.Clear();
-            int scriptX = UCharacterProperty.INSTANCE.GetAdditional(c, 0) & UCharacterProperty.SCRIPT_X_MASK;
+            int scriptX = UCharacterProperty.Instance.GetAdditional(c, 0) & UCharacterProperty.SCRIPT_X_MASK;
             if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)
             {
                 set.Set(scriptX);
                 return scriptX;
             }
 
-            char[] scriptExtensions = UCharacterProperty.INSTANCE.m_scriptExtensions_;
+            char[] scriptExtensions = UCharacterProperty.Instance.m_scriptExtensions_;
             int scx = scriptX & UCharacterProperty.SCRIPT_MASK_;  // index into scriptExtensions
             if (scriptX >= UCharacterProperty.SCRIPT_X_WITH_OTHER)
             {

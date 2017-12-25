@@ -242,10 +242,10 @@ namespace ICU4N.Impl
             // Letter, number, symbol,
             // or a private use code point because those are typically used as letters or numbers.
             // Consider modifier letters only if they are cased.
-            int gc = UCharacterProperty.INSTANCE.GetType(c);
+            int gc = UCharacterProperty.Instance.GetType(c);
             return ((1 << gc) & LNS) != 0 ||
                     (gc == UnicodeCategory.ModifierLetter.ToIcuValue() &&
-                        UCaseProps.INSTANCE.GetType(c) != UCaseProps.NONE);
+                        UCaseProps.Instance.GetType(c) != UCaseProps.NONE);
         }
 
         public static int AddTitleIteratorOption(int options, int newOption)

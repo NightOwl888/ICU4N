@@ -323,7 +323,7 @@ namespace ICU4N.Text
 
             if (checkBiDi)
             {
-                bdp = UBiDiProps.INSTANCE;
+                bdp = UBiDiProps.Instance;
             }
         }
 
