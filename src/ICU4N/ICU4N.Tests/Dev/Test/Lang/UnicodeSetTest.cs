@@ -1395,7 +1395,7 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestScriptNames()
         {
-            for (int i = 0; i < UScript.CODE_LIMIT; ++i)
+            for (int i = 0; i < UScript.CodeLimit; ++i)
             {
                 for (int j = 0; j < 2; ++j)
                 {

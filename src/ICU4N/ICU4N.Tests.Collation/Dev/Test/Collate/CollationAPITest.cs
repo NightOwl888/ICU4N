@@ -951,7 +951,7 @@ namespace ICU4N.Dev.Test.Collate
             // (base class).setMaxVariable() may or may not be implemented.
             try
             {
-                col1.MaxVariable = (ReorderCode.Currency);
+                col1.MaxVariable = (ReorderCodes.Currency);
             }
             catch (NotSupportedException expected)
             {
@@ -1167,16 +1167,16 @@ namespace ICU4N.Dev.Test.Collate
 
             try
             {
-                coll.MaxVariable = (ReorderCode.Others);
+                coll.MaxVariable = (ReorderCodes.Others);
                 Errln("setMaxVariable(others) did not detect illegal argument");
             }
             catch (ArgumentException expected)
             {
             }
 
-            coll.MaxVariable = (ReorderCode.Currency);
+            coll.MaxVariable = (ReorderCodes.Currency);
 
-            if (ReorderCode.Currency != coll.MaxVariable)
+            if (ReorderCodes.Currency != coll.MaxVariable)
             {
                 Errln("setMaxVariable(currency) != following getMaxVariable()");
             }

@@ -235,13 +235,13 @@ namespace ICU4N.Impl.Coll
                 long beforeDigitStart = 0;
                 long digitStart = 0;
                 long afterDigitStart = 0;
-                for (int group = (int)ReorderCode.First;
-                        group < (int)ReorderCode.First + CollationData.MAX_NUM_SPECIAL_REORDER_CODES;
+                for (int group = ReorderCodes.First;
+                        group < ReorderCodes.First + CollationData.MAX_NUM_SPECIAL_REORDER_CODES;
                         ++group)
                 {
                     long start = data.GetFirstPrimaryForGroup(group);
                     start = settings.Reorder(start);
-                    if (group == (int)ReorderCode.Digit)
+                    if (group == ReorderCodes.Digit)
                     {
                         beforeDigitStart = prevStart;
                         digitStart = start;
@@ -261,7 +261,7 @@ namespace ICU4N.Impl.Coll
                         prevStart = start;
                     }
                 }
-                long latinStart = data.GetFirstPrimaryForGroup(UScript.LATIN);
+                long latinStart = data.GetFirstPrimaryForGroup(UScript.Latin);
                 latinStart = settings.Reorder(latinStart);
                 if (latinStart < prevStart)
                 {

@@ -26,8 +26,8 @@ namespace ICU4N.Impl.Coll
         // Note: The ucadata.icu loader could discover the reserved ranges by setting an array
         // parallel with the ranges, and resetting ranges that are indexed.
         // The reordering builder code could clone the resulting template array.
-        internal static readonly int REORDER_RESERVED_BEFORE_LATIN = (int)ReorderCode.First + 14;
-        internal static readonly int REORDER_RESERVED_AFTER_LATIN = (int)ReorderCode.First + 15;
+        internal static readonly int REORDER_RESERVED_BEFORE_LATIN = ReorderCodes.First + 14;
+        internal static readonly int REORDER_RESERVED_AFTER_LATIN = ReorderCodes.First + 15;
 
         internal static readonly int MAX_NUM_SPECIAL_REORDER_CODES = 8;
 
@@ -267,7 +267,7 @@ namespace ICU4N.Impl.Coll
             {
                 if (scriptsIndex[numScripts + i] == index)
                 {
-                    return (int)ReorderCode.First + i;
+                    return ReorderCodes.First + i;
                 }
             }
             return -1;
@@ -283,13 +283,13 @@ namespace ICU4N.Impl.Coll
             {
                 return scriptsIndex[script];
             }
-            else if (script < (int)ReorderCode.First)
+            else if (script < ReorderCodes.First)
             {
                 return 0;
             }
             else
             {
-                script -= (int)ReorderCode.First;
+                script -= ReorderCodes.First;
                 if (script < MAX_NUM_SPECIAL_REORDER_CODES)
                 {
                     return scriptsIndex[numScripts + script];
@@ -305,7 +305,7 @@ namespace ICU4N.Impl.Coll
         {
             int index = GetScriptIndex(script);
             if (index == 0) { return EMPTY_INT_ARRAY; }
-            if (script >= (int)ReorderCode.First)
+            if (script >= ReorderCodes.First)
             {
                 // Special groups have no aliases.
                 return new int[] { script };
@@ -357,7 +357,7 @@ namespace ICU4N.Impl.Coll
         {
             ranges.Clear();
             int length = reorder.Length;
-            if (length == 0 || (length == 1 && reorder[0] == UScript.UNKNOWN))
+            if (length == 0 || (length == 1 && reorder[0] == UScript.Unknown))
             {
                 return;
             }
@@ -368,13 +368,13 @@ namespace ICU4N.Impl.Coll
             {
                 // Set "don't care" values for reserved ranges.
                 int index = scriptsIndex[
-                        numScripts + REORDER_RESERVED_BEFORE_LATIN - (int)ReorderCode.First];
+                        numScripts + REORDER_RESERVED_BEFORE_LATIN - ReorderCodes.First];
                 if (index != 0)
                 {
                     table[index] = 0xff;
                 }
                 index = scriptsIndex[
-                        numScripts + REORDER_RESERVED_AFTER_LATIN - (int)ReorderCode.First];
+                        numScripts + REORDER_RESERVED_AFTER_LATIN - ReorderCodes.First];
                 if (index != 0)
                 {
                     table[index] = 0xff;
@@ -395,7 +395,7 @@ namespace ICU4N.Impl.Coll
             int specials = 0;
             for (int i = 0; i < length; ++i)
             {
-                int reorderCode = reorder[i] - (int)ReorderCode.First;
+                int reorderCode = reorder[i] - ReorderCodes.First;
                 if (0 <= reorderCode && reorderCode < MAX_NUM_SPECIAL_REORDER_CODES)
                 {
                     specials |= 1 << reorderCode;
@@ -415,9 +415,9 @@ namespace ICU4N.Impl.Coll
             // Skip the reserved range before Latin if Latin is the first script,
             // so that we do not move it unnecessarily.
             int skippedReserved = 0;
-            if (specials == 0 && reorder[0] == UScript.LATIN && !latinMustMove)
+            if (specials == 0 && reorder[0] == UScript.Latin && !latinMustMove)
             {
-                int index = scriptsIndex[UScript.LATIN];
+                int index = scriptsIndex[UScript.Latin];
                 Debug.Assert(index != 0);
                 int start = scriptStarts[index];
                 Debug.Assert(lowStart <= start);
@@ -430,19 +430,19 @@ namespace ICU4N.Impl.Coll
             for (int i = 0; i < length;)
             {
                 int script = reorder[i++];
-                if (script == UScript.UNKNOWN)
+                if (script == UScript.Unknown)
                 {
                     // Put the remaining scripts at the top.
                     hasReorderToEnd = true;
                     while (i < length)
                     {
                         script = reorder[--length];
-                        if (script == UScript.UNKNOWN)
+                        if (script == UScript.Unknown)
                         {  // Must occur at most once.
                             throw new ArgumentException(
                                     "setReorderCodes(): duplicate UScript.UNKNOWN");
                         }
-                        if (script == (int)ReorderCode.Default)
+                        if (script == ReorderCodes.Default)
                         {
                             throw new ArgumentException(
                                     "setReorderCodes(): UScript.DEFAULT together with other scripts");
@@ -459,7 +459,7 @@ namespace ICU4N.Impl.Coll
                     }
                     break;
                 }
-                if (script == (int)ReorderCode.Default)
+                if (script == ReorderCodes.Default)
                 {
                     // The default code must be the only one in the list, and that is handled by the caller.
                     // Otherwise it must not be used.
@@ -562,7 +562,7 @@ namespace ICU4N.Impl.Coll
         private static string ScriptCodeString(int script)
         {
             // Do not use the script name here: We do not want to depend on that data.
-            return (script < (int)ReorderCode.First) ?
+            return (script < ReorderCodes.First) ?
                     script.ToString(CultureInfo.InvariantCulture) : "0x" + script.ToHexString();
         }
 
@@ -636,7 +636,7 @@ namespace ICU4N.Impl.Coll
 
         /// <summary>
         /// The length of scriptsIndex is <see cref="numScripts"/>+16.
-        /// It maps from a UScriptCode or a special reorder code to an entry in <see cref="scriptStarts"/>.
+        /// It maps from a Script code or a special reorder code to an entry in <see cref="scriptStarts"/>.
         /// 16 special reorder codes (not all used) are mapped starting at <see cref="numScripts"/>.
         /// Up to <see cref="MAX_NUM_SPECIAL_REORDER_CODES"/> are codes for special groups like space/punct/digit.
         /// There are special codes at the end for reorder-reserved primary ranges.

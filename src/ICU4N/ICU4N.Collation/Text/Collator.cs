@@ -15,6 +15,17 @@ using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: De-nest?
 
 namespace ICU4N.Text
 {
+    /// <summary>Use this to set the strength of a Collator object.
+	///  This is also used to determine the strength of sort keys
+	///  generated from Collator objects
+	/// The usual strength for most locales (except Japanese) is tertiary.
+	/// Quaternary strength is useful when combined with shifted setting
+	/// for alternate handling attribute and for JIS x 4061 collation,
+	/// when it is used to distinguish between Katakana and Hiragana
+	/// (this is achieved by setting the <see cref="RuleBasedCollator.IsHiraganaQuaternary"/> to true.
+	/// Otherwise, quaternary level is affected only by the number of
+	/// non ignorable code points in the string.
+	/// </summary>
     public enum CollationStrength
     {
         /// <summary>
@@ -63,31 +74,73 @@ namespace ICU4N.Text
         CanonicalDecomposition = 17
     }
 
-    // ICU4N TODO: API - rename back to ReorderCodes
-    public enum ReorderCode // ICU4N TODO: API - does it make sense to add the related codes from UScript here and possibly make this into a [Flags] enum?
+    /// <summary>
+    ///  Reordering codes for non-script groups that can be reordered under collation.
+    /// </summary>
+    /// <see cref="Collator.GetReorderCodes()"/>
+    /// <see cref="Collator.SetReorderCodes(int[])"/>
+    /// <see cref="Collator.GetEquivalentReorderCodes(int)"/>
+    /// <stable>ICU 4.8</stable>
+    public static class ReorderCodes
     {
-        Default = 0, // ICU4N specific - default value for value types in .NET is 0
-        None = UScript.UNKNOWN,
-        Others = UScript.UNKNOWN,
-        Space = 0x1000,
-        First = Space,
-        Punctuation = 0x1001,
-        Symbol = 0x1002,
-        Currency = 0x1003,
-        Digit = 0x1004,
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        Limit = 0x1005,
+        /// <summary>
+        /// A special reordering code that is used to specify the default reordering codes for a locale.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public const int Default = -1;
+        /// <summary>
+        /// A special reordering code that is used to specify no reordering codes.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public const int None = UScript.Unknown;
+        /// <summary>
+        /// A special reordering code that is used to specify all other codes used for reordering except
+        /// for the codes listed as ReorderingCodes and those listed explicitly in a reordering.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public const int Others = UScript.Unknown;
+        /// <summary>
+        /// Characters with the space property.
+        /// This is equivalent to the rule value "space".
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public const int Space = 0x1000;
+        /// <summary>
+        /// The first entry in the enumeration of reordering groups. This is intended for use in
+        /// range checking and enumeration of the reorder codes.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public const int First = Space;
+        /// <summary>
+        /// Characters with the punctuation property.
+        /// This is equivalent to the rule value "punct".
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public const int Punctuation = 0x1001;
+        /// <summary>
+        /// Characters with the symbol property.
+        /// This is equivalent to the rule value "symbol".
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public const int Symbol = 0x1002;
+        /// <summary>
+        /// Characters with the currency property.
+        /// This is equivalent to the rule value "currency".
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public const int Currency = 0x1003;
+        /// <summary>
+        /// Characters with the digit property.
+        /// This is equivalent to the rule value "digit".
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public const int Digit = 0x1004;
+        /// <summary>
+        /// One more than the highest normal <see cref="ReorderCodes"/> value.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time; see ICU ticket #12420.")]
+        public const int Limit = 0x1005;
     }
-
-    //public static class ReorderCodesExtensions
-    //{
-    //    private static readonly int limit = Enum.GetNames(typeof(ReorderCodes)).Length;
-
-    //    public static int Limit(this ReorderCodes reorderCodes)
-    //    {
-    //        return limit;
-    //    }
-    //}
 
 
     public abstract class Collator : IComparer<object>, IFreezable<Collator>
@@ -194,75 +247,7 @@ namespace ICU4N.Text
          */
         public const NormalizationMode CANONICAL_DECOMPOSITION = NormalizationMode.CanonicalDecomposition;
 
-        ///**
-        // * Reordering codes for non-script groups that can be reordered under collation.
-        // *
-        // * @see #getReorderCodes
-        // * @see #setReorderCodes
-        // * @see #getEquivalentReorderCodes
-        // * @stable ICU 4.8
-        // */
-        //public static class ReorderCodes
-        //{
-        //    /**
-        //     * A special reordering code that is used to specify the default reordering codes for a locale.
-        //     * @stable ICU 4.8
-        //     */
-        //    public const int DEFAULT = -1;  // == UScript.INVALID_CODE
-        //                                           /**
-        //                                            * A special reordering code that is used to specify no reordering codes.
-        //                                            * @stable ICU 4.8
-        //                                            */
-        //    public const int NONE = UScript.UNKNOWN;
-        //    /**
-        //     * A special reordering code that is used to specify all other codes used for reordering except
-        //     * for the codes listed as ReorderingCodes and those listed explicitly in a reordering.
-        //     * @stable ICU 4.8
-        //     */
-        //    public const int OTHERS = UScript.UNKNOWN;
-        //    /**
-        //     * Characters with the space property.
-        //     * This is equivalent to the rule value "space".
-        //     * @stable ICU 4.8
-        //     */
-        //    public const int SPACE = 0x1000;
-        //    /**
-        //     * The first entry in the enumeration of reordering groups. This is intended for use in
-        //     * range checking and enumeration of the reorder codes.
-        //     * @stable ICU 4.8
-        //     */
-        //    public const int FIRST = SPACE;
-        //    /**
-        //     * Characters with the punctuation property.
-        //     * This is equivalent to the rule value "punct".
-        //     * @stable ICU 4.8
-        //     */
-        //    public const int PUNCTUATION = 0x1001;
-        //    /**
-        //     * Characters with the symbol property.
-        //     * This is equivalent to the rule value "symbol".
-        //     * @stable ICU 4.8
-        //     */
-        //    public const int SYMBOL = 0x1002;
-        //    /**
-        //     * Characters with the currency property.
-        //     * This is equivalent to the rule value "currency".
-        //     * @stable ICU 4.8
-        //     */
-        //    public const int CURRENCY = 0x1003;
-        //    /**
-        //     * Characters with the digit property.
-        //     * This is equivalent to the rule value "digit".
-        //     * @stable ICU 4.8
-        //     */
-        //    public const int DIGIT = 0x1004;
-        //    /**
-        //     * One more than the highest normal ReorderCodes value.
-        //     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-        //     */
-        //    [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        //    public const int LIMIT = 0x1005;
-        //}
+        // ICU4N specific - De-nested ReorderCodes class
 
         // public methods --------------------------------------------------------
 
@@ -679,7 +664,7 @@ namespace ICU4N.Text
 
         private static int GetReorderCode(string keyword, string s)
         {
-            return (int)ReorderCode.First +
+            return ReorderCodes.First +
                     GetInt32Value(keyword, s, "space", "punct", "symbol", "currency", "digit");
             // Not supporting "others" = UCOL_REORDER_CODE_OTHERS
             // as a synonym for Zzzz = USCRIPT_UNKNOWN for now:
@@ -805,7 +790,7 @@ namespace ICU4N.Text
             value = loc.GetKeywordValue("colReorder");
             if (value != null)
             {
-                int[] codes = new int[UScript.CODE_LIMIT + ReorderCode.Limit - ReorderCode.First];
+                int[] codes = new int[UScript.CodeLimit + ReorderCodes.Limit - ReorderCodes.First];
                 int codesLength = 0;
                 int scriptNameStart = 0;
                 for (; ; )
@@ -843,7 +828,7 @@ namespace ICU4N.Text
             value = loc.GetKeywordValue("kv");
             if (value != null)
             {
-                coll.MaxVariable = (ReorderCode)GetReorderCode("kv", value);
+                coll.MaxVariable = GetReorderCode("kv", value);
             }
         }
 
@@ -1434,9 +1419,9 @@ namespace ICU4N.Text
         //    return Collator.ReorderCodes.PUNCTUATION;
         //}
 
-        public virtual ReorderCode MaxVariable
+        public virtual int MaxVariable
         {
-            get { return ReorderCode.Punctuation; }
+            get { return ReorderCodes.Punctuation; }
             set { throw new NotSupportedException("Needs to be implemented by the subclass."); }
         }
 

@@ -708,7 +708,7 @@ namespace ICU4N.Impl.Coll
                     {
                         settings.SetMaxVariable(value, 0);
                         settings.VariableTop = baseData.GetLastPrimaryForGroup(
-                            (int)ReorderCode.First + value);
+                            ReorderCodes.First + value);
                         Debug.Assert(settings.VariableTop != 0);
                         ruleIndex = j;
                         return;
@@ -919,7 +919,7 @@ namespace ICU4N.Impl.Coll
             {
                 if (word.Equals(gSpecialReorderCodes[i], StringComparison.OrdinalIgnoreCase))
                 {
-                    return (int)ReorderCode.First + i;
+                    return ReorderCodes.First + i;
                 }
             }
             try
@@ -936,7 +936,7 @@ namespace ICU4N.Impl.Coll
             }
             if (word.Equals("others", StringComparison.OrdinalIgnoreCase))
             {
-                return (int)ReorderCode.Others;  // same as Zzzz = USCRIPT_UNKNOWN 
+                return ReorderCodes.Others;  // same as Zzzz = USCRIPT_UNKNOWN 
             }
             return -1;
         }

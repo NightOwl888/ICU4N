@@ -109,7 +109,7 @@ namespace ICU4N.Text
                     isSpecLocale = false;
                     res = null;
                     // If 'top' is not a script name, try a locale lookup
-                    if (script == UScript.INVALID_CODE)
+                    if (script == UScript.InvalidCode)
                     {
                         // ICU4N specific - CultureInfo doesn't support IANA culture names, so we use ULocale instead.
                         ULocale toploc = new ULocale(top);

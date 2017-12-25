@@ -239,8 +239,8 @@ namespace ICU4N.Dev.Test.Collate
                     Errln("Characters not in order: " + last + " !< " + index);
                 }
                 int script = GetFirstRealScript(index);
-                if (script == UScript.UNKNOWN) { continue; }
-                UnicodeSet s = new UnicodeSet().ApplyIntPropertyValue((int)UProperty.SCRIPT, script);
+                if (script == UScript.Unknown) { continue; }
+                UnicodeSet s = new UnicodeSet().ApplyIntPropertyValue((int)UProperty.SCRIPT, (int)script);
                 if (missingScripts.ContainsNone(s))
                 {
                     Errln("2nd character in script: " + index + "\t" + new UnicodeSet(missingScripts).RetainAll(s).ToPattern(false));
@@ -274,13 +274,13 @@ namespace ICU4N.Dev.Test.Collate
             {
                 int c = Character.CodePointAt(s, i);
                 int script = UScript.GetScript(c);
-                if (script != UScript.UNKNOWN && script != UScript.INHERITED && script != UScript.COMMON)
+                if (script != UScript.Unknown && script != UScript.Inherited && script != UScript.Common)
                 {
                     return script;
                 }
                 i += Character.CharCount(c);
             }
-            return UScript.UNKNOWN;
+            return UScript.Unknown;
         }
 
         [Test]
@@ -768,14 +768,14 @@ namespace ICU4N.Dev.Test.Collate
          */
         private static ICollection<String> FirstStringsInScript(RuleBasedCollator ruleBasedCollator)
         {
-            String[] results = new String[UScript.CODE_LIMIT];
+            String[] results = new String[UScript.CodeLimit];
             foreach (String current in TO_TRY)
             {
                 if (ruleBasedCollator.Compare(current, "a") < 0)
                 { // we only want "real" script characters, not symbols.
                     continue;
                 }
-                int script = UScript.GetScript(current.CodePointAt(0));
+                int script = (int)UScript.GetScript(current.CodePointAt(0));
                 if (results[script] == null)
                 {
                     results[script] = current;
@@ -801,8 +801,8 @@ namespace ICU4N.Dev.Test.Collate
                         {
                             continue;
                         }
-                        int script = GetFirstRealScript(current);
-                        if (script == UScript.UNKNOWN && !IsUnassignedBoundary(current)) { continue; }
+                        int script = (int)GetFirstRealScript(current);
+                        if (script == UScript.Unknown && !IsUnassignedBoundary(current)) { continue; }
                         if (results[script] == null)
                         {
                             results[script] = current;
@@ -837,7 +837,7 @@ namespace ICU4N.Dev.Test.Collate
             // The root collator provides a script-first-primary boundary contraction
             // for the unassigned-implicit range.
             return s[0] == 0xfdd1 &&
-                    UScript.GetScript(Character.CodePointAt(s, 1)) == UScript.UNKNOWN;
+                    UScript.GetScript(Character.CodePointAt(s, 1)) == UScript.Unknown;
         }
 
         [Test]
@@ -1007,7 +1007,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestHaniFirst()
         {
             RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(ULocale.ROOT);
-            coll.SetReorderCodes(UScript.HAN);
+            coll.SetReorderCodes(UScript.Han);
             AlphabeticIndex<object> index = new AlphabeticIndex<object>(coll);
             assertEquals("getBucketCount()", 1, index.BucketCount);   // ... (underflow only)
             index.AddLabels(new CultureInfo("en") /* Locale.ENGLISH */);
@@ -1032,7 +1032,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestPinyinFirst()
         {
             RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(ULocale.CHINESE);
-            coll.SetReorderCodes(UScript.HAN);
+            coll.SetReorderCodes(UScript.Han);
             AlphabeticIndex<object> index = new AlphabeticIndex<object>(coll);
             assertEquals("getBucketCount()", 28, index.BucketCount);   // ... A-Z ...
             index.AddLabels(new CultureInfo("zh") /* Locale.CHINESE */);

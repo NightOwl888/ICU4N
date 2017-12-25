@@ -709,11 +709,11 @@ namespace ICU4N.Text
 
                 // The global list doesn't have an existing engine, build one.
                 int script = UCharacter.GetInt32PropertyValue(c, UProperty.SCRIPT);
-                if (script == UScript.KATAKANA || script == UScript.HIRAGANA)
+                if (script == UScript.Katakana || script == UScript.Hiragana)
                 {
                     // Katakana, Hiragana and Han are handled by the same dictionary engine.
                     // Fold them together for mapping from script -> engine.
-                    script = UScript.HAN;
+                    script = UScript.Han;
                 }
 
                 ILanguageBreakEngine eng;
@@ -721,19 +721,19 @@ namespace ICU4N.Text
                 {
                     switch (script)
                     {
-                        case UScript.THAI:
+                        case UScript.Thai:
                             eng = new ThaiBreakEngine();
                             break;
-                        case UScript.LAO:
+                        case UScript.Lao:
                             eng = new LaoBreakEngine();
                             break;
-                        case UScript.MYANMAR:
+                        case UScript.Myanmar:
                             eng = new BurmeseBreakEngine();
                             break;
-                        case UScript.KHMER:
+                        case UScript.Khmer:
                             eng = new KhmerBreakEngine();
                             break;
-                        case UScript.HAN:
+                        case UScript.Han:
                             if (BreakType == KIND_WORD)
                             {
                                 eng = new CjkBreakEngine(false);
@@ -744,7 +744,7 @@ namespace ICU4N.Text
                                 eng = gUnhandledBreakEngine;
                             }
                             break;
-                        case UScript.HANGUL:
+                        case UScript.Hangul:
                             if (BreakType == KIND_WORD)
                             {
                                 eng = new CjkBreakEngine(true);

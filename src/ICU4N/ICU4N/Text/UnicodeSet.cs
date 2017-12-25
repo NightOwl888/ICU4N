@@ -3395,7 +3395,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>A reference to this set.</returns>
         /// <stable>ICU 2.4</stable>
-        public virtual UnicodeSet ApplyIntPropertyValue(int prop, int value) // ICU4N TODO: API Rename ApplyInt32PropertyValue
+        public virtual UnicodeSet ApplyIntPropertyValue(int prop, int value) // ICU4N TODO: API Rename ApplyInt32PropertyValue, Change prop to UProperty
         {
             CheckFrozen();
             if (prop == (int)UProperty.GENERAL_CATEGORY_MASK)

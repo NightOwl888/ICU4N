@@ -2115,7 +2115,7 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestMaxVariable()
         {
-            ReorderCode oldMax, max;
+            int oldMax, max;
 
             String empty = "";
             String space = " ";
@@ -2130,10 +2130,10 @@ namespace ICU4N.Dev.Test.Collate
             Logln(String.Format("coll.getMaxVariable(root) -> {0:x4}", (int)oldMax));
             ((RuleBasedCollator)coll).IsAlternateHandlingShifted = (true);
 
-            coll.MaxVariable = (ReorderCode.Space);
+            coll.MaxVariable = (ReorderCodes.Space);
             max = coll.MaxVariable;
             Logln(String.Format("coll.setMaxVariable(space) -> {0:x4}", (int)max));
-            if (max != ReorderCode.Space ||
+            if (max != ReorderCodes.Space ||
                     !coll.Equals(empty, space) ||
                     coll.Equals(empty, dot) ||
                     coll.Equals(empty, degree) ||
@@ -2144,10 +2144,10 @@ namespace ICU4N.Dev.Test.Collate
                 Errln("coll.setMaxVariable(space) did not work");
             }
 
-            coll.MaxVariable = (ReorderCode.Punctuation);
+            coll.MaxVariable = (ReorderCodes.Punctuation);
             max = coll.MaxVariable;
             Logln(String.Format("coll.setMaxVariable(punctuation) -> {0:x4}", (int)max));
-            if (max != ReorderCode.Punctuation ||
+            if (max != ReorderCodes.Punctuation ||
                     !coll.Equals(empty, space) ||
                     !coll.Equals(empty, dot) ||
                     coll.Equals(empty, degree) ||
@@ -2158,10 +2158,10 @@ namespace ICU4N.Dev.Test.Collate
                 Errln("coll.setMaxVariable(punctuation) did not work");
             }
 
-            coll.MaxVariable = (ReorderCode.Symbol);
+            coll.MaxVariable = (ReorderCodes.Symbol);
             max = coll.MaxVariable;
             Logln(String.Format("coll.setMaxVariable(symbol) -> {0:x4}", (int)max));
-            if (max != ReorderCode.Symbol ||
+            if (max != ReorderCodes.Symbol ||
                     !coll.Equals(empty, space) ||
                     !coll.Equals(empty, dot) ||
                     !coll.Equals(empty, degree) ||
@@ -2172,10 +2172,10 @@ namespace ICU4N.Dev.Test.Collate
                 Errln("coll.setMaxVariable(symbol) did not work");
             }
 
-            coll.MaxVariable = (ReorderCode.Currency);
+            coll.MaxVariable = (ReorderCodes.Currency);
             max = coll.MaxVariable;
             Logln(String.Format("coll.setMaxVariable(currency) -> {0:x4}", (int)max));
-            if (max != ReorderCode.Currency ||
+            if (max != ReorderCodes.Currency ||
                     !coll.Equals(empty, space) ||
                     !coll.Equals(empty, dot) ||
                     !coll.Equals(empty, degree) ||
@@ -3501,7 +3501,7 @@ namespace ICU4N.Dev.Test.Collate
         {
             /* build collator */
             String rules = "&[before 1]\u03b1 < \u0e01";
-            int[] reorderCodes = { UScript.GREEK };
+            int[] reorderCodes = { UScript.Greek };
             int result;
 
             Collator myCollation = new RuleBasedCollator(rules);
@@ -3560,7 +3560,7 @@ namespace ICU4N.Dev.Test.Collate
             Collator myCollation;
             byte[] baseKey;
             byte[] reorderKey;
-            int[] reorderCodes = { UScript.GREEK };
+            int[] reorderCodes = { UScript.Greek };
             String testString = "\u03b1\u03b2\u03b3";
 
             /* build collator tertiary */
@@ -3614,9 +3614,9 @@ namespace ICU4N.Dev.Test.Collate
         {
             // ICU4N TODO: API - can we use reorder codes without casting?
             Collator myCollation;
-            int[] reorderCodes = { UScript.GREEK, UScript.HAN, (int)ReorderCode.Punctuation };
-            int[] duplicateReorderCodes = { UScript.HIRAGANA, UScript.GREEK, (int)ReorderCode.Currency, UScript.KATAKANA };
-            int[] reorderCodesStartingWithDefault = { (int)ReorderCode.Default, UScript.GREEK, UScript.HAN, (int)ReorderCode.Punctuation };
+            int[] reorderCodes = { UScript.Greek, UScript.Han, ReorderCodes.Punctuation };
+            int[] duplicateReorderCodes = { UScript.Hiragana, UScript.Greek, ReorderCodes.Currency, UScript.Katakana };
+            int[] reorderCodesStartingWithDefault = { ReorderCodes.Default, UScript.Greek, UScript.Han, ReorderCodes.Punctuation };
             int[] retrievedReorderCodes;
             String greekString = "\u03b1";
             String punctuationString = "\u203e";
@@ -3680,7 +3680,7 @@ namespace ICU4N.Dev.Test.Collate
             }
 
             /* clear the reordering using [NONE] */
-            myCollation.SetReorderCodes(new int[] { (int)ReorderCode.None });
+            myCollation.SetReorderCodes(new int[] { ReorderCodes.None });
             retrievedReorderCodes = myCollation.GetReorderCodes();
             if (retrievedReorderCodes.Length != 0)
             {
@@ -3727,8 +3727,8 @@ namespace ICU4N.Dev.Test.Collate
         {
             Collator myCollation;
             String rules = "[reorder Hani Grek]";
-            int[] rulesReorderCodes = { UScript.HAN, UScript.GREEK };
-            int[] reorderCodes = { UScript.GREEK, UScript.HAN, (int)ReorderCode.Punctuation };
+            int[] rulesReorderCodes = { UScript.Han, UScript.Greek };
+            int[] reorderCodes = { UScript.Greek, UScript.Han, ReorderCodes.Punctuation };
             int[] retrievedReorderCodes;
 
 
@@ -3760,7 +3760,7 @@ namespace ICU4N.Dev.Test.Collate
             }
 
             /* reset the reordering */
-            myCollation.SetReorderCodes((int)ReorderCode.Default);
+            myCollation.SetReorderCodes(ReorderCodes.Default);
             retrievedReorderCodes = myCollation.GetReorderCodes();
             if (!Arrays.Equals(rulesReorderCodes, retrievedReorderCodes))
             {
@@ -3784,20 +3784,20 @@ namespace ICU4N.Dev.Test.Collate
             // rather than groups of scripts,
             // except where scripts share a range and sort primary-equal.
             int[] expectedScripts = {
-                    UScript.HIRAGANA,
-                    UScript.KATAKANA,
-                    UScript.KATAKANA_OR_HIRAGANA
+                    UScript.Hiragana,
+                    UScript.Katakana,
+                    UScript.KatakanaOrHiragana
             };
 
-            int[] equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.GOTHIC);
-            if (equivalentScripts.Length != 1 || equivalentScripts[0] != UScript.GOTHIC)
+            int[] equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.Gothic);
+            if (equivalentScripts.Length != 1 || equivalentScripts[0] != UScript.Gothic)
             {
                 Errln(String.Format("ERROR/Gothic: retrieved equivalent scripts wrong: " +
                         "length expected 1, was = {0}; expected [{1}] was [{2}]",
-                        equivalentScripts.Length, UScript.GOTHIC, equivalentScripts[0]));
+                        equivalentScripts.Length, UScript.Gothic, equivalentScripts[0]));
             }
 
-            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.HIRAGANA);
+            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.Hiragana);
             if (equivalentScripts.Length != expectedScripts.Length)
             {
                 Errln(String.Format("ERROR/Hiragana: retrieved equivalent script length wrong: " +
@@ -3822,7 +3822,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
             }
 
-            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.KATAKANA);
+            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.Katakana);
             if (equivalentScripts.Length != expectedScripts.Length)
             {
                 Errln(String.Format("ERROR/Katakana: retrieved equivalent script length wrong: " +
@@ -3837,7 +3837,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
             }
 
-            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.KATAKANA_OR_HIRAGANA);
+            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.KatakanaOrHiragana);
             if (equivalentScripts.Length != expectedScripts.Length)
             {
                 Errln(String.Format("ERROR/Hrkt: retrieved equivalent script length wrong: " +
@@ -3845,32 +3845,32 @@ namespace ICU4N.Dev.Test.Collate
                         expectedScripts.Length, equivalentScripts.Length));
             }
 
-            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.HAN);
+            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.Han);
             if (equivalentScripts.Length != 3)
             {
                 Errln("ERROR/Hani: retrieved equivalent script length wrong: " +
                         "expected 3, was = " + equivalentScripts.Length);
             }
-            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.SIMPLIFIED_HAN);
+            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.SimplifiedHan);
             if (equivalentScripts.Length != 3)
             {
                 Errln("ERROR/Hans: retrieved equivalent script length wrong: " +
                         "expected 3, was = " + equivalentScripts.Length);
             }
-            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.TRADITIONAL_HAN);
+            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.TraditionalHan);
             if (equivalentScripts.Length != 3)
             {
                 Errln("ERROR/Hant: retrieved equivalent script length wrong: " +
                         "expected 3, was = " + equivalentScripts.Length);
             }
 
-            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.MEROITIC_CURSIVE);
+            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.MeroiticCursive);
             if (equivalentScripts.Length != 2)
             {
                 Errln("ERROR/Merc: retrieved equivalent script length wrong: " +
                         "expected 2, was = " + equivalentScripts.Length);
             }
-            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.MEROITIC_HIEROGLYPHS);
+            equivalentScripts = RuleBasedCollator.GetEquivalentReorderCodes(UScript.MeroiticHieroglyphs);
             if (equivalentScripts.Length != 2)
             {
                 Errln("ERROR/Mero: retrieved equivalent script length wrong: " +
@@ -3965,7 +3965,7 @@ namespace ICU4N.Dev.Test.Collate
             };
 
             int[] apiRules = {
-                UScript.GREEK
+                UScript.Greek
             };
 
             OneTestCase[] privateUseCharacterStrings = {
@@ -3992,7 +3992,7 @@ namespace ICU4N.Dev.Test.Collate
             };
 
             int[] apiRules = {
-                UScript.UNKNOWN, UScript.GREEK
+                UScript.Unknown, UScript.Greek
             };
 
             OneTestCase[] privateUseCharacterStrings = {
@@ -4018,9 +4018,9 @@ namespace ICU4N.Dev.Test.Collate
             };
 
             int[] apiRules = {
-                UScript.GREEK, (int)ReorderCode.Symbol, (int)ReorderCode.Digit, UScript.LATIN,
-                (int)ReorderCode.Punctuation, (int)ReorderCode.Space, UScript.UNKNOWN,
-                (int)ReorderCode.Currency
+                UScript.Greek, ReorderCodes.Symbol, ReorderCodes.Digit, UScript.Latin,
+                ReorderCodes.Punctuation, ReorderCodes.Space, UScript.Unknown,
+                ReorderCodes.Currency
             };
 
             OneTestCase[] privateUseCharacterStrings = {
@@ -4045,7 +4045,7 @@ namespace ICU4N.Dev.Test.Collate
                 "[reorder Hani]"
             };
             int[] apiRules = {
-                UScript.HAN
+                UScript.Han
             };
 
             OneTestCase[] privateUseCharacterStrings = {
@@ -4095,7 +4095,7 @@ namespace ICU4N.Dev.Test.Collate
             };
 
             int[] apiRules = {
-                UScript.GREEK, UScript.UNKNOWN, (int)ReorderCode.Digit, UScript.LATIN, UScript.HAN
+                UScript.Greek, UScript.Unknown, ReorderCodes.Digit, UScript.Latin, UScript.Han
             };
 
             OneTestCase[] collationTestCases = {
@@ -4134,7 +4134,7 @@ namespace ICU4N.Dev.Test.Collate
 
             try
             {
-                myCollation.SetReorderCodes((int)ReorderCode.Default);
+                myCollation.SetReorderCodes(ReorderCodes.Default);
             }
             catch (NotSupportedException e)
             {

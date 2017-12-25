@@ -2815,7 +2815,7 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; i <= 0x10ffff; i++)
             {
                 code = UScript.GetScript(i);
-                if (code == UScript.INVALID_CODE)
+                if (code == UScript.InvalidCode)
                 {
                     Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
                 }
@@ -3260,7 +3260,7 @@ namespace ICU4N.Dev.Test.Translit
         {
             UnicodeSet alphabetic = new UnicodeSet("[:alphabetic:]").Freeze();
             StringBuffer testString = new StringBuffer();
-            for (int i = 0; i < UScript.CODE_LIMIT; ++i)
+            for (int i = 0; i < UScript.CodeLimit; ++i)
             {
                 UnicodeSet sample = new UnicodeSet().ApplyPropertyAlias("script", UScript.GetShortName(i)).RetainAll(alphabetic);
                 int count = 5;

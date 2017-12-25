@@ -1938,7 +1938,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(After(cp)) .eq.  Greek Then True;
                         if (!(i < labelEnd &&
-                             UScript.GREEK == UScript.GetScript(Character.CodePointAt(label, i + 1))))
+                             UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -1955,7 +1955,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(Before(cp)) .eq.  Hebrew Then True;
                         if (!(labelStart < i &&
-                             UScript.HEBREW == UScript.GetScript(Character.CodePointBefore(label, i))))
+                             UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -2010,7 +2010,7 @@ namespace ICU4N.Impl
                         }
                         c = Character.CodePointAt(label, j);
                         int script = UScript.GetScript(c);
-                        if (script == UScript.HIRAGANA || script == UScript.KATAKANA || script == UScript.HAN)
+                        if (script == UScript.Hiragana || script == UScript.Katakana || script == UScript.Han)
                         {
                             break;
                         }
@@ -2052,7 +2052,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(After(cp)) .eq.  Greek Then True;
                         if (!(i < labelEnd &&
-                             UScript.GREEK == UScript.GetScript(Character.CodePointAt(label, i + 1))))
+                             UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -2069,7 +2069,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(Before(cp)) .eq.  Hebrew Then True;
                         if (!(labelStart < i &&
-                             UScript.HEBREW == UScript.GetScript(Character.CodePointBefore(label, i))))
+                             UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -2124,7 +2124,7 @@ namespace ICU4N.Impl
                         }
                         c = Character.CodePointAt(label, j);
                         int script = UScript.GetScript(c);
-                        if (script == UScript.HIRAGANA || script == UScript.KATAKANA || script == UScript.HAN)
+                        if (script == UScript.Hiragana || script == UScript.Katakana || script == UScript.Han)
                         {
                             break;
                         }
@@ -2166,7 +2166,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(After(cp)) .eq.  Greek Then True;
                         if (!(i < labelEnd &&
-                             UScript.GREEK == UScript.GetScript(Character.CodePointAt(label, i + 1))))
+                             UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -2183,7 +2183,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(Before(cp)) .eq.  Hebrew Then True;
                         if (!(labelStart < i &&
-                             UScript.HEBREW == UScript.GetScript(Character.CodePointBefore(label, i))))
+                             UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -2238,7 +2238,7 @@ namespace ICU4N.Impl
                         }
                         c = Character.CodePointAt(label, j);
                         int script = UScript.GetScript(c);
-                        if (script == UScript.HIRAGANA || script == UScript.KATAKANA || script == UScript.HAN)
+                        if (script == UScript.Hiragana || script == UScript.Katakana || script == UScript.Han)
                         {
                             break;
                         }
@@ -2280,7 +2280,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(After(cp)) .eq.  Greek Then True;
                         if (!(i < labelEnd &&
-                             UScript.GREEK == UScript.GetScript(Character.CodePointAt(label, i + 1))))
+                             UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -2297,7 +2297,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(Before(cp)) .eq.  Hebrew Then True;
                         if (!(labelStart < i &&
-                             UScript.HEBREW == UScript.GetScript(Character.CodePointBefore(label, i))))
+                             UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -2352,7 +2352,7 @@ namespace ICU4N.Impl
                         }
                         c = Character.CodePointAt(label, j);
                         int script = UScript.GetScript(c);
-                        if (script == UScript.HIRAGANA || script == UScript.KATAKANA || script == UScript.HAN)
+                        if (script == UScript.Hiragana || script == UScript.Katakana || script == UScript.Han)
                         {
                             break;
                         }

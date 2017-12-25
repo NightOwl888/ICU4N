@@ -398,7 +398,7 @@ namespace ICU4N.Impl.Coll
                     // for backward compatibility with behavior before the introduction of
                     // script-first-primary CEs in the root collator.
                     ce = rootElements.FirstCEWithPrimaryAtLeast(
-                        baseData.GetFirstPrimaryForGroup(UScript.HAN));
+                        baseData.GetFirstPrimaryForGroup(UScript.Han));
                     break;
                 case CollationRuleParser.Position.FIRST_IMPLICIT:
                     ce = baseData.GetSingleCE(0x4e00);

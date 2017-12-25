@@ -158,7 +158,7 @@ namespace ICU4N.Impl.Coll
             // (space, punct, ..., digit) followed by Latn, then Grek and other scripts.
             for (int i = 0; i < NUM_SPECIAL_GROUPS; ++i)
             {
-                lastSpecialPrimaries[i] = data.GetLastPrimaryForGroup((int)ReorderCode.First + i);
+                lastSpecialPrimaries[i] = data.GetLastPrimaryForGroup(ReorderCodes.First + i);
                 if (lastSpecialPrimaries[i] == 0)
                 {
                     // missing data
@@ -168,9 +168,9 @@ namespace ICU4N.Impl.Coll
                 result.Append((char)0);  // reserve a slot for this group
             }
 
-            firstDigitPrimary = data.GetFirstPrimaryForGroup((int)ReorderCode.Digit);
-            firstLatinPrimary = data.GetFirstPrimaryForGroup(UScript.LATIN);
-            lastLatinPrimary = data.GetLastPrimaryForGroup(UScript.LATIN);
+            firstDigitPrimary = data.GetFirstPrimaryForGroup(ReorderCodes.Digit);
+            firstLatinPrimary = data.GetFirstPrimaryForGroup(UScript.Latin);
+            lastLatinPrimary = data.GetLastPrimaryForGroup(UScript.Latin);
             if (firstDigitPrimary == 0 || firstLatinPrimary == 0)
             {
                 // missing data
@@ -837,7 +837,7 @@ namespace ICU4N.Impl.Coll
 
         // space, punct, symbol, currency (not digit)
         private static readonly int NUM_SPECIAL_GROUPS =
-                ReorderCode.Currency - ReorderCode.First + 1;
+                ReorderCodes.Currency - ReorderCodes.First + 1;
 
         private static readonly long CONTRACTION_FLAG = 0x80000000L;
 

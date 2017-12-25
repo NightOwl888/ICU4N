@@ -14,12 +14,14 @@ namespace ICU4N.Text
     /// </summary>
     /// <remarks>
     /// An AnyTransliterator partitions text into runs of the same
-    /// script, together with adjacent COMMON or INHERITED characters.
+    /// script, together with adjacent <see cref="UScript.Common"/> 
+    /// or <see cref="UScript.Inherited"/> characters.
     /// After determining the script of each run, it transliterates from
     /// that script to the given target/variant.  It does so by
     /// instantiating a transliterator from the source script to the
     /// target/variant.  If a run consists only of the target script,
-    /// COMMON, or INHERITED characters, then the run is not changed.
+    /// <see cref="UScript.Common"/>, or <see cref="UScript.Inherited"/> 
+    /// characters, then the run is not changed.
     /// <para/>
     /// At startup, all possible AnyTransliterators are registered with
     /// the system, as determined by examining the registered script
@@ -39,7 +41,7 @@ namespace ICU4N.Text
         internal static readonly string LATIN_PIVOT = "-Latin;Latin-";
 
         /// <summary>
-        /// Cache mapping UScriptCode values to Transliterator*.
+        /// Cache mapping Script code values to Transliterator*.
         /// </summary>
         private ConcurrentDictionary<int, Transliterator> cache;
 
@@ -49,7 +51,7 @@ namespace ICU4N.Text
         private string target;
 
         /// <summary>
-        /// The target script code.  Never USCRIPT_INVALID_CODE.
+        /// The target script code.  Never <see cref="UScript.InvalidCode"/>.
         /// </summary>
         private int targetScript;
 
@@ -158,14 +160,14 @@ namespace ICU4N.Text
         /// <summary>
         /// Returns a transliterator from the given source to our target or
         /// target/variant.  Returns NULL if the source is the same as our
-        /// target script, or if the source is USCRIPT_INVALID_CODE.
+        /// target script, or if the source is <see cref="UScript.InvalidCode"/>.
         /// Caches the result and returns the same transliterator the next
         /// time.  The caller does NOT own the result and must not delete
         /// it.
         /// </summary>
         private Transliterator GetTransliterator(int source)
         {
-            if (source == targetScript || source == UScript.INVALID_CODE)
+            if (source == targetScript || source == UScript.InvalidCode)
             {
                 if (IsWide(targetScript))
                 {
@@ -177,7 +179,7 @@ namespace ICU4N.Text
                 }
             }
 
-            int key = source;
+            int key = (int)source;
             Transliterator t = cache.Get(key);
             if (!cache.TryGetValue(key, out t) || t == null)
             {
@@ -237,7 +239,7 @@ namespace ICU4N.Text
 
         private bool IsWide(int script)
         {
-            return script == UScript.BOPOMOFO || script == UScript.HAN || script == UScript.HANGUL || script == UScript.HIRAGANA || script == UScript.KATAKANA;
+            return script == UScript.Bopomofo || script == UScript.Han || script == UScript.Hangul || script == UScript.Hiragana || script == UScript.Katakana;
         }
 
         /// <summary>
@@ -259,7 +261,7 @@ namespace ICU4N.Text
                 {
                     // Get the script code for the target.  If not a script, ignore.
                     int targetScript = ScriptNameToCode(target);
-                    if (targetScript == UScript.INVALID_CODE)
+                    if (targetScript == UScript.InvalidCode)
                     {
                         continue;
                     }
@@ -292,19 +294,19 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Return the script code for a given name, or
-        /// <see cref="UScript.INVALID_CODE"/> if not found.
+        /// <see cref="UScript.InvalidCode"/> if not found.
         /// </summary>
-        private static int ScriptNameToCode(String name)
+        private static int ScriptNameToCode(string name)
         {
             try
             {
                 int[] codes = UScript.GetCode(name);
-                return codes != null ? codes[0] : UScript.INVALID_CODE;
+                return codes != null ? codes[0] : UScript.InvalidCode;
             }
-            catch (MissingManifestResourceException e)
+            catch (MissingManifestResourceException)
             {
                 ///CLOVER:OFF
-                return UScript.INVALID_CODE;
+                return UScript.InvalidCode;
                 ///CLOVER:ON
             }
         }
@@ -332,8 +334,8 @@ namespace ICU4N.Text
 
             /// <summary>
             /// The code of the current run, valid after <see cref="Next()"/> returns.  May
-            /// be <see cref="UScript.INVALID_CODE"/> if and only if the entire text is
-            /// COMMON/INHERITED.
+            /// be <see cref="UScript.InvalidCode"/> if and only if the entire text is
+            /// <see cref="UScript.Common"/>/<see cref="UScript.Inherited"/>.
             /// </summary>
             public int ScriptCode { get; set; }
 
@@ -372,7 +374,7 @@ namespace ICU4N.Text
                 int ch;
                 int s;
 
-                ScriptCode = UScript.INVALID_CODE; // don't know script yet
+                ScriptCode = UScript.InvalidCode; // don't know script yet
                 Start = Limit;
 
                 // Are we done?
@@ -381,13 +383,13 @@ namespace ICU4N.Text
                     return false;
                 }
 
-                // Move start back to include adjacent COMMON or INHERITED
+                // Move start back to include adjacent <see cref="UScript.Common"/> / <see cref="UScript.Inherited"/>
                 // characters
                 while (Start > textStart)
                 {
                     ch = text.Char32At(Start - 1); // look back
                     s = UScript.GetScript(ch);
-                    if (s == UScript.COMMON || s == UScript.INHERITED)
+                    if (s == UScript.Common || s == UScript.Inherited)
                     {
                         --Start;
                     }
@@ -403,9 +405,9 @@ namespace ICU4N.Text
                 {
                     ch = text.Char32At(Limit); // look ahead
                     s = UScript.GetScript(ch);
-                    if (s != UScript.COMMON && s != UScript.INHERITED)
+                    if (s != UScript.Common && s != UScript.Inherited)
                     {
-                        if (ScriptCode == UScript.INVALID_CODE)
+                        if (ScriptCode == UScript.InvalidCode)
                         {
                             ScriptCode = s;
                         }
@@ -418,7 +420,7 @@ namespace ICU4N.Text
                 }
 
                 // Return TRUE even if the entire text is COMMON / INHERITED, in
-                // which case scriptCode will be UScript.INVALID_CODE.
+                // which case scriptCode will be UScript.InvalidCode.
                 return true;
             }
 

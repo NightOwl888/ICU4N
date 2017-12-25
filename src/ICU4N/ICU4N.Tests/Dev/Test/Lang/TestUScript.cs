@@ -21,9 +21,9 @@ namespace ICU4N.Dev.Test.Lang
         {
             /* test characters which have Script_Extensions */
             if (!(
-                UScript.COMMON == UScript.GetScript(0x0640) &&
-                UScript.INHERITED == UScript.GetScript(0x0650) &&
-                UScript.ARABIC == UScript.GetScript(0xfdf2))
+                UScript.Common == UScript.GetScript(0x0640) &&
+                UScript.Inherited == UScript.GetScript(0x0650) &&
+                UScript.Arabic == UScript.GetScript(0xfdf2))
             )
             {
                 Errln("UScript.getScript(character with Script_Extensions) failed");
@@ -34,46 +34,46 @@ namespace ICU4N.Dev.Test.Lang
         public void TestHasScript()
         {
             if (!(
-                !UScript.HasScript(0x063f, UScript.COMMON) &&
-                UScript.HasScript(0x063f, UScript.ARABIC) &&  /* main Script value */
-                !UScript.HasScript(0x063f, UScript.SYRIAC) &&
-                !UScript.HasScript(0x063f, UScript.THAANA))
+                !UScript.HasScript(0x063f, UScript.Common) &&
+                UScript.HasScript(0x063f, UScript.Arabic) &&  /* main Script value */
+                !UScript.HasScript(0x063f, UScript.Syriac) &&
+                !UScript.HasScript(0x063f, UScript.Thaana))
             )
             {
                 Errln("UScript.hasScript(U+063F, ...) is wrong");
             }
             if (!(
-                !UScript.HasScript(0x0640, UScript.COMMON) &&  /* main Script value */
-                UScript.HasScript(0x0640, UScript.ARABIC) &&
-                UScript.HasScript(0x0640, UScript.SYRIAC) &&
-                !UScript.HasScript(0x0640, UScript.THAANA))
+                !UScript.HasScript(0x0640, UScript.Common) &&  /* main Script value */
+                UScript.HasScript(0x0640, UScript.Arabic) &&
+                UScript.HasScript(0x0640, UScript.Syriac) &&
+                !UScript.HasScript(0x0640, UScript.Thaana))
             )
             {
                 Errln("UScript.hasScript(U+0640, ...) is wrong");
             }
             if (!(
-                !UScript.HasScript(0x0650, UScript.INHERITED) &&  /* main Script value */
-                UScript.HasScript(0x0650, UScript.ARABIC) &&
-                UScript.HasScript(0x0650, UScript.SYRIAC) &&
-                !UScript.HasScript(0x0650, UScript.THAANA))
+                !UScript.HasScript(0x0650, UScript.Inherited) &&  /* main Script value */
+                UScript.HasScript(0x0650, UScript.Arabic) &&
+                UScript.HasScript(0x0650, UScript.Syriac) &&
+                !UScript.HasScript(0x0650, UScript.Thaana))
             )
             {
                 Errln("UScript.hasScript(U+0650, ...) is wrong");
             }
             if (!(
-                !UScript.HasScript(0x0660, UScript.COMMON) &&  /* main Script value */
-                UScript.HasScript(0x0660, UScript.ARABIC) &&
-                !UScript.HasScript(0x0660, UScript.SYRIAC) &&
-                UScript.HasScript(0x0660, UScript.THAANA))
+                !UScript.HasScript(0x0660, UScript.Common) &&  /* main Script value */
+                UScript.HasScript(0x0660, UScript.Arabic) &&
+                !UScript.HasScript(0x0660, UScript.Syriac) &&
+                UScript.HasScript(0x0660, UScript.Thaana))
             )
             {
                 Errln("UScript.hasScript(U+0660, ...) is wrong");
             }
             if (!(
-                !UScript.HasScript(0xfdf2, UScript.COMMON) &&
-                UScript.HasScript(0xfdf2, UScript.ARABIC) &&  /* main Script value */
-                !UScript.HasScript(0xfdf2, UScript.SYRIAC) &&
-                UScript.HasScript(0xfdf2, UScript.THAANA))
+                !UScript.HasScript(0xfdf2, UScript.Common) &&
+                UScript.HasScript(0xfdf2, UScript.Arabic) &&  /* main Script value */
+                !UScript.HasScript(0xfdf2, UScript.Syriac) &&
+                UScript.HasScript(0xfdf2, UScript.Thaana))
             )
             {
                 Errln("UScript.hasScript(U+FDF2, ...) is wrong");
@@ -88,39 +88,39 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestGetScriptExtensions()
         {
-            BitSet scripts = new BitSet(UScript.CODE_LIMIT);
+            BitSet scripts = new BitSet(UScript.CodeLimit);
 
             /* invalid code points */
-            if (UScript.GetScriptExtensions(-1, scripts) != UScript.UNKNOWN || scripts.Cardinality() != 1 ||
-                    !scripts.Get(UScript.UNKNOWN))
+            if (UScript.GetScriptExtensions(-1, scripts) != UScript.Unknown || scripts.Cardinality() != 1 ||
+                    !scripts.Get(UScript.Unknown))
             {
                 Errln("UScript.getScriptExtensions(-1) is not {UNKNOWN}");
             }
-            if (UScript.GetScriptExtensions(0x110000, scripts) != UScript.UNKNOWN || scripts.Cardinality() != 1 ||
-                    !scripts.Get(UScript.UNKNOWN))
+            if (UScript.GetScriptExtensions(0x110000, scripts) != UScript.Unknown || scripts.Cardinality() != 1 ||
+                    !scripts.Get(UScript.Unknown))
             {
                 Errln("UScript.getScriptExtensions(0x110000) is not {UNKNOWN}");
             }
 
             /* normal usage */
-            if (UScript.GetScriptExtensions(0x063f, scripts) != UScript.ARABIC || scripts.Cardinality() != 1 ||
-                    !scripts.Get(UScript.ARABIC))
+            if (UScript.GetScriptExtensions(0x063f, scripts) != UScript.Arabic || scripts.Cardinality() != 1 ||
+                    !scripts.Get(UScript.Arabic))
             {
                 Errln("UScript.getScriptExtensions(U+063F) is not {ARABIC}");
             }
             if (UScript.GetScriptExtensions(0x0640, scripts) > -3 || scripts.Cardinality() < 3 ||
-               !scripts.Get(UScript.ARABIC) || !scripts.Get(UScript.SYRIAC) || !scripts.Get(UScript.MANDAIC)
+               !scripts.Get(UScript.Arabic) || !scripts.Get(UScript.Syriac) || !scripts.Get(UScript.Mandaic)
             )
             {
                 Errln("UScript.getScriptExtensions(U+0640) failed");
             }
             if (UScript.GetScriptExtensions(0xfdf2, scripts) != -2 || scripts.Cardinality() != 2 ||
-                    !scripts.Get(UScript.ARABIC) || !scripts.Get(UScript.THAANA))
+                    !scripts.Get(UScript.Arabic) || !scripts.Get(UScript.Thaana))
             {
                 Errln("UScript.getScriptExtensions(U+FDF2) failed");
             }
             if (UScript.GetScriptExtensions(0xff65, scripts) != -6 || scripts.Cardinality() != 6 ||
-                    !scripts.Get(UScript.BOPOMOFO) || !scripts.Get(UScript.YI))
+                    !scripts.Get(UScript.Bopomofo) || !scripts.Get(UScript.Yi))
             {
                 Errln("UScript.getScriptExtensions(U+FF65) failed");
             }
@@ -130,49 +130,49 @@ namespace ICU4N.Dev.Test.Lang
         public void TestScriptMetadataAPI()
         {
             /* API & code coverage. */
-            String sample = UScript.GetSampleString(UScript.LATIN);
-            if (sample.Length != 1 || UScript.GetScript(sample[0]) != UScript.LATIN)
+            String sample = UScript.GetSampleString(UScript.Latin);
+            if (sample.Length != 1 || UScript.GetScript(sample[0]) != UScript.Latin)
             {
                 Errln("UScript.getSampleString(Latn) failed");
             }
-            sample = UScript.GetSampleString(UScript.INVALID_CODE);
+            sample = UScript.GetSampleString(UScript.InvalidCode);
             if (sample.Length != 0)
             {
                 Errln("UScript.getSampleString(invalid) failed");
             }
 
-            if (UScript.GetUsage(UScript.LATIN) != ScriptUsage.Recommended ||
+            if (UScript.GetUsage(UScript.Latin) != ScriptUsage.Recommended ||
                     // Unicode 10 gives up on "aspirational".
-                    UScript.GetUsage(UScript.YI) != ScriptUsage.LimitedUse ||
-                    UScript.GetUsage(UScript.CHEROKEE) != ScriptUsage.LimitedUse ||
-                    UScript.GetUsage(UScript.COPTIC) != ScriptUsage.Excluded ||
-                    UScript.GetUsage(UScript.CIRTH) != ScriptUsage.NotEncoded ||
-                    UScript.GetUsage(UScript.INVALID_CODE) != ScriptUsage.NotEncoded ||
-                    UScript.GetUsage(UScript.CODE_LIMIT) != ScriptUsage.NotEncoded)
+                    UScript.GetUsage(UScript.Yi) != ScriptUsage.LimitedUse ||
+                    UScript.GetUsage(UScript.Cherokee) != ScriptUsage.LimitedUse ||
+                    UScript.GetUsage(UScript.Coptic) != ScriptUsage.Excluded ||
+                    UScript.GetUsage(UScript.Cirth) != ScriptUsage.NotEncoded ||
+                    UScript.GetUsage(UScript.InvalidCode) != ScriptUsage.NotEncoded ||
+                    UScript.GetUsage(UScript.CodeLimit) != ScriptUsage.NotEncoded)
             {
                 Errln("UScript.getUsage() failed");
             }
 
-            if (UScript.IsRightToLeft(UScript.LATIN) ||
-                    UScript.IsRightToLeft(UScript.CIRTH) ||
-                    !UScript.IsRightToLeft(UScript.ARABIC) ||
-                    !UScript.IsRightToLeft(UScript.HEBREW))
+            if (UScript.IsRightToLeft(UScript.Latin) ||
+                    UScript.IsRightToLeft(UScript.Cirth) ||
+                    !UScript.IsRightToLeft(UScript.Arabic) ||
+                    !UScript.IsRightToLeft(UScript.Hebrew))
             {
                 Errln("UScript.isRightToLeft() failed");
             }
 
-            if (UScript.BreaksBetweenLetters(UScript.LATIN) ||
-                    UScript.BreaksBetweenLetters(UScript.CIRTH) ||
-                    !UScript.BreaksBetweenLetters(UScript.HAN) ||
-                    !UScript.BreaksBetweenLetters(UScript.THAI))
+            if (UScript.BreaksBetweenLetters(UScript.Latin) ||
+                    UScript.BreaksBetweenLetters(UScript.Cirth) ||
+                    !UScript.BreaksBetweenLetters(UScript.Han) ||
+                    !UScript.BreaksBetweenLetters(UScript.Thai))
             {
                 Errln("UScript.breaksBetweenLetters() failed");
             }
 
-            if (UScript.IsCased(UScript.CIRTH) ||
-                    UScript.IsCased(UScript.HAN) ||
-                    !UScript.IsCased(UScript.LATIN) ||
-                    !UScript.IsCased(UScript.GREEK))
+            if (UScript.IsCased(UScript.Cirth) ||
+                    UScript.IsCased(UScript.Han) ||
+                    !UScript.IsCased(UScript.Latin) ||
+                    !UScript.IsCased(UScript.Greek))
             {
                 Errln("UScript.isCased() failed");
             }
@@ -185,17 +185,17 @@ namespace ICU4N.Dev.Test.Lang
         {
             switch (script)
             {
-                case UScript.HAN_WITH_BOPOMOFO:
-                case UScript.SIMPLIFIED_HAN:
-                case UScript.TRADITIONAL_HAN:
-                    return UScript.HAN;
-                case UScript.JAPANESE:
-                    return UScript.HIRAGANA;
-                case UScript.JAMO:
-                case UScript.KOREAN:
-                    return UScript.HANGUL;
-                case UScript.SYMBOLS_EMOJI:
-                    return UScript.SYMBOLS;
+                case UScript.HanWithBopomofo:
+                case UScript.SimplifiedHan:
+                case UScript.TraditionalHan:
+                    return UScript.Han;
+                case UScript.Japanese:
+                    return UScript.Hiragana;
+                case UScript.Jamo:
+                case UScript.Korean:
+                    return UScript.Hangul;
+                case UScript.SymbolsEmoji:
+                    return UScript.Symbols;
                 default:
                     return script;
             }
@@ -208,7 +208,7 @@ namespace ICU4N.Dev.Test.Lang
             // So far, sample characters are uppercase.
             // Georgian is special.
             UnicodeSet cased = new UnicodeSet("[[:Lu:]-[:sc=Common:]-[:sc=Geor:]]");
-            for (int sc = 0; sc < UScript.CODE_LIMIT; ++sc)
+            for (int sc = 0; sc < UScript.CodeLimit; ++sc)
             {
                 String sn = UScript.GetShortName(sc);
                 ScriptUsage usage = UScript.GetUsage(sc);
@@ -246,15 +246,15 @@ namespace ICU4N.Dev.Test.Lang
             assertEquals("no remaining RTL characters", "[]", rtl.ToPattern(true));
             assertEquals("no remaining cased characters", "[]", cased.ToPattern(true));
 
-            assertTrue("Hani breaks between letters", UScript.BreaksBetweenLetters(UScript.HAN));
-            assertTrue("Thai breaks between letters", UScript.BreaksBetweenLetters(UScript.THAI));
-            assertFalse("Latn does not break between letters", UScript.BreaksBetweenLetters(UScript.LATIN));
+            assertTrue("Hani breaks between letters", UScript.BreaksBetweenLetters(UScript.Han));
+            assertTrue("Thai breaks between letters", UScript.BreaksBetweenLetters(UScript.Thai));
+            assertFalse("Latn does not break between letters", UScript.BreaksBetweenLetters(UScript.Latin));
         }
 
         [Test]
         public void TestScriptNames()
         {
-            for (int i = 0; i < UScript.CODE_LIMIT; i++)
+            for (int i = 0; i < UScript.CodeLimit; i++)
             {
                 String name = UScript.GetName(i);
                 if (name.Equals(""))
@@ -276,9 +276,9 @@ namespace ICU4N.Dev.Test.Lang
             //String oldAbbrId="";
             for (int i = 0; i <= 0x10ffff; i++)
             {
-                code = UScript.INVALID_CODE;
+                code = UScript.InvalidCode;
                 code = UScript.GetScript(i);
-                if (code == UScript.INVALID_CODE)
+                if (code == UScript.InvalidCode)
                 {
                     Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
                 }
@@ -370,14 +370,14 @@ namespace ICU4N.Dev.Test.Lang
                 // new in ICU 60
                 "Gonm", "Soyo", "Zanb"
             };
-            if (expectedLong.Length != (UScript.CODE_LIMIT - UScript.BALINESE))
+            if (expectedLong.Length != (UScript.CodeLimit - UScript.Balinese))
             {
                 Errln("need to add new script codes in lang.TestUScript.java!");
                 return;
             }
             int j = 0;
             int i = 0;
-            for (i = UScript.BALINESE; i < UScript.CODE_LIMIT; i++, j++)
+            for (i = UScript.Balinese; i < UScript.CodeLimit; i++, j++)
             {
                 String name = UScript.GetName(i);
                 if (name == null || !name.Equals(expectedLong[j]))
@@ -397,9 +397,9 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     Errln("UScript.getCode did not return expected number of codes for script" + expectedShort[i] + ". EXPECTED: 1 GOT: " + ret.Length);
                 }
-                if (ret[0] != (UScript.BALINESE + i))
+                if (ret[0] != (UScript.Balinese + i))
                 {
-                    Errln("UScript.getCode did not return expected code for script" + expectedShort[i] + ". EXPECTED: " + (UScript.BALINESE + i) + " GOT: %i\n" + ret[0]);
+                    Errln("UScript.getCode did not return expected code for script" + expectedShort[i] + ". EXPECTED: " + (UScript.Balinese + i) + " GOT: %i\n" + ret[0]);
                 }
             }
         }

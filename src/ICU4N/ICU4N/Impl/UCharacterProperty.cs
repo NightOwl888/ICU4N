@@ -475,7 +475,7 @@ namespace ICU4N.Impl
                     }),
                 new AnonymousIntProperty(this, 0, SCRIPT_MASK_, 0, getValue: (c) =>
                     {
-                        return UScript.GetScript(c);
+                        return (int)UScript.GetScript(c);
                     }, getMaxValue: null),
                 new AnonymousIntProperty(this, SRC_PROPSVEC, getValue: (c) =>
                     {  // HANGUL_SYLLABLE_TYPE

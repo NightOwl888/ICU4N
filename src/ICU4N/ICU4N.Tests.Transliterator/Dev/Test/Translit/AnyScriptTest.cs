@@ -24,7 +24,7 @@ namespace ICU4N.Dev.Test.Translit
             // get a couple of characters of each script for testing
 
             StringBuffer testBuffer = new StringBuffer();
-            for (int script = 0; script < UScript.CODE_LIMIT; ++script)
+            for (int script = 0; script < UScript.CodeLimit; ++script)
             {
                 UnicodeSet test = new UnicodeSet().ApplyPropertyAlias("script", UScript.GetName(script));
                 int count = Math.Min(20, test.Count);
@@ -40,17 +40,17 @@ namespace ICU4N.Dev.Test.Translit
                 int inclusion = TestFmwk.GetExhaustiveness();
                 bool testedUnavailableScript = false;
 
-                for (int script = 0; script < UScript.CODE_LIMIT; ++script)
+                for (int script = 0; script < UScript.CodeLimit; ++script)
                 {
-                    if (script == UScript.COMMON || script == UScript.INHERITED)
+                    if (script == UScript.Common || script == UScript.Inherited)
                     {
                         continue;
                     }
                     // if the inclusion rate is not 10, skip all but a small number of items.
                     // Make sure, however, that we test at least one unavailable script
-                    if (inclusion < 10 && script != UScript.LATIN
-                            && script != UScript.HAN
-                            && script != UScript.HIRAGANA
+                    if (inclusion < 10 && script != UScript.Latin
+                            && script != UScript.Han
+                            && script != UScript.Hiragana
                             && testedUnavailableScript
                             )
                     {

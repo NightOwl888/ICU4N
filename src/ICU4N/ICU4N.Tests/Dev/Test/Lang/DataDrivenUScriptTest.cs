@@ -40,17 +40,17 @@ namespace ICU4N.Dev.Test.Lang
             {
                 get
                 {
-                    yield return new TestCaseData(new ULocale("en"), UScript.LATIN);
-                    yield return new TestCaseData(new ULocale("en_US"), UScript.LATIN);
-                    yield return new TestCaseData(new ULocale("sr"), UScript.CYRILLIC);
-                    yield return new TestCaseData(new ULocale("ta"), UScript.TAMIL);
-                    yield return new TestCaseData(new ULocale("te_IN"), UScript.TELUGU);
-                    yield return new TestCaseData(new ULocale("hi"), UScript.DEVANAGARI);
-                    yield return new TestCaseData(new ULocale("he"), UScript.HEBREW);
-                    yield return new TestCaseData(new ULocale("ar"), UScript.ARABIC);
-                    yield return new TestCaseData(new ULocale("abcde"), UScript.INVALID_CODE);
-                    yield return new TestCaseData(new ULocale("abcde_cdef"), UScript.INVALID_CODE);
-                    yield return new TestCaseData(new ULocale("iw"), UScript.HEBREW);
+                    yield return new TestCaseData(new ULocale("en"), UScript.Latin);
+                    yield return new TestCaseData(new ULocale("en_US"), UScript.Latin);
+                    yield return new TestCaseData(new ULocale("sr"), UScript.Cyrillic);
+                    yield return new TestCaseData(new ULocale("ta"), UScript.Tamil);
+                    yield return new TestCaseData(new ULocale("te_IN"), UScript.Telugu);
+                    yield return new TestCaseData(new ULocale("hi"), UScript.Devanagari);
+                    yield return new TestCaseData(new ULocale("he"), UScript.Hebrew);
+                    yield return new TestCaseData(new ULocale("ar"), UScript.Arabic);
+                    yield return new TestCaseData(new ULocale("abcde"), UScript.InvalidCode);
+                    yield return new TestCaseData(new ULocale("abcde_cdef"), UScript.InvalidCode);
+                    yield return new TestCaseData(new ULocale("iw"), UScript.Hebrew);
                 }
             }
 
@@ -60,7 +60,7 @@ namespace ICU4N.Dev.Test.Lang
                 int[] code = UScript.GetCode(testLocaleName);
                 if (code == null)
                 {
-                    if (expected != UScript.INVALID_CODE)
+                    if (expected != UScript.InvalidCode)
                     {
                         Errln("Error testing UScript.getCode(). Got: null" + " Expected: " + expected + " for locale "
                                 + testLocaleName);
@@ -78,7 +78,7 @@ namespace ICU4N.Dev.Test.Lang
                 code = UScript.GetCode(esperanto);
                 if (code != null)
                 {
-                    if (code[0] != UScript.LATIN)
+                    if (code[0] != UScript.Latin)
                     {
                         Errln("Did not get the expected script code for Esperanto");
                     }
@@ -91,23 +91,23 @@ namespace ICU4N.Dev.Test.Lang
 
                 // Should work regardless of whether we have locale data for the language.
                 AssertEqualScripts("tg script: Cyrl", // Tajik
-                        new int[] { UScript.CYRILLIC }, UScript.GetCode(new ULocale("tg")));
+                        new int[] { UScript.Cyrillic }, UScript.GetCode(new ULocale("tg")));
                 AssertEqualScripts("xsr script: Deva", // Sherpa
-                        new int[] { UScript.DEVANAGARI }, UScript.GetCode(new ULocale("xsr")));
+                        new int[] { UScript.Devanagari }, UScript.GetCode(new ULocale("xsr")));
 
                 // Multi-script languages.
                 AssertEqualScripts("ja scripts: Kana Hira Hani",
-                        new int[] { UScript.KATAKANA, UScript.HIRAGANA, UScript.HAN }, UScript.GetCode(ULocale.JAPANESE));
-                AssertEqualScripts("ko scripts: Hang Hani", new int[] { UScript.HANGUL, UScript.HAN },
+                        new int[] { UScript.Katakana, UScript.Hiragana, UScript.Han }, UScript.GetCode(ULocale.JAPANESE));
+                AssertEqualScripts("ko scripts: Hang Hani", new int[] { UScript.Hangul, UScript.Han },
                         UScript.GetCode(ULocale.KOREAN));
-                AssertEqualScripts("zh script: Hani", new int[] { UScript.HAN }, UScript.GetCode(ULocale.CHINESE));
-                AssertEqualScripts("zh-Hant scripts: Hani Bopo", new int[] { UScript.HAN, UScript.BOPOMOFO },
+                AssertEqualScripts("zh script: Hani", new int[] { UScript.Han }, UScript.GetCode(ULocale.CHINESE));
+                AssertEqualScripts("zh-Hant scripts: Hani Bopo", new int[] { UScript.Han, UScript.Bopomofo },
                         UScript.GetCode(ULocale.TRADITIONAL_CHINESE));
-                AssertEqualScripts("zh-TW scripts: Hani Bopo", new int[] { UScript.HAN, UScript.BOPOMOFO },
+                AssertEqualScripts("zh-TW scripts: Hani Bopo", new int[] { UScript.Han, UScript.Bopomofo },
                         UScript.GetCode(ULocale.TAIWAN));
 
                 // Ambiguous API, but this probably wants to return Latin rather than Rongorongo (Roro).
-                AssertEqualScripts("ro-RO script: Latn", new int[] { UScript.LATIN }, UScript.GetCode("ro-RO")); // String
+                AssertEqualScripts("ro-RO script: Latn", new int[] { UScript.Latin }, UScript.GetCode("ro-RO")); // String
                                                                                                                  // not
                                                                                                                  // ULocale
             }
@@ -119,10 +119,10 @@ namespace ICU4N.Dev.Test.Lang
             {
                 get
                 {
-                    yield return new TestCaseData("ja", new int[] { UScript.KATAKANA, UScript.HIRAGANA, UScript.HAN }, new CultureInfo("ja"));
-                    yield return new TestCaseData("ko_KR", new int[] { UScript.HANGUL, UScript.HAN }, new CultureInfo("ko-KR"));
-                    yield return new TestCaseData("zh", new int[] { UScript.HAN }, new CultureInfo("zh"));
-                    yield return new TestCaseData("zh_TW", new int[] { UScript.HAN, UScript.BOPOMOFO }, new CultureInfo("zh-TW"));
+                    yield return new TestCaseData("ja", new int[] { UScript.Katakana, UScript.Hiragana, UScript.Han }, new CultureInfo("ja"));
+                    yield return new TestCaseData("ko_KR", new int[] { UScript.Hangul, UScript.Han }, new CultureInfo("ko-KR"));
+                    yield return new TestCaseData("zh", new int[] { UScript.Han }, new CultureInfo("zh"));
+                    yield return new TestCaseData("zh_TW", new int[] { UScript.Han, UScript.Bopomofo }, new CultureInfo("zh-TW"));
                 }
             }
 
@@ -173,61 +173,61 @@ namespace ICU4N.Dev.Test.Lang
                 get
                 {
                     /* test locale */
-                    yield return new TestCaseData("en", UScript.LATIN);
-                    yield return new TestCaseData("en_US", UScript.LATIN);
-                    yield return new TestCaseData("sr", UScript.CYRILLIC);
-                    yield return new TestCaseData("ta", UScript.TAMIL);
-                    yield return new TestCaseData("gu", UScript.GUJARATI);
-                    yield return new TestCaseData("te_IN", UScript.TELUGU);
-                    yield return new TestCaseData("hi", UScript.DEVANAGARI);
-                    yield return new TestCaseData("he", UScript.HEBREW);
-                    yield return new TestCaseData("ar", UScript.ARABIC);
-                    yield return new TestCaseData("abcde", UScript.INVALID_CODE);
-                    yield return new TestCaseData("abscde_cdef", UScript.INVALID_CODE);
-                    yield return new TestCaseData("iw", UScript.HEBREW);
+                    yield return new TestCaseData("en", UScript.Latin);
+                    yield return new TestCaseData("en_US", UScript.Latin);
+                    yield return new TestCaseData("sr", UScript.Cyrillic);
+                    yield return new TestCaseData("ta", UScript.Tamil);
+                    yield return new TestCaseData("gu", UScript.Gujarati);
+                    yield return new TestCaseData("te_IN", UScript.Telugu);
+                    yield return new TestCaseData("hi", UScript.Devanagari);
+                    yield return new TestCaseData("he", UScript.Hebrew);
+                    yield return new TestCaseData("ar", UScript.Arabic);
+                    yield return new TestCaseData("abcde", UScript.InvalidCode);
+                    yield return new TestCaseData("abscde_cdef", UScript.InvalidCode);
+                    yield return new TestCaseData("iw", UScript.Hebrew);
                     /* test abbr */
-                    yield return new TestCaseData("Hani", UScript.HAN);
-                    yield return new TestCaseData("Hang", UScript.HANGUL);
-                    yield return new TestCaseData("Hebr", UScript.HEBREW);
-                    yield return new TestCaseData("Hira", UScript.HIRAGANA);
-                    yield return new TestCaseData("Knda", UScript.KANNADA);
-                    yield return new TestCaseData("Kana", UScript.KATAKANA);
-                    yield return new TestCaseData("Khmr", UScript.KHMER);
-                    yield return new TestCaseData("Lao", UScript.LAO);
-                    yield return new TestCaseData("Latn", UScript.LATIN); /* "Latf","Latg", */
-                    yield return new TestCaseData("Mlym", UScript.MALAYALAM);
-                    yield return new TestCaseData("Mong", UScript.MONGOLIAN);
+                    yield return new TestCaseData("Hani", UScript.Han);
+                    yield return new TestCaseData("Hang", UScript.Hangul);
+                    yield return new TestCaseData("Hebr", UScript.Hebrew);
+                    yield return new TestCaseData("Hira", UScript.Hiragana);
+                    yield return new TestCaseData("Knda", UScript.Kannada);
+                    yield return new TestCaseData("Kana", UScript.Katakana);
+                    yield return new TestCaseData("Khmr", UScript.Khmer);
+                    yield return new TestCaseData("Lao", UScript.Lao);
+                    yield return new TestCaseData("Latn", UScript.Latin); /* "Latf","Latg", */
+                    yield return new TestCaseData("Mlym", UScript.Malayalam);
+                    yield return new TestCaseData("Mong", UScript.Mongolian);
                     /* test names */
-                    yield return new TestCaseData("CYRILLIC", UScript.CYRILLIC);
-                    yield return new TestCaseData("DESERET", UScript.DESERET);
-                    yield return new TestCaseData("DEVANAGARI", UScript.DEVANAGARI);
-                    yield return new TestCaseData("ETHIOPIC", UScript.ETHIOPIC);
-                    yield return new TestCaseData("GEORGIAN", UScript.GEORGIAN);
-                    yield return new TestCaseData("GOTHIC", UScript.GOTHIC);
-                    yield return new TestCaseData("GREEK", UScript.GREEK);
-                    yield return new TestCaseData("GUJARATI", UScript.GUJARATI);
-                    yield return new TestCaseData("COMMON", UScript.COMMON);
-                    yield return new TestCaseData("INHERITED", UScript.INHERITED);
+                    yield return new TestCaseData("CYRILLIC", UScript.Cyrillic);
+                    yield return new TestCaseData("DESERET", UScript.Deseret);
+                    yield return new TestCaseData("DEVANAGARI", UScript.Devanagari);
+                    yield return new TestCaseData("ETHIOPIC", UScript.Ethiopic);
+                    yield return new TestCaseData("GEORGIAN", UScript.Georgian);
+                    yield return new TestCaseData("GOTHIC", UScript.Gothic);
+                    yield return new TestCaseData("GREEK", UScript.Greek);
+                    yield return new TestCaseData("GUJARATI", UScript.Gujarati);
+                    yield return new TestCaseData("COMMON", UScript.Common);
+                    yield return new TestCaseData("INHERITED", UScript.Inherited);
                     /* test lower case names */
-                    yield return new TestCaseData("malayalam", UScript.MALAYALAM);
-                    yield return new TestCaseData("mongolian", UScript.MONGOLIAN);
-                    yield return new TestCaseData("myanmar", UScript.MYANMAR);
-                    yield return new TestCaseData("ogham", UScript.OGHAM);
-                    yield return new TestCaseData("old-italic", UScript.OLD_ITALIC);
-                    yield return new TestCaseData("oriya", UScript.ORIYA);
-                    yield return new TestCaseData("runic", UScript.RUNIC);
-                    yield return new TestCaseData("sinhala", UScript.SINHALA);
-                    yield return new TestCaseData("syriac", UScript.SYRIAC);
-                    yield return new TestCaseData("tamil", UScript.TAMIL);
-                    yield return new TestCaseData("telugu", UScript.TELUGU);
-                    yield return new TestCaseData("thaana", UScript.THAANA);
-                    yield return new TestCaseData("thai", UScript.THAI);
-                    yield return new TestCaseData("tibetan", UScript.TIBETAN);
+                    yield return new TestCaseData("malayalam", UScript.Malayalam);
+                    yield return new TestCaseData("mongolian", UScript.Mongolian);
+                    yield return new TestCaseData("myanmar", UScript.Myanmar);
+                    yield return new TestCaseData("ogham", UScript.Ogham);
+                    yield return new TestCaseData("old-italic", UScript.OldItalic);
+                    yield return new TestCaseData("oriya", UScript.Oriya);
+                    yield return new TestCaseData("runic", UScript.Runic);
+                    yield return new TestCaseData("sinhala", UScript.Sinhala);
+                    yield return new TestCaseData("syriac", UScript.Syriac);
+                    yield return new TestCaseData("tamil", UScript.Tamil);
+                    yield return new TestCaseData("telugu", UScript.Telugu);
+                    yield return new TestCaseData("thaana", UScript.Thaana);
+                    yield return new TestCaseData("thai", UScript.Thai);
+                    yield return new TestCaseData("tibetan", UScript.Tibetan);
                     /* test the bounds */
-                    yield return new TestCaseData("Cans", UScript.CANADIAN_ABORIGINAL);
-                    yield return new TestCaseData("arabic", UScript.ARABIC);
-                    yield return new TestCaseData("Yi", UScript.YI);
-                    yield return new TestCaseData("Zyyy", UScript.COMMON);
+                    yield return new TestCaseData("Cans", UScript.CanadianAboriginal);
+                    yield return new TestCaseData("arabic", UScript.Arabic);
+                    yield return new TestCaseData("Yi", UScript.Yi);
+                    yield return new TestCaseData("Zyyy", UScript.Common);
                 }
             }
 
@@ -237,7 +237,7 @@ namespace ICU4N.Dev.Test.Lang
                 int[] code = UScript.GetCode(testName);
                 if (code == null)
                 {
-                    if (expected != UScript.INVALID_CODE)
+                    if (expected != UScript.InvalidCode)
                     {
                         // getCode returns null if the code could not be found
                         Errln("Error testing UScript.getCode(). Got: null" + " Expected: " + expected + " for locale "
@@ -258,14 +258,14 @@ namespace ICU4N.Dev.Test.Lang
             {
                 get
                 {
-                    yield return new TestCaseData(UScript.CYRILLIC, "Cyrillic");
-                    yield return new TestCaseData(UScript.DESERET, "Deseret");
-                    yield return new TestCaseData(UScript.DEVANAGARI, "Devanagari");
-                    yield return new TestCaseData(UScript.ETHIOPIC, "Ethiopic");
-                    yield return new TestCaseData(UScript.GEORGIAN, "Georgian");
-                    yield return new TestCaseData(UScript.GOTHIC, "Gothic");
-                    yield return new TestCaseData(UScript.GREEK, "Greek");
-                    yield return new TestCaseData(UScript.GUJARATI, "Gujarati");
+                    yield return new TestCaseData(UScript.Cyrillic, "Cyrillic");
+                    yield return new TestCaseData(UScript.Deseret, "Deseret");
+                    yield return new TestCaseData(UScript.Devanagari, "Devanagari");
+                    yield return new TestCaseData(UScript.Ethiopic, "Ethiopic");
+                    yield return new TestCaseData(UScript.Georgian, "Georgian");
+                    yield return new TestCaseData(UScript.Gothic, "Gothic");
+                    yield return new TestCaseData(UScript.Greek, "Greek");
+                    yield return new TestCaseData(UScript.Gujarati, "Gujarati");
                 }
             }
 
@@ -286,17 +286,17 @@ namespace ICU4N.Dev.Test.Lang
             {
                 get
                 {
-                    yield return new TestCaseData(UScript.HAN, "Hani");
-                    yield return new TestCaseData(UScript.HANGUL, "Hang");
-                    yield return new TestCaseData(UScript.HEBREW, "Hebr");
-                    yield return new TestCaseData(UScript.HIRAGANA, "Hira");
-                    yield return new TestCaseData(UScript.KANNADA, "Knda");
-                    yield return new TestCaseData(UScript.KATAKANA, "Kana");
-                    yield return new TestCaseData(UScript.KHMER, "Khmr");
-                    yield return new TestCaseData(UScript.LAO, "Laoo");
-                    yield return new TestCaseData(UScript.LATIN, "Latn");
-                    yield return new TestCaseData(UScript.MALAYALAM, "Mlym");
-                    yield return new TestCaseData(UScript.MONGOLIAN, "Mong");
+                    yield return new TestCaseData(UScript.Han, "Hani");
+                    yield return new TestCaseData(UScript.Hangul, "Hang");
+                    yield return new TestCaseData(UScript.Hebrew, "Hebr");
+                    yield return new TestCaseData(UScript.Hiragana, "Hira");
+                    yield return new TestCaseData(UScript.Kannada, "Knda");
+                    yield return new TestCaseData(UScript.Katakana, "Kana");
+                    yield return new TestCaseData(UScript.Khmer, "Khmr");
+                    yield return new TestCaseData(UScript.Lao, "Laoo");
+                    yield return new TestCaseData(UScript.Latin, "Latn");
+                    yield return new TestCaseData(UScript.Malayalam, "Mlym");
+                    yield return new TestCaseData(UScript.Mongolian, "Mong");
                 }
             }
 
@@ -317,29 +317,29 @@ namespace ICU4N.Dev.Test.Lang
             {
                 get
                 {
-                    yield return new TestCaseData(0x0000FF9D, UScript.KATAKANA);
-                    yield return new TestCaseData(0x0000FFBE, UScript.HANGUL);
-                    yield return new TestCaseData(0x0000FFC7, UScript.HANGUL);
-                    yield return new TestCaseData(0x0000FFCF, UScript.HANGUL);
-                    yield return new TestCaseData(0x0000FFD7, UScript.HANGUL);
-                    yield return new TestCaseData(0x0000FFDC, UScript.HANGUL);
-                    yield return new TestCaseData(0x00010300, UScript.OLD_ITALIC);
-                    yield return new TestCaseData(0x00010330, UScript.GOTHIC);
-                    yield return new TestCaseData(0x0001034A, UScript.GOTHIC);
-                    yield return new TestCaseData(0x00010400, UScript.DESERET);
-                    yield return new TestCaseData(0x00010428, UScript.DESERET);
-                    yield return new TestCaseData(0x0001D167, UScript.INHERITED);
-                    yield return new TestCaseData(0x0001D17B, UScript.INHERITED);
-                    yield return new TestCaseData(0x0001D185, UScript.INHERITED);
-                    yield return new TestCaseData(0x0001D1AA, UScript.INHERITED);
-                    yield return new TestCaseData(0x00020000, UScript.HAN);
-                    yield return new TestCaseData(0x00000D02, UScript.MALAYALAM);
-                    yield return new TestCaseData(0x00050005, UScript.UNKNOWN); // new Zzzz value in Unicode 5.0
-                    yield return new TestCaseData(0x00000000, UScript.COMMON);
-                    yield return new TestCaseData(0x0001D169, UScript.INHERITED);
-                    yield return new TestCaseData(0x0001D182, UScript.INHERITED);
-                    yield return new TestCaseData(0x0001D18B, UScript.INHERITED);
-                    yield return new TestCaseData(0x0001D1AD, UScript.INHERITED);
+                    yield return new TestCaseData(0x0000FF9D, UScript.Katakana);
+                    yield return new TestCaseData(0x0000FFBE, UScript.Hangul);
+                    yield return new TestCaseData(0x0000FFC7, UScript.Hangul);
+                    yield return new TestCaseData(0x0000FFCF, UScript.Hangul);
+                    yield return new TestCaseData(0x0000FFD7, UScript.Hangul);
+                    yield return new TestCaseData(0x0000FFDC, UScript.Hangul);
+                    yield return new TestCaseData(0x00010300, UScript.OldItalic);
+                    yield return new TestCaseData(0x00010330, UScript.Gothic);
+                    yield return new TestCaseData(0x0001034A, UScript.Gothic);
+                    yield return new TestCaseData(0x00010400, UScript.Deseret);
+                    yield return new TestCaseData(0x00010428, UScript.Deseret);
+                    yield return new TestCaseData(0x0001D167, UScript.Inherited);
+                    yield return new TestCaseData(0x0001D17B, UScript.Inherited);
+                    yield return new TestCaseData(0x0001D185, UScript.Inherited);
+                    yield return new TestCaseData(0x0001D1AA, UScript.Inherited);
+                    yield return new TestCaseData(0x00020000, UScript.Han);
+                    yield return new TestCaseData(0x00000D02, UScript.Malayalam);
+                    yield return new TestCaseData(0x00050005, UScript.Unknown); // new Zzzz value in Unicode 5.0
+                    yield return new TestCaseData(0x00000000, UScript.Common);
+                    yield return new TestCaseData(0x0001D169, UScript.Inherited);
+                    yield return new TestCaseData(0x0001D182, UScript.Inherited);
+                    yield return new TestCaseData(0x0001D18B, UScript.Inherited);
+                    yield return new TestCaseData(0x0001D1AD, UScript.Inherited);
                 }
             }
 
@@ -347,7 +347,7 @@ namespace ICU4N.Dev.Test.Lang
             public void TestGetScript(int codepoint, int expected)
             {
 
-                int code = UScript.INVALID_CODE;
+                int code = UScript.InvalidCode;
 
                 code = UScript.GetScript(codepoint);
 

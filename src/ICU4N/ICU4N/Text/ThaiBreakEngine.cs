@@ -89,7 +89,7 @@ namespace ICU4N.Text
             if (breakType == BreakIterator.KIND_WORD || breakType == BreakIterator.KIND_LINE)
             {
                 int script = UCharacter.GetInt32PropertyValue(c, UProperty.SCRIPT);
-                return (script == UScript.THAI);
+                return (script == UScript.Thai);
             }
             return false;
         }

@@ -782,23 +782,23 @@ namespace ICU4N.Text
         //    return this;
         //}
 
-        public override ReorderCode MaxVariable
+        public override int MaxVariable
         {
             get
             {
-                return ReorderCode.First + settings.ReadOnly.MaxVariable;
+                return ReorderCodes.First + settings.ReadOnly.MaxVariable;
             }
             set
             {
                 // Convert the reorder code into a MaxVariable number, or UCOL_DEFAULT=-1.
                 int val;
-                if (value == ReorderCode.Default)
+                if (value == ReorderCodes.Default)
                 {
                     val = -1;  // UCOL_DEFAULT
                 }
-                else if (ReorderCode.First <= value && value <= ReorderCode.Currency)
+                else if (ReorderCodes.First <= value && value <= ReorderCodes.Currency)
                 {
-                    val = value - ReorderCode.First;
+                    val = value - ReorderCodes.First;
                 }
                 else
                 {
@@ -819,9 +819,9 @@ namespace ICU4N.Text
                 }
                 CollationSettings ownedSettings = GetOwnedSettings();
 
-                if (value == ReorderCode.Default)
+                if (value == ReorderCodes.Default)
                 {
-                    value = ReorderCode.First + defaultSettings.MaxVariable;
+                    value = ReorderCodes.First + defaultSettings.MaxVariable;
                 }
                 long varTop = data.GetLastPrimaryForGroup((int)value);
                 Debug.Assert(varTop != 0);
@@ -940,7 +940,7 @@ namespace ICU4N.Text
                 // Pin the variable top to the end of the reordering group which contains it.
                 // Only a few special groups are supported.
                 int group = data.GetGroupForPrimary(varTop);
-                if (group < (int)ReorderCode.First || (int)ReorderCode.Currency < group)
+                if (group < ReorderCodes.First || ReorderCodes.Currency < group)
                 {
                     throw new ArgumentException("The variable top must be a primary weight in " +
                             "the space/punctuation/symbols/currency symbols range");
@@ -951,7 +951,7 @@ namespace ICU4N.Text
                 if (varTop != settings.ReadOnly.VariableTop)
                 {
                     CollationSettings ownedSettings = GetOwnedSettings();
-                    ownedSettings.SetMaxVariable(group - (int)ReorderCode.First,
+                    ownedSettings.SetMaxVariable(group - ReorderCodes.First,
                             GetDefaultSettings().Options);
                     ownedSettings.VariableTop = varTop;
                     SetFastLatinOptions(ownedSettings);
@@ -1024,7 +1024,7 @@ namespace ICU4N.Text
         {
             CheckNotFrozen();
             int length = (order != null) ? order.Length : 0;
-            if (length == 1 && order[0] == (int)ReorderCode.None)
+            if (length == 1 && order[0] == ReorderCodes.None)
             {
                 length = 0;
             }
@@ -1035,7 +1035,7 @@ namespace ICU4N.Text
                 return;
             }
             CollationSettings defaultSettings = GetDefaultSettings();
-            if (length == 1 && order[0] == (int)ReorderCode.Default)
+            if (length == 1 && order[0] == ReorderCodes.Default)
             {
                 if (settings.ReadOnly != defaultSettings)
                 {

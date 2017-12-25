@@ -179,7 +179,7 @@ namespace ICU4N.Impl.Coll
 
         public void SetReordering(CollationData data, int[] codes)
         {
-            if (codes.Length == 0 || (codes.Length == 1 && codes[0] == (int)ReorderCode.None))
+            if (codes.Length == 0 || (codes.Length == 1 && codes[0] == Text.ReorderCodes.None))
             {
                 ResetReordering();
                 return;

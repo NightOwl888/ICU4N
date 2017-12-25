@@ -559,7 +559,7 @@ namespace ICU4N.Impl.Coll
             settings.Options = options;
             // Set variableTop from options and scripts data.
             settings.VariableTop = tailoring.Data.GetLastPrimaryForGroup(
-                    (int)ReorderCode.First + settings.MaxVariable);
+                    ReorderCodes.First + settings.MaxVariable);
             if (settings.VariableTop == 0)
             {
                 throw new ICUException("The maxVariable could not be mapped to a variableTop");

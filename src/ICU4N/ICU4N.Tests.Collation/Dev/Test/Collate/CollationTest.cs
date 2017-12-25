@@ -1365,22 +1365,22 @@ namespace ICU4N.Dev.Test.Collate
             String valueString = fileLine.Substring(equalPos + 1);
             if (attrString.Equals("maxVariable"))
             {
-                ReorderCode max;
+                int max;
                 if (valueString.Equals("space"))
                 {
-                    max = ReorderCode.Space;
+                    max = ReorderCodes.Space;
                 }
                 else if (valueString.Equals("punct"))
                 {
-                    max = ReorderCode.Punctuation;
+                    max = ReorderCodes.Punctuation;
                 }
                 else if (valueString.Equals("symbol"))
                 {
-                    max = ReorderCode.Symbol;
+                    max = ReorderCodes.Symbol;
                 }
                 else if (valueString.Equals("currency"))
                 {
-                    max = ReorderCode.Currency;
+                    max = ReorderCodes.Currency;
                 }
                 else
                 {
@@ -1558,7 +1558,7 @@ namespace ICU4N.Dev.Test.Collate
                 {
                     if (name.Equals("default", StringComparison.OrdinalIgnoreCase))
                     {
-                        code = (int)ReorderCode.Default;  // -1
+                        code = ReorderCodes.Default;  // -1
                     }
                     else
                     {
