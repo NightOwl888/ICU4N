@@ -43,7 +43,7 @@ namespace ICU4N.Lang
                 m_choice_ == (int)UCharacterNameChoice.ExtendedCharName
             )
             {
-                int length = m_name_.GetAlgorithmLength();
+                int length = m_name_.AlgorithmLength;
                 if (m_algorithmIndex_ < length)
                 {
                     while (m_algorithmIndex_ < length)

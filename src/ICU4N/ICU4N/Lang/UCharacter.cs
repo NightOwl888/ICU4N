@@ -4462,7 +4462,7 @@ namespace ICU4N.Lang
          */
         public static string GetName(int ch)
         {
-            return UCharacterName.INSTANCE.GetName(ch, UCharacterNameChoice.UnicodeCharName);
+            return UCharacterName.Instance.GetName(ch, UCharacterNameChoice.UnicodeCharName);
         }
 
         /**
@@ -4525,7 +4525,7 @@ namespace ICU4N.Lang
          */
         public static string GetExtendedName(int ch)
         {
-            return UCharacterName.INSTANCE.GetName(ch, UCharacterNameChoice.ExtendedCharName);
+            return UCharacterName.Instance.GetName(ch, UCharacterNameChoice.ExtendedCharName);
         }
 
         /**
@@ -4541,7 +4541,7 @@ namespace ICU4N.Lang
          */
         public static string GetNameAlias(int ch)
         {
-            return UCharacterName.INSTANCE.GetName(ch, UCharacterNameChoice.CharNameAlias);
+            return UCharacterName.Instance.GetName(ch, UCharacterNameChoice.CharNameAlias);
         }
 
         /**
@@ -4572,7 +4572,7 @@ namespace ICU4N.Lang
          */
         public static int GetCharFromName(string name)
         {
-            return UCharacterName.INSTANCE.GetCharFromName(
+            return UCharacterName.Instance.GetCharFromName(
                     UCharacterNameChoice.UnicodeCharName, name);
         }
 
@@ -4613,7 +4613,7 @@ namespace ICU4N.Lang
          */
         public static int GetCharFromExtendedName(string name)
         {
-            return UCharacterName.INSTANCE.GetCharFromName(
+            return UCharacterName.Instance.GetCharFromName(
                     UCharacterNameChoice.ExtendedCharName, name);
         }
 
@@ -4628,7 +4628,7 @@ namespace ICU4N.Lang
          */
         public static int GetCharFromNameAlias(string name)
         {
-            return UCharacterName.INSTANCE.GetCharFromName(UCharacterNameChoice.CharNameAlias, name);
+            return UCharacterName.Instance.GetCharFromName(UCharacterNameChoice.CharNameAlias, name);
         }
 
         /// <summary>
@@ -5532,7 +5532,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.6</stable>
         public static IValueEnumerator GetNameEnumerator()
         {
-            return new UCharacterNameEnumerator(UCharacterName.INSTANCE,
+            return new UCharacterNameEnumerator(UCharacterName.Instance,
                     UCharacterNameChoice.UnicodeCharName);
         }
 
@@ -5598,7 +5598,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.6</stable>
         public static IValueEnumerator GetExtendedNameEnumerator()
         {
-            return new UCharacterNameEnumerator(UCharacterName.INSTANCE,
+            return new UCharacterNameEnumerator(UCharacterName.Instance,
                     UCharacterNameChoice.ExtendedCharName);
         }
 

@@ -48,13 +48,13 @@ namespace ICU4N.Text
                                            Position offsets, bool isIncremental)
         {
 
-            int maxLen = UCharacterName.INSTANCE.GetMaxCharNameLength() + 1; // allow for temporary trailing space
+            int maxLen = UCharacterName.Instance.MaxCharNameLength + 1; // allow for temporary trailing space
 
             StringBuffer name = new StringBuffer(maxLen);
 
             // Get the legal character set
             UnicodeSet legal = new UnicodeSet();
-            UCharacterName.INSTANCE.GetCharNameCharacters(legal);
+            UCharacterName.Instance.GetCharNameCharacters(legal);
 
             int cursor = offsets.Start;
             int limit = offsets.Limit;

@@ -26,22 +26,27 @@ namespace ICU4N.Impl
     {
         // public data members ----------------------------------------------
 
+        private static readonly UCharacterName instance;
+
         /// <summary>
         /// Public singleton instance.
         /// </summary>
-        public static readonly UCharacterName INSTANCE;
+        public static UCharacterName Instance
+        {
+            get { return instance; }
+        }
 
         static UCharacterName()
         {
             try
             {
-                INSTANCE = new UCharacterName();
+                instance = new UCharacterName();
             }
             catch (IOException e)
             {
-                ///CLOVER:OFF
-                throw new MissingManifestResourceException("Could not construct UCharacterName. Missing unames.icu"/*, "", ""*/);
-                ///CLOVER:ON
+                //CLOVER:OFF
+                throw new MissingManifestResourceException("Could not construct UCharacterName. Missing unames.icu", e/*, "", ""*/);
+                //CLOVER:ON
             }
         }
 
@@ -500,9 +505,9 @@ namespace ICU4N.Impl
         /// <summary>
         /// Gets the Algorithm range length.
         /// </summary>
-        public int GetAlgorithmLength() // ICU4N TODO: API - make property
+        public int AlgorithmLength
         {
-            return m_algorithm_.Length;
+            get { return m_algorithm_.Length; }
         }
 
         /// <summary>
@@ -578,15 +583,18 @@ namespace ICU4N.Impl
         /// Equivalent to uprv_getMaxCharNameLength.
         /// </summary>
         /// <returns>The maximum length of any codepoint name.</returns>
-        public int GetMaxCharNameLength() // ICU4N TODO: API make property
+        public int MaxCharNameLength
         {
-            if (InitNameSetsLengths())
+            get
             {
-                return m_maxNameLength_;
-            }
-            else
-            {
-                return 0;
+                if (InitNameSetsLengths())
+                {
+                    return m_maxNameLength_;
+                }
+                else
+                {
+                    return 0;
+                }
             }
         }
 
@@ -596,15 +604,18 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>The maximum length of any codepoint name.</returns>
         //CLOVER:OFF
-        public int GetMaxISOCommentLength() // ICU4N TODO: API make property
+        public int MaxISOCommentLength
         {
-            if (InitNameSetsLengths())
+            get
             {
-                return m_maxISOCommentLength_;
-            }
-            else
-            {
-                return 0;
+                if (InitNameSetsLengths())
+                {
+                    return m_maxISOCommentLength_;
+                }
+                else
+                {
+                    return 0;
+                }
             }
         }
         //CLOVER:ON

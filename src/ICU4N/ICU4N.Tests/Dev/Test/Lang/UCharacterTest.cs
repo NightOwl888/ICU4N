@@ -1096,7 +1096,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             try
             {
-                int length = UCharacterName.INSTANCE.GetMaxCharNameLength();
+                int length = UCharacterName.Instance.MaxCharNameLength;
                 if (length < 83)
                 { // Unicode 3.2 max char name length
                     Errln("getMaxCharNameLength()=" + length + " is too short");
@@ -1242,7 +1242,7 @@ namespace ICU4N.Dev.Test.Lang
                     // letters than actual character names contain because
                     // it includes all the characters in lowercased names of
                     // general categories, for the full possible set of extended names.
-                    UCharacterName.INSTANCE.GetCharNameCharacters(set);
+                    UCharacterName.Instance.GetCharNameCharacters(set);
 
                     // build set the dumb (but sure-fire) way
                     Arrays.Fill(map, false);
@@ -1268,7 +1268,7 @@ namespace ICU4N.Dev.Test.Lang
                         }
                     }
 
-                    length = UCharacterName.INSTANCE.GetMaxCharNameLength();
+                    length = UCharacterName.Instance.MaxCharNameLength;
                     if (length != maxLength)
                     {
                         Errln("getMaxCharNameLength()=" + length
