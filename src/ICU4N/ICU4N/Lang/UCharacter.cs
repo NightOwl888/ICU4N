@@ -2377,7 +2377,7 @@ namespace ICU4N.Lang
                 }
 
                 return UnicodeBlock.GetInstance(
-                        UCharacterProperty.INSTANCE.GetInt32PropertyValue(ch, (int)UProperty.BLOCK));
+                        UCharacterProperty.INSTANCE.GetInt32PropertyValue(ch, (int)UProperty.Block));
             }
 
             /**
@@ -2406,7 +2406,7 @@ namespace ICU4N.Lang
                     {
                         UnicodeBlock b2 = BLOCKS_[i];
                         string name = TrimBlockName(
-                                GetPropertyValueName(UProperty.BLOCK, b2.ID,
+                                GetPropertyValueName(UProperty.Block, b2.ID,
                                         NameChoice.Long));
                         m[name] = b2;
                     }
@@ -4639,7 +4639,7 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// In addition, this function maps the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/> to the synthetic names "gcm" /
+        /// <see cref="UProperty.General_Category_Mask"/> to the synthetic names "gcm" /
         /// "General_Category_Mask".  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
@@ -4678,7 +4678,7 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// In addition, this function maps the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/> to the synthetic names "gcm" /
+        /// <see cref="UProperty.General_Category_Mask"/> to the synthetic names "gcm" /
         /// "General_Category_Mask".  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
@@ -4722,16 +4722,16 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Note: Some of the names in PropertyValueAliases.txt can only be
-        /// retrieved using <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// retrieved using <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">
         /// <see cref="UProperty"/> selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// If out of range, null is returned.
         /// </param>
         /// <param name="value">
@@ -4740,15 +4740,15 @@ namespace ICU4N.Lang
         /// are a few exceptions:
         /// <list type="number">
         ///     <item><desription>
-        ///         <see cref="UProperty.BLOCK"/> values begin at the
+        ///         <see cref="UProperty.Block"/> values begin at the
         ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN_ID"/>.
         ///     </desription></item>
         ///     <item><desription>
-        ///         <see cref="UProperty.CANONICAL_COMBINING_CLASS"/> values are not contiguous
+        ///         <see cref="UProperty.Canonical_Combining_Class"/> values are not contiguous
         ///         and range from 0..240.
         ///     </desription></item>
         ///     <item><desription>
-        ///         <see cref="UProperty.GENERAL_CATEGORY_MASK"/> values
+        ///         <see cref="UProperty.General_Category_Mask"/> values
         ///         are mask values produced by left-shifting 1 by
         ///         <see cref="UCharacter.GetType(int)"/>.GetIcuValue().  This allows grouped categories such as
         ///         [:L:] to be represented.  Mask values are non-contiguous.
@@ -4780,13 +4780,13 @@ namespace ICU4N.Lang
                     int value,
                     NameChoice nameChoice)
         {
-            if ((property == UProperty.CANONICAL_COMBINING_CLASS
-                    || property == UProperty.LEAD_CANONICAL_COMBINING_CLASS
-                    || property == UProperty.TRAIL_CANONICAL_COMBINING_CLASS)
+            if ((property == UProperty.Canonical_Combining_Class
+                    || property == UProperty.Lead_Canonical_Combining_Class
+                    || property == UProperty.Trail_Canonical_Combining_Class)
                     && value >= UCharacter.GetIntPropertyMinValue(
-                            UProperty.CANONICAL_COMBINING_CLASS)
+                            UProperty.Canonical_Combining_Class)
                             && value <= UCharacter.GetIntPropertyMaxValue(
-                                    UProperty.CANONICAL_COMBINING_CLASS)
+                                    UProperty.Canonical_Combining_Class)
                                     && nameChoice >= 0 && nameChoice < NameChoice.Count)
             {
                 // this is hard coded for the valid cc
@@ -4816,16 +4816,16 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Note: Some of the names in PropertyValueAliases.txt can only be
-        /// retrieved using <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// retrieved using <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">
         /// <see cref="UProperty"/> selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// If out of range, null is returned.
         /// </param>
         /// <param name="value">
@@ -4834,11 +4834,11 @@ namespace ICU4N.Lang
         /// are a few exceptions:
         /// <list type="number">
         ///     <item><desription>
-        ///         <see cref="UProperty.BLOCK"/> values begin at the
+        ///         <see cref="UProperty.Block"/> values begin at the
         ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN_ID"/>.
         ///     </desription></item>
         ///     <item><desription>
-        ///         <see cref="UProperty.CANONICAL_COMBINING_CLASS"/> values are not contiguous
+        ///         <see cref="UProperty.Canonical_Combining_Class"/> values are not contiguous
         ///         and range from 0..240.
         ///     </desription></item>
         ///     <item><desription>
@@ -4877,13 +4877,13 @@ namespace ICU4N.Lang
                int value,
                NameChoice nameChoice, out string result) // ICU4N TODO: Tests
         {
-            if ((property == UProperty.CANONICAL_COMBINING_CLASS
-                    || property == UProperty.LEAD_CANONICAL_COMBINING_CLASS
-                    || property == UProperty.TRAIL_CANONICAL_COMBINING_CLASS)
+            if ((property == UProperty.Canonical_Combining_Class
+                    || property == UProperty.Lead_Canonical_Combining_Class
+                    || property == UProperty.Trail_Canonical_Combining_Class)
                     && value >= UCharacter.GetIntPropertyMinValue(
-                            UProperty.CANONICAL_COMBINING_CLASS)
+                            UProperty.Canonical_Combining_Class)
                             && value <= UCharacter.GetIntPropertyMaxValue(
-                                    UProperty.CANONICAL_COMBINING_CLASS)
+                                    UProperty.Canonical_Combining_Class)
                                     && nameChoice >= 0 && nameChoice < NameChoice.Count)
             {
                 // this is hard coded for the valid cc
@@ -4900,11 +4900,11 @@ namespace ICU4N.Lang
         // ICU4N specific - GetPropertyValueEnum(UProperty property, ICharSequence valueAlias) moved to UCharacterExtension.tt
 
         /// <summary>
-        /// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UProperty.UNDEFINED"/>.
+        /// Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>, except doesn't throw exception. Instead, returns <see cref="UProperty.Undefined"/>.
         /// </summary>
         /// <param name="property">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
         /// <param name="valueAlias">Same as <see cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>.</param>
-        /// <returns>Returns <see cref="UProperty.UNDEFINED"/> if the value is not valid, otherwise the value.</returns>
+        /// <returns>Returns <see cref="UProperty.Undefined"/> if the value is not valid, otherwise the value.</returns>
         [Obsolete("ICU4N 60.1.0 Use TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias) instead.")]
         internal static int GetPropertyValueEnumNoThrow(UProperty property, ICharSequence valueAlias)
         {
@@ -5662,7 +5662,7 @@ namespace ICU4N.Lang
          */
         public static bool IsUAlphabetic(int ch)
         {
-            return HasBinaryProperty(ch, UProperty.ALPHABETIC);
+            return HasBinaryProperty(ch, UProperty.Alphabetic);
         }
 
         /**
@@ -5674,7 +5674,7 @@ namespace ICU4N.Lang
          */
         public static bool IsULowercase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
         {
-            return HasBinaryProperty(ch, UProperty.LOWERCASE);
+            return HasBinaryProperty(ch, UProperty.Lowercase);
         }
 
         /**
@@ -5686,7 +5686,7 @@ namespace ICU4N.Lang
          */
         public static bool IsUUppercase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
         {
-            return HasBinaryProperty(ch, UProperty.UPPERCASE);
+            return HasBinaryProperty(ch, UProperty.Uppercase);
         }
 
         /**
@@ -5699,7 +5699,7 @@ namespace ICU4N.Lang
          */
         public static bool IsUWhiteSpace(int ch)
         {
-            return HasBinaryProperty(ch, UProperty.WHITE_SPACE);
+            return HasBinaryProperty(ch, UProperty.White_Space);
         }
 
         /**
@@ -5758,32 +5758,32 @@ namespace ICU4N.Lang
         ///CLOVER:OFF
         public static string GetStringPropertyValue(UProperty propertyEnum, int codepoint, NameChoice nameChoice)
         {
-            if ((propertyEnum >= UProperty.BINARY_START && propertyEnum < UProperty.BINARY_LIMIT) ||
-                    (propertyEnum >= UProperty.INT_START && propertyEnum < UProperty.INT_LIMIT))
+            if ((propertyEnum >= UProperty.Binary_Start && propertyEnum < UProperty.Binary_Limit) ||
+                    (propertyEnum >= UProperty.Int_Start && propertyEnum < UProperty.Int_Limit))
             {
                 return GetPropertyValueName(propertyEnum, GetInt32PropertyValue(codepoint, propertyEnum),
                         nameChoice);
             }
-            if (propertyEnum == UProperty.NUMERIC_VALUE)
+            if (propertyEnum == UProperty.Numeric_Value)
             {
                 return GetUnicodeNumericValue(codepoint).ToString(CultureInfo.InvariantCulture);
             }
             // otherwise must be string property
             switch (propertyEnum)
             {
-                case UProperty.AGE: return GetAge(codepoint).ToString();
-                case UProperty.ISO_COMMENT: return GetISOComment(codepoint);
-                case UProperty.BIDI_MIRRORING_GLYPH: return ToString(GetMirror(codepoint));
-                case UProperty.CASE_FOLDING: return ToString(FoldCase(codepoint, true));
-                case UProperty.LOWERCASE_MAPPING: return ToString(ToLower(codepoint));
-                case UProperty.NAME: return GetName(codepoint);
-                case UProperty.SIMPLE_CASE_FOLDING: return ToString(FoldCase(codepoint, true));
-                case UProperty.SIMPLE_LOWERCASE_MAPPING: return ToString(ToLower(codepoint));
-                case UProperty.SIMPLE_TITLECASE_MAPPING: return ToString(ToTitleCase(codepoint));
-                case UProperty.SIMPLE_UPPERCASE_MAPPING: return ToString(ToUpper(codepoint));
-                case UProperty.TITLECASE_MAPPING: return ToString(ToTitleCase(codepoint));
-                case UProperty.UNICODE_1_NAME: return GetName1_0(codepoint);
-                case UProperty.UPPERCASE_MAPPING: return ToString(ToUpper(codepoint));
+                case UProperty.Age: return GetAge(codepoint).ToString();
+                case UProperty.ISO_Comment: return GetISOComment(codepoint);
+                case UProperty.Bidi_Mirroring_Glyph: return ToString(GetMirror(codepoint));
+                case UProperty.Case_Folding: return ToString(FoldCase(codepoint, true));
+                case UProperty.Lowercase_Mapping: return ToString(ToLower(codepoint));
+                case UProperty.Name: return GetName(codepoint);
+                case UProperty.Simple_Case_Folding: return ToString(FoldCase(codepoint, true));
+                case UProperty.Simple_Lowercase_Mapping: return ToString(ToLower(codepoint));
+                case UProperty.Simple_Titlecase_Mapping: return ToString(ToTitleCase(codepoint));
+                case UProperty.Simple_Uppercase_Mapping: return ToString(ToUpper(codepoint));
+                case UProperty.Titlecase_Mapping: return ToString(ToTitleCase(codepoint));
+                case UProperty.Unicode_1_Name: return GetName1_0(codepoint);
+                case UProperty.Uppercase_Mapping: return ToString(ToUpper(codepoint));
             }
             throw new ArgumentException("Illegal Property Enum");
         }

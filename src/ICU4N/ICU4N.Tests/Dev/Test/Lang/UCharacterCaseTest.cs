@@ -308,7 +308,7 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestTitleRegression()
         {
-            bool isIgnorable = UCharacter.HasBinaryProperty('\'', UProperty.CASE_IGNORABLE);
+            bool isIgnorable = UCharacter.HasBinaryProperty('\'', UProperty.Case_Ignorable);
             assertTrue("Case Ignorable check of ASCII apostrophe", isIgnorable);
             assertEquals("Titlecase check",
                     "The Quick Brown Fox Can't Jump Over The Lazy Dogs.",

@@ -244,7 +244,7 @@ namespace ICU4N.Impl
             }
             internal override bool Contains(int c)
             {
-                return Norm2AllModes.GetN2WithImpl(which - (int)UProperty.NFD_INERT).IsInert(c);
+                return Norm2AllModes.GetN2WithImpl(which - (int)UProperty.NFD_Inert).IsInert(c);
             }
         }
 
@@ -308,25 +308,25 @@ namespace ICU4N.Impl
                         return UBiDiProps.INSTANCE.IsJoinControl(c);
                     }),
                 new BinaryProperty(this,1, (1<<LOGICAL_ORDER_EXCEPTION_PROPERTY_)),
-                new CaseBinaryProperty(this, (int)UProperty.LOWERCASE),
+                new CaseBinaryProperty(this, (int)UProperty.Lowercase),
                 new BinaryProperty(this,1, (1<<MATH_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<NONCHARACTER_CODE_POINT_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<QUOTATION_MARK_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<RADICAL_PROPERTY_)),
-                new CaseBinaryProperty(this, (int)UProperty.SOFT_DOTTED),
+                new CaseBinaryProperty(this, (int)UProperty.Soft_Dotted),
                 new BinaryProperty(this,1, (1<<TERMINAL_PUNCTUATION_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<UNIFIED_IDEOGRAPH_PROPERTY_)),
-                new CaseBinaryProperty(this, (int)UProperty.UPPERCASE),
+                new CaseBinaryProperty(this, (int)UProperty.Uppercase),
                 new BinaryProperty(this,1, (1<<WHITE_SPACE_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<XID_CONTINUE_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<XID_START_PROPERTY_)),
-                new CaseBinaryProperty(this, (int)UProperty.CASE_SENSITIVE),
+                new CaseBinaryProperty(this, (int)UProperty.Case_Sensitive),
                 new BinaryProperty(this,1, (1<<S_TERM_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<VARIATION_SELECTOR_PROPERTY_)),
-                new NormInertBinaryProperty(this,SRC_NFC, (int)UProperty.NFD_INERT),
-                new NormInertBinaryProperty(this,SRC_NFKC, (int)UProperty.NFKD_INERT),
-                new NormInertBinaryProperty(this,SRC_NFC, (int)UProperty.NFC_INERT),
-                new NormInertBinaryProperty(this,SRC_NFKC, (int)UProperty.NFKC_INERT),
+                new NormInertBinaryProperty(this,SRC_NFC, (int)UProperty.NFD_Inert),
+                new NormInertBinaryProperty(this,SRC_NFKC, (int)UProperty.NFKD_Inert),
+                new NormInertBinaryProperty(this,SRC_NFC, (int)UProperty.NFC_Inert),
+                new NormInertBinaryProperty(this,SRC_NFKC, (int)UProperty.NFKC_Inert),
                 new AnonymousBinaryProperty(this, SRC_NFC_CANON_ITER, contains: (c) =>
                     {  // UCHAR_SEGMENT_STARTER
                         return Norm2AllModes.GetNFCInstance().Impl.
@@ -377,11 +377,11 @@ namespace ICU4N.Impl
                         }
                         return UCharacter.GetType(c) == UnicodeCategory.DecimalDigitNumber;
                     }),
-                new CaseBinaryProperty(this, (int)UProperty.CASED),
-                new CaseBinaryProperty(this, (int)UProperty.CASE_IGNORABLE),
-                new CaseBinaryProperty(this, (int)UProperty.CHANGES_WHEN_LOWERCASED),
-                new CaseBinaryProperty(this, (int)UProperty.CHANGES_WHEN_UPPERCASED),
-                new CaseBinaryProperty(this, (int)UProperty.CHANGES_WHEN_TITLECASED),
+                new CaseBinaryProperty(this, (int)UProperty.Cased),
+                new CaseBinaryProperty(this, (int)UProperty.Case_Ignorable),
+                new CaseBinaryProperty(this, (int)UProperty.Changes_When_Lowercased),
+                new CaseBinaryProperty(this, (int)UProperty.Changes_When_Uppercased),
+                new CaseBinaryProperty(this, (int)UProperty.Changes_When_Titlecased),
                 new AnonymousBinaryProperty(this, SRC_CASE_AND_NORM, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_CASEFOLDED
                         string nfd = Norm2AllModes.GetNFCInstance().Impl.GetDecomposition(c);
@@ -413,7 +413,7 @@ namespace ICU4N.Impl
                             return !folded.Equals(nfd);
                         }
                     }),
-                new CaseBinaryProperty(this, (int)UProperty.CHANGES_WHEN_CASEMAPPED),
+                new CaseBinaryProperty(this, (int)UProperty.Changes_When_Casemapped),
                 new AnonymousBinaryProperty(this, SRC_NFKC_CF, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_NFKC_CASEFOLDED
                         Normalizer2Impl kcf = Norm2AllModes.GetNFKC_CFInstance().Impl;
@@ -494,11 +494,11 @@ namespace ICU4N.Impl
                         return HangulSyllableType.COUNT - 1;
                     }),
                 // max=1=YES -- these are never "maybe", only "no" or "yes"
-                new NormQuickCheckIntProperty(this, SRC_NFC, (int)UProperty.NFD_QUICK_CHECK, 1),
-                new NormQuickCheckIntProperty(this, SRC_NFKC, (int)UProperty.NFKD_QUICK_CHECK, 1),
+                new NormQuickCheckIntProperty(this, SRC_NFC, (int)UProperty.NFD_Quick_Check, 1),
+                new NormQuickCheckIntProperty(this, SRC_NFKC, (int)UProperty.NFKD_Quick_Check, 1),
                 // max=2=MAYBE
-                new NormQuickCheckIntProperty(this, SRC_NFC, (int)UProperty.NFC_QUICK_CHECK, 2),
-                new NormQuickCheckIntProperty(this, SRC_NFKC, (int)UProperty.NFKC_QUICK_CHECK, 2),
+                new NormQuickCheckIntProperty(this, SRC_NFC, (int)UProperty.NFC_Quick_Check, 2),
+                new NormQuickCheckIntProperty(this, SRC_NFKC, (int)UProperty.NFKC_Quick_Check, 2),
                 new CombiningClassIntProperty(this, SRC_NFC, getValue: (c) =>
                     {  // LEAD_CANONICAL_COMBINING_CLASS
                         return Norm2AllModes.GetNFCInstance().Impl.GetFCD16(c) >> 8;
@@ -523,7 +523,7 @@ namespace ICU4N.Impl
 
         public bool HasBinaryProperty(int c, int which)
         {
-            if (which < (int)UProperty.BINARY_START || (int)UProperty.BINARY_LIMIT <= which)
+            if (which < (int)UProperty.Binary_Start || (int)UProperty.Binary_Limit <= which)
             {
                 // not a known binary property
                 return false;
@@ -682,7 +682,7 @@ namespace ICU4N.Impl
 
             internal override int GetValue(int c)
             {
-                return Norm2AllModes.GetN2WithImpl(which - (int)UProperty.NFD_QUICK_CHECK).GetQuickCheck(c);
+                return Norm2AllModes.GetN2WithImpl(which - (int)UProperty.NFD_Quick_Check).GetQuickCheck(c);
             }
 
             internal override int GetMaxValue(int which)
@@ -695,18 +695,18 @@ namespace ICU4N.Impl
 
         public int GetInt32PropertyValue(int c, int which)
         {
-            if (which < (int)UProperty.INT_START)
+            if (which < (int)UProperty.Int_Start)
             {
-                if ((int)UProperty.BINARY_START <= which && which < (int)UProperty.BINARY_LIMIT)
+                if ((int)UProperty.Binary_Start <= which && which < (int)UProperty.Binary_Limit)
                 {
                     return binProps[which].Contains(c) ? 1 : 0;
                 }
             }
-            else if (which < (int)UProperty.INT_LIMIT)
+            else if (which < (int)UProperty.Int_Limit)
             {
-                return intProps[which - (int)UProperty.INT_START].GetValue(c);
+                return intProps[which - (int)UProperty.Int_Start].GetValue(c);
             }
-            else if (which == (int)UProperty.GENERAL_CATEGORY_MASK)
+            else if (which == (int)UProperty.General_Category_Mask)
             {
                 return GetMask(GetType(c));
             }
@@ -715,73 +715,73 @@ namespace ICU4N.Impl
 
         public int GetIntPropertyMaxValue(int which)
         {
-            if (which < (int)UProperty.INT_START)
+            if (which < (int)UProperty.Int_Start)
             {
-                if ((int)UProperty.BINARY_START <= which && which < (int)UProperty.BINARY_LIMIT)
+                if ((int)UProperty.Binary_Start <= which && which < (int)UProperty.Binary_Limit)
                 {
                     return 1;  // maximum TRUE for all binary properties
                 }
             }
-            else if (which < (int)UProperty.INT_LIMIT)
+            else if (which < (int)UProperty.Int_Limit)
             {
-                return intProps[which - (int)UProperty.INT_START].GetMaxValue(which);
+                return intProps[which - (int)UProperty.Int_Start].GetMaxValue(which);
             }
             return -1; // undefined
         }
 
         public int GetSource(int which)
         {
-            if (which < (int)UProperty.BINARY_START)
+            if (which < (int)UProperty.Binary_Start)
             {
                 return SRC_NONE; /* undefined */
             }
-            else if (which < (int)UProperty.BINARY_LIMIT)
+            else if (which < (int)UProperty.Binary_Limit)
             {
                 return binProps[which].GetSource();
             }
-            else if (which < (int)UProperty.INT_START)
+            else if (which < (int)UProperty.Int_Start)
             {
                 return SRC_NONE; /* undefined */
             }
-            else if (which < (int)UProperty.INT_LIMIT)
+            else if (which < (int)UProperty.Int_Limit)
             {
-                return intProps[which - (int)UProperty.INT_START].GetSource();
+                return intProps[which - (int)UProperty.Int_Start].GetSource();
             }
-            else if (which < (int)UProperty.STRING_START)
+            else if (which < (int)UProperty.String_Start)
             {
                 switch (which)
                 {
-                    case (int)UProperty.GENERAL_CATEGORY_MASK:
-                    case (int)UProperty.NUMERIC_VALUE:
+                    case (int)UProperty.General_Category_Mask:
+                    case (int)UProperty.Numeric_Value:
                         return SRC_CHAR;
 
                     default:
                         return SRC_NONE;
                 }
             }
-            else if (which < (int)UProperty.STRING_LIMIT)
+            else if (which < (int)UProperty.String_Limit)
             {
                 switch (which)
                 {
-                    case (int)UProperty.AGE:
+                    case (int)UProperty.Age:
                         return SRC_PROPSVEC;
 
-                    case (int)UProperty.BIDI_MIRRORING_GLYPH:
+                    case (int)UProperty.Bidi_Mirroring_Glyph:
                         return SRC_BIDI;
 
-                    case (int)UProperty.CASE_FOLDING:
-                    case (int)UProperty.LOWERCASE_MAPPING:
-                    case (int)UProperty.SIMPLE_CASE_FOLDING:
-                    case (int)UProperty.SIMPLE_LOWERCASE_MAPPING:
-                    case (int)UProperty.SIMPLE_TITLECASE_MAPPING:
-                    case (int)UProperty.SIMPLE_UPPERCASE_MAPPING:
-                    case (int)UProperty.TITLECASE_MAPPING:
-                    case (int)UProperty.UPPERCASE_MAPPING:
+                    case (int)UProperty.Case_Folding:
+                    case (int)UProperty.Lowercase_Mapping:
+                    case (int)UProperty.Simple_Case_Folding:
+                    case (int)UProperty.Simple_Lowercase_Mapping:
+                    case (int)UProperty.Simple_Titlecase_Mapping:
+                    case (int)UProperty.Simple_Uppercase_Mapping:
+                    case (int)UProperty.Titlecase_Mapping:
+                    case (int)UProperty.Uppercase_Mapping:
                         return SRC_CASE;
 
-                    case (int)UProperty.ISO_COMMENT:
-                    case (int)UProperty.NAME:
-                    case (int)UProperty.UNICODE_1_NAME:
+                    case (int)UProperty.ISO_Comment:
+                    case (int)UProperty.Name:
+                    case (int)UProperty.Unicode_1_Name:
                         return SRC_NAMES;
 
                     default:
@@ -792,7 +792,7 @@ namespace ICU4N.Impl
             {
                 switch (which)
                 {
-                    case (int)UProperty.SCRIPT_EXTENSIONS:
+                    case (int)UProperty.Script_Extensions:
                         return SRC_PROPSVEC;
                     default:
                         return SRC_NONE; /* undefined */
@@ -1392,11 +1392,11 @@ namespace ICU4N.Impl
             Init();
 
             // consistency check
-            if (binProps.Length != (int)UProperty.BINARY_LIMIT)
+            if (binProps.Length != (int)UProperty.Binary_Limit)
             {
                 throw new ICUException("binProps.length!=UProperty.BINARY_LIMIT");
             }
-            if (intProps.Length != ((int)UProperty.INT_LIMIT - (int)UProperty.INT_START))
+            if (intProps.Length != ((int)UProperty.Int_Limit - (int)UProperty.Int_Start))
             {
                 throw new ICUException("intProps.length!=(UProperty.INT_LIMIT-UProperty.INT_START)");
             }

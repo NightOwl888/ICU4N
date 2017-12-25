@@ -53,17 +53,17 @@ namespace ICU4N.Dev.Test.Lang
                     /* looks like a valid property; check the values */
                     string pname = UCharacter.GetPropertyName(p, NameChoice.Long);
                     int max = 0;
-                    if (p == UProperty.CANONICAL_COMBINING_CLASS)
+                    if (p == UProperty.Canonical_Combining_Class)
                     {
                         max = 255;
                     }
-                    else if (p == UProperty.GENERAL_CATEGORY_MASK)
+                    else if (p == UProperty.General_Category_Mask)
                     {
                         /* it's far too slow to iterate all the way up to
                            the real max, U_GC_P_MASK */
                         max = 0x1000; // U_GC_NL_MASK;
                     }
-                    else if (p == UProperty.BLOCK)
+                    else if (p == UProperty.Block)
                     {
                         /* UBlockCodes, unlike other values, start at 1 */
                         max = 1;
@@ -108,39 +108,39 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 if (!sawProp)
                 {
-                    if (p >= UProperty.STRING_LIMIT)
+                    if (p >= UProperty.String_Limit)
                     {
                         break;
                     }
-                    else if (p >= UProperty.DOUBLE_LIMIT)
+                    else if (p >= UProperty.Double_Limit)
                     {
-                        p = UProperty.STRING_START - 1;
+                        p = UProperty.String_Start - 1;
                     }
-                    else if (p >= UProperty.MASK_LIMIT)
+                    else if (p >= UProperty.Mask_Limit)
                     {
-                        p = UProperty.DOUBLE_START - 1;
+                        p = UProperty.Double_Start - 1;
                     }
-                    else if (p >= UProperty.INT_LIMIT)
+                    else if (p >= UProperty.Int_Limit)
                     {
-                        p = UProperty.MASK_START - 1;
+                        p = UProperty.Mask_Start - 1;
                     }
-                    else if (p >= UProperty.BINARY_LIMIT)
+                    else if (p >= UProperty.Binary_Limit)
                     {
-                        p = UProperty.INT_START - 1;
+                        p = UProperty.Int_Start - 1;
                     }
                 }
             }
 
             int i = UCharacter.GetIntPropertyMinValue(
-                                            UProperty.CANONICAL_COMBINING_CLASS);
+                                            UProperty.Canonical_Combining_Class);
             try
             {
                 for (; i <= UCharacter.GetIntPropertyMaxValue(
-                                              UProperty.CANONICAL_COMBINING_CLASS);
+                                              UProperty.Canonical_Combining_Class);
                      i++)
                 {
                     UCharacter.GetPropertyValueName(
-                                              UProperty.CANONICAL_COMBINING_CLASS,
+                                              UProperty.Canonical_Combining_Class,
                                               i, NameChoice.Long);
                 }
             }
@@ -194,17 +194,17 @@ namespace ICU4N.Dev.Test.Lang
                     string pname;
                     UCharacter.TryGetPropertyName(p, NameChoice.Long, out pname);
                     int max = 0;
-                    if (p == UProperty.CANONICAL_COMBINING_CLASS)
+                    if (p == UProperty.Canonical_Combining_Class)
                     {
                         max = 255;
                     }
-                    else if (p == UProperty.GENERAL_CATEGORY_MASK)
+                    else if (p == UProperty.General_Category_Mask)
                     {
                         /* it's far too slow to iterate all the way up to
                            the real max, U_GC_P_MASK */
                         max = 0x1000; // U_GC_NL_MASK;
                     }
-                    else if (p == UProperty.BLOCK)
+                    else if (p == UProperty.Block)
                     {
                         /* UBlockCodes, unlike other values, start at 1 */
                         max = 1;
@@ -248,39 +248,39 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 if (!sawProp)
                 {
-                    if (p >= UProperty.STRING_LIMIT)
+                    if (p >= UProperty.String_Limit)
                     {
                         break;
                     }
-                    else if (p >= UProperty.DOUBLE_LIMIT)
+                    else if (p >= UProperty.Double_Limit)
                     {
-                        p = UProperty.STRING_START - 1;
+                        p = UProperty.String_Start - 1;
                     }
-                    else if (p >= UProperty.MASK_LIMIT)
+                    else if (p >= UProperty.Mask_Limit)
                     {
-                        p = UProperty.DOUBLE_START - 1;
+                        p = UProperty.Double_Start - 1;
                     }
-                    else if (p >= UProperty.INT_LIMIT)
+                    else if (p >= UProperty.Int_Limit)
                     {
-                        p = UProperty.MASK_START - 1;
+                        p = UProperty.Mask_Start - 1;
                     }
-                    else if (p >= UProperty.BINARY_LIMIT)
+                    else if (p >= UProperty.Binary_Limit)
                     {
-                        p = UProperty.INT_START - 1;
+                        p = UProperty.Int_Start - 1;
                     }
                 }
             }
 
             int i = UCharacter.GetIntPropertyMinValue(
-                                            UProperty.CANONICAL_COMBINING_CLASS);
+                                            UProperty.Canonical_Combining_Class);
 
             for (; i <= UCharacter.GetIntPropertyMaxValue(
-                                            UProperty.CANONICAL_COMBINING_CLASS);
+                                            UProperty.Canonical_Combining_Class);
                     i++)
             {
                 string valueName;
                 if (!UCharacter.TryGetPropertyValueName(
-                                            UProperty.CANONICAL_COMBINING_CLASS,
+                                            UProperty.Canonical_Combining_Class,
                                             i, NameChoice.Long, out valueName))
                 {
                     Errln("0x" + i.ToHexString()
@@ -305,7 +305,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                int p = UCharacter.GetPropertyValueEnum(UProperty.LINE_BREAK, "?!");
+                int p = UCharacter.GetPropertyValueEnum(UProperty.Line_Break, "?!");
                 Errln("UCharacter.getPropertyValueEnum(UProperty.LINE_BREAK, ?!) returned " + p +
                       " rather than throwing an exception");
             }

@@ -345,19 +345,19 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names. Does not throw.
         /// </summary>
-        /// <returns>value enum, or <see cref="UProperty.UNDEFINED"/> if not defined for that property</returns>
+        /// <returns>value enum, or <see cref="UProperty.Undefined"/> if not defined for that property</returns>
         [Obsolete("ICU4N 60.1.0 - Use TryGetPropertyValueEnum instead.")]
         internal int GetPropertyValueEnumNoThrow(int property, ICharSequence alias)
         {
             int valueMapIndex = FindProperty(property);
             if (valueMapIndex == 0)
             {
-                return (int)UProperty.UNDEFINED;
+                return (int)UProperty.Undefined;
             }
             valueMapIndex = valueMaps[valueMapIndex + 1];
             if (valueMapIndex == 0)
             {
-                return (int)UProperty.UNDEFINED;
+                return (int)UProperty.Undefined;
             }
             // valueMapIndex is the start of the property's valueMap,
             // where the first word is the BytesTrie offset.

@@ -214,7 +214,7 @@ namespace ICU4N.Dev.Test.Lang
                 ScriptUsage usage = UScript.GetUsage(sc);
                 String sample = UScript.GetSampleString(sc);
                 UnicodeSet scriptSet = new UnicodeSet();
-                scriptSet.ApplyIntPropertyValue((int)UProperty.SCRIPT, sc); // ICU4N TODO: API - eliminate the cast ?
+                scriptSet.ApplyIntPropertyValue((int)UProperty.Script, sc); // ICU4N TODO: API - eliminate the cast ?
                 if (usage == ScriptUsage.NotEncoded)
                 {
                     assertTrue(sn + " not encoded, no sample", sample.Length == 0);  // Java 6: sample.isEmpty()

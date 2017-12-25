@@ -117,7 +117,7 @@ namespace ICU4N.Dev.Test.Rbbi
             internal RBBICharMonkey()
             {
                 fText = null;
-                fCharProperty = UProperty.GRAPHEME_CLUSTER_BREAK;
+                fCharProperty = UProperty.Grapheme_Cluster_Break;
                 fCRLFSet = new UnicodeSet("[\\r\\n]");
                 fControlSet = new UnicodeSet("[\\p{Grapheme_Cluster_Break = Control}]");
                 fExtendSet = new UnicodeSet("[\\p{Grapheme_Cluster_Break = Extend}]");
@@ -381,7 +381,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             internal RBBIWordMonkey()
             {
-                fCharProperty = UProperty.WORD_BREAK;
+                fCharProperty = UProperty.Word_Break;
 
                 fCRSet = new UnicodeSet("[\\p{Word_Break = CR}]");
                 fLFSet = new UnicodeSet("[\\p{Word_Break = LF}]");
@@ -761,7 +761,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             internal RBBILineMonkey()
             {
-                fCharProperty = UProperty.LINE_BREAK;
+                fCharProperty = UProperty.Line_Break;
                 fSets = new List<object>();
 
                 fBK = new UnicodeSet("[\\p{Line_Break=BK}]");
@@ -1386,7 +1386,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 for (idx = startIdx; idx < s.Length; idx = MoveIndex32(s, idx, 1))
                 {
                     int c = UTF16.CharAt(s, idx);
-                    int cLBType = UCharacter.GetInt32PropertyValue(c, UProperty.LINE_BREAK);
+                    int cLBType = UCharacter.GetInt32PropertyValue(c, UProperty.Line_Break);
                     switch (matchState)
                     {
                         case 0:
@@ -1571,7 +1571,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             internal RBBISentenceMonkey()
             {
-                fCharProperty = UProperty.SENTENCE_BREAK;
+                fCharProperty = UProperty.Sentence_Break;
 
                 fSets = new List<object>();
 
@@ -2351,7 +2351,7 @@ namespace ICU4N.Dev.Test.Rbbi
                             {
                                 c = UTF16.CharAt(testText, ci);
                                 appendCharToBuf(errorText, c, 11);
-                                String gc = UCharacter.GetPropertyValueName(UProperty.GENERAL_CATEGORY, UCharacter.GetType(c).ToIcuValue(), NameChoice.Short);
+                                String gc = UCharacter.GetPropertyValueName(UProperty.General_Category, UCharacter.GetType(c).ToIcuValue(), NameChoice.Short);
                                 appendToBuf(errorText, gc, 8);
                                 int extraProp = UCharacter.GetInt32PropertyValue(c, mk.fCharProperty);
                                 String extraPropValue =

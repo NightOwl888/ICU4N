@@ -198,7 +198,7 @@ namespace ICU4N.Dev.Test.Lang
                 bool j = char.IsWhiteSpace((char)c);
                 bool i = UCharacter.IsWhitespace(c);
                 bool u = UCharacter.IsUWhiteSpace(c);
-                bool z = (UCharacter.GetInt32PropertyValue(c, UProperty.GENERAL_CATEGORY_MASK) &
+                bool z = (UCharacter.GetInt32PropertyValue(c, UProperty.General_Category_Mask) &
                              GC_Z_MASK) != 0;
                 if (j != i)
                 {
@@ -217,7 +217,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 bool j = ICU4N.Support.Text.Character.IsSpace(c);
                 bool i = UCharacter.IsSpace(c);
-                bool z = (UCharacter.GetInt32PropertyValue(c, UProperty.GENERAL_CATEGORY_MASK) &
+                bool z = (UCharacter.GetInt32PropertyValue(c, UProperty.General_Category_Mask) &
                              GC_Z_MASK) != 0;
                 if (j != i)
                 {
@@ -556,7 +556,7 @@ namespace ICU4N.Dev.Test.Lang
                         Errln("getMirror() does not roundtrip: U+" + Hex(start) + "->U+" + Hex(c2) + "->U+" + Hex(c3));
                     }
                     c3 = UCharacter.GetBidiPairedBracket(start);
-                    if (UCharacter.GetInt32PropertyValue(start, UProperty.BIDI_PAIRED_BRACKET_TYPE) == UCharacter.BidiPairedBracketType.NONE)
+                    if (UCharacter.GetInt32PropertyValue(start, UProperty.Bidi_Paired_Bracket_Type) == UCharacter.BidiPairedBracketType.NONE)
                     {
                         if (c3 != start)
                         {
@@ -762,7 +762,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
 
                     if (UCharacter.GetInt32PropertyValue(ch,
-                               UProperty.GENERAL_CATEGORY_MASK) != (1 << type))
+                               UProperty.General_Category_Mask) != (1 << type))
                     {
                         Errln("error: getIntPropertyValue(\\u" +
                               (ch).ToHexString() +
@@ -830,7 +830,7 @@ namespace ICU4N.Dev.Test.Lang
                             int end = d.IndexOf('>', 1);
                             if (end >= 0)
                             {
-                                dt = UCharacter.GetPropertyValueEnum(UProperty.DECOMPOSITION_TYPE, d.Substring(1, end - 1));// ICU4N: Corrected 2nd parameter
+                                dt = UCharacter.GetPropertyValueEnum(UProperty.Decomposition_Type, d.Substring(1, end - 1));// ICU4N: Corrected 2nd parameter
                                 while (d[++end] == ' ') { }  // skip spaces
                                 d = d.Substring(end);
                             }
@@ -871,7 +871,7 @@ namespace ICU4N.Dev.Test.Lang
                         Errln(String.Format("error in UnicodeData.txt: syntax error in U+{0:X4} decomposition field", ch));
                         return;
                     }
-                    int i = UCharacter.GetInt32PropertyValue(ch, UProperty.DECOMPOSITION_TYPE);
+                    int i = UCharacter.GetInt32PropertyValue(ch, UProperty.Decomposition_Type);
                     assertEquals(
                             String.Format("error: UCharacter.getIntPropertyValue(U+{0:X4}, UProperty.DECOMPOSITION_TYPE) is wrong", ch),
                             dt, i);
@@ -891,7 +891,7 @@ namespace ICU4N.Dev.Test.Lang
                             dm, mapping);
                     /* recompose */
                     if (dt == UCharacter.DecompositionType.CANONICAL
-                            && !UCharacter.HasBinaryProperty(ch, UProperty.FULL_COMPOSITION_EXCLUSION))
+                            && !UCharacter.HasBinaryProperty(ch, UProperty.Full_Composition_Exclusion))
                     {
                         int a = dm.CodePointAt(0);
                         int b = dm.CodePointBefore(dm.Length);
@@ -1008,7 +1008,7 @@ namespace ICU4N.Dev.Test.Lang
 
             if (UCharacter.UnicodeBlock.Of(0x0041)
                                             != UCharacter.UnicodeBlock.BASIC_LATIN
-                || UCharacter.GetInt32PropertyValue(0x41, UProperty.BLOCK)
+                || UCharacter.GetInt32PropertyValue(0x41, UProperty.Block)
                                   != UCharacter.UnicodeBlock.BASIC_LATIN.ID)
             {
                 Errln("UCharacter.UnicodeBlock.of(\\u0041) property failed! "
@@ -1022,7 +1022,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 int type = UCharacter.GetType(ch).ToIcuValue();
                 if (UCharacter.GetInt32PropertyValue(ch,
-                                                   UProperty.GENERAL_CATEGORY_MASK)
+                                                   UProperty.General_Category_Mask)
                     != (1 << type))
                 {
                     Errln("error: UCharacter.getIntPropertyValue(\\u"
@@ -1052,7 +1052,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 int type = UCharacter.GetType(ch).ToIcuValue();
                 if (UCharacter.GetInt32PropertyValue(ch,
-                                                   UProperty.GENERAL_CATEGORY_MASK)
+                                                   UProperty.General_Category_Mask)
                     != (1 << type))
                 {
                     Errln("error: UCharacter.getIntPropertyValue(\\u"
@@ -1795,7 +1795,7 @@ namespace ICU4N.Dev.Test.Lang
                     while (c < result.Limit)
                     {
                         if (0 == UCharacter.GetInt32PropertyValue(c,
-                                                    UProperty.LINE_BREAK))
+                                                    UProperty.Line_Break))
                         {
                             Logln("error UProperty.LINE_BREAK(assigned \\u"
                                   + Utility.Hex(c, 4) + ")=XX");
@@ -1820,7 +1820,7 @@ namespace ICU4N.Dev.Test.Lang
                             while (c < result.Limit && c < defaultBidi[i][0])
                             {
                                 // TODO change to public UCharacter.isNonCharacter(c) once it's available
-                                if (UCharacterUtility.IsNonCharacter(c) || UCharacter.HasBinaryProperty(c, UProperty.DEFAULT_IGNORABLE_CODE_POINT))
+                                if (UCharacterUtility.IsNonCharacter(c) || UCharacter.HasBinaryProperty(c, UProperty.Default_Ignorable_Code_Point))
                                 {
                                     shouldBeDir = (int)UnicodeDirection.BoundaryNeutral;
                                 }
@@ -1832,7 +1832,7 @@ namespace ICU4N.Dev.Test.Lang
 
                                 if (UCharacter.GetDirection(c) != shouldBeDir
                                     || UCharacter.GetInt32PropertyValue(c,
-                                                              UProperty.BIDI_CLASS)
+                                                              UProperty.BiDi_Class)
                                        != shouldBeDir)
                                 {
                                     Errln("error: getDirection(unassigned/PUA "
@@ -1928,117 +1928,117 @@ namespace ICU4N.Dev.Test.Lang
             int TRUE = 1;
             // test data for hasBinaryProperty()
             int[][] props = { // code point, property
-                new int[] { 0x0627, (int)UProperty.ALPHABETIC, 1 },
-                new int[] { 0x1034a, (int)UProperty.ALPHABETIC, 1 },
-                new int[] { 0x2028, (int)UProperty.ALPHABETIC, 0 },
+                new int[] { 0x0627, (int)UProperty.Alphabetic, 1 },
+                new int[] { 0x1034a, (int)UProperty.Alphabetic, 1 },
+                new int[] { 0x2028, (int)UProperty.Alphabetic, 0 },
 
-                new int[] { 0x0066, (int)UProperty.ASCII_HEX_DIGIT, 1 },
-                new int[] { 0x0067, (int)UProperty.ASCII_HEX_DIGIT, 0 },
+                new int[] { 0x0066, (int)UProperty.ASCII_Hex_Digit, 1 },
+                new int[] { 0x0067, (int)UProperty.ASCII_Hex_Digit, 0 },
 
-                new int[] { 0x202c, (int)UProperty.BIDI_CONTROL, 1 },
-                new int[] { 0x202f, (int)UProperty.BIDI_CONTROL, 0 },
+                new int[] { 0x202c, (int)UProperty.Bidi_Control, 1 },
+                new int[] { 0x202f, (int)UProperty.Bidi_Control, 0 },
 
-                new int[] { 0x003c, (int)UProperty.BIDI_MIRRORED, 1 },
-                new int[] { 0x003d, (int)UProperty.BIDI_MIRRORED, 0 },
+                new int[] { 0x003c, (int)UProperty.Bidi_Mirrored, 1 },
+                new int[] { 0x003d, (int)UProperty.Bidi_Mirrored, 0 },
 
                 /* see Unicode Corrigendum #6 at http://www.unicode.org/versions/corrigendum6.html */
-                new int[] { 0x2018, (int)UProperty.BIDI_MIRRORED, 0 },
-                new int[] { 0x201d, (int)UProperty.BIDI_MIRRORED, 0 },
-                new int[] { 0x201f, (int)UProperty.BIDI_MIRRORED, 0 },
-                new int[] { 0x301e, (int)UProperty.BIDI_MIRRORED, 0 },
+                new int[] { 0x2018, (int)UProperty.Bidi_Mirrored, 0 },
+                new int[] { 0x201d, (int)UProperty.Bidi_Mirrored, 0 },
+                new int[] { 0x201f, (int)UProperty.Bidi_Mirrored, 0 },
+                new int[] { 0x301e, (int)UProperty.Bidi_Mirrored, 0 },
 
-                new int[] { 0x058a, (int)UProperty.DASH, 1 },
-                new int[] { 0x007e, (int)UProperty.DASH, 0 },
+                new int[] { 0x058a, (int)UProperty.Dash, 1 },
+                new int[] { 0x007e, (int)UProperty.Dash, 0 },
 
-                new int[] { 0x0c4d, (int)UProperty.DIACRITIC, 1 },
-                new int[] { 0x3000, (int)UProperty.DIACRITIC, 0 },
+                new int[] { 0x0c4d, (int)UProperty.Diacritic, 1 },
+                new int[] { 0x3000, (int)UProperty.Diacritic, 0 },
 
-                new int[] { 0x0e46, (int)UProperty.EXTENDER, 1 },
-                new int[] { 0x0020, (int)UProperty.EXTENDER, 0 },
+                new int[] { 0x0e46, (int)UProperty.Extender, 1 },
+                new int[] { 0x0020, (int)UProperty.Extender, 0 },
 
-                new int[] { 0xfb1d, (int)UProperty.FULL_COMPOSITION_EXCLUSION, 1 },
-                new int[] { 0x1d15f, (int)UProperty.FULL_COMPOSITION_EXCLUSION, 1 },
-                new int[] { 0xfb1e, (int)UProperty.FULL_COMPOSITION_EXCLUSION, 0 },
+                new int[] { 0xfb1d, (int)UProperty.Full_Composition_Exclusion, 1 },
+                new int[] { 0x1d15f, (int)UProperty.Full_Composition_Exclusion, 1 },
+                new int[] { 0xfb1e, (int)UProperty.Full_Composition_Exclusion, 0 },
 
-                new int[] { 0x110a, (int)UProperty.NFD_INERT, 1 },      /* Jamo L */
-                new int[] { 0x0308, (int)UProperty.NFD_INERT, 0 },
+                new int[] { 0x110a, (int)UProperty.NFD_Inert, 1 },      /* Jamo L */
+                new int[] { 0x0308, (int)UProperty.NFD_Inert, 0 },
 
-                new int[] { 0x1164, (int)UProperty.NFKD_INERT, 1 },     /* Jamo V */
-                new int[] { 0x1d79d, (int)UProperty.NFKD_INERT, 0 },   /* math compat version of xi */
+                new int[] { 0x1164, (int)UProperty.NFKD_Inert, 1 },     /* Jamo V */
+                new int[] { 0x1d79d, (int)UProperty.NFKD_Inert, 0 },   /* math compat version of xi */
 
-                new int[] { 0x0021, (int)UProperty.NFC_INERT, 1 },      /* ! */
-                new int[] { 0x0061, (int)UProperty.NFC_INERT, 0 },     /* a */
-                new int[] { 0x00e4, (int)UProperty.NFC_INERT, 0 },     /* a-umlaut */
-                new int[] { 0x0102, (int)UProperty.NFC_INERT, 0 },     /* a-breve */
-                new int[] { 0xac1c, (int)UProperty.NFC_INERT, 0 },     /* Hangul LV */
-                new int[] { 0xac1d, (int)UProperty.NFC_INERT, 1 },      /* Hangul LVT */
+                new int[] { 0x0021, (int)UProperty.NFC_Inert, 1 },      /* ! */
+                new int[] { 0x0061, (int)UProperty.NFC_Inert, 0 },     /* a */
+                new int[] { 0x00e4, (int)UProperty.NFC_Inert, 0 },     /* a-umlaut */
+                new int[] { 0x0102, (int)UProperty.NFC_Inert, 0 },     /* a-breve */
+                new int[] { 0xac1c, (int)UProperty.NFC_Inert, 0 },     /* Hangul LV */
+                new int[] { 0xac1d, (int)UProperty.NFC_Inert, 1 },      /* Hangul LVT */
 
-                new int[] { 0x1d79d, (int)UProperty.NFKC_INERT, 0 },   /* math compat version of xi */
-                new int[] { 0x2a6d6, (int)UProperty.NFKC_INERT, 1 },    /* Han, last of CJK ext. B */
+                new int[] { 0x1d79d, (int)UProperty.NFKC_Inert, 0 },   /* math compat version of xi */
+                new int[] { 0x2a6d6, (int)UProperty.NFKC_Inert, 1 },    /* Han, last of CJK ext. B */
 
-                new int[] { 0x00e4, (int)UProperty.SEGMENT_STARTER, 1 },
-                new int[] { 0x0308, (int)UProperty.SEGMENT_STARTER, 0 },
-                new int[] { 0x110a, (int)UProperty.SEGMENT_STARTER, 1 }, /* Jamo L */
-                new int[] { 0x1164, (int)UProperty.SEGMENT_STARTER, 0 },/* Jamo V */
-                new int[] { 0xac1c, (int)UProperty.SEGMENT_STARTER, 1 }, /* Hangul LV */
-                new int[] { 0xac1d, (int)UProperty.SEGMENT_STARTER, 1 }, /* Hangul LVT */
+                new int[] { 0x00e4, (int)UProperty.Segment_Starter, 1 },
+                new int[] { 0x0308, (int)UProperty.Segment_Starter, 0 },
+                new int[] { 0x110a, (int)UProperty.Segment_Starter, 1 }, /* Jamo L */
+                new int[] { 0x1164, (int)UProperty.Segment_Starter, 0 },/* Jamo V */
+                new int[] { 0xac1c, (int)UProperty.Segment_Starter, 1 }, /* Hangul LV */
+                new int[] { 0xac1d, (int)UProperty.Segment_Starter, 1 }, /* Hangul LVT */
 
-                new int[] { 0x0044, (int)UProperty.HEX_DIGIT, 1 },
-                new int[] { 0xff46, (int)UProperty.HEX_DIGIT, 1 },
-                new int[] { 0x0047, (int)UProperty.HEX_DIGIT, 0 },
+                new int[] { 0x0044, (int)UProperty.Hex_Digit, 1 },
+                new int[] { 0xff46, (int)UProperty.Hex_Digit, 1 },
+                new int[] { 0x0047, (int)UProperty.Hex_Digit, 0 },
 
-                new int[] { 0x30fb, (int)UProperty.HYPHEN, 1 },
-                new int[] { 0xfe58, (int)UProperty.HYPHEN, 0 },
+                new int[] { 0x30fb, (int)UProperty.Hyphen, 1 },
+                new int[] { 0xfe58, (int)UProperty.Hyphen, 0 },
 
-                new int[] { 0x2172, (int)UProperty.ID_CONTINUE, 1 },
-                new int[] { 0x0307, (int)UProperty.ID_CONTINUE, 1 },
-                new int[] { 0x005c, (int)UProperty.ID_CONTINUE, 0 },
+                new int[] { 0x2172, (int)UProperty.ID_Continue, 1 },
+                new int[] { 0x0307, (int)UProperty.ID_Continue, 1 },
+                new int[] { 0x005c, (int)UProperty.ID_Continue, 0 },
 
-                new int[] { 0x2172, (int)UProperty.ID_START, 1 },
-                new int[] { 0x007a, (int)UProperty.ID_START, 1 },
-                new int[] { 0x0039, (int)UProperty.ID_START, 0 },
+                new int[] { 0x2172, (int)UProperty.ID_Start, 1 },
+                new int[] { 0x007a, (int)UProperty.ID_Start, 1 },
+                new int[] { 0x0039, (int)UProperty.ID_Start, 0 },
 
-                new int[] { 0x4db5, (int)UProperty.IDEOGRAPHIC, 1 },
-                new int[] { 0x2f999, (int)UProperty.IDEOGRAPHIC, 1 },
-                new int[] { 0x2f99, (int)UProperty.IDEOGRAPHIC, 0 },
+                new int[] { 0x4db5, (int)UProperty.Ideographic, 1 },
+                new int[] { 0x2f999, (int)UProperty.Ideographic, 1 },
+                new int[] { 0x2f99, (int)UProperty.Ideographic, 0 },
 
-                new int[] { 0x200c, (int)UProperty.JOIN_CONTROL, 1 },
-                new int[] { 0x2029, (int)UProperty.JOIN_CONTROL, 0 },
+                new int[] { 0x200c, (int)UProperty.Join_Control, 1 },
+                new int[] { 0x2029, (int)UProperty.Join_Control, 0 },
 
-                new int[] { 0x1d7bc, (int)UProperty.LOWERCASE, 1 },
-                new int[] { 0x0345, (int)UProperty.LOWERCASE, 1 },
-                new int[] { 0x0030, (int)UProperty.LOWERCASE, 0 },
+                new int[] { 0x1d7bc, (int)UProperty.Lowercase, 1 },
+                new int[] { 0x0345, (int)UProperty.Lowercase, 1 },
+                new int[] { 0x0030, (int)UProperty.Lowercase, 0 },
 
-                new int[] { 0x1d7a9, (int)UProperty.MATH, 1 },
-                new int[] { 0x2135, (int)UProperty.MATH, 1 },
-                new int[] { 0x0062, (int)UProperty.MATH, 0 },
+                new int[] { 0x1d7a9, (int)UProperty.Math, 1 },
+                new int[] { 0x2135, (int)UProperty.Math, 1 },
+                new int[] { 0x0062, (int)UProperty.Math, 0 },
 
-                new int[] { 0xfde1, (int)UProperty.NONCHARACTER_CODE_POINT, 1 },
-                new int[] { 0x10ffff, (int)UProperty.NONCHARACTER_CODE_POINT, 1 },
-                new int[] { 0x10fffd, (int)UProperty.NONCHARACTER_CODE_POINT, 0 },
+                new int[] { 0xfde1, (int)UProperty.Noncharacter_Code_Point, 1 },
+                new int[] { 0x10ffff, (int)UProperty.Noncharacter_Code_Point, 1 },
+                new int[] { 0x10fffd, (int)UProperty.Noncharacter_Code_Point, 0 },
 
-                new int[] { 0x0022, (int)UProperty.QUOTATION_MARK, 1 },
-                new int[] { 0xff62, (int)UProperty.QUOTATION_MARK, 1 },
-                new int[] { 0xd840, (int)UProperty.QUOTATION_MARK, 0 },
+                new int[] { 0x0022, (int)UProperty.Quotation_Mark, 1 },
+                new int[] { 0xff62, (int)UProperty.Quotation_Mark, 1 },
+                new int[] { 0xd840, (int)UProperty.Quotation_Mark, 0 },
 
-                new int[] { 0x061f, (int)UProperty.TERMINAL_PUNCTUATION, 1 },
-                new int[] { 0xe003f, (int)UProperty.TERMINAL_PUNCTUATION, 0 },
+                new int[] { 0x061f, (int)UProperty.Terminal_Punctuation, 1 },
+                new int[] { 0xe003f, (int)UProperty.Terminal_Punctuation, 0 },
 
-                new int[] { 0x1d44a, (int)UProperty.UPPERCASE, 1 },
-                new int[] { 0x2162, (int)UProperty.UPPERCASE, 1 },
-                new int[] { 0x0345, (int)UProperty.UPPERCASE, 0 },
+                new int[] { 0x1d44a, (int)UProperty.Uppercase, 1 },
+                new int[] { 0x2162, (int)UProperty.Uppercase, 1 },
+                new int[] { 0x0345, (int)UProperty.Uppercase, 0 },
 
-                new int[] { 0x0020, (int)UProperty.WHITE_SPACE, 1 },
-                new int[] { 0x202f, (int)UProperty.WHITE_SPACE, 1 },
-                new int[] { 0x3001, (int)UProperty.WHITE_SPACE, 0 },
+                new int[] { 0x0020, (int)UProperty.White_Space, 1 },
+                new int[] { 0x202f, (int)UProperty.White_Space, 1 },
+                new int[] { 0x3001, (int)UProperty.White_Space, 0 },
 
-                new int[] { 0x0711, (int)UProperty.XID_CONTINUE, 1 },
-                new int[] { 0x1d1aa, (int)UProperty.XID_CONTINUE, 1 },
-                new int[] { 0x007c, (int)UProperty.XID_CONTINUE, 0 },
+                new int[] { 0x0711, (int)UProperty.XID_Continue, 1 },
+                new int[] { 0x1d1aa, (int)UProperty.XID_Continue, 1 },
+                new int[] { 0x007c, (int)UProperty.XID_Continue, 0 },
 
-                new int[] { 0x16ee, (int)UProperty.XID_START, 1 },
-                new int[] { 0x23456, (int)UProperty.XID_START, 1 },
-                new int[] { 0x1d1aa, (int)UProperty.XID_START, 0 },
+                new int[] { 0x16ee, (int)UProperty.XID_Start, 1 },
+                new int[] { 0x23456, (int)UProperty.XID_Start, 1 },
+                new int[] { 0x1d1aa, (int)UProperty.XID_Start, 0 },
 
                 /*
                  * Version break:
@@ -2047,310 +2047,310 @@ namespace ICU4N.Dev.Test.Lang
                  */
                 new int[] { -1, 0x320, 0 },
 
-                new int[] { 0x180c, (int)UProperty.DEFAULT_IGNORABLE_CODE_POINT, 1 },
-                new int[] { 0xfe02, (int)UProperty.DEFAULT_IGNORABLE_CODE_POINT, 1 },
-                new int[] { 0x1801, (int)UProperty.DEFAULT_IGNORABLE_CODE_POINT, 0 },
+                new int[] { 0x180c, (int)UProperty.Default_Ignorable_Code_Point, 1 },
+                new int[] { 0xfe02, (int)UProperty.Default_Ignorable_Code_Point, 1 },
+                new int[] { 0x1801, (int)UProperty.Default_Ignorable_Code_Point, 0 },
 
-                new int[] { 0x0149, (int)UProperty.DEPRECATED, 1 },         /* changed in Unicode 5.2 */
-                new int[] { 0x0341, (int)UProperty.DEPRECATED, 0 },        /* changed in Unicode 5.2 */
-                new int[] { 0xe0001, (int)UProperty.DEPRECATED, 1 },       /* Changed from Unicode 5 to 5.1 */
-                new int[] { 0xe0100, (int)UProperty.DEPRECATED, 0 },
+                new int[] { 0x0149, (int)UProperty.Deprecated, 1 },         /* changed in Unicode 5.2 */
+                new int[] { 0x0341, (int)UProperty.Deprecated, 0 },        /* changed in Unicode 5.2 */
+                new int[] { 0xe0001, (int)UProperty.Deprecated, 1 },       /* Changed from Unicode 5 to 5.1 */
+                new int[] { 0xe0100, (int)UProperty.Deprecated, 0 },
 
-                new int[] { 0x00a0, (int)UProperty.GRAPHEME_BASE, 1 },
-                new int[] { 0x0a4d, (int)UProperty.GRAPHEME_BASE, 0 },
-                new int[] { 0xff9d, (int)UProperty.GRAPHEME_BASE, 1 },
-                new int[] { 0xff9f, (int)UProperty.GRAPHEME_BASE, 0 },      /* changed from Unicode 3.2 to 4  and again 5 to 5.1 */
+                new int[] { 0x00a0, (int)UProperty.Grapheme_Base, 1 },
+                new int[] { 0x0a4d, (int)UProperty.Grapheme_Base, 0 },
+                new int[] { 0xff9d, (int)UProperty.Grapheme_Base, 1 },
+                new int[] { 0xff9f, (int)UProperty.Grapheme_Base, 0 },      /* changed from Unicode 3.2 to 4  and again 5 to 5.1 */
 
-                new int[] { 0x0300, (int)UProperty.GRAPHEME_EXTEND, 1 },
-                new int[] { 0xff9d, (int)UProperty.GRAPHEME_EXTEND, 0 },
-                new int[] { 0xff9f, (int)UProperty.GRAPHEME_EXTEND, 1 },   /* changed from Unicode 3.2 to 4 and again 5 to 5.1 */
-                new int[] { 0x0603, (int)UProperty.GRAPHEME_EXTEND, 0 },
+                new int[] { 0x0300, (int)UProperty.Grapheme_Extend, 1 },
+                new int[] { 0xff9d, (int)UProperty.Grapheme_Extend, 0 },
+                new int[] { 0xff9f, (int)UProperty.Grapheme_Extend, 1 },   /* changed from Unicode 3.2 to 4 and again 5 to 5.1 */
+                new int[] { 0x0603, (int)UProperty.Grapheme_Extend, 0 },
 
-                new int[] { 0x0a4d, (int)UProperty.GRAPHEME_LINK, 1 },
-                new int[] { 0xff9f, (int)UProperty.GRAPHEME_LINK, 0 },
+                new int[] { 0x0a4d, (int)UProperty.Grapheme_Link, 1 },
+                new int[] { 0xff9f, (int)UProperty.Grapheme_Link, 0 },
 
-                new int[] { 0x2ff7, (int)UProperty.IDS_BINARY_OPERATOR, 1 },
-                new int[] { 0x2ff3, (int)UProperty.IDS_BINARY_OPERATOR, 0 },
+                new int[] { 0x2ff7, (int)UProperty.IDS_Binary_Operator, 1 },
+                new int[] { 0x2ff3, (int)UProperty.IDS_Binary_Operator, 0 },
 
-                new int[] { 0x2ff3, (int)UProperty.IDS_TRINARY_OPERATOR, 1 },
-                new int[] { 0x2f03, (int)UProperty.IDS_TRINARY_OPERATOR, 0 },
+                new int[] { 0x2ff3, (int)UProperty.IDS_Trinary_Operator, 1 },
+                new int[] { 0x2f03, (int)UProperty.IDS_Trinary_Operator, 0 },
 
-                new int[] { 0x0ec1, (int)UProperty.LOGICAL_ORDER_EXCEPTION, 1 },
-                new int[] { 0xdcba, (int)UProperty.LOGICAL_ORDER_EXCEPTION, 0 },
+                new int[] { 0x0ec1, (int)UProperty.Logical_Order_Exception, 1 },
+                new int[] { 0xdcba, (int)UProperty.Logical_Order_Exception, 0 },
 
-                new int[] { 0x2e9b, (int)UProperty.RADICAL, 1 },
-                new int[] { 0x4e00, (int)UProperty.RADICAL, 0 },
+                new int[] { 0x2e9b, (int)UProperty.Radical, 1 },
+                new int[] { 0x4e00, (int)UProperty.Radical, 0 },
 
-                new int[] { 0x012f, (int)UProperty.SOFT_DOTTED, 1 },
-                new int[] { 0x0049, (int)UProperty.SOFT_DOTTED, 0 },
+                new int[] { 0x012f, (int)UProperty.Soft_Dotted, 1 },
+                new int[] { 0x0049, (int)UProperty.Soft_Dotted, 0 },
 
-                new int[] { 0xfa11, (int)UProperty.UNIFIED_IDEOGRAPH, 1 },
-                new int[] { 0xfa12, (int)UProperty.UNIFIED_IDEOGRAPH, 0 },
+                new int[] { 0xfa11, (int)UProperty.Unified_Ideograph, 1 },
+                new int[] { 0xfa12, (int)UProperty.Unified_Ideograph, 0 },
 
                 new int[] { -1, 0x401, 0 }, /* version break for Unicode 4.0.1 */
 
-                new int[] { 0x002e, (int)UProperty.S_TERM, 1 },
-                new int[] { 0x0061, (int)UProperty.S_TERM, 0 },
+                new int[] { 0x002e, (int)UProperty.STerm, 1 },
+                new int[] { 0x0061, (int)UProperty.STerm, 0 },
 
-                new int[] { 0x180c, (int)UProperty.VARIATION_SELECTOR, 1 },
-                new int[] { 0xfe03, (int)UProperty.VARIATION_SELECTOR, 1 },
-                new int[] { 0xe01ef, (int)UProperty.VARIATION_SELECTOR, 1 },
-                new int[] { 0xe0200, (int)UProperty.VARIATION_SELECTOR, 0 },
+                new int[] { 0x180c, (int)UProperty.Variation_Selector, 1 },
+                new int[] { 0xfe03, (int)UProperty.Variation_Selector, 1 },
+                new int[] { 0xe01ef, (int)UProperty.Variation_Selector, 1 },
+                new int[] { 0xe0200, (int)UProperty.Variation_Selector, 0 },
 
                 /* enum/integer type properties */
                 /* test default Bidi classes for unassigned code points */
-                new int[] { 0x0590, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x05cf, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x05ed, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x07f2, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.DirNonSpacingMark }, /* Nko, new in Unicode 5.0 */
-                new int[] { 0x07fe, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft }, /* unassigned R */
-                new int[] { 0x089f, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0xfb37, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0xfb42, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x10806, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x10909, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x10fe4, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x0590, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x05cf, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x05ed, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x07f2, (int)UProperty.BiDi_Class, (int)UnicodeDirection.DirNonSpacingMark }, /* Nko, new in Unicode 5.0 */
+                new int[] { 0x07fe, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft }, /* unassigned R */
+                new int[] { 0x089f, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0xfb37, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0xfb42, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x10806, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x10909, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x10fe4, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
 
-                new int[] { 0x061d, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0x063f, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0x070e, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0x0775, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0xfbc2, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0xfd90, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0xfefe, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0x061d, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0x063f, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0x070e, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0x0775, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0xfbc2, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0xfd90, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0xfefe, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
 
-                new int[] { 0x02AF, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.IPA_EXTENSIONS.ID },
-                new int[] { 0x0C4E, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.TELUGU.ID },
-                new int[] { 0x155A, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS.ID },
-                new int[] { 0x1717, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.TAGALOG.ID },
-                new int[] { 0x1900, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.LIMBU.ID },
-                new int[] { 0x1CBF, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.NO_BLOCK.ID},
-                new int[] { 0x3040, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.HIRAGANA.ID},
-                new int[] { 0x1D0FF, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.BYZANTINE_MUSICAL_SYMBOLS.ID},
-                new int[] { 0x50000, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.NO_BLOCK.ID },
-                new int[] { 0xEFFFF, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.NO_BLOCK.ID },
-                new int[] { 0x10D0FF, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.SUPPLEMENTARY_PRIVATE_USE_AREA_B.ID },
+                new int[] { 0x02AF, (int)UProperty.Block, UCharacter.UnicodeBlock.IPA_EXTENSIONS.ID },
+                new int[] { 0x0C4E, (int)UProperty.Block, UCharacter.UnicodeBlock.TELUGU.ID },
+                new int[] { 0x155A, (int)UProperty.Block, UCharacter.UnicodeBlock.UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS.ID },
+                new int[] { 0x1717, (int)UProperty.Block, UCharacter.UnicodeBlock.TAGALOG.ID },
+                new int[] { 0x1900, (int)UProperty.Block, UCharacter.UnicodeBlock.LIMBU.ID },
+                new int[] { 0x1CBF, (int)UProperty.Block, UCharacter.UnicodeBlock.NO_BLOCK.ID},
+                new int[] { 0x3040, (int)UProperty.Block, UCharacter.UnicodeBlock.HIRAGANA.ID},
+                new int[] { 0x1D0FF, (int)UProperty.Block, UCharacter.UnicodeBlock.BYZANTINE_MUSICAL_SYMBOLS.ID},
+                new int[] { 0x50000, (int)UProperty.Block, UCharacter.UnicodeBlock.NO_BLOCK.ID },
+                new int[] { 0xEFFFF, (int)UProperty.Block, UCharacter.UnicodeBlock.NO_BLOCK.ID },
+                new int[] { 0x10D0FF, (int)UProperty.Block, UCharacter.UnicodeBlock.SUPPLEMENTARY_PRIVATE_USE_AREA_B.ID },
 
                 /* (int)UProperty.CANONICAL_COMBINING_CLASS tested for assigned characters in TestUnicodeData() */
-                new int[] { 0xd7d7, (int)UProperty.CANONICAL_COMBINING_CLASS, 0 },
+                new int[] { 0xd7d7, (int)UProperty.Canonical_Combining_Class, 0 },
 
-                new int[] { 0x00A0, (int)UProperty.DECOMPOSITION_TYPE, UCharacter.DecompositionType.NOBREAK },
-                new int[] { 0x00A8, (int)UProperty.DECOMPOSITION_TYPE, UCharacter.DecompositionType.COMPAT },
-                new int[] { 0x00bf, (int)UProperty.DECOMPOSITION_TYPE, UCharacter.DecompositionType.NONE },
-                new int[] { 0x00c0, (int)UProperty.DECOMPOSITION_TYPE, UCharacter.DecompositionType.CANONICAL },
-                new int[] { 0x1E9B, (int)UProperty.DECOMPOSITION_TYPE, UCharacter.DecompositionType.CANONICAL },
-                new int[] { 0xBCDE, (int)UProperty.DECOMPOSITION_TYPE, UCharacter.DecompositionType.CANONICAL },
-                new int[] { 0xFB5D, (int)UProperty.DECOMPOSITION_TYPE, UCharacter.DecompositionType.MEDIAL },
-                new int[] { 0x1D736, (int)UProperty.DECOMPOSITION_TYPE, UCharacter.DecompositionType.FONT },
-                new int[] { 0xe0033, (int)UProperty.DECOMPOSITION_TYPE, UCharacter.DecompositionType.NONE },
+                new int[] { 0x00A0, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.NOBREAK },
+                new int[] { 0x00A8, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.COMPAT },
+                new int[] { 0x00bf, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.NONE },
+                new int[] { 0x00c0, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.CANONICAL },
+                new int[] { 0x1E9B, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.CANONICAL },
+                new int[] { 0xBCDE, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.CANONICAL },
+                new int[] { 0xFB5D, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.MEDIAL },
+                new int[] { 0x1D736, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.FONT },
+                new int[] { 0xe0033, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.NONE },
 
-                new int[] { 0x0009, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.NEUTRAL },
-                new int[] { 0x0020, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.NARROW },
-                new int[] { 0x00B1, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.AMBIGUOUS },
-                new int[] { 0x20A9, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.HALFWIDTH },
-                new int[] { 0x2FFB, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x3000, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.FULLWIDTH },
-                new int[] { 0x35bb, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x58bd, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0xD7A3, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0xEEEE, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.AMBIGUOUS },
-                new int[] { 0x1D198, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.NEUTRAL },
-                new int[] { 0x20000, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x2F8C7, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x3a5bd, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x5a5bd, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.NEUTRAL },
-                new int[] { 0xFEEEE, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.AMBIGUOUS },
-                new int[] { 0x10EEEE, (int)UProperty.EAST_ASIAN_WIDTH, UCharacter.EastAsianWidth.AMBIGUOUS },
+                new int[] { 0x0009, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.NEUTRAL },
+                new int[] { 0x0020, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.NARROW },
+                new int[] { 0x00B1, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.AMBIGUOUS },
+                new int[] { 0x20A9, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.HALFWIDTH },
+                new int[] { 0x2FFB, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
+                new int[] { 0x3000, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.FULLWIDTH },
+                new int[] { 0x35bb, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
+                new int[] { 0x58bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
+                new int[] { 0xD7A3, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
+                new int[] { 0xEEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.AMBIGUOUS },
+                new int[] { 0x1D198, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.NEUTRAL },
+                new int[] { 0x20000, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
+                new int[] { 0x2F8C7, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
+                new int[] { 0x3a5bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
+                new int[] { 0x5a5bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.NEUTRAL },
+                new int[] { 0xFEEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.AMBIGUOUS },
+                new int[] { 0x10EEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.AMBIGUOUS },
 
                 /* (int)UProperty.GENERAL_CATEGORY tested for assigned characters in TestUnicodeData() */
-                new int[] { 0xd7c7, (int)UProperty.GENERAL_CATEGORY, 0 },
-                new int[] { 0xd7d7, (int)UProperty.GENERAL_CATEGORY, UnicodeCategory.OtherLetter.ToIcuValue() },     /* changed in Unicode 5.2 */
+                new int[] { 0xd7c7, (int)UProperty.General_Category, 0 },
+                new int[] { 0xd7d7, (int)UProperty.General_Category, UnicodeCategory.OtherLetter.ToIcuValue() },     /* changed in Unicode 5.2 */
 
-                new int[] { 0x0444, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.NO_JOINING_GROUP },
-                new int[] { 0x0639, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.AIN },
-                new int[] { 0x072A, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.DALATH_RISH },
-                new int[] { 0x0647, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.HEH },
-                new int[] { 0x06C1, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.HEH_GOAL },
+                new int[] { 0x0444, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NO_JOINING_GROUP },
+                new int[] { 0x0639, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.AIN },
+                new int[] { 0x072A, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.DALATH_RISH },
+                new int[] { 0x0647, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.HEH },
+                new int[] { 0x06C1, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.HEH_GOAL },
 
-                new int[] { 0x200C, (int)UProperty.JOINING_TYPE, UCharacter.JoiningType.NON_JOINING },
-                new int[] { 0x200D, (int)UProperty.JOINING_TYPE, UCharacter.JoiningType.JOIN_CAUSING },
-                new int[] { 0x0639, (int)UProperty.JOINING_TYPE, UCharacter.JoiningType.DUAL_JOINING },
-                new int[] { 0x0640, (int)UProperty.JOINING_TYPE, UCharacter.JoiningType.JOIN_CAUSING },
-                new int[] { 0x06C3, (int)UProperty.JOINING_TYPE, UCharacter.JoiningType.RIGHT_JOINING },
-                new int[] { 0x0300, (int)UProperty.JOINING_TYPE, UCharacter.JoiningType.TRANSPARENT },
-                new int[] { 0x070F, (int)UProperty.JOINING_TYPE, UCharacter.JoiningType.TRANSPARENT },
-                new int[] { 0xe0033, (int)UProperty.JOINING_TYPE, UCharacter.JoiningType.TRANSPARENT },
+                new int[] { 0x200C, (int)UProperty.Joining_Type, UCharacter.JoiningType.NON_JOINING },
+                new int[] { 0x200D, (int)UProperty.Joining_Type, UCharacter.JoiningType.JOIN_CAUSING },
+                new int[] { 0x0639, (int)UProperty.Joining_Type, UCharacter.JoiningType.DUAL_JOINING },
+                new int[] { 0x0640, (int)UProperty.Joining_Type, UCharacter.JoiningType.JOIN_CAUSING },
+                new int[] { 0x06C3, (int)UProperty.Joining_Type, UCharacter.JoiningType.RIGHT_JOINING },
+                new int[] { 0x0300, (int)UProperty.Joining_Type, UCharacter.JoiningType.TRANSPARENT },
+                new int[] { 0x070F, (int)UProperty.Joining_Type, UCharacter.JoiningType.TRANSPARENT },
+                new int[] { 0xe0033, (int)UProperty.Joining_Type, UCharacter.JoiningType.TRANSPARENT },
 
                 /* TestUnicodeData() verifies that no assigned character has "XX" (unknown) */
-                new int[] { 0xe7e7, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.UNKNOWN },
-                new int[] { 0x10fffd, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.UNKNOWN },
-                new int[] { 0x0028, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.OPEN_PUNCTUATION },
-                new int[] { 0x232A, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.CLOSE_PUNCTUATION },
-                new int[] { 0x3401, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.IDEOGRAPHIC },
-                new int[] { 0x4e02, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.IDEOGRAPHIC },
-                new int[] { 0x20004, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.IDEOGRAPHIC },
-                new int[] { 0xf905, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.IDEOGRAPHIC },
-                new int[] { 0xdb7e, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.SURROGATE },
-                new int[] { 0xdbfd, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.SURROGATE },
-                new int[] { 0xdffc, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.SURROGATE },
-                new int[] { 0x2762, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.EXCLAMATION },
-                new int[] { 0x002F, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.BREAK_SYMBOLS },
-                new int[] { 0x1D49C, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.ALPHABETIC },
-                new int[] { 0x1731, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.ALPHABETIC },
+                new int[] { 0xe7e7, (int)UProperty.Line_Break, UCharacter.LineBreak.UNKNOWN },
+                new int[] { 0x10fffd, (int)UProperty.Line_Break, UCharacter.LineBreak.UNKNOWN },
+                new int[] { 0x0028, (int)UProperty.Line_Break, UCharacter.LineBreak.OPEN_PUNCTUATION },
+                new int[] { 0x232A, (int)UProperty.Line_Break, UCharacter.LineBreak.CLOSE_PUNCTUATION },
+                new int[] { 0x3401, (int)UProperty.Line_Break, UCharacter.LineBreak.IDEOGRAPHIC },
+                new int[] { 0x4e02, (int)UProperty.Line_Break, UCharacter.LineBreak.IDEOGRAPHIC },
+                new int[] { 0x20004, (int)UProperty.Line_Break, UCharacter.LineBreak.IDEOGRAPHIC },
+                new int[] { 0xf905, (int)UProperty.Line_Break, UCharacter.LineBreak.IDEOGRAPHIC },
+                new int[] { 0xdb7e, (int)UProperty.Line_Break, UCharacter.LineBreak.SURROGATE },
+                new int[] { 0xdbfd, (int)UProperty.Line_Break, UCharacter.LineBreak.SURROGATE },
+                new int[] { 0xdffc, (int)UProperty.Line_Break, UCharacter.LineBreak.SURROGATE },
+                new int[] { 0x2762, (int)UProperty.Line_Break, UCharacter.LineBreak.EXCLAMATION },
+                new int[] { 0x002F, (int)UProperty.Line_Break, UCharacter.LineBreak.BREAK_SYMBOLS },
+                new int[] { 0x1D49C, (int)UProperty.Line_Break, UCharacter.LineBreak.ALPHABETIC },
+                new int[] { 0x1731, (int)UProperty.Line_Break, UCharacter.LineBreak.ALPHABETIC },
 
                 /* (int)UProperty.NUMERIC_TYPE tested in TestNumericProperties() */
 
                 /* (int)UProperty.SCRIPT tested in TestUScriptCodeAPI() */
 
-                new int[] { 0x10ff, (int)UProperty.HANGUL_SYLLABLE_TYPE, 0 },
-                new int[] { 0x1100, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LEADING_JAMO },
-                new int[] { 0x1111, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LEADING_JAMO },
-                new int[] { 0x1159, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LEADING_JAMO },
-                new int[] { 0x115a, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
-                new int[] { 0x115e, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
-                new int[] { 0x115f, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LEADING_JAMO },
+                new int[] { 0x10ff, (int)UProperty.Hangul_Syllable_Type, 0 },
+                new int[] { 0x1100, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },
+                new int[] { 0x1111, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },
+                new int[] { 0x1159, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },
+                new int[] { 0x115a, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
+                new int[] { 0x115e, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
+                new int[] { 0x115f, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },
 
-                new int[] { 0xa95f, (int)UProperty.HANGUL_SYLLABLE_TYPE, 0 },
-                new int[] { 0xa960, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
-                new int[] { 0xa97c, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
-                new int[] { 0xa97d, (int)UProperty.HANGUL_SYLLABLE_TYPE, 0 },
+                new int[] { 0xa95f, (int)UProperty.Hangul_Syllable_Type, 0 },
+                new int[] { 0xa960, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
+                new int[] { 0xa97c, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
+                new int[] { 0xa97d, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0x1160, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.VOWEL_JAMO },
-                new int[] { 0x1161, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.VOWEL_JAMO },
-                new int[] { 0x1172, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.VOWEL_JAMO },
-                new int[] { 0x11a2, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.VOWEL_JAMO },
-                new int[] { 0x11a3, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
-                new int[] { 0x11a7, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
+                new int[] { 0x1160, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },
+                new int[] { 0x1161, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },
+                new int[] { 0x1172, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },
+                new int[] { 0x11a2, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },
+                new int[] { 0x11a3, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
+                new int[] { 0x11a7, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
 
-                new int[] { 0xd7af, (int)UProperty.HANGUL_SYLLABLE_TYPE, 0 },
-                new int[] { 0xd7b0, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
-                new int[] { 0xd7c6, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
-                new int[] { 0xd7c7, (int)UProperty.HANGUL_SYLLABLE_TYPE, 0 },
+                new int[] { 0xd7af, (int)UProperty.Hangul_Syllable_Type, 0 },
+                new int[] { 0xd7b0, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
+                new int[] { 0xd7c6, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
+                new int[] { 0xd7c7, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0x11a8, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.TRAILING_JAMO },
-                new int[] { 0x11b8, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.TRAILING_JAMO },
-                new int[] { 0x11c8, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.TRAILING_JAMO },
-                new int[] { 0x11f9, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.TRAILING_JAMO },
-                new int[] { 0x11fa, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
-                new int[] { 0x11ff, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
-                new int[] { 0x1200, (int)UProperty.HANGUL_SYLLABLE_TYPE, 0 },
+                new int[] { 0x11a8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },
+                new int[] { 0x11b8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },
+                new int[] { 0x11c8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },
+                new int[] { 0x11f9, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },
+                new int[] { 0x11fa, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
+                new int[] { 0x11ff, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
+                new int[] { 0x1200, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0xd7ca, (int)UProperty.HANGUL_SYLLABLE_TYPE, 0 },
-                new int[] { 0xd7cb, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
-                new int[] { 0xd7fb, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
-                new int[] { 0xd7fc, (int)UProperty.HANGUL_SYLLABLE_TYPE, 0 },
+                new int[] { 0xd7ca, (int)UProperty.Hangul_Syllable_Type, 0 },
+                new int[] { 0xd7cb, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
+                new int[] { 0xd7fb, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
+                new int[] { 0xd7fc, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0xac00, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LV_SYLLABLE },
-                new int[] { 0xac1c, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LV_SYLLABLE },
-                new int[] { 0xc5ec, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LV_SYLLABLE },
-                new int[] { 0xd788, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LV_SYLLABLE },
+                new int[] { 0xac00, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LV_SYLLABLE },
+                new int[] { 0xac1c, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LV_SYLLABLE },
+                new int[] { 0xc5ec, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LV_SYLLABLE },
+                new int[] { 0xd788, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LV_SYLLABLE },
 
-                new int[] { 0xac01, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LVT_SYLLABLE },
-                new int[] { 0xac1b, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LVT_SYLLABLE },
-                new int[] { 0xac1d, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LVT_SYLLABLE },
-                new int[] { 0xc5ee, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LVT_SYLLABLE },
-                new int[] { 0xd7a3, (int)UProperty.HANGUL_SYLLABLE_TYPE, UCharacter.HangulSyllableType.LVT_SYLLABLE },
+                new int[] { 0xac01, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
+                new int[] { 0xac1b, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
+                new int[] { 0xac1d, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
+                new int[] { 0xc5ee, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
+                new int[] { 0xd7a3, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
 
-                new int[] { 0xd7a4, (int)UProperty.HANGUL_SYLLABLE_TYPE, 0 },
+                new int[] { 0xd7a4, (int)UProperty.Hangul_Syllable_Type, 0 },
 
                 new int[] { -1, 0x410, 0 }, /* version break for Unicode 4.1 */
 
-                new int[] { 0x00d7, (int)UProperty.PATTERN_SYNTAX, 1 },
-                new int[] { 0xfe45, (int)UProperty.PATTERN_SYNTAX, 1 },
-                new int[] { 0x0061, (int)UProperty.PATTERN_SYNTAX, 0 },
+                new int[] { 0x00d7, (int)UProperty.Pattern_Syntax, 1 },
+                new int[] { 0xfe45, (int)UProperty.Pattern_Syntax, 1 },
+                new int[] { 0x0061, (int)UProperty.Pattern_Syntax, 0 },
 
-                new int[] { 0x0020, (int)UProperty.PATTERN_WHITE_SPACE, 1 },
-                new int[] { 0x0085, (int)UProperty.PATTERN_WHITE_SPACE, 1 },
-                new int[] { 0x200f, (int)UProperty.PATTERN_WHITE_SPACE, 1 },
-                new int[] { 0x00a0, (int)UProperty.PATTERN_WHITE_SPACE, 0 },
-                new int[] { 0x3000, (int)UProperty.PATTERN_WHITE_SPACE, 0 },
+                new int[] { 0x0020, (int)UProperty.Pattern_White_Space, 1 },
+                new int[] { 0x0085, (int)UProperty.Pattern_White_Space, 1 },
+                new int[] { 0x200f, (int)UProperty.Pattern_White_Space, 1 },
+                new int[] { 0x00a0, (int)UProperty.Pattern_White_Space, 0 },
+                new int[] { 0x3000, (int)UProperty.Pattern_White_Space, 0 },
 
-                new int[] { 0x1d200, (int)UProperty.BLOCK, UCharacter.UnicodeBlock.ANCIENT_GREEK_MUSICAL_NOTATION_ID },
-                new int[] { 0x2c8e,  (int)UProperty.BLOCK, UCharacter.UnicodeBlock.COPTIC_ID },
-                new int[] { 0xfe17,  (int)UProperty.BLOCK, UCharacter.UnicodeBlock.VERTICAL_FORMS_ID },
+                new int[] { 0x1d200, (int)UProperty.Block, UCharacter.UnicodeBlock.ANCIENT_GREEK_MUSICAL_NOTATION_ID },
+                new int[] { 0x2c8e,  (int)UProperty.Block, UCharacter.UnicodeBlock.COPTIC_ID },
+                new int[] { 0xfe17,  (int)UProperty.Block, UCharacter.UnicodeBlock.VERTICAL_FORMS_ID },
 
-                new int[] { 0x1a00,  (int)UProperty.SCRIPT, UScript.Buginese },
-                new int[] { 0x2cea,  (int)UProperty.SCRIPT, UScript.Coptic },
-                new int[] { 0xa82b,  (int)UProperty.SCRIPT, UScript.SylotiNagri },
-                new int[] { 0x103d0, (int)UProperty.SCRIPT, UScript.OldPersian },
+                new int[] { 0x1a00,  (int)UProperty.Script, UScript.Buginese },
+                new int[] { 0x2cea,  (int)UProperty.Script, UScript.Coptic },
+                new int[] { 0xa82b,  (int)UProperty.Script, UScript.SylotiNagri },
+                new int[] { 0x103d0, (int)UProperty.Script, UScript.OldPersian },
 
-                new int[] { 0xcc28, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.H2 },
-                new int[] { 0xcc29, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.H3 },
-                new int[] { 0xac03, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.H3 },
-                new int[] { 0x115f, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.JL },
-                new int[] { 0x11aa, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.JT },
-                new int[] { 0x11a1, (int)UProperty.LINE_BREAK, UCharacter.LineBreak.JV },
+                new int[] { 0xcc28, (int)UProperty.Line_Break, UCharacter.LineBreak.H2 },
+                new int[] { 0xcc29, (int)UProperty.Line_Break, UCharacter.LineBreak.H3 },
+                new int[] { 0xac03, (int)UProperty.Line_Break, UCharacter.LineBreak.H3 },
+                new int[] { 0x115f, (int)UProperty.Line_Break, UCharacter.LineBreak.JL },
+                new int[] { 0x11aa, (int)UProperty.Line_Break, UCharacter.LineBreak.JT },
+                new int[] { 0x11a1, (int)UProperty.Line_Break, UCharacter.LineBreak.JV },
 
-                new int[] { 0xb2c9, (int)UProperty.GRAPHEME_CLUSTER_BREAK, UCharacter.GraphemeClusterBreak.LVT },
-                new int[] { 0x036f, (int)UProperty.GRAPHEME_CLUSTER_BREAK, UCharacter.GraphemeClusterBreak.EXTEND },
-                new int[] { 0x0000, (int)UProperty.GRAPHEME_CLUSTER_BREAK, UCharacter.GraphemeClusterBreak.CONTROL },
-                new int[] { 0x1160, (int)UProperty.GRAPHEME_CLUSTER_BREAK, UCharacter.GraphemeClusterBreak.V },
+                new int[] { 0xb2c9, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.LVT },
+                new int[] { 0x036f, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.EXTEND },
+                new int[] { 0x0000, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.CONTROL },
+                new int[] { 0x1160, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.V },
 
-                new int[] { 0x05f4, (int)UProperty.WORD_BREAK, UCharacter.WordBreak.MIDLETTER },
-                new int[] { 0x4ef0, (int)UProperty.WORD_BREAK, UCharacter.WordBreak.OTHER },
-                new int[] { 0x19d9, (int)UProperty.WORD_BREAK, UCharacter.WordBreak.NUMERIC },
-                new int[] { 0x2044, (int)UProperty.WORD_BREAK, UCharacter.WordBreak.MIDNUM },
+                new int[] { 0x05f4, (int)UProperty.Word_Break, UCharacter.WordBreak.MIDLETTER },
+                new int[] { 0x4ef0, (int)UProperty.Word_Break, UCharacter.WordBreak.OTHER },
+                new int[] { 0x19d9, (int)UProperty.Word_Break, UCharacter.WordBreak.NUMERIC },
+                new int[] { 0x2044, (int)UProperty.Word_Break, UCharacter.WordBreak.MIDNUM },
 
-                new int[] { 0xfffd, (int)UProperty.SENTENCE_BREAK, UCharacter.SentenceBreak.OTHER },
-                new int[] { 0x1ffc, (int)UProperty.SENTENCE_BREAK, UCharacter.SentenceBreak.UPPER },
-                new int[] { 0xff63, (int)UProperty.SENTENCE_BREAK, UCharacter.SentenceBreak.CLOSE },
-                new int[] { 0x2028, (int)UProperty.SENTENCE_BREAK, UCharacter.SentenceBreak.SEP },
+                new int[] { 0xfffd, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.OTHER },
+                new int[] { 0x1ffc, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.UPPER },
+                new int[] { 0xff63, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.CLOSE },
+                new int[] { 0x2028, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.SEP },
 
                 new int[] { -1, 0x520, 0 }, /* version break for Unicode 5.2 */
 
                 /* unassigned code points in new default Bidi R blocks */
-                new int[] { 0x1ede4, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x1efe4, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x1ede4, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x1efe4, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
 
                 /* test some script codes >127 */
-                new int[] { 0xa6e6,  (int)UProperty.SCRIPT, UScript.Bamum },
-                new int[] { 0xa4d0,  (int)UProperty.SCRIPT, UScript.Lisu },
-                new int[] { 0x10a7f,  (int)UProperty.SCRIPT, UScript.OldSouthArabian },
+                new int[] { 0xa6e6,  (int)UProperty.Script, UScript.Bamum },
+                new int[] { 0xa4d0,  (int)UProperty.Script, UScript.Lisu },
+                new int[] { 0x10a7f,  (int)UProperty.Script, UScript.OldSouthArabian },
 
                 new int[] { -1, 0x600, 0 }, /* version break for Unicode 6.0 */
 
                 /* value changed in Unicode 6.0 */
-                new int[] { 0x06C3, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.TEH_MARBUTA_GOAL },
+                new int[] { 0x06C3, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.TEH_MARBUTA_GOAL },
 
                 new int[] { -1, 0x610, 0 }, /* version break for Unicode 6.1 */
 
                 /* unassigned code points in new/changed default Bidi AL blocks */
-                new int[] { 0x08ba, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0x1eee4, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0x08ba, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0x1eee4, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
 
                 new int[] { -1, 0x630, 0 }, /* version break for Unicode 6.3 */
 
                 /* unassigned code points in the currency symbols block now default to ET */
-                new int[] { 0x20C0, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.EuropeanNumberTerminator },
-                new int[] { 0x20CF, (int)UProperty.BIDI_CLASS, (int)UnicodeDirection.EuropeanNumberTerminator },
+                new int[] { 0x20C0, (int)UProperty.BiDi_Class, (int)UnicodeDirection.EuropeanNumberTerminator },
+                new int[] { 0x20CF, (int)UProperty.BiDi_Class, (int)UnicodeDirection.EuropeanNumberTerminator },
 
                 /* new property in Unicode 6.3 */
-                new int[] { 0x0027, (int)UProperty.BIDI_PAIRED_BRACKET_TYPE, UCharacter.BidiPairedBracketType.NONE },
-                new int[] { 0x0028, (int)UProperty.BIDI_PAIRED_BRACKET_TYPE, UCharacter.BidiPairedBracketType.OPEN },
-                new int[] { 0x0029, (int)UProperty.BIDI_PAIRED_BRACKET_TYPE, UCharacter.BidiPairedBracketType.CLOSE },
-                new int[] { 0xFF5C, (int)UProperty.BIDI_PAIRED_BRACKET_TYPE, UCharacter.BidiPairedBracketType.NONE },
-                new int[] { 0xFF5B, (int)UProperty.BIDI_PAIRED_BRACKET_TYPE, UCharacter.BidiPairedBracketType.OPEN },
-                new int[] { 0xFF5D, (int)UProperty.BIDI_PAIRED_BRACKET_TYPE, UCharacter.BidiPairedBracketType.CLOSE },
+                new int[] { 0x0027, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.NONE },
+                new int[] { 0x0028, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.OPEN },
+                new int[] { 0x0029, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.CLOSE },
+                new int[] { 0xFF5C, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.NONE },
+                new int[] { 0xFF5B, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.OPEN },
+                new int[] { 0xFF5D, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.CLOSE },
 
                 new int[] { -1, 0x700, 0 }, /* version break for Unicode 7.0 */
 
                 /* new character range with Joining_Group values */
-                new int[] { 0x10ABF, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.NO_JOINING_GROUP },
-                new int[] { 0x10AC0, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.MANICHAEAN_ALEPH },
-                new int[] { 0x10AC1, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.MANICHAEAN_BETH },
-                new int[] { 0x10AEF, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.MANICHAEAN_HUNDRED },
-                new int[] { 0x10AF0, (int)UProperty.JOINING_GROUP, UCharacter.JoiningGroup.NO_JOINING_GROUP },
+                new int[] { 0x10ABF, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NO_JOINING_GROUP },
+                new int[] { 0x10AC0, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.MANICHAEAN_ALEPH },
+                new int[] { 0x10AC1, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.MANICHAEAN_BETH },
+                new int[] { 0x10AEF, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.MANICHAEAN_HUNDRED },
+                new int[] { 0x10AF0, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NO_JOINING_GROUP },
 
                 new int[] { -1, 0xa00, 0 },  // version break for Unicode 10
 
-                new int[] { 0x1F1E5, (int)UProperty.REGIONAL_INDICATOR, FALSE },
-                new int[] { 0x1F1E7, (int)UProperty.REGIONAL_INDICATOR, TRUE },
-                new int[] { 0x1F1FF, (int)UProperty.REGIONAL_INDICATOR, TRUE },
-                new int[] { 0x1F200, (int)UProperty.REGIONAL_INDICATOR, FALSE },
+                new int[] { 0x1F1E5, (int)UProperty.Regional_Indicator, FALSE },
+                new int[] { 0x1F1E7, (int)UProperty.Regional_Indicator, TRUE },
+                new int[] { 0x1F1FF, (int)UProperty.Regional_Indicator, TRUE },
+                new int[] { 0x1F200, (int)UProperty.Regional_Indicator, FALSE },
 
-                new int[] { 0x0600, (int)UProperty.PREPENDED_CONCATENATION_MARK, TRUE },
-                new int[] { 0x0606, (int)UProperty.PREPENDED_CONCATENATION_MARK, FALSE },
-                new int[] { 0x110BD, (int)UProperty.PREPENDED_CONCATENATION_MARK, TRUE },
+                new int[] { 0x0600, (int)UProperty.Prepended_Concatenation_Mark, TRUE },
+                new int[] { 0x0606, (int)UProperty.Prepended_Concatenation_Mark, FALSE },
+                new int[] { 0x110BD, (int)UProperty.Prepended_Concatenation_Mark, TRUE },
 
                 /* undefined (int)UProperty values */
                 new int[] { 0x61, 0x4a7, 0 },
@@ -2358,69 +2358,69 @@ namespace ICU4N.Dev.Test.Lang
             };
 
 
-            if (UCharacter.GetIntPropertyMinValue(UProperty.DASH) != 0
-                || UCharacter.GetIntPropertyMinValue(UProperty.BIDI_CLASS) != 0
-                || UCharacter.GetIntPropertyMinValue(UProperty.BLOCK) != 0  /* j2478 */
-                || UCharacter.GetIntPropertyMinValue(UProperty.SCRIPT) != 0 /* JB#2410 */
+            if (UCharacter.GetIntPropertyMinValue(UProperty.Dash) != 0
+                || UCharacter.GetIntPropertyMinValue(UProperty.BiDi_Class) != 0
+                || UCharacter.GetIntPropertyMinValue(UProperty.Block) != 0  /* j2478 */
+                || UCharacter.GetIntPropertyMinValue(UProperty.Script) != 0 /* JB#2410 */
                 || UCharacter.GetIntPropertyMinValue((UProperty)0x2345) != 0)
             {
                 Errln("error: UCharacter.getIntPropertyMinValue() wrong");
             }
 
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.DASH) != 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Dash) != 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.DASH) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.ID_CONTINUE) != 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.ID_Continue) != 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.ID_CONTINUE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.BINARY_LIMIT - 1) != 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Binary_Limit - 1) != 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BINARY_LIMIT-1) wrong\n");
             }
 
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.BIDI_CLASS) != (int)UnicodeDirection.CharDirectionCount - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.BiDi_Class) != (int)UnicodeDirection.CharDirectionCount - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.BLOCK) != UCharacter.UnicodeBlock.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Block) != UCharacter.UnicodeBlock.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BLOCK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.LINE_BREAK) != UCharacter.LineBreak.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Line_Break) != UCharacter.LineBreak.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.LINE_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.SCRIPT) != UScript.CodeLimit - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Script) != UScript.CodeLimit - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.SCRIPT) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.NUMERIC_TYPE) != UCharacter.NumericType.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Numeric_Type) != UCharacter.NumericType.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.NUMERIC_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.GENERAL_CATEGORY) != UCharacterCategory.CHAR_CATEGORY_COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.General_Category) != UCharacterCategory.CHAR_CATEGORY_COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.GENERAL_CATEGORY) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.HANGUL_SYLLABLE_TYPE) != UCharacter.HangulSyllableType.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Hangul_Syllable_Type) != UCharacter.HangulSyllableType.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.HANGUL_SYLLABLE_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.GRAPHEME_CLUSTER_BREAK) != UCharacter.GraphemeClusterBreak.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Grapheme_Cluster_Break) != UCharacter.GraphemeClusterBreak.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.GRAPHEME_CLUSTER_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.SENTENCE_BREAK) != UCharacter.SentenceBreak.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Sentence_Break) != UCharacter.SentenceBreak.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.SENTENCE_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.WORD_BREAK) != UCharacter.WordBreak.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Word_Break) != UCharacter.WordBreak.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.WORD_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.BIDI_PAIRED_BRACKET_TYPE) != UCharacter.BidiPairedBracketType.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Bidi_Paired_Bracket_Type) != UCharacter.BidiPairedBracketType.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_PAIRED_BRACKET_TYPE) wrong\n");
             }
@@ -2429,19 +2429,19 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(0x2345) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.DECOMPOSITION_TYPE) != (UCharacter.DecompositionType.COUNT - 1))
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Decomposition_Type) != (UCharacter.DecompositionType.COUNT - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.DECOMPOSITION_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.JOINING_GROUP) != (UCharacter.JoiningGroup.COUNT - 1))
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Joining_Group) != (UCharacter.JoiningGroup.COUNT - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.JOINING_GROUP) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.JOINING_TYPE) != (UCharacter.JoiningType.COUNT - 1))
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Joining_Type) != (UCharacter.JoiningType.COUNT - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.JOINING_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.EAST_ASIAN_WIDTH) != (UCharacter.EastAsianWidth.COUNT - 1))
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.East_Asian_Width) != (UCharacter.EastAsianWidth.COUNT - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.EAST_ASIAN_WIDTH) wrong\n");
             }
@@ -2479,7 +2479,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     expect = false;
                 }
-                if ((UProperty)which < UProperty.INT_START)
+                if ((UProperty)which < UProperty.Int_Start)
                 {
                     if (UCharacter.HasBinaryProperty(props[i][0], (UProperty)which)
                         != expect)
@@ -2502,7 +2502,7 @@ namespace ICU4N.Dev.Test.Lang
                 // test separate functions, too
                 switch ((UProperty)which)
                 {
-                    case UProperty.ALPHABETIC:
+                    case UProperty.Alphabetic:
                         if (UCharacter.IsUAlphabetic(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isUAlphabetic(\\u" +
@@ -2510,7 +2510,7 @@ namespace ICU4N.Dev.Test.Lang
                                   ") is wrong expected " + props[i][2]);
                         }
                         break;
-                    case UProperty.LOWERCASE:
+                    case UProperty.Lowercase:
                         if (UCharacter.IsULowercase(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isULowercase(\\u" +
@@ -2518,7 +2518,7 @@ namespace ICU4N.Dev.Test.Lang
                                   ") is wrong expected " + props[i][2]);
                         }
                         break;
-                    case UProperty.UPPERCASE:
+                    case UProperty.Uppercase:
                         if (UCharacter.IsUUppercase(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isUUppercase(\\u" +
@@ -2526,7 +2526,7 @@ namespace ICU4N.Dev.Test.Lang
                                   ") is wrong expected " + props[i][2]);
                         }
                         break;
-                    case UProperty.WHITE_SPACE:
+                    case UProperty.White_Space:
                         if (UCharacter.IsUWhiteSpace(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isUWhiteSpace(\\u" +
@@ -2613,7 +2613,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 int c = (int)values[i][0];
                 int type = UCharacter.GetInt32PropertyValue(c,
-                                                          UProperty.NUMERIC_TYPE);
+                                                          UProperty.Numeric_Type);
                 double nv = UCharacter.GetUnicodeNumericValue(c);
 
                 if (type != values[i][1])
@@ -2671,12 +2671,12 @@ namespace ICU4N.Dev.Test.Lang
 
             /* Min should be 0 for everything. */
             /* Until JB#2478 is fixed, the one exception is UProperty.BLOCK. */
-            for (p = UProperty.INT_START; p < UProperty.INT_LIMIT; ++p)
+            for (p = UProperty.Int_Start; p < UProperty.Int_Limit; ++p)
             {
                 min = UCharacter.GetIntPropertyMinValue(p);
                 if (min != 0)
                 {
-                    if (p == UProperty.BLOCK)
+                    if (p == UProperty.Block)
                     {
                         /* This is okay...for now.  See JB#2487.
                            TODO Update this for JB#2487. */
@@ -2691,10 +2691,10 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
 
-            if (UCharacter.GetIntPropertyMinValue(UProperty.GENERAL_CATEGORY_MASK)
+            if (UCharacter.GetIntPropertyMinValue(UProperty.General_Category_Mask)
                 != 0
                 || UCharacter.GetIntPropertyMaxValue(
-                                                   UProperty.GENERAL_CATEGORY_MASK)
+                                                   UProperty.General_Category_Mask)
                    != -1)
             {
                 Errln("error: UCharacter.getIntPropertyMin/MaxValue("
@@ -2724,7 +2724,7 @@ namespace ICU4N.Dev.Test.Lang
                             desc = "UScript.getScript(-1)";
                             break;
                         case 1:
-                            script = UCharacter.GetInt32PropertyValue(-1, UProperty.SCRIPT);
+                            script = UCharacter.GetInt32PropertyValue(-1, UProperty.Script);
                             desc = "UCharacter.getIntPropertyValue(-1, UProperty.SCRIPT)";
                             break;
                     }
@@ -2768,19 +2768,19 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestEmojiProperties()
         {
-            assertFalse("space is not Emoji", UCharacter.HasBinaryProperty(0x20, UProperty.EMOJI));
-            assertTrue("shooting star is Emoji", UCharacter.HasBinaryProperty(0x1F320, UProperty.EMOJI));
+            assertFalse("space is not Emoji", UCharacter.HasBinaryProperty(0x20, UProperty.Emoji));
+            assertTrue("shooting star is Emoji", UCharacter.HasBinaryProperty(0x1F320, UProperty.Emoji));
             UnicodeSet emoji = new UnicodeSet("[:Emoji:]");
             assertTrue("lots of Emoji", emoji.Count > 700);
 
             assertTrue("shooting star is Emoji_Presentation",
-                    UCharacter.HasBinaryProperty(0x1F320, UProperty.EMOJI_PRESENTATION));
+                    UCharacter.HasBinaryProperty(0x1F320, UProperty.Emoji_Presentation));
             assertTrue("Fitzpatrick 6 is Emoji_Modifier",
-                    UCharacter.HasBinaryProperty(0x1F3FF, UProperty.EMOJI_MODIFIER));
+                    UCharacter.HasBinaryProperty(0x1F3FF, UProperty.Emoji_Modifier));
             assertTrue("happy person is Emoji_Modifier_Base",
-                    UCharacter.HasBinaryProperty(0x1F64B, UProperty.EMOJI_MODIFIER_BASE));
+                    UCharacter.HasBinaryProperty(0x1F64B, UProperty.Emoji_Modifier_Base));
             assertTrue("asterisk is Emoji_Component",
-                    UCharacter.HasBinaryProperty(0x2A, UProperty.EMOJI_COMPONENT));
+                    UCharacter.HasBinaryProperty(0x2A, UProperty.Emoji_Component));
         }
 
         [Test]
@@ -3549,7 +3549,7 @@ namespace ICU4N.Dev.Test.Lang
             // Testing when "if(ch<NormalizerImpl.JAMO_L_BASE)" is true
             for (int i = Normalizer2Impl.Hangul.JAMO_L_BASE - 5; i < Normalizer2Impl.Hangul.JAMO_L_BASE; i++)
             {
-                if (UCharacter.GetInt32PropertyValue(i, UProperty.HANGUL_SYLLABLE_TYPE) != 0)
+                if (UCharacter.GetInt32PropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
                 {
                     Errln("UCharacter.getIntPropertyValue(ch, type) was suppose to return 0 " +
                             "when passing ch: " + i + "and type of Property.HANGUL_SYLLABLE_TYPE");
@@ -3560,7 +3560,7 @@ namespace ICU4N.Dev.Test.Lang
             // Testing when "else if((ch-=NormalizerImpl.HANGUL_BASE)<0)" is true
             for (int i = Normalizer2Impl.Hangul.HANGUL_BASE - 5; i < Normalizer2Impl.Hangul.HANGUL_BASE; i++)
             {
-                if (UCharacter.GetInt32PropertyValue(i, UProperty.HANGUL_SYLLABLE_TYPE) != 0)
+                if (UCharacter.GetInt32PropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
                 {
                     Errln("UCharacter.getIntPropertyValue(ch, type) was suppose to return 0 " +
                             "when passing ch: " + i + "and type of Property.HANGUL_SYLLABLE_TYPE");
@@ -3578,8 +3578,8 @@ namespace ICU4N.Dev.Test.Lang
         {
             /* Testing UCharacter.getIntPropertyMaxValue(type) */
             // Testing when "else if (type < UProperty.INT_START)" is true
-            UProperty[] cases = {UProperty.BINARY_LIMIT, UProperty.BINARY_LIMIT+1,
-                UProperty.INT_START-2, UProperty.INT_START-1};
+            UProperty[] cases = {UProperty.Binary_Limit, UProperty.Binary_Limit+1,
+                UProperty.Int_Start-2, UProperty.Int_Start-1};
             for (int i = 0; i < cases.Length; i++)
             {
                 if (UCharacter.GetIntPropertyMaxValue(cases[i]) != -1)

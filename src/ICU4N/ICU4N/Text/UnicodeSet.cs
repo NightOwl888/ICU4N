@@ -3379,15 +3379,15 @@ namespace ICU4N.Text
         /// <param name="prop">
         /// A property in the range
         /// <list type="bullet">
-        ///     <item><description><see cref="UProperty.BINARY_START"/>..<see cref="UProperty.BINARY_LIMIT"/>-1 or</description></item>
-        ///     <item><description><see cref="UProperty.INT_START"/>..<see cref="UProperty.INT_LIMIT"/>-1 or</description></item>
-        ///     <item><description><see cref="UProperty.MASK_START"/>..<see cref="UProperty.MASK_LIMIT"/>-1</description></item>
+        ///     <item><description><see cref="UProperty.Binary_Start"/>..<see cref="UProperty.Binary_Limit"/>-1 or</description></item>
+        ///     <item><description><see cref="UProperty.Int_Start"/>..<see cref="UProperty.Int_Limit"/>-1 or</description></item>
+        ///     <item><description><see cref="UProperty.Mask_Start"/>..<see cref="UProperty.Mask_Limit"/>-1</description></item>
         /// </list>
         /// </param>
         /// <param name="value">
         /// A value in the range <see cref="UCharacter.GetIntPropertyMinValue(UProperty)"/>..
         /// <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>, with one exception.
-        /// If prop is <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, then value should not be
+        /// If prop is <see cref="UProperty.General_Category_Mask"/>, then value should not be
         /// a <see cref="UCharacter.GetType(int)"/> result, but rather a mask value produced
         /// by logically ORing (1 &lt;&lt; <see cref="UCharacter.GetType(int)"/>) values together.
         /// <para/>
@@ -3398,11 +3398,11 @@ namespace ICU4N.Text
         public virtual UnicodeSet ApplyIntPropertyValue(int prop, int value) // ICU4N TODO: API Rename ApplyInt32PropertyValue, Change prop to UProperty
         {
             CheckFrozen();
-            if (prop == (int)UProperty.GENERAL_CATEGORY_MASK)
+            if (prop == (int)UProperty.General_Category_Mask)
             {
                 ApplyFilter(new GeneralCategoryMaskFilter(value), UCharacterProperty.SRC_CHAR);
             }
-            else if (prop == (int)UProperty.SCRIPT_EXTENSIONS)
+            else if (prop == (int)UProperty.Script_Extensions)
             {
                 ApplyFilter(new ScriptExtensionsFilter(value), UCharacterProperty.SRC_PROPSVEC);
             }
@@ -3485,15 +3485,15 @@ namespace ICU4N.Text
                 p = (UProperty)UCharacter.GetPropertyEnum(propertyAlias);
 
                 // Treat gc as gcm
-                if (p == UProperty.GENERAL_CATEGORY)
+                if (p == UProperty.General_Category)
                 {
-                    p = UProperty.GENERAL_CATEGORY_MASK;
+                    p = UProperty.General_Category_Mask;
                 }
 
 #pragma warning disable 612, 618
-                if ((p >= UProperty.BINARY_START && p < UProperty.BINARY_LIMIT) ||
-                        (p >= UProperty.INT_START && p < UProperty.INT_LIMIT) ||
-                        (p >= UProperty.MASK_START && p < UProperty.MASK_LIMIT))
+                if ((p >= UProperty.Binary_Start && p < UProperty.Binary_Limit) ||
+                        (p >= UProperty.Int_Start && p < UProperty.Int_Limit) ||
+                        (p >= UProperty.Mask_Start && p < UProperty.Mask_Limit))
 #pragma warning restore 612, 618
                 {
                     // ICU4N specific - use safe methods that don't throw exceptions -
@@ -3506,9 +3506,9 @@ namespace ICU4N.Text
                     else
                     {
                         // Handle numeric CCC
-                        if (p == UProperty.CANONICAL_COMBINING_CLASS ||
-                                p == UProperty.LEAD_CANONICAL_COMBINING_CLASS ||
-                                p == UProperty.TRAIL_CANONICAL_COMBINING_CLASS)
+                        if (p == UProperty.Canonical_Combining_Class ||
+                                p == UProperty.Lead_Canonical_Combining_Class ||
+                                p == UProperty.Trail_Canonical_Combining_Class)
                         {
                             if (int.TryParse(PatternProps.TrimWhiteSpace(valueAlias), NumberStyles.Integer, CultureInfo.InvariantCulture, out v2))
                             {
@@ -3534,13 +3534,13 @@ namespace ICU4N.Text
                 {
                     switch (p)
                     {
-                        case UProperty.NUMERIC_VALUE:
+                        case UProperty.Numeric_Value:
                             {
                                 double value = double.Parse(PatternProps.TrimWhiteSpace(valueAlias), CultureInfo.InvariantCulture);
                                 ApplyFilter(new NumericValueFilter(value), UCharacterProperty.SRC_CHAR);
                                 return this;
                             }
-                        case UProperty.NAME:
+                        case UProperty.Name:
                             {
                                 // Must munge name, since
                                 // UCharacter.charFromName() does not do
@@ -3556,11 +3556,11 @@ namespace ICU4N.Text
                                 return this;
                             }
 #pragma warning disable 612, 618
-                        case UProperty.UNICODE_1_NAME:
+                        case UProperty.Unicode_1_Name:
                             // ICU 49 deprecates the Unicode_1_Name property APIs.
                             throw new ArgumentException("Unicode_1_Name (na1) not supported");
 #pragma warning restore 612, 618
-                        case UProperty.AGE:
+                        case UProperty.Age:
                             {
                                 // Must munge name, since
                                 // VersionInfo.getInstance() does not do
@@ -3569,8 +3569,8 @@ namespace ICU4N.Text
                                 ApplyFilter(new VersionFilter(version), UCharacterProperty.SRC_PROPSVEC);
                                 return this;
                             }
-                        case UProperty.SCRIPT_EXTENSIONS:
-                            v = (UProperty)UCharacter.GetPropertyValueEnum(UProperty.SCRIPT, valueAlias);
+                        case UProperty.Script_Extensions:
+                            v = (UProperty)UCharacter.GetPropertyValueEnum(UProperty.Script, valueAlias);
                             // fall through to calling applyIntPropertyValue()
                             break;
                         default:
@@ -3587,21 +3587,21 @@ namespace ICU4N.Text
                 // Binary property, or ANY or ASCII.  Upon success, p and v will
                 // be set.
                 UPropertyAliases pnames = UPropertyAliases.INSTANCE;
-                p = UProperty.GENERAL_CATEGORY_MASK;
+                p = UProperty.General_Category_Mask;
                 v = (UProperty)pnames.GetPropertyValueEnum(p, propertyAlias);
 #pragma warning disable 612, 618
-                if (v == UProperty.UNDEFINED)
+                if (v == UProperty.Undefined)
                 {
-                    p = UProperty.SCRIPT;
+                    p = UProperty.Script;
                     v = (UProperty)pnames.GetPropertyValueEnum(p, propertyAlias);
-                    if (v == UProperty.UNDEFINED)
+                    if (v == UProperty.Undefined)
                     {
                         p = (UProperty)pnames.GetPropertyEnum(propertyAlias);
-                        if (p == UProperty.UNDEFINED)
+                        if (p == UProperty.Undefined)
                         {
                             p = (UProperty)(-1);
                         }
-                        if (p >= UProperty.BINARY_START && p < UProperty.BINARY_LIMIT)
+                        if (p >= UProperty.Binary_Start && p < UProperty.Binary_Limit)
 #pragma warning restore 612, 618
                         {
                             v = (UProperty)1;
@@ -3621,7 +3621,7 @@ namespace ICU4N.Text
                             else if (0 == UPropertyAliases.Compare(ASSIGNED, propertyAlias))
                             {
                                 // [:Assigned:]=[:^Cn:]
-                                p = UProperty.GENERAL_CATEGORY_MASK;
+                                p = UProperty.General_Category_Mask;
                                 v = (UProperty)(1 << UCharacter.UNASSIGNED);
                                 invert = true;
                             }

@@ -59,7 +59,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             int count = 0;
             // test to see that all of the names work
-            for (UProperty propNum = UProperty.BINARY_START; propNum < UProperty.INT_LIMIT; ++propNum)
+            for (UProperty propNum = UProperty.Binary_Start; propNum < UProperty.Int_Limit; ++propNum)
             {
                 count++;
                 //Skipping tests in the non-exhaustive mode to shorten the test time ticket#6475
@@ -67,9 +67,9 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     continue;
                 }
-                if (propNum >= UProperty.BINARY_LIMIT && propNum < UProperty.INT_START)
+                if (propNum >= UProperty.Binary_Limit && propNum < UProperty.Int_Start)
                 { // skip the gap
-                    propNum = UProperty.INT_START;
+                    propNum = UProperty.Int_Start;
                 }
                 for (NameChoice nameChoice = NameChoice.Short; nameChoice <= NameChoice.Long; ++nameChoice)
                 {
@@ -101,9 +101,9 @@ namespace ICU4N.Dev.Test.Lang
                             if (valueName == null)
                             {
                                 if (nameChoice == NameChoice.Short) continue; // allow non-existent short names
-                                if ((propNum == UProperty.CANONICAL_COMBINING_CLASS ||
-                                        propNum == UProperty.LEAD_CANONICAL_COMBINING_CLASS ||
-                                        propNum == UProperty.TRAIL_CANONICAL_COMBINING_CLASS) &&
+                                if ((propNum == UProperty.Canonical_Combining_Class ||
+                                        propNum == UProperty.Lead_Canonical_Combining_Class ||
+                                        propNum == UProperty.Trail_Canonical_Combining_Class) &&
                                         !IsCccValue(valueNum))
                                 {
                                     // Only a few of the canonical combining classes have names.

@@ -425,7 +425,7 @@ namespace ICU4N.Dev.Test.Translit
         }
 
         private static readonly int SET_LIMIT = 0x10FFFF;
-        private static readonly UProperty propEnum = UProperty.GENERAL_CATEGORY;
+        private static readonly UProperty propEnum = UProperty.General_Category;
 
         [Test]
         public void TestUnicodeMapGeneralCategory()

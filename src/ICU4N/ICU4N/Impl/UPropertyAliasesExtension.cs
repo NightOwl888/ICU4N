@@ -110,7 +110,7 @@ namespace ICU4N.Impl
             else
             {
 #pragma warning disable 612, 618
-                return (int)UProperty.UNDEFINED;
+                return (int)UProperty.Undefined;
 #pragma warning restore 612, 618
             }
         }
@@ -125,7 +125,7 @@ namespace ICU4N.Impl
             else
             {
 #pragma warning disable 612, 618
-                return (int)UProperty.UNDEFINED;
+                return (int)UProperty.Undefined;
 #pragma warning restore 612, 618
             }
         }
@@ -140,7 +140,7 @@ namespace ICU4N.Impl
             else
             {
 #pragma warning disable 612, 618
-                return (int)UProperty.UNDEFINED;
+                return (int)UProperty.Undefined;
 #pragma warning restore 612, 618
             }
         }
@@ -155,7 +155,7 @@ namespace ICU4N.Impl
             else
             {
 #pragma warning disable 612, 618
-                return (int)UProperty.UNDEFINED;
+                return (int)UProperty.Undefined;
 #pragma warning restore 612, 618
             }
         }
@@ -167,7 +167,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
-        /// <see cref="UProperty.UNDEFINED"/>.
+        /// <see cref="UProperty.Undefined"/>.
         /// </summary>
         public int GetPropertyEnum(string alias)
         {
@@ -177,7 +177,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
-        /// <see cref="UProperty.UNDEFINED"/>.
+        /// <see cref="UProperty.Undefined"/>.
         /// </summary>
         public int GetPropertyEnum(StringBuilder alias)
         {
@@ -187,7 +187,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
-        /// <see cref="UProperty.UNDEFINED"/>.
+        /// <see cref="UProperty.Undefined"/>.
         /// </summary>
         public int GetPropertyEnum(char[] alias)
         {
@@ -197,7 +197,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a property enum given one of its property names.
         /// If the property name is not known, this method returns
-        /// <see cref="UProperty.UNDEFINED"/>.
+        /// <see cref="UProperty.Undefined"/>.
         /// </summary>
         internal int GetPropertyEnum(ICharSequence alias)
         {
@@ -307,7 +307,7 @@ namespace ICU4N.Impl
         public bool TryGetPropertyValueEnum(UProperty property, string alias, out int result)
         {
 #pragma warning disable 612, 618
-            result = (int)UProperty.UNDEFINED;
+            result = (int)UProperty.Undefined;
 #pragma warning restore 612, 618
             int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
@@ -323,7 +323,7 @@ namespace ICU4N.Impl
             // where the first word is the BytesTrie offset.
             result = GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
 #pragma warning disable 612, 618
-            return result != (int)UProperty.UNDEFINED;
+            return result != (int)UProperty.Undefined;
 #pragma warning restore 612, 618
         }
 
@@ -334,7 +334,7 @@ namespace ICU4N.Impl
         public bool TryGetPropertyValueEnum(UProperty property, StringBuilder alias, out int result)
         {
 #pragma warning disable 612, 618
-            result = (int)UProperty.UNDEFINED;
+            result = (int)UProperty.Undefined;
 #pragma warning restore 612, 618
             int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
@@ -350,7 +350,7 @@ namespace ICU4N.Impl
             // where the first word is the BytesTrie offset.
             result = GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
 #pragma warning disable 612, 618
-            return result != (int)UProperty.UNDEFINED;
+            return result != (int)UProperty.Undefined;
 #pragma warning restore 612, 618
         }
 
@@ -361,7 +361,7 @@ namespace ICU4N.Impl
         public bool TryGetPropertyValueEnum(UProperty property, char[] alias, out int result)
         {
 #pragma warning disable 612, 618
-            result = (int)UProperty.UNDEFINED;
+            result = (int)UProperty.Undefined;
 #pragma warning restore 612, 618
             int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
@@ -377,7 +377,7 @@ namespace ICU4N.Impl
             // where the first word is the BytesTrie offset.
             result = GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
 #pragma warning disable 612, 618
-            return result != (int)UProperty.UNDEFINED;
+            return result != (int)UProperty.Undefined;
 #pragma warning restore 612, 618
         }
 
@@ -388,7 +388,7 @@ namespace ICU4N.Impl
         internal bool TryGetPropertyValueEnum(UProperty property, ICharSequence alias, out int result)
         {
 #pragma warning disable 612, 618
-            result = (int)UProperty.UNDEFINED;
+            result = (int)UProperty.Undefined;
 #pragma warning restore 612, 618
             int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
@@ -404,7 +404,7 @@ namespace ICU4N.Impl
             // where the first word is the BytesTrie offset.
             result = GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
 #pragma warning disable 612, 618
-            return result != (int)UProperty.UNDEFINED;
+            return result != (int)UProperty.Undefined;
 #pragma warning restore 612, 618
         }
 	}

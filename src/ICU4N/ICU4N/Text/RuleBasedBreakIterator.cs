@@ -708,7 +708,7 @@ namespace ICU4N.Text
                 }
 
                 // The global list doesn't have an existing engine, build one.
-                int script = UCharacter.GetInt32PropertyValue(c, UProperty.SCRIPT);
+                int script = UCharacter.GetInt32PropertyValue(c, UProperty.Script);
                 if (script == UScript.Katakana || script == UScript.Hiragana)
                 {
                     // Katakana, Hiragana and Han are handled by the same dictionary engine.

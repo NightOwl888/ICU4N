@@ -240,7 +240,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 int script = GetFirstRealScript(index);
                 if (script == UScript.Unknown) { continue; }
-                UnicodeSet s = new UnicodeSet().ApplyIntPropertyValue((int)UProperty.SCRIPT, (int)script);
+                UnicodeSet s = new UnicodeSet().ApplyIntPropertyValue((int)UProperty.Script, (int)script);
                 if (missingScripts.ContainsNone(s))
                 {
                     Errln("2nd character in script: " + index + "\t" + new UnicodeSet(missingScripts).RetainAll(s).ToPattern(false));
@@ -261,8 +261,8 @@ namespace ICU4N.Dev.Test.Collate
                     int script = UScript.GetScript(c);
                     missingScriptNames += " " +
                             UCharacter.GetPropertyValueName(
-                                    UProperty.SCRIPT, script, NameChoice.Short);
-                    missingChars.RemoveAll(new UnicodeSet().ApplyIntPropertyValue((int)UProperty.SCRIPT, script));
+                                    UProperty.Script, script, NameChoice.Short);
+                    missingChars.RemoveAll(new UnicodeSet().ApplyIntPropertyValue((int)UProperty.Script, script));
                 }
                 Errln("Missing character from:" + missingScriptNames + " -- " + missingScripts);
             }

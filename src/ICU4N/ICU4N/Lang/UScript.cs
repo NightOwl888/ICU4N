@@ -1281,7 +1281,7 @@ namespace ICU4N.Lang
 
         /// <summary>
         /// One more than the highest normal Script code.
-        /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/> (passing <see cref="UProperty.SCRIPT"/>).
+        /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/> (passing <see cref="UProperty.Script"/>).
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         public const int CodeLimit = 178;
@@ -1379,7 +1379,7 @@ namespace ICU4N.Lang
             if (nameOrAbbrOrLocale.IndexOf('_') < 0 && nameOrAbbrOrLocale.IndexOf('-') < 0)
             {
                 // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
-                if (UCharacter.TryGetPropertyValueEnum(UProperty.SCRIPT, nameOrAbbrOrLocale, out int propNum))
+                if (UCharacter.TryGetPropertyValueEnum(UProperty.Script, nameOrAbbrOrLocale, out int propNum))
                 {
                     return new int[] { propNum };
                 }
@@ -1393,7 +1393,7 @@ namespace ICU4N.Lang
             if (!triedCode)
             {
                 // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
-                if (UCharacter.TryGetPropertyValueEnum(UProperty.SCRIPT, nameOrAbbrOrLocale, out int propNum))
+                if (UCharacter.TryGetPropertyValueEnum(UProperty.Script, nameOrAbbrOrLocale, out int propNum))
                 {
                     return new int[] { propNum };
                 }
@@ -1413,7 +1413,7 @@ namespace ICU4N.Lang
         public static int GetCodeFromName(string nameOrAbbr)
         {
             // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
-            if (UCharacter.TryGetPropertyValueEnum(UProperty.SCRIPT, nameOrAbbr, out int propNum))
+            if (UCharacter.TryGetPropertyValueEnum(UProperty.Script, nameOrAbbr, out int propNum))
             {
                 return propNum;
             }
@@ -1567,7 +1567,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         public static string GetName(int scriptCode)
         {
-            return UCharacter.GetPropertyValueName(UProperty.SCRIPT,
+            return UCharacter.GetPropertyValueName(UProperty.Script,
                     scriptCode,
                     NameChoice.Long);
         }
@@ -1584,7 +1584,7 @@ namespace ICU4N.Lang
         /// <stable>ICU4N 60.1.0</stable>
         public static bool TryGetName(int scriptCode, out string result) // ICU4N TODO: Tests
         {
-            return UCharacter.TryGetPropertyValueName(UProperty.SCRIPT,
+            return UCharacter.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,
                     NameChoice.Long, out result);
         }
@@ -1601,7 +1601,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         public static string GetShortName(int scriptCode)
         {
-            return UCharacter.GetPropertyValueName(UProperty.SCRIPT,
+            return UCharacter.GetPropertyValueName(UProperty.Script,
                     scriptCode,
                     NameChoice.Short);
         }
@@ -1619,7 +1619,7 @@ namespace ICU4N.Lang
         /// <stable>ICU4N 60.1.0</stable>
         public static bool TryGetShortName(int scriptCode, out string result) // ICU4N TODO: Tests
         {
-            return UCharacter.TryGetPropertyValueName(UProperty.SCRIPT,
+            return UCharacter.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,
                     NameChoice.Short, out result);
         }

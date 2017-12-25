@@ -1035,7 +1035,7 @@ namespace ICU4N.Dev.Test.Translit
             {
                 if (sourceString.Length == 0) return true;
                 char ch = sourceString[sourceString.Length - 1]; // don't worry about surrogates.
-                if (UCharacter.HasBinaryProperty(ch, UProperty.LOGICAL_ORDER_EXCEPTION)) return false;
+                if (UCharacter.HasBinaryProperty(ch, UProperty.Logical_Order_Exception)) return false;
 
 
                 // disallow anything with a wordbreak between

@@ -68,9 +68,9 @@ namespace ICU4N.Text
                 UnicodeSet originalSet = fHandled[breakType];
                 if (!originalSet.Contains(c))
                 {
-                    int script = UCharacter.GetInt32PropertyValue(c, UProperty.SCRIPT);
+                    int script = UCharacter.GetInt32PropertyValue(c, UProperty.Script);
                     UnicodeSet newSet = new UnicodeSet();
-                    newSet.ApplyIntPropertyValue((int)UProperty.SCRIPT, script);
+                    newSet.ApplyIntPropertyValue((int)UProperty.Script, script);
                     newSet.AddAll(originalSet);
                     fHandled[breakType]= newSet;
                 }

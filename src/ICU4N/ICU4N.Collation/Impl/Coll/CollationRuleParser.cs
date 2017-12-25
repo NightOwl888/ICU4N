@@ -924,7 +924,7 @@ namespace ICU4N.Impl.Coll
             }
             try
             {
-                int script = UCharacter.GetPropertyValueEnum(UProperty.SCRIPT, word);
+                int script = UCharacter.GetPropertyValueEnum(UProperty.Script, word);
                 if (script >= 0)
                 {
                     return script;
