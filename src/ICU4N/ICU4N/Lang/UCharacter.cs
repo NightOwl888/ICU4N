@@ -3912,7 +3912,7 @@ namespace ICU4N.Lang
          * @return true if code point is a lowercase character
          * @stable ICU 2.1
          */
-        public static bool IsLowerCase(int ch)
+        public static bool IsLowerCase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
         {
             // if props == 0, it will just fall through and return false
             return GetType(ch) == UnicodeCategory.LowercaseLetter;
@@ -4120,7 +4120,7 @@ namespace ICU4N.Lang
          * @return true if the code point is an uppercase character
          * @stable ICU 2.1
          */
-        public static bool IsUpperCase(int ch)
+        public static bool IsUpperCase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
         {
             // if props == 0, it will just fall through and return false
             return GetType(ch) == UnicodeCategory.UppercaseLetter;
@@ -5672,7 +5672,7 @@ namespace ICU4N.Lang
          * @param ch codepoint to be tested
          * @stable ICU 2.6
          */
-        public static bool IsULowercase(int ch)
+        public static bool IsULowercase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
         {
             return HasBinaryProperty(ch, UProperty.LOWERCASE);
         }
@@ -5684,7 +5684,7 @@ namespace ICU4N.Lang
          * @param ch codepoint to be tested
          * @stable ICU 2.6
          */
-        public static bool IsUUppercase(int ch)
+        public static bool IsUUppercase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
         {
             return HasBinaryProperty(ch, UProperty.UPPERCASE);
         }

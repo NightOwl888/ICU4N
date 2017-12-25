@@ -1,935 +1,1008 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Lang
 {
+    /// <summary>
+    /// Selection values for Unicode properties.
+    /// <para/>
+    /// These values are used in functions like
+    /// <see cref="UCharacter.HasBinaryProperty(int, UProperty)"/> to select one of the Unicode properties.
+    /// </summary>
+    /// <remarks>
+    /// The properties APIs are intended to reflect Unicode properties as
+    /// defined in the Unicode Character Database (UCD) and Unicode Technical
+    /// Reports (UTR).
+    /// <para/>
+    /// For details about the properties see
+    /// <a href="http://www.unicode.org/reports/tr44/">UAX #44: Unicode Character Database</a>.
+    /// <para/>
+    /// Important: If ICU is built with UCD files from Unicode versions below
+    /// 3.2, then properties marked with "new" are not or not fully
+    /// available. Check <see cref="UCharacter.UnicodeVersion"/> to be sure.
+    /// </remarks>
+    /// <seealso cref="UCharacter"/>
+    /// <author>Syn Wee Quek</author>
+    /// <stable>ICU 2.6</stable>
     public enum UProperty
     {
-        /**
-         * Special value indicating undefined property.
-         * @internal
-         * @deprecated 
-         */
+        /// <summary>
+        /// Special value indicating undefined property.
+        /// </summary>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         UNDEFINED = -1,
 
-        /**
-         * <p>Binary property Alphabetic.
-         * <p>Property for UCharacter.isUAlphabetic(), different from the property
-         * in UCharacter.isalpha().
-         * <p>Lu + Ll + Lt + Lm + Lo + Nl + Other_Alphabetic.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Alphabetic.
+        /// <para/>
+        /// Property for <see cref="UCharacter.IsUAlphabetic(int)"/>, different from the property
+        /// in <see cref="UCharacter.IsUAlphabetic(int)"/>.
+        /// <para/>
+        /// Lu + Ll + Lt + Lm + Lo + Nl + Other_Alphabetic.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         ALPHABETIC = 0,
 
-        /**
-         * First constant for binary Unicode properties.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// First constant for binary Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         BINARY_START = ALPHABETIC,
 
-        /**
-         * Binary property ASCII_Hex_Digit (0-9 A-F a-f).
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property ASCII_Hex_Digit (0-9 A-F a-f).
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         ASCII_HEX_DIGIT = 1,
 
-        /**
-         * <p>Binary property Bidi_Control.
-         * <p>Format controls which have specific functions in the Bidi Algorithm.
-         *
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Bidi_Control.
+        /// <para/>
+        /// Format controls which have specific functions in the Bidi Algorithm.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         BIDI_CONTROL = 2,
 
-        /**
-         * <p>Binary property Bidi_Mirrored.
-         * <p>Characters that may change display in RTL text.
-         * <p>Property for UCharacter.isMirrored().
-         * <p>See Bidi Algorithm, UTR 9.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Bidi_Mirrored.
+        /// <para/>
+        /// Characters that may change display in RTL text.
+        /// <para/>
+        /// Property for <see cref="UCharacter.IsMirrored(int)"/>.
+        /// <para/>
+        /// See Bidi Algorithm, UTR 9.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         BIDI_MIRRORED = 3,
 
-        /**
-         * <p>Binary property Dash.
-         * <p>Variations of dashes.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Dash.
+        /// <para/>
+        /// Variations of dashes.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         DASH = 4,
 
-        /**
-         * <p>Binary property Default_Ignorable_Code_Point (new).
-         *
-         * <p>Property that indicates codepoint is ignorable in most processing.
-         *
-         * <p>Codepoints (2060..206F, FFF0..FFFB, E0000..E0FFF) +
-         * Other_Default_Ignorable_Code_Point + (Cf + Cc + Cs - White_Space)
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Default_Ignorable_Code_Point (new).
+        /// <para/>
+        /// Property that indicates codepoint is ignorable in most processing.
+        /// <para/>
+        /// Codepoints (2060..206F, FFF0..FFFB, E0000..E0FFF) +
+        /// Other_Default_Ignorable_Code_Point + (Cf + Cc + Cs - White_Space)
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         DEFAULT_IGNORABLE_CODE_POINT = 5,
 
-        /**
-         * <p>Binary property Deprecated (new).
-         * <p>The usage of deprecated characters is strongly discouraged.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Deprecated (new).
+        /// <para/>
+        /// The usage of deprecated characters is strongly discouraged.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         DEPRECATED = 6,
 
-        /**
-         * <p>Binary property Diacritic.
-         * <p>Characters that linguistically modify the meaning of another
-         * character to which they apply.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Diacritic.
+        /// <para/>
+        /// Characters that linguistically modify the meaning of another
+        /// character to which they apply.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         DIACRITIC = 7,
 
-        /**
-         * <p>Binary property Extender.
-         * <p>Extend the value or shape of a preceding alphabetic character, e.g.
-         * length and iteration marks.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Extender.
+        /// <para/>
+        /// Extend the value or shape of a preceding alphabetic character, e.g.
+        /// length and iteration marks.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         EXTENDER = 8,
 
-        /**
-         * <p>Binary property Full_Composition_Exclusion.
-         * <p>CompositionExclusions.txt + Singleton Decompositions +
-         * Non-Starter Decompositions.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Full_Composition_Exclusion.
+        /// <para/>
+        /// CompositionExclusions.txt + Singleton Decompositions +
+        /// Non-Starter Decompositions.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         FULL_COMPOSITION_EXCLUSION = 9,
 
-        /**
-         * <p>Binary property Grapheme_Base (new).
-         * <p>For programmatic determination of grapheme cluster boundaries.
-         * [0..10FFFF]-Cc-Cf-Cs-Co-Cn-Zl-Zp-Grapheme_Link-Grapheme_Extend-CGJ
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Grapheme_Base (new).
+        /// <para/>
+        /// For programmatic determination of grapheme cluster boundaries.
+        /// [0..10FFFF]-Cc-Cf-Cs-Co-Cn-Zl-Zp-Grapheme_Link-Grapheme_Extend-CGJ
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         GRAPHEME_BASE = 10,
 
-        /**
-         * <p>Binary property Grapheme_Extend (new).
-         * <p>For programmatic determination of grapheme cluster boundaries.
-         * <p>Me+Mn+Mc+Other_Grapheme_Extend-Grapheme_Link-CGJ
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Grapheme_Extend (new).
+        /// <para/>
+        /// For programmatic determination of grapheme cluster boundaries.
+        /// <para/>
+        /// Me+Mn+Mc+Other_Grapheme_Extend-Grapheme_Link-CGJ
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         GRAPHEME_EXTEND = 11,
 
-        /**
-         * <p>Binary property Grapheme_Link (new).
-         * <p>For programmatic determination of grapheme cluster boundaries.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Grapheme_Link (new).
+        /// <para/>
+        /// For programmatic determination of grapheme cluster boundaries.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         GRAPHEME_LINK = 12,
 
-        /**
-         * <p>Binary property Hex_Digit.
-         * <p>Characters commonly used for hexadecimal numbers.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Hex_Digit.
+        /// <para/>
+        /// Characters commonly used for hexadecimal numbers.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         HEX_DIGIT = 13,
 
-        /**
-         * <p>Binary property Hyphen.
-         * <p>Dashes used to mark connections between pieces of words, plus the
-         * Katakana middle dot.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Hyphen.
+        /// <para/>
+        /// Dashes used to mark connections between pieces of words, plus the
+        /// Katakana middle dot.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         HYPHEN = 14,
 
-        /**
-         * <p>Binary property ID_Continue.
-         * <p>Characters that can continue an identifier.
-         * <p>ID_Start+Mn+Mc+Nd+Pc
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property ID_Continue.
+        /// <para/>
+        /// Characters that can continue an identifier.
+        /// <para/>
+        /// ID_Start+Mn+Mc+Nd+Pc
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         ID_CONTINUE = 15,
 
-        /**
-         * <p>Binary property ID_Start.
-         * <p>Characters that can start an identifier.
-         * <p>Lu+Ll+Lt+Lm+Lo+Nl
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property ID_Start.
+        /// <para/>
+        /// Characters that can start an identifier.
+        /// <para/>
+        /// Lu+Ll+Lt+Lm+Lo+Nl
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         ID_START = 16,
 
-        /**
-         * <p>Binary property Ideographic.
-         * <p>CJKV ideographs.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Ideographic.
+        /// <para/>
+        /// CJKV ideographs.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         IDEOGRAPHIC = 17,
 
-        /**
-         * <p>Binary property IDS_Binary_Operator (new).
-         * <p>For programmatic determination of Ideographic Description Sequences.
-         *
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property IDS_Binary_Operator (new).
+        /// <para/>
+        /// For programmatic determination of Ideographic Description Sequences.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         IDS_BINARY_OPERATOR = 18,
 
-        /**
-         * <p>Binary property IDS_Trinary_Operator (new).
-         * <p>For programmatic determination of Ideographic Description
-         * Sequences.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property IDS_Trinary_Operator (new).
+        /// <para/>
+        /// For programmatic determination of Ideographic Description
+        /// Sequences.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         IDS_TRINARY_OPERATOR = 19,
 
-        /**
-         * <p>Binary property Join_Control.
-         * <p>Format controls for cursive joining and ligation.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Join_Control.
+        /// <para/>
+        /// Format controls for cursive joining and ligation.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         JOIN_CONTROL = 20,
 
-        /**
-         * <p>Binary property Logical_Order_Exception (new).
-         * <p>Characters that do not use logical order and require special
-         * handling in most processing.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Logical_Order_Exception (new).
+        /// <para/>
+        /// Characters that do not use logical order and require special
+        /// handling in most processing.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         LOGICAL_ORDER_EXCEPTION = 21,
 
-        /**
-         * <p>Binary property Lowercase.
-         * <p>Same as UCharacter.isULowercase(), different from
-         * UCharacter.islower().
-         * <p>Ll+Other_Lowercase
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Lowercase.
+        /// <para/>
+        /// Same as <see cref="UCharacter.IsULowercase(int)"/>, different from
+        /// <see cref="UCharacter.IsLowerCase(int)"/>.
+        /// <para/>
+        /// Ll+Other_Lowercase
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         LOWERCASE = 22,
 
-        /** <p>Binary property Math.
-         * <p>Sm+Other_Math
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Math.
+        /// <para/>
+        /// Sm+Other_Math
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         MATH = 23,
 
-        /**
-         * <p>Binary property Noncharacter_Code_Point.
-         * <p>Code points that are explicitly defined as illegal for the encoding
-         * of characters.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Noncharacter_Code_Point.
+        /// <para/>
+        /// Code points that are explicitly defined as illegal for the encoding
+        /// of characters.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         NONCHARACTER_CODE_POINT = 24,
 
-        /**
-         * <p>Binary property Quotation_Mark.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Quotation_Mark.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         QUOTATION_MARK = 25,
 
-        /**
-         * <p>Binary property Radical (new).
-         * <p>For programmatic determination of Ideographic Description
-         * Sequences.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Radical (new).
+        /// <para/>
+        /// For programmatic determination of Ideographic Description
+        /// Sequences.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         RADICAL = 26,
 
-        /**
-         * <p>Binary property Soft_Dotted (new).
-         * <p>Characters with a "soft dot", like i or j.
-         * <p>An accent placed on these characters causes the dot to disappear.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Soft_Dotted (new).
+        /// <para/>
+        /// Characters with a "soft dot", like i or j.
+        /// <para/>
+        /// An accent placed on these characters causes the dot to disappear.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         SOFT_DOTTED = 27,
 
-        /**
-         * <p>Binary property Terminal_Punctuation.
-         * <p>Punctuation characters that generally mark the end of textual
-         * units.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Terminal_Punctuation.
+        /// <para/>
+        /// Punctuation characters that generally mark the end of textual
+        /// units.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         TERMINAL_PUNCTUATION = 28,
 
-        /**
-         * <p>Binary property Unified_Ideograph (new).
-         * <p>For programmatic determination of Ideographic Description
-         * Sequences.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Unified_Ideograph (new).
+        /// <para/>
+        /// For programmatic determination of Ideographic Description
+        /// Sequences.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         UNIFIED_IDEOGRAPH = 29,
 
-        /**
-         * <p>Binary property Uppercase.
-         * <p>Same as UCharacter.isUUppercase(), different from
-         * UCharacter.isUpperCase().
-         * <p>Lu+Other_Uppercase
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Uppercase.
+        /// <para/>
+        /// Same as <see cref="UCharacter.IsUUppercase(int)"/>, different from
+        /// <see cref="UCharacter.IsUpperCase(int)"/>.
+        /// <para/>
+        /// Lu+Other_Uppercase
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         UPPERCASE = 30,
 
-        /**
-         * <p>Binary property White_Space.
-         * <p>Same as UCharacter.isUWhiteSpace(), different from
-         * UCharacter.isSpace() and UCharacter.isWhitespace().
-         * Space characters+TAB+CR+LF-ZWSP-ZWNBSP
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property White_Space.
+        /// <para/>
+        /// Same as <see cref="UCharacter.IsUWhiteSpace(int)"/>, different from
+        /// <see cref="UCharacter.IsSpace(int)"/> and <see cref="UCharacter.IsWhitespace(int)"/>.
+        /// Space characters+TAB+CR+LF-ZWSP-ZWNBSP
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         WHITE_SPACE = 31,
 
-        /**
-         * <p>Binary property XID_Continue.
-         * <p>ID_Continue modified to allow closure under normalization forms
-         * NFKC and NFKD.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property XID_Continue.
+        /// <para/>
+        /// ID_Continue modified to allow closure under normalization forms
+        /// NFKC and NFKD.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         XID_CONTINUE = 32,
 
-        /**
-         * <p>Binary property XID_Start.
-         * <p>ID_Start modified to allow closure under normalization forms NFKC
-         * and NFKD.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property XID_Start.
+        /// <para/>
+        /// ID_Start modified to allow closure under normalization forms NFKC
+        /// and NFKD.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         XID_START = 33,
 
-        /**
-         * <p>Binary property Case_Sensitive.
-         * <p>Either the source of a case
-         * mapping or _in_ the target of a case mapping. Not the same as
-         * the general category Cased_Letter.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Binary property Case_Sensitive.
+        /// <para/>
+        /// Either the source of a case
+        /// mapping or _in_ the target of a case mapping. Not the same as
+        /// the general category Cased_Letter.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         CASE_SENSITIVE = 34,
 
-        /**
-         * Binary property STerm (new in Unicode 4.0.1).
-         * Sentence Terminal. Used in UAX #29: Text Boundaries
-         * (http://www.unicode.org/reports/tr29/)
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Binary property STerm (new in Unicode 4.0.1).
+        /// Sentence Terminal. Used in UAX #29: Text Boundaries
+        /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>)
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         S_TERM = 35,
 
-        /**
-         * Binary property Variation_Selector (new in Unicode 4.0.1).
-         * Indicates all those characters that qualify as Variation Selectors.
-         * For details on the behavior of these characters,
-         * see StandardizedVariants.html and 15.6 Variation Selectors.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Binary property Variation_Selector (new in Unicode 4.0.1).
+        /// Indicates all those characters that qualify as Variation Selectors.
+        /// For details on the behavior of these characters,
+        /// see StandardizedVariants.html and 15.6 Variation Selectors.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         VARIATION_SELECTOR = 36,
 
-        /**
-         * Binary property NFD_Inert.
-         * ICU-specific property for characters that are inert under NFD,
-         * i.e., they do not interact with adjacent characters.
-         * Used for example in normalizing transforms in incremental mode
-         * to find the boundary of safely normalizable text despite possible
-         * text additions.
-         *
-         * There is one such property per normalization form.
-         * These properties are computed as follows - an inert character is:
-         * a) unassigned, or ALL of the following:
-         * b) of combining class 0.
-         * c) not decomposed by this normalization form.
-         * AND if NFC or NFKC,
-         * d) can never compose with a previous character.
-         * e) can never compose with a following character.
-         * f) can never change if another character is added.
-         * Example: a-breve might satisfy all but f, but if you
-         * add an ogonek it changes to a-ogonek + breve
-         *
-         * See also com.ibm.text.UCD.NFSkippable in the ICU4J repository,
-         * and icu/source/common/unormimp.h .
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Binary property NFD_Inert.
+        /// ICU-specific property for characters that are inert under NFD,
+        /// i.e., they do not interact with adjacent characters.
+        /// Used for example in normalizing transforms in incremental mode
+        /// to find the boundary of safely normalizable text despite possible
+        /// text additions.
+        /// <para/>
+        /// There is one such property per normalization form.
+        /// These properties are computed as follows - an inert character is:
+        /// a) unassigned, or ALL of the following:
+        /// b) of combining class 0.
+        /// c) not decomposed by this normalization form.
+        /// AND if NFC or NFKC,
+        /// d) can never compose with a previous character.
+        /// e) can never compose with a following character.
+        /// f) can never change if another character is added.
+        /// Example: a-breve might satisfy all but f, but if you
+        /// add an ogonek it changes to a-ogonek + breve
+        /// <para/>
+        /// See also com.ibm.text.UCD.NFSkippable in the ICU4J repository,
+        /// and icu/source/common/unormimp.h .
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         NFD_INERT = 37,
 
-        /**
-         * Binary property NFKD_Inert.
-         * ICU-specific property for characters that are inert under NFKD,
-         * i.e., they do not interact with adjacent characters.
-         * Used for example in normalizing transforms in incremental mode
-         * to find the boundary of safely normalizable text despite possible
-         * text additions.
-         * @see #NFD_INERT
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Binary property NFKD_Inert.
+        /// ICU-specific property for characters that are inert under NFKD,
+        /// i.e., they do not interact with adjacent characters.
+        /// Used for example in normalizing transforms in incremental mode
+        /// to find the boundary of safely normalizable text despite possible
+        /// text additions.
+        /// </summary>
+        /// <seealso cref="NFD_INERT"/>
+        /// <stable>ICU 3.0</stable>
         NFKD_INERT = 38,
 
-        /**
-         * Binary property NFC_Inert.
-         * ICU-specific property for characters that are inert under NFC,
-         * i.e., they do not interact with adjacent characters.
-         * Used for example in normalizing transforms in incremental mode
-         * to find the boundary of safely normalizable text despite possible
-         * text additions.
-         * @see #NFD_INERT
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Binary property NFC_Inert.
+        /// ICU-specific property for characters that are inert under NFC,
+        /// i.e., they do not interact with adjacent characters.
+        /// Used for example in normalizing transforms in incremental mode
+        /// to find the boundary of safely normalizable text despite possible
+        /// text additions.
+        /// </summary>
+        /// <seealso cref="NFD_INERT"/>
+        /// <stable>ICU 3.0</stable>
         NFC_INERT = 39,
 
-        /**
-         * Binary property NFKC_Inert.
-         * ICU-specific property for characters that are inert under NFKC,
-         * i.e., they do not interact with adjacent characters.
-         * Used for example in normalizing transforms in incremental mode
-         * to find the boundary of safely normalizable text despite possible
-         * text additions.
-         * @see #NFD_INERT
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Binary property NFKC_Inert.
+        /// ICU-specific property for characters that are inert under NFKC,
+        /// i.e., they do not interact with adjacent characters.
+        /// Used for example in normalizing transforms in incremental mode
+        /// to find the boundary of safely normalizable text despite possible
+        /// text additions.
+        /// </summary>
+        /// <seealso cref="NFD_INERT"/>
+        /// <stable>ICU 3.0</stable>
         NFKC_INERT = 40,
 
-        /**
-         * Binary Property Segment_Starter.
-         * ICU-specific property for characters that are starters in terms of
-         * Unicode normalization and combining character sequences.
-         * They have ccc=0 and do not occur in non-initial position of the
-         * canonical decomposition of any character
-         * (like " in NFD(a-umlaut) and a Jamo T in an NFD(Hangul LVT)).
-         * ICU uses this property for segmenting a string for generating a set of
-         * canonically equivalent strings, e.g. for canonical closure while
-         * processing collation tailoring rules.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Binary Property Segment_Starter.
+        /// ICU-specific property for characters that are starters in terms of
+        /// Unicode normalization and combining character sequences.
+        /// They have ccc=0 and do not occur in non-initial position of the
+        /// canonical decomposition of any character
+        /// (like " in NFD(a-umlaut) and a Jamo T in an NFD(Hangul LVT)).
+        /// ICU uses this property for segmenting a string for generating a set of
+        /// canonically equivalent strings, e.g. for canonical closure while
+        /// processing collation tailoring rules.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         SEGMENT_STARTER = 41,
 
-        /**
-         * Binary property Pattern_Syntax (new in Unicode 4.1).
-         * See UAX #31 Identifier and Pattern Syntax
-         * (http://www.unicode.org/reports/tr31/)
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Binary property Pattern_Syntax (new in Unicode 4.1).
+        /// See UAX #31 Identifier and Pattern Syntax
+        /// (<a href="http://www.unicode.org/reports/tr31/">http://www.unicode.org/reports/tr31/</a>)
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         PATTERN_SYNTAX = 42,
 
-        /**
-         * Binary property Pattern_White_Space (new in Unicode 4.1).
-         * See UAX #31 Identifier and Pattern Syntax
-         * (http://www.unicode.org/reports/tr31/)
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Binary property Pattern_White_Space (new in Unicode 4.1).
+        /// See UAX #31 Identifier and Pattern Syntax
+        /// (<a href="http://www.unicode.org/reports/tr31/">http://www.unicode.org/reports/tr31/</a>)
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         PATTERN_WHITE_SPACE = 43,
 
-        /**
-         * Binary property alnum (a C/POSIX character class).
-         * Implemented according to the UTS #18 Annex C Standard Recommendation.
-         * See the UCharacter class documentation.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Binary property alnum (a C/POSIX character class).
+        /// Implemented according to the UTS #18 Annex C Standard Recommendation.
+        /// See the <see cref="UCharacter"/> class documentation.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         POSIX_ALNUM = 44,
 
-        /**
-         * Binary property blank (a C/POSIX character class).
-         * Implemented according to the UTS #18 Annex C Standard Recommendation.
-         * See the UCharacter class documentation.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Binary property blank (a C/POSIX character class).
+        /// Implemented according to the UTS #18 Annex C Standard Recommendation.
+        /// See the <see cref="UCharacter"/> class documentation.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         POSIX_BLANK = 45,
 
-        /**
-         * Binary property graph (a C/POSIX character class).
-         * Implemented according to the UTS #18 Annex C Standard Recommendation.
-         * See the UCharacter class documentation.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Binary property graph (a C/POSIX character class).
+        /// Implemented according to the UTS #18 Annex C Standard Recommendation.
+        /// See the <see cref="UCharacter"/> class documentation.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         POSIX_GRAPH = 46,
 
-        /**
-         * Binary property print (a C/POSIX character class).
-         * Implemented according to the UTS #18 Annex C Standard Recommendation.
-         * See the UCharacter class documentation.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Binary property print (a C/POSIX character class).
+        /// Implemented according to the UTS #18 Annex C Standard Recommendation.
+        /// See the <see cref="UCharacter"/> class documentation.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         POSIX_PRINT = 47,
 
-        /**
-         * Binary property xdigit (a C/POSIX character class).
-         * Implemented according to the UTS #18 Annex C Standard Recommendation.
-         * See the UCharacter class documentation.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Binary property xdigit (a C/POSIX character class).
+        /// Implemented according to the UTS #18 Annex C Standard Recommendation.
+        /// See the <see cref="UCharacter"/> class documentation.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         POSIX_XDIGIT = 48,
 
-        /**
-         * Binary property Cased.
-         * For Lowercase, Uppercase and Titlecase characters.
-         * @stable ICU 4.4
-         */
+        /// <summary>
+        /// Binary property Cased.
+        /// For Lowercase, Uppercase and Titlecase characters.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         CASED = 49,
-        /**
-         * Binary property Case_Ignorable.
-         * Used in context-sensitive case mappings.
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Binary property Case_Ignorable.
+        /// Used in context-sensitive case mappings.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         CASE_IGNORABLE = 50,
-        /**
-         * Binary property Changes_When_Lowercased.
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Binary property Changes_When_Lowercased.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         CHANGES_WHEN_LOWERCASED = 51,
-        /**
-         * Binary property Changes_When_Uppercased.
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Binary property Changes_When_Uppercased.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         CHANGES_WHEN_UPPERCASED = 52,
-        /**
-         * Binary property Changes_When_Titlecased.
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Binary property Changes_When_Titlecased.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         CHANGES_WHEN_TITLECASED = 53,
-        /**
-         * Binary property Changes_When_Casefolded.
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Binary property Changes_When_Casefolded.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         CHANGES_WHEN_CASEFOLDED = 54,
-        /**
-         * Binary property Changes_When_Casemapped.
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Binary property Changes_When_Casemapped.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         CHANGES_WHEN_CASEMAPPED = 55,
-        /**
-         * Binary property Changes_When_NFKC_Casefolded.
-         * @stable ICU 4.4
-         */
+
+        /// <summary>
+        /// Binary property Changes_When_NFKC_Casefolded.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
         CHANGES_WHEN_NFKC_CASEFOLDED = 56,
-        /**
-         * Binary property Emoji.
-         * See http://www.unicode.org/reports/tr51/#Emoji_Properties
-         *
-         * @stable ICU 57
-         */
+
+        /// <summary>
+        /// Binary property Emoji.
+        /// See <a href="http://www.unicode.org/reports/tr51/#Emoji_Properties">http://www.unicode.org/reports/tr51/#Emoji_Properties</a>
+        /// </summary>
+        /// <stable>ICU 57</stable>
         EMOJI = 57,
-        /**
-         * Binary property Emoji_Presentation.
-         * See http://www.unicode.org/reports/tr51/#Emoji_Properties
-         *
-         * @stable ICU 57
-         */
+
+        /// <summary>
+        /// Binary property Emoji_Presentation.
+        /// See <a href="http://www.unicode.org/reports/tr51/#Emoji_Properties">http://www.unicode.org/reports/tr51/#Emoji_Properties</a>
+        /// </summary>
+        /// <stable>ICU 57</stable>
         EMOJI_PRESENTATION = 58,
-        /**
-         * Binary property Emoji_Modifier.
-         * See http://www.unicode.org/reports/tr51/#Emoji_Properties
-         *
-         * @stable ICU 57
-         */
+
+        /// <summary>
+        /// Binary property Emoji_Modifier.
+        /// See <a href="http://www.unicode.org/reports/tr51/#Emoji_Properties">http://www.unicode.org/reports/tr51/#Emoji_Properties</a>
+        /// </summary>
+        /// <stable>ICU 57</stable>
         EMOJI_MODIFIER = 59,
-        /**
-         * Binary property Emoji_Modifier_Base.
-         * See http://www.unicode.org/reports/tr51/#Emoji_Properties
-         *
-         * @stable ICU 57
-         */
+
+        /// <summary>
+        /// Binary property Emoji_Modifier_Base.
+        /// See <a href="http://www.unicode.org/reports/tr51/#Emoji_Properties">http://www.unicode.org/reports/tr51/#Emoji_Properties</a>
+        /// </summary>
+        /// <stable>ICU 57</stable>
         EMOJI_MODIFIER_BASE = 60,
-        /**
-         * Binary property Emoji_Component.
-         * See http://www.unicode.org/reports/tr51/#Emoji_Properties
-         *
-         * @stable ICU 60
-         */
+
+        /// <summary>
+        /// Binary property Emoji_Component.
+        /// See <a href="http://www.unicode.org/reports/tr51/#Emoji_Properties">http://www.unicode.org/reports/tr51/#Emoji_Properties</a>
+        /// </summary>
+        /// <stable>ICU 60</stable>
         EMOJI_COMPONENT = 61,
-        /**
-         * Binary property Regional_Indicator.
-         *
-         * @stable ICU 60
-         */
+
+        /// <summary>
+        /// Binary property Regional_Indicator.
+        /// </summary>
+        /// <stable>ICU 60</stable>
         REGIONAL_INDICATOR = 62,
-        /**
-         * Binary property Prepended_Concatenation_Mark.
-         *
-         * @stable ICU 60
-         */
+
+        /// <summary>
+        /// Binary property Prepended_Concatenation_Mark.
+        /// </summary>
+        /// <stable>ICU 60</stable>
         PREPENDED_CONCATENATION_MARK = 63,
 
-        /**
-         * One more than the last constant for binary Unicode properties.
-         * @deprecated 
-         */
+        /// <summary>
+        /// One more than the last constant for binary Unicode properties.
+        /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         BINARY_LIMIT = 64,
 
-        /**
-         * Enumerated property Bidi_Class.
-         * Same as UCharacter.getDirection(int), returns UCharacterDirection values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property Bidi_Class.
+        /// Same as <see cref="UCharacter.GetDirection(int)"/>, returns <see cref="UCharacterDirection"/> values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         BIDI_CLASS = 0x1000,
 
-        /**
-         * First constant for enumerated/integer Unicode properties.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        ///  First constant for enumerated/integer Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         INT_START = BIDI_CLASS,
 
-        /**
-         * Enumerated property Block.
-         * Same as UCharacter.UnicodeBlock.of(int), returns UCharacter.UnicodeBlock
-         * values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property Block.
+        /// Same as <see cref="UCharacter.UnicodeBlock.Of(int)"/>, returns <see cref="UCharacter.UnicodeBlock"/>
+        /// values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         BLOCK = 0x1001,
 
-        /**
-         * Enumerated property Canonical_Combining_Class.
-         * Same as UCharacter.getCombiningClass(int), returns 8-bit numeric values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property Canonical_Combining_Class.
+        /// Same as <see cref="UCharacter.GetCombiningClass(int)"/>, returns 8-bit numeric values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         CANONICAL_COMBINING_CLASS = 0x1002,
 
-        /**
-         * Enumerated property Decomposition_Type.
-         * Returns UCharacter.DecompositionType values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property Decomposition_Type.
+        /// Returns <see cref="UCharacter.DecompositionType"/> values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         DECOMPOSITION_TYPE = 0x1003,
 
-        /**
-         * Enumerated property East_Asian_Width.
-         * See http://www.unicode.org/reports/tr11/
-         * Returns UCharacter.EastAsianWidth values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property East_Asian_Width.
+        /// See <a href="http://www.unicode.org/reports/tr11/">http://www.unicode.org/reports/tr11/</a>.
+        /// Returns <see cref="UCharacter.EastAsianWidth"/> values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         EAST_ASIAN_WIDTH = 0x1004,
 
-        /**
-         * Enumerated property General_Category.
-         * Same as UCharacter.getType(int), returns UCharacterCategory values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property General_Category.
+        /// Same as <see cref="UCharacter.GetType(int)"/>, returns <see cref="System.Globalization.UnicodeCategory"/> values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         GENERAL_CATEGORY = 0x1005,
 
-        /**
-         * Enumerated property Joining_Group.
-         * Returns UCharacter.JoiningGroup values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property Joining_Group.
+        /// Returns <see cref="UCharacter.JoiningGroup"/> values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         JOINING_GROUP = 0x1006,
 
-        /**
-         * Enumerated property Joining_Type.
-         * Returns UCharacter.JoiningType values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property Joining_Type.
+        /// Returns <see cref="UCharacter.JoiningType"/> values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         JOINING_TYPE = 0x1007,
 
-        /**
-         * Enumerated property Line_Break.
-         * Returns UCharacter.LineBreak values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property Line_Break.
+        /// Returns <see cref="UCharacter.LineBreak"/> values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         LINE_BREAK = 0x1008,
 
-        /**
-         * Enumerated property Numeric_Type.
-         * Returns UCharacter.NumericType values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property Numeric_Type.
+        /// Returns <see cref="UCharacter.NumericType"/> values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         NUMERIC_TYPE = 0x1009,
 
-        /**
-         * Enumerated property Script.
-         * Same as UScript.getScript(int), returns UScript values.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Enumerated property Script.
+        /// Same as <see cref="UScript.GetScript(int)"/>, returns <see cref="UScript"/> values.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         SCRIPT = 0x100A,
 
-        /**
-         * Enumerated property Hangul_Syllable_Type, new in Unicode 4.
-         * Returns UCharacter.HangulSyllableType values.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Enumerated property Hangul_Syllable_Type, new in Unicode 4.
+        /// Returns <see cref="UCharacter.HangulSyllableType"/> values.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         HANGUL_SYLLABLE_TYPE = 0x100B,
 
-        /**
-         * Enumerated property NFD_Quick_Check.
-         * Returns numeric values compatible with Normalizer.QuickCheckResult.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Enumerated property NFD_Quick_Check.
+        /// Returns numeric values compatible with <see cref="Text.NormalizerQuickCheckResult"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         NFD_QUICK_CHECK = 0x100C,
 
-        /**
-         * Enumerated property NFKD_Quick_Check.
-         * Returns numeric values compatible with Normalizer.QuickCheckResult.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Enumerated property NFKD_Quick_Check.
+        /// Returns numeric values compatible with <see cref="Text.NormalizerQuickCheckResult"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         NFKD_QUICK_CHECK = 0x100D,
 
-        /**
-         * Enumerated property NFC_Quick_Check.
-         * Returns numeric values compatible with Normalizer.QuickCheckResult.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Enumerated property NFC_Quick_Check.
+        /// Returns numeric values compatible with <see cref="Text.NormalizerQuickCheckResult"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         NFC_QUICK_CHECK = 0x100E,
 
-        /**
-         * Enumerated property NFKC_Quick_Check.
-         * Returns numeric values compatible with Normalizer.QuickCheckResult.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Enumerated property NFKC_Quick_Check.
+        /// Returns numeric values compatible with <see cref="Text.NormalizerQuickCheckResult"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         NFKC_QUICK_CHECK = 0x100F,
 
-        /**
-         * Enumerated property Lead_Canonical_Combining_Class.
-         * ICU-specific property for the ccc of the first code point
-         * of the decomposition, or lccc(c)=ccc(NFD(c)[0]).
-         * Useful for checking for canonically ordered text,
-         * see Normalizer.FCD and http://www.unicode.org/notes/tn5/#FCD .
-         * Returns 8-bit numeric values like CANONICAL_COMBINING_CLASS.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Enumerated property Lead_Canonical_Combining_Class.
+        /// ICU-specific property for the ccc of the first code point
+        /// of the decomposition, or lccc(c)=ccc(NFD(c)[0]).
+        /// Useful for checking for canonically ordered text,
+        /// see <see cref="Text.Normalizer.FCD"/> and 
+        /// <a href="http://www.unicode.org/notes/tn5/#FCD">http://www.unicode.org/notes/tn5/#FCD</a>.
+        /// Returns 8-bit numeric values like <see cref="CANONICAL_COMBINING_CLASS"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         LEAD_CANONICAL_COMBINING_CLASS = 0x1010,
 
-        /**
-         * Enumerated property Trail_Canonical_Combining_Class.
-         * ICU-specific property for the ccc of the last code point
-         * of the decomposition, or lccc(c)=ccc(NFD(c)[last]).
-         * Useful for checking for canonically ordered text,
-         * see Normalizer.FCD and http://www.unicode.org/notes/tn5/#FCD .
-         * Returns 8-bit numeric values like CANONICAL_COMBINING_CLASS.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Enumerated property Trail_Canonical_Combining_Class.
+        /// ICU-specific property for the ccc of the last code point
+        /// of the decomposition, or lccc(c)=ccc(NFD(c)[last]).
+        /// Useful for checking for canonically ordered text,
+        /// see <see cref="Text.Normalizer.FCD"/> and 
+        /// <a href="http://www.unicode.org/notes/tn5/#FCD">http://www.unicode.org/notes/tn5/#FCD</a>.
+        /// Returns 8-bit numeric values like <see cref="CANONICAL_COMBINING_CLASS"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         TRAIL_CANONICAL_COMBINING_CLASS = 0x1011,
 
-        /**
-         * Enumerated property Grapheme_Cluster_Break (new in Unicode 4.1).
-         * Used in UAX #29: Text Boundaries
-         * (http://www.unicode.org/reports/tr29/)
-         * Returns UCharacter.GraphemeClusterBreak values.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Enumerated property Grapheme_Cluster_Break (new in Unicode 4.1).
+        /// Used in UAX #29: Text Boundaries
+        /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>).
+        /// Returns <see cref="UCharacter.GraphemeClusterBreak"/> values.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         GRAPHEME_CLUSTER_BREAK = 0x1012,
 
-        /**
-         * Enumerated property Sentence_Break (new in Unicode 4.1).
-         * Used in UAX #29: Text Boundaries
-         * (http://www.unicode.org/reports/tr29/)
-         * Returns UCharacter.SentenceBreak values.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Enumerated property Sentence_Break (new in Unicode 4.1).
+        /// Used in UAX #29: Text Boundaries
+        /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>).
+        /// Returns <see cref="UCharacter.SentenceBreak"/> values.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         SENTENCE_BREAK = 0x1013,
 
-        /**
-         * Enumerated property Word_Break (new in Unicode 4.1).
-         * Used in UAX #29: Text Boundaries
-         * (http://www.unicode.org/reports/tr29/)
-         * Returns UCharacter.WordBreak values.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Enumerated property Word_Break (new in Unicode 4.1).
+        /// Used in UAX #29: Text Boundaries
+        /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>).
+        /// Returns <see cref="UCharacter.WordBreak"/> values.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         WORD_BREAK = 0x1014,
 
-        /**
-         * Enumerated property Bidi_Paired_Bracket_Type (new in Unicode 6.3).
-         * Used in UAX #9: Unicode Bidirectional Algorithm
-         * (http://www.unicode.org/reports/tr9/)
-         * Returns UCharacter.BidiPairedBracketType values.
-         * @stable ICU 52
-         */
+        /// <summary>
+        /// Enumerated property Bidi_Paired_Bracket_Type (new in Unicode 6.3).
+        /// Used in UAX #9: Unicode Bidirectional Algorithm
+        /// (<a href="http://www.unicode.org/reports/tr9/">http://www.unicode.org/reports/tr9/</a>).
+        /// Returns <see cref="UCharacter.BidiPairedBracketType"/> values.
+        /// </summary>
+        /// <stable>ICU 52</stable>
         BIDI_PAIRED_BRACKET_TYPE = 0x1015,
 
-        /**
-         * One more than the last constant for enumerated/integer Unicode properties.
-         * @deprecated .
-         */
+        /// <summary>
+        /// One more than the last constant for enumerated/integer Unicode properties.
+        /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         INT_LIMIT = 0x1016,
 
-        /**
-         * Bitmask property General_Category_Mask.
-         * This is the General_Category property returned as a bit mask.
-         * When used in UCharacter.getIntPropertyValue(c),
-         * returns bit masks for UCharacterCategory values where exactly one bit is set.
-         * When used with UCharacter.getPropertyValueName() and UCharacter.getPropertyValueEnum(),
-         * a multi-bit mask is used for sets of categories like "Letters".
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Bitmask property General_Category_Mask.
+        /// This is the General_Category property returned as a bit mask.
+        /// When used in <see cref="UCharacter.GetInt32PropertyValue(int, UProperty)"/>,
+        /// returns bit masks for <see cref="System.Globalization.UnicodeCategory"/> values where exactly one bit is set.
+        /// When used with <see cref="UCharacter.GetPropertyValueName(UProperty, int, NameChoice)"/> 
+        /// and <see cref="UCharacter.GetPropertyValueEnum(UProperty, string)"/>,
+        /// a multi-bit mask is used for sets of categories like "Letters".
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         GENERAL_CATEGORY_MASK = 0x2000,
 
-        /**
-         * First constant for bit-mask Unicode properties.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// First constant for bit-mask Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         MASK_START = GENERAL_CATEGORY_MASK,
 
-        /**
-         * One more than the last constant for bit-mask Unicode properties.
-         * @deprecated 
-         */
+        /// <summary>
+        /// One more than the last constant for bit-mask Unicode properties.
+        /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         MASK_LIMIT = 0x2001,
 
-        /**
-         * Double property Numeric_Value.
-         * Corresponds to UCharacter.getUnicodeNumericValue(int).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Double property Numeric_Value.
+        /// Corresponds to <see cref="UCharacter.GetUnicodeNumericValue(int)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         NUMERIC_VALUE = 0x3000,
 
-        /**
-         * First constant for double Unicode properties.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// First constant for double Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         DOUBLE_START = NUMERIC_VALUE,
 
-        /**
-         * One more than the last constant for double Unicode properties.
-         * @deprecated 
-         */
+        /// <summary>
+        /// One more than the last constant for double Unicode properties.
+        /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         DOUBLE_LIMIT = 0x3001,
 
-        /**
-         * String property Age.
-         * Corresponds to UCharacter.getAge(int).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Age.
+        /// Corresponds to <see cref="UCharacter.GetAge(int)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         AGE = 0x4000,
 
-        /**
-         * First constant for string Unicode properties.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// First constant for string Unicode properties.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         STRING_START = AGE,
 
-        /**
-         * String property Bidi_Mirroring_Glyph.
-         * Corresponds to UCharacter.getMirror(int).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Bidi_Mirroring_Glyph.
+        /// Corresponds to <see cref="UCharacter.GetMirror(int)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         BIDI_MIRRORING_GLYPH = 0x4001,
 
-        /**
-         * String property Case_Folding.
-         * Corresponds to UCharacter.foldCase(String, boolean).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Case_Folding.
+        /// Corresponds to <see cref="UCharacter.FoldCase(string, bool)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         CASE_FOLDING = 0x4002,
 
-        /**
-         * Deprecated string property ISO_Comment.
-         * Corresponds to UCharacter.getISOComment(int).
-         * @deprecated 
-         */
+        /// <summary>
+        /// Deprecated string property ISO_Comment.
+        /// Corresponds to <see cref="UCharacter.GetISOComment(int)"/>.
+        /// </summary>
         [Obsolete("ICU 49")]
         ISO_COMMENT = 0x4003,
 
-        /**
-         * String property Lowercase_Mapping.
-         * Corresponds to UCharacter.toLowerCase(String).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Lowercase_Mapping.
+        /// Corresponds to <see cref="UCharacter.ToLower(string)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         LOWERCASE_MAPPING = 0x4004,
 
-        /**
-         * String property Name.
-         * Corresponds to UCharacter.getName(int).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Name.
+        /// Corresponds to <see cref="UCharacter.GetName(int)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         NAME = 0x4005,
 
-        /**
-         * String property Simple_Case_Folding.
-         * Corresponds to UCharacter.foldCase(int, boolean).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Simple_Case_Folding.
+        /// Corresponds to <see cref="UCharacter.FoldCase(int, bool)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         SIMPLE_CASE_FOLDING = 0x4006,
 
-        /**
-         * String property Simple_Lowercase_Mapping.
-         * Corresponds to UCharacter.toLowerCase(int).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Simple_Lowercase_Mapping.
+        /// Corresponds to <see cref="UCharacter.ToLower(int)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         SIMPLE_LOWERCASE_MAPPING = 0x4007,
 
-        /**
-         * String property Simple_Titlecase_Mapping.
-         * Corresponds to UCharacter.toTitleCase(int).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Simple_Titlecase_Mapping.
+        /// Corresponds to <see cref="UCharacter.ToTitleCase(int)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         SIMPLE_TITLECASE_MAPPING = 0x4008,
 
-        /**
-         * String property Simple_Uppercase_Mapping.
-         * Corresponds to UCharacter.toUpperCase(int).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Simple_Uppercase_Mapping.
+        /// Corresponds to <see cref="UCharacter.ToUpper(int)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         SIMPLE_UPPERCASE_MAPPING = 0x4009,
 
-        /**
-         * String property Titlecase_Mapping.
-         * Corresponds to UCharacter.toTitleCase(String).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Titlecase_Mapping.
+        /// Corresponds to <see cref="UCharacter.ToTitleCase(string)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         TITLECASE_MAPPING = 0x400A,
 
-        /**
-         * String property Unicode_1_Name.
-         * This property is of little practical value.
-         * Beginning with ICU 49, ICU APIs return null or an empty string for this property.
-         * Corresponds to UCharacter.getName1_0(int).
-         * @deprecated 
-         */
+        /// <summary>
+        /// String property Unicode_1_Name.
+        /// This property is of little practical value.
+        /// Beginning with ICU 49, ICU APIs return null or an empty string for this property.
+        /// Corresponds to <see cref="UCharacter.GetName1_0(int)"/>.
+        /// </summary>
         [Obsolete("ICU 49")]
         UNICODE_1_NAME = 0x400B,
 
-        /**
-         * String property Uppercase_Mapping.
-         * Corresponds to UCharacter.toUpperCase(String).
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// String property Uppercase_Mapping.
+        /// Corresponds to <see cref="UCharacter.ToUpper(string)"/>.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         UPPERCASE_MAPPING = 0x400C,
 
-        /**
-         * String property Bidi_Paired_Bracket (new in Unicode 6.3).
-         * Corresponds to UCharacter.getBidiPairedBracket.
-         * @stable ICU 52
-         */
+        /// <summary>
+        /// String property Bidi_Paired_Bracket (new in Unicode 6.3).
+        /// Corresponds to <see cref="UCharacter.GetBidiPairedBracket(int)"/>.
+        /// </summary>
+        /// <stable>ICU 52</stable>
         BIDI_PAIRED_BRACKET = 0x400D,
 
-        /**
-         * One more than the last constant for string Unicode properties.
-         * @deprecated 
-         */
+        /// <summary>
+        /// One more than the last constant for string Unicode properties.
+        /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         STRING_LIMIT = 0x400E,
 
-        /**
-         * Miscellaneous property Script_Extensions (new in Unicode 6.0).
-         * Some characters are commonly used in multiple scripts.
-         * For more information, see UAX #24: http://www.unicode.org/reports/tr24/.
-         * Corresponds to UScript.hasScript and UScript.getScriptExtensions.
-         * @stable ICU 4.6
-         */
+        /// <summary>
+        /// Miscellaneous property Script_Extensions (new in Unicode 6.0).
+        /// Some characters are commonly used in multiple scripts.
+        /// For more information, see UAX #24: <a href="http://www.unicode.org/reports/tr24/">http://www.unicode.org/reports/tr24/</a>.
+        /// Corresponds to <see cref="UScript.HasScript(int, int)"/> and <see cref="UScript.GetScriptExtensions(int, Support.Collections.BitSet)"/>.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
         SCRIPT_EXTENSIONS = 0x7000,
-        /**
-         * First constant for Unicode properties with unusual value types.
-         * @stable ICU 4.6
-         */
+
+        /// <summary>
+        /// First constant for Unicode properties with unusual value types.
+        /// </summary>
+        /// <stable>ICU 4.6</stable>
         OTHER_PROPERTY_START = SCRIPT_EXTENSIONS,
-        /**
-         * One more than the last constant for Unicode properties with unusual value types.
-         * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-         */
+
+        /// <summary>
+        /// One more than the last constant for Unicode properties with unusual value types.
+        /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         OTHER_PROPERTY_LIMIT = 0x7001,
     }
 
-    public enum NameChoice // ICU4N TODO: API Re-nest so this is the same as the Java documentation?
+    /// <summary>
+    /// Selector constants for <see cref="UCharacter.GetPropertyName(UProperty, NameChoice)"/> and
+    /// <see cref="UCharacter.GetPropertyValueName(UProperty, int, NameChoice)"/>.  These selectors are used to
+    /// choose which name is returned for a given property or value.
+    /// All properties and values have a long name.  Most have a short
+    /// name, but some do not.  Unicode allows for additional names,
+    /// beyond the long and short name, which would be indicated by
+    /// LONG + i, where i=1, 2,...
+    /// </summary>
+    /// <seealso cref="UCharacter.GetPropertyName(UProperty, NameChoice)"/>
+    /// <seealso cref="UCharacter.GetPropertyValueName(UProperty, int, NameChoice)"/>
+    /// <stable>ICU 2.4</stable>
+    public enum NameChoice 
     {
-        /**
-         * Selector for the abbreviated name of a property or value.
-         * Most properties and values have a short name, those that do
-         * not return null.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Selector for the abbreviated name of a property or value.
+        /// Most properties and values have a short name, those that do
+        /// not return null.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         Short = 0,
 
-        /**
-         * Selector for the long name of a property or value.  All
-         * properties and values have a long name.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Selector for the long name of a property or value.  All
+        /// properties and values have a long name.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         Long = 1,
 
-        /**
-         * The number of predefined property name choices.  Individual
-         * properties or values may have more than COUNT aliases.
-         * @deprecated 
-         */
+        /// <summary>
+        /// The number of predefined property name choices.  Individual
+        /// properties or values may have more than <see cref="Count"/> aliases.
+        /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         Count = 2,
     }

@@ -15,7 +15,7 @@ namespace ICU4N.Text
     /// <see cref="Normalizer2.QuickCheck(string)"/>.
     /// For details see Unicode Technical Report 15.
     /// </summary>
-    public enum NormalizerQuickCheckResult
+    public enum NormalizerQuickCheckResult // ICU4N TODO: API - rename QuickCheckResult
     {
         /// <summary>
         /// Indicates that string is not in the normalized format.
