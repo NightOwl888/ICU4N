@@ -70,7 +70,7 @@ namespace ICU4N.Text
                 {
                     int script = UCharacter.GetInt32PropertyValue(c, UProperty.Script);
                     UnicodeSet newSet = new UnicodeSet();
-                    newSet.ApplyIntPropertyValue((int)UProperty.Script, script);
+                    newSet.ApplyInt32PropertyValue(UProperty.Script, script);
                     newSet.AddAll(originalSet);
                     fHandled[breakType]= newSet;
                 }

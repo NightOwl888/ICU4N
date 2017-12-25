@@ -3185,16 +3185,16 @@ namespace ICU4N.Text
 
         private class Int32PropertyFilter : IFilter
         {
-            public int Prop { get; set; }
+            public UProperty Prop { get; set; }
             public int Value { get; set; }
-            internal Int32PropertyFilter(int prop, int value)
+            internal Int32PropertyFilter(UProperty prop, int value)
             {
                 this.Prop = prop;
                 this.Value = value;
             }
             public virtual bool Contains(int ch)
             {
-                return UCharacter.GetInt32PropertyValue(ch, (UProperty)Prop) == Value;
+                return UCharacter.GetInt32PropertyValue(ch, Prop) == Value;
             }
         }
 
@@ -3395,14 +3395,14 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>A reference to this set.</returns>
         /// <stable>ICU 2.4</stable>
-        public virtual UnicodeSet ApplyIntPropertyValue(int prop, int value) // ICU4N TODO: API Rename ApplyInt32PropertyValue, Change prop to UProperty
+        public virtual UnicodeSet ApplyInt32PropertyValue(UProperty prop, int value)
         {
             CheckFrozen();
-            if (prop == (int)UProperty.General_Category_Mask)
+            if (prop == UProperty.General_Category_Mask)
             {
                 ApplyFilter(new GeneralCategoryMaskFilter(value), UCharacterProperty.SRC_CHAR);
             }
-            else if (prop == (int)UProperty.Script_Extensions)
+            else if (prop == UProperty.Script_Extensions)
             {
                 ApplyFilter(new ScriptExtensionsFilter(value), UCharacterProperty.SRC_PROPSVEC);
             }
@@ -3641,7 +3641,7 @@ namespace ICU4N.Text
                 }
             }
 
-            ApplyIntPropertyValue((int)p, (int)v);
+            ApplyInt32PropertyValue(p, (int)v);
             if (invert)
             {
                 Complement();

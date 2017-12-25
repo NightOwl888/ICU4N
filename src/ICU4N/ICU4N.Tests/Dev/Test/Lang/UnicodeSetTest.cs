@@ -2025,7 +2025,7 @@ namespace ICU4N.Dev.Test.Lang
                         case 3: List<string> a = new List<string>(); a.Add("a"); test.AddAll(a); break;
                         case 4: test.AddAll("ab"); break;
                         case 5: test.AddAll(new UnicodeSet("[ab]")); break;
-                        case 6: test.ApplyIntPropertyValue(0, 0); break;
+                        case 6: test.ApplyInt32PropertyValue(0, 0); break;
                         case 7: test.ApplyPattern("[ab]"); break;
                         case 8: test.ApplyPattern("[ab]", true); break;
                         case 9: test.ApplyPattern("[ab]", 0); break;

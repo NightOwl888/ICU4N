@@ -729,59 +729,59 @@ namespace ICU4N.Impl
             return -1; // undefined
         }
 
-        public int GetSource(int which)
+        public int GetSource(UProperty which)
         {
-            if (which < (int)UProperty.Binary_Start)
+            if (which < UProperty.Binary_Start)
             {
                 return SRC_NONE; /* undefined */
             }
-            else if (which < (int)UProperty.Binary_Limit)
+            else if (which < UProperty.Binary_Limit)
             {
-                return binProps[which].GetSource();
+                return binProps[(int)which].GetSource();
             }
-            else if (which < (int)UProperty.Int_Start)
+            else if (which < UProperty.Int_Start)
             {
                 return SRC_NONE; /* undefined */
             }
-            else if (which < (int)UProperty.Int_Limit)
+            else if (which < UProperty.Int_Limit)
             {
-                return intProps[which - (int)UProperty.Int_Start].GetSource();
+                return intProps[which - UProperty.Int_Start].GetSource();
             }
-            else if (which < (int)UProperty.String_Start)
+            else if (which < UProperty.String_Start)
             {
                 switch (which)
                 {
-                    case (int)UProperty.General_Category_Mask:
-                    case (int)UProperty.Numeric_Value:
+                    case UProperty.General_Category_Mask:
+                    case UProperty.Numeric_Value:
                         return SRC_CHAR;
 
                     default:
                         return SRC_NONE;
                 }
             }
-            else if (which < (int)UProperty.String_Limit)
+            else if (which < UProperty.String_Limit)
             {
                 switch (which)
                 {
-                    case (int)UProperty.Age:
+                    case UProperty.Age:
                         return SRC_PROPSVEC;
 
-                    case (int)UProperty.Bidi_Mirroring_Glyph:
+                    case UProperty.Bidi_Mirroring_Glyph:
                         return SRC_BIDI;
 
-                    case (int)UProperty.Case_Folding:
-                    case (int)UProperty.Lowercase_Mapping:
-                    case (int)UProperty.Simple_Case_Folding:
-                    case (int)UProperty.Simple_Lowercase_Mapping:
-                    case (int)UProperty.Simple_Titlecase_Mapping:
-                    case (int)UProperty.Simple_Uppercase_Mapping:
-                    case (int)UProperty.Titlecase_Mapping:
-                    case (int)UProperty.Uppercase_Mapping:
+                    case UProperty.Case_Folding:
+                    case UProperty.Lowercase_Mapping:
+                    case UProperty.Simple_Case_Folding:
+                    case UProperty.Simple_Lowercase_Mapping:
+                    case UProperty.Simple_Titlecase_Mapping:
+                    case UProperty.Simple_Uppercase_Mapping:
+                    case UProperty.Titlecase_Mapping:
+                    case UProperty.Uppercase_Mapping:
                         return SRC_CASE;
 
-                    case (int)UProperty.ISO_Comment:
-                    case (int)UProperty.Name:
-                    case (int)UProperty.Unicode_1_Name:
+                    case UProperty.ISO_Comment:
+                    case UProperty.Name:
+                    case UProperty.Unicode_1_Name:
                         return SRC_NAMES;
 
                     default:
@@ -792,7 +792,7 @@ namespace ICU4N.Impl
             {
                 switch (which)
                 {
-                    case (int)UProperty.Script_Extensions:
+                    case UProperty.Script_Extensions:
                         return SRC_PROPSVEC;
                     default:
                         return SRC_NONE; /* undefined */
