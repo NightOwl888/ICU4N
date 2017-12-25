@@ -4,7 +4,8 @@ using System.Globalization;
 namespace ICU4N.Lang
 {
     /// <summary>
-    /// Extension methods for <see cref="UnicodeCategory"/>.
+    /// Utility methods for converting <see cref="UnicodeCategory"/> numbers for use
+    /// in ICU.
     /// </summary>
     public static class UnicodeCategoryConvert
     {

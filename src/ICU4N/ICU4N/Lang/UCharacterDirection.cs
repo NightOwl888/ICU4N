@@ -1,17 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ICU4N.Lang
+﻿namespace ICU4N.Lang
 {
+    /// <summary>
+    /// Enumerated Unicode character linguistic direction values.
+    /// Used as return results from <see cref="UCharacter"/>.
+    /// <para/>
+    /// This class is not subclassable.
+    /// </summary>
+    /// <author>Syn Wee Quek</author>
+    /// <stable>ICU 2.1</stable>
     public static class UCharacterDirection
     {
-        /**
-         * Gets the name of the argument direction
-         * @param dir direction type to retrieve name
-         * @return directional name
-         * @stable ICU 2.1
-         */
+        /// <summary>
+        /// Gets the name of the argument direction.
+        /// </summary>
+        /// <param name="dir">Direction type to retrieve name.</param>
+        /// <returns>Directional name.</returns>
+        /// <stable>ICU 2.1</stable>
         public static string ToString(UnicodeDirection dir)
         {
             switch (dir)
