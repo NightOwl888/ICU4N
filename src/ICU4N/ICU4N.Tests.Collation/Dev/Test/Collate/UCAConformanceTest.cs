@@ -31,7 +31,7 @@ namespace ICU4N.Dev.Test.Collate
         private RuleBasedCollator UCA;
         private RuleBasedCollator rbUCA;
         private UTF16.StringComparer comparer;
-        private bool isAtLeastUCA62 = UCharacter.GetUnicodeVersion().CompareTo(VersionInfo.UNICODE_6_2) >= 0;
+        private bool isAtLeastUCA62 = UCharacter.UnicodeVersion.CompareTo(VersionInfo.UNICODE_6_2) >= 0;
 
         [Test]
         public void TestTableNonIgnorable()

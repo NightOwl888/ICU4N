@@ -75,7 +75,7 @@ namespace ICU4N.Dev.Test.Lang
              * The following checks work only starting from Unicode 4.0.
              * Check the version number here.
              */
-            VersionInfo version = UCharacter.GetUnicodeVersion();
+            VersionInfo version = UCharacter.UnicodeVersion;
             if (version.Major < 4 || version.Equals(VersionInfo.GetInstance(4, 0, 1)))
             {
                 return;
@@ -445,8 +445,8 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestVersion()
         {
-            if (!UCharacter.GetUnicodeVersion().Equals(VERSION_))
-                Errln("FAIL expected: " + VERSION_ + " got: " + UCharacter.GetUnicodeVersion());
+            if (!UCharacter.UnicodeVersion.Equals(VERSION_))
+                Errln("FAIL expected: " + VERSION_ + " got: " + UCharacter.UnicodeVersion);
         }
 
         /**
@@ -2446,7 +2446,7 @@ namespace ICU4N.Dev.Test.Lang
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.EAST_ASIAN_WIDTH) wrong\n");
             }
 
-            VersionInfo version = UCharacter.GetUnicodeVersion();
+            VersionInfo version = UCharacter.UnicodeVersion;
 
             // test hasBinaryProperty()
             for (int i = 0; i < props.Length; ++i)

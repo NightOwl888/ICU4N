@@ -485,7 +485,7 @@ namespace ICU4N.Dev.Test.Collate
             Logln("Test getUCAVersion");
             // Assume that the UCD and UCA versions are the same,
             // rather than hardcoding (and updating each time) a particular UCA version.
-            VersionInfo ucdVersion = UCharacter.GetUnicodeVersion();
+            VersionInfo ucdVersion = UCharacter.UnicodeVersion;
             VersionInfo ucaVersion = col.GetUCAVersion();
             DoAssert(ucaVersion.Equals(ucdVersion),
                     "Expected UCA version " + ucdVersion.ToString() + " got " + col.GetUCAVersion().ToString());

@@ -312,7 +312,7 @@ namespace ICU4N.Text
             checkBiDi = ((indexes[OPTIONS] & CHECK_BIDI_ON) > 0);
             sprepUniVer = GetVersionInfo(reader.GetUnicodeVersion());
             normCorrVer = GetVersionInfo(indexes[NORM_CORRECTNS_LAST_UNI_VERSION]);
-            VersionInfo normUniVer = UCharacter.GetUnicodeVersion();
+            VersionInfo normUniVer = UCharacter.UnicodeVersion;
             if (normUniVer.CompareTo(sprepUniVer) < 0 && /* the Unicode version of SPREP file must be less than the Unicode Vesion of the normalization data */
                normUniVer.CompareTo(normCorrVer) < 0 && /* the Unicode version of the NormalizationCorrections.txt file should be less than the Unicode Vesion of the normalization data */
                ((indexes[OPTIONS] & NORMALIZATION_ON) > 0) /* normalization turned on*/
