@@ -445,7 +445,7 @@ namespace ICU4N.Impl
             {
                 new BiDiIntProperty(this, getValue: (c) =>
                     {
-                        return UBiDiProps.Instance.GetClass(c);
+                        return UBiDiProps.Instance.GetClass(c).ToInt32();
                     }),
                 new IntProperty(this, 0, BLOCK_MASK_, BLOCK_SHIFT_),
                 new CombiningClassIntProperty(this, SRC_NFC, getValue: (c) =>
@@ -678,7 +678,7 @@ namespace ICU4N.Impl
             int which;
             int max;
             internal NormQuickCheckIntProperty(UCharacterProperty outerInstance, int source, int which, int max)
-                        : base(outerInstance, source)
+                : base(outerInstance, source)
             {
                 this.which = which;
                 this.max = max;

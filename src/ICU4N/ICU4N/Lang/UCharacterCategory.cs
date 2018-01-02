@@ -1,4 +1,4 @@
-﻿namespace ICU4N.Lang // ICU4N TODO: Move to Globalization namespace
+﻿namespace ICU4N.Lang // ICU4N TODO: API Move to Globalization namespace
 {
     /// <summary>
     /// Enum for the CharacterCategory constants.  These constants are

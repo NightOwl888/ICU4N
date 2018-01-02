@@ -791,10 +791,10 @@ namespace ICU4N.Dev.Test.Lang
                         d = d + "   ";
 
                     int dir = DIR.IndexOf(d) >> 2;
-                    if (UCharacter.GetDirection(ch) != dir)
+                    if (UCharacter.GetDirection(ch).ToInt32() != dir)
                     {
                         Errln("FAIL \\u" + Hex(ch) +
-                            " expected direction " + dir + " but got " + UCharacter.GetDirection(ch));
+                            " expected direction " + dir + " but got " + UCharacter.GetDirection(ch).ToInt32());
                         break;
                     }
 
@@ -1712,28 +1712,28 @@ namespace ICU4N.Dev.Test.Lang
 
             // default Bidi classes for unassigned code points, from the DerivedBidiClass.txt header
             int[][] defaultBidi ={
-            new int[] { 0x0590, (int)UnicodeDirection.LeftToRight },
-            new int[] { 0x0600, (int)UnicodeDirection.RightToLeft },
-            new int[] { 0x07C0, (int)UnicodeDirection.RightToLeftArabic },
-            new int[] { 0x0860, (int)UnicodeDirection.RightToLeft },
-            new int[] { 0x0870, (int)UnicodeDirection.RightToLeftArabic },  // Unicode 10 changes U+0860..U+086F from R to AL.
-            new int[] { 0x08A0, (int)UnicodeDirection.RightToLeft },
-            new int[] { 0x0900, (int)UnicodeDirection.RightToLeftArabic },  /* Unicode 6.1 changes U+08A0..U+08FF from R to AL */
-            new int[] { 0x20A0, (int)UnicodeDirection.LeftToRight },
-            new int[] { 0x20D0, (int)UnicodeDirection.EuropeanNumberTerminator },  /* Unicode 6.3 changes the currency symbols block U+20A0..U+20CF to default to ET not L */
-            new int[] { 0xFB1D, (int)UnicodeDirection.LeftToRight },
-            new int[] { 0xFB50, (int)UnicodeDirection.RightToLeft },
-            new int[] { 0xFE00, (int)UnicodeDirection.RightToLeftArabic },
-            new int[] { 0xFE70, (int)UnicodeDirection.LeftToRight },
-            new int[] { 0xFF00, (int)UnicodeDirection.RightToLeftArabic },
-            new int[] { 0x10800, (int)UnicodeDirection.LeftToRight },
-            new int[] { 0x11000, (int)UnicodeDirection.RightToLeft },
-            new int[] { 0x1E800, (int)UnicodeDirection.LeftToRight },  /* new default-R range in Unicode 5.2: U+1E800 - U+1EFFF */
-            new int[] { 0x1EE00, (int)UnicodeDirection.RightToLeft },
-            new int[] { 0x1EF00, (int)UnicodeDirection.RightToLeftArabic },  /* Unicode 6.1 changes U+1EE00..U+1EEFF from R to AL */
-            new int[] { 0x1F000, (int)UnicodeDirection.RightToLeft },
-            new int[] { 0x110000, (int)UnicodeDirection.LeftToRight }
-        };
+                new int[] { 0x0590, UCharacterDirection.LeftToRight.ToInt32() },
+                new int[] { 0x0600, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x07C0, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x0860, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x0870, UCharacterDirection.RightToLeftArabic.ToInt32() },  // Unicode 10 changes U+0860..U+086F from R to AL.
+                new int[] { 0x08A0, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x0900, UCharacterDirection.RightToLeftArabic.ToInt32() },  /* Unicode 6.1 changes U+08A0..U+08FF from R to AL */
+                new int[] { 0x20A0, UCharacterDirection.LeftToRight.ToInt32() },
+                new int[] { 0x20D0, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },  /* Unicode 6.3 changes the currency symbols block U+20A0..U+20CF to default to ET not L */
+                new int[] { 0xFB1D, UCharacterDirection.LeftToRight.ToInt32() },
+                new int[] { 0xFB50, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0xFE00, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0xFE70, UCharacterDirection.LeftToRight.ToInt32() },
+                new int[] { 0xFF00, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x10800, UCharacterDirection.LeftToRight.ToInt32() },
+                new int[] { 0x11000, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x1E800, UCharacterDirection.LeftToRight.ToInt32() },  /* new default-R range in Unicode 5.2: U+1E800 - U+1EFFF */
+                new int[] { 0x1EE00, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x1EF00, UCharacterDirection.RightToLeftArabic.ToInt32() },  /* Unicode 6.1 changes U+1EE00..U+1EEFF from R to AL */
+                new int[] { 0x1F000, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x110000, UCharacterDirection.LeftToRight.ToInt32() }
+            };
 
             IRangeValueEnumerator iterator = UCharacter.GetTypeEnumerator();
             RangeValueEnumeratorElement result;
@@ -1822,7 +1822,7 @@ namespace ICU4N.Dev.Test.Lang
                                 // TODO change to public UCharacter.isNonCharacter(c) once it's available
                                 if (UCharacterUtility.IsNonCharacter(c) || UCharacter.HasBinaryProperty(c, UProperty.Default_Ignorable_Code_Point))
                                 {
-                                    shouldBeDir = (int)UnicodeDirection.BoundaryNeutral;
+                                    shouldBeDir = UCharacterDirection.BoundaryNeutral.ToInt32();
                                 }
                                 else
                                 {
@@ -1830,7 +1830,7 @@ namespace ICU4N.Dev.Test.Lang
                                 }
 
 
-                                if (UCharacter.GetDirection(c) != shouldBeDir
+                                if (UCharacter.GetDirection(c).ToInt32() != shouldBeDir
                                     || UCharacter.GetInt32PropertyValue(c,
                                                               UProperty.BiDi_Class)
                                        != shouldBeDir)
@@ -2099,25 +2099,25 @@ namespace ICU4N.Dev.Test.Lang
 
                 /* enum/integer type properties */
                 /* test default Bidi classes for unassigned code points */
-                new int[] { 0x0590, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x05cf, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x05ed, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x07f2, (int)UProperty.BiDi_Class, (int)UnicodeDirection.DirNonSpacingMark }, /* Nko, new in Unicode 5.0 */
-                new int[] { 0x07fe, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft }, /* unassigned R */
-                new int[] { 0x089f, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0xfb37, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0xfb42, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x10806, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x10909, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x10fe4, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x0590, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x05cf, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x05ed, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x07f2, (int)UProperty.BiDi_Class, UCharacterDirection.DirNonSpacingMark.ToInt32() }, /* Nko, new in Unicode 5.0 */
+                new int[] { 0x07fe, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() }, /* unassigned R */
+                new int[] { 0x089f, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0xfb37, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0xfb42, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x10806, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x10909, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x10fe4, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
 
-                new int[] { 0x061d, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0x063f, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0x070e, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0x0775, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0xfbc2, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0xfd90, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0xfefe, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0x061d, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x063f, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x070e, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x0775, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0xfbc2, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0xfd90, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0xfefe, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
 
                 new int[] { 0x02AF, (int)UProperty.Block, UCharacter.UnicodeBlock.IPA_EXTENSIONS.ID },
                 new int[] { 0x0C4E, (int)UProperty.Block, UCharacter.UnicodeBlock.TELUGU.ID },
@@ -2299,8 +2299,8 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { -1, 0x520, 0 }, /* version break for Unicode 5.2 */
 
                 /* unassigned code points in new default Bidi R blocks */
-                new int[] { 0x1ede4, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
-                new int[] { 0x1efe4, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeft },
+                new int[] { 0x1ede4, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x1efe4, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
 
                 /* test some script codes >127 */
                 new int[] { 0xa6e6,  (int)UProperty.Script, UScript.Bamum },
@@ -2315,14 +2315,14 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { -1, 0x610, 0 }, /* version break for Unicode 6.1 */
 
                 /* unassigned code points in new/changed default Bidi AL blocks */
-                new int[] { 0x08ba, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
-                new int[] { 0x1eee4, (int)UProperty.BiDi_Class, (int)UnicodeDirection.RightToLeftArabic },
+                new int[] { 0x08ba, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x1eee4, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
 
                 new int[] { -1, 0x630, 0 }, /* version break for Unicode 6.3 */
 
                 /* unassigned code points in the currency symbols block now default to ET */
-                new int[] { 0x20C0, (int)UProperty.BiDi_Class, (int)UnicodeDirection.EuropeanNumberTerminator },
-                new int[] { 0x20CF, (int)UProperty.BiDi_Class, (int)UnicodeDirection.EuropeanNumberTerminator },
+                new int[] { 0x20C0, (int)UProperty.BiDi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
+                new int[] { 0x20CF, (int)UProperty.BiDi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
 
                 /* new property in Unicode 6.3 */
                 new int[] { 0x0027, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.NONE },
@@ -2380,7 +2380,7 @@ namespace ICU4N.Dev.Test.Lang
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BINARY_LIMIT-1) wrong\n");
             }
 
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.BiDi_Class) != (int)UnicodeDirection.CharDirectionCount - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.BiDi_Class) != UCharacterDirection.CharDirectionCount.ToInt32() - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS) wrong\n");
             }

@@ -596,8 +596,8 @@ namespace ICU4N.Text
             UCharacterIterator iter = UCharacterIterator.GetInstance(normOut);
             Values val = new Values();
 #pragma warning disable 612, 618
-            UnicodeDirection direction = UnicodeDirection.CharDirectionCount,
-                firstCharDir = UnicodeDirection.CharDirectionCount;
+            UCharacterDirection direction = UCharacterDirection.CharDirectionCount,
+                firstCharDir = UCharacterDirection.CharDirectionCount;
 #pragma warning restore 612, 618
             int rtlPos = -1, ltrPos = -1;
             bool rightToLeft = false, leftToRight = false;
@@ -615,19 +615,19 @@ namespace ICU4N.Text
 
                 if (checkBiDi)
                 {
-                    direction = (UnicodeDirection)bdp.GetClass(ch);
+                    direction = (UCharacterDirection)bdp.GetClass(ch);
 #pragma warning disable 612, 618
-                    if (firstCharDir == UnicodeDirection.CharDirectionCount)
+                    if (firstCharDir == UCharacterDirection.CharDirectionCount)
 #pragma warning restore 612, 618
                     {
                         firstCharDir = direction;
                     }
-                    if (direction == UnicodeDirection.LeftToRight)
+                    if (direction == UCharacterDirection.LeftToRight)
                     {
                         leftToRight = true;
                         ltrPos = iter.Index - 1;
                     }
-                    if (direction == UnicodeDirection.RightToLeft || direction == UnicodeDirection.RightToLeftArabic)
+                    if (direction == UCharacterDirection.RightToLeft || direction == UCharacterDirection.RightToLeftArabic)
                     {
                         rightToLeft = true;
                         rtlPos = iter.Index - 1;
@@ -646,8 +646,8 @@ namespace ICU4N.Text
 
                 //satisfy 3
                 if (rightToLeft == true &&
-                    !((firstCharDir == UnicodeDirection.RightToLeft || firstCharDir == UnicodeDirection.RightToLeftArabic) &&
-                    (direction == UnicodeDirection.RightToLeft || direction == UnicodeDirection.RightToLeftArabic))
+                    !((firstCharDir == UCharacterDirection.RightToLeft || firstCharDir == UCharacterDirection.RightToLeftArabic) &&
+                    (direction == UCharacterDirection.RightToLeft || direction == UCharacterDirection.RightToLeftArabic))
                   )
                 {
                     throw new StringPrepParseException("The input does not conform to the rules for BiDi code points.",

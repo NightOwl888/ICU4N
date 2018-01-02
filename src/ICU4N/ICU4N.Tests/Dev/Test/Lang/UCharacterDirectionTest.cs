@@ -54,12 +54,12 @@ namespace ICU4N.Dev.Test.Lang
                          "Pop Directional Isolate",
                          "Unassigned"};
 
-            for (UnicodeDirection i = UnicodeDirection.LeftToRight;
+            for (UCharacterDirection i = UCharacterDirection.LeftToRight;
                 // Placed <= because we need to consider 'Unassigned'
                 // when it goes out of bounds of UCharacterDirection
-                i <= UnicodeDirection.CharDirectionCount; i++)
+                i <= UCharacterDirection.CharDirectionCount; i++)
             {
-                if (!UCharacterDirection.ToString(i).Equals(name[(int)i]))
+                if (!i.AsString().Equals(name[(int)i]))
                 {
                     Errln("Error toString for direction " + i + " expected " +
                           name[(int)i]);

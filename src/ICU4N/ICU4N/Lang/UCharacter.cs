@@ -3376,15 +3376,15 @@ namespace ICU4N.Lang
         /// <icu/>
         /// <summary>
         /// Returns the Bidirection property of a code point.
-        /// For example, 0x0041 (letter A) has the <see cref="UnicodeDirection.LeftToRight"/> directional
+        /// For example, 0x0041 (letter A) has the <see cref="UCharacterDirection.LeftToRight"/> directional
         /// property.
         /// <para/>
-        /// Result returned belongs to the enum <see cref="UnicodeDirection"/>.
+        /// Result returned belongs to the enum <see cref="UCharacterDirection"/>.
         /// </summary>
         /// <param name="ch">The code point to be determined its direction.</param>
-        /// <returns>Direction constant from <see cref="UnicodeDirection"/>.</returns>
+        /// <returns>Direction constant from <see cref="UCharacterDirection"/>.</returns>
         /// <stable>ICU 2.1</stable>
-        public static int GetDirection(int ch) // ICU4N TODO: API - return UnicodeDirection type
+        public static UCharacterDirection GetDirection(int ch)
         {
             return UBiDiProps.Instance.GetClass(ch);
         }
@@ -5019,7 +5019,7 @@ namespace ICU4N.Lang
         /// <list type="bullet">
         ///     <item><description>
         ///         <see cref="UProperty.BiDi_Class"/>:    0/18
-        ///         (<see cref="UnicodeDirection.LeftToRight"/>/<see cref="UnicodeDirection.BoundaryNeutral"/>)
+        ///         (<see cref="UCharacterDirection.LeftToRight"/>/<see cref="UCharacterDirection.BoundaryNeutral"/>)
         ///     </description></item>
         ///     <item><description>
         ///         <see cref="UProperty.Script"/>:        0/45 (<see cref="UScript.Common"/>/<see cref="UScript.Tagbanwa"/>)

@@ -464,27 +464,27 @@ namespace ICU4N.Impl
             return labelLength;
         }
 
-        private static readonly int L_MASK = U_MASK((int)UnicodeDirection.LeftToRight);
+        private static readonly int L_MASK = U_MASK(UCharacterDirection.LeftToRight.ToInt32());
         private static readonly int R_AL_MASK =
-            U_MASK((int)UnicodeDirection.RightToLeft) |
-            U_MASK((int)UnicodeDirection.RightToLeftArabic);
+            U_MASK(UCharacterDirection.RightToLeft.ToInt32()) |
+            U_MASK(UCharacterDirection.RightToLeftArabic.ToInt32());
         private static readonly int L_R_AL_MASK = L_MASK | R_AL_MASK;
 
-        private static readonly int R_AL_AN_MASK = R_AL_MASK | U_MASK((int)UnicodeDirection.ArabicNumber);
+        private static readonly int R_AL_AN_MASK = R_AL_MASK | U_MASK(UCharacterDirection.ArabicNumber.ToInt32());
 
         private static readonly int EN_AN_MASK =
-            U_MASK((int)UnicodeDirection.EuropeanNumber) |
-            U_MASK((int)UnicodeDirection.ArabicNumber);
+            U_MASK(UCharacterDirection.EuropeanNumber.ToInt32()) |
+            U_MASK(UCharacterDirection.ArabicNumber.ToInt32());
         private static readonly int R_AL_EN_AN_MASK = R_AL_MASK | EN_AN_MASK;
-        private static readonly int L_EN_MASK = L_MASK | U_MASK((int)UnicodeDirection.EuropeanNumber);
+        private static readonly int L_EN_MASK = L_MASK | U_MASK(UCharacterDirection.EuropeanNumber.ToInt32());
 
         private static readonly int ES_CS_ET_ON_BN_NSM_MASK =
-            U_MASK((int)UnicodeDirection.EuropeanNumberSeparator) |
-            U_MASK((int)UnicodeDirection.CommonNumberSeparator) |
-            U_MASK((int)UnicodeDirection.EuropeanNumberTerminator) |
-            U_MASK((int)UnicodeDirection.OtherNeutral) |
-            U_MASK((int)UnicodeDirection.BoundaryNeutral) |
-            U_MASK((int)UnicodeDirection.DirNonSpacingMark);
+            U_MASK(UCharacterDirection.EuropeanNumberSeparator.ToInt32()) |
+            U_MASK(UCharacterDirection.CommonNumberSeparator.ToInt32()) |
+            U_MASK(UCharacterDirection.EuropeanNumberTerminator.ToInt32()) |
+            U_MASK(UCharacterDirection.OtherNeutral.ToInt32()) |
+            U_MASK(UCharacterDirection.BoundaryNeutral.ToInt32()) |
+            U_MASK(UCharacterDirection.DirNonSpacingMark.ToInt32());
         private static readonly int L_EN_ES_CS_ET_ON_BN_NSM_MASK = L_EN_MASK | ES_CS_ET_ON_BN_NSM_MASK;
         private static readonly int R_AL_AN_EN_ES_CS_ET_ON_BN_NSM_MASK = R_AL_MASK | EN_AN_MASK | ES_CS_ET_ON_BN_NSM_MASK;
 

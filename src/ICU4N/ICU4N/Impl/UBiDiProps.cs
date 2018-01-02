@@ -172,9 +172,9 @@ namespace ICU4N.Impl
             }
         }
 
-        public int GetClass(int c)
+        public UCharacterDirection GetClass(int c)
         {
-            return GetClassFromProps(trie.Get(c));
+            return (UCharacterDirection)GetClassFromProps(trie.Get(c));
         }
 
         public bool IsMirrored(int c)

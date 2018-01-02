@@ -37,21 +37,21 @@ namespace ICU4N.Impl
     {
 <# foreach (var charSequence in charSequences) { #>
 
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override StringBuilder LabelToASCII(<#=charSequence#> label, StringBuilder dest, Info info)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override StringBuilder LabelToASCII(<#=charSequence#> label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override StringBuilder LabelToUnicode(<#=charSequence#> label, StringBuilder dest, Info info)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override StringBuilder LabelToUnicode(<#=charSequence#> label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override StringBuilder NameToASCII(<#=charSequence#> name, StringBuilder dest, Info info)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override StringBuilder NameToASCII(<#=charSequence#> name, StringBuilder dest, IDNAInfo info)
         {
             Process(name, false, true, dest, info);
             if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
@@ -66,7 +66,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override StringBuilder NameToUnicode(<#=charSequence#> name, StringBuilder dest, Info info)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override StringBuilder NameToUnicode(<#=charSequence#> name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }
@@ -91,7 +91,7 @@ namespace ICU4N.Impl
         private StringBuilder Process(<#=charSequence#> src,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
 <# if (charSequence=="StringBuilder" || charSequence=="ICharSequence") { #>
             // uts46Norm2.Normalize() would do all of this error checking and setup,
@@ -212,7 +212,7 @@ namespace ICU4N.Impl
             int labelStart, int mappingStart,
             bool isLabel, bool toASCII,
             StringBuilder dest,
-            Info info)
+            IDNAInfo info)
         {
             if (mappingStart == 0)
             {
@@ -300,7 +300,7 @@ namespace ICU4N.Impl
         // In a BiDi domain name, all labels must pass the BiDi Rule, but we might find
         // that a domain name is a BiDi domain name (has an RTL label) only after
         // processing several earlier labels.
-        private void CheckLabelBiDi(<#=charSequence#> label, int labelStart, int labelLength, Info info)
+        private void CheckLabelBiDi(<#=charSequence#> label, int labelStart, int labelLength, IDNAInfo info)
         {
             // IDNA2008 BiDi rule
             // Get the directionality of the first character.
@@ -308,7 +308,7 @@ namespace ICU4N.Impl
             int i = labelStart;
             c = Character.CodePointAt(label, i);
             i += Character.CharCount(c);
-            int firstMask = U_MASK(UBiDiProps.INSTANCE.GetClass(c));
+            int firstMask = U_MASK(UBiDiProps.Instance.GetClass(c));
             // 1. The first character must be a character with BIDI property L, R
             // or AL.  If it has the R or AL property, it is an RTL label; if it
             // has the L property, it is an LTR label.
@@ -328,8 +328,8 @@ namespace ICU4N.Impl
                 }
                 c = Character.CodePointBefore(label, labelLimit);
                 labelLimit -= Character.CharCount(c);
-                int dir = UBiDiProps.INSTANCE.GetClass(c);
-                if (dir != (int)UnicodeDirection.DirNonSpacingMark)
+                int dir = UBiDiProps.Instance.GetClass(c);
+                if (dir != UCharacterDirection.DirNonSpacingMark.ToInt32())
                 {
                     lastMask = U_MASK(dir);
                     break;
@@ -354,7 +354,7 @@ namespace ICU4N.Impl
             {
                 c = Character.CodePointAt(label, i);
                 i += Character.CharCount(c);
-                mask |= U_MASK(UBiDiProps.INSTANCE.GetClass(c));
+                mask |= U_MASK(UBiDiProps.Instance.GetClass(c));
             }
             if ((firstMask & L_MASK) != 0)
             {
@@ -479,7 +479,7 @@ namespace ICU4N.Impl
                     for (; ; )
                     {
                         /* UJoiningType */
-                        int type = UBiDiProps.INSTANCE.GetJoiningType(c);
+                        int type = UBiDiProps.Instance.GetJoiningType(c);
                         if (type == UCharacter.JoiningType.TRANSPARENT)
                         {
                             if (j == 0)
@@ -508,7 +508,7 @@ namespace ICU4N.Impl
                         c = Character.CodePointAt(label, j);
                         j += Character.CharCount(c);
                         /* UJoiningType */
-                        int type = UBiDiProps.INSTANCE.GetJoiningType(c);
+                        int type = UBiDiProps.Instance.GetJoiningType(c);
                         if (type == UCharacter.JoiningType.TRANSPARENT)
                         {
                             // just skip this character
@@ -545,7 +545,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
-        private void CheckLabelContextO(<#=charSequence#> label, int labelStart, int labelLength, Info info)
+        private void CheckLabelContextO(<#=charSequence#> label, int labelStart, int labelLength, IDNAInfo info)
         {
             int labelEnd = labelStart + labelLength - 1;  // inclusive
             int arabicDigits = 0;  // -1 for 066x, +1 for 06Fx
@@ -578,7 +578,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(After(cp)) .eq.  Greek Then True;
                         if (!(i < labelEnd &&
-                             UScript.GREEK == UScript.GetScript(Character.CodePointAt(label, i + 1))))
+                             UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -595,7 +595,7 @@ namespace ICU4N.Impl
                         //  False;
                         //  If Script(Before(cp)) .eq.  Hebrew Then True;
                         if (!(labelStart < i &&
-                             UScript.HEBREW == UScript.GetScript(Character.CodePointBefore(label, i))))
+                             UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
                             AddLabelError(info, IDNAError.ContextOPunctuation);
                         }
@@ -650,7 +650,7 @@ namespace ICU4N.Impl
                         }
                         c = Character.CodePointAt(label, j);
                         int script = UScript.GetScript(c);
-                        if (script == UScript.HIRAGANA || script == UScript.KATAKANA || script == UScript.HAN)
+                        if (script == UScript.Hiragana || script == UScript.Katakana || script == UScript.Han)
                         {
                             break;
                         }

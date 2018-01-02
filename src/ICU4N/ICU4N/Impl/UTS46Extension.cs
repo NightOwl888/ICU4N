@@ -942,7 +942,7 @@ namespace ICU4N.Impl
             int i = labelStart;
             c = Character.CodePointAt(label, i);
             i += Character.CharCount(c);
-            int firstMask = U_MASK(UBiDiProps.Instance.GetClass(c));
+            int firstMask = U_MASK(UBiDiProps.Instance.GetClass(c).ToInt32());
             // 1. The first character must be a character with BIDI property L, R
             // or AL.  If it has the R or AL property, it is an RTL label; if it
             // has the L property, it is an LTR label.
@@ -962,10 +962,10 @@ namespace ICU4N.Impl
                 }
                 c = Character.CodePointBefore(label, labelLimit);
                 labelLimit -= Character.CharCount(c);
-                int dir = UBiDiProps.Instance.GetClass(c);
-                if (dir != (int)UnicodeDirection.DirNonSpacingMark)
+                UCharacterDirection dir = UBiDiProps.Instance.GetClass(c);
+                if (dir != UCharacterDirection.DirNonSpacingMark)
                 {
-                    lastMask = U_MASK(dir);
+                    lastMask = U_MASK(dir.ToInt32());
                     break;
                 }
             }
@@ -988,7 +988,7 @@ namespace ICU4N.Impl
             {
                 c = Character.CodePointAt(label, i);
                 i += Character.CharCount(c);
-                mask |= U_MASK(UBiDiProps.Instance.GetClass(c));
+                mask |= U_MASK(UBiDiProps.Instance.GetClass(c).ToInt32());
             }
             if ((firstMask & L_MASK) != 0)
             {
@@ -1039,7 +1039,7 @@ namespace ICU4N.Impl
             int i = labelStart;
             c = Character.CodePointAt(label, i);
             i += Character.CharCount(c);
-            int firstMask = U_MASK(UBiDiProps.Instance.GetClass(c));
+            int firstMask = U_MASK(UBiDiProps.Instance.GetClass(c).ToInt32());
             // 1. The first character must be a character with BIDI property L, R
             // or AL.  If it has the R or AL property, it is an RTL label; if it
             // has the L property, it is an LTR label.
@@ -1059,10 +1059,10 @@ namespace ICU4N.Impl
                 }
                 c = Character.CodePointBefore(label, labelLimit);
                 labelLimit -= Character.CharCount(c);
-                int dir = UBiDiProps.Instance.GetClass(c);
-                if (dir != (int)UnicodeDirection.DirNonSpacingMark)
+                UCharacterDirection dir = UBiDiProps.Instance.GetClass(c);
+                if (dir != UCharacterDirection.DirNonSpacingMark)
                 {
-                    lastMask = U_MASK(dir);
+                    lastMask = U_MASK(dir.ToInt32());
                     break;
                 }
             }
@@ -1085,7 +1085,7 @@ namespace ICU4N.Impl
             {
                 c = Character.CodePointAt(label, i);
                 i += Character.CharCount(c);
-                mask |= U_MASK(UBiDiProps.Instance.GetClass(c));
+                mask |= U_MASK(UBiDiProps.Instance.GetClass(c).ToInt32());
             }
             if ((firstMask & L_MASK) != 0)
             {
@@ -1136,7 +1136,7 @@ namespace ICU4N.Impl
             int i = labelStart;
             c = Character.CodePointAt(label, i);
             i += Character.CharCount(c);
-            int firstMask = U_MASK(UBiDiProps.Instance.GetClass(c));
+            int firstMask = U_MASK(UBiDiProps.Instance.GetClass(c).ToInt32());
             // 1. The first character must be a character with BIDI property L, R
             // or AL.  If it has the R or AL property, it is an RTL label; if it
             // has the L property, it is an LTR label.
@@ -1156,10 +1156,10 @@ namespace ICU4N.Impl
                 }
                 c = Character.CodePointBefore(label, labelLimit);
                 labelLimit -= Character.CharCount(c);
-                int dir = UBiDiProps.Instance.GetClass(c);
-                if (dir != (int)UnicodeDirection.DirNonSpacingMark)
+                UCharacterDirection dir = UBiDiProps.Instance.GetClass(c);
+                if (dir != UCharacterDirection.DirNonSpacingMark)
                 {
-                    lastMask = U_MASK(dir);
+                    lastMask = U_MASK(dir.ToInt32());
                     break;
                 }
             }
@@ -1182,7 +1182,7 @@ namespace ICU4N.Impl
             {
                 c = Character.CodePointAt(label, i);
                 i += Character.CharCount(c);
-                mask |= U_MASK(UBiDiProps.Instance.GetClass(c));
+                mask |= U_MASK(UBiDiProps.Instance.GetClass(c).ToInt32());
             }
             if ((firstMask & L_MASK) != 0)
             {
@@ -1233,7 +1233,7 @@ namespace ICU4N.Impl
             int i = labelStart;
             c = Character.CodePointAt(label, i);
             i += Character.CharCount(c);
-            int firstMask = U_MASK(UBiDiProps.Instance.GetClass(c));
+            int firstMask = U_MASK(UBiDiProps.Instance.GetClass(c).ToInt32());
             // 1. The first character must be a character with BIDI property L, R
             // or AL.  If it has the R or AL property, it is an RTL label; if it
             // has the L property, it is an LTR label.
@@ -1253,10 +1253,10 @@ namespace ICU4N.Impl
                 }
                 c = Character.CodePointBefore(label, labelLimit);
                 labelLimit -= Character.CharCount(c);
-                int dir = UBiDiProps.Instance.GetClass(c);
-                if (dir != (int)UnicodeDirection.DirNonSpacingMark)
+                UCharacterDirection dir = UBiDiProps.Instance.GetClass(c);
+                if (dir != UCharacterDirection.DirNonSpacingMark)
                 {
-                    lastMask = U_MASK(dir);
+                    lastMask = U_MASK(dir.ToInt32());
                     break;
                 }
             }
@@ -1279,7 +1279,7 @@ namespace ICU4N.Impl
             {
                 c = Character.CodePointAt(label, i);
                 i += Character.CharCount(c);
-                mask |= U_MASK(UBiDiProps.Instance.GetClass(c));
+                mask |= U_MASK(UBiDiProps.Instance.GetClass(c).ToInt32());
             }
             if ((firstMask & L_MASK) != 0)
             {
