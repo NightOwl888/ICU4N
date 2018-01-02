@@ -1,6 +1,5 @@
 ﻿using ICU4N.Impl.Coll;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
@@ -33,78 +32,108 @@ namespace ICU4N.Text
         UpperLong = 2,
     }
 
+    /// <summary>
+    /// A <see cref="CollationKey"/> represents a <see cref="string"/>
+    /// under the rules of a specific <see cref="Collator"/> object.
+    /// Comparing two <see cref="CollationKey"/>s returns the
+    /// relative order of the <see cref="string"/>s they represent.
+    /// </summary>
+    /// <remarks>
+    /// Since the rule set of <see cref="Collator"/>s can differ, the
+    /// sort orders of the same string under two different
+    /// <see cref="Collator"/>s might differ.  Hence comparing
+    /// <see cref="CollationKey"/>s generated from different
+    /// <see cref="Collator"/>s can give incorrect results.
+    /// <para/>
+    /// Both the method
+    /// <see cref="CollationKey.CompareTo(CollationKey)"/> and the method
+    /// <see cref="Collator.Compare(string, string)"/> compare two strings
+    /// and returns their relative order.  The performance characteristics
+    /// of these two approaches can differ.
+    /// Note that collation keys are often less efficient than simply doing comparison.
+    /// For more details, see the ICU User Guide.
+    /// <para/>
+    /// During the construction of a <see cref="CollationKey"/>, the
+    /// entire source string is examined and processed into a series of
+    /// bits terminated by a null, that are stored in the <see cref="CollationKey"/>.
+    /// When <see cref="CollationKey.CompareTo(CollationKey)"/> executes, it
+    /// performs bitwise comparison on the bit sequences.  This can incur
+    /// startup cost when creating the <see cref="CollationKey"/>, but once
+    /// the key is created, binary comparisons are fast.  This approach is
+    /// recommended when the same strings are to be compared over and over
+    /// again.
+    /// <para/>
+    /// On the other hand, implementations of
+    /// <see cref="Collator.Compare(string, string)"/> can examine and
+    /// process the strings only until the first characters differing in
+    /// order.  This approach is recommended if the strings are to be
+    /// compared only once.
+    /// <para/>
+    /// More information about the composition of the bit sequence can
+    /// be found in the
+    /// <a href="http://www.icu-project.org/userguide/Collate_ServiceArchitecture.html">
+    /// user guide</a>.
+    /// <para/>
+    /// The following example shows how <see cref="CollationKey"/>s can be used
+    /// to sort a list of <see cref="string"/>s.
+    /// 
+    /// <code>
+    /// // Create an array of CollationKeys for the Strings to be sorted.
+    /// Collator myCollator = Collator.GetInstance();
+    /// CollationKey[] keys = new CollationKey[3];
+    /// keys[0] = myCollator.GetCollationKey("Tom");
+    /// keys[1] = myCollator.GetCollationKey("Dick");
+    /// keys[2] = myCollator.GetCollationKey("Harry");
+    /// Sort( keys );
+    /// 
+    /// //...
+    /// 
+    /// // Inside body of sort routine, compare keys this way
+    /// if( keys[i].CompareTo( keys[j] ) &gt; 0 )
+    ///     // swap keys[i] and keys[j]
+    ///     
+    /// //...
+    /// 
+    /// // Finally, when we've returned from sort.
+    /// Console.WriteLine(keys[0].SourceString);
+    /// Console.WriteLine(keys[1].SourceString);
+    /// Console.WriteLine(keys[2].SourceString);
+    /// </code>
+    /// <para/>
+    /// This class is not subclassable
+    /// </remarks>
+    /// <seealso cref="Collator"/>
+    /// <seealso cref="RuleBasedCollator"/>
+    /// <author>Syn Wee Quek</author>
+    /// <stable>ICU 2.8</stable>
     public sealed class CollationKey : IComparable<CollationKey>, IComparable
     {
         // public inner classes -------------------------------------------------
 
-        ///**
-        // * Options that used in the API CollationKey.getBound() for getting a
-        // * CollationKey based on the bound mode requested.
-        // * @stable ICU 2.6
-        // */
-        //public static final class BoundMode
-        //{
-        //    /*
-        //     * do not change the values assigned to the members of this enum.
-        //     * Underlying code depends on them having these numbers
-        //     */
-
-        //    /**
-        //     * Lower bound
-        //     * @stable ICU 2.6
-        //     */
-        //    public static final int LOWER = 0;
-
-        //    /**
-        //     * Upper bound that will match strings of exact size
-        //     * @stable ICU 2.6
-        //     */
-        //    public static final int UPPER = 1;
-
-        //    /**
-        //     * Upper bound that will match all the strings that have the same
-        //     * initial substring as the given string
-        //     * @stable ICU 2.6
-        //     */
-        //    public static final int UPPER_LONG = 2;
-
-        //    /**
-        //     * One more than the highest normal BoundMode value.
-        //     * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-        //     */
-        //    @Deprecated
-        //    public static final int COUNT = 3;
-
-        //    /**
-        //     * Private Constructor
-        //     */
-        //    ///CLOVER:OFF
-        //    private BoundMode() { }
-        //    ///CLOVER:ON
-        //}
+        // ICU4N specific - boundmode de-nested, made into Enum, and renamed CollationKeyBoundMode
 
         // public constructor ---------------------------------------------------
 
-        /**
-         * CollationKey constructor.
-         * This constructor is given public access, unlike the JDK version, to
-         * allow access to users extending the Collator class. See
-         * {@link Collator#getCollationKey(String)}.
-         * @param source string this CollationKey is to represent
-         * @param key array of bytes that represent the collation order of argument
-         *            source terminated by a null
-         * @see Collator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// <see cref="CollationKey"/> constructor.
+        /// This constructor is given public access, unlike the <c>System.Globalization.SortKey</c>, to
+        /// allow access to users extending the <see cref="Collator"/> class. See
+        /// <see cref="Collator.GetCollationKey(string)"/>.
+        /// </summary>
+        /// <param name="source">String this <see cref="CollationKey"/> is to represent.</param>
+        /// <param name="key">Array of bytes that represent the collation order of argument
+        /// source terminated by a null.</param>
+        /// <seealso cref="Collator"/>
+        /// <stable>ICU 2.8</stable>
         public CollationKey(string source, byte[] key)
             : this(source, key, -1)
         {
         }
 
-        /**
-         * Private constructor, takes a length argument so it need not be lazy-evaluated.
-         * There must be a 00 byte at key[length] and none before.
-         */
+        /// <summary>
+        /// Private constructor, takes a <paramref name="length"/> argument so it need not be lazy-evaluated.
+        /// There must be a 00 byte at <paramref name="key"/>[<paramref name="length"/>] and none before.
+        /// </summary>
         private CollationKey(string source, byte[] key, int length)
         {
             m_source_ = source;
@@ -113,17 +142,15 @@ namespace ICU4N.Text
             m_length_ = length;
         }
 
-        /**
-         * CollationKey constructor that forces key to release its internal byte
-         * array for adoption. key will have a null byte array after this
-         * construction.
-         * @param source string this CollationKey is to represent
-         * @param key RawCollationKey object that represents the collation order of
-         *            argument source.
-         * @see Collator
-         * @see RawCollationKey
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// <see cref="CollationKey"/> constructor that forces key to release its internal byte
+        /// array for adoption. key will have a null byte array after this
+        /// construction.
+        /// </summary>
+        /// <param name="source">String this <see cref="CollationKey"/> is to represent.</param>
+        /// <param name="key"><see cref="RawCollationKey"/> object that represents the collation order of
+        /// argument source.</param>
+        /// <stable>ICU 2.8</stable>
         public CollationKey(string source, RawCollationKey key)
         {
             m_source_ = source;
@@ -135,47 +162,51 @@ namespace ICU4N.Text
 
         // public getters -------------------------------------------------------
 
-        /**
-         * Return the source string that this CollationKey represents.
-         * @return source string that this CollationKey represents
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Gets the source string that this <see cref="CollationKey"/> represents.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         public string SourceString
         {
             get { return m_source_; }
         }
 
-        /**
-         * Duplicates and returns the value of this CollationKey as a sequence
-         * of big-endian bytes terminated by a null.
-         *
-         * <p>If two CollationKeys can be legitimately compared, then one can
-         * compare the byte arrays of each to obtain the same result, e.g.
-         * <pre>
-         * byte key1[] = collationkey1.toByteArray();
-         * byte key2[] = collationkey2.toByteArray();
-         * int key, targetkey;
-         * int i = 0;
-         * do {
-         *       key = key1[i] &amp; 0xFF;
-         *     targetkey = key2[i] &amp; 0xFF;
-         *     if (key &lt; targetkey) {
-         *         System.out.println("String 1 is less than string 2");
-         *         return;
-         *     }
-         *     if (targetkey &lt; key) {
-         *         System.out.println("String 1 is more than string 2");
-         *     }
-         *     i ++;
-         * } while (key != 0 &amp;&amp; targetKey != 0);
-         *
-         * System.out.println("Strings are equal.");
-         * </pre>
-         *
-         * @return CollationKey value in a sequence of big-endian byte bytes
-         *         terminated by a null.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Duplicates and returns the value of this <see cref="CollationKey"/> as a sequence
+        /// of big-endian bytes terminated by a null.
+        /// </summary>
+        /// <remarks>
+        /// If two <see cref="CollationKey"/>s can be legitimately compared, then one can
+        /// compare the byte arrays of each to obtain the same result, e.g.
+        /// <code>
+        /// byte key1[] = collationkey1.ToByteArray();
+        /// byte key2[] = collationkey2.ToByteArray();
+        /// int key, targetkey;
+        /// int i = 0;
+        /// do
+        /// {
+        ///     key = key1[i] &amp; 0xFF;
+        ///     targetkey = key2[i] &amp; 0xFF;
+        ///     if (key &lt; targetkey)
+        ///     {
+        ///         Console.WriteLine("String 1 is less than string 2");
+        ///         return;
+        ///     }
+        ///     if (targetkey &lt; key)
+        ///     {
+        ///         Console.WriteLine("String 1 is more than string 2");
+        ///     }
+        ///     i++;
+        /// } while (key != 0 &amp;&amp; targetKey != 0);
+        /// 
+        /// Console.WriteLine("Strings are equal.");
+        /// </code>
+        /// </remarks>
+        /// <returns>
+        /// <see cref="CollationKey"/> value in a sequence of big-endian byte bytes
+        /// terminated by a null.
+        /// </returns>
+        /// <stable>ICU 2.8</stable>
         public byte[] ToByteArray()
         {
             int length = GetLength() + 1;
@@ -187,20 +218,20 @@ namespace ICU4N.Text
         // public other methods -------------------------------------------------
 
         /// <summary>
-        /// Compare this CollationKey to another CollationKey.  The
-        /// collation rules of the Collator that created this key are
+        /// Compare this <see cref="CollationKey"/> to another <see cref="CollationKey"/>.  The
+        /// collation rules of the <see cref="Collator"/> that created this key are
         /// applied.
         /// </summary>
         /// <remarks>
-        /// <strong>Note:</strong> Comparison between CollationKeys
-        /// created by different Collators might return incorrect
+        /// <strong>Note:</strong> Comparison between <see cref="CollationKey"/>s
+        /// created by different <see cref="Collator"/>s might return incorrect
         /// results.  See class documentation.
         /// </remarks>
         /// <param name="target">Target <see cref="CollationKey"/>.</param>
         /// <returns>
         /// An integer value.  If the value is less than zero this CollationKey
         /// is less than than target, if the value is zero they are equal, and
-        /// if the value is greater than zero this CollationKey is greater
+        /// if the value is greater than zero this <see cref="CollationKey"/> is greater
         /// than target.
         /// </returns>
         /// <exception cref="ArgumentNullException">is thrown if argument is null.</exception>
@@ -231,20 +262,20 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Compare this CollationKey to another CollationKey.  The
-        /// collation rules of the Collator that created this key are
+        /// Compare this <see cref="CollationKey"/> to another <see cref="CollationKey"/>.  The
+        /// collation rules of the <see cref="Collator"/> that created this key are
         /// applied.
         /// </summary>
         /// <remarks>
-        /// <strong>Note:</strong> Comparison between CollationKeys
-        /// created by different Collators might return incorrect
+        /// <strong>Note:</strong> Comparison between <see cref="CollationKey"/>s
+        /// created by different <see cref="Collator"/>s might return incorrect
         /// results.  See class documentation.
         /// </remarks>
         /// <param name="target">Target <see cref="CollationKey"/>.</param>
         /// <returns>
         /// An integer value.  If the value is less than zero this CollationKey
         /// is less than than target, if the value is zero they are equal, and
-        /// if the value is greater than zero this CollationKey is greater
+        /// if the value is greater than zero this <see cref="CollationKey"/> is greater
         /// than target.
         /// </returns>
         /// <exception cref="ArgumentNullException">is thrown if argument is null.</exception>
@@ -259,23 +290,19 @@ namespace ICU4N.Text
             throw new ArgumentException("'other' must be a CollationKey.");
         }
 
-        /**
-         * Compare this CollationKey and the specified Object for
-         * equality.  The collation rules of the Collator that created
-         * this key are applied.
-         *
-         * <p>See note in compareTo(CollationKey) for warnings about
-         * possible incorrect results.
-         *
-         * @param target the object to compare to.
-         * @return true if the two keys compare as equal, false otherwise.
-         * @see #compareTo(CollationKey)
-         * @exception ClassCastException is thrown when the argument is not
-         *            a CollationKey.  NullPointerException is thrown when the argument
-         *            is null.
-         * @stable ICU 2.8
-         */
-        public override bool Equals(object target)
+        /// <summary>
+        /// Compare this <see cref="CollationKey"/> and the specified <see cref="object"/> for
+        /// equality.  The collation rules of the <see cref="Collator"/> that created
+        /// this key are applied.
+        /// <para/>
+        /// See note in <see cref="CompareTo(CollationKey)"/> for warnings about
+        /// possible incorrect results.
+        /// </summary>
+        /// <param name="target">The object to compare to.</param>
+        /// <returns>true if the two keys compare as equal, false otherwise.</returns>
+        /// <seealso cref="CompareTo(CollationKey)"/>
+        /// <seealso cref="CompareTo(object)"/>
+        public override bool Equals(object target) // ICU4N specific - no exceptions thrown (if null or not a CollationKey, returns false)
         {
             if (!(target is CollationKey)) {
                 return false;
@@ -284,20 +311,18 @@ namespace ICU4N.Text
             return Equals((CollationKey)target);
         }
 
-        /**
-         * Compare this CollationKey and the argument target CollationKey for
-         * equality.
-         * The collation
-         * rules of the Collator object which created these objects are applied.
-         * <p>
-         * See note in compareTo(CollationKey) for warnings of incorrect results
-         *
-         * @param target the CollationKey to compare to.
-         * @return true if two objects are equal, false otherwise.
-         * @exception NullPointerException is thrown when the argument is null.
-         * @stable ICU 2.8
-         */
-        public bool Equals(CollationKey target)
+        /// <summary>
+        /// Compare this <see cref="CollationKey"/> and the argument target <see cref="CollationKey"/> for
+        /// equality.
+        /// The collation
+        /// rules of the <see cref="Collator"/> object which created these objects are applied.
+        /// <para/>
+        /// See note in <see cref="CompareTo(CollationKey)"/> for warnings of incorrect results
+        /// </summary>
+        /// <param name="target">The <see cref="CollationKey"/> to compare to.</param>
+        /// <returns>true if two objects are equal, false otherwise.</returns>
+        /// <stable>ICU 2.8</stable>
+        public bool Equals(CollationKey target) // ICU4N specific - no exceptions thrown (if null or not a CollationKey, returns false)
         {
             if (this == target)
             {
@@ -324,16 +349,15 @@ namespace ICU4N.Text
             return true;
         }
 
-        /**
-         * Returns a hash code for this CollationKey. The hash value is calculated
-         * on the key itself, not the String from which the key was created. Thus
-         * if x and y are CollationKeys, then x.hashCode(x) == y.hashCode()
-         * if x.equals(y) is true. This allows language-sensitive comparison in a
-         * hash table.
-         *
-         * @return the hash value.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Returns a hash code for this CollationKey. The hash value is calculated
+        /// on the key itself, not the string from which the key was created. Thus
+        /// if x and y are <see cref="CollationKey"/>s, then x.GetHashCode(x) == y.GetHashCode()
+        /// if x.Equals(y) is true. This allows language-sensitive comparison in a
+        /// <see cref="IDictionary{TKey, TValue}"/>.
+        /// </summary>
+        /// <returns>The hash value.</returns>
+        /// <stable>ICU 2.8</stable>
         public override int GetHashCode()
         {
             if (m_hashCode_ == 0)
@@ -362,57 +386,67 @@ namespace ICU4N.Text
             return m_hashCode_;
         }
 
-        /**
-         * Produces a bound for the sort order of a given collation key and a
-         * strength level. This API does not attempt to find a bound for the
-         * CollationKey String representation, hence null will be returned in its
-         * place.
-         * <p>
-         * Resulting bounds can be used to produce a range of strings that are
-         * between upper and lower bounds. For example, if bounds are produced
-         * for a sortkey of string "smith", strings between upper and lower
-         * bounds with primary strength would include "Smith", "SMITH", "sMiTh".
-         * <p>
-         * There are two upper bounds that can be produced. If BoundMode.UPPER
-         * is produced, strings matched would be as above. However, if a bound
-         * is produced using BoundMode.UPPER_LONG is used, the above example will
-         * also match "Smithsonian" and similar.
-         * <p>
-         * For more on usage, see example in test procedure
-         * <a href="http://source.icu-project.org/repos/icu/icu4j/trunk/src/com/ibm/icu/dev/test/collator/CollationAPITest.java">
-         * src/com/ibm/icu/dev/test/collator/CollationAPITest/TestBounds.
-         * </a>
-         * <p>
-         * Collation keys produced may be compared using the <TT>compare</TT> API.
-         * @param boundType Mode of bound required. It can be BoundMode.LOWER, which
-         *              produces a lower inclusive bound, BoundMode.UPPER, that
-         *              produces upper bound that matches strings of the same
-         *              length or BoundMode.UPPER_LONG that matches strings that
-         *              have the same starting substring as the source string.
-         * @param noOfLevels Strength levels required in the resulting bound
-         *                 (for most uses, the recommended value is PRIMARY). This
-         *                 strength should be less than the maximum strength of
-         *                 this CollationKey.
-         *                 See users guide for explanation on the strength levels a
-         *                 collation key can have.
-         * @return the result bounded CollationKey with a valid sort order but
-         *         a null String representation.
-         * @exception IllegalArgumentException thrown when the strength level
-         *            requested is higher than or equal to the strength in this
-         *            CollationKey.
-         *            In the case of an Exception, information
-         *            about the maximum strength to use will be returned in the
-         *            Exception. The user can then call getBound() again with the
-         *            appropriate strength.
-         * @see CollationKey
-         * @see CollationKey.BoundMode
-         * @see Collator#PRIMARY
-         * @see Collator#SECONDARY
-         * @see Collator#TERTIARY
-         * @see Collator#QUATERNARY
-         * @see Collator#IDENTICAL
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Produces a bound for the sort order of a given collation key and a
+        /// strength level. This API does not attempt to find a bound for the
+        /// <see cref="CollationKey"/> string representation, hence null will be returned in its
+        /// place.
+        /// </summary>
+        /// <remarks>
+        /// Resulting bounds can be used to produce a range of strings that are
+        /// between upper and lower bounds. For example, if bounds are produced
+        /// for a sortkey of string "smith", strings between upper and lower
+        /// bounds with primary strength would include "Smith", "SMITH", "sMiTh".
+        /// <para/>
+        /// There are two upper bounds that can be produced. If <see cref="CollationKeyBoundMode.Upper"/>
+        /// is produced, strings matched would be as above. However, if a bound
+        /// is produced using <see cref="CollationKeyBoundMode.UpperLong"/> is used, the above example will
+        /// also match "Smithsonian" and similar.
+        /// <para/>
+        /// For more on usage, see example in test procedure
+        /// <a href="http://source.icu-project.org/repos/icu/icu4j/trunk/src/com/ibm/icu/dev/test/collator/CollationAPITest.java">
+        /// src/com/ibm/icu/dev/test/collator/CollationAPITest/TestBounds.
+        /// </a>
+        /// <para/>
+        /// Collation keys produced may be compared using the <see cref="CollationKey.CompareTo(CollationKey)"/> API.
+        /// </remarks>
+        /// <param name="boundType">
+        /// Mode of bound required. It can be <see cref="CollationKeyBoundMode.Lower"/>, which
+        /// produces a lower inclusive bound, <see cref="CollationKeyBoundMode.Upper"/>, that
+        /// produces upper bound that matches strings of the same
+        /// length or <see cref="CollationKeyBoundMode.UpperLong"/> that matches strings that
+        /// have the same starting substring as the source string.
+        /// </param>
+        /// <param name="noOfLevels">
+        /// Strength levels required in the resulting bound
+        /// (for most uses, the recommended value is <see cref="CollationStrength.Primary"/>). This
+        /// strength should be less than the maximum strength of
+        /// this <see cref="CollationKey"/>.
+        /// See users guide for explanation on the strength levels a
+        /// collation key can have.
+        /// </param>
+        /// <returns>
+        /// The result bounded <see cref="CollationKey"/> with a valid sort order but
+        /// a null string representation.
+        /// </returns>
+        /// <exception cref="ArgumentException">
+        /// thrown when the strength level
+        /// requested is higher than or equal to the strength in this
+        /// <see cref="CollationKey"/>.
+        /// In the case of an Exception, information
+        /// about the maximum strength to use will be returned in the
+        /// Exception. The user can then call <see cref="GetBound(CollationKeyBoundMode, CollationStrength)"/> again with the
+        /// appropriate strength.
+        /// </exception>
+        /// <seealso cref="CollationKey"/>
+        /// <seealso cref="CollationKeyBoundMode"/>
+        /// <seealso cref="CollationStrength.Primary"/>
+        /// <seealso cref="CollationStrength.Secondary"/>
+        /// <seealso cref="CollationStrength.Tertiary"/>
+        /// <seealso cref="CollationStrength.Quaternary"/>
+        /// <seealso cref="CollationStrength.Identical"/>
+        /// <stable>ICU 2.6</stable>
+        // ICU4N TODO: Update documentation to point to .NET CollationAPITest class
         public CollationKey GetBound(CollationKeyBoundMode boundType, CollationStrength noOfLevels) 
         {
             // Scan the string until we skip enough of the key OR reach the end of
@@ -444,7 +478,7 @@ namespace ICU4N.Text
                 throw new ArgumentException(
                                       "Source collation key has only "
                                       + keystrength
-                                      + " strength level. Call getBound() again "
+                                      + " strength level. Call GetBound() again "
                                       + " with noOfLevels < " + keystrength);
             }
 
@@ -475,48 +509,51 @@ namespace ICU4N.Text
             return new CollationKey(null, resultkey, offset);
         }
 
-
-        /**
-         * Merges this CollationKey with another.
-         * The levels are merged with their corresponding counterparts
-         * (primaries with primaries, secondaries with secondaries etc.).
-         * Between the values from the same level a separator is inserted.
-         *
-         * <p>This is useful, for example, for combining sort keys from first and last names
-         * to sort such pairs.
-         * See http://www.unicode.org/reports/tr10/#Merging_Sort_Keys
-         *
-         * <p>The recommended way to achieve "merged" sorting is by
-         * concatenating strings with U+FFFE between them.
-         * The concatenation has the same sort order as the merged sort keys,
-         * but merge(getSortKey(str1), getSortKey(str2)) may differ from getSortKey(str1 + '\uFFFE' + str2).
-         * Using strings with U+FFFE may yield shorter sort keys.
-         *
-         * <p>For details about Sort Key Features see
-         * http://userguide.icu-project.org/collation/api#TOC-Sort-Key-Features
-         *
-         * <p>It is possible to merge multiple sort keys by consecutively merging
-         * another one with the intermediate result.
-         *
-         * <p>Only the sort key bytes of the CollationKeys are merged.
-         * This API does not attempt to merge the
-         * String representations of the CollationKeys, hence null will be returned
-         * as the result's String representation.
-         *
-         * <p>Example (uncompressed):
-         * <pre>191B1D 01 050505 01 910505 00
-         * 1F2123 01 050505 01 910505 00</pre>
-         * will be merged as
-         * <pre>191B1D 02 1F2123 01 050505 02 050505 01 910505 02 910505 00</pre>
-         *
-         * @param source CollationKey to merge with
-         * @return a CollationKey that contains the valid merged sort keys
-         *         with a null String representation,
-         *         i.e. <tt>new CollationKey(null, merged_sort_keys)</tt>
-         * @exception IllegalArgumentException thrown if source CollationKey
-         *            argument is null or of 0 length.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Merges this <see cref="CollationKey"/> with another.
+        /// The levels are merged with their corresponding counterparts
+        /// (primaries with primaries, secondaries with secondaries etc.).
+        /// Between the values from the same level a separator is inserted.
+        /// </summary>
+        /// <remarks>
+        /// This is useful, for example, for combining sort keys from first and last names
+        /// to sort such pairs.
+        /// See <a href="http://www.unicode.org/reports/tr10/#Merging_Sort_Keys">http://www.unicode.org/reports/tr10/#Merging_Sort_Keys</a>.
+        /// <para/>
+        /// The recommended way to achieve "merged" sorting is by
+        /// concatenating strings with U+FFFE between them.
+        /// The concatenation has the same sort order as the merged sort keys,
+        /// but Merge(GetCollationKey(str1), GetCollationKey(str2)) may differ from GetCollationKey(str1 + '\uFFFE' + str2).
+        /// Using strings with U+FFFE may yield shorter sort keys.
+        /// <para/>
+        /// For details about Sort Key Features see
+        /// <a href="http://userguide.icu-project.org/collation/api#TOC-Sort-Key-Features">http://userguide.icu-project.org/collation/api#TOC-Sort-Key-Features</a>.
+        /// <para/>
+        /// It is possible to merge multiple sort keys by consecutively merging
+        /// another one with the intermediate result.
+        /// <para/>
+        /// Only the sort key bytes of the <see cref="CollationKey"/>s are merged.
+        /// This API does not attempt to merge the
+        /// string representations of the <see cref="CollationKey"/>s, hence null will be returned
+        /// as the result's string representation.
+        /// <para/>
+        /// Example (uncompressed):
+        /// <code>
+        /// 191B1D 01 050505 01 910505 00
+        /// 1F2123 01 050505 01 910505 00
+        /// </code>
+        /// will be merged as
+        /// <code>
+        /// 191B1D 02 1F2123 01 050505 02 050505 01 910505 02 910505 00
+        /// </code>
+        /// </remarks>
+        /// <param name="source"><see cref="CollationKey"/> to merge with.</param>
+        /// <returns>A <see cref="CollationKey"/> that contains the valid merged sort keys
+        /// with a null String representation,
+        /// i.e. <c>new CollationKey(null, merged_sort_keys)</c>.</returns>
+        /// <exception cref="ArgumentException">Thrown if source <see cref="CollationKey"/>
+        /// argument is null or of 0 length.</exception>
+        /// <stable>ICU 2.6</stable>
         public CollationKey Merge(CollationKey source)
         {
             // check arguments
@@ -591,35 +628,35 @@ namespace ICU4N.Text
 
         // private data members -------------------------------------------------
 
-        /**
-         * Sequence of bytes that represents the sort key
-         */
+        /// <summary>
+        /// Sequence of bytes that represents the sort key
+        /// </summary>
         private byte[] m_key_;
 
-        /**
-         * Source string this CollationKey represents
-         */
+        /// <summary>
+        /// Source string this <see cref="CollationKey"/> represents
+        /// </summary>
         private string m_source_;
 
-        /**
-         * Hash code for the key
-         */
+        /// <summary>
+        /// Hash code for the key
+        /// </summary>
         private int m_hashCode_;
-        /**
-         * Gets the length of this CollationKey
-         */
+        /// <summary>
+        /// Gets the length of this <see cref="CollationKey"/>
+        /// </summary>
         private int m_length_;
-        /**
-         * Collation key merge seperator
-         */
+        /// <summary>
+        /// Collation key merge seperator
+        /// </summary>
         private static readonly byte MERGE_SEPERATOR_ = 2;
 
         // private methods ------------------------------------------------------
 
-        /**
-         * Gets the length of the CollationKey
-         * @return length of the CollationKey
-         */
+        /// <summary>
+        /// Gets the length of the <see cref="CollationKey"/>.
+        /// </summary>
+        /// <returns>Length of the <see cref="CollationKey"/>.</returns>
         private int GetLength()
         {
             if (m_length_ >= 0)
