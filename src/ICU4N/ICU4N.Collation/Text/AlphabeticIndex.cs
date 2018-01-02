@@ -13,6 +13,120 @@ using System.Text;
 
 namespace ICU4N.Text
 {
+    /// <summary>
+    /// <see cref="AlphabeticIndex{T}"/> supports the creation of a UI index appropriate for a given language.
+    /// It can support either direct use, or use with a client that doesn't support localized collation.
+    /// </summary>
+    /// <remarks>
+    /// The following is an example of what an index might look like in a UI:
+    /// <code>
+    ///  <b>... A B C D E F G H I J K L M N O P Q R S T U V W X Y Z  ...</b>
+    ///  
+    ///  <b>A</b>
+    ///     Addison
+    ///     Albertson
+    ///     Azensky
+    ///  <b>B</b>
+    ///     Baecker
+    ///  ...
+    /// </code>
+    /// <para/>
+    /// The class can generate a list of labels for use as a UI "index", that is, a list of
+    /// clickable characters (or character sequences) that allow the user to see a segment
+    /// (bucket) of a larger "target" list. That is, each label corresponds to a bucket in
+    /// the target list, where everything in the bucket is greater than or equal to the character
+    /// (according to the locale's collation). Strings can be added to the index;
+    /// they will be in sorted order in the right bucket.
+    /// <para/>
+    /// The class also supports having buckets for strings before the first (underflow),
+    /// after the last (overflow), and between scripts (inflow). For example, if the index
+    /// is constructed with labels for Russian and English, Greek characters would fall
+    /// into an inflow bucket between the other two scripts.
+    /// <para/>
+    /// <em>Note:</em> If you expect to have a lot of ASCII or Latin characters
+    /// as well as characters from the user's language,
+    /// then it is a good idea to call <see cref="AddLabels(ULocale[])"/> with <see cref="ULocale.ENGLISH"/>.
+    /// <h2>Direct Use</h2>
+    /// The following shows an example of building an index directly.
+    /// The "show..." methods below are just to illustrate usage.
+    /// <code>
+    /// // Create a simple index where the values for the strings are Integers, and add the strings
+    /// 
+    /// AlphabeticIndex&lt;int&gt; index = new AlphabeticIndex&lt;int&gt;(desiredLocale).AddLabels(additionalLocale);
+    /// int counter = 0;
+    /// foreach (string item in test)
+    /// {
+    ///     index.AddRecord(item, counter++);
+    /// }
+    /// ...
+    /// // Show index at top. We could skip or gray out empty buckets
+    /// 
+    /// foreach (AlphabeticIndex&lt;int&gt;.Bucket bucket in index)
+    /// {
+    ///     if (showAll || bucket.Count != 0)
+    ///     {
+    ///         ShowLabelAtTop(UI, bucket.Label);
+    ///     }
+    /// }
+    /// ...
+    /// // Show the buckets with their contents, skipping empty buckets
+    /// 
+    /// foreach (AlphabeticIndex&lt;int&gt;.Bucket bucket in index)
+    /// {
+    ///     if (bucket.Count != 0)
+    ///     {
+    ///         ShowLabelInList(UI, bucket.Label);
+    ///         foreach (AlphabeticIndex&lt;int&gt;.Record item in bucket)
+    ///         {
+    ///             ShowIndexedItem(UI, item.Name, item.Data);
+    ///         }
+    ///     }
+    /// }
+    /// </code>
+    /// The caller can build different UIs using this class.
+    /// For example, an index character could be omitted or grayed-out
+    /// if its bucket is empty. Small buckets could also be combined based on size, such as:
+    /// <code>
+    /// <b>... A-F G-N O-Z ...</b>
+    /// </code>
+    /// <h2>Client Support</h2>
+    /// Callers can also use the <see cref="AlphabeticIndex{T}.ImmutableIndex"/>, or the <see cref="AlphabeticIndex{T}"/> itself,
+    /// to support sorting on a client that doesn't support <see cref="AlphabeticIndex{T}"/> functionality.
+    /// <para/>
+    /// The <see cref="ImmutableIndex"/> is both immutable and thread-safe.
+    /// The corresponding <see cref="AlphabeticIndex{T}"/> methods are not thread-safe because
+    /// they "lazily" build the index buckets.
+    /// <list type="bullet">
+    ///     <item><description>
+    ///         <see cref="ImmutableIndex.GetBucket(int)"/> provides random access to all
+    ///         buckets and their labels and label types.
+    ///     </description></item>
+    ///     <item><description>
+    ///         <see cref="AlphabeticIndex{T}.GetBucketLabels()"/> or the bucket iterator on either class
+    ///         can be used to get a list of the labels,
+    ///         such as "...", "A", "B",..., and send that list to the client.
+    ///     </description></item>
+    ///     <item><description>
+    ///         When the client has a new name, it sends that name to the server.
+    ///         The server needs to call the following methods,
+    ///         and communicate the bucketIndex and collationKey back to the client.
+    ///         
+    ///         <code>
+    ///         int bucketIndex = index.GetBucketIndex(name);
+    ///         string label = immutableIndex.GetBucket(bucketIndex).Label;  // optional
+    ///         RawCollationKey collationKey = collator.GetRawCollationKey(name, null);
+    ///         </code>
+    ///         
+    ///     </description></item>
+    ///     <item><description>
+    ///         The client would put the name (and associated information) into its bucket for bucketIndex. The collationKey is a
+    ///         sequence of bytes that can be compared with a binary compare, and produce the right localized result.
+    ///     </description></item>
+    /// </list>
+    /// </remarks>
+    /// <typeparam name="T">Data type of bucket data.</typeparam>
+    /// <author>Mark Davis</author>
+    /// <stable>ICU 4.8</stable>
     public sealed class AlphabeticIndex<T> : IEnumerable<AlphabeticIndex<T>.Bucket>
     {
         /// <summary>
@@ -44,7 +158,7 @@ namespace ICU4N.Text
             }
         }
 
-        // Comparator for records, so that the Record class can be static.
+        // Comparer for records, so that the Record class can be static.
         private readonly IComparer<Record> recordComparer;
 
 
@@ -61,16 +175,13 @@ namespace ICU4N.Text
         private string underflowLabel = "\u2026";
         private string inflowLabel = "\u2026";
 
-        /**
-         * Immutable, thread-safe version of {@link AlphabeticIndex}.
-         * This class provides thread-safe methods for bucketing,
-         * and random access to buckets and their properties,
-         * but does not offer adding records to the index.
-         *
-         * @param <V> The Record value type is unused. It can be omitted for this class
-         * if it was omitted for the AlphabeticIndex that built it.
-         * @stable ICU 51
-         */
+        /// <summary>
+        /// Immutable, thread-safe version of <see cref="AlphabeticIndex{T}"/>.
+        /// This class provides thread-safe methods for bucketing,
+        /// and random access to buckets and their properties,
+        /// but does not offer adding records to the index.
+        /// </summary>
+        /// <stable>ICU 51</stable>
         public sealed class ImmutableIndex : IEnumerable<Bucket>
         {
             internal readonly BucketList buckets;
@@ -82,37 +193,33 @@ namespace ICU4N.Text
                 this.collatorPrimaryOnly = collatorPrimaryOnly;
             }
 
-            /**
-             * Returns the number of index buckets and labels, including underflow/inflow/overflow.
-             *
-             * @return the number of index buckets
-             * @stable ICU 51
-             */
+            /// <summary>
+            /// Gets the number of index buckets and labels, including underflow/inflow/overflow.
+            /// </summary>
+            /// <stable>ICU 51</stable>
             public int BucketCount
             {
                 get { return buckets.BucketCount; }
             }
 
-            /**
-             * Finds the index bucket for the given name and returns the number of that bucket.
-             * Use {@link #getBucket(int)} to get the bucket's properties.
-             *
-             * @param name the string to be sorted into an index bucket
-             * @return the bucket number for the name
-             * @stable ICU 51
-             */
+            /// <summary>
+            /// Finds the index bucket for the given name and returns the number of that bucket.
+            /// Use <see cref="GetBucket(int)"/> to get the bucket's properties.
+            /// </summary>
+            /// <param name="name">The string to be sorted into an index bucket.</param>
+            /// <returns>The bucket number for the name.</returns>
+            /// <stable>ICU 51</stable>
             public int GetBucketIndex(string name) // ICU4N specific - changed name from ICharSequence to string
             {
                 return buckets.GetBucketIndex(name, collatorPrimaryOnly);
             }
 
-            /**
-             * Returns the index-th bucket. Returns null if the index is out of range.
-             *
-             * @param index bucket number
-             * @return the index-th bucket
-             * @stable ICU 51
-             */
+            /// <summary>
+            /// Returns the <paramref name="index"/>-th bucket. Returns null if the index is out of range.
+            /// </summary>
+            /// <param name="index">Bucket number.</param>
+            /// <returns>The <paramref name="index"/>-th bucket.</returns>
+            /// <stable>ICU 51</stable>
             public Bucket GetBucket(int index)
             {
                 if (0 <= index && index < buckets.BucketCount)
@@ -125,10 +232,11 @@ namespace ICU4N.Text
                 }
             }
 
-            /**
-             * {@inheritDoc}
-             * @stable ICU 51
-             */
+            /// <summary>
+            /// Returns an enumerator that iterates through the collection.
+            /// </summary>
+            /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+            /// <stable>ICU 51</stable>
             public IEnumerator<Bucket> GetEnumerator()
             {
                 return buckets.GetEnumerator();
@@ -142,51 +250,46 @@ namespace ICU4N.Text
             #endregion
         }
 
-        /**
-         * Create the index object.
-         *
-         * @param locale
-         *            The locale for the index.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Create the index object.
+        /// </summary>
+        /// <param name="locale">The locale for the index.</param>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex(ULocale locale)
-                    : this(locale, null)
+            : this(locale, null)
         {
         }
 
-        /**
-         * Create the index object.
-         *
-         * @param locale
-         *            The locale for the index.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Create the index object.
+        /// </summary>
+        /// <param name="locale">The locale for the index.</param>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex(CultureInfo locale)
-                    : this(ULocale.ForLocale(locale), null)
+            : this(ULocale.ForLocale(locale), null)
         {
         }
 
-        /**
-         * Create an AlphabeticIndex that uses a specific collator.
-         *
-         * <p>The index will be created with no labels; the addLabels() function must be called
-         * after creation to add the desired labels to the index.
-         *
-         * <p>The index will work directly with the supplied collator. If the caller will need to
-         * continue working with the collator it should be cloned first, so that the
-         * collator provided to the AlphabeticIndex remains unchanged after creation of the index.
-         *
-         * @param collator The collator to use to order the contents of this index.
-         * @stable ICU 51
-         */
+        /// <summary>
+        /// Create an <see cref="AlphabeticIndex{T}"/> that uses a specific collator.
+        /// <para/>
+        /// The index will be created with no labels; the <see cref="AddLabels(CultureInfo[])"/> function (or overload) must be called
+        /// after creation to add the desired labels to the index.
+        /// <para/>
+        /// The index will work directly with the supplied collator. If the caller will need to
+        /// continue working with the collator it should be cloned first, so that the
+        /// collator provided to the <see cref="AlphabeticIndex{T}"/> remains unchanged after creation of the index.
+        /// </summary>
+        /// <param name="collator">The collator to use to order the contents of this index.</param>
+        /// <stable>ICU 51</stable>
         public AlphabeticIndex(RuleBasedCollator collator)
-                    : this(null, collator)
+            : this(null, collator)
         {
         }
 
-        /**
-         * Internal constructor containing implementation used by public constructors.
-         */
+        /// <summary>
+        /// Internal constructor containing implementation used by public constructors.
+        /// </summary>
         private AlphabeticIndex(ULocale locale, RuleBasedCollator collator)
         {
             collatorOriginal = collator != null ? collator : (RuleBasedCollator)Text.Collator.GetInstance(locale);
@@ -234,12 +337,12 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Add more index characters (aside from what are in the locale)
-         * @param additions additional characters to add to the index, such as A-Z.
-         * @return this, for chaining
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Add more index characters (aside from what are in the locale)
+        /// </summary>
+        /// <param name="additions">Additional characters to add to the index, such as A-Z.</param>
+        /// <returns>This, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex<T> AddLabels(UnicodeSet additions)
         {
             initialLabels.AddAll(additions);
@@ -247,12 +350,12 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Add more index characters (aside from what are in the locale)
-         * @param additions additional characters to add to the index, such as those in Swedish.
-         * @return this, for chaining
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Add more index characters (aside from what are in the locale)
+        /// </summary>
+        /// <param name="additions">Additional characters to add to the index, such as those in Swedish.</param>
+        /// <returns>This, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex<T> AddLabels(params ULocale[] additions)
         {
             foreach (ULocale addition in additions)
@@ -263,12 +366,12 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Add more index characters (aside from what are in the locale)
-         * @param additions additional characters to add to the index, such as those in Swedish.
-         * @return this, for chaining
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Add more index characters (aside from what are in the locale)
+        /// </summary>
+        /// <param name="additions">Additional characters to add to the index, such as those in Swedish.</param>
+        /// <returns>This, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex<T> AddLabels(params CultureInfo[] additions)
         {
             foreach (var addition in additions)
@@ -279,12 +382,12 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Set the overflow label
-         * @param overflowLabel see class description
-         * @return this, for chaining
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Set the overflow label.
+        /// </summary>
+        /// <param name="overflowLabel">See <see cref="AlphabeticIndex{T}"/> class description.</param>
+        /// <returns>This, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex<T> SetOverflowLabel(string overflowLabel)
         {
             this.overflowLabel = overflowLabel;
@@ -292,24 +395,21 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Get the default label used in the IndexCharacters' locale for underflow, eg the last item in: X Y Z ...
-         *
-         * @return underflow label
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Get the default label used in the IndexCharacters' locale for underflow, eg the last item in: X Y Z ...
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public string UnderflowLabel
         {
             get { return underflowLabel; } // TODO get localized version
         }
 
-
-        /**
-         * Set the underflowLabel label
-         * @param underflowLabel see class description
-         * @return this, for chaining
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Set the underflowLabel label.
+        /// </summary>
+        /// <param name="underflowLabel">See <see cref="AlphabeticIndex{T}"/> class description.</param>
+        /// <returns>This, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex<T> SetUnderflowLabel(string underflowLabel) // ICU4N TODO: API - make extension method ?
         {
             this.underflowLabel = underflowLabel;
@@ -317,24 +417,21 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Get the default label used in the IndexCharacters' locale for overflow, eg the first item in: ... A B C
-         *
-         * @return overflow label
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Get the default label used in the IndexCharacters' locale for overflow, eg the first item in: ... A B C
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public string OverflowLabel
         {
             get { return overflowLabel; } // TODO get localized version
         }
 
-
-        /**
-         * Set the inflowLabel label
-         * @param inflowLabel see class description
-         * @return this, for chaining
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Set the inflowLabel label.
+        /// </summary>
+        /// <param name="inflowLabel">See <see cref="AlphabeticIndex{T}"/> class description.</param>
+        /// <returns>This, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex<T> SetInflowLabel(string inflowLabel)
         {
             this.inflowLabel = inflowLabel;
@@ -342,40 +439,37 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Get the default label used for abbreviated buckets <i>between</i> other labels. For example, consider the labels
-         * for Latin and Greek are used: X Y Z ... &#x0391; &#x0392; &#x0393;.
-         *
-         * @return inflow label
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Get the default label used for abbreviated buckets <i>between</i> other labels. For example, consider the labels
+        /// for Latin and Greek are used: X Y Z ... &#x0391; &#x0392; &#x0393;.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public string InflowLabel
         {
             get { return inflowLabel; } // TODO get localized version
         }
 
-
-        /**
-         * Get the limit on the number of labels in the index. The number of buckets can be slightly larger: see getBucketCount().
-         *
-         * @return maxLabelCount maximum number of labels.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Get the limit on the number of labels in the index. The number of buckets can be slightly larger: see <see cref="BucketCount"/>.
+        /// Returns maximum number of labels.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public int MaxLabelCount
         {
             get { return maxLabelCount; }
         }
 
-        /**
-         * Set a limit on the number of labels in the index. The number of buckets can be slightly larger: see
-         * getBucketCount().
-         *
-         * @param maxLabelCount Set the maximum number of labels. Currently, if the number is exceeded, then every
-         *         nth item is removed to bring the count down. A more sophisticated mechanism may be available in the
-         *         future.
-         * @return this, for chaining
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Set a limit on the number of labels in the index. The number of buckets can be slightly larger: see
+        /// <see cref="BucketCount"/>.
+        /// </summary>
+        /// <param name="maxLabelCount">
+        /// Set the maximum number of labels. Currently, if the number is exceeded, then every
+        /// nth item is removed to bring the count down. A more sophisticated mechanism may be available in the
+        /// future.
+        /// </param>
+        /// <returns>This, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex<T> SetMaxLabelCount(int maxLabelCount)
         {
             this.maxLabelCount = maxLabelCount;
@@ -383,10 +477,10 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Determine the best labels to use. This is based on the exemplars, but we also process to make sure that they are unique,
-         * and sort differently, and that the overall list is small enough.
-         */
+        /// <summary>
+        /// Determine the best labels to use. This is based on the exemplars, but we also process to make sure that they are unique,
+        /// and sort differently, and that the overall list is small enough.
+        /// </summary>
         private IList<string> InitLabels()
         {
             Normalizer2 nfkdNormalizer = Normalizer2.GetNFKDInstance();
@@ -511,10 +605,10 @@ namespace ICU4N.Text
             return current.Substring(BASE.Length);
         }
 
-        /**
-         * This method is called to get the index exemplars. Normally these come from the locale directly,
-         * but if they aren't available, we have to synthesize them.
-         */
+        /// <summary>
+        /// This method is called to get the index exemplars. Normally these come from the <paramref name="locale"/> directly,
+        /// but if they aren't available, we have to synthesize them.
+        /// </summary>
         private void AddIndexExemplars(ULocale locale)
         {
             UnicodeSet exemplars = LocaleData.GetExemplarSet(locale, 0, LocaleData.ES_INDEX);
@@ -567,13 +661,13 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Add Chinese index characters from the tailoring.
-         */
+        /// <summary>
+        /// Add Chinese index characters from the tailoring.
+        /// </summary>
         private bool AddChineseIndexCharacters()
         {
             UnicodeSet contractions = new UnicodeSet();
-            try
+            try // ICU4N TODO: Try to remove this catch block and use Try.. version of method
             {
                 collatorPrimaryOnly.InternalAddContractions(BASE[0], contractions);
             }
@@ -597,10 +691,11 @@ namespace ICU4N.Text
             return true;
         }
 
-        /**
-         * Return the string with interspersed CGJs. Input must have more than 2 codepoints.
-         * <p>This is used to test whether contractions sort differently from their components.
-         */
+        /// <summary>
+        /// Return the string with interspersed CGJs. Input must have more than 2 codepoints.
+        /// <para/>
+        /// This is used to test whether contractions sort differently from their components.
+        /// </summary>
         private string Separated(string item)
         {
             StringBuilder result = new StringBuilder();
@@ -620,12 +715,11 @@ namespace ICU4N.Text
             return result.ToString();
         }
 
-        /**
-         * Builds an immutable, thread-safe version of this instance, without data records.
-         *
-         * @return an immutable index instance
-         * @stable ICU 51
-         */
+        /// <summary>
+        /// Builds an immutable, thread-safe version of this instance, without data records.
+        /// </summary>
+        /// <returns>An immutable index instance.</returns>
+        /// <stable>ICU 51</stable>
         public ImmutableIndex BuildImmutableIndex()
         {
             // The current AlphabeticIndex Java code never modifies the bucket list once built.
@@ -648,12 +742,11 @@ namespace ICU4N.Text
             return new ImmutableIndex(immutableBucketList, collatorPrimaryOnly);
         }
 
-        /**
-         * Get the labels.
-         *
-         * @return The list of bucket labels, after processing.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Get the labels.
+        /// </summary>
+        /// <returns>The list of bucket labels, after processing.</returns>
+        /// <stable>ICU 4.8</stable>
         public IList<string> GetBucketLabels()
         {
             InitBuckets();
@@ -665,16 +758,14 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Get a clone of the collator used internally. Note that for performance reasons, the clone is only done once, and
-         * then stored. The next time it is accessed, the same instance is returned.
-         * <p>
-         * <b><i>Don't use this method across threads if you are changing the settings on the collator, at least not without
-         * synchronizing.</i></b>
-         *
-         * @return a clone of the collator used internally
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Get a clone of the collator used internally. Note that for performance reasons, the clone is only done once, and
+        /// then stored. The next time it is accessed, the same instance is returned.
+        /// <para/>
+        /// <b><i>Don't use this property across threads if you are changing the settings on the collator, at least not without
+        /// synchronizing.</i></b>
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public RuleBasedCollator Collator
         {
             get
@@ -716,33 +807,30 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Get the bucket number for the given name. This routine permits callers to implement their own bucket handling
-         * mechanisms, including client-server handling. For example, when a new name is created on the client, it can ask
-         * the server for the bucket for that name, and the sortkey (using getCollator). Once the client has that
-         * information, it can put the name into the right bucket, and sort it within that bucket, without having access to
-         * the index or collator.
-         * <p>
-         * Note that the bucket number (and sort key) are only valid for the settings of the current AlphabeticIndex; if
-         * those are changed, then the bucket number and sort key must be regenerated.
-         *
-         * @param name
-         *            Name, such as a name
-         * @return the bucket index for the name
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Get the bucket number for the given name. This routine permits callers to implement their own bucket handling
+        /// mechanisms, including client-server handling. For example, when a new name is created on the client, it can ask
+        /// the server for the bucket for that name, and the sortkey (using <see cref="Collator"/>). Once the client has that
+        /// information, it can put the name into the right bucket, and sort it within that bucket, without having access to
+        /// the index or collator.
+        /// <para/>
+        /// Note that the bucket number (and sort key) are only valid for the settings of the current <see cref="AlphabeticIndex{T}"/>; if
+        /// those are changed, then the bucket number and sort key must be regenerated.
+        /// </summary>
+        /// <param name="name">Name, such as a name.</param>
+        /// <returns>The bucket index for the name.</returns>
+        /// <stable>ICU 4.8</stable>
         public int GetBucketIndex(string name) // ICU4N specific - changed name from ICharSequence to string
         {
             InitBuckets();
             return buckets.GetBucketIndex(name, collatorPrimaryOnly);
         }
 
-        /**
-         * Clear the index.
-         *
-         * @return this, for chaining
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Clear the index.
+        /// </summary>
+        /// <returns>This, for chaining.</returns>
+        /// <stable>ICU 4.8</stable>
         public AlphabeticIndex<T> ClearRecords()
         {
             if (inputList != null && inputList.Count > 0)
@@ -753,12 +841,10 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Return the number of buckets in the index. This will be the same as the number of labels, plus buckets for the underflow, overflow, and inflow(s).
-         *
-         * @return number of buckets
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Gets the number of buckets in the index. This will be the same as the number of labels, plus buckets for the underflow, overflow, and inflow(s).
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public int BucketCount
         {
             get
@@ -768,23 +854,20 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Return the number of records in the index: that is, the total number of distinct &lt;name,data&gt; pairs added with addRecord(...), over all the buckets.
-         *
-         * @return total number of records in buckets
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Gets the number of records in the index: that is, the total number of distinct &lt;name,data&gt; pairs added with AddRecord(...), over all the buckets.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public int RecordCount
         {
             get { return inputList != null ? inputList.Count : 0; }
         }
 
-        /**
-         * Return an iterator over the buckets.
-         *
-         * @return iterator over buckets.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Return an enumerator over the buckets.
+        /// </summary>
+        /// <returns>Enumerator over buckets.</returns>
+        /// <stable>ICU 4.8</stable>
         public IEnumerator<Bucket> GetEnumerator()
         {
             InitBuckets();
@@ -798,9 +881,9 @@ namespace ICU4N.Text
         }
         #endregion
 
-        /**
-         * Creates an index, and buckets and sorts the list of records into the index.
-         */
+        /// <summary>
+        /// Creates an index, and buckets and sorts the list of records into the index.
+        /// </summary>
         private void InitBuckets()
         {
             if (buckets != null)
@@ -873,11 +956,11 @@ namespace ICU4N.Text
 
         private int maxLabelCount = 99;
 
-        /**
-         * Returns true if one index character string is "better" than the other.
-         * Shorter NFKD is better, and otherwise NFKD-binary-less-than is
-         * better, and otherwise binary-less-than is better.
-         */
+        /// <summary>
+        /// Returns true if one index character string is "better" than the other.
+        /// Shorter NFKD is better, and otherwise NFKD-binary-less-than is
+        /// better, and otherwise binary-less-than is better.
+        /// </summary>
         private static bool IsOneLabelBetterThanOther(Normalizer2 nfkdNormalizer, string one, string other)
         {
             // This is called with primary-equal strings, but never with one.equals(other).
@@ -896,13 +979,12 @@ namespace ICU4N.Text
             return binaryCmp.Compare(one, other) < 0;
         }
 
-        /**
-         * A (name, data) pair, to be sorted by name into one of the index buckets.
-         * The user data is not used by the index implementation.
-         *
-         * @stable ICU 4.8
-         */
-        public class Record
+        /// <summary>
+        /// A (name, data) pair, to be sorted by name into one of the index buckets.
+        /// The user data is not used by the index implementation.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public class Record // ICU4N TODO: API Make struct ?
         {
             private readonly string name;
             private readonly T data;
@@ -913,52 +995,43 @@ namespace ICU4N.Text
                 this.data = data;
             }
 
-            /**
-             * Get the name
-             *
-             * @return the name
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Gets the name.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public virtual string Name
             {
                 get { return name; }
             }
 
-            /**
-             * Get the data
-             *
-             * @return the data
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Gets the data.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public virtual T Data
             {
                 get { return data; }
             }
 
-            /**
-             * Standard toString()
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Returns <c>name + "=" + data</c>.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public override string ToString()
             {
                 return name + "=" + data;
             }
         }
 
-        
-
-        /**
-         * An index "bucket" with a label string and type.
-         * It is referenced by {@link AlphabeticIndex#getBucketIndex(CharSequence)}
-         * and {@link AlphabeticIndex.ImmutableIndex#getBucketIndex(CharSequence)},
-         * returned by {@link AlphabeticIndex.ImmutableIndex#getBucket(int)},
-         * and {@link AlphabeticIndex#addRecord(CharSequence, Object)} adds a record
-         * into a bucket according to the record's name.
-         *
-         * @param <V>
-         *            Data type
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// An index "bucket" with a label string and type.
+        /// It is referenced by <see cref="AlphabeticIndex{T}.GetBucketIndex(string)"/>
+        /// and <see cref="AlphabeticIndex{T}.ImmutableIndex.GetBucketIndex(string)"/>,
+        /// returned by <see cref="AlphabeticIndex{T}.ImmutableIndex.GetBucket(int)"/>,
+        /// and <see cref="AlphabeticIndex{T}.AddRecord(string, T)"/> adds a record
+        /// into a bucket according to the record's name.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public class Bucket : IEnumerable<Record>
         {
             private readonly string label;
@@ -993,15 +1066,13 @@ namespace ICU4N.Text
                 set { records = value; }
             }
 
-            /**
-             * Set up the bucket.
-             *
-             * @param label
-             *            label for the bucket
-             * @param labelType
-             *            is an underflow, overflow, or inflow bucket
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Set up the bucket.
+            /// </summary>
+            /// <param name="label">Label for the bucket.</param>
+            /// <param name="lowerBoundary"></param>
+            /// <param name="labelType">Is an underflow, overflow, or inflow bucket.</param>
+            /// <stable>ICU 4.8</stable>
             internal Bucket(string label, string lowerBoundary, BucketLabelType labelType)
             {
                 this.label = label;
@@ -1009,43 +1080,38 @@ namespace ICU4N.Text
                 this.labelType = labelType;
             }
 
-            /**
-             * Get the label
-             *
-             * @return label for the bucket
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Gets the label for the bucket.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public virtual string Label
             {
                 get { return label; }
             }
 
-            /**
-             * Is a normal, underflow, overflow, or inflow bucket
-             *
-             * @return is an underflow, overflow, or inflow bucket
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Is a normal, underflow, overflow, or inflow bucket?
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public BucketLabelType LabelType
             {
                 get { return labelType; }
             }
 
-            /**
-             * Get the number of records in the bucket.
-             *
-             * @return number of records in bucket
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Gets the number of records in the bucket.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public virtual int Count
             {
                 get { return records == null ? 0 : records.Count; }
             }
 
-            /**
-             * Iterator over the records in the bucket
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Enumerator over the records in the bucket.
+            /// </summary>
+            /// <returns>An enumerator over the records in the bucket.</returns>
+            /// <stable>ICU 4.8</stable>
             public virtual IEnumerator<Record> GetEnumerator()
             {
                 if (records == null)
@@ -1062,10 +1128,10 @@ namespace ICU4N.Text
             }
             #endregion
 
-            /**
-             * Standard toString()
-             * @stable ICU 4.8
-             */
+            /// <summary>
+            /// Returns a name with the <see cref="labelType"/>, <see cref="lowerBoundary"/>, and <see cref="label"/>.
+            /// </summary>
+            /// <stable>ICU 4.8</stable>
             public override string ToString()
             {
                 return "{" +
@@ -1077,8 +1143,6 @@ namespace ICU4N.Text
                 + "}"
                 ;
             }
-
-
         }
 
         private BucketList CreateBucketList()
@@ -1301,17 +1365,17 @@ namespace ICU4N.Text
                 return bucket2.DisplayIndex;
             }
 
-            /**
-             * Private iterator over all the buckets, visible and invisible
-             */
+            /// <summary>
+            /// Private enumerator over all the buckets, visible and invisible
+            /// </summary>
             internal IEnumerator<Bucket> GetFullEnumerator()
             {
                 return bucketList.GetEnumerator();
             }
 
-            /**
-             * Iterator over just the visible buckets.
-             */
+            /// <summary>
+            /// Enumerator over just the visible buckets.
+            /// </summary>
             public virtual IEnumerator<Bucket> GetEnumerator()
             {
                 return immutableVisibleList.GetEnumerator(); // use immutable list to prevent remove().
@@ -1357,13 +1421,11 @@ namespace ICU4N.Text
                 GC_LU_MASK | GC_LL_MASK | GC_LT_MASK | GC_LM_MASK | GC_LO_MASK;
         private static readonly int GC_CN_MASK = 1 << UnicodeCategory.OtherNotAssigned.ToIcuValue();
 
-        /**
-         * Return a list of the first character in each script. Only exposed for testing.
-         *
-         * @return list of first characters in each script
-         * @internal
-         * @deprecated This API is ICU internal, only for testing.
-         */
+        /// <summary>
+        /// Return a list of the first character in each script. Only exposed for testing.
+        /// </summary>
+        /// <returns>List of first characters in each script.</returns>
+        /// <internal/>
         [Obsolete("This API is ICU internal, only for testing.")]
         public List<string> GetFirstCharactersInScripts()
         {
