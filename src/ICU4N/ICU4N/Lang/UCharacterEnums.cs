@@ -7,7 +7,7 @@ namespace ICU4N.Lang
     /// Utility methods for converting <see cref="UnicodeCategory"/> numbers for use
     /// in ICU.
     /// </summary>
-    public static class UnicodeCategoryConvert
+    public static class UnicodeCategoryConvert // ICU4N TODO: API eliminate
     {
         /// <summary>
         /// Converts a <see cref="UnicodeCategory"/> to the integer value that is used by

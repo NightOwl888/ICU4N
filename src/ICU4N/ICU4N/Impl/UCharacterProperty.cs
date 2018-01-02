@@ -540,7 +540,7 @@ namespace ICU4N.Impl
 
         // int-value and enumerated properties --------------------------------- ***
 
-        public int GetType(int c)
+        public int GetType(int c) // ICU4N TODO: API - Return UCharacterCategory type
         {
             return GetProperty(c) & TYPE_MASK;
         }
@@ -697,7 +697,8 @@ namespace ICU4N.Impl
 
         private IntProperty[] intProps;
 
-        public int GetInt32PropertyValue(int c, int which)
+        // ICU4N TODO: API - change which to UProperty
+        public int GetInt32PropertyValue(int c, int which) // ICU4N TODO: API - rename back to GetIntPropertyValue (we don't have to discern between different data types)
         {
             if (which < (int)UProperty.Int_Start)
             {
@@ -717,7 +718,8 @@ namespace ICU4N.Impl
             return 0; // undefined
         }
 
-        public int GetIntPropertyMaxValue(int which) // ICU4N TODO API - rename GetInt32PropertyMaxValue()
+        // ICU4N TODO: API - change which to UProperty
+        public int GetIntPropertyMaxValue(int which)
         {
             if (which < (int)UProperty.Int_Start)
             {

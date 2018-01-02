@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ICU4N.Lang
 {
-    public static class UCharacterCategory
+    public static class UCharacterCategory // ICU4N TODO: API Make into extension methods
     {
         /**
      * Gets the name of the argument category

@@ -13,7 +13,7 @@ using System.Text;
 
 namespace ICU4N.Lang
 {
-    public sealed partial class UCharacter
+    public static partial class UCharacter
     {
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -52,7 +52,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -80,7 +80,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -108,7 +108,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -136,7 +136,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -168,7 +168,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -200,7 +200,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -232,7 +232,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
+        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -263,15 +263,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -279,7 +279,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -307,15 +307,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -323,7 +323,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -351,15 +351,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -367,7 +367,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -395,15 +395,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -411,7 +411,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -439,15 +439,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -455,7 +455,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -480,15 +480,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -496,7 +496,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -521,15 +521,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -537,7 +537,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -562,15 +562,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
-        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
+        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
-        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
-        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
+        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
+        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
+        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -578,7 +578,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
+        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.

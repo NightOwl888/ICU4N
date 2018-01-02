@@ -61,7 +61,7 @@ namespace ICU4N.Lang
         /// Format controls which have specific functions in the Bidi Algorithm.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        Bidi_Control = 2,
+        Bidi_Control = 2, // ICU4N TODO: API Rename BiDi
 
         /// <summary>
         /// Binary property Bidi_Mirrored.
@@ -73,7 +73,7 @@ namespace ICU4N.Lang
         /// See Bidi Algorithm, UTR 9.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        Bidi_Mirrored = 3,
+        Bidi_Mirrored = 3, // ICU4N TODO: API Rename BiDi
 
         /// <summary>
         /// Binary property Dash.
@@ -785,7 +785,7 @@ namespace ICU4N.Lang
         /// Returns <see cref="UCharacter.BidiPairedBracketType"/> values.
         /// </summary>
         /// <stable>ICU 52</stable>
-        Bidi_Paired_Bracket_Type = 0x1015,
+        Bidi_Paired_Bracket_Type = 0x1015, // ICU4N TODO: API Rename BiDi
 
         /// <summary>
         /// One more than the last constant for enumerated/integer Unicode properties.
@@ -854,7 +854,7 @@ namespace ICU4N.Lang
         /// Corresponds to <see cref="UCharacter.GetMirror(int)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
-        Bidi_Mirroring_Glyph = 0x4001,
+        Bidi_Mirroring_Glyph = 0x4001, // ICU4N TODO: API Rename BiDi
 
         /// <summary>
         /// String property Case_Folding.
@@ -940,7 +940,7 @@ namespace ICU4N.Lang
         /// Corresponds to <see cref="UCharacter.GetBidiPairedBracket(int)"/>.
         /// </summary>
         /// <stable>ICU 52</stable>
-        Bidi_Paired_Bracket = 0x400D,
+        Bidi_Paired_Bracket = 0x400D, // ICU4N TODO: API Rename BiDi
 
         /// <summary>
         /// One more than the last constant for string Unicode properties.

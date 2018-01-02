@@ -32,7 +32,7 @@ using System.Text;
 
 namespace ICU4N.Lang
 {
-    public sealed partial class UCharacter
+    public static partial class UCharacter
     {
 <# foreach (var charSequence in charSequences) { #>
 
@@ -56,8 +56,8 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int GetPropertyEnum(<#=charSequence#> propertyAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
-            if (propEnum == (int)UProperty.UNDEFINED)
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+            if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
             }
@@ -89,8 +89,8 @@ namespace ICU4N.Lang
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static bool TryGetPropertyEnum(<#=charSequence#> propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyEnum(propertyAlias);
-            if (propEnum == (int)UProperty.UNDEFINED)
+            int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+            if (propEnum == (int)UProperty.Undefined)
             {
                 return false;
             }
@@ -136,8 +136,8 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int GetPropertyValueEnum(UProperty property, <#=charSequence#> valueAlias)
         {
-            int propEnum = UPropertyAliases.INSTANCE.GetPropertyValueEnum(property, valueAlias);
-            if (propEnum == (int)UProperty.UNDEFINED)
+            int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
+            if (propEnum == (int)UProperty.Undefined)
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
             }
@@ -184,7 +184,7 @@ namespace ICU4N.Lang
         // ICU4N specific
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static bool TryGetPropertyValueEnum(UProperty property, <#=charSequence#> valueAlias, out int result) // ICU4N TODO: Tests
         {
-            return UPropertyAliases.INSTANCE.TryGetPropertyValueEnum(property, valueAlias, out result);
+            return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>

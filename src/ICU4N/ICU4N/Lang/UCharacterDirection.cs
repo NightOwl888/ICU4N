@@ -8,7 +8,7 @@
     /// </summary>
     /// <author>Syn Wee Quek</author>
     /// <stable>ICU 2.1</stable>
-    public static class UCharacterDirection
+    public static class UCharacterDirection // ICU4N TODO: API Make into extension methods for enum UCharacterDirection
     {
         /// <summary>
         /// Gets the name of the argument direction.
