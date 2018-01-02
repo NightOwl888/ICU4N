@@ -1412,14 +1412,14 @@ namespace ICU4N.Text
         }
 
         // TODO: Surely we have at least a ticket for porting these mask values to UCharacter.java?!
-        private static readonly int GC_LU_MASK = 1 << UnicodeCategory.UppercaseLetter.ToIcuValue();
-        private static readonly int GC_LL_MASK = 1 << UnicodeCategory.LowercaseLetter.ToIcuValue();
-        private static readonly int GC_LT_MASK = 1 << UnicodeCategory.TitlecaseLetter.ToIcuValue();
-        private static readonly int GC_LM_MASK = 1 << UnicodeCategory.ModifierLetter.ToIcuValue();
-        private static readonly int GC_LO_MASK = 1 << UnicodeCategory.OtherLetter.ToIcuValue();
+        private static readonly int GC_LU_MASK = 1 << UCharacterCategory.UppercaseLetter.ToInt32();
+        private static readonly int GC_LL_MASK = 1 << UCharacterCategory.LowercaseLetter.ToInt32();
+        private static readonly int GC_LT_MASK = 1 << UCharacterCategory.TitlecaseLetter.ToInt32();
+        private static readonly int GC_LM_MASK = 1 << UCharacterCategory.ModifierLetter.ToInt32();
+        private static readonly int GC_LO_MASK = 1 << UCharacterCategory.OtherLetter.ToInt32();
         private static readonly int GC_L_MASK =
                 GC_LU_MASK | GC_LL_MASK | GC_LT_MASK | GC_LM_MASK | GC_LO_MASK;
-        private static readonly int GC_CN_MASK = 1 << UnicodeCategory.OtherNotAssigned.ToIcuValue();
+        private static readonly int GC_CN_MASK = 1 << UCharacterCategory.OtherNotAssigned.ToInt32();
 
         /// <summary>
         /// Return a list of the first character in each script. Only exposed for testing.
@@ -1441,7 +1441,7 @@ namespace ICU4N.Text
             }
             foreach (string boundary in set)
             {
-                int gcMask = 1 << UCharacter.GetType(boundary.CodePointAt(1)).ToIcuValue();
+                int gcMask = 1 << UCharacter.GetType(boundary.CodePointAt(1)).ToInt32();
                 if ((gcMask & (GC_L_MASK | GC_CN_MASK)) == 0)
                 {
                     // Ignore boundaries for the special reordering groups.

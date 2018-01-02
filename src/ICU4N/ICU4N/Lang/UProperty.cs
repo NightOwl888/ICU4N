@@ -652,7 +652,7 @@ namespace ICU4N.Lang
 
         /// <summary>
         /// Enumerated property General_Category.
-        /// Same as <see cref="UCharacter.GetType(int)"/>, returns <see cref="System.Globalization.UnicodeCategory"/> values.
+        /// Same as <see cref="UCharacter.GetType(int)"/>, returns <see cref="UCharacterCategory"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         General_Category = 0x1005,
@@ -797,7 +797,7 @@ namespace ICU4N.Lang
         /// Bitmask property General_Category_Mask.
         /// This is the <see cref="General_Category"/> property returned as a bit mask.
         /// When used in <see cref="UCharacter.GetInt32PropertyValue(int, UProperty)"/>,
-        /// returns bit masks for <see cref="System.Globalization.UnicodeCategory"/> values where exactly one bit is set.
+        /// returns bit masks for <see cref="UCharacterCategory"/> values where exactly one bit is set.
         /// When used with <see cref="UCharacter.GetPropertyValueName(UProperty, int, NameChoice)"/> 
         /// and <see cref="UCharacter.GetPropertyValueEnum(UProperty, string)"/>,
         /// a multi-bit mask is used for sets of categories like "Letters".

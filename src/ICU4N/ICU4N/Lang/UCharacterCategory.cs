@@ -1,158 +1,339 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-
-namespace ICU4N.Lang
+﻿namespace ICU4N.Lang // ICU4N TODO: Move to Globalization namespace
 {
-    public static class UCharacterCategory // ICU4N TODO: API Make into extension methods
+    /// <summary>
+    /// Enum for the CharacterCategory constants.  These constants are
+    /// compatible in name <b>but not in value</b> with those defined in
+    /// <see cref="System.Globalization.UnicodeCategory"/>.
+    /// </summary>
+    /// <stable>ICU 3.0</stable>
+    public enum UCharacterCategory : byte
     {
-        /**
-     * Gets the name of the argument category
-     * @param category to retrieve name
-     * @return category name
-     * @stable ICU 2.1
-     */
-        public static string ToString(UnicodeCategory category)
+        /// <summary>
+        /// Unassigned character type.
+        /// </summary>
+        /// <seealso cref="OtherNotAssigned"/>
+        /// <seealso cref="GeneralOtherTypes"/>
+        /// <stable>ICU 2.1</stable>
+        Unassigned = 0,
+
+        /// <summary>
+        /// Unassigned character type.
+        /// This name is compatible with <see cref="System.Globalization.UnicodeCategory"/>'s name for this type.
+        /// </summary>
+        /// <seealso cref="Unassigned"/>
+        /// <seealso cref="GeneralOtherTypes"/>
+        /// <stable>ICU 60</stable>
+        OtherNotAssigned = 0,
+
+        /// <summary>
+        /// Character type Cn.
+        /// Not Assigned (no characters in [UnicodeData.txt] have this property)
+        /// </summary>
+        /// <seealso cref="Unassigned"/>
+        /// <seealso cref="OtherNotAssigned"/>
+        /// <stable>ICU 2.6</stable>
+        GeneralOtherTypes = 0,
+
+        /// <summary>
+        /// Character type Lu.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        UppercaseLetter = 1,
+
+        /// <summary>
+        /// Character type Ll.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        LowercaseLetter = 2,
+
+        /// <summary>
+        /// Character type Lt.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        TitlecaseLetter = 3,
+
+        /// <summary>
+        /// Character type Lm.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        ModifierLetter = 4,
+
+        /// <summary>
+        /// Character type Lo.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        OtherLetter = 5,
+
+        /// <summary>
+        /// Character type Mn.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        NonSpacingMark = 6,
+
+        /// <summary>
+        /// Character type Me.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        EnclosingMark = 7,
+
+        /// <summary>
+        /// Character type Mc.
+        /// </summary>
+        /// <seealso cref="SpacingCombiningMark"/>
+        /// <stable>ICU 2.1</stable>
+        CombiningSpacingMark = 8,
+
+        /// <summary>
+        /// Character type Mc.
+        /// This name is compatible with <see cref="System.Globalization.UnicodeCategory"/>'s name for this type.
+        /// </summary>
+        /// <seealso cref="CombiningSpacingMark"/>
+        /// <stable>ICU 2.1</stable>
+        SpacingCombiningMark = 8,
+
+        /// <summary>
+        /// Character type Nd.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        DecimalDigitNumber = 9,
+
+        /// <summary>
+        /// Character type Nl.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        LetterNumber = 10,
+
+        /// <summary>
+        /// Character type No.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        OtherNumber = 11,
+
+        /// <summary>
+        /// Character type Zs.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        SpaceSeparator = 12,
+
+        /// <summary>
+        /// Character type Zl.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        LineSeparator = 13,
+
+        /// <summary>
+        /// Character type Zp.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        ParagraphSeparator = 14,
+
+        /// <summary>
+        /// Character type Cc.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        Control = 15,
+
+        /// <summary>
+        /// Character type Cf.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        Format = 16,
+
+        /// <summary>
+        /// Character type Co.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        PrivateUse = 17,
+
+        /// <summary>
+        /// Character type Cs.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        Surrogate = 18,
+
+        /// <summary>
+        /// Character type Pd.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        DashPunctuation = 19,
+
+        /// <summary>
+        /// Character type Ps.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        OpenPunctuation = 20,
+
+        /// <summary>
+        /// Character type Pe.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        ClosePunctuation = 21,
+
+        /// <summary>
+        /// Character type Pc.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        ConnectorPunctuation = 22,
+
+        /// <summary>
+        /// Character type Po.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        OtherPunctuation = 23,
+
+        /// <summary>
+        /// Character type Sm.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        MathSymbol = 24,
+
+        /// <summary>
+        /// Character type Sc.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        CurrencySymbol = 25,
+
+        /// <summary>
+        /// Character type Sk.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        ModifierSymbol = 26,
+
+        /// <summary>
+        /// Character type So.
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        OtherSymbol = 27,
+
+        /// <summary>
+        /// Character type Pi.
+        /// </summary>
+        /// <seealso cref="InitialQuotePunctuation"/>
+        /// <stable>ICU 2.1</stable>
+        InitialPunctuation = 28,
+
+        /// <summary>
+        /// Character type Pi.
+        /// This name is compatible with <see cref="System.Globalization.UnicodeCategory"/>'s name for this type.
+        /// </summary>
+        /// <seealso cref="InitialPunctuation"/>
+        /// <stable>ICU 2.8</stable>
+        InitialQuotePunctuation = 28,
+
+        /// <summary>
+        /// Character type Pf.
+        /// </summary>
+        /// <seealso cref="FinalQuotePunctuation"/>
+        /// <stable>ICU 2.1</stable>
+        FinalPunctuation = 29,
+
+        /// <summary>
+        /// Character type Pf.
+        /// This name is compatible with <see cref="System.Globalization.UnicodeCategory"/>'s name for this type.
+        /// </summary>
+        /// <seealso cref="FinalPunctuation"/>
+        /// <stable>ICU 2.8</stable>
+        FinalQuotePunctuation = 29,
+    }
+
+    /// <summary>
+    /// Extension methods for <see cref="UCharacterCategory"/>.
+    /// </summary>
+    public static class UCharacterCategoryExtensions
+    {
+        /// <summary>
+        /// Gets the name of the argument category.
+        /// </summary>
+        /// <param name="category">Category to retrieve name.</param>
+        /// <returns>Category name.</returns>
+        /// <stable>ICU 2.1</stable>
+        // ICU4N NOTE: Since ToString() cannot be changed from the default on an Enum,
+        // we have renamed this method AsString().
+        public static string AsString(this UCharacterCategory category)
         {
             switch (category)
             {
-                case UnicodeCategory.UppercaseLetter:
+                case UCharacterCategory.UppercaseLetter:
                     return "Letter, Uppercase";
-                case UnicodeCategory.LowercaseLetter:
+                case UCharacterCategory.LowercaseLetter:
                     return "Letter, Lowercase";
-                case UnicodeCategory.TitlecaseLetter:
+                case UCharacterCategory.TitlecaseLetter:
                     return "Letter, Titlecase";
-                case UnicodeCategory.ModifierLetter:
+                case UCharacterCategory.ModifierLetter:
                     return "Letter, Modifier";
-                case UnicodeCategory.OtherLetter:
+                case UCharacterCategory.OtherLetter:
                     return "Letter, Other";
-                case UnicodeCategory.NonSpacingMark:
+                case UCharacterCategory.NonSpacingMark:
                     return "Mark, Non-Spacing";
-                case UnicodeCategory.EnclosingMark:
+                case UCharacterCategory.EnclosingMark:
                     return "Mark, Enclosing";
-                case UnicodeCategory.SpacingCombiningMark:
+                case UCharacterCategory.SpacingCombiningMark:
                     return "Mark, Spacing Combining";
-                case UnicodeCategory.DecimalDigitNumber:
+                case UCharacterCategory.DecimalDigitNumber:
                     return "Number, Decimal Digit";
-                case UnicodeCategory.LetterNumber:
+                case UCharacterCategory.LetterNumber:
                     return "Number, Letter";
-                case UnicodeCategory.OtherNumber:
+                case UCharacterCategory.OtherNumber:
                     return "Number, Other";
-                case UnicodeCategory.SpaceSeparator:
+                case UCharacterCategory.SpaceSeparator:
                     return "Separator, Space";
-                case UnicodeCategory.LineSeparator:
+                case UCharacterCategory.LineSeparator:
                     return "Separator, Line";
-                case UnicodeCategory.ParagraphSeparator:
+                case UCharacterCategory.ParagraphSeparator:
                     return "Separator, Paragraph";
-                case UnicodeCategory.Control:
+                case UCharacterCategory.Control:
                     return "Other, Control";
-                case UnicodeCategory.Format:
+                case UCharacterCategory.Format:
                     return "Other, Format";
-                case UnicodeCategory.PrivateUse:
+                case UCharacterCategory.PrivateUse:
                     return "Other, Private Use";
-                case UnicodeCategory.Surrogate:
+                case UCharacterCategory.Surrogate:
                     return "Other, Surrogate";
-                case UnicodeCategory.DashPunctuation:
+                case UCharacterCategory.DashPunctuation:
                     return "Punctuation, Dash";
-                case UnicodeCategory.OpenPunctuation:
+                case UCharacterCategory.OpenPunctuation:
                     return "Punctuation, Open";
-                case UnicodeCategory.ClosePunctuation:
+                case UCharacterCategory.ClosePunctuation:
                     return "Punctuation, Close";
-                case UnicodeCategory.ConnectorPunctuation:
+                case UCharacterCategory.ConnectorPunctuation:
                     return "Punctuation, Connector";
-                case UnicodeCategory.OtherPunctuation:
+                case UCharacterCategory.OtherPunctuation:
                     return "Punctuation, Other";
-                case UnicodeCategory.MathSymbol:
+                case UCharacterCategory.MathSymbol:
                     return "Symbol, Math";
-                case UnicodeCategory.CurrencySymbol:
+                case UCharacterCategory.CurrencySymbol:
                     return "Symbol, Currency";
-                case UnicodeCategory.ModifierSymbol:
+                case UCharacterCategory.ModifierSymbol:
                     return "Symbol, Modifier";
-                case UnicodeCategory.OtherSymbol:
+                case UCharacterCategory.OtherSymbol:
                     return "Symbol, Other";
-                case UnicodeCategory.InitialQuotePunctuation:
+                case UCharacterCategory.InitialQuotePunctuation:
                     return "Punctuation, Initial quote";
-                case UnicodeCategory.FinalQuotePunctuation:
+                case UCharacterCategory.FinalQuotePunctuation:
                     return "Punctuation, Final quote";
                 default:
                     return "Unassigned";
             }
         }
 
-        public static readonly int CHAR_CATEGORY_COUNT;
-
-        static UCharacterCategory()
+        /// <summary>
+        /// Converts a <see cref="UCharacterCategory"/> to an <see cref="int"/>.
+        /// Same as <c>(int)<paramref name="characterCategory"/></c>.
+        /// </summary>
+        /// <param name="characterCategory">This <see cref="UCharacterCategory"/>.</param>
+        /// <returns>This category as <see cref="int"/>.</returns>
+        public static int ToInt32(this UCharacterCategory characterCategory) // ICU4N TODO: Add this extension to all main enums
         {
-            CHAR_CATEGORY_COUNT = Enum.GetNames(typeof(UnicodeCategory)).Length;
+            return (int)characterCategory;
         }
 
-
-        //public static string ToString(ECharacterCategory category)
-        //{
-        //    switch (category)
-        //    {
-        //        case ECharacterCategory.UppercaseLetter:
-        //            return "Letter, Uppercase";
-        //        case ECharacterCategory.LowercaseLetter:
-        //            return "Letter, Lowercase";
-        //        case ECharacterCategory.TitleCaseLetter:
-        //            return "Letter, Titlecase";
-        //        case ECharacterCategory.ModifierLetter:
-        //            return "Letter, Modifier";
-        //        case ECharacterCategory.OtherLetter:
-        //            return "Letter, Other";
-        //        case ECharacterCategory.NonSpacingMark:
-        //            return "Mark, Non-Spacing";
-        //        case ECharacterCategory.EnclosingMark:
-        //            return "Mark, Enclosing";
-        //        case ECharacterCategory.CombiningSpacingMark:
-        //            return "Mark, Spacing Combining";
-        //        case ECharacterCategory.DecimalDigitNumber:
-        //            return "Number, Decimal Digit";
-        //        case ECharacterCategory.LetterNumber:
-        //            return "Number, Letter";
-        //        case ECharacterCategory.OtherNumber:
-        //            return "Number, Other";
-        //        case ECharacterCategory.SpaceSeparator:
-        //            return "Separator, Space";
-        //        case ECharacterCategory.LineSeparator:
-        //            return "Separator, Line";
-        //        case ECharacterCategory.ParagraphSeparator:
-        //            return "Separator, Paragraph";
-        //        case ECharacterCategory.Control:
-        //            return "Other, Control";
-        //        case ECharacterCategory.Format:
-        //            return "Other, Format";
-        //        case ECharacterCategory.PrivateUse:
-        //            return "Other, Private Use";
-        //        case ECharacterCategory.Surrogate:
-        //            return "Other, Surrogate";
-        //        case ECharacterCategory.DashPunctuation:
-        //            return "Punctuation, Dash";
-        //        case ECharacterCategory.StartPunctuation:
-        //            return "Punctuation, Open";
-        //        case ECharacterCategory.EndPunctuation:
-        //            return "Punctuation, Close";
-        //        case ECharacterCategory.ConnectorPunctuation:
-        //            return "Punctuation, Connector";
-        //        case ECharacterCategory.OtherPunctuation:
-        //            return "Punctuation, Other";
-        //        case ECharacterCategory.MathSymbol:
-        //            return "Symbol, Math";
-        //        case ECharacterCategory.CurrencySymbol:
-        //            return "Symbol, Currency";
-        //        case ECharacterCategory.ModifierSymbol:
-        //            return "Symbol, Modifier";
-        //        case ECharacterCategory.OtherSymbol:
-        //            return "Symbol, Other";
-        //        case ECharacterCategory.InitialPunctuation:
-        //            return "Punctuation, Initial quote";
-        //        case ECharacterCategory.FinalPunctuation:
-        //            return "Punctuation, Final quote";
-        //        default:
-        //            return "Unassigned";
-        //    }
-        //}
+        /// <summary>
+        /// One more than the highest normal <see cref="UCharacterCategory"/> value.
+        /// This numeric value is stable (will not change), see
+        /// <a href="http://www.unicode.org/policies/stability_policy.html#Property_Value">
+        /// http://www.unicode.org/policies/stability_policy.html#Property_Value</a>
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        public const int CharCategoryCount = 30;
     }
 }

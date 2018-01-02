@@ -2399,7 +2399,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int count;
             int/*unsigned*/ cc, trailCC, foldCC, foldTrailCC;
             NormalizerQuickCheckResult qcResult;
-            UnicodeCategory category;
+            UCharacterCategory category;
             bool isNFD;
 
 
@@ -2409,7 +2409,7 @@ namespace ICU4N.Dev.Test.Normalizers
             for (c = 0; c <= 0x10ffff; ++c)
             {
                 category = UCharacter.GetType(c);
-                if (category == UnicodeCategory.OtherNotAssigned)
+                if (category == UCharacterCategory.OtherNotAssigned)
                 {
                     continue; // skip unassigned code points
                 }

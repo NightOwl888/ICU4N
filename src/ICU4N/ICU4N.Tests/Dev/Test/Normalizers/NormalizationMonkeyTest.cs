@@ -96,7 +96,7 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 int codepoint = random.Next(maxCodePoint);
                 //Elimate unassigned characters
-                while (UCharacter.GetType(codepoint) == UnicodeCategory.OtherNotAssigned)
+                while (UCharacter.GetType(codepoint) == UCharacterCategory.OtherNotAssigned)
                 {
                     codepoint = random.Next(maxCodePoint);
                 }

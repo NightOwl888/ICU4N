@@ -2351,7 +2351,7 @@ namespace ICU4N.Dev.Test.Rbbi
                             {
                                 c = UTF16.CharAt(testText, ci);
                                 appendCharToBuf(errorText, c, 11);
-                                String gc = UCharacter.GetPropertyValueName(UProperty.General_Category, UCharacter.GetType(c).ToIcuValue(), NameChoice.Short);
+                                String gc = UCharacter.GetPropertyValueName(UProperty.General_Category, UCharacter.GetType(c).ToInt32(), NameChoice.Short);
                                 appendToBuf(errorText, gc, 8);
                                 int extraProp = UCharacter.GetInt32PropertyValue(c, mk.fCharProperty);
                                 String extraPropValue =

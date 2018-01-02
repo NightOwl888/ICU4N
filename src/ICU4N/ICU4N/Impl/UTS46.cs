@@ -503,11 +503,11 @@ namespace ICU4N.Impl
         }
         private static int U_GET_GC_MASK(int c)
         {
-            return (1 << UCharacter.GetType(c).ToIcuValue());
+            return (1 << UCharacter.GetType(c).ToInt32());
         }
         private static int U_GC_M_MASK =
-            U_MASK(UnicodeCategory.NonSpacingMark.ToIcuValue()) |
-            U_MASK(UnicodeCategory.EnclosingMark.ToIcuValue()) |
-            U_MASK(UnicodeCategory.SpacingCombiningMark.ToIcuValue());
+            U_MASK(UCharacterCategory.NonSpacingMark.ToInt32()) |
+            U_MASK(UCharacterCategory.EnclosingMark.ToInt32()) |
+            U_MASK(UCharacterCategory.SpacingCombiningMark.ToInt32());
     }
 }

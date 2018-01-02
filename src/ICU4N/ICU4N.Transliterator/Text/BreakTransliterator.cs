@@ -63,14 +63,14 @@ namespace ICU4N.Text
         ///CLOVER:ON
 
         internal static readonly int LETTER_OR_MARK_MASK =
-              (1 << UnicodeCategory.UppercaseLetter.ToIcuValue())
-            | (1 << UnicodeCategory.LowercaseLetter.ToIcuValue())
-            | (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue())
-            | (1 << UnicodeCategory.ModifierLetter.ToIcuValue())
-            | (1 << UnicodeCategory.OtherLetter.ToIcuValue())
-            | (1 << UnicodeCategory.SpacingCombiningMark.ToIcuValue())
-            | (1 << UnicodeCategory.NonSpacingMark.ToIcuValue())
-            | (1 << UnicodeCategory.EnclosingMark.ToIcuValue())
+              (1 << UCharacterCategory.UppercaseLetter.ToInt32())
+            | (1 << UCharacterCategory.LowercaseLetter.ToInt32())
+            | (1 << UCharacterCategory.TitlecaseLetter.ToInt32())
+            | (1 << UCharacterCategory.ModifierLetter.ToInt32())
+            | (1 << UCharacterCategory.OtherLetter.ToInt32())
+            | (1 << UCharacterCategory.SpacingCombiningMark.ToInt32())
+            | (1 << UCharacterCategory.NonSpacingMark.ToInt32())
+            | (1 << UCharacterCategory.EnclosingMark.ToInt32())
             ;
 
         protected override void HandleTransliterate(IReplaceable text, Position pos, bool incremental)
@@ -98,12 +98,12 @@ namespace ICU4N.Text
                     // HACK: Check to see that preceeding item was a letter
 
                     int cp = UTF16.CharAt(text, boundary - 1);
-                    int type = UCharacter.GetType(cp).ToIcuValue();
+                    int type = UCharacter.GetType(cp).ToInt32();
                     //System.out.println(Integer.toString(cp,16) + " (before): " + type);
                     if (((1 << type) & LETTER_OR_MARK_MASK) == 0) continue;
 
                     cp = UTF16.CharAt(text, boundary);
-                    type = UCharacter.GetType(cp).ToIcuValue();
+                    type = UCharacter.GetType(cp).ToInt32();
                     //System.out.println(Integer.toString(cp,16) + " (after): " + type);
                     if (((1 << type) & LETTER_OR_MARK_MASK) == 0) continue;
 

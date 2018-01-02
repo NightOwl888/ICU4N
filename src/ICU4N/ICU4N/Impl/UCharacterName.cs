@@ -1235,22 +1235,22 @@ namespace ICU4N.Impl
         /// Not a character type
         /// </summary>
         private static readonly int NON_CHARACTER_
-                                        = UCharacterCategory.CHAR_CATEGORY_COUNT;
+                                        = UCharacterCategoryExtensions.CharCategoryCount;
         /// <summary>
         /// Lead surrogate type
         /// </summary>
         private static readonly int LEAD_SURROGATE_
-                                      = UCharacterCategory.CHAR_CATEGORY_COUNT + 1;
+                                      = UCharacterCategoryExtensions.CharCategoryCount + 1;
         /// <summary>
         /// Trail surrogate type
         /// </summary>
         private static readonly int TRAIL_SURROGATE_
-                                      = UCharacterCategory.CHAR_CATEGORY_COUNT + 2;
+                                      = UCharacterCategoryExtensions.CharCategoryCount + 2;
         /// <summary>
         /// Extended category count
         /// </summary>
         static readonly int EXTENDED_CATEGORY_
-                                      = UCharacterCategory.CHAR_CATEGORY_COUNT + 3;
+                                      = UCharacterCategoryExtensions.CharCategoryCount + 3;
 
         // private constructor ------------------------------------------------
 
@@ -1435,8 +1435,8 @@ namespace ICU4N.Impl
                 // not a character we return a invalid category count
                 return NON_CHARACTER_;
             }
-            int result = UCharacter.GetType(ch).ToIcuValue();
-            if (result == UnicodeCategory.Surrogate.ToIcuValue())
+            int result = UCharacter.GetType(ch).ToInt32();
+            if (result == UCharacterCategory.Surrogate.ToInt32())
             {
                 if (ch <= UTF16.LEAD_SURROGATE_MAX_VALUE)
                 {

@@ -3179,7 +3179,7 @@ namespace ICU4N.Text
 
             public virtual bool Contains(int ch)
             {
-                return ((1 << UCharacter.GetType(ch).ToIcuValue()) & Mask) != 0;
+                return ((1 << UCharacter.GetType(ch).ToInt32()) & Mask) != 0;
             }
         }
 

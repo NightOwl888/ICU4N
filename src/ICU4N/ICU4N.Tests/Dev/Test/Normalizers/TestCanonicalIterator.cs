@@ -41,9 +41,9 @@ namespace ICU4N.Dev.Test.Normalizers
             {
 
                 // skip characters we know don't have decomps
-                UnicodeCategory type = UCharacter.GetType(i);
-                if (type == UnicodeCategory.OtherNotAssigned || type == UnicodeCategory.PrivateUse
-                    || type == UnicodeCategory.Surrogate) continue;
+                UCharacterCategory type = UCharacter.GetType(i);
+                if (type == UCharacterCategory.OtherNotAssigned || type == UCharacterCategory.PrivateUse
+                    || type == UCharacterCategory.Surrogate) continue;
 
                 if ((++counter % 5000) == 0) Logln("Testing " + Utility.Hex(i, 0));
 

@@ -61,22 +61,22 @@ namespace ICU4N.Dev.Test.Lang
                            "Punctuation, Initial quote",
                            "Punctuation, Final quote"};
 
-            for (int i = UnicodeCategory.OtherNotAssigned.ToIcuValue();
-                     i < UCharacterCategory.CHAR_CATEGORY_COUNT; i++)
+            for (int i = UCharacterCategory.OtherNotAssigned.ToInt32();
+                     i < UCharacterCategoryExtensions.CharCategoryCount; i++)
             {
-                if (!UCharacterCategory.ToString(UnicodeCategoryConvert.FromIcuValue(i)).Equals(name[i]))
+                if (!((UCharacterCategory)i).AsString().Equals(name[i]))
                 {
                     Errln("Error toString for category " + i + " expected " +
                           name[i]);
                 }
             }
 
-            foreach (UnicodeCategory category in Enum.GetValues(typeof(UnicodeCategory)))
+            foreach (UCharacterCategory category in Enum.GetValues(typeof(UCharacterCategory)))
             {
-                if (!UCharacterCategory.ToString(category).Equals(name[category.ToIcuValue()]))
+                if (!category.AsString().Equals(name[category.ToInt32()]))
                 {
                     Errln("Error toString for category " + category + " expected " +
-                          name[category.ToIcuValue()]);
+                          name[category.ToInt32()]);
                 }
             }
         }

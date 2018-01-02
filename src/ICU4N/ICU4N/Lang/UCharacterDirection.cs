@@ -1,4 +1,4 @@
-﻿namespace ICU4N.Lang
+﻿namespace ICU4N.Lang // ICU4N TODO: Move to Globalization namespace
 {
     /// <summary>
     /// Enumerated Unicode character linguistic direction values.

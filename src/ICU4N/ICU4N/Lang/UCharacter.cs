@@ -121,6 +121,7 @@ namespace ICU4N.Lang
     /// <see cref="UCharacterDirection"/>
     // ICU4N TODO: API Move to root namespace and rename UChar (in .NET the type we are emulating is System.Char).
     // ICU4N TODO: API Add all members of System.Char to this class
+    // ICU4N TODO: API Merge Support.Character with this class
     public static partial class UCharacter // ICU4N specific - made class static because there are no instance members
     {
         // ICU4N specific - copy UNASSIGNED from UCharacterEnums.ECharacterCategory (since we cannot inherit via interface)
@@ -2826,9 +2827,9 @@ namespace ICU4N.Lang
         /// <param name="ch">Code point whose type is to be determined.</param>
         /// <returns>Category which is a value of <see cref="UCharacterCategory"/>.</returns>
         /// <stable>ICU 2.1</stable>
-        public static UnicodeCategory GetType(int ch) // ICU4N TODO: API - Rename GetUnicodeCategory() to cover Char, add overload for (string, int)
+        public static UCharacterCategory GetType(int ch) // ICU4N TODO: API - Rename GetUnicodeCategory() to cover Char, add overload for (string, int)
         {
-            return UnicodeCategoryConvert.FromIcuValue(UCharacterProperty.Instance.GetType(ch));
+            return (UCharacterCategory)UCharacterProperty.Instance.GetType(ch);
         }
 
         /// <summary>
@@ -2844,7 +2845,7 @@ namespace ICU4N.Lang
         public static bool IsDefined(int ch)
         {
             // ICU4N specific - need to check for the value, not 0
-            return GetType(ch) != UnicodeCategory.OtherNotAssigned;
+            return GetType(ch) != UCharacterCategory.OtherNotAssigned;
         }
 
         /// <summary>
@@ -2857,7 +2858,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.1</stable>
         public static bool IsDigit(int ch) // ICU4N TODO: API - to cover Char, add overload for (string, int)
         {
-            return GetType(ch) == UnicodeCategory.DecimalDigitNumber;
+            return GetType(ch) == UCharacterCategory.DecimalDigitNumber;
         }
 
         /// <summary>
@@ -2885,12 +2886,12 @@ namespace ICU4N.Lang
         public static bool IsLetter(int ch) // ICU4N TODO: API - to cover Char, add overload for (string, int)
         {
             // if props == 0, it will just fall through and return false
-            return ((1 << GetType(ch).ToIcuValue())
-                    & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.LowercaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.ModifierLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.OtherLetter.ToIcuValue()))) != 0;
+            return ((1 << GetType(ch).ToInt32())
+                    & ((1 << UCharacterCategory.UppercaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.LowercaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.TitlecaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.ModifierLetter.ToInt32())
+                            | (1 << UCharacterCategory.OtherLetter.ToInt32()))) != 0;
         }
 
         /// <summary>
@@ -2901,13 +2902,13 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.1</stable>
         public static bool IsLetterOrDigit(int ch) // ICU4N TODO: API - to cover Char, add overload for (string, int)
         {
-            return ((1 << GetType(ch).ToIcuValue())
-                    & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.LowercaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.ModifierLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.OtherLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.DecimalDigitNumber.ToIcuValue()))) != 0;
+            return ((1 << GetType(ch).ToInt32())
+                    & ((1 << UCharacterCategory.UppercaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.LowercaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.TitlecaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.ModifierLetter.ToInt32())
+                            | (1 << UCharacterCategory.OtherLetter.ToInt32())
+                            | (1 << UCharacterCategory.DecimalDigitNumber.ToInt32()))) != 0;
         }
 
         // ICU4N: We definitely don't need any of the Java.. functions. 
@@ -2938,7 +2939,7 @@ namespace ICU4N.Lang
         public static bool IsLowerCase(int ch) 
         {
             // if props == 0, it will just fall through and return false
-            return GetType(ch) == UnicodeCategory.LowercaseLetter;
+            return GetType(ch) == UCharacterCategory.LowercaseLetter;
         }
 
         /// <summary>
@@ -2998,10 +2999,10 @@ namespace ICU4N.Lang
         {
             // exclude no-break spaces
             // if props == 0, it will just fall through and return false
-            return ((1 << GetType(ch).ToIcuValue()) &
-                    ((1 << UnicodeCategory.SpaceSeparator.ToIcuValue())
-                            | (1 << UnicodeCategory.LineSeparator.ToIcuValue())
-                            | (1 << UnicodeCategory.ParagraphSeparator.ToIcuValue()))) != 0
+            return ((1 << (int)GetType(ch)) &
+                    ((1 << (int)UCharacterCategory.SpaceSeparator)
+                            | (1 << (int)UCharacterCategory.LineSeparator)
+                            | (1 << (int)UCharacterCategory.ParagraphSeparator))) != 0
                             && (ch != NO_BREAK_SPACE_) && (ch != FIGURE_SPACE_) && (ch != NARROW_NO_BREAK_SPACE_)
                             // TAB VT LF FF CR FS GS RS US NL are all control characters
                             // that are white spaces.
@@ -3019,9 +3020,9 @@ namespace ICU4N.Lang
         public static bool IsSpaceChar(int ch)
         {
             // if props == 0, it will just fall through and return false
-            return ((1 << GetType(ch).ToIcuValue()) & ((1 << UnicodeCategory.SpaceSeparator.ToIcuValue())
-                    | (1 << UnicodeCategory.LineSeparator.ToIcuValue())
-                    | (1 << UnicodeCategory.ParagraphSeparator.ToIcuValue())))
+            return ((1 << GetType(ch).ToInt32()) & ((1 << UCharacterCategory.SpaceSeparator.ToInt32())
+                    | (1 << UCharacterCategory.LineSeparator.ToInt32())
+                    | (1 << UCharacterCategory.ParagraphSeparator.ToInt32())))
                     != 0;
         }
 
@@ -3043,7 +3044,7 @@ namespace ICU4N.Lang
         public static bool IsTitleCase(int ch)
         {
             // if props == 0, it will just fall through and return false
-            return GetType(ch) == UnicodeCategory.TitlecaseLetter;
+            return GetType(ch) == UCharacterCategory.TitlecaseLetter;
         }
 
         /// <summary>
@@ -3080,17 +3081,17 @@ namespace ICU4N.Lang
         {
             // if props == 0, it will just fall through and return false
             // cat == format
-            return ((1 << GetType(ch).ToIcuValue())
-                    & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.LowercaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.ModifierLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.OtherLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.LetterNumber.ToIcuValue())
-                            | (1 << UnicodeCategory.ConnectorPunctuation.ToIcuValue())
-                            | (1 << UnicodeCategory.DecimalDigitNumber.ToIcuValue())
-                            | (1 << UnicodeCategory.SpacingCombiningMark.ToIcuValue())
-                            | (1 << UnicodeCategory.NonSpacingMark.ToIcuValue()))) != 0
+            return ((1 << GetType(ch).ToInt32())
+                    & ((1 << UCharacterCategory.UppercaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.LowercaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.TitlecaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.ModifierLetter.ToInt32())
+                            | (1 << UCharacterCategory.OtherLetter.ToInt32())
+                            | (1 << UCharacterCategory.LetterNumber.ToInt32())
+                            | (1 << UCharacterCategory.ConnectorPunctuation.ToInt32())
+                            | (1 << UCharacterCategory.DecimalDigitNumber.ToInt32())
+                            | (1 << UCharacterCategory.SpacingCombiningMark.ToInt32())
+                            | (1 << UCharacterCategory.NonSpacingMark.ToInt32()))) != 0
                             || IsIdentifierIgnorable(ch);
         }
 
@@ -3121,13 +3122,13 @@ namespace ICU4N.Lang
         {
             /*int cat = getType(ch);*/
             // if props == 0, it will just fall through and return false
-            return ((1 << GetType(ch).ToIcuValue())
-                    & ((1 << UnicodeCategory.UppercaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.LowercaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.TitlecaseLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.ModifierLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.OtherLetter.ToIcuValue())
-                            | (1 << UnicodeCategory.LetterNumber.ToIcuValue()))) != 0;
+            return ((1 << GetType(ch).ToInt32())
+                    & ((1 << UCharacterCategory.UppercaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.LowercaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.TitlecaseLetter.ToInt32())
+                            | (1 << UCharacterCategory.ModifierLetter.ToInt32())
+                            | (1 << UCharacterCategory.OtherLetter.ToInt32())
+                            | (1 << UCharacterCategory.LetterNumber.ToInt32()))) != 0;
         }
 
         /// <summary>
@@ -3158,7 +3159,7 @@ namespace ICU4N.Lang
                         && !((ch >= 0x9 && ch <= 0xd)
                                 || (ch >= 0x1c && ch <= 0x1f));
             }
-            return GetType(ch) == UnicodeCategory.Format;
+            return GetType(ch) == UCharacterCategory.Format;
         }
 
         /// <summary>
@@ -3185,7 +3186,7 @@ namespace ICU4N.Lang
         public static bool IsUpperCase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
         {
             // if props == 0, it will just fall through and return false
-            return GetType(ch) == UnicodeCategory.UppercaseLetter;
+            return GetType(ch) == UCharacterCategory.UppercaseLetter;
         }
 
         /// <summary>
@@ -3337,13 +3338,13 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.1</stable>
         public static bool IsPrintable(int ch)
         {
-            UnicodeCategory cat = GetType(ch);
+            UCharacterCategory cat = GetType(ch);
             // if props == 0, it will just fall through and return false
-            return (cat != UnicodeCategory.OtherNotAssigned &&
-                    cat != UnicodeCategory.Control &&
-                    cat != UnicodeCategory.Format &&
-                    cat != UnicodeCategory.PrivateUse &&
-                    cat != UnicodeCategory.Surrogate);
+            return (cat != UCharacterCategory.OtherNotAssigned &&
+                    cat != UCharacterCategory.Control &&
+                    cat != UCharacterCategory.Format &&
+                    cat != UCharacterCategory.PrivateUse &&
+                    cat != UCharacterCategory.Surrogate);
         }
 
         /// <icu/>
@@ -3357,19 +3358,19 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.1</stable>
         public static bool IsBaseForm(int ch)
         {
-            UnicodeCategory cat = GetType(ch);
+            UCharacterCategory cat = GetType(ch);
             // if props == 0, it will just fall through and return false
-            return cat == UnicodeCategory.DecimalDigitNumber ||
-                    cat == UnicodeCategory.OtherNumber ||
-                    cat == UnicodeCategory.LetterNumber ||
-                    cat == UnicodeCategory.UppercaseLetter ||
-                    cat == UnicodeCategory.LowercaseLetter ||
-                    cat == UnicodeCategory.TitlecaseLetter ||
-                    cat == UnicodeCategory.ModifierLetter ||
-                    cat == UnicodeCategory.OtherLetter ||
-                    cat == UnicodeCategory.NonSpacingMark ||
-                    cat == UnicodeCategory.EnclosingMark ||
-                    cat == UnicodeCategory.SpacingCombiningMark;
+            return cat == UCharacterCategory.DecimalDigitNumber ||
+                    cat == UCharacterCategory.OtherNumber ||
+                    cat == UCharacterCategory.LetterNumber ||
+                    cat == UCharacterCategory.UppercaseLetter ||
+                    cat == UCharacterCategory.LowercaseLetter ||
+                    cat == UCharacterCategory.TitlecaseLetter ||
+                    cat == UCharacterCategory.ModifierLetter ||
+                    cat == UCharacterCategory.OtherLetter ||
+                    cat == UCharacterCategory.NonSpacingMark ||
+                    cat == UCharacterCategory.EnclosingMark ||
+                    cat == UCharacterCategory.SpacingCombiningMark;
         }
 
         /// <icu/>
