@@ -1557,7 +1557,7 @@ namespace ICU4N.Impl
                     {
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.TRANSPARENT)
+                        if (type == UCharacter.JoiningType.Transparent)
                         {
                             if (j == 0)
                             {
@@ -1566,7 +1566,7 @@ namespace ICU4N.Impl
                             c = Character.CodePointBefore(label, j);
                             j -= Character.CharCount(c);
                         }
-                        else if (type == UCharacter.JoiningType.LEFT_JOINING || type == UCharacter.JoiningType.DUAL_JOINING)
+                        else if (type == UCharacter.JoiningType.LeftJoining || type == UCharacter.JoiningType.DualJoining)
                         {
                             break;  // precontext fulfilled
                         }
@@ -1586,11 +1586,11 @@ namespace ICU4N.Impl
                         j += Character.CharCount(c);
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.TRANSPARENT)
+                        if (type == UCharacter.JoiningType.Transparent)
                         {
                             // just skip this character
                         }
-                        else if (type == UCharacter.JoiningType.RIGHT_JOINING || type == UCharacter.JoiningType.DUAL_JOINING)
+                        else if (type == UCharacter.JoiningType.RightJoining || type == UCharacter.JoiningType.DualJoining)
                         {
                             break;  // postcontext fulfilled
                         }
@@ -1652,7 +1652,7 @@ namespace ICU4N.Impl
                     {
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.TRANSPARENT)
+                        if (type == UCharacter.JoiningType.Transparent)
                         {
                             if (j == 0)
                             {
@@ -1661,7 +1661,7 @@ namespace ICU4N.Impl
                             c = Character.CodePointBefore(label, j);
                             j -= Character.CharCount(c);
                         }
-                        else if (type == UCharacter.JoiningType.LEFT_JOINING || type == UCharacter.JoiningType.DUAL_JOINING)
+                        else if (type == UCharacter.JoiningType.LeftJoining || type == UCharacter.JoiningType.DualJoining)
                         {
                             break;  // precontext fulfilled
                         }
@@ -1681,11 +1681,11 @@ namespace ICU4N.Impl
                         j += Character.CharCount(c);
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.TRANSPARENT)
+                        if (type == UCharacter.JoiningType.Transparent)
                         {
                             // just skip this character
                         }
-                        else if (type == UCharacter.JoiningType.RIGHT_JOINING || type == UCharacter.JoiningType.DUAL_JOINING)
+                        else if (type == UCharacter.JoiningType.RightJoining || type == UCharacter.JoiningType.DualJoining)
                         {
                             break;  // postcontext fulfilled
                         }
@@ -1747,7 +1747,7 @@ namespace ICU4N.Impl
                     {
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.TRANSPARENT)
+                        if (type == UCharacter.JoiningType.Transparent)
                         {
                             if (j == 0)
                             {
@@ -1756,7 +1756,7 @@ namespace ICU4N.Impl
                             c = Character.CodePointBefore(label, j);
                             j -= Character.CharCount(c);
                         }
-                        else if (type == UCharacter.JoiningType.LEFT_JOINING || type == UCharacter.JoiningType.DUAL_JOINING)
+                        else if (type == UCharacter.JoiningType.LeftJoining || type == UCharacter.JoiningType.DualJoining)
                         {
                             break;  // precontext fulfilled
                         }
@@ -1776,11 +1776,11 @@ namespace ICU4N.Impl
                         j += Character.CharCount(c);
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.TRANSPARENT)
+                        if (type == UCharacter.JoiningType.Transparent)
                         {
                             // just skip this character
                         }
-                        else if (type == UCharacter.JoiningType.RIGHT_JOINING || type == UCharacter.JoiningType.DUAL_JOINING)
+                        else if (type == UCharacter.JoiningType.RightJoining || type == UCharacter.JoiningType.DualJoining)
                         {
                             break;  // postcontext fulfilled
                         }
@@ -1842,7 +1842,7 @@ namespace ICU4N.Impl
                     {
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.TRANSPARENT)
+                        if (type == UCharacter.JoiningType.Transparent)
                         {
                             if (j == 0)
                             {
@@ -1851,7 +1851,7 @@ namespace ICU4N.Impl
                             c = Character.CodePointBefore(label, j);
                             j -= Character.CharCount(c);
                         }
-                        else if (type == UCharacter.JoiningType.LEFT_JOINING || type == UCharacter.JoiningType.DUAL_JOINING)
+                        else if (type == UCharacter.JoiningType.LeftJoining || type == UCharacter.JoiningType.DualJoining)
                         {
                             break;  // precontext fulfilled
                         }
@@ -1871,11 +1871,11 @@ namespace ICU4N.Impl
                         j += Character.CharCount(c);
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.TRANSPARENT)
+                        if (type == UCharacter.JoiningType.Transparent)
                         {
                             // just skip this character
                         }
-                        else if (type == UCharacter.JoiningType.RIGHT_JOINING || type == UCharacter.JoiningType.DUAL_JOINING)
+                        else if (type == UCharacter.JoiningType.RightJoining || type == UCharacter.JoiningType.DualJoining)
                         {
                             break;  // postcontext fulfilled
                         }

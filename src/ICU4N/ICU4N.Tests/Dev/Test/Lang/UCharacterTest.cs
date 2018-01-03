@@ -556,7 +556,7 @@ namespace ICU4N.Dev.Test.Lang
                         Errln("getMirror() does not roundtrip: U+" + Hex(start) + "->U+" + Hex(c2) + "->U+" + Hex(c3));
                     }
                     c3 = UCharacter.GetBidiPairedBracket(start);
-                    if (UCharacter.GetInt32PropertyValue(start, UProperty.Bidi_Paired_Bracket_Type) == UCharacter.BidiPairedBracketType.NONE)
+                    if (UCharacter.GetInt32PropertyValue(start, UProperty.Bidi_Paired_Bracket_Type) == UCharacter.BidiPairedBracketType.None)
                     {
                         if (c3 != start)
                         {
@@ -814,11 +814,11 @@ namespace ICU4N.Dev.Test.Lang
                         /* no decomposition, except UnicodeData.txt omits Hangul syllable decompositions */
                         if (ch == 0xac00 || ch == 0xd7a3)
                         {
-                            dt = UCharacter.DecompositionType.CANONICAL;
+                            dt = UCharacter.DecompositionType.Canonical;
                         }
                         else
                         {
-                            dt = UCharacter.DecompositionType.NONE;
+                            dt = UCharacter.DecompositionType.None;
                         }
                     }
                     else
@@ -837,11 +837,11 @@ namespace ICU4N.Dev.Test.Lang
                         }
                         else
                         {
-                            dt = UCharacter.DecompositionType.CANONICAL;
+                            dt = UCharacter.DecompositionType.Canonical;
                         }
                     }
                     String dm;
-                    if (dt > UCharacter.DecompositionType.NONE)
+                    if (dt > UCharacter.DecompositionType.None)
                     {
                         if (ch == 0xac00)
                         {
@@ -881,7 +881,7 @@ namespace ICU4N.Dev.Test.Lang
                             String.Format("error: nfkc.getRawDecomposition(U+{0:X4}) is wrong", ch),
                             dm, mapping);
                     /* For canonical decompositions only, expect Decomposition_Mapping=nfc.getRawDecomposition(c). */
-                    if (dt != UCharacter.DecompositionType.CANONICAL)
+                    if (dt != UCharacter.DecompositionType.Canonical)
                     {
                         dm = null;
                     }
@@ -890,7 +890,7 @@ namespace ICU4N.Dev.Test.Lang
                             String.Format("error: nfc.getRawDecomposition(U+{0:X4}) is wrong", ch),
                             dm, mapping);
                     /* recompose */
-                    if (dt == UCharacter.DecompositionType.CANONICAL
+                    if (dt == UCharacter.DecompositionType.Canonical
                             && !UCharacter.HasBinaryProperty(ch, UProperty.Full_Composition_Exclusion))
                     {
                         int a = dm.CodePointAt(0);
@@ -2134,122 +2134,122 @@ namespace ICU4N.Dev.Test.Lang
                 /* (int)UProperty.CANONICAL_COMBINING_CLASS tested for assigned characters in TestUnicodeData() */
                 new int[] { 0xd7d7, (int)UProperty.Canonical_Combining_Class, 0 },
 
-                new int[] { 0x00A0, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.NOBREAK },
-                new int[] { 0x00A8, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.COMPAT },
-                new int[] { 0x00bf, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.NONE },
-                new int[] { 0x00c0, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.CANONICAL },
-                new int[] { 0x1E9B, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.CANONICAL },
-                new int[] { 0xBCDE, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.CANONICAL },
-                new int[] { 0xFB5D, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.MEDIAL },
-                new int[] { 0x1D736, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.FONT },
-                new int[] { 0xe0033, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.NONE },
+                new int[] { 0x00A0, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.NoBreak },
+                new int[] { 0x00A8, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Compat },
+                new int[] { 0x00bf, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.None },
+                new int[] { 0x00c0, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Canonical },
+                new int[] { 0x1E9B, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Canonical },
+                new int[] { 0xBCDE, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Canonical },
+                new int[] { 0xFB5D, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Medial },
+                new int[] { 0x1D736, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Font },
+                new int[] { 0xe0033, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.None },
 
-                new int[] { 0x0009, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.NEUTRAL },
-                new int[] { 0x0020, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.NARROW },
-                new int[] { 0x00B1, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.AMBIGUOUS },
-                new int[] { 0x20A9, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.HALFWIDTH },
-                new int[] { 0x2FFB, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x3000, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.FULLWIDTH },
-                new int[] { 0x35bb, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x58bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0xD7A3, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0xEEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.AMBIGUOUS },
-                new int[] { 0x1D198, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.NEUTRAL },
-                new int[] { 0x20000, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x2F8C7, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x3a5bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.WIDE },
-                new int[] { 0x5a5bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.NEUTRAL },
-                new int[] { 0xFEEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.AMBIGUOUS },
-                new int[] { 0x10EEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.AMBIGUOUS },
+                new int[] { 0x0009, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Neutral },
+                new int[] { 0x0020, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Narrow },
+                new int[] { 0x00B1, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Ambiguous },
+                new int[] { 0x20A9, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.HalfWidth },
+                new int[] { 0x2FFB, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
+                new int[] { 0x3000, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.FullWidth },
+                new int[] { 0x35bb, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
+                new int[] { 0x58bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
+                new int[] { 0xD7A3, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
+                new int[] { 0xEEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Ambiguous },
+                new int[] { 0x1D198, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Neutral },
+                new int[] { 0x20000, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
+                new int[] { 0x2F8C7, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
+                new int[] { 0x3a5bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
+                new int[] { 0x5a5bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Neutral },
+                new int[] { 0xFEEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Ambiguous },
+                new int[] { 0x10EEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Ambiguous },
 
                 /* (int)UProperty.GENERAL_CATEGORY tested for assigned characters in TestUnicodeData() */
                 new int[] { 0xd7c7, (int)UProperty.General_Category, 0 },
                 new int[] { 0xd7d7, (int)UProperty.General_Category, UCharacterCategory.OtherLetter.ToInt32() },     /* changed in Unicode 5.2 */
 
-                new int[] { 0x0444, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NO_JOINING_GROUP },
-                new int[] { 0x0639, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.AIN },
-                new int[] { 0x072A, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.DALATH_RISH },
-                new int[] { 0x0647, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.HEH },
-                new int[] { 0x06C1, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.HEH_GOAL },
+                new int[] { 0x0444, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NoJoiningGroup },
+                new int[] { 0x0639, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.Ain },
+                new int[] { 0x072A, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.DalathRish },
+                new int[] { 0x0647, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.Heh },
+                new int[] { 0x06C1, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.HehGoal },
 
-                new int[] { 0x200C, (int)UProperty.Joining_Type, UCharacter.JoiningType.NON_JOINING },
-                new int[] { 0x200D, (int)UProperty.Joining_Type, UCharacter.JoiningType.JOIN_CAUSING },
-                new int[] { 0x0639, (int)UProperty.Joining_Type, UCharacter.JoiningType.DUAL_JOINING },
-                new int[] { 0x0640, (int)UProperty.Joining_Type, UCharacter.JoiningType.JOIN_CAUSING },
-                new int[] { 0x06C3, (int)UProperty.Joining_Type, UCharacter.JoiningType.RIGHT_JOINING },
-                new int[] { 0x0300, (int)UProperty.Joining_Type, UCharacter.JoiningType.TRANSPARENT },
-                new int[] { 0x070F, (int)UProperty.Joining_Type, UCharacter.JoiningType.TRANSPARENT },
-                new int[] { 0xe0033, (int)UProperty.Joining_Type, UCharacter.JoiningType.TRANSPARENT },
+                new int[] { 0x200C, (int)UProperty.Joining_Type, UCharacter.JoiningType.NonJoining },
+                new int[] { 0x200D, (int)UProperty.Joining_Type, UCharacter.JoiningType.JoinCausing },
+                new int[] { 0x0639, (int)UProperty.Joining_Type, UCharacter.JoiningType.DualJoining },
+                new int[] { 0x0640, (int)UProperty.Joining_Type, UCharacter.JoiningType.JoinCausing },
+                new int[] { 0x06C3, (int)UProperty.Joining_Type, UCharacter.JoiningType.RightJoining },
+                new int[] { 0x0300, (int)UProperty.Joining_Type, UCharacter.JoiningType.Transparent },
+                new int[] { 0x070F, (int)UProperty.Joining_Type, UCharacter.JoiningType.Transparent },
+                new int[] { 0xe0033, (int)UProperty.Joining_Type, UCharacter.JoiningType.Transparent },
 
                 /* TestUnicodeData() verifies that no assigned character has "XX" (unknown) */
-                new int[] { 0xe7e7, (int)UProperty.Line_Break, UCharacter.LineBreak.UNKNOWN },
-                new int[] { 0x10fffd, (int)UProperty.Line_Break, UCharacter.LineBreak.UNKNOWN },
-                new int[] { 0x0028, (int)UProperty.Line_Break, UCharacter.LineBreak.OPEN_PUNCTUATION },
-                new int[] { 0x232A, (int)UProperty.Line_Break, UCharacter.LineBreak.CLOSE_PUNCTUATION },
-                new int[] { 0x3401, (int)UProperty.Line_Break, UCharacter.LineBreak.IDEOGRAPHIC },
-                new int[] { 0x4e02, (int)UProperty.Line_Break, UCharacter.LineBreak.IDEOGRAPHIC },
-                new int[] { 0x20004, (int)UProperty.Line_Break, UCharacter.LineBreak.IDEOGRAPHIC },
-                new int[] { 0xf905, (int)UProperty.Line_Break, UCharacter.LineBreak.IDEOGRAPHIC },
-                new int[] { 0xdb7e, (int)UProperty.Line_Break, UCharacter.LineBreak.SURROGATE },
-                new int[] { 0xdbfd, (int)UProperty.Line_Break, UCharacter.LineBreak.SURROGATE },
-                new int[] { 0xdffc, (int)UProperty.Line_Break, UCharacter.LineBreak.SURROGATE },
-                new int[] { 0x2762, (int)UProperty.Line_Break, UCharacter.LineBreak.EXCLAMATION },
-                new int[] { 0x002F, (int)UProperty.Line_Break, UCharacter.LineBreak.BREAK_SYMBOLS },
-                new int[] { 0x1D49C, (int)UProperty.Line_Break, UCharacter.LineBreak.ALPHABETIC },
-                new int[] { 0x1731, (int)UProperty.Line_Break, UCharacter.LineBreak.ALPHABETIC },
+                new int[] { 0xe7e7, (int)UProperty.Line_Break, UCharacter.LineBreak.Unknown },
+                new int[] { 0x10fffd, (int)UProperty.Line_Break, UCharacter.LineBreak.Unknown },
+                new int[] { 0x0028, (int)UProperty.Line_Break, UCharacter.LineBreak.OpenPunctuation },
+                new int[] { 0x232A, (int)UProperty.Line_Break, UCharacter.LineBreak.ClosePunctuation },
+                new int[] { 0x3401, (int)UProperty.Line_Break, UCharacter.LineBreak.Ideographic },
+                new int[] { 0x4e02, (int)UProperty.Line_Break, UCharacter.LineBreak.Ideographic },
+                new int[] { 0x20004, (int)UProperty.Line_Break, UCharacter.LineBreak.Ideographic },
+                new int[] { 0xf905, (int)UProperty.Line_Break, UCharacter.LineBreak.Ideographic },
+                new int[] { 0xdb7e, (int)UProperty.Line_Break, UCharacter.LineBreak.Surrogate },
+                new int[] { 0xdbfd, (int)UProperty.Line_Break, UCharacter.LineBreak.Surrogate },
+                new int[] { 0xdffc, (int)UProperty.Line_Break, UCharacter.LineBreak.Surrogate },
+                new int[] { 0x2762, (int)UProperty.Line_Break, UCharacter.LineBreak.Exclamation },
+                new int[] { 0x002F, (int)UProperty.Line_Break, UCharacter.LineBreak.BreakSymbols },
+                new int[] { 0x1D49C, (int)UProperty.Line_Break, UCharacter.LineBreak.Alphabetic },
+                new int[] { 0x1731, (int)UProperty.Line_Break, UCharacter.LineBreak.Alphabetic },
 
                 /* (int)UProperty.NUMERIC_TYPE tested in TestNumericProperties() */
 
                 /* (int)UProperty.SCRIPT tested in TestUScriptCodeAPI() */
 
                 new int[] { 0x10ff, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0x1100, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },
-                new int[] { 0x1111, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },
-                new int[] { 0x1159, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },
-                new int[] { 0x115a, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
-                new int[] { 0x115e, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
-                new int[] { 0x115f, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },
+                new int[] { 0x1100, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },
+                new int[] { 0x1111, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },
+                new int[] { 0x1159, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },
+                new int[] { 0x115a, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0x115e, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0x115f, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },
 
                 new int[] { 0xa95f, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0xa960, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
-                new int[] { 0xa97c, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LEADING_JAMO },     /* changed in Unicode 5.2 */
+                new int[] { 0xa960, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0xa97c, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
                 new int[] { 0xa97d, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0x1160, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },
-                new int[] { 0x1161, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },
-                new int[] { 0x1172, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },
-                new int[] { 0x11a2, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },
-                new int[] { 0x11a3, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
-                new int[] { 0x11a7, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
+                new int[] { 0x1160, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },
+                new int[] { 0x1161, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },
+                new int[] { 0x1172, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },
+                new int[] { 0x11a2, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },
+                new int[] { 0x11a3, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0x11a7, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
 
                 new int[] { 0xd7af, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0xd7b0, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
-                new int[] { 0xd7c6, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VOWEL_JAMO },       /* changed in Unicode 5.2 */
+                new int[] { 0xd7b0, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0xd7c6, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
                 new int[] { 0xd7c7, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0x11a8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },
-                new int[] { 0x11b8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },
-                new int[] { 0x11c8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },
-                new int[] { 0x11f9, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },
-                new int[] { 0x11fa, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
-                new int[] { 0x11ff, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
+                new int[] { 0x11a8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },
+                new int[] { 0x11b8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },
+                new int[] { 0x11c8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },
+                new int[] { 0x11f9, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },
+                new int[] { 0x11fa, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0x11ff, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
                 new int[] { 0x1200, (int)UProperty.Hangul_Syllable_Type, 0 },
 
                 new int[] { 0xd7ca, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0xd7cb, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
-                new int[] { 0xd7fb, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TRAILING_JAMO },    /* changed in Unicode 5.2 */
+                new int[] { 0xd7cb, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0xd7fb, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
                 new int[] { 0xd7fc, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0xac00, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LV_SYLLABLE },
-                new int[] { 0xac1c, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LV_SYLLABLE },
-                new int[] { 0xc5ec, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LV_SYLLABLE },
-                new int[] { 0xd788, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LV_SYLLABLE },
+                new int[] { 0xac00, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvSyllable },
+                new int[] { 0xac1c, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvSyllable },
+                new int[] { 0xc5ec, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvSyllable },
+                new int[] { 0xd788, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvSyllable },
 
-                new int[] { 0xac01, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
-                new int[] { 0xac1b, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
-                new int[] { 0xac1d, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
-                new int[] { 0xc5ee, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
-                new int[] { 0xd7a3, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LVT_SYLLABLE },
+                new int[] { 0xac01, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
+                new int[] { 0xac1b, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
+                new int[] { 0xac1d, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
+                new int[] { 0xc5ee, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
+                new int[] { 0xd7a3, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
 
                 new int[] { 0xd7a4, (int)UProperty.Hangul_Syllable_Type, 0 },
 
@@ -2277,24 +2277,24 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { 0xcc28, (int)UProperty.Line_Break, UCharacter.LineBreak.H2 },
                 new int[] { 0xcc29, (int)UProperty.Line_Break, UCharacter.LineBreak.H3 },
                 new int[] { 0xac03, (int)UProperty.Line_Break, UCharacter.LineBreak.H3 },
-                new int[] { 0x115f, (int)UProperty.Line_Break, UCharacter.LineBreak.JL },
-                new int[] { 0x11aa, (int)UProperty.Line_Break, UCharacter.LineBreak.JT },
-                new int[] { 0x11a1, (int)UProperty.Line_Break, UCharacter.LineBreak.JV },
+                new int[] { 0x115f, (int)UProperty.Line_Break, UCharacter.LineBreak.Jl },
+                new int[] { 0x11aa, (int)UProperty.Line_Break, UCharacter.LineBreak.Jt },
+                new int[] { 0x11a1, (int)UProperty.Line_Break, UCharacter.LineBreak.Jv },
 
-                new int[] { 0xb2c9, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.LVT },
-                new int[] { 0x036f, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.EXTEND },
-                new int[] { 0x0000, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.CONTROL },
+                new int[] { 0xb2c9, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.Lvt },
+                new int[] { 0x036f, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.Extend },
+                new int[] { 0x0000, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.Control },
                 new int[] { 0x1160, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.V },
 
-                new int[] { 0x05f4, (int)UProperty.Word_Break, UCharacter.WordBreak.MIDLETTER },
-                new int[] { 0x4ef0, (int)UProperty.Word_Break, UCharacter.WordBreak.OTHER },
-                new int[] { 0x19d9, (int)UProperty.Word_Break, UCharacter.WordBreak.NUMERIC },
-                new int[] { 0x2044, (int)UProperty.Word_Break, UCharacter.WordBreak.MIDNUM },
+                new int[] { 0x05f4, (int)UProperty.Word_Break, UCharacter.WordBreak.MidLetter },
+                new int[] { 0x4ef0, (int)UProperty.Word_Break, UCharacter.WordBreak.Other },
+                new int[] { 0x19d9, (int)UProperty.Word_Break, UCharacter.WordBreak.Numeric },
+                new int[] { 0x2044, (int)UProperty.Word_Break, UCharacter.WordBreak.MidNum },
 
-                new int[] { 0xfffd, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.OTHER },
-                new int[] { 0x1ffc, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.UPPER },
-                new int[] { 0xff63, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.CLOSE },
-                new int[] { 0x2028, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.SEP },
+                new int[] { 0xfffd, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.Other },
+                new int[] { 0x1ffc, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.Upper },
+                new int[] { 0xff63, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.Close },
+                new int[] { 0x2028, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.Sep },
 
                 new int[] { -1, 0x520, 0 }, /* version break for Unicode 5.2 */
 
@@ -2310,7 +2310,7 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { -1, 0x600, 0 }, /* version break for Unicode 6.0 */
 
                 /* value changed in Unicode 6.0 */
-                new int[] { 0x06C3, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.TEH_MARBUTA_GOAL },
+                new int[] { 0x06C3, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.TehMarbutaGoal },
 
                 new int[] { -1, 0x610, 0 }, /* version break for Unicode 6.1 */
 
@@ -2325,21 +2325,21 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { 0x20CF, (int)UProperty.BiDi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
 
                 /* new property in Unicode 6.3 */
-                new int[] { 0x0027, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.NONE },
-                new int[] { 0x0028, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.OPEN },
-                new int[] { 0x0029, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.CLOSE },
-                new int[] { 0xFF5C, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.NONE },
-                new int[] { 0xFF5B, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.OPEN },
-                new int[] { 0xFF5D, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.CLOSE },
+                new int[] { 0x0027, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.None },
+                new int[] { 0x0028, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.Open },
+                new int[] { 0x0029, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.Close },
+                new int[] { 0xFF5C, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.None },
+                new int[] { 0xFF5B, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.Open },
+                new int[] { 0xFF5D, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.Close },
 
                 new int[] { -1, 0x700, 0 }, /* version break for Unicode 7.0 */
 
                 /* new character range with Joining_Group values */
-                new int[] { 0x10ABF, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NO_JOINING_GROUP },
-                new int[] { 0x10AC0, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.MANICHAEAN_ALEPH },
-                new int[] { 0x10AC1, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.MANICHAEAN_BETH },
-                new int[] { 0x10AEF, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.MANICHAEAN_HUNDRED },
-                new int[] { 0x10AF0, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NO_JOINING_GROUP },
+                new int[] { 0x10ABF, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NoJoiningGroup },
+                new int[] { 0x10AC0, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.ManichaeanAleph },
+                new int[] { 0x10AC1, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.ManichaeanBeth },
+                new int[] { 0x10AEF, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.ManichaeanHundred },
+                new int[] { 0x10AF0, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NoJoiningGroup },
 
                 new int[] { -1, 0xa00, 0 },  // version break for Unicode 10
 
@@ -2388,7 +2388,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BLOCK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Line_Break) != UCharacter.LineBreak.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Line_Break) != UCharacter.LineBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.LINE_BREAK) wrong\n");
             }
@@ -2396,7 +2396,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.SCRIPT) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Numeric_Type) != UCharacter.NumericType.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Numeric_Type) != UCharacter.NumericType.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.NUMERIC_TYPE) wrong\n");
             }
@@ -2408,19 +2408,19 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.HANGUL_SYLLABLE_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Grapheme_Cluster_Break) != UCharacter.GraphemeClusterBreak.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Grapheme_Cluster_Break) != UCharacter.GraphemeClusterBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.GRAPHEME_CLUSTER_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Sentence_Break) != UCharacter.SentenceBreak.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Sentence_Break) != UCharacter.SentenceBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.SENTENCE_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Word_Break) != UCharacter.WordBreak.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Word_Break) != UCharacter.WordBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.WORD_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Bidi_Paired_Bracket_Type) != UCharacter.BidiPairedBracketType.COUNT - 1)
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Bidi_Paired_Bracket_Type) != UCharacter.BidiPairedBracketType.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_PAIRED_BRACKET_TYPE) wrong\n");
             }
@@ -2433,15 +2433,15 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.DECOMPOSITION_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Joining_Group) != (UCharacter.JoiningGroup.COUNT - 1))
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Joining_Group) != (UCharacter.JoiningGroup.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.JOINING_GROUP) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Joining_Type) != (UCharacter.JoiningType.COUNT - 1))
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.Joining_Type) != (UCharacter.JoiningType.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.JOINING_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.East_Asian_Width) != (UCharacter.EastAsianWidth.COUNT - 1))
+            if (UCharacter.GetIntPropertyMaxValue(UProperty.East_Asian_Width) != (UCharacter.EastAsianWidth.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.EAST_ASIAN_WIDTH) wrong\n");
             }
@@ -2551,62 +2551,62 @@ namespace ICU4N.Dev.Test.Lang
                 // where UCharacter.NO_NUMERIC_VALUE is turned into -1.
                 // getNumericValue() returns -2 if the code point has a value
                 // which is not a non-negative integer. (This is mostly auto-converted to -2.)
-                new double[] { 0x0F33, UCharacter.NumericType.NUMERIC, -1.0 / 2.0 },
-                new double[] { 0x0C66, UCharacter.NumericType.DECIMAL, 0 },
-                new double[] { 0x96f6, UCharacter.NumericType.NUMERIC, 0 },
-                new double[] { 0xa833, UCharacter.NumericType.NUMERIC, 1.0 / 16.0 },
-                new double[] { 0x2152, UCharacter.NumericType.NUMERIC, 1.0 / 10.0 },
-                new double[] { 0x2151, UCharacter.NumericType.NUMERIC, 1.0 / 9.0 },
-                new double[] { 0x1245f, UCharacter.NumericType.NUMERIC, 1.0 / 8.0 },
-                new double[] { 0x2150, UCharacter.NumericType.NUMERIC, 1.0 / 7.0 },
-                new double[] { 0x2159, UCharacter.NumericType.NUMERIC, 1.0 / 6.0 },
-                new double[] { 0x09f6, UCharacter.NumericType.NUMERIC, 3.0 / 16.0 },
-                new double[] { 0x2155, UCharacter.NumericType.NUMERIC, 1.0 / 5.0 },
-                new double[] { 0x00BD, UCharacter.NumericType.NUMERIC, 1.0 / 2.0 },
-                new double[] { 0x0031, UCharacter.NumericType.DECIMAL, 1.0 },
-                new double[] { 0x4e00, UCharacter.NumericType.NUMERIC, 1.0 },
-                new double[] { 0x58f1, UCharacter.NumericType.NUMERIC, 1.0 },
-                new double[] { 0x10320, UCharacter.NumericType.NUMERIC, 1.0 },
-                new double[] { 0x0F2B, UCharacter.NumericType.NUMERIC, 3.0 / 2.0 },
-                new double[] { 0x00B2, UCharacter.NumericType.DIGIT, 2.0 }, /* Unicode 4.0 change */
-                new double[] { 0x5f10, UCharacter.NumericType.NUMERIC, 2.0 },
-                new double[] { 0x1813, UCharacter.NumericType.DECIMAL, 3.0 },
-                new double[] { 0x5f0e, UCharacter.NumericType.NUMERIC, 3.0 },
-                new double[] { 0x2173, UCharacter.NumericType.NUMERIC, 4.0 },
-                new double[] { 0x8086, UCharacter.NumericType.NUMERIC, 4.0 },
-                new double[] { 0x278E, UCharacter.NumericType.DIGIT, 5.0 },
-                new double[] { 0x1D7F2, UCharacter.NumericType.DECIMAL, 6.0 },
-                new double[] { 0x247A, UCharacter.NumericType.DIGIT, 7.0 },
-                new double[] { 0x7396, UCharacter.NumericType.NUMERIC, 9.0 },
-                new double[] { 0x1372, UCharacter.NumericType.NUMERIC, 10.0 },
-                new double[] { 0x216B, UCharacter.NumericType.NUMERIC, 12.0 },
-                new double[] { 0x16EE, UCharacter.NumericType.NUMERIC, 17.0 },
-                new double[] { 0x249A, UCharacter.NumericType.NUMERIC, 19.0 },
-                new double[] { 0x303A, UCharacter.NumericType.NUMERIC, 30.0 },
-                new double[] { 0x5345, UCharacter.NumericType.NUMERIC, 30.0 },
-                new double[] { 0x32B2, UCharacter.NumericType.NUMERIC, 37.0 },
-                new double[] { 0x1375, UCharacter.NumericType.NUMERIC, 40.0 },
-                new double[] { 0x10323, UCharacter.NumericType.NUMERIC, 50.0 },
-                new double[] { 0x0BF1, UCharacter.NumericType.NUMERIC, 100.0 },
-                new double[] { 0x964c, UCharacter.NumericType.NUMERIC, 100.0 },
-                new double[] { 0x217E, UCharacter.NumericType.NUMERIC, 500.0 },
-                new double[] { 0x2180, UCharacter.NumericType.NUMERIC, 1000.0 },
-                new double[] { 0x4edf, UCharacter.NumericType.NUMERIC, 1000.0 },
-                new double[] { 0x2181, UCharacter.NumericType.NUMERIC, 5000.0 },
-                new double[] { 0x137C, UCharacter.NumericType.NUMERIC, 10000.0 },
-                new double[] { 0x4e07, UCharacter.NumericType.NUMERIC, 10000.0 },
-                new double[] { 0x12432, UCharacter.NumericType.NUMERIC, 216000.0 },
-                new double[] { 0x12433, UCharacter.NumericType.NUMERIC, 432000.0 },
-                new double[] { 0x4ebf, UCharacter.NumericType.NUMERIC, 100000000.0 },
-                new double[] { 0x5146, UCharacter.NumericType.NUMERIC, 1000000000000.0 },
-                new double[] { -1, UCharacter.NumericType.NONE, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0x61, UCharacter.NumericType.NONE, UCharacter.NO_NUMERIC_VALUE, 10.0 },
-                new double[] { 0x3000, UCharacter.NumericType.NONE, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0xfffe, UCharacter.NumericType.NONE, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0x10301, UCharacter.NumericType.NONE, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0xe0033, UCharacter.NumericType.NONE, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0x10ffff, UCharacter.NumericType.NONE, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0x110000, UCharacter.NumericType.NONE, UCharacter.NO_NUMERIC_VALUE }
+                new double[] { 0x0F33, UCharacter.NumericType.Numeric, -1.0 / 2.0 },
+                new double[] { 0x0C66, UCharacter.NumericType.Decimal, 0 },
+                new double[] { 0x96f6, UCharacter.NumericType.Numeric, 0 },
+                new double[] { 0xa833, UCharacter.NumericType.Numeric, 1.0 / 16.0 },
+                new double[] { 0x2152, UCharacter.NumericType.Numeric, 1.0 / 10.0 },
+                new double[] { 0x2151, UCharacter.NumericType.Numeric, 1.0 / 9.0 },
+                new double[] { 0x1245f, UCharacter.NumericType.Numeric, 1.0 / 8.0 },
+                new double[] { 0x2150, UCharacter.NumericType.Numeric, 1.0 / 7.0 },
+                new double[] { 0x2159, UCharacter.NumericType.Numeric, 1.0 / 6.0 },
+                new double[] { 0x09f6, UCharacter.NumericType.Numeric, 3.0 / 16.0 },
+                new double[] { 0x2155, UCharacter.NumericType.Numeric, 1.0 / 5.0 },
+                new double[] { 0x00BD, UCharacter.NumericType.Numeric, 1.0 / 2.0 },
+                new double[] { 0x0031, UCharacter.NumericType.Decimal, 1.0 },
+                new double[] { 0x4e00, UCharacter.NumericType.Numeric, 1.0 },
+                new double[] { 0x58f1, UCharacter.NumericType.Numeric, 1.0 },
+                new double[] { 0x10320, UCharacter.NumericType.Numeric, 1.0 },
+                new double[] { 0x0F2B, UCharacter.NumericType.Numeric, 3.0 / 2.0 },
+                new double[] { 0x00B2, UCharacter.NumericType.Digit, 2.0 }, /* Unicode 4.0 change */
+                new double[] { 0x5f10, UCharacter.NumericType.Numeric, 2.0 },
+                new double[] { 0x1813, UCharacter.NumericType.Decimal, 3.0 },
+                new double[] { 0x5f0e, UCharacter.NumericType.Numeric, 3.0 },
+                new double[] { 0x2173, UCharacter.NumericType.Numeric, 4.0 },
+                new double[] { 0x8086, UCharacter.NumericType.Numeric, 4.0 },
+                new double[] { 0x278E, UCharacter.NumericType.Digit, 5.0 },
+                new double[] { 0x1D7F2, UCharacter.NumericType.Decimal, 6.0 },
+                new double[] { 0x247A, UCharacter.NumericType.Digit, 7.0 },
+                new double[] { 0x7396, UCharacter.NumericType.Numeric, 9.0 },
+                new double[] { 0x1372, UCharacter.NumericType.Numeric, 10.0 },
+                new double[] { 0x216B, UCharacter.NumericType.Numeric, 12.0 },
+                new double[] { 0x16EE, UCharacter.NumericType.Numeric, 17.0 },
+                new double[] { 0x249A, UCharacter.NumericType.Numeric, 19.0 },
+                new double[] { 0x303A, UCharacter.NumericType.Numeric, 30.0 },
+                new double[] { 0x5345, UCharacter.NumericType.Numeric, 30.0 },
+                new double[] { 0x32B2, UCharacter.NumericType.Numeric, 37.0 },
+                new double[] { 0x1375, UCharacter.NumericType.Numeric, 40.0 },
+                new double[] { 0x10323, UCharacter.NumericType.Numeric, 50.0 },
+                new double[] { 0x0BF1, UCharacter.NumericType.Numeric, 100.0 },
+                new double[] { 0x964c, UCharacter.NumericType.Numeric, 100.0 },
+                new double[] { 0x217E, UCharacter.NumericType.Numeric, 500.0 },
+                new double[] { 0x2180, UCharacter.NumericType.Numeric, 1000.0 },
+                new double[] { 0x4edf, UCharacter.NumericType.Numeric, 1000.0 },
+                new double[] { 0x2181, UCharacter.NumericType.Numeric, 5000.0 },
+                new double[] { 0x137C, UCharacter.NumericType.Numeric, 10000.0 },
+                new double[] { 0x4e07, UCharacter.NumericType.Numeric, 10000.0 },
+                new double[] { 0x12432, UCharacter.NumericType.Numeric, 216000.0 },
+                new double[] { 0x12433, UCharacter.NumericType.Numeric, 432000.0 },
+                new double[] { 0x4ebf, UCharacter.NumericType.Numeric, 100000000.0 },
+                new double[] { 0x5146, UCharacter.NumericType.Numeric, 1000000000000.0 },
+                new double[] { -1, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
+                new double[] { 0x61, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE, 10.0 },
+                new double[] { 0x3000, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
+                new double[] { 0xfffe, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
+                new double[] { 0x10301, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
+                new double[] { 0xe0033, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
+                new double[] { 0x10ffff, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
+                new double[] { 0x110000, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE }
             };
 
             for (int i = 0; i < values.Length; ++i)

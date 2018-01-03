@@ -148,168 +148,168 @@ namespace ICU4N.Lang
             // block id corresponding to icu4c -----------------------------------
 
             /// <stable>ICU 2.4</stable>
-            public static readonly int INVALID_CODE_ID = -1;
+            public const int INVALID_CODE_ID = -1;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BASIC_LATIN_ID = 1;
+            public const int BASIC_LATIN_ID = 1;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LATIN_1_SUPPLEMENT_ID = 2;
+            public const int LATIN_1_SUPPLEMENT_ID = 2;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LATIN_EXTENDED_A_ID = 3;
+            public const int LATIN_EXTENDED_A_ID = 3;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LATIN_EXTENDED_B_ID = 4;
+            public const int LATIN_EXTENDED_B_ID = 4;
             /// <stable>ICU 2.4</stable>
-            public static readonly int IPA_EXTENSIONS_ID = 5;
+            public const int IPA_EXTENSIONS_ID = 5;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SPACING_MODIFIER_LETTERS_ID = 6;
+            public const int SPACING_MODIFIER_LETTERS_ID = 6;
             /// <stable>ICU 2.4</stable>
-            public static readonly int COMBINING_DIACRITICAL_MARKS_ID = 7;
+            public const int COMBINING_DIACRITICAL_MARKS_ID = 7;
             /// <summary>
             /// Unicode 3.2 renames this block to "Greek and Coptic".
             /// </summary>
             /// <stable>ICU 2.4</stable>
-            public static readonly int GREEK_ID = 8;
+            public const int GREEK_ID = 8;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CYRILLIC_ID = 9;
+            public const int CYRILLIC_ID = 9;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ARMENIAN_ID = 10;
+            public const int ARMENIAN_ID = 10;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HEBREW_ID = 11;
+            public const int HEBREW_ID = 11;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ARABIC_ID = 12;
+            public const int ARABIC_ID = 12;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SYRIAC_ID = 13;
+            public const int SYRIAC_ID = 13;
             /// <stable>ICU 2.4</stable>
-            public static readonly int THAANA_ID = 14;
+            public const int THAANA_ID = 14;
             /// <stable>ICU 2.4</stable>
-            public static readonly int DEVANAGARI_ID = 15;
+            public const int DEVANAGARI_ID = 15;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BENGALI_ID = 16;
+            public const int BENGALI_ID = 16;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GURMUKHI_ID = 17;
+            public const int GURMUKHI_ID = 17;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GUJARATI_ID = 18;
+            public const int GUJARATI_ID = 18;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ORIYA_ID = 19;
+            public const int ORIYA_ID = 19;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TAMIL_ID = 20;
+            public const int TAMIL_ID = 20;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TELUGU_ID = 21;
+            public const int TELUGU_ID = 21;
             /// <stable>ICU 2.4</stable>
-            public static readonly int KANNADA_ID = 22;
+            public const int KANNADA_ID = 22;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MALAYALAM_ID = 23;
+            public const int MALAYALAM_ID = 23;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SINHALA_ID = 24;
+            public const int SINHALA_ID = 24;
             /// <stable>ICU 2.4</stable>
-            public static readonly int THAI_ID = 25;
+            public const int THAI_ID = 25;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LAO_ID = 26;
+            public const int LAO_ID = 26;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TIBETAN_ID = 27;
+            public const int TIBETAN_ID = 27;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MYANMAR_ID = 28;
+            public const int MYANMAR_ID = 28;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GEORGIAN_ID = 29;
+            public const int GEORGIAN_ID = 29;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HANGUL_JAMO_ID = 30;
+            public const int HANGUL_JAMO_ID = 30;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ETHIOPIC_ID = 31;
+            public const int ETHIOPIC_ID = 31;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CHEROKEE_ID = 32;
+            public const int CHEROKEE_ID = 32;
             /// <stable>ICU 2.4</stable>
-            public static readonly int UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS_ID = 33;
+            public const int UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS_ID = 33;
             /// <stable>ICU 2.4</stable>
-            public static readonly int OGHAM_ID = 34;
+            public const int OGHAM_ID = 34;
             /// <stable>ICU 2.4</stable>
-            public static readonly int RUNIC_ID = 35;
+            public const int RUNIC_ID = 35;
             /// <stable>ICU 2.4</stable>
-            public static readonly int KHMER_ID = 36;
+            public const int KHMER_ID = 36;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MONGOLIAN_ID = 37;
+            public const int MONGOLIAN_ID = 37;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LATIN_EXTENDED_ADDITIONAL_ID = 38;
+            public const int LATIN_EXTENDED_ADDITIONAL_ID = 38;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GREEK_EXTENDED_ID = 39;
+            public const int GREEK_EXTENDED_ID = 39;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GENERAL_PUNCTUATION_ID = 40;
+            public const int GENERAL_PUNCTUATION_ID = 40;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SUPERSCRIPTS_AND_SUBSCRIPTS_ID = 41;
+            public const int SUPERSCRIPTS_AND_SUBSCRIPTS_ID = 41;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CURRENCY_SYMBOLS_ID = 42;
+            public const int CURRENCY_SYMBOLS_ID = 42;
             /// <summary>
             /// Unicode 3.2 renames this block to "Combining Diacritical Marks for
             /// Symbols".
             /// </summary>
             /// <stable>ICU 2.4</stable>
-            public static readonly int COMBINING_MARKS_FOR_SYMBOLS_ID = 43;
+            public const int COMBINING_MARKS_FOR_SYMBOLS_ID = 43;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LETTERLIKE_SYMBOLS_ID = 44;
+            public const int LETTERLIKE_SYMBOLS_ID = 44;
             /// <stable>ICU 2.4</stable>
-            public static readonly int NUMBER_FORMS_ID = 45;
+            public const int NUMBER_FORMS_ID = 45;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ARROWS_ID = 46;
+            public const int ARROWS_ID = 46;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MATHEMATICAL_OPERATORS_ID = 47;
+            public const int MATHEMATICAL_OPERATORS_ID = 47;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MISCELLANEOUS_TECHNICAL_ID = 48;
+            public const int MISCELLANEOUS_TECHNICAL_ID = 48;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CONTROL_PICTURES_ID = 49;
+            public const int CONTROL_PICTURES_ID = 49;
             /// <stable>ICU 2.4</stable>
-            public static readonly int OPTICAL_CHARACTER_RECOGNITION_ID = 50;
+            public const int OPTICAL_CHARACTER_RECOGNITION_ID = 50;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ENCLOSED_ALPHANUMERICS_ID = 51;
+            public const int ENCLOSED_ALPHANUMERICS_ID = 51;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BOX_DRAWING_ID = 52;
+            public const int BOX_DRAWING_ID = 52;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BLOCK_ELEMENTS_ID = 53;
+            public const int BLOCK_ELEMENTS_ID = 53;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GEOMETRIC_SHAPES_ID = 54;
+            public const int GEOMETRIC_SHAPES_ID = 54;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MISCELLANEOUS_SYMBOLS_ID = 55;
+            public const int MISCELLANEOUS_SYMBOLS_ID = 55;
             /// <stable>ICU 2.4</stable>
-            public static readonly int DINGBATS_ID = 56;
+            public const int DINGBATS_ID = 56;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BRAILLE_PATTERNS_ID = 57;
+            public const int BRAILLE_PATTERNS_ID = 57;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CJK_RADICALS_SUPPLEMENT_ID = 58;
+            public const int CJK_RADICALS_SUPPLEMENT_ID = 58;
             /// <stable>ICU 2.4</stable>
-            public static readonly int KANGXI_RADICALS_ID = 59;
+            public const int KANGXI_RADICALS_ID = 59;
             /// <stable>ICU 2.4</stable>
-            public static readonly int IDEOGRAPHIC_DESCRIPTION_CHARACTERS_ID = 60;
+            public const int IDEOGRAPHIC_DESCRIPTION_CHARACTERS_ID = 60;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CJK_SYMBOLS_AND_PUNCTUATION_ID = 61;
+            public const int CJK_SYMBOLS_AND_PUNCTUATION_ID = 61;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HIRAGANA_ID = 62;
+            public const int HIRAGANA_ID = 62;
             /// <stable>ICU 2.4</stable>
-            public static readonly int KATAKANA_ID = 63;
+            public const int KATAKANA_ID = 63;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BOPOMOFO_ID = 64;
+            public const int BOPOMOFO_ID = 64;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HANGUL_COMPATIBILITY_JAMO_ID = 65;
+            public const int HANGUL_COMPATIBILITY_JAMO_ID = 65;
             /// <stable>ICU 2.4</stable>
-            public static readonly int KANBUN_ID = 66;
+            public const int KANBUN_ID = 66;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BOPOMOFO_EXTENDED_ID = 67;
+            public const int BOPOMOFO_EXTENDED_ID = 67;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ENCLOSED_CJK_LETTERS_AND_MONTHS_ID = 68;
+            public const int ENCLOSED_CJK_LETTERS_AND_MONTHS_ID = 68;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CJK_COMPATIBILITY_ID = 69;
+            public const int CJK_COMPATIBILITY_ID = 69;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A_ID = 70;
+            public const int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A_ID = 70;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CJK_UNIFIED_IDEOGRAPHS_ID = 71;
+            public const int CJK_UNIFIED_IDEOGRAPHS_ID = 71;
             /// <stable>ICU 2.4</stable>
-            public static readonly int YI_SYLLABLES_ID = 72;
+            public const int YI_SYLLABLES_ID = 72;
             /// <stable>ICU 2.4</stable>
-            public static readonly int YI_RADICALS_ID = 73;
+            public const int YI_RADICALS_ID = 73;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HANGUL_SYLLABLES_ID = 74;
+            public const int HANGUL_SYLLABLES_ID = 74;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HIGH_SURROGATES_ID = 75;
+            public const int HIGH_SURROGATES_ID = 75;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HIGH_PRIVATE_USE_SURROGATES_ID = 76;
+            public const int HIGH_PRIVATE_USE_SURROGATES_ID = 76;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LOW_SURROGATES_ID = 77;
+            public const int LOW_SURROGATES_ID = 77;
             /// <summary>
             /// Same as <see cref="PRIVATE_USE"/>.
             /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
@@ -318,7 +318,7 @@ namespace ICU4N.Lang
             /// and adds separate blocks for the supplementary PUAs.
             /// </summary>
             /// <stable>ICU 2.4</stable>
-            public static readonly int PRIVATE_USE_AREA_ID = 78;
+            public const int PRIVATE_USE_AREA_ID = 78;
             /// <summary>
             /// Same as <see cref="PRIVATE_USE_AREA"/>.
             /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
@@ -327,43 +327,43 @@ namespace ICU4N.Lang
             /// and adds separate blocks for the supplementary PUAs.
             /// </summary>
             /// <stable>ICU 2.4</stable>
-            public static readonly int PRIVATE_USE_ID = PRIVATE_USE_AREA_ID;
+            public const int PRIVATE_USE_ID = PRIVATE_USE_AREA_ID;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CJK_COMPATIBILITY_IDEOGRAPHS_ID = 79;
+            public const int CJK_COMPATIBILITY_IDEOGRAPHS_ID = 79;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ALPHABETIC_PRESENTATION_FORMS_ID = 80;
+            public const int ALPHABETIC_PRESENTATION_FORMS_ID = 80;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ARABIC_PRESENTATION_FORMS_A_ID = 81;
+            public const int ARABIC_PRESENTATION_FORMS_A_ID = 81;
             /// <stable>ICU 2.4</stable>
-            public static readonly int COMBINING_HALF_MARKS_ID = 82;
+            public const int COMBINING_HALF_MARKS_ID = 82;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CJK_COMPATIBILITY_FORMS_ID = 83;
+            public const int CJK_COMPATIBILITY_FORMS_ID = 83;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SMALL_FORM_VARIANTS_ID = 84;
+            public const int SMALL_FORM_VARIANTS_ID = 84;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ARABIC_PRESENTATION_FORMS_B_ID = 85;
+            public const int ARABIC_PRESENTATION_FORMS_B_ID = 85;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SPECIALS_ID = 86;
+            public const int SPECIALS_ID = 86;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HALFWIDTH_AND_FULLWIDTH_FORMS_ID = 87;
+            public const int HALFWIDTH_AND_FULLWIDTH_FORMS_ID = 87;
             /// <stable>ICU 2.4</stable>
-            public static readonly int OLD_ITALIC_ID = 88;
+            public const int OLD_ITALIC_ID = 88;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GOTHIC_ID = 89;
+            public const int GOTHIC_ID = 89;
             /// <stable>ICU 2.4</stable>
-            public static readonly int DESERET_ID = 90;
+            public const int DESERET_ID = 90;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BYZANTINE_MUSICAL_SYMBOLS_ID = 91;
+            public const int BYZANTINE_MUSICAL_SYMBOLS_ID = 91;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MUSICAL_SYMBOLS_ID = 92;
+            public const int MUSICAL_SYMBOLS_ID = 92;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MATHEMATICAL_ALPHANUMERIC_SYMBOLS_ID = 93;
+            public const int MATHEMATICAL_ALPHANUMERIC_SYMBOLS_ID = 93;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B_ID = 94;
+            public const int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B_ID = 94;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT_ID = 95;
+            public const int CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT_ID = 95;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TAGS_ID = 96;
+            public const int TAGS_ID = 96;
 
             // New blocks in Unicode 3.2
 
@@ -371,442 +371,442 @@ namespace ICU4N.Lang
             /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
             /// </summary>
             /// <stable>ICU 2.4</stable>
-            public static readonly int CYRILLIC_SUPPLEMENTARY_ID = 97;
+            public const int CYRILLIC_SUPPLEMENTARY_ID = 97;
             /// <summary>
             /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
             /// </summary>
             /// <stable>ICU 3.0</stable>
-            public static readonly int CYRILLIC_SUPPLEMENT_ID = 97;
+            public const int CYRILLIC_SUPPLEMENT_ID = 97;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TAGALOG_ID = 98;
+            public const int TAGALOG_ID = 98;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HANUNOO_ID = 99;
+            public const int HANUNOO_ID = 99;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BUHID_ID = 100;
+            public const int BUHID_ID = 100;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TAGBANWA_ID = 101;
+            public const int TAGBANWA_ID = 101;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MISCELLANEOUS_MATHEMATICAL_SYMBOLS_A_ID = 102;
+            public const int MISCELLANEOUS_MATHEMATICAL_SYMBOLS_A_ID = 102;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SUPPLEMENTAL_ARROWS_A_ID = 103;
+            public const int SUPPLEMENTAL_ARROWS_A_ID = 103;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SUPPLEMENTAL_ARROWS_B_ID = 104;
+            public const int SUPPLEMENTAL_ARROWS_B_ID = 104;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MISCELLANEOUS_MATHEMATICAL_SYMBOLS_B_ID = 105;
+            public const int MISCELLANEOUS_MATHEMATICAL_SYMBOLS_B_ID = 105;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SUPPLEMENTAL_MATHEMATICAL_OPERATORS_ID = 106;
+            public const int SUPPLEMENTAL_MATHEMATICAL_OPERATORS_ID = 106;
             /// <stable>ICU 2.4</stable>
-            public static readonly int KATAKANA_PHONETIC_EXTENSIONS_ID = 107;
+            public const int KATAKANA_PHONETIC_EXTENSIONS_ID = 107;
             /// <stable>ICU 2.4</stable>
-            public static readonly int VARIATION_SELECTORS_ID = 108;
+            public const int VARIATION_SELECTORS_ID = 108;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SUPPLEMENTARY_PRIVATE_USE_AREA_A_ID = 109;
+            public const int SUPPLEMENTARY_PRIVATE_USE_AREA_A_ID = 109;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SUPPLEMENTARY_PRIVATE_USE_AREA_B_ID = 110;
+            public const int SUPPLEMENTARY_PRIVATE_USE_AREA_B_ID = 110;
 
             /// <stable>ICU 2.6</stable>
-            public static readonly int LIMBU_ID = 111; /*[1900]*/
+            public const int LIMBU_ID = 111; /*[1900]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int TAI_LE_ID = 112; /*[1950]*/
+            public const int TAI_LE_ID = 112; /*[1950]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int KHMER_SYMBOLS_ID = 113; /*[19E0]*/
+            public const int KHMER_SYMBOLS_ID = 113; /*[19E0]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int PHONETIC_EXTENSIONS_ID = 114; /*[1D00]*/
+            public const int PHONETIC_EXTENSIONS_ID = 114; /*[1D00]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int MISCELLANEOUS_SYMBOLS_AND_ARROWS_ID = 115; /*[2B00]*/
+            public const int MISCELLANEOUS_SYMBOLS_AND_ARROWS_ID = 115; /*[2B00]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int YIJING_HEXAGRAM_SYMBOLS_ID = 116; /*[4DC0]*/
+            public const int YIJING_HEXAGRAM_SYMBOLS_ID = 116; /*[4DC0]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int LINEAR_B_SYLLABARY_ID = 117; /*[10000]*/
+            public const int LINEAR_B_SYLLABARY_ID = 117; /*[10000]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int LINEAR_B_IDEOGRAMS_ID = 118; /*[10080]*/
+            public const int LINEAR_B_IDEOGRAMS_ID = 118; /*[10080]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int AEGEAN_NUMBERS_ID = 119; /*[10100]*/
+            public const int AEGEAN_NUMBERS_ID = 119; /*[10100]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int UGARITIC_ID = 120; /*[10380]*/
+            public const int UGARITIC_ID = 120; /*[10380]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int SHAVIAN_ID = 121; /*[10450]*/
+            public const int SHAVIAN_ID = 121; /*[10450]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int OSMANYA_ID = 122; /*[10480]*/
+            public const int OSMANYA_ID = 122; /*[10480]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int CYPRIOT_SYLLABARY_ID = 123; /*[10800]*/
+            public const int CYPRIOT_SYLLABARY_ID = 123; /*[10800]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int TAI_XUAN_JING_SYMBOLS_ID = 124; /*[1D300]*/
+            public const int TAI_XUAN_JING_SYMBOLS_ID = 124; /*[1D300]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int VARIATION_SELECTORS_SUPPLEMENT_ID = 125; /*[E0100]*/
+            public const int VARIATION_SELECTORS_SUPPLEMENT_ID = 125; /*[E0100]*/
 
             /* New blocks in Unicode 4.1 */
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int ANCIENT_GREEK_MUSICAL_NOTATION_ID = 126; /*[1D200]*/
+            public const int ANCIENT_GREEK_MUSICAL_NOTATION_ID = 126; /*[1D200]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int ANCIENT_GREEK_NUMBERS_ID = 127; /*[10140]*/
+            public const int ANCIENT_GREEK_NUMBERS_ID = 127; /*[10140]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int ARABIC_SUPPLEMENT_ID = 128; /*[0750]*/
+            public const int ARABIC_SUPPLEMENT_ID = 128; /*[0750]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int BUGINESE_ID = 129; /*[1A00]*/
+            public const int BUGINESE_ID = 129; /*[1A00]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int CJK_STROKES_ID = 130; /*[31C0]*/
+            public const int CJK_STROKES_ID = 130; /*[31C0]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int COMBINING_DIACRITICAL_MARKS_SUPPLEMENT_ID = 131; /*[1DC0]*/
+            public const int COMBINING_DIACRITICAL_MARKS_SUPPLEMENT_ID = 131; /*[1DC0]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int COPTIC_ID = 132; /*[2C80]*/
+            public const int COPTIC_ID = 132; /*[2C80]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int ETHIOPIC_EXTENDED_ID = 133; /*[2D80]*/
+            public const int ETHIOPIC_EXTENDED_ID = 133; /*[2D80]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int ETHIOPIC_SUPPLEMENT_ID = 134; /*[1380]*/
+            public const int ETHIOPIC_SUPPLEMENT_ID = 134; /*[1380]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int GEORGIAN_SUPPLEMENT_ID = 135; /*[2D00]*/
+            public const int GEORGIAN_SUPPLEMENT_ID = 135; /*[2D00]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int GLAGOLITIC_ID = 136; /*[2C00]*/
+            public const int GLAGOLITIC_ID = 136; /*[2C00]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int KHAROSHTHI_ID = 137; /*[10A00]*/
+            public const int KHAROSHTHI_ID = 137; /*[10A00]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int MODIFIER_TONE_LETTERS_ID = 138; /*[A700]*/
+            public const int MODIFIER_TONE_LETTERS_ID = 138; /*[A700]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int NEW_TAI_LUE_ID = 139; /*[1980]*/
+            public const int NEW_TAI_LUE_ID = 139; /*[1980]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int OLD_PERSIAN_ID = 140; /*[103A0]*/
+            public const int OLD_PERSIAN_ID = 140; /*[103A0]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int PHONETIC_EXTENSIONS_SUPPLEMENT_ID = 141; /*[1D80]*/
+            public const int PHONETIC_EXTENSIONS_SUPPLEMENT_ID = 141; /*[1D80]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int SUPPLEMENTAL_PUNCTUATION_ID = 142; /*[2E00]*/
+            public const int SUPPLEMENTAL_PUNCTUATION_ID = 142; /*[2E00]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int SYLOTI_NAGRI_ID = 143; /*[A800]*/
+            public const int SYLOTI_NAGRI_ID = 143; /*[A800]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int TIFINAGH_ID = 144; /*[2D30]*/
+            public const int TIFINAGH_ID = 144; /*[2D30]*/
 
             /// <stable>ICU 3.4</stable>
-            public static readonly int VERTICAL_FORMS_ID = 145; /*[FE10]*/
+            public const int VERTICAL_FORMS_ID = 145; /*[FE10]*/
 
             /* New blocks in Unicode 5.0 */
 
             /// <stable>ICU 3.6</stable>
-            public static readonly int NKO_ID = 146; /*[07C0]*/
+            public const int NKO_ID = 146; /*[07C0]*/
             /// <stable>ICU 3.6</stable>
-            public static readonly int BALINESE_ID = 147; /*[1B00]*/
+            public const int BALINESE_ID = 147; /*[1B00]*/
             /// <stable>ICU 3.6</stable>
-            public static readonly int LATIN_EXTENDED_C_ID = 148; /*[2C60]*/
+            public const int LATIN_EXTENDED_C_ID = 148; /*[2C60]*/
             /// <stable>ICU 3.6</stable>
-            public static readonly int LATIN_EXTENDED_D_ID = 149; /*[A720]*/
+            public const int LATIN_EXTENDED_D_ID = 149; /*[A720]*/
             /// <stable>ICU 3.6</stable>
-            public static readonly int PHAGS_PA_ID = 150; /*[A840]*/
+            public const int PHAGS_PA_ID = 150; /*[A840]*/
             /// <stable>ICU 3.6</stable>
-            public static readonly int PHOENICIAN_ID = 151; /*[10900]*/
+            public const int PHOENICIAN_ID = 151; /*[10900]*/
             /// <stable>ICU 3.6</stable>
-            public static readonly int CUNEIFORM_ID = 152; /*[12000]*/
+            public const int CUNEIFORM_ID = 152; /*[12000]*/
             /// <stable>ICU 3.6</stable>
-            public static readonly int CUNEIFORM_NUMBERS_AND_PUNCTUATION_ID = 153; /*[12400]*/
+            public const int CUNEIFORM_NUMBERS_AND_PUNCTUATION_ID = 153; /*[12400]*/
             /// <stable>ICU 3.6</stable>
-            public static readonly int COUNTING_ROD_NUMERALS_ID = 154; /*[1D360]*/
+            public const int COUNTING_ROD_NUMERALS_ID = 154; /*[1D360]*/
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int SUNDANESE_ID = 155; /* [1B80] */
+            public const int SUNDANESE_ID = 155; /* [1B80] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int LEPCHA_ID = 156; /* [1C00] */
+            public const int LEPCHA_ID = 156; /* [1C00] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int OL_CHIKI_ID = 157; /* [1C50] */
+            public const int OL_CHIKI_ID = 157; /* [1C50] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int CYRILLIC_EXTENDED_A_ID = 158; /* [2DE0] */
+            public const int CYRILLIC_EXTENDED_A_ID = 158; /* [2DE0] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int VAI_ID = 159; /* [A500] */
+            public const int VAI_ID = 159; /* [A500] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int CYRILLIC_EXTENDED_B_ID = 160; /* [A640] */
+            public const int CYRILLIC_EXTENDED_B_ID = 160; /* [A640] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int SAURASHTRA_ID = 161; /* [A880] */
+            public const int SAURASHTRA_ID = 161; /* [A880] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int KAYAH_LI_ID = 162; /* [A900] */
+            public const int KAYAH_LI_ID = 162; /* [A900] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int REJANG_ID = 163; /* [A930] */
+            public const int REJANG_ID = 163; /* [A930] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int CHAM_ID = 164; /* [AA00] */
+            public const int CHAM_ID = 164; /* [AA00] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int ANCIENT_SYMBOLS_ID = 165; /* [10190] */
+            public const int ANCIENT_SYMBOLS_ID = 165; /* [10190] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int PHAISTOS_DISC_ID = 166; /* [101D0] */
+            public const int PHAISTOS_DISC_ID = 166; /* [101D0] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int LYCIAN_ID = 167; /* [10280] */
+            public const int LYCIAN_ID = 167; /* [10280] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int CARIAN_ID = 168; /* [102A0] */
+            public const int CARIAN_ID = 168; /* [102A0] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int LYDIAN_ID = 169; /* [10920] */
+            public const int LYDIAN_ID = 169; /* [10920] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int MAHJONG_TILES_ID = 170; /* [1F000] */
+            public const int MAHJONG_TILES_ID = 170; /* [1F000] */
 
             /// <stable>ICU 4.0</stable>
-            public static readonly int DOMINO_TILES_ID = 171; /* [1F030] */
+            public const int DOMINO_TILES_ID = 171; /* [1F030] */
 
             /* New blocks in Unicode 5.2 */
 
             /// <stable>ICU 4.4</stable>
-            public static readonly int SAMARITAN_ID = 172; /*[0800]*/
+            public const int SAMARITAN_ID = 172; /*[0800]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS_EXTENDED_ID = 173; /*[18B0]*/
+            public const int UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS_EXTENDED_ID = 173; /*[18B0]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int TAI_THAM_ID = 174; /*[1A20]*/
+            public const int TAI_THAM_ID = 174; /*[1A20]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int VEDIC_EXTENSIONS_ID = 175; /*[1CD0]*/
+            public const int VEDIC_EXTENSIONS_ID = 175; /*[1CD0]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int LISU_ID = 176; /*[A4D0]*/
+            public const int LISU_ID = 176; /*[A4D0]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int BAMUM_ID = 177; /*[A6A0]*/
+            public const int BAMUM_ID = 177; /*[A6A0]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int COMMON_INDIC_NUMBER_FORMS_ID = 178; /*[A830]*/
+            public const int COMMON_INDIC_NUMBER_FORMS_ID = 178; /*[A830]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int DEVANAGARI_EXTENDED_ID = 179; /*[A8E0]*/
+            public const int DEVANAGARI_EXTENDED_ID = 179; /*[A8E0]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int HANGUL_JAMO_EXTENDED_A_ID = 180; /*[A960]*/
+            public const int HANGUL_JAMO_EXTENDED_A_ID = 180; /*[A960]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int JAVANESE_ID = 181; /*[A980]*/
+            public const int JAVANESE_ID = 181; /*[A980]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int MYANMAR_EXTENDED_A_ID = 182; /*[AA60]*/
+            public const int MYANMAR_EXTENDED_A_ID = 182; /*[AA60]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int TAI_VIET_ID = 183; /*[AA80]*/
+            public const int TAI_VIET_ID = 183; /*[AA80]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int MEETEI_MAYEK_ID = 184; /*[ABC0]*/
+            public const int MEETEI_MAYEK_ID = 184; /*[ABC0]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int HANGUL_JAMO_EXTENDED_B_ID = 185; /*[D7B0]*/
+            public const int HANGUL_JAMO_EXTENDED_B_ID = 185; /*[D7B0]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int IMPERIAL_ARAMAIC_ID = 186; /*[10840]*/
+            public const int IMPERIAL_ARAMAIC_ID = 186; /*[10840]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int OLD_SOUTH_ARABIAN_ID = 187; /*[10A60]*/
+            public const int OLD_SOUTH_ARABIAN_ID = 187; /*[10A60]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int AVESTAN_ID = 188; /*[10B00]*/
+            public const int AVESTAN_ID = 188; /*[10B00]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int INSCRIPTIONAL_PARTHIAN_ID = 189; /*[10B40]*/
+            public const int INSCRIPTIONAL_PARTHIAN_ID = 189; /*[10B40]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int INSCRIPTIONAL_PAHLAVI_ID = 190; /*[10B60]*/
+            public const int INSCRIPTIONAL_PAHLAVI_ID = 190; /*[10B60]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int OLD_TURKIC_ID = 191; /*[10C00]*/
+            public const int OLD_TURKIC_ID = 191; /*[10C00]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int RUMI_NUMERAL_SYMBOLS_ID = 192; /*[10E60]*/
+            public const int RUMI_NUMERAL_SYMBOLS_ID = 192; /*[10E60]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int KAITHI_ID = 193; /*[11080]*/
+            public const int KAITHI_ID = 193; /*[11080]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int EGYPTIAN_HIEROGLYPHS_ID = 194; /*[13000]*/
+            public const int EGYPTIAN_HIEROGLYPHS_ID = 194; /*[13000]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int ENCLOSED_ALPHANUMERIC_SUPPLEMENT_ID = 195; /*[1F100]*/
+            public const int ENCLOSED_ALPHANUMERIC_SUPPLEMENT_ID = 195; /*[1F100]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int ENCLOSED_IDEOGRAPHIC_SUPPLEMENT_ID = 196; /*[1F200]*/
+            public const int ENCLOSED_IDEOGRAPHIC_SUPPLEMENT_ID = 196; /*[1F200]*/
             /// <stable>ICU 4.4</stable>
-            public static readonly int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C_ID = 197; /*[2A700]*/
+            public const int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C_ID = 197; /*[2A700]*/
 
             /* New blocks in Unicode 6.0 */
 
             /// <stable>ICU 4.6</stable>
-            public static readonly int MANDAIC_ID = 198; /*[0840]*/
+            public const int MANDAIC_ID = 198; /*[0840]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int BATAK_ID = 199; /*[1BC0]*/
+            public const int BATAK_ID = 199; /*[1BC0]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int ETHIOPIC_EXTENDED_A_ID = 200; /*[AB00]*/
+            public const int ETHIOPIC_EXTENDED_A_ID = 200; /*[AB00]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int BRAHMI_ID = 201; /*[11000]*/
+            public const int BRAHMI_ID = 201; /*[11000]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int BAMUM_SUPPLEMENT_ID = 202; /*[16800]*/
+            public const int BAMUM_SUPPLEMENT_ID = 202; /*[16800]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int KANA_SUPPLEMENT_ID = 203; /*[1B000]*/
+            public const int KANA_SUPPLEMENT_ID = 203; /*[1B000]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int PLAYING_CARDS_ID = 204; /*[1F0A0]*/
+            public const int PLAYING_CARDS_ID = 204; /*[1F0A0]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int MISCELLANEOUS_SYMBOLS_AND_PICTOGRAPHS_ID = 205; /*[1F300]*/
+            public const int MISCELLANEOUS_SYMBOLS_AND_PICTOGRAPHS_ID = 205; /*[1F300]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int EMOTICONS_ID = 206; /*[1F600]*/
+            public const int EMOTICONS_ID = 206; /*[1F600]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int TRANSPORT_AND_MAP_SYMBOLS_ID = 207; /*[1F680]*/
+            public const int TRANSPORT_AND_MAP_SYMBOLS_ID = 207; /*[1F680]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int ALCHEMICAL_SYMBOLS_ID = 208; /*[1F700]*/
+            public const int ALCHEMICAL_SYMBOLS_ID = 208; /*[1F700]*/
             /// <stable>ICU 4.6</stable>
-            public static readonly int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D_ID = 209; /*[2B740]*/
+            public const int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D_ID = 209; /*[2B740]*/
 
             /* New blocks in Unicode 6.1 */
 
             /// <stable>ICU 49</stable>
-            public static readonly int ARABIC_EXTENDED_A_ID = 210; /*[08A0]*/
+            public const int ARABIC_EXTENDED_A_ID = 210; /*[08A0]*/
             /// <stable>ICU 49</stable>
-            public static readonly int ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS_ID = 211; /*[1EE00]*/
+            public const int ARABIC_MATHEMATICAL_ALPHABETIC_SYMBOLS_ID = 211; /*[1EE00]*/
             /// <stable>ICU 49</stable>
-            public static readonly int CHAKMA_ID = 212; /*[11100]*/
+            public const int CHAKMA_ID = 212; /*[11100]*/
             /// <stable>ICU 49</stable>
-            public static readonly int MEETEI_MAYEK_EXTENSIONS_ID = 213; /*[AAE0]*/
+            public const int MEETEI_MAYEK_EXTENSIONS_ID = 213; /*[AAE0]*/
             /// <stable>ICU 49</stable>
-            public static readonly int MEROITIC_CURSIVE_ID = 214; /*[109A0]*/
+            public const int MEROITIC_CURSIVE_ID = 214; /*[109A0]*/
             /// <stable>ICU 49</stable>
-            public static readonly int MEROITIC_HIEROGLYPHS_ID = 215; /*[10980]*/
+            public const int MEROITIC_HIEROGLYPHS_ID = 215; /*[10980]*/
             /// <stable>ICU 49</stable>
-            public static readonly int MIAO_ID = 216; /*[16F00]*/
+            public const int MIAO_ID = 216; /*[16F00]*/
             /// <stable>ICU 49</stable>
-            public static readonly int SHARADA_ID = 217; /*[11180]*/
+            public const int SHARADA_ID = 217; /*[11180]*/
             /// <stable>ICU 49</stable>
-            public static readonly int SORA_SOMPENG_ID = 218; /*[110D0]*/
+            public const int SORA_SOMPENG_ID = 218; /*[110D0]*/
             /// <stable>ICU 49</stable>
-            public static readonly int SUNDANESE_SUPPLEMENT_ID = 219; /*[1CC0]*/
+            public const int SUNDANESE_SUPPLEMENT_ID = 219; /*[1CC0]*/
             /// <stable>ICU 49</stable>
-            public static readonly int TAKRI_ID = 220; /*[11680]*/
+            public const int TAKRI_ID = 220; /*[11680]*/
 
             /* New blocks in Unicode 7.0 */
 
             /// <stable>ICU 54</stable>
-            public static readonly int BASSA_VAH_ID = 221; /*[16AD0]*/
+            public const int BASSA_VAH_ID = 221; /*[16AD0]*/
             /// <stable>ICU 54</stable>
-            public static readonly int CAUCASIAN_ALBANIAN_ID = 222; /*[10530]*/
+            public const int CAUCASIAN_ALBANIAN_ID = 222; /*[10530]*/
             /// <stable>ICU 54</stable>
-            public static readonly int COPTIC_EPACT_NUMBERS_ID = 223; /*[102E0]*/
+            public const int COPTIC_EPACT_NUMBERS_ID = 223; /*[102E0]*/
             /// <stable>ICU 54</stable>
-            public static readonly int COMBINING_DIACRITICAL_MARKS_EXTENDED_ID = 224; /*[1AB0]*/
+            public const int COMBINING_DIACRITICAL_MARKS_EXTENDED_ID = 224; /*[1AB0]*/
             /// <stable>ICU 54</stable>
-            public static readonly int DUPLOYAN_ID = 225; /*[1BC00]*/
+            public const int DUPLOYAN_ID = 225; /*[1BC00]*/
             /// <stable>ICU 54</stable>
-            public static readonly int ELBASAN_ID = 226; /*[10500]*/
+            public const int ELBASAN_ID = 226; /*[10500]*/
             /// <stable>ICU 54</stable>
-            public static readonly int GEOMETRIC_SHAPES_EXTENDED_ID = 227; /*[1F780]*/
+            public const int GEOMETRIC_SHAPES_EXTENDED_ID = 227; /*[1F780]*/
             /// <stable>ICU 54</stable>
-            public static readonly int GRANTHA_ID = 228; /*[11300]*/
+            public const int GRANTHA_ID = 228; /*[11300]*/
             /// <stable>ICU 54</stable>
-            public static readonly int KHOJKI_ID = 229; /*[11200]*/
+            public const int KHOJKI_ID = 229; /*[11200]*/
             /// <stable>ICU 54</stable>
-            public static readonly int KHUDAWADI_ID = 230; /*[112B0]*/
+            public const int KHUDAWADI_ID = 230; /*[112B0]*/
             /// <stable>ICU 54</stable>
-            public static readonly int LATIN_EXTENDED_E_ID = 231; /*[AB30]*/
+            public const int LATIN_EXTENDED_E_ID = 231; /*[AB30]*/
             /// <stable>ICU 54</stable>
-            public static readonly int LINEAR_A_ID = 232; /*[10600]*/
+            public const int LINEAR_A_ID = 232; /*[10600]*/
             /// <stable>ICU 54</stable>
-            public static readonly int MAHAJANI_ID = 233; /*[11150]*/
+            public const int MAHAJANI_ID = 233; /*[11150]*/
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_ID = 234; /*[10AC0]*/
+            public const int MANICHAEAN_ID = 234; /*[10AC0]*/
             /// <stable>ICU 54</stable>
-            public static readonly int MENDE_KIKAKUI_ID = 235; /*[1E800]*/
+            public const int MENDE_KIKAKUI_ID = 235; /*[1E800]*/
             /// <stable>ICU 54</stable>
-            public static readonly int MODI_ID = 236; /*[11600]*/
+            public const int MODI_ID = 236; /*[11600]*/
             /// <stable>ICU 54</stable>
-            public static readonly int MRO_ID = 237; /*[16A40]*/
+            public const int MRO_ID = 237; /*[16A40]*/
             /// <stable>ICU 54</stable>
-            public static readonly int MYANMAR_EXTENDED_B_ID = 238; /*[A9E0]*/
+            public const int MYANMAR_EXTENDED_B_ID = 238; /*[A9E0]*/
             /// <stable>ICU 54</stable>
-            public static readonly int NABATAEAN_ID = 239; /*[10880]*/
+            public const int NABATAEAN_ID = 239; /*[10880]*/
             /// <stable>ICU 54</stable>
-            public static readonly int OLD_NORTH_ARABIAN_ID = 240; /*[10A80]*/
+            public const int OLD_NORTH_ARABIAN_ID = 240; /*[10A80]*/
             /// <stable>ICU 54</stable>
-            public static readonly int OLD_PERMIC_ID = 241; /*[10350]*/
+            public const int OLD_PERMIC_ID = 241; /*[10350]*/
             /// <stable>ICU 54</stable>
-            public static readonly int ORNAMENTAL_DINGBATS_ID = 242; /*[1F650]*/
+            public const int ORNAMENTAL_DINGBATS_ID = 242; /*[1F650]*/
             /// <stable>ICU 54</stable>
-            public static readonly int PAHAWH_HMONG_ID = 243; /*[16B00]*/
+            public const int PAHAWH_HMONG_ID = 243; /*[16B00]*/
             /// <stable>ICU 54</stable>
-            public static readonly int PALMYRENE_ID = 244; /*[10860]*/
+            public const int PALMYRENE_ID = 244; /*[10860]*/
             /// <stable>ICU 54</stable>
-            public static readonly int PAU_CIN_HAU_ID = 245; /*[11AC0]*/
+            public const int PAU_CIN_HAU_ID = 245; /*[11AC0]*/
             /// <stable>ICU 54</stable>
-            public static readonly int PSALTER_PAHLAVI_ID = 246; /*[10B80]*/
+            public const int PSALTER_PAHLAVI_ID = 246; /*[10B80]*/
             /// <stable>ICU 54</stable>
-            public static readonly int SHORTHAND_FORMAT_CONTROLS_ID = 247; /*[1BCA0]*/
+            public const int SHORTHAND_FORMAT_CONTROLS_ID = 247; /*[1BCA0]*/
             /// <stable>ICU 54</stable>
-            public static readonly int SIDDHAM_ID = 248; /*[11580]*/
+            public const int SIDDHAM_ID = 248; /*[11580]*/
             /// <stable>ICU 54</stable>
-            public static readonly int SINHALA_ARCHAIC_NUMBERS_ID = 249; /*[111E0]*/
+            public const int SINHALA_ARCHAIC_NUMBERS_ID = 249; /*[111E0]*/
             /// <stable>ICU 54</stable>
-            public static readonly int SUPPLEMENTAL_ARROWS_C_ID = 250; /*[1F800]*/
+            public const int SUPPLEMENTAL_ARROWS_C_ID = 250; /*[1F800]*/
             /// <stable>ICU 54</stable>
-            public static readonly int TIRHUTA_ID = 251; /*[11480]*/
+            public const int TIRHUTA_ID = 251; /*[11480]*/
             /// <stable>ICU 54</stable>
-            public static readonly int WARANG_CITI_ID = 252; /*[118A0]*/
+            public const int WARANG_CITI_ID = 252; /*[118A0]*/
 
             /* New blocks in Unicode 8.0 */
 
             /// <stable>ICU 56</stable>
-            public static readonly int AHOM_ID = 253; /*[11700]*/
+            public const int AHOM_ID = 253; /*[11700]*/
             /// <stable>ICU 56</stable>
-            public static readonly int ANATOLIAN_HIEROGLYPHS_ID = 254; /*[14400]*/
+            public const int ANATOLIAN_HIEROGLYPHS_ID = 254; /*[14400]*/
             /// <stable>ICU 56</stable>
-            public static readonly int CHEROKEE_SUPPLEMENT_ID = 255; /*[AB70]*/
+            public const int CHEROKEE_SUPPLEMENT_ID = 255; /*[AB70]*/
             /// <stable>ICU 56</stable>
-            public static readonly int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_E_ID = 256; /*[2B820]*/
+            public const int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_E_ID = 256; /*[2B820]*/
             /// <stable>ICU 56</stable>
-            public static readonly int EARLY_DYNASTIC_CUNEIFORM_ID = 257; /*[12480]*/
+            public const int EARLY_DYNASTIC_CUNEIFORM_ID = 257; /*[12480]*/
             /// <stable>ICU 56</stable>
-            public static readonly int HATRAN_ID = 258; /*[108E0]*/
+            public const int HATRAN_ID = 258; /*[108E0]*/
             /// <stable>ICU 56</stable>
-            public static readonly int MULTANI_ID = 259; /*[11280]*/
+            public const int MULTANI_ID = 259; /*[11280]*/
             /// <stable>ICU 56</stable>
-            public static readonly int OLD_HUNGARIAN_ID = 260; /*[10C80]*/
+            public const int OLD_HUNGARIAN_ID = 260; /*[10C80]*/
             /// <stable>ICU 56</stable>
-            public static readonly int SUPPLEMENTAL_SYMBOLS_AND_PICTOGRAPHS_ID = 261; /*[1F900]*/
+            public const int SUPPLEMENTAL_SYMBOLS_AND_PICTOGRAPHS_ID = 261; /*[1F900]*/
             /// <stable>ICU 56</stable>
-            public static readonly int SUTTON_SIGNWRITING_ID = 262; /*[1D800]*/
+            public const int SUTTON_SIGNWRITING_ID = 262; /*[1D800]*/
 
             /* New blocks in Unicode 9.0 */
 
             /// <stable>ICU 58</stable>
-            public static readonly int ADLAM_ID = 263; /*[1E900]*/
+            public const int ADLAM_ID = 263; /*[1E900]*/
             /// <stable>ICU 58</stable>
-            public static readonly int BHAIKSUKI_ID = 264; /*[11C00]*/
+            public const int BHAIKSUKI_ID = 264; /*[11C00]*/
             /// <stable>ICU 58</stable>
-            public static readonly int CYRILLIC_EXTENDED_C_ID = 265; /*[1C80]*/
+            public const int CYRILLIC_EXTENDED_C_ID = 265; /*[1C80]*/
             /// <stable>ICU 58</stable>
-            public static readonly int GLAGOLITIC_SUPPLEMENT_ID = 266; /*[1E000]*/
+            public const int GLAGOLITIC_SUPPLEMENT_ID = 266; /*[1E000]*/
             /// <stable>ICU 58</stable>
-            public static readonly int IDEOGRAPHIC_SYMBOLS_AND_PUNCTUATION_ID = 267; /*[16FE0]*/
+            public const int IDEOGRAPHIC_SYMBOLS_AND_PUNCTUATION_ID = 267; /*[16FE0]*/
             /// <stable>ICU 58</stable>
-            public static readonly int MARCHEN_ID = 268; /*[11C70]*/
+            public const int MARCHEN_ID = 268; /*[11C70]*/
             /// <stable>ICU 58</stable>
-            public static readonly int MONGOLIAN_SUPPLEMENT_ID = 269; /*[11660]*/
+            public const int MONGOLIAN_SUPPLEMENT_ID = 269; /*[11660]*/
             /// <stable>ICU 58</stable>
-            public static readonly int NEWA_ID = 270; /*[11400]*/
+            public const int NEWA_ID = 270; /*[11400]*/
             /// <stable>ICU 58</stable>
-            public static readonly int OSAGE_ID = 271; /*[104B0]*/
+            public const int OSAGE_ID = 271; /*[104B0]*/
             /// <stable>ICU 58</stable>
-            public static readonly int TANGUT_ID = 272; /*[17000]*/
+            public const int TANGUT_ID = 272; /*[17000]*/
             /// <stable>ICU 58</stable>
-            public static readonly int TANGUT_COMPONENTS_ID = 273; /*[18800]*/
+            public const int TANGUT_COMPONENTS_ID = 273; /*[18800]*/
 
             // New blocks in Unicode 10.0
 
             /// <stable>ICU 60</stable>
-            public static readonly int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_F_ID = 274; /*[2CEB0]*/
+            public const int CJK_UNIFIED_IDEOGRAPHS_EXTENSION_F_ID = 274; /*[2CEB0]*/
             /// <stable>ICU 60</stable>
-            public static readonly int KANA_EXTENDED_A_ID = 275; /*[1B100]*/
+            public const int KANA_EXTENDED_A_ID = 275; /*[1B100]*/
             /// <stable>ICU 60</stable>
-            public static readonly int MASARAM_GONDI_ID = 276; /*[11D00]*/
+            public const int MASARAM_GONDI_ID = 276; /*[11D00]*/
             /// <stable>ICU 60</stable>
-            public static readonly int NUSHU_ID = 277; /*[1B170]*/
+            public const int NUSHU_ID = 277; /*[1B170]*/
             /// <stable>ICU 60</stable>
-            public static readonly int SOYOMBO_ID = 278; /*[11A50]*/
+            public const int SOYOMBO_ID = 278; /*[11A50]*/
             /// <stable>ICU 60</stable>
-            public static readonly int SYRIAC_SUPPLEMENT_ID = 279; /*[0860]*/
+            public const int SYRIAC_SUPPLEMENT_ID = 279; /*[0860]*/
             /// <stable>ICU 60</stable>
-            public static readonly int ZANABAZAR_SQUARE_ID = 280; /*[11A00]*/
+            public const int ZANABAZAR_SQUARE_ID = 280; /*[11A00]*/
 
             /// <summary>
             /// One more than the highest normal UnicodeBlock value.
@@ -814,7 +814,7 @@ namespace ICU4N.Lang
             /// with parameter <see cref="UProperty.Block"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 281;
+            public const int COUNT = 281;
 
             // blocks objects ---------------------------------------------------
 
@@ -1929,24 +1929,24 @@ namespace ICU4N.Lang
         public static class EastAsianWidth
         {
             /// <stable>ICU 2.4</stable>
-            public static readonly int NEUTRAL = 0;
+            public const int Neutral = 0;
             /// <stable>ICU 2.4</stable>
-            public static readonly int AMBIGUOUS = 1;
+            public const int Ambiguous = 1;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HALFWIDTH = 2;
+            public const int HalfWidth = 2;
             /// <stable>ICU 2.4</stable>
-            public static readonly int FULLWIDTH = 3;
+            public const int FullWidth = 3;
             /// <stable>ICU 2.4</stable>
-            public static readonly int NARROW = 4;
+            public const int Narrow = 4;
             /// <stable>ICU 2.4</stable>
-            public static readonly int WIDE = 5;
+            public const int Wide = 5;
             /// <summary>
             /// One more than the highest normal <see cref="EastAsianWidth"/> value.
             /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.East_Asian_Width"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 6;
+            public const int Count = 6;
         }
 
         /// <summary>
@@ -1957,48 +1957,48 @@ namespace ICU4N.Lang
         public static class DecompositionType
         {
             /// <stable>ICU 2.4</stable>
-            public static readonly int NONE = 0;
+            public const int None = 0;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CANONICAL = 1;
+            public const int Canonical = 1;
             /// <stable>ICU 2.4</stable>
-            public static readonly int COMPAT = 2;
+            public const int Compat = 2;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CIRCLE = 3;
+            public const int Circle = 3;
             /// <stable>ICU 2.4</stable>
-            public static readonly int FINAL = 4;
+            public const int Final = 4;
             /// <stable>ICU 2.4</stable>
-            public static readonly int FONT = 5;
+            public const int Font = 5;
             /// <stable>ICU 2.4</stable>
-            public static readonly int FRACTION = 6;
+            public const int Fraction = 6;
             /// <stable>ICU 2.4</stable>
-            public static readonly int INITIAL = 7;
+            public const int Initial = 7;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ISOLATED = 8;
+            public const int Isolated = 8;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MEDIAL = 9;
+            public const int Medial = 9;
             /// <stable>ICU 2.4</stable>
-            public static readonly int NARROW = 10;
+            public const int Narrow = 10;
             /// <stable>ICU 2.4</stable>
-            public static readonly int NOBREAK = 11;
+            public const int NoBreak = 11;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SMALL = 12;
+            public const int Small = 12;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SQUARE = 13;
+            public const int Square = 13;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SUB = 14;
+            public const int Sub = 14;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SUPER = 15;
+            public const int Super = 15;
             /// <stable>ICU 2.4</stable>
-            public static readonly int VERTICAL = 16;
+            public const int Vertical = 16;
             /// <stable>ICU 2.4</stable>
-            public static readonly int WIDE = 17;
+            public const int Wide = 17;
             /// <summary>
             /// One more than the highest normal <see cref="DecompositionType"/> value.
             /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Decomposition_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 18;
+            public const int COUNT = 18;
         }
 
         /// <summary>
@@ -2009,24 +2009,24 @@ namespace ICU4N.Lang
         public static class JoiningType
         {
             /// <stable>ICU 2.4</stable>
-            public static readonly int NON_JOINING = 0;
+            public const int NonJoining = 0;
             /// <stable>ICU 2.4</stable>
-            public static readonly int JOIN_CAUSING = 1;
+            public const int JoinCausing = 1;
             /// <stable>ICU 2.4</stable>
-            public static readonly int DUAL_JOINING = 2;
+            public const int DualJoining = 2;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LEFT_JOINING = 3;
+            public const int LeftJoining = 3;
             /// <stable>ICU 2.4</stable>
-            public static readonly int RIGHT_JOINING = 4;
+            public const int RightJoining = 4;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TRANSPARENT = 5;
+            public const int Transparent = 5;
             /// <summary>
             /// One more than the highest normal <see cref="JoiningType"/> value.
             /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Joining_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 6;
+            public const int Count = 6;
         }
 
         /// <summary>
@@ -2037,210 +2037,210 @@ namespace ICU4N.Lang
         public static class JoiningGroup
         {
             /// <stable>ICU 2.4</stable>
-            public static readonly int NO_JOINING_GROUP = 0;
+            public const int NoJoiningGroup = 0;
             /// <stable>ICU 2.4</stable>
-            public static readonly int AIN = 1;
+            public const int Ain = 1;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ALAPH = 2;
+            public const int Alaph = 2;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ALEF = 3;
+            public const int Alef = 3;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BEH = 4;
+            public const int Beh = 4;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BETH = 5;
+            public const int Beth = 5;
             /// <stable>ICU 2.4</stable>
-            public static readonly int DAL = 6;
+            public const int Dal = 6;
             /// <stable>ICU 2.4</stable>
-            public static readonly int DALATH_RISH = 7;
+            public const int DalathRish = 7;
             /// <stable>ICU 2.4</stable>
-            public static readonly int E = 8;
+            public const int E = 8;
             /// <stable>ICU 2.4</stable>
-            public static readonly int FEH = 9;
+            public const int Feh = 9;
             /// <stable>ICU 2.4</stable>
-            public static readonly int FINAL_SEMKATH = 10;
+            public const int FinalSemkath = 10;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GAF = 11;
+            public const int Gaf = 11;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GAMAL = 12;
+            public const int Gamal = 12;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HAH = 13;
+            public const int Hah = 13;
             /// <stable>ICU 4.6</stable>
-            public static readonly int TEH_MARBUTA_GOAL = 14;
+            public const int TehMarbutaGoal = 14;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HAMZA_ON_HEH_GOAL = TEH_MARBUTA_GOAL;
+            public const int HamzaOnHehGoal = TehMarbutaGoal;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HE = 15;
+            public const int He = 15;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HEH = 16;
+            public const int Heh = 16;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HEH_GOAL = 17;
+            public const int HehGoal = 17;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HETH = 18;
+            public const int Heth = 18;
             /// <stable>ICU 2.4</stable>
-            public static readonly int KAF = 19;
+            public const int Kaf = 19;
             /// <stable>ICU 2.4</stable>
-            public static readonly int KAPH = 20;
+            public const int Kaph = 20;
             /// <stable>ICU 2.4</stable>
-            public static readonly int KNOTTED_HEH = 21;
+            public const int KnottedHeh = 21;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LAM = 22;
+            public const int Lam = 22;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LAMADH = 23;
+            public const int Lamadh = 23;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MEEM = 24;
+            public const int Meem = 24;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MIM = 25;
+            public const int Mim = 25;
             /// <stable>ICU 2.4</stable>
-            public static readonly int NOON = 26;
+            public const int Noon = 26;
             /// <stable>ICU 2.4</stable>
-            public static readonly int NUN = 27;
+            public const int Nun = 27;
             /// <stable>ICU 2.4</stable>
-            public static readonly int PE = 28;
+            public const int Pe = 28;
             /// <stable>ICU 2.4</stable>
-            public static readonly int QAF = 29;
+            public const int Qaf = 29;
             /// <stable>ICU 2.4</stable>
-            public static readonly int QAPH = 30;
+            public const int Qaph = 30;
             /// <stable>ICU 2.4</stable>
-            public static readonly int REH = 31;
+            public const int Reh = 31;
             /// <stable>ICU 2.4</stable>
-            public static readonly int REVERSED_PE = 32;
+            public const int ReversedPe = 32;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SAD = 33;
+            public const int Sad = 33;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SADHE = 34;
+            public const int Sadhe = 34;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SEEN = 35;
+            public const int Seen = 35;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SEMKATH = 36;
+            public const int Semkath = 36;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SHIN = 37;
+            public const int Shin = 37;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SWASH_KAF = 38;
+            public const int SwashKaf = 38;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SYRIAC_WAW = 39;
+            public const int SyriacWaw = 39;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TAH = 40;
+            public const int Tah = 40;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TAW = 41;
+            public const int Taw = 41;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TEH_MARBUTA = 42;
+            public const int TehMarbuta = 42;
             /// <stable>ICU 2.4</stable>
-            public static readonly int TETH = 43;
+            public const int Teth = 43;
             /// <stable>ICU 2.4</stable>
-            public static readonly int WAW = 44;
+            public const int Waw = 44;
             /// <stable>ICU 2.4</stable>
-            public static readonly int YEH = 45;
+            public const int Yeh = 45;
             /// <stable>ICU 2.4</stable>
-            public static readonly int YEH_BARREE = 46;
+            public const int YehBarree = 46;
             /// <stable>ICU 2.4</stable>
-            public static readonly int YEH_WITH_TAIL = 47;
+            public const int YehWithTail = 47;
             /// <stable>ICU 2.4</stable>
-            public static readonly int YUDH = 48;
+            public const int Yudh = 48;
             /// <stable>ICU 2.4</stable>
-            public static readonly int YUDH_HE = 49;
+            public const int YudhHe = 49;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ZAIN = 50;
+            public const int Zain = 50;
             /// <stable>ICU 2.6</stable>
-            public static readonly int FE = 51;
+            public const int Fe = 51;
             /// <stable>ICU 2.6</stable>
-            public static readonly int KHAPH = 52;
+            public const int Khaph = 52;
             /// <stable>ICU 2.6</stable>
-            public static readonly int ZHAIN = 53;
+            public const int Zhain = 53;
             /// <stable>ICU 4.0</stable>
-            public static readonly int BURUSHASKI_YEH_BARREE = 54;
+            public const int BurushaskiYehBarree = 54;
             /// <stable>ICU 4.4</stable>
-            public static readonly int FARSI_YEH = 55;
+            public const int FarsiYeh = 55;
             /// <stable>ICU 4.4</stable>
-            public static readonly int NYA = 56;
+            public const int Nya = 56;
             /// <stable>ICU 49</stable>
-            public static readonly int ROHINGYA_YEH = 57;
+            public const int RohingyaYeh = 57;
 
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_ALEPH = 58;
+            public const int ManichaeanAleph = 58;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_AYIN = 59;
+            public const int ManichaeanAyin = 59;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_BETH = 60;
+            public const int ManichaeanBeth = 60;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_DALETH = 61;
+            public const int ManichaeanDaleth = 61;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_DHAMEDH = 62;
+            public const int ManichaeanDhamedh = 62;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_FIVE = 63;
+            public const int ManichaeanFive = 63;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_GIMEL = 64;
+            public const int ManichaeanGimel = 64;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_HETH = 65;
+            public const int ManichaeanHeth = 65;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_HUNDRED = 66;
+            public const int ManichaeanHundred = 66;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_KAPH = 67;
+            public const int ManichaeanKaph = 67;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_LAMEDH = 68;
+            public const int ManichaeanLamedh = 68;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_MEM = 69;
+            public const int ManichaeanMem = 69;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_NUN = 70;
+            public const int ManichaeanNun = 70;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_ONE = 71;
+            public const int ManichaeanOne = 71;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_PE = 72;
+            public const int ManichaeanPe = 72;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_QOPH = 73;
+            public const int ManichaeanQoph = 73;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_RESH = 74;
+            public const int ManichaeanResh = 74;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_SADHE = 75;
+            public const int ManichaeanSadhe = 75;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_SAMEKH = 76;
+            public const int ManichaeanSamekh = 76;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_TAW = 77;
+            public const int ManichaeanTaw = 77;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_TEN = 78;
+            public const int ManichaeanTen = 78;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_TETH = 79;
+            public const int ManichaeanTeth = 79;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_THAMEDH = 80;
+            public const int ManichaeanThamedh = 80;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_TWENTY = 81;
+            public const int ManichaeanTwenty = 81;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_WAW = 82;
+            public const int ManichaeanWaw = 82;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_YODH = 83;
+            public const int ManichaeanYodh = 83;
             /// <stable>ICU 54</stable>
-            public static readonly int MANICHAEAN_ZAYIN = 84;
+            public const int ManichaeanZayin = 84;
             /// <stable>ICU 54</stable>
-            public static readonly int STRAIGHT_WAW = 85;
+            public const int StraightWaw = 85;
 
             /// <stable>ICU 58</stable>
-            public static readonly int AFRICAN_FEH = 86;
+            public const int AfricanFeh = 86;
             /// <stable>ICU 58</stable>
-            public static readonly int AFRICAN_NOON = 87;
+            public const int AfricanNoon = 87;
             /// <stable>ICU 58</stable>
-            public static readonly int AFRICAN_QAF = 88;
+            public const int AfricanQaf = 88;
 
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_BHA = 89;
+            public const int MalayalamBha = 89;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_JA = 90;
+            public const int MalayalamJa = 90;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_LLA = 91;
+            public const int MalayalamLla = 91;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_LLLA = 92;
+            public const int MalayalamLlla = 92;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_NGA = 93;
+            public const int MalayalamNga = 93;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_NNA = 94;
+            public const int MalayalamNna = 94;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_NNNA = 95;
+            public const int MalayalamNnna = 95;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_NYA = 96;
+            public const int MalayalamNya = 96;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_RA = 97;
+            public const int MalayalamRa = 97;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_SSA = 98;
+            public const int MalayalamSsa = 98;
             /// <stable>ICU 60</stable>
-            public static readonly int MALAYALAM_TTA = 99;
+            public const int MalayalamTta = 99;
 
             /// <summary>
             /// One more than the highest normal <see cref="JoiningGroup"/> value.
@@ -2248,7 +2248,7 @@ namespace ICU4N.Lang
             /// with parameter <see cref="UProperty.Joining_Group"/>
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 100;
+            public const int Count = 100;
         }
 
         /// <summary>
@@ -2259,41 +2259,41 @@ namespace ICU4N.Lang
         public static class GraphemeClusterBreak
         {
             /// <stable>ICU 3.4</stable>
-            public static readonly int OTHER = 0;
+            public const int Other = 0;
             /// <stable>ICU 3.4</stable>
-            public static readonly int CONTROL = 1;
+            public const int Control = 1;
             /// <stable>ICU 3.4</stable>
-            public static readonly int CR = 2;
+            public const int Cr = 2;
             /// <stable>ICU 3.4</stable>
-            public static readonly int EXTEND = 3;
+            public const int Extend = 3;
             /// <stable>ICU 3.4</stable>
-            public static readonly int L = 4;
+            public const int L = 4;
             /// <stable>ICU 3.4</stable>
-            public static readonly int LF = 5;
+            public const int Lf = 5;
             /// <stable>ICU 3.4</stable>
-            public static readonly int LV = 6;
+            public const int Lv = 6;
             /// <stable>ICU 3.4</stable>
-            public static readonly int LVT = 7;
+            public const int Lvt = 7;
             /// <stable>ICU 3.4</stable>
-            public static readonly int T = 8;
+            public const int T = 8;
             /// <stable>ICU 3.4</stable>
-            public static readonly int V = 9;
+            public const int V = 9;
             /// <stable>ICU 4.0</stable>
-            public static readonly int SPACING_MARK = 10;
+            public const int SpacingMark = 10;
             /// <stable>ICU 4.0</stable>
-            public static readonly int PREPEND = 11;
+            public const int Prepend = 11;
             /// <stable>ICU 50</stable>
-            public static readonly int REGIONAL_INDICATOR = 12;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
+            public const int RegionalIndicator = 12;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
             /// <stable>ICU 58</stable>
-            public static readonly int E_BASE = 13;          /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
+            public const int EBase = 13;          /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
             /// <stable>ICU 58</stable>
-            public static readonly int E_BASE_GAZ = 14;      /*[EBG]*/
+            public const int EBaseGaz = 14;      /*[EBG]*/
             /// <stable>ICU 58</stable>
-            public static readonly int E_MODIFIER = 15;      /*[EM]*/
+            public const int EModifier = 15;      /*[EM]*/
             /// <stable>ICU 58</stable>
-            public static readonly int GLUE_AFTER_ZWJ = 16;  /*[GAZ]*/
+            public const int GlueAfterZwj = 16;  /*[GAZ]*/
             /// <stable>ICU 58</stable>
-            public static readonly int ZWJ = 17;             /*[ZWJ]*/
+            public const int Zwj = 17;             /*[ZWJ]*/
 
             /// <summary>
             /// One more than the highest normal <see cref="GraphemeClusterBreak"/> value.
@@ -2301,7 +2301,7 @@ namespace ICU4N.Lang
             /// with parameter <see cref="UProperty.Grapheme_Cluster_Break"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 18;
+            public const int Count = 18;
         }
 
         /// <summary>
@@ -2312,49 +2312,49 @@ namespace ICU4N.Lang
         public static class WordBreak
         {
             /// <stable>ICU 3.8</stable>
-            public static readonly int OTHER = 0;
+            public const int Other = 0;
             /// <stable>ICU 3.8</stable>
-            public static readonly int ALETTER = 1;
+            public const int ALetter = 1;
             /// <stable>ICU 3.8</stable>
-            public static readonly int FORMAT = 2;
+            public const int Format = 2;
             /// <stable>ICU 3.8</stable>
-            public static readonly int KATAKANA = 3;
+            public const int Katakana = 3;
             /// <stable>ICU 3.8</stable>
-            public static readonly int MIDLETTER = 4;
+            public const int MidLetter = 4;
             /// <stable>ICU 3.8</stable>
-            public static readonly int MIDNUM = 5;
+            public const int MidNum = 5;
             /// <stable>ICU 3.8</stable>
-            public static readonly int NUMERIC = 6;
+            public const int Numeric = 6;
             /// <stable>ICU 3.8</stable>
-            public static readonly int EXTENDNUMLET = 7;
+            public const int ExtendNumLet = 7;
             /// <stable>ICU 4.0</stable>
-            public static readonly int CR = 8;
+            public const int Cr = 8;
             /// <stable>ICU 4.0</stable>
-            public static readonly int EXTEND = 9;
+            public const int Extend = 9;
             /// <stable>ICU 4.0</stable>
-            public static readonly int LF = 10;
+            public const int Lf = 10;
             /// <stable>ICU 4.0</stable>
-            public static readonly int MIDNUMLET = 11;
+            public const int MidNumLet = 11;
             /// <stable>ICU 4.0</stable>
-            public static readonly int NEWLINE = 12;
+            public const int Newline = 12;
             /// <stable>ICU 50</stable>
-            public static readonly int REGIONAL_INDICATOR = 13;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
+            public const int RegionalIndicator = 13;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
             /// <stable>ICU 52</stable>
-            public static readonly int HEBREW_LETTER = 14;    /*[HL]*/ /* from here on: new in Unicode 6.3/ICU 52 */
+            public const int HebrewLetter = 14;    /*[HL]*/ /* from here on: new in Unicode 6.3/ICU 52 */
             /// <stable>ICU 52</stable>
-            public static readonly int SINGLE_QUOTE = 15;     /*[SQ]*/
+            public const int SingleQuote = 15;     /*[SQ]*/
             /// <stable>ICU 52</stable>
-            public static readonly int DOUBLE_QUOTE = 16;     /*[DQ]*/
+            public const int DoubleQuote = 16;     /*[DQ]*/
             /// <stable>ICU 58</stable>
-            public static readonly int E_BASE = 17;           /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
+            public const int EBase = 17;           /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
             /// <stable>ICU 58</stable>
-            public static readonly int E_BASE_GAZ = 18;       /*[EBG]*/
+            public const int EBaseGaz = 18;       /*[EBG]*/
             /// <stable>ICU 58</stable>
-            public static readonly int E_MODIFIER = 19;       /*[EM]*/
+            public const int EModifier = 19;       /*[EM]*/
             /// <stable>ICU 58</stable>
-            public static readonly int GLUE_AFTER_ZWJ = 20;   /*[GAZ]*/
+            public const int GlueAfterZwj = 20;   /*[GAZ]*/
             /// <stable>ICU 58</stable>
-            public static readonly int ZWJ = 21;              /*[ZWJ]*/
+            public const int Zwj = 21;              /*[ZWJ]*/
 
             /// <summary>
             /// One more than the highest normal <see cref="WordBreak"/> value.
@@ -2362,7 +2362,7 @@ namespace ICU4N.Lang
             /// with parameter <see cref="UProperty.Word_Break"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 22;
+            public const int Count = 22;
         }
 
         /// <summary>
@@ -2373,35 +2373,35 @@ namespace ICU4N.Lang
         public static class SentenceBreak
         {
             /// <stable>ICU 3.8</stable>
-            public static readonly int OTHER = 0;
+            public const int Other = 0;
             /// <stable>ICU 3.8</stable>
-            public static readonly int ATERM = 1;
+            public const int ATerm = 1;
             /// <stable>ICU 3.8</stable>
-            public static readonly int CLOSE = 2;
+            public const int Close = 2;
             /// <stable>ICU 3.8</stable>
-            public static readonly int FORMAT = 3;
+            public const int Format = 3;
             /// <stable>ICU 3.8</stable>
-            public static readonly int LOWER = 4;
+            public const int Lower = 4;
             /// <stable>ICU 3.8</stable>
-            public static readonly int NUMERIC = 5;
+            public const int Numeric = 5;
             /// <stable>ICU 3.8</stable>
-            public static readonly int OLETTER = 6;
+            public const int OLetter = 6;
             /// <stable>ICU 3.8</stable>
-            public static readonly int SEP = 7;
+            public const int Sep = 7;
             /// <stable>ICU 3.8</stable>
-            public static readonly int SP = 8;
+            public const int Sp = 8;
             /// <stable>ICU 3.8</stable>
-            public static readonly int STERM = 9;
+            public const int STerm = 9;
             /// <stable>ICU 3.8</stable>
-            public static readonly int UPPER = 10;
+            public const int Upper = 10;
             /// <stable>ICU 4.0</stable>
-            public static readonly int CR = 11;
+            public const int Cr = 11;
             /// <stable>ICU 4.0</stable>
-            public static readonly int EXTEND = 12;
+            public const int Extend = 12;
             /// <stable>ICU 4.0</stable>
-            public static readonly int LF = 13;
+            public const int Lf = 13;
             /// <stable>ICU 4.0</stable>
-            public static readonly int SCONTINUE = 14;
+            public const int SContinue = 14;
 
             /// <summary>
             /// One more than the highest normal <see cref="SentenceBreak"/> value.
@@ -2409,7 +2409,7 @@ namespace ICU4N.Lang
             /// with parameter <see cref="UProperty.Sentence_Break"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 15;
+            public const int Count = 15;
         }
 
         /// <summary>
@@ -2420,97 +2420,97 @@ namespace ICU4N.Lang
         public static class LineBreak
         {
             /// <stable>ICU 2.4</stable>
-            public static readonly int UNKNOWN = 0;
+            public const int Unknown = 0;
             /// <stable>ICU 2.4</stable>
-            public static readonly int AMBIGUOUS = 1;
+            public const int Ambiguous = 1;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ALPHABETIC = 2;
+            public const int Alphabetic = 2;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BREAK_BOTH = 3;
+            public const int BreakBoth = 3;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BREAK_AFTER = 4;
+            public const int BreakAfter = 4;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BREAK_BEFORE = 5;
+            public const int BreakBefore = 5;
             /// <stable>ICU 2.4</stable>
-            public static readonly int MANDATORY_BREAK = 6;
+            public const int MandatoryBreak = 6;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CONTINGENT_BREAK = 7;
+            public const int ContingentBreak = 7;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CLOSE_PUNCTUATION = 8;
+            public const int ClosePunctuation = 8;
             /// <stable>ICU 2.4</stable>
-            public static readonly int COMBINING_MARK = 9;
+            public const int CombiningMark = 9;
             /// <stable>ICU 2.4</stable>
-            public static readonly int CARRIAGE_RETURN = 10;
+            public const int CarriageReturn = 10;
             /// <stable>ICU 2.4</stable>
-            public static readonly int EXCLAMATION = 11;
+            public const int Exclamation = 11;
             /// <stable>ICU 2.4</stable>
-            public static readonly int GLUE = 12;
+            public const int Glue = 12;
             /// <stable>ICU 2.4</stable>
-            public static readonly int HYPHEN = 13;
+            public const int Hyphen = 13;
             /// <stable>ICU 2.4</stable>
-            public static readonly int IDEOGRAPHIC = 14;
-            /// <seealso cref="INSEPARABLE"/>
-            /// <stable>ICU 2.4</stable>
-            public static readonly int INSEPERABLE = 15;
-            /// <summary>
-            /// Renamed from the misspelled "inseperable" in Unicode 4.0.1.
-            /// </summary>
+            public const int Ideographic = 14;
+            ///// <seealso cref="Inseparable"/>
+            ///// <stable>ICU 2.4</stable>
+            //public const int Inseperable = 15;
+            ///// <summary>
+            ///// Renamed from the misspelled "inseperable" in Unicode 4.0.1.
+            ///// </summary>
             /// <stable>ICU 3.0</stable>
-            public static readonly int INSEPARABLE = 15;
+            public const int Inseparable = 15;
             /// <stable>ICU 2.4</stable>
-            public static readonly int INFIX_NUMERIC = 16;
+            public const int InfixNumeric = 16;
             /// <stable>ICU 2.4</stable>
-            public static readonly int LINE_FEED = 17;
+            public const int LineFeed = 17;
             /// <stable>ICU 2.4</stable>
-            public static readonly int NONSTARTER = 18;
+            public const int Nonstarter = 18;
             /// <stable>ICU 2.4</stable>
-            public static readonly int NUMERIC = 19;
+            public const int Numeric = 19;
             /// <stable>ICU 2.4</stable>
-            public static readonly int OPEN_PUNCTUATION = 20;
+            public const int OpenPunctuation = 20;
             /// <stable>ICU 2.4</stable>
-            public static readonly int POSTFIX_NUMERIC = 21;
+            public const int PostfixNumeric = 21;
             /// <stable>ICU 2.4</stable>
-            public static readonly int PREFIX_NUMERIC = 22;
+            public const int PrefixNumeric = 22;
             /// <stable>ICU 2.4</stable>
-            public static readonly int QUOTATION = 23;
+            public const int Quotation = 23;
             /// <stable>ICU 2.4</stable>
-            public static readonly int COMPLEX_CONTEXT = 24;
+            public const int ComplexContext = 24;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SURROGATE = 25;
+            public const int Surrogate = 25;
             /// <stable>ICU 2.4</stable>
-            public static readonly int SPACE = 26;
+            public const int Space = 26;
             /// <stable>ICU 2.4</stable>
-            public static readonly int BREAK_SYMBOLS = 27;
+            public const int BreakSymbols = 27;
             /// <stable>ICU 2.4</stable>
-            public static readonly int ZWSPACE = 28;
+            public const int ZwSpace = 28;
             /// <stable>ICU 2.6</stable>
-            public static readonly int NEXT_LINE = 29;  /*[NL]*/ /* from here on: new in Unicode 4/ICU 2.6 */
+            public const int NextLine = 29;  /*[NL]*/ /* from here on: new in Unicode 4/ICU 2.6 */
             /// <stable>ICU 2.6</stable>
-            public static readonly int WORD_JOINER = 30;      /*[WJ]*/
+            public const int WordJoiner = 30;      /*[WJ]*/
             /// <stable>ICU 3.4</stable>
-            public static readonly int H2 = 31;  /* from here on: new in Unicode 4.1/ICU 3.4 */
+            public const int H2 = 31;  /* from here on: new in Unicode 4.1/ICU 3.4 */
             /// <stable>ICU 3.4</stable>
-            public static readonly int H3 = 32;
+            public const int H3 = 32;
             /// <stable>ICU 3.4</stable>
-            public static readonly int JL = 33;
+            public const int Jl = 33;
             /// <stable>ICU 3.4</stable>
-            public static readonly int JT = 34;
+            public const int Jt = 34;
             /// <stable>ICU 3.4</stable>
-            public static readonly int JV = 35;
+            public const int Jv = 35;
             /// <stable>ICU 4.4</stable>
-            public static readonly int CLOSE_PARENTHESIS = 36; /*[CP]*/ /* new in Unicode 5.2/ICU 4.4 */
+            public const int CloseParenthesis = 36; /*[CP]*/ /* new in Unicode 5.2/ICU 4.4 */
             /// <stable>ICU 49</stable>
-            public static readonly int CONDITIONAL_JAPANESE_STARTER = 37;  /*[CJ]*/ /* new in Unicode 6.1/ICU 49 */
+            public const int ConditionalJapaneseStarter = 37;  /*[CJ]*/ /* new in Unicode 6.1/ICU 49 */
             /// <stable>ICU 49</stable>
-            public static readonly int HEBREW_LETTER = 38;  /*[HL]*/ /* new in Unicode 6.1/ICU 49 */
+            public const int HebrewLetter = 38;  /*[HL]*/ /* new in Unicode 6.1/ICU 49 */
             /// <stable>ICU 50</stable>
-            public static readonly int REGIONAL_INDICATOR = 39;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
+            public const int RegionalIndicator = 39;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
             /// <stable>ICU 58</stable>
-            public static readonly int E_BASE = 40;  /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
+            public const int EBase = 40;  /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
             /// <stable>ICU 58</stable>
-            public static readonly int E_MODIFIER = 41;  /*[EM]*/
+            public const int EModifier = 41;  /*[EM]*/
             /// <stable>ICU 58</stable>
-            public static readonly int ZWJ = 42;  /*[ZWJ]*/
+            public const int Zwj = 42;  /*[ZWJ]*/
 
             /// <summary>
             /// One more than the highest normal <see cref="LineBreak"/> value.
@@ -2518,7 +2518,7 @@ namespace ICU4N.Lang
             /// with parameter <see cref="UProperty.Line_Break"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 43;
+            public const int Count = 43;
         }
 
         /// <summary>
@@ -2529,13 +2529,13 @@ namespace ICU4N.Lang
         public static class NumericType
         {
             /// <stable>ICU 2.4</stable>
-            public static readonly int NONE = 0;
+            public const int None = 0;
             /// <stable>ICU 2.4</stable>
-            public static readonly int DECIMAL = 1;
+            public const int Decimal = 1;
             /// <stable>ICU 2.4</stable>
-            public static readonly int DIGIT = 2;
+            public const int Digit = 2;
             /// <stable>ICU 2.4</stable>
-            public static readonly int NUMERIC = 3;
+            public const int Numeric = 3;
 
             /// <summary>
             /// One more than the highest normal <see cref="NumericType"/> value.
@@ -2543,7 +2543,7 @@ namespace ICU4N.Lang
             /// with parameter <see cref="UProperty.Numeric_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 4;
+            public const int Count = 4;
         }
 
         /// <summary>
@@ -2554,17 +2554,17 @@ namespace ICU4N.Lang
         public static class HangulSyllableType
         {
             /// <stable>ICU 2.6</stable>
-            public static readonly int NOT_APPLICABLE = 0;   /*[NA]*/ /*See note !!*/
+            public const int NotApplicable = 0;   /*[NA]*/ /*See note !!*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int LEADING_JAMO = 1;   /*[L]*/
+            public const int LeadingJamo = 1;   /*[L]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int VOWEL_JAMO = 2;   /*[V]*/
+            public const int VowelJamo = 2;   /*[V]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int TRAILING_JAMO = 3;   /*[T]*/
+            public const int TrailingJamo = 3;   /*[T]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int LV_SYLLABLE = 4;   /*[LV]*/
+            public const int LvSyllable = 4;   /*[LV]*/
             /// <stable>ICU 2.6</stable>
-            public static readonly int LVT_SYLLABLE = 5;   /*[LVT]*/
+            public const int LvtSyllable = 5;   /*[LVT]*/
 
             /// <summary>
             /// One more than the highest normal <see cref="HangulSyllableType"/> value.
@@ -2572,7 +2572,7 @@ namespace ICU4N.Lang
             /// with parameter <see cref="UProperty.Hangul_Syllable_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 6;
+            public const int COUNT = 6;
         }
 
         /// <summary>
@@ -2586,17 +2586,17 @@ namespace ICU4N.Lang
             /// Not a paired bracket.
             /// </summary>
             /// <stable>ICU 52</stable>
-            public static readonly int NONE = 0;
+            public const int None = 0;
             /// <summary>
             /// Open paired bracket.
             /// </summary>
             /// <stable>ICU 52</stable>
-            public static readonly int OPEN = 1;
+            public const int Open = 1;
             /// <summary>
             /// Close paired bracket.
             /// </summary>
             /// <stable>ICU 52</stable>
-            public static readonly int CLOSE = 2;
+            public const int Close = 2;
 
             /// <summary>
             /// One more than the highest normal <see cref="BidiPairedBracketType"/> value.
@@ -2604,7 +2604,7 @@ namespace ICU4N.Lang
             /// with parameter <see cref="UProperty.Bidi_Paired_Bracket_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public static readonly int COUNT = 3;
+            public const int Count = 3;
         }
 
         // public data members -----------------------------------------------
@@ -2614,7 +2614,7 @@ namespace ICU4N.Lang
         /// Same integer value as <see cref="Char.MinValue"/>.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public static readonly int MIN_VALUE = Character.MIN_CODE_POINT; // ICU4N TODO: Change to Char.MinValue
+        public const int MIN_VALUE = Character.MIN_CODE_POINT; // ICU4N TODO: Change to Char.MinValue
 
         /// <summary>
         /// The highest Unicode code point value (scalar value), constant U+10FFFF (uses 21 bits).
@@ -2624,21 +2624,21 @@ namespace ICU4N.Lang
         /// which is still a char with the value U+FFFF.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public static readonly int MAX_VALUE = Character.MAX_CODE_POINT; // ICU4N TODO: Change to Char.MaxValue (and check documentation to ensure it is right)
+        public const int MAX_VALUE = Character.MAX_CODE_POINT; // ICU4N TODO: Change to Char.MaxValue (and check documentation to ensure it is right)
 
         /// <summary>
         /// The minimum value for Supplementary code points, constant U+10000.
         /// Same as <see cref="Character.MIN_SUPPLEMENTARY_CODE_POINT"/>.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public static readonly int SUPPLEMENTARY_MIN_VALUE = Character.MIN_SUPPLEMENTARY_CODE_POINT;
+        public const int SUPPLEMENTARY_MIN_VALUE = Character.MIN_SUPPLEMENTARY_CODE_POINT;
 
         /// <summary>
         /// Unicode value used when translating into Unicode encoding form and there
         /// is no existing character.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public static readonly int REPLACEMENT_CHAR = '\uFFFD';
+        public const int REPLACEMENT_CHAR = '\uFFFD';
 
         /// <summary>
         /// Special value that is returned by <see cref="GetUnicodeNumericValue(int)"/> when no
@@ -2652,13 +2652,13 @@ namespace ICU4N.Lang
         /// Compatibility constant for <see cref="Character.MIN_RADIX"/>.
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public static readonly int MIN_RADIX = Character.MIN_RADIX;
+        public const int MIN_RADIX = Character.MIN_RADIX;
 
         /// <summary>
         /// Compatibility constant for <see cref="Character.MAX_RADIX"/>.
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public static readonly int MAX_RADIX = Character.MAX_RADIX;
+        public const int MAX_RADIX = Character.MAX_RADIX;
 
         /// <summary>
         /// Do not lowercase non-initial parts of words when titlecasing.
@@ -4433,7 +4433,7 @@ namespace ICU4N.Lang
         /// CaseFolding.txt.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly int FOLD_CASE_DEFAULT = 0x0000; // ICU4N TODO: API Make [Flags] enum
+        public const int FOLD_CASE_DEFAULT = 0x0000; // ICU4N TODO: API Make [Flags] enum
 
         /// <icu/>
         /// <summary>
@@ -4451,7 +4451,7 @@ namespace ICU4N.Lang
         /// included for the Turkic-specific mappings.
         /// </remarks>
         /// <stable>ICU 2.6</stable>
-        public static readonly int FOLD_CASE_EXCLUDE_SPECIAL_I = 0x0001; // ICU4N TODO: API Make [Flags] enum
+        public const int FOLD_CASE_EXCLUDE_SPECIAL_I = 0x0001; // ICU4N TODO: API Make [Flags] enum
 
         /// <icu/>
         /// <summary>
@@ -5096,19 +5096,19 @@ namespace ICU4N.Lang
         /// Constant U+10000, same as <see cref="Character.MIN_SUPPLEMENTARY_CODE_POINT"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public static readonly int MIN_SUPPLEMENTARY_CODE_POINT = Character.MIN_SUPPLEMENTARY_CODE_POINT;
+        public const int MIN_SUPPLEMENTARY_CODE_POINT = Character.MIN_SUPPLEMENTARY_CODE_POINT;
 
         /// <summary>
         /// Constant U+10FFFF, same as <see cref="Character.MAX_CODE_POINT"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public static readonly int MAX_CODE_POINT = Character.MAX_CODE_POINT;
+        public const int MAX_CODE_POINT = Character.MAX_CODE_POINT;
 
         /// <summary>
         /// Constant U+0000, same as <see cref="Character.MIN_CODE_POINT"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public static readonly int MIN_CODE_POINT = Character.MIN_CODE_POINT;
+        public const int MIN_CODE_POINT = Character.MIN_CODE_POINT;
 
         /// <summary>
         /// Equivalent to <see cref="Character.IsValidCodePoint(int)"/>.

@@ -475,7 +475,7 @@ namespace ICU4N.Impl
                         return NtvGetType(GetNumericTypeValue(GetProperty(c)));
                     }, getMaxValue: (which) =>
                     {
-                        return NumericType.COUNT - 1;
+                        return NumericType.Count - 1;
                     }),
                 new AnonymousIntProperty(this, 0, SCRIPT_MASK_, 0, getValue: (c) =>
                     {
@@ -491,7 +491,7 @@ namespace ICU4N.Impl
                         }
                         else
                         {
-                            return HangulSyllableType.NOT_APPLICABLE;
+                            return HangulSyllableType.NotApplicable;
                         }
                     }, getMaxValue: (which) =>
                     {
@@ -550,16 +550,16 @@ namespace ICU4N.Impl
         /// Hangul_Syllable_Type is fully redundant with a subset of Grapheme_Cluster_Break.
         /// </summary>
         private static readonly int[] /* UHangulSyllableType */ gcbToHst ={
-            HangulSyllableType.NOT_APPLICABLE,   /* U_GCB_OTHER */
-            HangulSyllableType.NOT_APPLICABLE,   /* U_GCB_CONTROL */
-            HangulSyllableType.NOT_APPLICABLE,   /* U_GCB_CR */
-            HangulSyllableType.NOT_APPLICABLE,   /* U_GCB_EXTEND */
-            HangulSyllableType.LEADING_JAMO,     /* U_GCB_L */
-            HangulSyllableType.NOT_APPLICABLE,   /* U_GCB_LF */
-            HangulSyllableType.LV_SYLLABLE,      /* U_GCB_LV */
-            HangulSyllableType.LVT_SYLLABLE,     /* U_GCB_LVT */
-            HangulSyllableType.TRAILING_JAMO,    /* U_GCB_T */
-            HangulSyllableType.VOWEL_JAMO        /* U_GCB_V */
+            HangulSyllableType.NotApplicable,   /* U_GCB_OTHER */
+            HangulSyllableType.NotApplicable,   /* U_GCB_CONTROL */
+            HangulSyllableType.NotApplicable,   /* U_GCB_CR */
+            HangulSyllableType.NotApplicable,   /* U_GCB_EXTEND */
+            HangulSyllableType.LeadingJamo,     /* U_GCB_L */
+            HangulSyllableType.NotApplicable,   /* U_GCB_LF */
+            HangulSyllableType.LvSyllable,      /* U_GCB_LV */
+            HangulSyllableType.LvtSyllable,     /* U_GCB_LVT */
+            HangulSyllableType.TrailingJamo,    /* U_GCB_T */
+            HangulSyllableType.VowelJamo        /* U_GCB_V */
             /*
              * Omit GCB values beyond what we need for hst.
              * The code below checks for the array length.
@@ -1234,10 +1234,10 @@ namespace ICU4N.Impl
         private static int NtvGetType(int ntv)
         {
             return
-                (ntv == NTV_NONE_) ? NumericType.NONE :
-                (ntv < NTV_DIGIT_START_) ? NumericType.DECIMAL :
-                (ntv < NTV_NUMERIC_START_) ? NumericType.DIGIT :
-                NumericType.NUMERIC;
+                (ntv == NTV_NONE_) ? NumericType.None :
+                (ntv < NTV_DIGIT_START_) ? NumericType.Decimal :
+                (ntv < NTV_NUMERIC_START_) ? NumericType.Digit :
+                NumericType.Numeric;
         }
 
         /*

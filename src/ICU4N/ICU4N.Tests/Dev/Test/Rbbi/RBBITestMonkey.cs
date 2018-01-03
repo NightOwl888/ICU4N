@@ -1390,23 +1390,23 @@ namespace ICU4N.Dev.Test.Rbbi
                     switch (matchState)
                     {
                         case 0:
-                            if (cLBType == UCharacter.LineBreak.PREFIX_NUMERIC ||
-                            cLBType == UCharacter.LineBreak.POSTFIX_NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.PrefixNumeric ||
+                            cLBType == UCharacter.LineBreak.PostfixNumeric)
                             {
                                 matchState = 1;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.OPEN_PUNCTUATION)
+                            if (cLBType == UCharacter.LineBreak.OpenPunctuation)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.HYPHEN)
+                            if (cLBType == UCharacter.LineBreak.Hyphen)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
@@ -1414,22 +1414,22 @@ namespace ICU4N.Dev.Test.Rbbi
                             goto matchLoop_break;   /* No Match  */
 
                         case 1:
-                            if (cLBType == UCharacter.LineBreak.COMBINING_MARK || cLBType == UCharacter.LineBreak.ZWJ)
+                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
                             {
                                 matchState = 1;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.OPEN_PUNCTUATION)
+                            if (cLBType == UCharacter.LineBreak.OpenPunctuation)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.HYPHEN)
+                            if (cLBType == UCharacter.LineBreak.Hyphen)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
@@ -1438,12 +1438,12 @@ namespace ICU4N.Dev.Test.Rbbi
 
 
                         case 4:
-                            if (cLBType == UCharacter.LineBreak.COMBINING_MARK || cLBType == UCharacter.LineBreak.ZWJ)
+                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
@@ -1453,42 +1453,42 @@ namespace ICU4N.Dev.Test.Rbbi
                                                     //      0    0   1       3    3    4              7    7    7    7      9   9     11   11    (match states)
 
                         case 7:
-                            if (cLBType == UCharacter.LineBreak.COMBINING_MARK || cLBType == UCharacter.LineBreak.ZWJ)
+                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.INFIX_NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.InfixNumeric)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.BREAK_SYMBOLS)
+                            if (cLBType == UCharacter.LineBreak.BreakSymbols)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.CLOSE_PUNCTUATION)
+                            if (cLBType == UCharacter.LineBreak.ClosePunctuation)
                             {
                                 matchState = 9;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.CLOSE_PARENTHESIS)
+                            if (cLBType == UCharacter.LineBreak.CloseParenthesis)
                             {
                                 matchState = 9;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.POSTFIX_NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.PostfixNumeric)
                             {
                                 matchState = 11;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.PREFIX_NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.PrefixNumeric)
                             {
                                 matchState = 11;
                                 break;
@@ -1496,24 +1496,24 @@ namespace ICU4N.Dev.Test.Rbbi
 
                             goto matchLoop_break;    // Match Complete.
                         case 9:
-                            if (cLBType == UCharacter.LineBreak.COMBINING_MARK || cLBType == UCharacter.LineBreak.ZWJ)
+                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
                             {
                                 matchState = 9;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.POSTFIX_NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.PostfixNumeric)
                             {
                                 matchState = 11;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.PREFIX_NUMERIC)
+                            if (cLBType == UCharacter.LineBreak.PrefixNumeric)
                             {
                                 matchState = 11;
                                 break;
                             }
                             goto matchLoop_break;    // Match Complete.
                         case 11:
-                            if (cLBType == UCharacter.LineBreak.COMBINING_MARK || cLBType == UCharacter.LineBreak.ZWJ)
+                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
                             {
                                 matchState = 11;
                                 break;
