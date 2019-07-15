@@ -6,11 +6,10 @@
 trigger:
 - master
 
-pool:
-  vmImage: 'windows-2019'
-
 jobs:
 - job: Test1
+  pool:
+    vmImage: 'windows-2019'
   steps:
   - script: echo Hello, world!
     displayName: 'Run a one-line script'
@@ -23,6 +22,8 @@ jobs:
   - powershell: Start-Sleep -s 15
 
 - job: Test2
+  pool:
+    vmImage: 'windows-2019'
   steps:
   - script: echo Hello, world!
     displayName: 'Run a one-line script'
@@ -35,6 +36,8 @@ jobs:
   - powershell: Start-Sleep -s 15
 
 - job: Test3
+  pool:
+    vmImage: 'windows-2019'
   steps:
   - script: echo Hello, world!
     displayName: 'Run a one-line script'
@@ -47,6 +50,8 @@ jobs:
   - powershell: Start-Sleep -s 15
 
 - job: Test4
+  pool:
+    vmImage: 'windows-2019'
   steps:
   - script: echo Hello, world!
     displayName: 'Run a one-line script'
@@ -59,6 +64,8 @@ jobs:
   - powershell: Start-Sleep -s 15
 
 - job: Test5
+  pool:
+    vmImage: 'windows-2019'
   steps:
   - script: echo Hello, world!
     displayName: 'Run a one-line script'
