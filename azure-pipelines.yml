@@ -7,6 +7,31 @@ trigger:
 - master
 
 jobs:
+- job: Test
+  strategy:
+    matrix:
+      Windows:
+        osName: 'Windows'
+        imageName: 'windows-2019'
+        platform: 'netcoreapp2.1'
+      Linux:
+        osName: 'Linux'
+        imageName: 'ubuntu-16.04'
+        platform: 'netcoreapp2.1'
+      macOS:
+        osName: 'macOS'
+        imageName: 'macOS-10.14'
+        platform: 'netcoreapp2.1'
+      macOS2:
+        osName: 'macOS'
+        imageName: 'macOS-10.14'
+        platform: 'netcoreapp1.0'
+  displayName: 'Test on'
+  pool:
+    vmImage: $(imageName)
+  steps:
+  - pwsh: Write-Host "Hello there"
+
 - job: Test1
   pool:
     vmImage: 'windows-2019'
@@ -21,58 +46,3 @@ jobs:
 
   - powershell: Start-Sleep -s 15
 
-- job: Test2
-  pool:
-    vmImage: 'windows-2019'
-  steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
-
-  - script: |
-      echo Add other tasks to build, test, and deploy your project.
-      echo See https://aka.ms/yaml
-    displayName: 'Run a multi-line script'
-
-  - powershell: Start-Sleep -s 15
-
-- job: Test3
-  pool:
-    vmImage: 'windows-2019'
-  steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
-
-  - script: |
-      echo Add other tasks to build, test, and deploy your project.
-      echo See https://aka.ms/yaml
-    displayName: 'Run a multi-line script'
-
-  - powershell: Start-Sleep -s 15
-
-- job: Test4
-  pool:
-    vmImage: 'windows-2019'
-  steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
-
-  - script: |
-      echo Add other tasks to build, test, and deploy your project.
-      echo See https://aka.ms/yaml
-    displayName: 'Run a multi-line script'
-
-  - powershell: Start-Sleep -s 15
-
-- job: Test5
-  pool:
-    vmImage: 'windows-2019'
-  steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
-
-  - script: |
-      echo Add other tasks to build, test, and deploy your project.
-      echo See https://aka.ms/yaml
-    displayName: 'Run a multi-line script'
-
-  - powershell: Start-Sleep -s 15
