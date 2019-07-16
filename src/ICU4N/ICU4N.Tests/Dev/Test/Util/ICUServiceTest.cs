@@ -848,14 +848,14 @@ namespace ICU4N.Dev.Test.Util
 
             LocaleKey lkey = LocaleKey.CreateWithCanonicalFallback("en", null, 1234);
             Logln("lkey prefix: " + lkey.Prefix);
-            Logln("lkey descriptor: " + lkey.CurrentDescriptor());
-            Logln("lkey current locale: " + lkey.CurrentLocale());
+            Logln("lkey descriptor: " + lkey.GetCurrentDescriptor());
+            Logln("lkey current locale: " + lkey.GetCurrentLocale());
 
             lkey.Fallback();
-            Logln("lkey descriptor 2: " + lkey.CurrentDescriptor());
+            Logln("lkey descriptor 2: " + lkey.GetCurrentDescriptor());
 
             lkey.Fallback();
-            Logln("lkey descriptor 3: " + lkey.CurrentDescriptor());
+            Logln("lkey descriptor 3: " + lkey.GetCurrentDescriptor());
 
             target = service.Get("za_PPP");
             confirmEqual("test zappp", "root", target);

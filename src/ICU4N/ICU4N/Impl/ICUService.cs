@@ -127,7 +127,7 @@ namespace ICU4N.Impl
         /// determine the fallback strategy.
         /// </summary>
         /// <remarks>
-        /// Keys provide both a <see cref="CurrentDescriptor"/> and a <see cref="CurrentID"/>.
+        /// Keys provide both a <see cref="GetCurrentDescriptor"/> and a <see cref="CurrentID"/>.
         /// The descriptor contains an optional prefix, followed by '/'
         /// and the <see cref="CurrentID"/>.  Factories that handle complex keys,
         /// for example number format factories that generate multiple
@@ -186,7 +186,7 @@ namespace ICU4N.Impl
             /// descriptor or use custom API on the key in order to
             /// instantiate the service.
             /// </summary>
-            public virtual string CurrentDescriptor() // ICU4N TODO: API - make property ?
+            public virtual string GetCurrentDescriptor() // ICU4N TODO: API - make property ?
             {
                 return "/" + CurrentID;
             }
@@ -462,7 +462,7 @@ namespace ICU4N.Impl
                     //outer:
                     do
                     {
-                        currentDescriptor = key.CurrentDescriptor();
+                        currentDescriptor = key.GetCurrentDescriptor();
                         if (DEBUG) Console.Out.WriteLine(name + "[" + NDebug++ + "] looking for: " + currentDescriptor);
                         result = cache.Get(currentDescriptor);
                         if (result != null)

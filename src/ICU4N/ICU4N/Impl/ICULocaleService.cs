@@ -133,7 +133,7 @@ namespace ICU4N.Impl
         /// Convenience method for callers using locales.  This returns the standard
         /// <see cref="CultureInfo"/> list, built from the <see cref="ICollection{T}"/> of visible ids.
         /// </summary>
-        public virtual CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetCultures (just like CultureInfo) - consider adding a CultureTypes filter
+        public virtual CultureInfo[] GetAvailableLocales() // ICU4N specific - was named GetAvailableLocales() in Java
         {
             // TODO make this wrap getAvailableULocales later
             ICollection<string> visIDs = GetVisibleIDs();
@@ -299,7 +299,7 @@ namespace ICU4N.Impl
             /// Return the (canonical) current descriptor, or null if no current id.
             /// Includes the keywords, whereas the ID does not include keywords.
             /// </summary>
-            public override string CurrentDescriptor() // ICU4N TODO: API - begin with Get ?
+            public override string GetCurrentDescriptor() // ICU4N specific - added "Get"
             {
                 string result = CurrentID;
                 if (result != null)
@@ -323,7 +323,7 @@ namespace ICU4N.Impl
             /// <summary>
             /// Convenience method to return the locale corresponding to the (canonical) original ID.
             /// </summary>
-            public virtual ULocale CanonicalLocale() // ICU4N TODO: API - begin with Get ?
+            public virtual ULocale GetCanonicalLocale() // ICU4N specific - added "Get"
             {
                 return new ULocale(primaryID);
             }
@@ -331,7 +331,7 @@ namespace ICU4N.Impl
             /// <summary>
             /// Convenience method to return the ulocale corresponding to the (canonical) currentID.
             /// </summary>
-            public virtual ULocale CurrentLocale() // ICU4N TODO: API - begin with Get ?
+            public virtual ULocale GetCurrentLocale() // ICU4N specific - added "Get"
             {
                 if (varstart == -1)
                 {
@@ -432,7 +432,7 @@ namespace ICU4N.Impl
                     LocaleKey lkey = (LocaleKey)key;
                     int kind = lkey.Kind;
 
-                    ULocale uloc = lkey.CurrentLocale();
+                    ULocale uloc = lkey.GetCurrentLocale();
                     return HandleCreate(uloc, kind, service);
                 }
                 else
