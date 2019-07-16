@@ -881,7 +881,7 @@ namespace ICU4N.Text
             if (c >= UTF16.LEAD_SURROGATE_MIN_VALUE)
             {
                 c = CharacterIteration.NextTrail32(text, c);
-                if (c == CharacterIteration.DONE32)
+                if (c == CharacterIteration.Done32)
                 {
                     fDone = true;
                     return BreakIterator.Done;
@@ -910,7 +910,7 @@ namespace ICU4N.Text
             // loop until we reach the end of the text or transition to state 0
             while (state != STOP_STATE)
             {
-                if (c == CharacterIteration.DONE32)
+                if (c == CharacterIteration.Done32)
                 {
                     // Reached end of input string.
                     if (mode == RBBI_END)
@@ -1105,7 +1105,7 @@ namespace ICU4N.Text
             //mainLoop:
             for (; ; )
             {
-                if (c == CharacterIteration.DONE32)
+                if (c == CharacterIteration.Done32)
                 {
                     // Reached end of input string.
                     if (mode == RBBI_END)

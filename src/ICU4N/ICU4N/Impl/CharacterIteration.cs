@@ -10,7 +10,7 @@ namespace ICU4N.Impl
         ///     Positive value so fast case (not end, not surrogate) can be checked
         ///     with a single test.
         /// </summary>
-        public static readonly int DONE32 = 0x7fffffff; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly int Done32 = 0x7fffffff;
 
         /// <summary>
         /// Move the iterator forward to the next code point, and return that code point,
@@ -43,7 +43,7 @@ namespace ICU4N.Impl
                 c = NextTrail32(ci, c);
             }
 
-            if (c >= UTF16.SUPPLEMENTARY_MIN_VALUE && c != DONE32)
+            if (c >= UTF16.SUPPLEMENTARY_MIN_VALUE && c != Done32)
             {
                 // We got a supplementary char.  Back the iterator up to the postion
                 // of the lead surrogate.
@@ -65,7 +65,7 @@ namespace ICU4N.Impl
         {
             if (lead == CharacterIterator.Done && ci.Index >= ci.EndIndex)
             {
-                return DONE32;
+                return Done32;
             }
             int retVal = lead;
             if (lead <= UTF16.LEAD_SURROGATE_MAX_VALUE)
@@ -89,7 +89,7 @@ namespace ICU4N.Impl
         {
             if (ci.Index <= ci.BeginIndex)
             {
-                return DONE32;
+                return Done32;
             }
             char trail = ci.MovePrevious();
             int retVal = trail;
@@ -135,7 +135,7 @@ namespace ICU4N.Impl
                 {
                     if (ci.Index >= ci.EndIndex)
                     {
-                        retVal = DONE32;
+                        retVal = Done32;
                     }
                 }
             }

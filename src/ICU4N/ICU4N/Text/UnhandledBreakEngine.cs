@@ -63,7 +63,7 @@ namespace ICU4N.Text
         /// </summary>
         public void HandleChar(int c, int breakType)
         {
-            if (breakType >= 0 && breakType < fHandled.Length && c != CharacterIteration.DONE32)
+            if (breakType >= 0 && breakType < fHandled.Length && c != CharacterIteration.Done32)
             {
                 UnicodeSet originalSet = fHandled[breakType];
                 if (!originalSet.Contains(c))

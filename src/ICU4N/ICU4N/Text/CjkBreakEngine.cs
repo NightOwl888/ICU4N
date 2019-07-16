@@ -165,7 +165,7 @@ namespace ICU4N.Text
             // Exclude Korean characters from this treatment, as they should be
             // left together by default.
             text.SetIndex(i);  // fDictionary.matches() advances the text position; undo that.
-            if ((count == 0 || lengths[0] != 1) && CharacterIteration.Current32(text) != CharacterIteration.DONE32 && !fHangulWordSet.Contains(CharacterIteration.Current32(text)))
+            if ((count == 0 || lengths[0] != 1) && CharacterIteration.Current32(text) != CharacterIteration.Done32 && !fHangulWordSet.Contains(CharacterIteration.Current32(text)))
             {
                 values[count] = maxSnlp;
                 lengths[count] = 1;
