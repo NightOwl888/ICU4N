@@ -15,28 +15,53 @@ using SingleID = ICU4N.Text.TransliteratorIDParser.SingleID;
 
 namespace ICU4N.Text
 {
+    /// <summary>
+    /// Direction options for <see cref="Transliterator"/>.
+    /// </summary>
+    /// <draft>ICU4N 60.1</draft>
+    public enum TransliterationDirection
+    {
+        /// <summary>
+        /// Direction constant indicating the forward direction in a transliterator,
+        /// e.g., the forward rules of a RuleBasedTransliterator.  An "A-B"
+        /// transliterator transliterates A to B when operating in the forward
+        /// direction, and B to A when operating in the reverse direction.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        Forward = 0,
+
+        /// <summary>
+        /// Direction constant indicating the reverse direction in a transliterator,
+        /// e.g., the reverse rules of a RuleBasedTransliterator.  An "A-B"
+        /// transliterator transliterates A to B when operating in the forward
+        /// direction, and B to A when operating in the reverse direction.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        Reverse = 1
+    }
+
     public abstract class Transliterator : IStringTransform
     {
         // ICU4N specific - need to use the current assembly for resources
         public static readonly Assembly ICU_DATA_CLASS_LOADER = typeof(Transliterator).GetTypeInfo().Assembly;
 
-        /**
-         * Direction constant indicating the forward direction in a transliterator,
-         * e.g., the forward rules of a RuleBasedTransliterator.  An "A-B"
-         * transliterator transliterates A to B when operating in the forward
-         * direction, and B to A when operating in the reverse direction.
-         * @stable ICU 2.0
-         */
-        public static readonly int FORWARD = 0;
+        /// <summary>
+        /// Direction constant indicating the forward direction in a transliterator,
+        /// e.g., the forward rules of a RuleBasedTransliterator.  An "A-B"
+        /// transliterator transliterates A to B when operating in the forward
+        /// direction, and B to A when operating in the reverse direction.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public static readonly TransliterationDirection Forward = TransliterationDirection.Forward; 
 
-        /**
-         * Direction constant indicating the reverse direction in a transliterator,
-         * e.g., the reverse rules of a RuleBasedTransliterator.  An "A-B"
-         * transliterator transliterates A to B when operating in the forward
-         * direction, and B to A when operating in the reverse direction.
-         * @stable ICU 2.0
-         */
-        public static readonly int REVERSE = 1;
+        /// <summary>
+        /// Direction constant indicating the forward direction in a transliterator,
+        /// e.g., the forward rules of a RuleBasedTransliterator.  An "A-B"
+        /// transliterator transliterates A to B when operating in the forward
+        /// direction, and B to A when operating in the reverse direction.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        public static readonly TransliterationDirection Reverse = TransliterationDirection.Reverse; 
 
         /**
          * Position structure for incremental transliteration.  This data
@@ -59,7 +84,7 @@ namespace ICU4N.Text
          * results are unspecified.
          * @stable ICU 2.0
          */
-        public class Position
+        public class Position // ICU4N TODO: API - De-nest this class
         {
 
             /**
@@ -1230,7 +1255,7 @@ namespace ICU4N.Text
          */
         public static Transliterator GetInstance(string id)
         {
-            return GetInstance(id, FORWARD);
+            return GetInstance(id, Forward);
         }
 
         /**
@@ -1249,7 +1274,7 @@ namespace ICU4N.Text
          * @stable ICU 2.0
          */
         public static Transliterator GetInstance(string id,
-                                                 int dir)
+                                                 TransliterationDirection dir)
         {
             StringBuffer canonID = new StringBuffer();
             IList<SingleID> list = new List<SingleID>();
@@ -1303,7 +1328,7 @@ namespace ICU4N.Text
             {
                 // assert(t==0);
                 // Instantiate an alias
-                t = GetInstance(s.ToString(), FORWARD);
+                t = GetInstance(s.ToString(), Forward);
             }
             if (t != null && canonID != null)
             {
@@ -1321,7 +1346,7 @@ namespace ICU4N.Text
          * empty for the given direction.
          * @stable ICU 2.0
          */
-        public static Transliterator CreateFromRules(string id, string rules, int dir)
+        public static Transliterator CreateFromRules(string id, string rules, TransliterationDirection dir)
         {
             Transliterator t = null;
 
@@ -1641,7 +1666,7 @@ namespace ICU4N.Text
          */
         public Transliterator GetInverse()
         {
-            return GetInstance(id, REVERSE);
+            return GetInstance(id, Reverse);
         }
 
         /**
@@ -1898,15 +1923,15 @@ namespace ICU4N.Text
                     // Rest of line is <resource>:<encoding>:<direction>
                     //                pos       colon      c2
                     string resString = res.GetString("resource");
-                    int dir;
+                    TransliterationDirection dir;
                     string direction = res.GetString("direction");
                     switch (direction[0])
                     {
                         case 'F':
-                            dir = FORWARD;
+                            dir = Forward;
                             break;
                         case 'R':
-                            dir = REVERSE;
+                            dir = Reverse;
                             break;
                         default:
                             throw new Exception("Can't parse direction: " + direction);

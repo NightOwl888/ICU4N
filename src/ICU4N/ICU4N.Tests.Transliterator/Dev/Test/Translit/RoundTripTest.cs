@@ -1444,7 +1444,7 @@ namespace ICU4N.Dev.Test.Translit
                     try
                     {
                         rules = sourceToTarget.ToRules(false);
-                        sourceToTarget2 = Transliterator.CreateFromRules("s2t2", rules, Transliterator.FORWARD);
+                        sourceToTarget2 = Transliterator.CreateFromRules("s2t2", rules, Transliterator.Forward);
                         if (PRINT_RULES)
                         {
                             @out.WriteLine("<h3>Forward Rules:</h3><p>");
@@ -1452,7 +1452,7 @@ namespace ICU4N.Dev.Test.Translit
                             @out.WriteLine("</p>");
                         }
                         rules = targetToSource.ToRules(false);
-                        targetToSource2 = Transliterator.CreateFromRules("t2s2", rules, Transliterator.FORWARD);
+                        targetToSource2 = Transliterator.CreateFromRules("t2s2", rules, Transliterator.Forward);
                         if (PRINT_RULES)
                         {
                             @out.WriteLine("<h3>Backward Rules:</h3><p>");

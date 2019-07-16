@@ -188,7 +188,7 @@ namespace ICU4N.Text
 
                 try
                 {
-                    t = Transliterator.GetInstance(id, FORWARD);
+                    t = Transliterator.GetInstance(id, Forward);
                 }
                 catch (Exception e) { }
                 if (t == null)
@@ -198,7 +198,7 @@ namespace ICU4N.Text
                     id = sourceName + LATIN_PIVOT + target;
                     try
                     {
-                        t = Transliterator.GetInstance(id, FORWARD);
+                        t = Transliterator.GetInstance(id, Forward);
                     }
                     catch (Exception e) { }
                 }

@@ -41,7 +41,7 @@ namespace ICU4N.Dev.Test.Translit
             {
                 transliteratorName = transliteratorName.Substring(1);
                 t = Transliterator.CreateFromRules("test", transliteratorName,
-                                                   Transliterator.FORWARD);
+                                                   Transliterator.Forward);
             }
             else
             {
@@ -224,7 +224,7 @@ namespace ICU4N.Dev.Test.Translit
             String rules =
                 "IETR > IET | \\' R; # (1) do split ietr between t and r\r\n" +
                 "I[EH] > I; # (2) friedrich";
-            Transliterator trans = Transliterator.CreateFromRules("foo", rules, Transliterator.FORWARD);
+            Transliterator trans = Transliterator.CreateFromRules("foo", rules, Transliterator.Forward);
             String result = trans.Transliterate("BLENKDIETRICH");
             assertEquals("Rule breakage", "BLENKDIET'RICH", result);
         }

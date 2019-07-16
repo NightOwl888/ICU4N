@@ -24,7 +24,7 @@ namespace ICU4N.Dev.Test.Translit
             Transliterator.Position pos = new Transliterator.Position();
 
             Transliterator t =
-                Transliterator.GetInstance(trans, Transliterator.FORWARD);
+                Transliterator.GetInstance(trans, Transliterator.Forward);
             if (t == null)
             {
                 Errln("FAIL: construction of Latin-Greek");
@@ -128,7 +128,7 @@ namespace ICU4N.Dev.Test.Translit
             Transliterator t1 = null;
             try
             {
-                t1 = Transliterator.GetInstance(bogusID, Transliterator.FORWARD);
+                t1 = Transliterator.GetInstance(bogusID, Transliterator.Forward);
                 if (t1 != null)
                 {
                     Errln("FAIL: construction of bogus ID \"LATINGREEK-GREEKLATIN\"");
@@ -143,7 +143,7 @@ namespace ICU4N.Dev.Test.Translit
                 Transliterator.CreateFromRules(
                     newID,
                     newIDRules,
-                    Transliterator.FORWARD);
+                    Transliterator.Forward);
             try
             {
                 Transliterator t3 = t2.GetInverse();
@@ -163,7 +163,7 @@ namespace ICU4N.Dev.Test.Translit
                     Transliterator.CreateFromRules(
                         newID,
                         bogusRules,
-                        Transliterator.FORWARD);
+                        Transliterator.Forward);
                 if (t4 != null)
                 {
                     Errln("FAIL: The rules is malformed but error was not reported.");
@@ -243,13 +243,13 @@ namespace ICU4N.Dev.Test.Translit
                 try
                 {
                     Transliterator t =
-                        Transliterator.CreateFromRules(id, rules, Transliterator.REVERSE);
+                        Transliterator.CreateFromRules(id, rules, Transliterator.Reverse);
                     t.Filter = (set);
                     Transliterator.RegisterClass(id, t.GetType(), null);
                     Transliterator.Unregister(id);
                     try
                     {
-                        Transliterator.GetInstance(id, Transliterator.REVERSE);
+                        Transliterator.GetInstance(id, Transliterator.Reverse);
                         Errln("FAIL: construction of unregistered ID should have failed.");
                     }
                     catch (ArgumentException e)

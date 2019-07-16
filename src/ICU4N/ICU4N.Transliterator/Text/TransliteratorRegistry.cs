@@ -235,8 +235,8 @@ namespace ICU4N.Text
         internal class ResourceEntry
         {
             public string Resource { get; set; }
-            public int Direction { get; set; }
-            public ResourceEntry(string n, int d)
+            public TransliterationDirection Direction { get; set; }
+            public ResourceEntry(string n, TransliterationDirection d)
             {
                 Resource = n;
                 Direction = d;
@@ -247,8 +247,8 @@ namespace ICU4N.Text
         internal class LocaleEntry
         {
             public string Rule { get; set; }
-            public int Direction { get; set; }
-            public LocaleEntry(string r, int d)
+            public TransliterationDirection Direction { get; set; }
+            public LocaleEntry(string r, TransliterationDirection d)
             {
                 Rule = r;
                 Direction = d;
@@ -372,7 +372,7 @@ namespace ICU4N.Text
          */
         public virtual void Put(string id,
                         string resourceName,
-                        int dir,
+                        TransliterationDirection dir,
                         bool visible)
         {
             RegisterEntry(id, new ResourceEntry(resourceName, dir), visible);
@@ -717,11 +717,11 @@ namespace ICU4N.Text
             object[] entry = null;
             if (src.IsLocale)
             {
-                entry = FindInBundle(src, trg, variant, Transliterator.FORWARD);
+                entry = FindInBundle(src, trg, variant, Transliterator.Forward);
             }
             else if (trg.IsLocale)
             {
-                entry = FindInBundle(trg, src, variant, Transliterator.REVERSE);
+                entry = FindInBundle(trg, src, variant, Transliterator.Reverse);
             }
 
             // If we found an entry, store it in the Hashtable for next
@@ -747,7 +747,7 @@ namespace ICU4N.Text
         private object[] FindInBundle(Spec specToOpen,
                                       Spec specToFind,
                                       string variant,
-                                      int direction)
+                                      TransliterationDirection direction)
         {
             // assert(specToOpen.isLocale());
             ResourceBundle res = specToOpen.GetBundle();
@@ -768,7 +768,7 @@ namespace ICU4N.Text
                 // but must be consistent and documented.
                 if (pass == 0)
                 {
-                    tag.Append(direction == Transliterator.FORWARD ?
+                    tag.Append(direction == Transliterator.Forward ?
                                "TransliterateTo" : "TransliterateFrom");
                 }
                 else
@@ -811,7 +811,7 @@ namespace ICU4N.Text
                         // For the bidirectional Transliterate_xxx items,
                         // the direction is the value passed in to this
                         // function.
-                        int dir = (pass == 0) ? Transliterator.FORWARD : direction;
+                        TransliterationDirection dir = (pass == 0) ? Transliterator.Forward : direction;
                         return new Object[] { new LocaleEntry(subres[i + 1], dir) };
                     }
 

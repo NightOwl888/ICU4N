@@ -24,9 +24,9 @@ namespace ICU4N.Text
 
         private const string ANY = "Any";
 
-        private static readonly int FORWARD = Transliterator.FORWARD;
+        private static readonly TransliterationDirection Forward = TransliterationDirection.Forward;
 
-        private static readonly int REVERSE = Transliterator.REVERSE;
+        private static readonly TransliterationDirection Reverse = TransliterationDirection.Reverse;
 
         private static readonly IDictionary<CaseInsensitiveString, string> SPECIAL_INVERSES =
             new ConcurrentDictionary<CaseInsensitiveString, string>();
@@ -135,7 +135,7 @@ namespace ICU4N.Text
             }
 
             // Assemble return results
-            SingleID single = SpecsToID(specs, FORWARD);
+            SingleID single = SpecsToID(specs, Forward);
             single.Filter = specs.Filter;
             return single;
         }
@@ -152,7 +152,7 @@ namespace ICU4N.Text
          * SingleID is constructed for the reverse direction.
          * @return a SingleID object or null
          */
-        public static SingleID ParseSingleID(string id, int[] pos, int dir)
+        public static SingleID ParseSingleID(string id, int[] pos, TransliterationDirection dir)
         {
 
             int start = pos[0];
@@ -197,11 +197,11 @@ namespace ICU4N.Text
             SingleID single;
             if (sawParen)
             {
-                if (dir == FORWARD)
+                if (dir == Forward)
                 {
-                    single = SpecsToID(specsA, FORWARD);
+                    single = SpecsToID(specsA, Forward);
                     single.CanonID = single.CanonID +
-                        OPEN_REV + SpecsToID(specsB, FORWARD).CanonID + CLOSE_REV;
+                        OPEN_REV + SpecsToID(specsB, Forward).CanonID + CLOSE_REV;
                     if (specsA != null)
                     {
                         single.Filter = specsA.Filter;
@@ -209,9 +209,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    single = SpecsToID(specsB, FORWARD);
+                    single = SpecsToID(specsB, Forward);
                     single.CanonID = single.CanonID +
-                        OPEN_REV + SpecsToID(specsA, FORWARD).CanonID + CLOSE_REV;
+                        OPEN_REV + SpecsToID(specsA, Forward).CanonID + CLOSE_REV;
                     if (specsB != null)
                     {
                         single.Filter = specsB.Filter;
@@ -221,16 +221,16 @@ namespace ICU4N.Text
             else
             {
                 // assert(specsA != null);
-                if (dir == FORWARD)
+                if (dir == Forward)
                 {
-                    single = SpecsToID(specsA, FORWARD);
+                    single = SpecsToID(specsA, Forward);
                 }
                 else
                 {
                     single = SpecsToSpecialInverse(specsA);
                     if (single == null)
                     {
-                        single = SpecsToID(specsA, REVERSE);
+                        single = SpecsToID(specsA, Reverse);
                     }
                 }
                 single.Filter = specsA.Filter;
@@ -261,7 +261,7 @@ namespace ICU4N.Text
          * applies to the given direction.  The caller should discard it
          * if withParens != (dir == REVERSE).
          */
-        public static UnicodeSet ParseGlobalFilter(string id, int[] pos, int dir,
+        public static UnicodeSet ParseGlobalFilter(string id, int[] pos, TransliterationDirection dir,
                                                    int[] withParens,
                                                    StringBuffer canonID)
         {
@@ -310,7 +310,7 @@ namespace ICU4N.Text
                 // the presence of parens ("A" <-> "(A)").
                 if (canonID != null)
                 {
-                    if (dir == FORWARD)
+                    if (dir == Forward)
                     {
                         if (withParens[0] == 1)
                         {
@@ -354,7 +354,7 @@ namespace ICU4N.Text
          * @return true if the parse succeeds, that is, if the entire
          * id is consumed without syntax error.
          */
-        public static bool ParseCompoundID(String id, int dir,
+        public static bool ParseCompoundID(string id, TransliterationDirection dir,
                                               StringBuffer canonID,
                                               IList<SingleID> list,
                                               UnicodeSet[] globalFilter)
@@ -377,7 +377,7 @@ namespace ICU4N.Text
                     canonID.Length = 0;
                     pos[0] = 0;
                 }
-                if (dir == FORWARD)
+                if (dir == Forward)
                 {
                     globalFilter[0] = filter;
                 }
@@ -391,7 +391,7 @@ namespace ICU4N.Text
                 {
                     break;
                 }
-                if (dir == FORWARD)
+                if (dir == Forward)
                 {
                     list.Add(single);
                 }
@@ -433,7 +433,7 @@ namespace ICU4N.Text
                     // Don't require trailing ';', but parse it if present
                     Utility.ParseChar(id, pos, ID_DELIM);
 
-                    if (dir == REVERSE)
+                    if (dir == Reverse)
                     {
                         globalFilter[0] = filter;
                     }
@@ -764,7 +764,7 @@ namespace ICU4N.Text
          * @return a SingleID; never returns null.  Returned object always
          * has 'filter' field of null.
          */
-        private static SingleID SpecsToID(Specs specs, int dir)
+        private static SingleID SpecsToID(Specs specs, TransliterationDirection dir)
         {
             string canonID = "";
             string basicID = "";
@@ -772,7 +772,7 @@ namespace ICU4N.Text
             if (specs != null)
             {
                 StringBuilder buf = new StringBuilder();
-                if (dir == FORWARD)
+                if (dir == Forward)
                 {
                     if (specs.SawSource)
                     {

@@ -128,7 +128,7 @@ namespace ICU4N.Dev.Test.Translit
 
         private void checkRegistry(String id, String rules)
         {
-            Transliterator foo = Transliterator.CreateFromRules(id, rules, Transliterator.FORWARD);
+            Transliterator foo = Transliterator.CreateFromRules(id, rules, Transliterator.Forward);
             Transliterator.RegisterInstance(foo);
             checkRegistry(id);
         }
@@ -206,7 +206,7 @@ namespace ICU4N.Dev.Test.Translit
                     "'!' { $lu > '^';" +
                     "$lu > '*';" +
                     "a>ERROR",
-                    Transliterator.FORWARD);
+                    Transliterator.Forward);
             Expect(t, "abcdefgABCDEFGU", "&bcd&fg!^**!^*&");
         }
 
@@ -268,8 +268,8 @@ namespace ICU4N.Dev.Test.Translit
                 "caccb", "xyzzy",
         };
 
-            Transliterator fwd = Transliterator.CreateFromRules("<ID>", RULES, Transliterator.FORWARD);
-            Transliterator rev = Transliterator.CreateFromRules("<ID>", RULES, Transliterator.REVERSE);
+            Transliterator fwd = Transliterator.CreateFromRules("<ID>", RULES, Transliterator.Forward);
+            Transliterator rev = Transliterator.CreateFromRules("<ID>", RULES, Transliterator.Reverse);
             for (int i = 0; i < DATA.Length; i += 2)
             {
                 Expect(fwd, DATA[i], DATA[i + 1]);
@@ -287,7 +287,7 @@ namespace ICU4N.Dev.Test.Translit
                     "psch>Y;"
                     + "ps>y;"
                     + "ch>x;"
-                    + "a>A;", Transliterator.FORWARD);
+                    + "a>A;", Transliterator.Forward);
             String[] DATA = {
                 // insertion, buffer
                 "a", "A",
@@ -312,7 +312,7 @@ namespace ICU4N.Dev.Test.Translit
                     "ych>Y;"
                     + "ps>|y;"
                     + "ch>x;"
-                    + "a>A;", Transliterator.FORWARD);
+                    + "a>A;", Transliterator.Forward);
             String[] DATA = {
                 // insertion, buffer
                 "a", "A",
@@ -357,7 +357,7 @@ namespace ICU4N.Dev.Test.Translit
                 null, "abycz", // null means finishKeyboardTransliteration
         };
 
-            Transliterator t = Transliterator.CreateFromRules("<ID>", RULES, Transliterator.FORWARD);
+            Transliterator t = Transliterator.CreateFromRules("<ID>", RULES, Transliterator.Forward);
             keyboardAux(t, DATA);
         }
 
@@ -480,12 +480,12 @@ namespace ICU4N.Dev.Test.Translit
         public void TestFiltering()
         {
 
-            Transliterator tempTrans = Transliterator.CreateFromRules("temp", "x > y; x{a} > b; ", Transliterator.FORWARD);
+            Transliterator tempTrans = Transliterator.CreateFromRules("temp", "x > y; x{a} > b; ", Transliterator.Forward);
             tempTrans.Filter = (new UnicodeSet("[a]"));
             String tempResult = tempTrans.Transform("xa");
             assertEquals("context should not be filtered ", "xb", tempResult);
 
-            tempTrans = Transliterator.CreateFromRules("temp", "::[a]; x > y; x{a} > b; ", Transliterator.FORWARD);
+            tempTrans = Transliterator.CreateFromRules("temp", "::[a]; x > y; x{a} > b; ", Transliterator.Forward);
             tempResult = tempTrans.Transform("xa");
             assertEquals("context should not be filtered ", "xb", tempResult);
 
@@ -544,7 +544,7 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; i < DATA.Length; i += 3)
             {
                 Logln("Pattern: " + Utility.Escape(DATA[i]));
-                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[i], Transliterator.FORWARD);
+                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[i], Transliterator.Forward);
                 Expect(t, DATA[i + 1], DATA[i + 2]);
             }
         }
@@ -552,7 +552,7 @@ namespace ICU4N.Dev.Test.Translit
         [Test]
         public void TestVariableNames()
         {
-            Transliterator gl = Transliterator.CreateFromRules("foo5", "$\u2DC0 = qy; a>b;", Transliterator.FORWARD);
+            Transliterator gl = Transliterator.CreateFromRules("foo5", "$\u2DC0 = qy; a>b;", Transliterator.Forward);
             if (gl == null)
             {
                 Errln("FAIL: null Transliterator returned.");
@@ -601,7 +601,7 @@ namespace ICU4N.Dev.Test.Translit
                 "y <>           $ypsilon;" +
                 "n <>           $nu;";
             Transliterator mini = Transliterator.CreateFromRules
-            ("mini", rules, Transliterator.REVERSE);
+            ("mini", rules, Transliterator.Reverse);
             Expect(mini, syn, "syn");
             Expect(mini, sayn, "saun");
 
@@ -668,7 +668,7 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     Transliterator.CreateFromRules("<ID>",
                             (String)DATA[i + 1],
-                            Transliterator.FORWARD);
+                            Transliterator.Forward);
                 }
                 catch (ArgumentException e)
                 {
@@ -705,7 +705,7 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; i < DATA.Length; i += 3)
             {
                 Logln("Pattern: " + Utility.Escape(DATA[i]));
-                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[i], Transliterator.FORWARD);
+                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[i], Transliterator.Forward);
                 Expect(t, DATA[i + 1], DATA[i + 2]);
             }
         }
@@ -731,7 +731,7 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; i < DATA.Length; i += 3)
             {
                 Logln("Pattern: " + Utility.Escape(DATA[i]));
-                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[i], Transliterator.FORWARD);
+                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[i], Transliterator.Forward);
                 Expect(t, DATA[i + 1], DATA[i + 2]);
             }
         }
@@ -767,7 +767,7 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; i < DATA.Length; i += 3)
             {
                 Logln("Pattern: " + Utility.Escape(DATA[i]));
-                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[i], Transliterator.FORWARD);
+                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[i], Transliterator.Forward);
                 Expect(t, DATA[i + 1], DATA[i + 2]);
             }
         }
@@ -806,7 +806,7 @@ namespace ICU4N.Dev.Test.Translit
             int n = DATA.Length / 3;
             for (int i = 0; i < n; i++)
             {
-                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[3 * i], Transliterator.FORWARD);
+                Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[3 * i], Transliterator.Forward);
                 Transliterator.Position pos = new Transliterator.Position(
                         POS[4 * i], POS[4 * i + 1], POS[4 * i + 2], POS[4 * i + 3]);
                 ReplaceableString rsource = new ReplaceableString(DATA[3 * i + 1]);
@@ -1055,8 +1055,8 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; DATA[i] != null; i += 3)
             {
                 String id = DATA[i];
-                int dir = (DATA[i + 1] == FORWARD) ?
-                        Transliterator.FORWARD : Transliterator.REVERSE;
+                TransliterationDirection dir = (DATA[i + 1] == FORWARD) ?
+                        Transliterator.Forward : Transliterator.Reverse;
                 String expID = DATA[i + 2];
                 Exception e = null;
                 Transliterator t;
@@ -1190,7 +1190,7 @@ namespace ICU4N.Dev.Test.Translit
             "a > '.A.';\n" +
             "b > '.B.';\n" +
             "::[^t]Any-Upper;";
-            Transliterator t = Transliterator.CreateFromRules("Test", rule, Transliterator.FORWARD);
+            Transliterator t = Transliterator.CreateFromRules("Test", rule, Transliterator.Forward);
             if (t == null)
             {
                 Errln("FAIL: createFromRules failed");
@@ -1210,7 +1210,7 @@ namespace ICU4N.Dev.Test.Translit
             }
 
             // Now test toRules
-            t = Transliterator.GetInstance("Greek-Latin; Latin-Cyrillic", Transliterator.FORWARD);
+            t = Transliterator.GetInstance("Greek-Latin; Latin-Cyrillic", Transliterator.Forward);
             if (t == null)
             {
                 Errln("FAIL: createInstance failed");
@@ -1229,7 +1229,7 @@ namespace ICU4N.Dev.Test.Translit
             }
 
             // Round trip the result of toRules
-            t = Transliterator.CreateFromRules("Test", r, Transliterator.FORWARD);
+            t = Transliterator.CreateFromRules("Test", r, Transliterator.Forward);
             if (t == null)
             {
                 Errln("FAIL: createFromRules #2 failed");
@@ -1255,7 +1255,7 @@ namespace ICU4N.Dev.Test.Translit
             // Test Foo(Bar) IDs.  Careful with spacing in id; make it conform
             // to what the regenerated ID will look like.
             String id = "Upper(Lower);(NFKC)";
-            t = Transliterator.GetInstance(id, Transliterator.FORWARD);
+            t = Transliterator.GetInstance(id, Transliterator.Forward);
             if (t == null)
             {
                 Errln("FAIL: createInstance #2 failed");
@@ -1310,7 +1310,7 @@ namespace ICU4N.Dev.Test.Translit
         public void TestCompoundFilter()
         {
             Transliterator t = Transliterator.GetInstance
-            ("Greek-Latin; Latin-Greek; Lower", Transliterator.FORWARD);
+            ("Greek-Latin; Latin-Greek; Lower", Transliterator.Forward);
             t.Filter = (new UnicodeSet("[^A]"));
 
             // Only the 'A' at index 1 should remain unchanged
@@ -1403,7 +1403,7 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     // Transliterator test
                     Transliterator t = Transliterator.CreateFromRules("ID",
-                            DATA[d + 1], Transliterator.FORWARD);
+                            DATA[d + 1], Transliterator.Forward);
                     if (t == null)
                     {
                         Errln("FAIL: createFromRules failed");
@@ -1777,7 +1777,7 @@ namespace ICU4N.Dev.Test.Translit
         public void TestCompoundInverse()
         {
             Transliterator t = Transliterator.GetInstance
-            ("Greek-Latin; Title()", Transliterator.REVERSE);
+            ("Greek-Latin; Title()", Transliterator.Reverse);
             if (t == null)
             {
                 Errln("FAIL: createInstance");
@@ -1804,7 +1804,7 @@ namespace ICU4N.Dev.Test.Translit
         {
             Transliterator t = Transliterator.CreateFromRules(
                     "TEST", "::NFD; aa > Q; a > q;",
-                    Transliterator.FORWARD);
+                    Transliterator.Forward);
             Logln(t.ToRules(true));
             Expect(t, "aa", "Q");
         }
@@ -1868,7 +1868,7 @@ namespace ICU4N.Dev.Test.Translit
             String rule = "$initial } a <> \u1161;";
             try
             {
-                Transliterator.CreateFromRules("<ID>", rule, Transliterator.FORWARD);
+                Transliterator.CreateFromRules("<ID>", rule, Transliterator.Forward);
             }
             catch (ArgumentException e)
             {
@@ -1914,8 +1914,8 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; i < DATA.Length; i += 4)
             {
                 String id = DATA[i];
-                int direction = (DATA[i + 1] != null && DATA[i + 1][0] == 'R') ?
-                        Transliterator.REVERSE : Transliterator.FORWARD;
+                TransliterationDirection direction = (DATA[i + 1] != null && DATA[i + 1][0] == 'R') ?
+                        Transliterator.Reverse : Transliterator.Forward;
                 String source = DATA[i + 2];
                 String exp = DATA[i + 3];
                 bool expOk = (DATA[i + 1] != null);
@@ -1982,9 +1982,9 @@ namespace ICU4N.Dev.Test.Translit
                 // limitation of global filters in incremental mode.
 
                 Transliterator a =
-                    Transliterator.CreateFromRules("a_to_A", "a > A;", Transliterator.FORWARD);
+                    Transliterator.CreateFromRules("a_to_A", "a > A;", Transliterator.Forward);
                 Transliterator A =
-                    Transliterator.CreateFromRules("A_to_b", "A > b;", Transliterator.FORWARD);
+                    Transliterator.CreateFromRules("A_to_b", "A > b;", Transliterator.Forward);
 
                 //Transliterator array[] = new Transliterator[] {
                 //    a,
@@ -2054,7 +2054,7 @@ namespace ICU4N.Dev.Test.Translit
             // Test toRule/toPattern for non-quantified segment.
             // Careful with spacing here.
             String r = "([a-c]){q} > x $1 x;";
-            Transliterator t = Transliterator.CreateFromRules("ID", r, Transliterator.FORWARD);
+            Transliterator t = Transliterator.CreateFromRules("ID", r, Transliterator.Forward);
             String rr = t.ToRules(true);
             if (!r.Equals(rr))
             {
@@ -2068,7 +2068,7 @@ namespace ICU4N.Dev.Test.Translit
             // Test toRule/toPattern for quantified segment.
             // Careful with spacing here.
             r = "([a-c])+{q} > x $1 x;";
-            t = Transliterator.CreateFromRules("ID", r, Transliterator.FORWARD);
+            t = Transliterator.CreateFromRules("ID", r, Transliterator.Forward);
             rr = t.ToRules(true);
             if (!r.Equals(rr))
             {
@@ -2203,8 +2203,8 @@ namespace ICU4N.Dev.Test.Translit
                 "\u0906\u0928\u0902\u0926\u094D \u0935\u0926\u094D\u0926\u093F\u0930\u093E\u091C\u0941",
         };
 
-            Transliterator latinToDev = Transliterator.GetInstance("Latin-Devanagari", Transliterator.FORWARD);
-            Transliterator devToLatin = Transliterator.GetInstance("Devanagari-Latin", Transliterator.FORWARD);
+            Transliterator latinToDev = Transliterator.GetInstance("Latin-Devanagari", Transliterator.Forward);
+            Transliterator devToLatin = Transliterator.GetInstance("Devanagari-Latin", Transliterator.Forward);
 
             for (int i = 0; i < source.Length; i++)
             {
@@ -2243,8 +2243,8 @@ namespace ICU4N.Dev.Test.Translit
         };
 
 
-            Transliterator latinToDev = Transliterator.GetInstance("Latin-Telugu", Transliterator.FORWARD);
-            Transliterator devToLatin = Transliterator.GetInstance("Telugu-Latin", Transliterator.FORWARD);
+            Transliterator latinToDev = Transliterator.GetInstance("Latin-Telugu", Transliterator.Forward);
+            Transliterator devToLatin = Transliterator.GetInstance("Telugu-Latin", Transliterator.Forward);
 
             for (int i = 0; i < source.Length; i++)
             {
@@ -2296,8 +2296,8 @@ namespace ICU4N.Dev.Test.Translit
                 "\u0938\u0902\u091c\u0935",
         };
 
-            Transliterator latinToDev = Transliterator.GetInstance("Latin-Devanagari", Transliterator.FORWARD);
-            Transliterator devToLatin = Transliterator.GetInstance("Devanagari-Latin", Transliterator.FORWARD);
+            Transliterator latinToDev = Transliterator.GetInstance("Latin-Devanagari", Transliterator.Forward);
+            Transliterator devToLatin = Transliterator.GetInstance("Devanagari-Latin", Transliterator.Forward);
             for (int i = 0; i < MAX_LEN; i++)
             {
                 Expect(latinToDev, (source[i]), (expected[i]));
@@ -2348,8 +2348,8 @@ namespace ICU4N.Dev.Test.Translit
                 "\u0938\u0902\u091c\u0935"
         };
 
-            Transliterator latinToDevToLatin = Transliterator.GetInstance("Latin-Devanagari;Devanagari-Latin", Transliterator.FORWARD);
-            Transliterator devToLatinToDev = Transliterator.GetInstance("Devanagari-Latin;Latin-Devanagari", Transliterator.FORWARD);
+            Transliterator latinToDevToLatin = Transliterator.GetInstance("Latin-Devanagari;Devanagari-Latin", Transliterator.Forward);
+            Transliterator devToLatinToDev = Transliterator.GetInstance("Devanagari-Latin;Latin-Devanagari", Transliterator.Forward);
             for (int i = 0; i < MAX_LEN; i++)
             {
                 Expect(latinToDevToLatin, (source[i]), (source[i]));
@@ -2470,7 +2470,7 @@ namespace ICU4N.Dev.Test.Translit
                 "d << b;";
             try
             {
-                Transliterator t = Transliterator.CreateFromRules("ID", rule, Transliterator.FORWARD);
+                Transliterator t = Transliterator.CreateFromRules("ID", rule, Transliterator.Forward);
                 if (t != null)
                 {
                     Errln("FAIL: Did not get expected exception");
@@ -2502,7 +2502,7 @@ namespace ICU4N.Dev.Test.Translit
             Transliterator t = null;
             try
             {
-                t = Transliterator.CreateFromRules("ID", rule, Transliterator.FORWARD);
+                t = Transliterator.CreateFromRules("ID", rule, Transliterator.Forward);
                 if (t != null)
                 {
                     Errln("FAIL: Did not get the expected exception");
@@ -2527,7 +2527,7 @@ namespace ICU4N.Dev.Test.Translit
             try
             {
                 Transliterator t =
-                    Transliterator.CreateFromRules("ID", rule, Transliterator.FORWARD);
+                    Transliterator.CreateFromRules("ID", rule, Transliterator.Forward);
                 if (t != null)
                 {
                     Errln("FAIL: Did not get the expected exception");
@@ -2550,7 +2550,7 @@ namespace ICU4N.Dev.Test.Translit
             try
             {
                 Transliterator t =
-                    Transliterator.CreateFromRules("ID", "a}b{c>d;", Transliterator.FORWARD);
+                    Transliterator.CreateFromRules("ID", "a}b{c>d;", Transliterator.Forward);
                 if (t != null)
                 {
                     Errln("FAIL: Did not get the expected exception");
@@ -2694,8 +2694,8 @@ namespace ICU4N.Dev.Test.Translit
             String source = "\u00E1"; // a-acute
             String target = "\u03AC"; // alpha-acute
 
-            Transliterator t2 = Transliterator.CreateFromRules("source-target", testRules, Transliterator.FORWARD);
-            Transliterator t3 = Transliterator.CreateFromRules("target-source", testRules, Transliterator.REVERSE);
+            Transliterator t2 = Transliterator.CreateFromRules("source-target", testRules, Transliterator.Forward);
+            Transliterator t3 = Transliterator.CreateFromRules("target-source", testRules, Transliterator.Reverse);
 
             Expect(t2, source, target);
             Expect(t3, target, source);
@@ -2759,7 +2759,7 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     Logln("Ok: " + DATA[i] + ".getDisplayName() => " + name);
                 }
-                Transliterator t = Transliterator.GetInstance(DATA[i], Transliterator.REVERSE);
+                Transliterator t = Transliterator.GetInstance(DATA[i], Transliterator.Reverse);
                 name = Transliterator.GetDisplayName(t.ID, US);
                 if (!name.Equals(DATA[i + 2]))
                 {
@@ -2790,7 +2790,7 @@ namespace ICU4N.Dev.Test.Translit
             String rule = "^a > Q; a > q;";
             try
             {
-                Transliterator t = Transliterator.CreateFromRules("ID", rule, Transliterator.FORWARD);
+                Transliterator t = Transliterator.CreateFromRules("ID", rule, Transliterator.Forward);
                 if (t == null)
                 {
                     Errln("FAIL: Did not get the expected exception");
@@ -2932,7 +2932,7 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; i < registerRules.Length; ++i)
             {
                 Transliterator t = Transliterator.CreateFromRules(registerRules[i][0],
-                        registerRules[i][1], Transliterator.FORWARD);
+                        registerRules[i][1], Transliterator.Forward);
                 DummyFactory.Add(registerRules[i][0], t);
             }
             for (int i = 0; i < testCases.Length; ++i)
@@ -3050,7 +3050,7 @@ namespace ICU4N.Dev.Test.Translit
             String rule =
                 "([:Lu:]) > $1 '(' &Lower( $1 ) '=' &Hex( &Any-Lower( $1 ) ) ')';";
 
-            Transliterator t = Transliterator.CreateFromRules("Test", rule, Transliterator.FORWARD);
+            Transliterator t = Transliterator.CreateFromRules("Test", rule, Transliterator.Forward);
             if (t == null)
             {
                 Errln("FAIL: createFromRules failed");
@@ -3073,7 +3073,7 @@ namespace ICU4N.Dev.Test.Translit
             rule =
                 "([^\\ -\\u007F]) > &Hex/Unicode( $1 ) ' ' &Name( $1 ) ;";
 
-            t = Transliterator.CreateFromRules("Test", rule, Transliterator.FORWARD);
+            t = Transliterator.CreateFromRules("Test", rule, Transliterator.Forward);
             if (t == null)
             {
                 Errln("FAIL: createFromRules failed");
@@ -3102,13 +3102,13 @@ namespace ICU4N.Dev.Test.Translit
             String rule2 = "(.) <> &hex/unicode($1) &name($1); . > $1; [{}] >\u0020;";
             try
             {
-                Transliterator t = Transliterator.CreateFromRules("Test", rule, Transliterator.FORWARD);
+                Transliterator t = Transliterator.CreateFromRules("Test", rule, Transliterator.Forward);
                 if (t != null)
                 {
                     Errln("FAIL: createFromRules should have returned NULL");
                 }
                 Errln("FAIL: Ok: . > $1; => no error");
-                Transliterator t2 = Transliterator.CreateFromRules("Test2", rule2, Transliterator.FORWARD);
+                Transliterator t2 = Transliterator.CreateFromRules("Test2", rule2, Transliterator.Forward);
                 if (t2 != null)
                 {
                     Errln("FAIL: createFromRules should have returned NULL");
@@ -3132,7 +3132,7 @@ namespace ICU4N.Dev.Test.Translit
                 "[{gd}] { e          > q;" +
                 "         e } [{fg}] > r;";
 
-            Transliterator t = Transliterator.CreateFromRules("Test", rule, Transliterator.FORWARD);
+            Transliterator t = Transliterator.CreateFromRules("Test", rule, Transliterator.Forward);
             if (t == null)
             {
                 Errln("FAIL: createFromRules failed");
@@ -3150,7 +3150,7 @@ namespace ICU4N.Dev.Test.Translit
                 "           c          > z;" +
                 " q [t {st} {rst}] { e > p;";
 
-            t = Transliterator.CreateFromRules("Test", rule, Transliterator.FORWARD);
+            t = Transliterator.CreateFromRules("Test", rule, Transliterator.Forward);
             if (t == null)
             {
                 Errln("FAIL: createFromRules failed");
@@ -3174,22 +3174,22 @@ namespace ICU4N.Dev.Test.Translit
             TestUserFunctionFactory.Add("Any-gif",
                     Transliterator.CreateFromRules("gif",
                             "'\\'u(..)(..) > '<img src=\"http://www.unicode.org/gifs/24/' $1 '/U' $1$2 '.gif\">';",
-                            Transliterator.FORWARD));
+                            Transliterator.Forward));
             //TestUserFunctionFactory.add("gif-Any", Transliterator.GetInstance("Any-Null"));
 
             TestUserFunctionFactory.Add("Any-RemoveCurly",
-                    Transliterator.CreateFromRules("RemoveCurly", "[\\{\\}] > ; \\\\N > ;", Transliterator.FORWARD));
+                    Transliterator.CreateFromRules("RemoveCurly", "[\\{\\}] > ; \\\\N > ;", Transliterator.Forward));
             //TestUserFunctionFactory.add("RemoveCurly-Any", Transliterator.GetInstance("Any-Null"));
 
             Logln("Trying &hex");
-            t = Transliterator.CreateFromRules("hex2", "(.) > &hex($1);", Transliterator.FORWARD);
+            t = Transliterator.CreateFromRules("hex2", "(.) > &hex($1);", Transliterator.Forward);
             Logln("Registering");
             TestUserFunctionFactory.Add("Any-hex2", t);
             t = Transliterator.GetInstance("Any-hex2");
             Expect(t, "abc", "\\u0061\\u0062\\u0063");
 
             Logln("Trying &gif");
-            t = Transliterator.CreateFromRules("gif2", "(.) > &Gif(&Hex2($1));", Transliterator.FORWARD);
+            t = Transliterator.CreateFromRules("gif2", "(.) > &Gif(&Hex2($1));", Transliterator.Forward);
             Logln("Registering");
             TestUserFunctionFactory.Add("Any-gif2", t);
             t = Transliterator.GetInstance("Any-gif2");
@@ -3198,7 +3198,7 @@ namespace ICU4N.Dev.Test.Translit
 
             // Test that filters are allowed after &
             t = Transliterator.CreateFromRules("test",
-                    "(.) > &Hex($1) ' ' &Any-RemoveCurly(&Name($1)) ' ';", Transliterator.FORWARD);
+                    "(.) > &Hex($1) ' ' &Any-RemoveCurly(&Name($1)) ' ';", Transliterator.Forward);
             Expect(t, "abc", "\\u0061 LATIN SMALL LETTER A \\u0062 LATIN SMALL LETTER B \\u0063 LATIN SMALL LETTER C ");
 
             // Unregister our test stuff
@@ -3245,7 +3245,7 @@ namespace ICU4N.Dev.Test.Translit
         public void TestAnyX()
         {
             Transliterator anyLatin =
-                Transliterator.GetInstance("Any-Latin", Transliterator.FORWARD);
+                Transliterator.GetInstance("Any-Latin", Transliterator.Forward);
 
             Expect(anyLatin,
                     "greek:\u03B1\u03B2\u03BA\u0391\u0392\u039A hiragana:\u3042\u3076\u304F cyrillic:\u0430\u0431\u0446",
@@ -3295,7 +3295,7 @@ namespace ICU4N.Dev.Test.Translit
             // Expected target
             UnicodeSet expTrg = new UnicodeSet("[bq]");
 
-            Transliterator t = Transliterator.CreateFromRules("test", r, Transliterator.FORWARD);
+            Transliterator t = Transliterator.CreateFromRules("test", r, Transliterator.Forward);
             UnicodeSet src = t.GetSourceSet();
             UnicodeSet trg = t.GetTargetSet();
 
@@ -3485,7 +3485,7 @@ namespace ICU4N.Dev.Test.Translit
             foreach (Object[] rulex in rules)
             {
                 String rule = (String)rulex[0];
-                Transliterator trans = Transliterator.CreateFromRules("temp", rule, Transliterator.FORWARD);
+                Transliterator trans = Transliterator.CreateFromRules("temp", rule, Transliterator.Forward);
                 UnicodeSet actualSource = trans.GetSourceSet();
                 UnicodeSet actualTarget = trans.GetTargetSet();
                 UnicodeSet empiricalSource = new UnicodeSet();
@@ -3575,7 +3575,7 @@ namespace ICU4N.Dev.Test.Translit
                 }
                 catch (Exception e)
                 {
-                    t0 = Transliterator.CreateFromRules("temp", test, Transliterator.FORWARD);
+                    t0 = Transliterator.CreateFromRules("temp", test, Transliterator.Forward);
                 }
                 Transliterator t1;
                 try
@@ -3584,7 +3584,7 @@ namespace ICU4N.Dev.Test.Translit
                 }
                 catch (Exception e)
                 {
-                    t1 = Transliterator.CreateFromRules("temp", test, Transliterator.REVERSE);
+                    t1 = Transliterator.CreateFromRules("temp", test, Transliterator.Reverse);
                 }
                 int targetIndex = 0;
                 foreach (Transliterator t in new Transliterator[] { t0, t1 })
@@ -3791,7 +3791,7 @@ namespace ICU4N.Dev.Test.Translit
             // Rules
             String r = "a > \u200E b;";
 
-            Transliterator t = Transliterator.CreateFromRules("test", r, Transliterator.FORWARD);
+            Transliterator t = Transliterator.CreateFromRules("test", r, Transliterator.Forward);
 
             Expect(t, "a", "b");
 
@@ -4077,7 +4077,7 @@ namespace ICU4N.Dev.Test.Translit
 
             // instantiate the one reversible rule set in the reverse direction and make sure it does the right thing
             Transliterator reversed = Transliterator.CreateFromRules("Reversed", BEGIN_END_RULES[17],
-                    Transliterator.REVERSE);
+                    Transliterator.Reverse);
             Expect(reversed, "xy XY XYZ yz YZ", "xy abc xaba yz aba");
 
             // finally, run through the list of syntactically-ill-formed rule sets above and make sure
@@ -4108,18 +4108,18 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; i < BEGIN_END_TEST_CASES.Length; i += 3)
             {
                 Transliterator t = Transliterator.CreateFromRules("--", BEGIN_END_TEST_CASES[i],
-                        Transliterator.FORWARD);
+                        Transliterator.Forward);
                 String rules = t.ToRules(false);
-                Transliterator t2 = Transliterator.CreateFromRules("Test case #" + (i / 3), rules, Transliterator.FORWARD);
+                Transliterator t2 = Transliterator.CreateFromRules("Test case #" + (i / 3), rules, Transliterator.Forward);
                 Expect(t2, BEGIN_END_TEST_CASES[i + 1], BEGIN_END_TEST_CASES[i + 2]);
             }
 
             {
                 // do the same thing for the reversible test case
                 Transliterator reversed = Transliterator.CreateFromRules("Reversed", BEGIN_END_RULES[17],
-                        Transliterator.REVERSE);
+                        Transliterator.Reverse);
                 String rules = reversed.ToRules(false);
-                Transliterator reversed2 = Transliterator.CreateFromRules("Reversed", rules, Transliterator.FORWARD);
+                Transliterator reversed2 = Transliterator.CreateFromRules("Reversed", rules, Transliterator.Forward);
                 Expect(reversed2, "xy XY XYZ yz YZ", "xy abc xaba yz aba");
             }
         }
@@ -4217,7 +4217,7 @@ namespace ICU4N.Dev.Test.Translit
         [Test]
         public void TestThai()
         {
-            Transliterator tr = Transliterator.GetInstance("Any-Latin", Transliterator.FORWARD);
+            Transliterator tr = Transliterator.GetInstance("Any-Latin", Transliterator.Forward);
             String thaiText =
                 "\u0e42\u0e14\u0e22\u0e1e\u0e37\u0e49\u0e19\u0e10\u0e32\u0e19\u0e41\u0e25\u0e49\u0e27, \u0e04\u0e2d" +
                 "\u0e21\u0e1e\u0e34\u0e27\u0e40\u0e15\u0e2d\u0e23\u0e4c\u0e08\u0e30\u0e40\u0e01\u0e35\u0e48\u0e22" +
@@ -4286,16 +4286,16 @@ namespace ICU4N.Dev.Test.Translit
         public void TestCoverage()
         {
             // NullTransliterator
-            Transliterator t = Transliterator.GetInstance("Null", Transliterator.FORWARD);
+            Transliterator t = Transliterator.GetInstance("Null", Transliterator.Forward);
             Expect(t, "a", "a");
 
             // Source, target set
-            t = Transliterator.GetInstance("Latin-Greek", Transliterator.FORWARD);
+            t = Transliterator.GetInstance("Latin-Greek", Transliterator.Forward);
             t.Filter = (new UnicodeSet("[A-Z]"));
             Logln("source = " + t.GetSourceSet());
             Logln("target = " + t.GetTargetSet());
 
-            t = Transliterator.CreateFromRules("x", "(.) > &Any-Hex($1);", Transliterator.FORWARD);
+            t = Transliterator.CreateFromRules("x", "(.) > &Any-Hex($1);", Transliterator.Forward);
             Logln("source = " + t.GetSourceSet());
             Logln("target = " + t.GetTargetSet());
         }
@@ -4385,7 +4385,7 @@ namespace ICU4N.Dev.Test.Translit
                 String expectedResult,
                 Transliterator.Position pos)
         {
-            Transliterator t = Transliterator.CreateFromRules("<ID>", rules, Transliterator.FORWARD);
+            Transliterator t = Transliterator.CreateFromRules("<ID>", rules, Transliterator.Forward);
             Expect(t, source, expectedResult, pos);
         }
 
@@ -4611,7 +4611,7 @@ namespace ICU4N.Dev.Test.Translit
             // Tests when "if (s != null && s.Length > 0 && s.charAt(s.Length - 1) == '\\') is true
             try
             {
-                Transliterator.CreateFromRules("gif", "\\", Transliterator.FORWARD);
+                Transliterator.CreateFromRules("gif", "\\", Transliterator.Forward);
             }
             catch (Exception e)
             {

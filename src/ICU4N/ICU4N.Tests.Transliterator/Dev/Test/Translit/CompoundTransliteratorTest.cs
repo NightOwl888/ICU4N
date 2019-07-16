@@ -54,7 +54,7 @@ namespace ICU4N.Dev.Test.Translit
 
                 try
                 {
-                    Transliterator.GetInstance(IDs[i], Transliterator.FORWARD);
+                    Transliterator.GetInstance(IDs[i], Transliterator.Forward);
                 }
                 catch (ArgumentException ex2)
                 {
@@ -64,7 +64,7 @@ namespace ICU4N.Dev.Test.Translit
 
                 try
                 {
-                    Transliterator.GetInstance(IDs[i], Transliterator.REVERSE);
+                    Transliterator.GetInstance(IDs[i], Transliterator.Reverse);
                 }
                 catch (ArgumentException ex3)
                 {

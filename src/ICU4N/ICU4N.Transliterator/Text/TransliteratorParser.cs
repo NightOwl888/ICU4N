@@ -40,7 +40,7 @@ namespace ICU4N.Text
         public UnicodeSet CompoundFilter { get; set; }
 
 
-        private int direction;
+        private TransliterationDirection direction;
 
         /**
          * Temporary symbol table used during parsing.
@@ -955,7 +955,7 @@ namespace ICU4N.Text
          * Parse a set of rules.  After the parse completes, examine the public
          * data members for results.
          */
-        public virtual void Parse(string rules, int dir)
+        public virtual void Parse(string rules, TransliterationDirection dir)
         {
             ParseRules(new RuleArray(new string[] { rules }), dir);
         }
@@ -985,7 +985,7 @@ namespace ICU4N.Text
          * @exception IllegalIcuArgumentException if there is a syntax error in the
          * rules
          */
-        private void ParseRules(RuleBody ruleArray, int dir)
+        private void ParseRules(RuleBody ruleArray, TransliterationDirection dir)
         {
             bool parsingIDs = true;
             int ruleCount = 0;
@@ -1075,7 +1075,7 @@ namespace ICU4N.Text
                             {
                                 if (curData != null)
                                 {
-                                    if (direction == Transliterator.FORWARD)
+                                    if (direction == Transliterator.Forward)
                                         DataVector.Add(curData);
                                     else
                                         DataVector.Insert(0, curData);
@@ -1091,7 +1091,7 @@ namespace ICU4N.Text
                             {
                                 // Successful ::ID parse.
 
-                                if (direction == Transliterator.FORWARD)
+                                if (direction == Transliterator.Forward)
                                 {
                                     idBlockResult.Append(id.CanonID).Append(END_OF_RULE);
                                 }
@@ -1108,7 +1108,7 @@ namespace ICU4N.Text
                                 UnicodeSet f = TransliteratorIDParser.ParseGlobalFilter(rule, p, direction, withParens, null);
                                 if (f != null && Utility.ParseChar(rule, p, END_OF_RULE))
                                 {
-                                    if ((direction == Transliterator.FORWARD) ==
+                                    if ((direction == Transliterator.Forward) ==
                                         (withParens[0] == 0))
                                     {
                                         if (CompoundFilter != null)
@@ -1134,7 +1134,7 @@ namespace ICU4N.Text
                         {
                             if (parsingIDs)
                             {
-                                if (direction == Transliterator.FORWARD)
+                                if (direction == Transliterator.Forward)
                                     IdBlockVector.Add(idBlockResult.ToString());
                                 else
                                     IdBlockVector.Insert(0, idBlockResult.ToString());
@@ -1184,14 +1184,14 @@ namespace ICU4N.Text
             main_break: { }
             if (parsingIDs && idBlockResult.Length > 0)
             {
-                if (direction == Transliterator.FORWARD)
+                if (direction == Transliterator.Forward)
                     IdBlockVector.Add(idBlockResult.ToString());
                 else
                     IdBlockVector.Insert(0, idBlockResult.ToString());
             }
             else if (!parsingIDs && curData != null)
             {
-                if (direction == Transliterator.FORWARD)
+                if (direction == Transliterator.Forward)
                     DataVector.Add(curData);
                 else
                     DataVector.Insert(0, curData);
@@ -1213,9 +1213,9 @@ namespace ICU4N.Text
             {
                 if (CompoundFilter != null)
                 {
-                    if ((direction == Transliterator.FORWARD &&
+                    if ((direction == Transliterator.Forward &&
                          compoundFilterOffset != 1) ||
-                        (direction == Transliterator.REVERSE &&
+                        (direction == Transliterator.Reverse &&
                          compoundFilterOffset != ruleCount))
                     {
                         throw new IcuArgumentException("Compound filters misplaced");
@@ -1397,14 +1397,14 @@ namespace ICU4N.Text
             // If the direction we want doesn't match the rule
             // direction, do nothing.
             if (op != FWDREV_RULE_OP &&
-                ((direction == Transliterator.FORWARD) != (op == FORWARD_RULE_OP)))
+                ((direction == Transliterator.Forward) != (op == FORWARD_RULE_OP)))
             {
                 return pos;
             }
 
             // Transform the rule into a forward rule by swapping the
             // sides if necessary.
-            if (direction == Transliterator.REVERSE)
+            if (direction == Transliterator.Reverse)
             {
                 RuleHalf temp = left;
                 left = right;

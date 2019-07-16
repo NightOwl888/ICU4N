@@ -13,7 +13,7 @@ namespace ICU4N.Dev.Test.Translit
         [Test]
         public void TestContext()
         {
-            Transliterator t = Transliterator.CreateFromRules("foo", "::[bc]; a{b}d > B;", Transliterator.FORWARD);
+            Transliterator t = Transliterator.CreateFromRules("foo", "::[bc]; a{b}d > B;", Transliterator.Forward);
             String sample = "abd abc b";
             assertEquals("context works", "aBd abc b", t.Transform(sample));
         }

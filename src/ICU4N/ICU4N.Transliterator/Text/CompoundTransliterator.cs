@@ -105,7 +105,7 @@ namespace ICU4N.Text
             : base("", null)
         {
             trans = null;
-            Init(list, FORWARD, false);
+            Init(list, Forward, false);
             this.numAnonymousRBTs = numAnonymousRBTs;
             // assume caller will fixup ID
         }
@@ -175,7 +175,7 @@ namespace ICU4N.Text
         /// do not require this because they apply a facade ID anyway.
         /// </param>
         private void Init(IList<Transliterator> list,
-                          int direction,
+                          TransliterationDirection direction,
                           bool fixReverseID)
         {
             // assert(trans == 0);
@@ -189,13 +189,13 @@ namespace ICU4N.Text
             int i;
             for (i = 0; i < count; ++i)
             {
-                int j = (direction == FORWARD) ? i : count - 1 - i;
+                int j = (direction == Forward) ? i : count - 1 - i;
                 trans[i] = list[j];
             }
 
             // If the direction is UTRANS_REVERSE then we may need to fix the
             // ID.
-            if (direction == REVERSE && fixReverseID)
+            if (direction == Reverse && fixReverseID)
             {
                 StringBuilder newID = new StringBuilder();
                 for (i = 0; i < count; ++i)
