@@ -626,39 +626,39 @@ namespace ICU4N.Impl.Locale
         // Getter methods for language subtag fields
         //
 
-        public virtual string GetLanguage() // ICU4N TODO: API - make property
+        public virtual string Language
         {
-            return _language;
+            get { return _language; }
         }
 
-        public virtual IList<string> GetExtlangs() // ICU4N TODO: API - make property
+        public virtual IList<string> Extlangs
         {
-            return _extlangs.ToUnmodifiableList();
+            get { return _extlangs.ToUnmodifiableList(); }
         }
 
-        public virtual string GetScript() // ICU4N TODO: API - make property
+        public virtual string Script
         {
-            return _script;
+            get { return _script; }
         }
 
-        public virtual string GetRegion() // ICU4N TODO: API - make property
+        public virtual string Region
         {
-            return _region;
+            get { return _region; }
         }
 
-        public virtual IList<string> GetVariants() // ICU4N TODO: API - make property
+        public virtual IList<string> Variants
         {
-            return _variants.ToUnmodifiableList();
+            get { return _variants.ToUnmodifiableList(); }
         }
 
-        public virtual IList<string> GetExtensions() // ICU4N TODO: API - make property
+        public virtual IList<string> Extensions
         {
-            return _extensions.ToUnmodifiableList();
+            get { return _extensions.ToUnmodifiableList(); }
         }
 
-        public virtual string GetPrivateuse() // ICU4N TODO: API - make property
+        public virtual string PrivateUse
         {
-            return _privateuse;
+            get { return _privateuse; }
         }
 
         //
@@ -682,7 +682,7 @@ namespace ICU4N.Impl.Locale
             return (s.Length == 3) && AsciiUtil.IsAlphaString(s);
         }
 
-        public static bool IsScript(String s)
+        public static bool IsScript(string s)
         {
             // script        = 4ALPHA              ; ISO 15924 code
             return (s.Length == 4) && AsciiUtil.IsAlphaString(s);

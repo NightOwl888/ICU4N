@@ -3599,41 +3599,41 @@ namespace ICU4N.Util
             LanguageTag tag = LanguageTag.ParseLocale(@base, exts);
 
             StringBuilder buf = new StringBuilder();
-            string subtag = tag.GetLanguage();
+            string subtag = tag.Language;
             if (subtag.Length > 0)
             {
                 buf.Append(LanguageTag.CanonicalizeLanguage(subtag));
             }
 
-            subtag = tag.GetScript();
+            subtag = tag.Script;
             if (subtag.Length > 0)
             {
                 buf.Append(LanguageTag.SEP);
                 buf.Append(LanguageTag.CanonicalizeScript(subtag));
             }
 
-            subtag = tag.GetRegion();
+            subtag = tag.Region;
             if (subtag.Length > 0)
             {
                 buf.Append(LanguageTag.SEP);
                 buf.Append(LanguageTag.CanonicalizeRegion(subtag));
             }
 
-            IList<string> subtags = tag.GetVariants();
+            IList<string> subtags = tag.Variants;
             foreach (string s in subtags)
             {
                 buf.Append(LanguageTag.SEP);
                 buf.Append(LanguageTag.CanonicalizeVariant(s));
             }
 
-            subtags = tag.GetExtensions();
+            subtags = tag.Extensions;
             foreach (string s in subtags)
             {
                 buf.Append(LanguageTag.SEP);
                 buf.Append(LanguageTag.CanonicalizeExtension(s));
             }
 
-            subtag = tag.GetPrivateuse();
+            subtag = tag.PrivateUse;
             if (subtag.Length > 0)
             {
                 if (buf.Length > 0)

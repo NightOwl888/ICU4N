@@ -395,22 +395,22 @@ namespace ICU4N.Impl.Locale
         public InternalLocaleBuilder SetLanguageTag(LanguageTag langtag)
         {
             Clear();
-            if (langtag.GetExtlangs().Count > 0)
+            if (langtag.Extlangs.Count > 0)
             {
-                _language = langtag.GetExtlangs()[0];
+                _language = langtag.Extlangs[0];
             }
             else
             {
-                string language = langtag.GetLanguage();
+                string language = langtag.Language;
                 if (!language.Equals(LanguageTag.UNDETERMINED))
                 {
                     _language = language;
                 }
             }
-            _script = langtag.GetScript();
-            _region = langtag.GetRegion();
+            _script = langtag.Script;
+            _region = langtag.Region;
 
-            IList<string> bcpVariants = langtag.GetVariants();
+            IList<string> bcpVariants = langtag.Variants;
             if (bcpVariants.Count > 0)
             {
                 StringBuilder var = new StringBuilder(bcpVariants[0]);
@@ -421,7 +421,7 @@ namespace ICU4N.Impl.Locale
                 _variant = var.ToString();
             }
 
-            SetExtensions(langtag.GetExtensions(), langtag.GetPrivateuse());
+            SetExtensions(langtag.Extensions, langtag.PrivateUse);
 
             return this;
         }
