@@ -235,7 +235,7 @@ namespace ICU4N.Dev.Test.StringPrep
             int ch;
             StringBuffer result = new StringBuffer();
             UCharacterIterator iter = UCharacterIterator.GetInstance(input);
-            while ((ch = iter.NextCodePoint()) != UCharacterIterator.DONE)
+            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.DONE)
             {
                 @in[inLen++] = ch;
             }

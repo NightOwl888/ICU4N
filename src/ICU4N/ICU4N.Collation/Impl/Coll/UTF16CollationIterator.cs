@@ -61,7 +61,7 @@ namespace ICU4N.Impl.Coll
             limit = s.Length;
         }
 
-        public override int NextCodePoint()
+        public override int MoveNextCodePoint()
         {
             if (pos == limit)
             {
@@ -81,7 +81,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        public override int PreviousCodePoint()
+        public override int MovePreviousCodePoint()
         {
             if (pos == start)
             {

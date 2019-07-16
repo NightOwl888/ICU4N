@@ -1500,7 +1500,7 @@ namespace ICU4N.Impl.Coll
                 get { return pos; }
             }
 
-            public override int NextCodePoint()
+            public override int MoveNextCodePoint()
             {
                 if (pos == s.Length)
                 {
@@ -1511,7 +1511,7 @@ namespace ICU4N.Impl.Coll
                 return c;
             }
 
-            public override int PreviousCodePoint()
+            public override int MovePreviousCodePoint()
             {
                 if (pos == 0)
                 {

@@ -1128,7 +1128,7 @@ namespace ICU4N.Dev.Test.Normalizers
             cIter.SetToLimit();
             while ((ch = iter.MovePrevious()) != Normalizer.DONE)
             {
-                int want = cIter.PreviousCodePoint();
+                int want = cIter.MovePreviousCodePoint();
                 if (ch != want)
                 {
                     Errln("FAIL: " + msg + "got '" + (char)ch
@@ -1239,7 +1239,7 @@ namespace ICU4N.Dev.Test.Normalizers
             cIter.SetToLimit();
             while ((ch = iter.MovePrevious()) != Normalizer.DONE)
             {
-                int want = cIter.PreviousCodePoint();
+                int want = cIter.MovePreviousCodePoint();
                 if (ch != want)
                 {
                     Errln("FAIL: " + "got '" + (char)ch

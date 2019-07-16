@@ -489,7 +489,7 @@ namespace ICU4N.Dev.Test.Collate
             // Iterate forward to the limit.
             for (; ; )
             {
-                int c1 = ci.NextCodePoint();
+                int c1 = ci.MoveNextCodePoint();
                 int c2 = cpi.Next();
                 if (c1 != c2)
                 {
@@ -506,7 +506,7 @@ namespace ICU4N.Dev.Test.Collate
             // Iterate backward most of the way.
             for (int n = (cpi.Length * 2) / 3; n > 0; --n)
             {
-                int c1 = ci.PreviousCodePoint();
+                int c1 = ci.MovePreviousCodePoint();
                 int c2 = cpi.Previous();
                 if (c1 != c2)
                 {
@@ -519,7 +519,7 @@ namespace ICU4N.Dev.Test.Collate
             // Forward again.
             for (; ; )
             {
-                int c1 = ci.NextCodePoint();
+                int c1 = ci.MoveNextCodePoint();
                 int c2 = cpi.Next();
                 if (c1 != c2)
                 {
@@ -536,7 +536,7 @@ namespace ICU4N.Dev.Test.Collate
             // Iterate backward to the start.
             for (; ; )
             {
-                int c1 = ci.PreviousCodePoint();
+                int c1 = ci.MovePreviousCodePoint();
                 int c2 = cpi.Previous();
                 if (c1 != c2)
                 {

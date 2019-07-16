@@ -26,19 +26,19 @@ namespace ICU4N.Impl.Coll
             get { return iter.Index; }
         }
 
-        public override int NextCodePoint()
+        public override int MoveNextCodePoint()
         {
-            return iter.NextCodePoint();
+            return iter.MoveNextCodePoint();
         }
 
-        public override int PreviousCodePoint()
+        public override int MovePreviousCodePoint()
         {
-            return iter.PreviousCodePoint();
+            return iter.MovePreviousCodePoint();
         }
 
         protected override long HandleNextCE32()
         {
-            int c = iter.Next();
+            int c = iter.MoveNext();
             if (c < 0)
             {
                 return NO_CP_AND_CE32;
@@ -48,8 +48,8 @@ namespace ICU4N.Impl.Coll
 
         protected override char HandleGetTrailSurrogate()
         {
-            int trail = iter.Next();
-            if (!IsTrailSurrogate(trail) && trail >= 0) { iter.Previous(); }
+            int trail = iter.MoveNext();
+            if (!IsTrailSurrogate(trail) && trail >= 0) { iter.MovePrevious(); }
             return (char)trail;
         }
 

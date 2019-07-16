@@ -39,7 +39,7 @@ namespace ICU4N.Impl
         public override char MoveLast()
         {
             iterator.SetToLimit();
-            return (char)iterator.Previous();
+            return (char)iterator.MovePrevious();
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace ICU4N.Impl
         public override char MoveNext()
         {
             //pre-increment
-            iterator.Next();
+            iterator.MoveNext();
             return (char)iterator.Current;
         }
 
@@ -80,7 +80,7 @@ namespace ICU4N.Impl
         public override char MovePrevious()
         {
             //pre-decrement
-            return (char)iterator.Previous();
+            return (char)iterator.MovePrevious();
         }
 
         /// <summary>

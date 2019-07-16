@@ -363,7 +363,7 @@ namespace ICU4N.Impl
             StringBuilder dest, Edits edits)
         {
             int c;
-            while ((c = iter.NextCaseMapCP()) >= 0)
+            while ((c = iter.MoveNextCaseMapCP()) >= 0)
             {
                 c = UCaseProps.Instance.ToFullLower(c, iter, dest, caseLocale);
                 AppendResult(c, dest, iter.CPLength, options, edits);
@@ -374,7 +374,7 @@ namespace ICU4N.Impl
             IAppendable dest, Edits edits)
         {
             int c;
-            while ((c = iter.NextCaseMapCP()) >= 0)
+            while ((c = iter.MoveNextCaseMapCP()) >= 0)
             {
                 c = UCaseProps.Instance.ToFullLower(c, iter, dest, caseLocale);
                 AppendResult(c, dest, iter.CPLength, options, edits);
@@ -724,7 +724,7 @@ namespace ICU4N.Impl
                 }
                 StringContextIterator iter = new StringContextIterator(src);
                 int c;
-                while ((c = iter.NextCaseMapCP()) >= 0)
+                while ((c = iter.MoveNextCaseMapCP()) >= 0)
                 {
                     c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
@@ -752,7 +752,7 @@ namespace ICU4N.Impl
                 }
                 StringContextIterator iter = new StringContextIterator(src);
                 int c;
-                while ((c = iter.NextCaseMapCP()) >= 0)
+                while ((c = iter.MoveNextCaseMapCP()) >= 0)
                 {
                     c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
@@ -780,7 +780,7 @@ namespace ICU4N.Impl
                 }
                 StringContextIterator iter = new StringContextIterator(src);
                 int c;
-                while ((c = iter.NextCaseMapCP()) >= 0)
+                while ((c = iter.MoveNextCaseMapCP()) >= 0)
                 {
                     c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
@@ -808,7 +808,7 @@ namespace ICU4N.Impl
                 }
                 StringContextIterator iter = new StringContextIterator(src);
                 int c;
-                while ((c = iter.NextCaseMapCP()) >= 0)
+                while ((c = iter.MoveNextCaseMapCP()) >= 0)
                 {
                     c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
@@ -836,7 +836,7 @@ namespace ICU4N.Impl
                 }
                 StringContextIterator iter = new StringContextIterator(src);
                 int c;
-                while ((c = iter.NextCaseMapCP()) >= 0)
+                while ((c = iter.MoveNextCaseMapCP()) >= 0)
                 {
                     c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
@@ -864,7 +864,7 @@ namespace ICU4N.Impl
                 }
                 StringContextIterator iter = new StringContextIterator(src);
                 int c;
-                while ((c = iter.NextCaseMapCP()) >= 0)
+                while ((c = iter.MoveNextCaseMapCP()) >= 0)
                 {
                     c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
@@ -892,7 +892,7 @@ namespace ICU4N.Impl
                 }
                 StringContextIterator iter = new StringContextIterator(src);
                 int c;
-                while ((c = iter.NextCaseMapCP()) >= 0)
+                while ((c = iter.MoveNextCaseMapCP()) >= 0)
                 {
                     c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
@@ -920,7 +920,7 @@ namespace ICU4N.Impl
                 }
                 StringContextIterator iter = new StringContextIterator(src);
                 int c;
-                while ((c = iter.NextCaseMapCP()) >= 0)
+                while ((c = iter.MoveNextCaseMapCP()) >= 0)
                 {
                     c = UCaseProps.Instance.ToFullUpper(c, iter, dest, caseLocale);
                     AppendResult(c, dest, iter.CPLength, options, edits);
@@ -1072,7 +1072,7 @@ namespace ICU4N.Impl
                         // Find and copy skipped characters [prev..titleStart[
                         int titleStart = prev;
                         iter.SetLimit(index);
-                        int c = iter.NextCaseMapCP();
+                        int c = iter.MoveNextCaseMapCP();
                         if ((options & UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
@@ -1084,7 +1084,7 @@ namespace ICU4N.Impl
                             while ((toCased ?
                                         UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
-                                    (c = iter.NextCaseMapCP()) >= 0) { }
+                                    (c = iter.MoveNextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
                             // and stopped with titleStart==titleLimit==index.
                             titleStart = iter.CPStart;
@@ -1115,7 +1115,7 @@ namespace ICU4N.Impl
                                         {
                                             edits.AddReplace(1, 1);
                                         }
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1124,7 +1124,7 @@ namespace ICU4N.Impl
                                     {
                                         // Keep the capital J from getting lowercased.
                                         AppendUnchanged(src, titleStart + 1, 1, dest, options, edits);
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1207,7 +1207,7 @@ namespace ICU4N.Impl
                         // Find and copy skipped characters [prev..titleStart[
                         int titleStart = prev;
                         iter.SetLimit(index);
-                        int c = iter.NextCaseMapCP();
+                        int c = iter.MoveNextCaseMapCP();
                         if ((options & UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
@@ -1219,7 +1219,7 @@ namespace ICU4N.Impl
                             while ((toCased ?
                                         UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
-                                    (c = iter.NextCaseMapCP()) >= 0) { }
+                                    (c = iter.MoveNextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
                             // and stopped with titleStart==titleLimit==index.
                             titleStart = iter.CPStart;
@@ -1250,7 +1250,7 @@ namespace ICU4N.Impl
                                         {
                                             edits.AddReplace(1, 1);
                                         }
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1259,7 +1259,7 @@ namespace ICU4N.Impl
                                     {
                                         // Keep the capital J from getting lowercased.
                                         AppendUnchanged(src, titleStart + 1, 1, dest, options, edits);
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1342,7 +1342,7 @@ namespace ICU4N.Impl
                         // Find and copy skipped characters [prev..titleStart[
                         int titleStart = prev;
                         iter.SetLimit(index);
-                        int c = iter.NextCaseMapCP();
+                        int c = iter.MoveNextCaseMapCP();
                         if ((options & UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
@@ -1354,7 +1354,7 @@ namespace ICU4N.Impl
                             while ((toCased ?
                                         UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
-                                    (c = iter.NextCaseMapCP()) >= 0) { }
+                                    (c = iter.MoveNextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
                             // and stopped with titleStart==titleLimit==index.
                             titleStart = iter.CPStart;
@@ -1385,7 +1385,7 @@ namespace ICU4N.Impl
                                         {
                                             edits.AddReplace(1, 1);
                                         }
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1394,7 +1394,7 @@ namespace ICU4N.Impl
                                     {
                                         // Keep the capital J from getting lowercased.
                                         AppendUnchanged(src, titleStart + 1, 1, dest, options, edits);
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1477,7 +1477,7 @@ namespace ICU4N.Impl
                         // Find and copy skipped characters [prev..titleStart[
                         int titleStart = prev;
                         iter.SetLimit(index);
-                        int c = iter.NextCaseMapCP();
+                        int c = iter.MoveNextCaseMapCP();
                         if ((options & UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
@@ -1489,7 +1489,7 @@ namespace ICU4N.Impl
                             while ((toCased ?
                                         UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
-                                    (c = iter.NextCaseMapCP()) >= 0) { }
+                                    (c = iter.MoveNextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
                             // and stopped with titleStart==titleLimit==index.
                             titleStart = iter.CPStart;
@@ -1520,7 +1520,7 @@ namespace ICU4N.Impl
                                         {
                                             edits.AddReplace(1, 1);
                                         }
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1529,7 +1529,7 @@ namespace ICU4N.Impl
                                     {
                                         // Keep the capital J from getting lowercased.
                                         AppendUnchanged(src, titleStart + 1, 1, dest, options, edits);
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1612,7 +1612,7 @@ namespace ICU4N.Impl
                         // Find and copy skipped characters [prev..titleStart[
                         int titleStart = prev;
                         iter.SetLimit(index);
-                        int c = iter.NextCaseMapCP();
+                        int c = iter.MoveNextCaseMapCP();
                         if ((options & UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
@@ -1624,7 +1624,7 @@ namespace ICU4N.Impl
                             while ((toCased ?
                                         UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
-                                    (c = iter.NextCaseMapCP()) >= 0) { }
+                                    (c = iter.MoveNextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
                             // and stopped with titleStart==titleLimit==index.
                             titleStart = iter.CPStart;
@@ -1655,7 +1655,7 @@ namespace ICU4N.Impl
                                         {
                                             edits.AddReplace(1, 1);
                                         }
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1664,7 +1664,7 @@ namespace ICU4N.Impl
                                     {
                                         // Keep the capital J from getting lowercased.
                                         AppendUnchanged(src, titleStart + 1, 1, dest, options, edits);
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1747,7 +1747,7 @@ namespace ICU4N.Impl
                         // Find and copy skipped characters [prev..titleStart[
                         int titleStart = prev;
                         iter.SetLimit(index);
-                        int c = iter.NextCaseMapCP();
+                        int c = iter.MoveNextCaseMapCP();
                         if ((options & UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
@@ -1759,7 +1759,7 @@ namespace ICU4N.Impl
                             while ((toCased ?
                                         UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
-                                    (c = iter.NextCaseMapCP()) >= 0) { }
+                                    (c = iter.MoveNextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
                             // and stopped with titleStart==titleLimit==index.
                             titleStart = iter.CPStart;
@@ -1790,7 +1790,7 @@ namespace ICU4N.Impl
                                         {
                                             edits.AddReplace(1, 1);
                                         }
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1799,7 +1799,7 @@ namespace ICU4N.Impl
                                     {
                                         // Keep the capital J from getting lowercased.
                                         AppendUnchanged(src, titleStart + 1, 1, dest, options, edits);
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1882,7 +1882,7 @@ namespace ICU4N.Impl
                         // Find and copy skipped characters [prev..titleStart[
                         int titleStart = prev;
                         iter.SetLimit(index);
-                        int c = iter.NextCaseMapCP();
+                        int c = iter.MoveNextCaseMapCP();
                         if ((options & UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
@@ -1894,7 +1894,7 @@ namespace ICU4N.Impl
                             while ((toCased ?
                                         UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
-                                    (c = iter.NextCaseMapCP()) >= 0) { }
+                                    (c = iter.MoveNextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
                             // and stopped with titleStart==titleLimit==index.
                             titleStart = iter.CPStart;
@@ -1925,7 +1925,7 @@ namespace ICU4N.Impl
                                         {
                                             edits.AddReplace(1, 1);
                                         }
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -1934,7 +1934,7 @@ namespace ICU4N.Impl
                                     {
                                         // Keep the capital J from getting lowercased.
                                         AppendUnchanged(src, titleStart + 1, 1, dest, options, edits);
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -2017,7 +2017,7 @@ namespace ICU4N.Impl
                         // Find and copy skipped characters [prev..titleStart[
                         int titleStart = prev;
                         iter.SetLimit(index);
-                        int c = iter.NextCaseMapCP();
+                        int c = iter.MoveNextCaseMapCP();
                         if ((options & UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
@@ -2029,7 +2029,7 @@ namespace ICU4N.Impl
                             while ((toCased ?
                                         UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
-                                    (c = iter.NextCaseMapCP()) >= 0) { }
+                                    (c = iter.MoveNextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
                             // and stopped with titleStart==titleLimit==index.
                             titleStart = iter.CPStart;
@@ -2060,7 +2060,7 @@ namespace ICU4N.Impl
                                         {
                                             edits.AddReplace(1, 1);
                                         }
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);
@@ -2069,7 +2069,7 @@ namespace ICU4N.Impl
                                     {
                                         // Keep the capital J from getting lowercased.
                                         AppendUnchanged(src, titleStart + 1, 1, dest, options, edits);
-                                        c = iter.NextCaseMapCP();
+                                        c = iter.MoveNextCaseMapCP();
                                         titleLimit++;
                                         Debug.Assert(c == c2);
                                         Debug.Assert(titleLimit == iter.CPLimit);

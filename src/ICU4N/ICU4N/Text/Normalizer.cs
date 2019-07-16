@@ -2008,13 +2008,13 @@ namespace ICU4N.Text
             currentIndex = nextIndex;
             text.Index = nextIndex;
             // Skip at least one character so we make progress.
-            int c = text.NextCodePoint();
+            int c = text.MoveNextCodePoint();
             if (c < 0)
             {
                 return false;
             }
             StringBuilder segment = new StringBuilder().AppendCodePoint(c);
-            while ((c = text.NextCodePoint()) >= 0)
+            while ((c = text.MoveNextCodePoint()) >= 0)
             {
                 if (norm2.HasBoundaryBefore(c))
                 {
@@ -2035,7 +2035,7 @@ namespace ICU4N.Text
             text.Index = currentIndex;
             StringBuilder segment = new StringBuilder();
             int c;
-            while ((c = text.PreviousCodePoint()) >= 0)
+            while ((c = text.MovePreviousCodePoint()) >= 0)
             {
                 if (c <= 0xffff)
                 {
