@@ -23,7 +23,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>The first character in the text, or <see cref="UCharacterIterator.DONE"/> if the text is empty.</returns>
         /// <seealso cref="BeginIndex"/>
-        public override char First()
+        public override char MoveFirst()
         {
             //UCharacterIterator always iterates from 0 to length
             iterator.SetToStart();
@@ -36,7 +36,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>The last character in the text, or <see cref="UCharacterIterator.DONE"/> if the text is empty.</returns>
         /// <seealso cref="EndIndex"/>
-        public override char Last()
+        public override char MoveLast()
         {
             iterator.SetToLimit();
             return (char)iterator.Previous();
@@ -63,7 +63,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>The character at the new position or <see cref="UCharacterIterator.DONE"/> if the new
         /// position is off the end of the text range.</returns>
-        public override char Next()
+        public override char MoveNext()
         {
             //pre-increment
             iterator.Next();
@@ -77,7 +77,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>the character at the new position or <see cref="UCharacterIterator.DONE"/> if the current
         /// position is equal to <see cref="BeginIndex"/>.</returns>
-        public override char Previous()
+        public override char MovePrevious()
         {
             //pre-decrement
             return (char)iterator.Previous();

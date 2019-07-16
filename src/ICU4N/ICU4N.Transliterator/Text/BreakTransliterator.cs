@@ -245,7 +245,7 @@ namespace ICU4N.Text
             * Implements CharacterIterator.first() for String.
             * @see CharacterIterator#first
             */
-            public override char First()
+            public override char MoveFirst()
             {
                 pos = begin;
                 return Current;
@@ -255,7 +255,7 @@ namespace ICU4N.Text
             * Implements CharacterIterator.last() for String.
             * @see CharacterIterator#last
             */
-            public override char Last()
+            public override char MoveLast()
             {
                 if (end != begin)
                 {
@@ -305,7 +305,7 @@ namespace ICU4N.Text
             * Implements CharacterIterator.next() for String.
             * @see CharacterIterator#next
             */
-            public override char Next()
+            public override char MoveNext()
             {
                 if (pos < end - 1)
                 {
@@ -323,7 +323,7 @@ namespace ICU4N.Text
             * Implements CharacterIterator.previous() for String.
             * @see CharacterIterator#previous
             */
-            public override char Previous()
+            public override char MovePrevious()
             {
                 if (pos > begin)
                 {

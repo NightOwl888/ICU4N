@@ -31,7 +31,7 @@ namespace ICU4N.Impl
         /// the new position.
         /// </summary>
         /// <returns>The character at the begin index.</returns>
-        public override char First()
+        public override char MoveFirst()
         {
             index = 0;
             return Current;
@@ -42,10 +42,10 @@ namespace ICU4N.Impl
         /// at the new position.
         /// </summary>
         /// <returns>The character before the end index.</returns>
-        public override char Last()
+        public override char MoveLast()
         {
             index = seq.Length;
-            return Previous();
+            return MovePrevious();
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>The character at the next index, or <see cref="CharacterIterator.DONE"/> if the next
         /// index would be past the end.</returns>
-        public override char Next()
+        public override char MoveNext()
         {
             if (index < seq.Length)
             {
@@ -83,7 +83,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>The character at the previous index, or <see cref="CharacterIterator.DONE"/> if the
         /// previous index would be past the beginning.</returns>
-        public override char Previous()
+        public override char MovePrevious()
         {
             if (index == 0)
             {

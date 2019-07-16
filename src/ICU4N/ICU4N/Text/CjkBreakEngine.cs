@@ -89,7 +89,7 @@ namespace ICU4N.Text
         while (inText.Index < endPos)
         {
             s.Append(inText.Current);
-            inText.Next();
+            inText.MoveNext();
         }
         string prenormstr = s.ToString();
         bool isNormalized = Normalizer.QuickCheck(prenormstr, Normalizer.NFKC) == Normalizer.YES ||

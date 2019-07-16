@@ -180,7 +180,7 @@ namespace ICU4N.Text
                         int chars = 0;
                         for (; ; )
                         {
-                            fIter.Next();
+                            fIter.MoveNext();
                             uc = fIter.Current;
                             chars += 1;
                             if (--remaining <= 0)
@@ -220,7 +220,7 @@ namespace ICU4N.Text
                 int currPos;
                 while ((currPos = fIter.Index) < rangeEnd && fMarkSet.Contains(fIter.Current))
                 {
-                    fIter.Next();
+                    fIter.MoveNext();
                     wordLength += fIter.Index - currPos;
                 }
 

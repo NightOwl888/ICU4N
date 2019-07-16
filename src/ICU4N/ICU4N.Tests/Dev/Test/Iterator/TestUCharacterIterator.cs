@@ -305,15 +305,15 @@ namespace ICU4N.Dev.Test.Iterator
             CharacterIterator citer1 = iter1.GetCharacterIterator();
             CharacterIterator citer2 = iter2.GetCharacterIterator();
             CharacterIterator citer3 = iter3.GetCharacterIterator();
-            if (citer1.First() != iter1.Current)
+            if (citer1.MoveFirst() != iter1.Current)
             {
                 Errln("getCharacterIterator for iter1 failed");
             }
-            if (citer2.First() != iter2.Current)
+            if (citer2.MoveFirst() != iter2.Current)
             {
                 Errln("getCharacterIterator for iter2 failed");
             }
-            if (citer3.First() != iter3.Current)
+            if (citer3.MoveFirst() != iter3.Current)
             {
                 Errln("getCharacterIterator for iter3 failed");
             }
@@ -444,8 +444,8 @@ namespace ICU4N.Dev.Test.Iterator
                 m = moves[movesIndex++];
                 if (m == '-')
                 {
-                    c1 = wrap_ci.Previous();
-                    c2 = ci.Previous();
+                    c1 = wrap_ci.MovePrevious();
+                    c2 = ci.MovePrevious();
                 }
                 else if (m == '0')
                 {
@@ -454,8 +454,8 @@ namespace ICU4N.Dev.Test.Iterator
                 }
                 else
                 {// m=='+'
-                    c1 = wrap_ci.Next();
-                    c2 = ci.Next();
+                    c1 = wrap_ci.MoveNext();
+                    c2 = ci.MoveNext();
                 }
 
                 // compare results
@@ -479,13 +479,13 @@ namespace ICU4N.Dev.Test.Iterator
                     break;
                 }
             }
-            if (ci.First() != wrap_ci.First())
+            if (ci.MoveFirst() != wrap_ci.MoveFirst())
             {
-                Errln("CharacterIteratorWrapper.First() failed. expected: " + ci.First() + " got: " + wrap_ci.First());
+                Errln("CharacterIteratorWrapper.First() failed. expected: " + ci.MoveFirst() + " got: " + wrap_ci.MoveFirst());
             }
-            if (ci.Last() != wrap_ci.Last())
+            if (ci.MoveLast() != wrap_ci.MoveLast())
             {
-                Errln("CharacterIteratorWrapper.Last() failed expected: " + ci.Last() + " got: " + wrap_ci.Last());
+                Errln("CharacterIteratorWrapper.Last() failed expected: " + ci.MoveLast() + " got: " + wrap_ci.MoveLast());
             }
             if (ci.BeginIndex != wrap_ci.BeginIndex)
             {

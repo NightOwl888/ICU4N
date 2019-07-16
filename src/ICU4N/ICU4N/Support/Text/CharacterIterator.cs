@@ -41,7 +41,7 @@
         /// the new position.
         /// </summary>
         /// <returns>The character at the begin index.</returns>
-        public abstract char First();
+        public abstract char MoveFirst();
 
         /// <summary>
         /// Gets the begin index. Returns the index of the first character of the iteration.
@@ -63,21 +63,21 @@
         /// at the new position.
         /// </summary>
         /// <returns>The character before the end index.</returns>
-        public abstract char Last();
+        public abstract char MoveLast();
 
         /// <summary>
         /// Increments the current index and returns the character at the new index.
         /// </summary>
         /// <returns>The character at the next index, or <see cref="CharacterIterator.DONE"/> if the next
         /// index would be past the end.</returns>
-        public abstract char Next();
+        public abstract char MoveNext();
 
         /// <summary>
         /// Decrements the current index and returns the character at the new index.
         /// </summary>
         /// <returns>The character at the previous index, or <see cref="CharacterIterator.DONE"/> if the
         /// previous index would be past the beginning.</returns>
-        public abstract char Previous();
+        public abstract char MovePrevious();
 
         /// <summary>
         /// Sets the current index to a new position and returns the character at the
