@@ -25,19 +25,19 @@
     /// algorithm can be represented with single code units.
     /// Other processes will need to use the code point access functions.
     /// <para/>
-    /// <see cref="IUForwardCharacterIterator"/> provides <see cref="Next()"/> to access
+    /// <see cref="IUForwardCharacterIterator"/> provides <see cref="MoveNext()"/> to access
     /// a code unit and advance an internal position into the text object,
     /// similar to a <c>return text[position++]</c>.
-    /// It provides <see cref="NextCodePoint()"/> to access a code point and advance an internal
+    /// It provides <see cref="MoveNextCodePoint()"/> to access a code point and advance an internal
     /// position.
     /// <para/>
-    /// <see cref="NextCodePoint()"/> assumes that the current position is that of
+    /// <see cref="MoveNextCodePoint()"/> assumes that the current position is that of
     /// the beginning of a code point, i.e., of its first code unit.
-    /// After <see cref="NextCodePoint()"/>, this will be true again.
+    /// After <see cref="MoveNextCodePoint()"/>, this will be true again.
     /// In general, access to code units and code points in the same
     /// iteration loop should not be mixed. In UTF-16, if the current position
     /// is on a second code unit (Low Surrogate), then only that code unit
-    /// is returned even by <see cref="NextCodePoint()"/>.
+    /// is returned even by <see cref="MoveNextCodePoint()"/>.
     /// <para/>
     /// Usage:
     /// <code>
@@ -57,10 +57,10 @@
         /// <summary>
         /// Returns the UTF16 code unit at index, and increments to the next
         /// code unit (post-increment semantics).  If index is out of
-        /// range, <see cref="UForwardCharacterIterator.DONE"/> is returned, and the iterator is reset to the limit
+        /// range, <see cref="UForwardCharacterIterator.Done"/> is returned, and the iterator is reset to the limit
         /// of the text.
         /// </summary>
-        /// <returns>The next UTF16 code unit, or <see cref="UForwardCharacterIterator.DONE"/> if the index is at the limit of the text.</returns>
+        /// <returns>The next UTF16 code unit, or <see cref="UForwardCharacterIterator.Done"/> if the index is at the limit of the text.</returns>
         /// <stable>ICU 2.4</stable>
         int MoveNext();
 
@@ -72,7 +72,7 @@
         /// the surrogate pair, and the code point represented by the pair
         /// is returned.
         /// </summary>
-        /// <returns>The next codepoint in text, or <see cref="UForwardCharacterIterator.DONE"/> if the index is at
+        /// <returns>The next codepoint in text, or <see cref="UForwardCharacterIterator.Done"/> if the index is at
         /// the limit of the text.</returns>
         /// <stable>ICU 2.4</stable>
         int MoveNextCodePoint();
@@ -87,6 +87,6 @@
         /// Indicator that we have reached the ends of the UTF16 text.
         /// </summary>
         /// <stable>ICU 2.4</stable>
-        public static readonly int DONE = -1;
+        public static readonly int Done = -1;
     }
 }

@@ -316,7 +316,7 @@ namespace ICU4N.Text
         /// This is guaranteed to have the same value as <see cref="UCharacterIterator.Done"/>.
         /// </summary>
         [Obsolete("ICU 56")]
-        public static readonly int DONE = UForwardCharacterIterator.DONE;
+        public static readonly int DONE = UForwardCharacterIterator.Done;
 
         /// <summary>
         /// Constants for normalization modes.

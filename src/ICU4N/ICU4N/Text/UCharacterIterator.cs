@@ -26,7 +26,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <draft>ICU4N 60</draft>
         // ICU4N specific - copy over the constants, since they are not automatically inherited
-        public static readonly int Done = UForwardCharacterIterator.DONE;
+        public static readonly int Done = UForwardCharacterIterator.Done;
 
         /// <summary>
         /// Protected default constructor for the subclasses.
@@ -126,13 +126,13 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns the code unit at the current index. If index is out of range, returns <see cref="UForwardCharacterIterator.DONE"/>. Index is not changed.
+        /// Returns the code unit at the current index. If index is out of range, returns <see cref="UForwardCharacterIterator.Done"/>. Index is not changed.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         public abstract int Current { get; }
 
         /// <summary>
-        /// Returns the codepoint at the current index. If the current index is invalid, <see cref="UForwardCharacterIterator.DONE"/> is returned. If the current
+        /// Returns the codepoint at the current index. If the current index is invalid, <see cref="UForwardCharacterIterator.Done"/> is returned. If the current
         /// index points to a lead surrogate, and there is a following trail surrogate, then the code point is returned.
         /// Otherwise, the code unit at index is returned. Index is not changed.
         /// </summary>
@@ -182,9 +182,9 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns the UTF16 code unit at index, and increments to the next code unit (post-increment semantics). If index
-        /// is out of range, <see cref="UForwardCharacterIterator.DONE"/> is returned, and the iterator is reset to the limit of the text.
+        /// is out of range, <see cref="UForwardCharacterIterator.Done"/> is returned, and the iterator is reset to the limit of the text.
         /// </summary>
-        /// <returns>The next UTF16 code unit, or <see cref="UForwardCharacterIterator.DONE"/> if the index is at the limit of the text.</returns>
+        /// <returns>The next UTF16 code unit, or <see cref="UForwardCharacterIterator.Done"/> if the index is at the limit of the text.</returns>
         /// <stable>ICU 2.4</stable>
         public abstract int MoveNext();
 
@@ -193,7 +193,7 @@ namespace ICU4N.Text
         /// not point to a valid surrogate pair, the behavior is the same as <see cref="MoveNext()"/>. Otherwise the iterator is
         /// incremented past the surrogate pair, and the code point represented by the pair is returned.
         /// </summary>
-        /// <returns>The next codepoint in text, or <see cref="UForwardCharacterIterator.DONE"/> if the index is at the limit of the text.</returns>
+        /// <returns>The next codepoint in text, or <see cref="UForwardCharacterIterator.Done"/> if the index is at the limit of the text.</returns>
         /// <stable>ICU 2.4</stable>
         public virtual int MoveNextCodePoint()
         {
@@ -216,9 +216,9 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Decrement to the position of the previous code unit in the text, and return it (pre-decrement semantics). If the
-        /// resulting index is less than 0, the index is reset to 0 and <see cref="UForwardCharacterIterator.DONE"/> is returned.
+        /// resulting index is less than 0, the index is reset to 0 and <see cref="UForwardCharacterIterator.Done"/> is returned.
         /// </summary>
-        /// <returns>The previous code unit in the text, or <see cref="UForwardCharacterIterator.DONE"/> if the new index is before the start of the text.</returns>
+        /// <returns>The previous code unit in the text, or <see cref="UForwardCharacterIterator.Done"/> if the new index is before the start of the text.</returns>
         /// <stable>ICU 2.4</stable>
         public abstract int MovePrevious();
 
@@ -228,7 +228,7 @@ namespace ICU4N.Text
         /// the iterator is decremented to the start of the surrogate pair, and the code point represented by the pair is
         /// returned.
         /// </summary>
-        /// <returns>The previous code point in the text, or <see cref="UForwardCharacterIterator.DONE"/> if the new index is before the start of the text.</returns>
+        /// <returns>The previous code point in the text, or <see cref="UForwardCharacterIterator.Done"/> if the new index is before the start of the text.</returns>
         /// <stable>ICU 2.4</stable>
         public virtual int MovePreviousCodePoint()
         {

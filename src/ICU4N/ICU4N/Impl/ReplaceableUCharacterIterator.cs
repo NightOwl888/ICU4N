@@ -82,7 +82,7 @@ namespace ICU4N.Impl
                 {
                     return replaceable[currentIndex];
                 }
-                return UForwardCharacterIterator.DONE;
+                return UForwardCharacterIterator.Done;
             }
         }
 
@@ -149,10 +149,10 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns next UTF16 character and increments the iterator's <see cref="currentIndex"/> by 1.
         /// If the resulting <see cref="currentIndex"/> is greater or equal to the text length, the
-        /// <see cref="currentIndex"/> is reset to the text length and a value of <see cref="UForwardCharacterIterator.DONE"/> is
+        /// <see cref="currentIndex"/> is reset to the text length and a value of <see cref="UForwardCharacterIterator.Done"/> is
         /// returned.
         /// </summary>
-        /// <returns>Next UTF16 character in text or <see cref="UForwardCharacterIterator.DONE"/> if the new <see cref="currentIndex"/> is off the
+        /// <returns>Next UTF16 character in text or <see cref="UForwardCharacterIterator.Done"/> if the new <see cref="currentIndex"/> is off the
         ///         end of the text range.</returns>
         public override int MoveNext()
         {
@@ -160,16 +160,16 @@ namespace ICU4N.Impl
             {
                 return replaceable[currentIndex++];
             }
-            return UForwardCharacterIterator.DONE;
+            return UForwardCharacterIterator.Done;
         }
 
         /// <summary>
         /// Returns previous UTF16 character and decrements the iterator's <see cref="currentIndex"/> by
         /// 1.
         /// If the resulting <see cref="currentIndex"/> is less than 0, the <see cref="currentIndex"/> is reset to 0 and a
-        /// value of <see cref="UForwardCharacterIterator.DONE"/> is returned.
+        /// value of <see cref="UForwardCharacterIterator.Done"/> is returned.
         /// </summary>
-        /// <returns>Next UTF16 character in text or <see cref="UForwardCharacterIterator.DONE"/> if the new <see cref="currentIndex"/> is off the
+        /// <returns>Next UTF16 character in text or <see cref="UForwardCharacterIterator.Done"/> if the new <see cref="currentIndex"/> is off the
         ///         start of the text range.</returns>
         public override int MovePrevious()
         {
@@ -177,7 +177,7 @@ namespace ICU4N.Impl
             {
                 return replaceable[--currentIndex];
             }
-            return UForwardCharacterIterator.DONE;
+            return UForwardCharacterIterator.Done;
         }
 
         // ICU4N specific - moved setter to the Index property
