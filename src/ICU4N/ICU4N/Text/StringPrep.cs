@@ -439,11 +439,11 @@ namespace ICU4N.Text
 
             Values val = new Values();
             char result = (char)0;
-            int ch = UCharacterIterator.DONE;
+            int ch = UCharacterIterator.Done;
             StringBuffer dest = new StringBuffer();
             bool allowUnassigned = ((options & StringPrepOptions.AllowUnassigned) > 0);
 
-            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.DONE)
+            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.Done)
             {
 
                 result = GetCodePointValue(ch);
@@ -602,7 +602,7 @@ namespace ICU4N.Text
             int rtlPos = -1, ltrPos = -1;
             bool rightToLeft = false, leftToRight = false;
 
-            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.DONE)
+            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.Done)
             {
                 result = GetCodePointValue(ch);
                 GetValues(result, val);

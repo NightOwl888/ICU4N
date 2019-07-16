@@ -313,7 +313,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Constant indicating that the end of the iteration has been reached.
-        /// This is guaranteed to have the same value as <see cref="UCharacterIterator.DONE"/>.
+        /// This is guaranteed to have the same value as <see cref="UCharacterIterator.Done"/>.
         /// </summary>
         [Obsolete("ICU 56")]
         public static readonly int DONE = UForwardCharacterIterator.DONE;

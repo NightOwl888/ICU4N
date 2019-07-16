@@ -31,7 +31,7 @@ namespace ICU4N.Impl
                 int c = iterator.Current;
                 if (c == CharacterIterator.Done)
                 {
-                    return DONE;
+                    return Done;
                 }
                 return c;
             }
@@ -67,7 +67,7 @@ namespace ICU4N.Impl
             iterator.MoveNext();
             if (i == CharacterIterator.Done)
             {
-                return DONE;
+                return Done;
             }
             return i;
         }
@@ -78,7 +78,7 @@ namespace ICU4N.Impl
             int i = iterator.MovePrevious();
             if (i == CharacterIterator.Done)
             {
-                return DONE;
+                return Done;
             }
             return i;
         }

@@ -152,7 +152,7 @@ namespace ICU4N.Dev.Test.StringPrep
 
             int ch;
             // step 1
-            while ((ch = srcIter.MoveNext()) != UCharacterIterator.DONE)
+            while ((ch = srcIter.MoveNext()) != UCharacterIterator.Done)
             {
                 if (ch > 0x7f)
                 {
@@ -322,7 +322,7 @@ namespace ICU4N.Dev.Test.StringPrep
             int ch;
             int saveIndex = iter.Index;
             // step 1: find out if all the codepoints in src are ASCII
-            while ((ch = iter.MoveNext()) != UCharacterIterator.DONE)
+            while ((ch = iter.MoveNext()) != UCharacterIterator.Done)
             {
                 if (ch > 0x7F)
                 {

@@ -28,7 +28,7 @@ namespace ICU4N.Impl
 
         public override int Current
         {
-            get { return pos < limit ? text[pos] : DONE; }
+            get { return pos < limit ? text[pos] : Done; }
         }
 
         public override int Length
@@ -53,12 +53,12 @@ namespace ICU4N.Impl
 
         public override int MoveNext()
         {
-            return pos < limit ? text[pos++] : DONE;
+            return pos < limit ? text[pos++] : Done;
         }
 
         public override int MovePrevious()
         {
-            return pos > start ? text[--pos] : DONE;
+            return pos > start ? text[--pos] : Done;
         }
 
 

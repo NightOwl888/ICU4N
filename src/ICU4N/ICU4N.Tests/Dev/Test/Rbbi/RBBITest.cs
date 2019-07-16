@@ -325,8 +325,8 @@ namespace ICU4N.Dev.Test.Rbbi
             rbbi.SetText((CharacterIterator)null);
             if (rbbi.MoveLast() != BreakIterator.Done)
             {
-                Errln("RuleBasedBreakIterator.last() was suppose to return "
-                        + "BreakIterator.DONE when the object has a null fText.");
+                Errln("RuleBasedBreakIterator.MoveLast() was supposed to return "
+                        + "BreakIterator.Done when the object has a null fText.");
             }
         }
 
@@ -380,7 +380,7 @@ namespace ICU4N.Dev.Test.Rbbi
             if (rbbi.Current != BreakIterator.Done)
             {
                 Errln("RuleBasedBreakIterator.Current was suppose to return "
-                        + "BreakIterator.DONE when the object has a fText of null.");
+                        + "BreakIterator.Done when the object has a fText of null.");
             }
             rbbi.SetText("dummy");
             if (rbbi.Current != 0)

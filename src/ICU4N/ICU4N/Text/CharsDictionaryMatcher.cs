@@ -33,7 +33,7 @@ namespace ICU4N.Text
             UCharacterIterator text = UCharacterIterator.GetInstance(text_);
             CharsTrie uct = new CharsTrie(characters, 0);
             int c = text.MoveNextCodePoint();
-            if (c == UCharacterIterator.DONE)
+            if (c == UCharacterIterator.Done)
             {
                 return 0;
             }
@@ -70,7 +70,7 @@ namespace ICU4N.Text
                     break;
                 }
                 c = text.MoveNextCodePoint();
-                if (c == UCharacterIterator.DONE)
+                if (c == UCharacterIterator.Done)
                 {
                     break;
                 }

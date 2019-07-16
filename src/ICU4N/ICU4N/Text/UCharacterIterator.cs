@@ -26,7 +26,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <draft>ICU4N 60</draft>
         // ICU4N specific - copy over the constants, since they are not automatically inherited
-        public static readonly int DONE = UForwardCharacterIterator.DONE;
+        public static readonly int Done = UForwardCharacterIterator.DONE;
 
         /// <summary>
         /// Protected default constructor for the subclasses.
@@ -205,7 +205,7 @@ namespace ICU4N.Text
                 {
                     return Character.ToCodePoint((char)ch1, (char)ch2);
                 }
-                else if (ch2 != DONE)
+                else if (ch2 != Done)
                 {
                     // unmatched surrogate so back out
                     MovePrevious();
@@ -240,7 +240,7 @@ namespace ICU4N.Text
                 {
                     return Character.ToCodePoint((char)ch2, (char)ch1);
                 }
-                else if (ch2 != DONE)
+                else if (ch2 != Done)
                 {
                     // unmatched trail surrogate so back out
                     MoveNext();
@@ -359,14 +359,14 @@ namespace ICU4N.Text
         {
             if (delta > 0)
             {
-                while (delta > 0 && MoveNextCodePoint() != DONE)
+                while (delta > 0 && MoveNextCodePoint() != Done)
                 {
                     delta--;
                 }
             }
             else
             {
-                while (delta < 0 && MovePreviousCodePoint() != DONE)
+                while (delta < 0 && MovePreviousCodePoint() != Done)
                 {
                     delta++;
                 }

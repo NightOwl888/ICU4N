@@ -28,7 +28,7 @@ namespace ICU4N.Dev.Test.Iterator
             UCharacterIterator iterator = UCharacterIterator.GetInstance("testing");
             UCharacterIterator cloned = (UCharacterIterator)iterator.Clone();
             int completed = 0;
-            while (completed != UCharacterIterator.DONE)
+            while (completed != UCharacterIterator.Done)
             {
                 completed = iterator.MoveNext();
                 if (completed != cloned.MoveNext())
@@ -87,14 +87,14 @@ namespace ICU4N.Dev.Test.Iterator
             iterator2.Index = 0;
             iterator.Index = 0;
             int ch = 0;
-            while (ch != UCharacterIterator.DONE)
+            while (ch != UCharacterIterator.Done)
             {
                 int index = iterator2.Index;
                 ch = iterator2.MoveNextCodePoint();
                 if (index != ITERATION_SUPPLEMENTARY_INDEX)
                 {
                     if (ch != iterator.MoveNext() &&
-                        ch != UCharacterIterator.DONE)
+                        ch != UCharacterIterator.Done)
                     {
                         Errln("Error mismatch in next() and nextCodePoint()");
                     }
@@ -111,14 +111,14 @@ namespace ICU4N.Dev.Test.Iterator
             }
             iterator.Index = ITERATION_STRING_.Length;
             iterator2.Index = ITERATION_STRING_.Length;
-            while (ch != UCharacterIterator.DONE)
+            while (ch != UCharacterIterator.Done)
             {
                 int index = iterator2.Index;
                 ch = iterator2.MovePreviousCodePoint();
                 if (index != ITERATION_SUPPLEMENTARY_INDEX)
                 {
                     if (ch != iterator.MovePrevious() &&
-                        ch != UCharacterIterator.DONE)
+                        ch != UCharacterIterator.Done)
                     {
                         Errln("Error mismatch in previous() and " +
                               "previousCodePoint()");
@@ -199,7 +199,7 @@ namespace ICU4N.Dev.Test.Iterator
                 Logln("Testing forward iteration...");
                 do
                 {
-                    if (c != UCharacterIterator.DONE)
+                    if (c != UCharacterIterator.Done)
                         c = iter.MoveNextCodePoint();
 
                     if (c != UTF16.CharAt(text, i))
@@ -209,12 +209,12 @@ namespace ICU4N.Dev.Test.Iterator
                     if (iter.Index != i)
                         Errln("getIndex() aftr nextCodePointPostInc() isn't working right");
                     c = iter.CurrentCodePoint;
-                    if (c != UCharacterIterator.DONE && c != UTF16.CharAt(text, i))
+                    if (c != UCharacterIterator.Done && c != UTF16.CharAt(text, i))
                         Errln("current() after nextCodePointPostInc() isn't working right");
 
-                } while (c != UCharacterIterator.DONE);
+                } while (c != UCharacterIterator.Done);
                 c = iter.MoveNextCodePoint();
-                if (c != UCharacterIterator.DONE)
+                if (c != UCharacterIterator.Done)
                     Errln("nextCodePointPostInc() didn't return DONE at the beginning");
 
 
@@ -524,7 +524,7 @@ namespace ICU4N.Dev.Test.Iterator
             int ch;
             // this should never go into a infinite loop
             // if it does then we have a problem
-            while ((ch = iter.MovePreviousCodePoint()) != UCharacterIterator.DONE)
+            while ((ch = iter.MovePreviousCodePoint()) != UCharacterIterator.Done)
             {
                 if (ch != 0xDc00)
                 {
@@ -532,7 +532,7 @@ namespace ICU4N.Dev.Test.Iterator
                 }
             }
             iter.Index = (5);
-            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.DONE)
+            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.Done)
             {
                 if (ch != 0xDC03)
                 {

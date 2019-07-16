@@ -66,7 +66,7 @@ namespace ICU4N.Impl
 
             Result r = Result.IntermediateValue;
 
-            while ((uch = text.MovePreviousCodePoint()) != UCharacterIterator.DONE && // more to consume backwards and..
+            while ((uch = text.MovePreviousCodePoint()) != UCharacterIterator.Done && // more to consume backwards and..
                     ((r = backwardsTrie.NextForCodePoint(uch)).HasNext()))
             {// more in the trie
                 if (r.HasValue())

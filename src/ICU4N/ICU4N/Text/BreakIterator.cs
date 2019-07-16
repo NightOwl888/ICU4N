@@ -213,7 +213,7 @@ namespace ICU4N.Text
     /// {
     ///     int start = boundary.MoveFirst();
     ///     for (int end = boundary.MoveNext();
-    ///         end != BreakIterator.DONE;
+    ///         end != BreakIterator.Done;
     ///         start = end, end = boundary.MoveNext())
     ///     {
     ///         Console.WriteLine(source.Substring(start, end - start));
