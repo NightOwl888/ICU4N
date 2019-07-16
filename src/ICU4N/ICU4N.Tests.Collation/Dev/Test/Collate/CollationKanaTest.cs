@@ -98,7 +98,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestTertiary()
         {
             int i = 0;
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
 
             for (i = 0; i < 6; i++)
             {
@@ -111,7 +111,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestBase()
         {
             int i;
-            myCollation.Strength = (Collator.PRIMARY);
+            myCollation.Strength = (Collator.Primary);
             for (i = 0; i < 3; i++)
             {
                 doTest(testBaseCases[i], testBaseCases[i + 1], -1);
@@ -123,7 +123,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestPlainDakutenHandakuten()
         {
             int i;
-            myCollation.Strength = (Collator.SECONDARY);
+            myCollation.Strength = (Collator.Secondary);
             for (i = 0; i < 3; i++)
             {
                 doTest(testPlainDakutenHandakutenCases[i], testPlainDakutenHandakutenCases[i + 1], -1);
@@ -137,7 +137,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestSmallLarge()
         {
             int i;
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
 
             for (i = 0; i < 3; i++)
             {
@@ -152,7 +152,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestKatakanaHiragana()
         {
             int i;
-            myCollation.Strength = (Collator.QUATERNARY);
+            myCollation.Strength = (Collator.Quaternary);
             for (i = 0; i < 3; i++)
             {
                 doTest(testKatakanaHiraganaCases[i], testKatakanaHiraganaCases[i + 1], -1);
@@ -166,7 +166,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestChooonKigoo()
         {
             int i;
-            myCollation.Strength = (Collator.QUATERNARY);
+            myCollation.Strength = (Collator.Quaternary);
             for (i = 0; i < 7; i++)
             {
                 doTest(testChooonKigooCases[i], testChooonKigooCases[i + 1], -1);
@@ -186,7 +186,7 @@ namespace ICU4N.Dev.Test.Collate
             String string1 = new String(tmp1);
             String string2 = new String(tmp2);
             RuleBasedCollator rb = (RuleBasedCollator)Collator.GetInstance(ULocale.JAPANESE);
-            rb.Strength = (Collator.QUATERNARY);
+            rb.Strength = (Collator.Quaternary);
             rb.IsAlternateHandlingShifted = (false);
 
             result = rb.Compare(string1, string2);

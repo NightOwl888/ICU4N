@@ -34,7 +34,7 @@ namespace ICU4N.Dev.Test.Collate
         {
             Logln("testing CollationKey begins...");
             Collator col = Collator.GetInstance();
-            col.Strength = (Collator.TERTIARY);
+            col.Strength = (Collator.Tertiary);
 
             String test1 = "Abcda";
             String test2 = "abcda";
@@ -80,13 +80,13 @@ namespace ICU4N.Dev.Test.Collate
             {
                 Errln("Collator.GetInstance() failed");
             }
-            if (col.Strength != Collator.TERTIARY)
+            if (col.Strength != Collator.Tertiary)
             {
                 Errln("Default collation did not have tertiary strength");
             }
 
             // Need to use identical strength
-            col.Strength = (Collator.IDENTICAL);
+            col.Strength = (Collator.Identical);
 
             CollationKey key1 = col.GetCollationKey(test1);
             CollationKey key2 = col.GetCollationKey(test2);
@@ -102,7 +102,7 @@ namespace ICU4N.Dev.Test.Collate
             byte[] key2identical = key2.ToByteArray();
 
             Logln("Use secondary comparision level testing ...");
-            col.Strength = (Collator.SECONDARY);
+            col.Strength = (Collator.Secondary);
 
             key1 = col.GetCollationKey(test1);
             key2 = col.GetCollationKey(test2);
@@ -202,13 +202,13 @@ namespace ICU4N.Dev.Test.Collate
             DoAssert((!col.Equals(test1, test2)), "Result should be \"Abcda\" != \"abcda\"");
             DoAssert((col.Compare(test1, test2) > 0), "Result should be \"Abcda\" >>> \"abcda\"");
 
-            col.Strength = (Collator.SECONDARY);
+            col.Strength = (Collator.Secondary);
             Logln("Use secondary comparison level testing ....");
 
             DoAssert((col.Equals(test1, test2)), "Result should be \"Abcda\" == \"abcda\"");
             DoAssert((col.Compare(test1, test2) == 0), "Result should be \"Abcda\" == \"abcda\"");
 
-            col.Strength = (Collator.PRIMARY);
+            col.Strength = (Collator.Primary);
             Logln("Use primary comparison level testing ....");
 
             DoAssert((col.Equals(test1, test2)), "Result should be \"Abcda\" == \"abcda\"");
@@ -230,17 +230,17 @@ namespace ICU4N.Dev.Test.Collate
 
 
             // there is no reason to have canonical decomposition in en_US OR default locale */
-            if (vi_VN.Decomposition != Collator.CANONICAL_DECOMPOSITION)
+            if (vi_VN.Decomposition != Collator.CanonicalDecomposition)
             {
                 Errln("vi_VN collation did not have cannonical decomposition for normalization!");
             }
 
-            if (el_GR.Decomposition != Collator.CANONICAL_DECOMPOSITION)
+            if (el_GR.Decomposition != Collator.CanonicalDecomposition)
             {
                 Errln("el_GR collation did not have cannonical decomposition for normalization!");
             }
 
-            if (en_US.Decomposition != Collator.NO_DECOMPOSITION)
+            if (en_US.Decomposition != Collator.NoDecomposition)
             {
                 Errln("en_US collation had cannonical decomposition for normalization!");
             }
@@ -499,19 +499,19 @@ namespace ICU4N.Dev.Test.Collate
             Logln("Test ctors ends.");
 
             Logln("testing Collator.Strength method ...");
-            DoAssert((col.Strength == Collator.TERTIARY), "collation object has the wrong strength");
-            DoAssert((col.Strength != Collator.PRIMARY), "collation object's strength is primary difference");
+            DoAssert((col.Strength == Collator.Tertiary), "collation object has the wrong strength");
+            DoAssert((col.Strength != Collator.Primary), "collation object's strength is primary difference");
 
             Logln("testing Collator.setStrength() method ...");
-            col.Strength = (Collator.SECONDARY);
-            DoAssert((col.Strength != Collator.TERTIARY), "collation object's strength is secondary difference");
-            DoAssert((col.Strength != Collator.PRIMARY), "collation object's strength is primary difference");
-            DoAssert((col.Strength == Collator.SECONDARY), "collation object has the wrong strength");
+            col.Strength = (Collator.Secondary);
+            DoAssert((col.Strength != Collator.Tertiary), "collation object's strength is secondary difference");
+            DoAssert((col.Strength != Collator.Primary), "collation object's strength is primary difference");
+            DoAssert((col.Strength == Collator.Secondary), "collation object has the wrong strength");
 
             Logln("testing Collator.setDecomposition() method ...");
-            col.Decomposition = Collator.NO_DECOMPOSITION;
-            DoAssert((col.Decomposition != Collator.CANONICAL_DECOMPOSITION), "Decomposition mode != Collator.CANONICAL_DECOMPOSITION");
-            DoAssert((col.Decomposition == Collator.NO_DECOMPOSITION), "Decomposition mode = Collator.NO_DECOMPOSITION");
+            col.Decomposition = Collator.NoDecomposition;
+            DoAssert((col.Decomposition != Collator.CanonicalDecomposition), "Decomposition mode != Collator.CANONICAL_DECOMPOSITION");
+            DoAssert((col.Decomposition == Collator.NoDecomposition), "Decomposition mode = Collator.NO_DECOMPOSITION");
 
 
             RuleBasedCollator rcol = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("da-DK"));
@@ -527,16 +527,16 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
 
-            col.Strength = (Collator.PRIMARY);
+            col.Strength = (Collator.Primary);
             Logln("testing Collator.Strength method again ...");
-            DoAssert((col.Strength != Collator.TERTIARY), "collation object has the wrong strength");
-            DoAssert((col.Strength == Collator.PRIMARY), "collation object's strength is not primary difference");
+            DoAssert((col.Strength != Collator.Tertiary), "collation object has the wrong strength");
+            DoAssert((col.Strength == Collator.Primary), "collation object's strength is not primary difference");
 
             Logln("testing French Collator.setStrength() method ...");
-            col.Strength = (Collator.TERTIARY);
-            DoAssert((col.Strength == Collator.TERTIARY), "collation object's strength is not tertiary difference");
-            DoAssert((col.Strength != Collator.PRIMARY), "collation object's strength is primary difference");
-            DoAssert((col.Strength != Collator.SECONDARY), "collation object's strength is secondary difference");
+            col.Strength = (Collator.Tertiary);
+            DoAssert((col.Strength == Collator.Tertiary), "collation object's strength is not tertiary difference");
+            DoAssert((col.Strength != Collator.Primary), "collation object's strength is primary difference");
+            DoAssert((col.Strength != Collator.Secondary), "collation object's strength is secondary difference");
 
         }
 
@@ -749,8 +749,8 @@ namespace ICU4N.Dev.Test.Collate
                 //    Errln("Error cloning collator");
                 //}
 
-                someClonedCollators[index].Strength = (Collator.TERTIARY);
-                someCollators[index].Strength = (Collator.PRIMARY);
+                someClonedCollators[index].Strength = (Collator.Tertiary);
+                someCollators[index].Strength = (Collator.Primary);
                 someClonedCollators[index].IsCaseLevel = (false);
                 someCollators[index].IsCaseLevel = (false);
 
@@ -929,19 +929,19 @@ namespace ICU4N.Dev.Test.Collate
             assertEquals("compare(strings as Object)", 0,
                     col1.Compare(new StringBuilder("abc"), new StringBuffer("abc")));
 
-            col1.Strength = (Collator.SECONDARY);
-            assertNotEquals("getStrength()", Collator.PRIMARY, col1.Strength);
+            col1.Strength = (Collator.Secondary);
+            assertNotEquals("getStrength()", Collator.Primary, col1.Strength);
 
             // setStrength2() is @internal and returns this.
             // The base class getStrength() always returns the same value,
             // since the base class does not have a field to store the strength.
-            assertNotEquals("setStrength2().Strength", Collator.PRIMARY,
-                    col1.SetStrength2(Collator.IDENTICAL).Strength);
+            assertNotEquals("setStrength2().Strength", Collator.Primary,
+                    col1.SetStrength2(Collator.Identical).Strength);
 
             // (base class).setDecomposition() may or may not be implemented.
             try
             {
-                col1.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+                col1.Decomposition = (Collator.CanonicalDecomposition);
             }
             catch (NotSupportedException expected)
             {
@@ -995,7 +995,7 @@ namespace ICU4N.Dev.Test.Collate
             }
             try
             {
-                col2.Strength = (Collator.PRIMARY);
+                col2.Strength = (Collator.Primary);
                 if (col2.IsFrozen)
                 {
                     fail("(frozen Collator).setStrength() should throw an exception");
@@ -1031,13 +1031,13 @@ namespace ICU4N.Dev.Test.Collate
             bool lowercase = collator.IsLowerCaseFirst;
             bool uppercase = collator.IsUpperCaseFirst;
 
-            collator.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
-            if (collator.Decomposition != Collator.CANONICAL_DECOMPOSITION)
+            collator.Decomposition = (Collator.CanonicalDecomposition);
+            if (collator.Decomposition != Collator.CanonicalDecomposition)
             {
                 Errln("Setting decomposition failed");
             }
-            collator.Strength = (Collator.QUATERNARY);
-            if (collator.Strength != Collator.QUATERNARY)
+            collator.Strength = (Collator.Quaternary);
+            if (collator.Strength != Collator.Quaternary)
             {
                 Errln("Setting strength failed");
             }
@@ -1422,12 +1422,12 @@ namespace ICU4N.Dev.Test.Collate
             {
                 CollationKey lower
                                = testKey[i].GetBound(CollationKeyBoundMode.Lower,
-                                                     Collator.SECONDARY);
+                                                     Collator.Secondary);
                 for (int j = i + 1; j < testKey.Length; j++)
                 {
                     CollationKey upper
                                = testKey[j].GetBound(CollationKeyBoundMode.Upper,
-                                                     Collator.SECONDARY);
+                                                     Collator.Secondary);
                     for (int k = i; k <= j; k++)
                     {
                         if (lower.CompareTo(testKey[k]) > 0)
@@ -1448,9 +1448,9 @@ namespace ICU4N.Dev.Test.Collate
             {
                 CollationKey key = coll.GetCollationKey(test[i]);
                 CollationKey lower = key.GetBound(CollationKeyBoundMode.Lower,
-                                                  Collator.SECONDARY);
+                                                  Collator.Secondary);
                 CollationKey upper = key.GetBound(CollationKeyBoundMode.UpperLong,
-                                                  Collator.SECONDARY);
+                                                  Collator.Secondary);
                 for (int j = i + 1; j < test.Length; j++)
                 {
                     key = coll.GetCollationKey(test[j]);
@@ -1623,12 +1623,12 @@ namespace ICU4N.Dev.Test.Collate
         {
             Logln("\ninit c0");
             RuleBasedCollator c0 = (RuleBasedCollator)Collator.GetInstance();
-            c0.Strength = (Collator.TERTIARY);
+            c0.Strength = (Collator.Tertiary);
             Dump("c0", c0);
 
             Logln("\ninit c1");
             RuleBasedCollator c1 = (RuleBasedCollator)Collator.GetInstance();
-            c1.Strength = (Collator.TERTIARY);
+            c1.Strength = (Collator.Tertiary);
             c1.IsUpperCaseFirst = (!c1.IsUpperCaseFirst);
             Dump("c0", c0);
             Dump("c1", c1);

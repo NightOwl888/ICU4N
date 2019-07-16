@@ -108,7 +108,7 @@ namespace ICU4N.Dev.Test.Collate
                 {
                     Logln("Testing locale " + loc[i].DisplayName);
                     coll = (RuleBasedCollator)Collator.GetInstance(loc[i]);
-                    coll.Strength = (Collator.IDENTICAL);
+                    coll.Strength = (Collator.Identical);
 
                     for (int u = 0; u < noCases; u++)
                     {
@@ -562,10 +562,10 @@ namespace ICU4N.Dev.Test.Collate
             };
 
             String[] att = { "strength", };
-            Object[] val = { new int?((int)Collator.QUATERNARY), };
+            Object[] val = { new int?((int)Collator.Quaternary), };
 
             String[] attShifted = { "strength", "AlternateHandling" };
-            Object[] valShifted = { new int?((int)Collator.QUATERNARY),
+            Object[] valShifted = { new int?((int)Collator.Quaternary),
                                 true };
 
             genericLocaleStarterWithOptions(new CultureInfo("ja") /* Locale.JAPANESE */, test1, att, val);
@@ -742,7 +742,7 @@ namespace ICU4N.Dev.Test.Collate
         {
             String test = "\u0041\u0441\u4441\\U00044441\u4441\u0441\u0041";
             Collator coll = Collator.GetInstance();
-            coll.Strength = (Collator.IDENTICAL);
+            coll.Strength = (Collator.Identical);
             CollationKey key = coll.GetCollationKey(test);
             Logln("source:" + key.SourceString);
         }
@@ -820,7 +820,7 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
             // Logln("Testing different case settings");
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
 
             for (k = 0; k < 4; k++)
             {
@@ -859,7 +859,7 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
             // Logln("Testing different case settings with custom rules");
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
 
             for (k = 0; k < 4; k++)
             {
@@ -1056,7 +1056,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
             }
             ((RuleBasedCollator)coll).IsAlternateHandlingShifted = (true);
-            coll.Strength = (Collator.QUATERNARY);
+            coll.Strength = (Collator.Quaternary);
             size = shifted.Length;
             for (i = 0; i < size - 1; i++)
             {
@@ -1067,7 +1067,7 @@ namespace ICU4N.Dev.Test.Collate
                     CollationTest.DoTest(this, (RuleBasedCollator)coll, t1, t2, -1);
                 }
             }
-            coll.Strength = (Collator.TERTIARY);
+            coll.Strength = (Collator.Tertiary);
             size = shifted.Length;
             for (i = 1; i < size; i++)
             {
@@ -1118,8 +1118,8 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
             // Logln("Testing some A letters, for some reason");
-            myCollation.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Decomposition = (Collator.CanonicalDecomposition);
+            myCollation.Strength = (Collator.Tertiary);
             for (int i = 0; i < 4; i++)
             {
                 CollationTest.DoTest(this, (RuleBasedCollator)myCollation,
@@ -1215,9 +1215,9 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
 
-            coll.Decomposition = (Collator.NO_DECOMPOSITION);
+            coll.Decomposition = (Collator.NoDecomposition);
             CollationTest.DoTest(this, (RuleBasedCollator)coll, s1, s2, 0);
-            coll.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            coll.Decomposition = (Collator.CanonicalDecomposition);
             CollationTest.DoTest(this, (RuleBasedCollator)coll, s1, s2, 0);
         }
 
@@ -1420,7 +1420,7 @@ namespace ICU4N.Dev.Test.Collate
                 StringBuffer strA = new StringBuffer();
                 StringBuffer strB = new StringBuffer();
 
-                coll.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+                coll.Decomposition = (Collator.CanonicalDecomposition);
 
                 for (sLen = 1000; sLen < 1001; sLen++)
                 {
@@ -1433,10 +1433,10 @@ namespace ICU4N.Dev.Test.Collate
                         strA.Append(ccMix[i % 3]);
                         strB.Insert(1, ccMix[i % 3]);
                     }
-                    coll.Strength = (Collator.TERTIARY);   // Do test with default strength, which runs
+                    coll.Strength = (Collator.Tertiary);   // Do test with default strength, which runs
                     CollationTest.DoTest(this, (RuleBasedCollator)coll,
                                          strA.ToString(), strB.ToString(), 0);    //   optimized functions in the impl
-                    coll.Strength = (Collator.IDENTICAL);   // Do again with the slow, general impl.
+                    coll.Strength = (Collator.Identical);   // Do again with the slow, general impl.
                     CollationTest.DoTest(this, (RuleBasedCollator)coll,
                                          strA.ToString(), strB.ToString(), 0);
                 }
@@ -1447,7 +1447,7 @@ namespace ICU4N.Dev.Test.Collate
             {
                 String strA = "AA\u0300\u0316";
                 String strB = "A\u00c0\u0316";
-                coll.Strength = (Collator.TERTIARY);
+                coll.Strength = (Collator.Tertiary);
                 CollationTest.DoTest(this, (RuleBasedCollator)coll, strA, strB, 0);
             }
             /*  Test 3:  Non-normal sequence is terminated by a surrogate pair.*/
@@ -1455,7 +1455,7 @@ namespace ICU4N.Dev.Test.Collate
             {
                 String strA = "AA\u0300\u0316\uD800\uDC01";
                 String strB = "A\u00c0\u0316\uD800\uDC00";
-                coll.Strength = (Collator.TERTIARY);
+                coll.Strength = (Collator.Tertiary);
                 CollationTest.DoTest(this, (RuleBasedCollator)coll, strA, strB, 1);
             }
             /*  Test 4:  Imbedded nulls do not terminate a string when length is specified.*/
@@ -1859,7 +1859,7 @@ namespace ICU4N.Dev.Test.Collate
                     = new RuleBasedCollator("& \uD800\uDC00 = \uD800\uDC01");
                 String strA = "AA\u0300\u0316\uD800\uDC01";
                 String strB = "A\u00c0\u0316\uD800\uDC00";
-                coll.Strength = (Collator.IDENTICAL);
+                coll.Strength = (Collator.Identical);
                 CollationTest.DoTest(this, coll, strA, strB, 1);
             }
             catch (Exception e)
@@ -1880,8 +1880,8 @@ namespace ICU4N.Dev.Test.Collate
             Collator coll = Collator.GetInstance(new CultureInfo("en")  /*Locale.ENGLISH */);
             genericLocaleStarter(new CultureInfo("en")  /*Locale.ENGLISH */, cases);
 
-            CollationStrength strength = Collator.PRIMARY;
-            while (strength <= Collator.IDENTICAL)
+            CollationStrength strength = Collator.Primary;
+            while (strength <= Collator.Identical)
             {
                 coll.Strength = (strength);
                 CollationKey prefixKey = coll.GetCollationKey(prefix);
@@ -1916,9 +1916,9 @@ namespace ICU4N.Dev.Test.Collate
                         }
                     }
                 }
-                if (strength == Collator.QUATERNARY)
+                if (strength == Collator.Quaternary)
                 {
-                    strength = Collator.IDENTICAL;
+                    strength = Collator.Identical;
                 }
                 else
                 {
@@ -2228,7 +2228,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestShifted()
         {
             RuleBasedCollator collator = (RuleBasedCollator)Collator.GetInstance();
-            collator.Strength = (Collator.PRIMARY);
+            collator.Strength = (Collator.Primary);
             collator.IsAlternateHandlingShifted = (true);
             CollationTest.DoTest(this, collator, " a", "a", 0); // works properly
             CollationTest.DoTest(this, collator, "a", "a ", 0); // inconsistent results
@@ -2351,7 +2351,7 @@ namespace ICU4N.Dev.Test.Collate
             try
             {
                 Collator coll = Collator.GetInstance();
-                coll.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+                coll.Decomposition = (Collator.CanonicalDecomposition);
                 if (coll.Compare(test[0], test[1]) != 0)
                 {
                     Errln("Tibetan comparison error");
@@ -2458,7 +2458,7 @@ namespace ICU4N.Dev.Test.Collate
         {
             String[] tests = { "B", "b", "Bb", "bB" };
             String[] att = { "strength", "UpperFirst" };
-            Object[] attVals = { new int?((int)Collator.QUATERNARY), true };
+            Object[] attVals = { new int?((int)Collator.Quaternary), true };
             genericLocaleStarterWithOptions(CultureInfo.InvariantCulture /* new Locale("root", "", "") */, tests, att, attVals);
         }
 
@@ -2467,7 +2467,7 @@ namespace ICU4N.Dev.Test.Collate
         {
             String[] tests = { "\\u00e2T", "aT" };
             String[] att = { "strength", "CaseLevel" };
-            Object[] attVals = { new int?((int)Collator.PRIMARY), true };
+            Object[] attVals = { new int?((int)Collator.Primary), true };
             String[] tests2 = { "a", "A" };
             String rule = "&[first tertiary ignorable]=A=a";
             String[] att2 = { "CaseLevel" };
@@ -2929,8 +2929,8 @@ namespace ICU4N.Dev.Test.Collate
                     return;
                 }
 
-                myCollation.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
-                myCollation.Strength = (Collator.TERTIARY);
+                myCollation.Decomposition = (Collator.CanonicalDecomposition);
+                myCollation.Strength = (Collator.Tertiary);
                 foreach (OneTestCase testCase in testCases)
                 {
                     CollationTest.DoTest(this, (RuleBasedCollator)myCollation,
@@ -3505,8 +3505,8 @@ namespace ICU4N.Dev.Test.Collate
             int result;
 
             Collator myCollation = new RuleBasedCollator(rules);
-            myCollation.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Decomposition = (Collator.CanonicalDecomposition);
+            myCollation.Strength = (Collator.Tertiary);
 
             String @base = "\u03b1"; /* base */
             String before = "\u0e01"; /* ko kai */
@@ -3565,7 +3565,7 @@ namespace ICU4N.Dev.Test.Collate
 
             /* build collator tertiary */
             myCollation = new RuleBasedCollator("");
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
             baseKey = myCollation.GetCollationKey(testString).ToByteArray();
 
             myCollation.SetReorderCodes(reorderCodes);
@@ -3586,7 +3586,7 @@ namespace ICU4N.Dev.Test.Collate
 
             /* build collator tertiary */
             myCollation = new RuleBasedCollator("");
-            myCollation.Strength = (Collator.QUATERNARY);
+            myCollation.Strength = (Collator.Quaternary);
             baseKey = myCollation.GetCollationKey(testString).ToByteArray();
 
             myCollation.SetReorderCodes(reorderCodes);
@@ -3623,7 +3623,7 @@ namespace ICU4N.Dev.Test.Collate
 
             /* build collator tertiary */
             myCollation = new RuleBasedCollator("");
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
 
             /* set the reorderding */
             myCollation.SetReorderCodes(reorderCodes);
@@ -3734,7 +3734,7 @@ namespace ICU4N.Dev.Test.Collate
 
             /* build collator tertiary */
             myCollation = new RuleBasedCollator(rules);
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
 
             retrievedReorderCodes = myCollation.GetReorderCodes();
             if (!Arrays.Equals(rulesReorderCodes, retrievedReorderCodes))
@@ -3926,8 +3926,8 @@ namespace ICU4N.Dev.Test.Collate
                 Warnln("ERROR: in creation of rule based collator");
                 return;
             }
-            myCollation.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Decomposition = (Collator.CanonicalDecomposition);
+            myCollation.Strength = (Collator.Tertiary);
             for (int i = 0; i < testSourceCases.Length; i++)
             {
                 CollationTest.DoTest(this, (RuleBasedCollator)myCollation,
@@ -4122,7 +4122,7 @@ namespace ICU4N.Dev.Test.Collate
 
             try
             {
-                myCollation.Strength = (Collator.SECONDARY);
+                myCollation.Strength = (Collator.Secondary);
             }
             catch (NotSupportedException e)
             {

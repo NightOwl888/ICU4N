@@ -33,7 +33,7 @@ namespace ICU4N.Dev.Test.Collate
         public void Init()
         {
             myCollation = Collator.GetInstance(new CultureInfo("ko") /* Locale.KOREAN */);
-            myCollation.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            myCollation.Decomposition = (Collator.CanonicalDecomposition);
         }
 
         // performs test with strength TERIARY
@@ -41,7 +41,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestTertiary()
         {
             int i = 0;
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
             for (i = 0; i < 1; i++)
             {
                 DoTest(testSourceCases[i], testTargetCases[i], results[i]);

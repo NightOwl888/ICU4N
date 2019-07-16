@@ -66,7 +66,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestTertiary()
         {
             int i = 0;
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
             for (i = 0; i < 5; i++)
             {
                 doTest(testSourceCases[i], testTargetCases[i], results[i]);
@@ -77,7 +77,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestPrimary()
         {
             int i;
-            myCollation.Strength = (Collator.PRIMARY);
+            myCollation.Strength = (Collator.Primary);
             for (i = 5; i < 9; i++)
             {
                 doTest(testSourceCases[i], testTargetCases[i], results[i]);

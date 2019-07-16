@@ -137,7 +137,7 @@ namespace ICU4N.Dev.Test.Collate
 
             // NOTE: The Java code uses en_us to create the CollationElementIterators
             // but I'm pretty sure that's wrong, so I've changed this to use c.
-            c.Decomposition = (Collator.NO_DECOMPOSITION);
+            c.Decomposition = (Collator.NoDecomposition);
             CollationElementIterator i1 = c.GetCollationElementIterator(test3);
             Logln("Offset:" + i1.GetOffset());
         }
@@ -160,8 +160,8 @@ namespace ICU4N.Dev.Test.Collate
             };
 
             RuleBasedCollator c = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            c.Strength = (Collator.IDENTICAL);
-            c.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            c.Strength = (Collator.Identical);
+            c.Decomposition = (Collator.CanonicalDecomposition);
             CompareArray(c, decomp);
         }
 
@@ -312,8 +312,8 @@ namespace ICU4N.Dev.Test.Collate
         {
             RuleBasedCollator c = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
 
-            c.Strength = (Collator.SECONDARY);
-            c.Decomposition = (Collator.NO_DECOMPOSITION);
+            c.Strength = (Collator.Secondary);
+            c.Decomposition = (Collator.NoDecomposition);
 
             String[] tests = { "\uFB4F", "\u003d", "\u05D0\u05DC" };  // Alef-Lamed vs. Alef, Lamed
             CompareArray(c, tests);
@@ -353,7 +353,7 @@ namespace ICU4N.Dev.Test.Collate
 
             // Since the fix to this bug was to turn off decomposition for Korean collators,
             // ensure that's what we got
-            if (c.Decomposition != Collator.NO_DECOMPOSITION)
+            if (c.Decomposition != Collator.NoDecomposition)
             {
                 Errln("Decomposition is not set to NO_DECOMPOSITION for Korean collator");
             }
@@ -412,7 +412,7 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
 
-            c.Decomposition = (Collator.NO_DECOMPOSITION);
+            c.Decomposition = (Collator.NoDecomposition);
 
             String[] tertiary = {
             "A",        "<",    "B",
@@ -423,7 +423,7 @@ namespace ICU4N.Dev.Test.Collate
             "\u0130",   ">",    "H",
         };
 
-            c.Strength = (Collator.TERTIARY);
+            c.Strength = (Collator.Tertiary);
             CompareArray(c, tertiary);
 
             String[] secondary = {
@@ -431,7 +431,7 @@ namespace ICU4N.Dev.Test.Collate
             "\u0131",   "=",    "\u0130",
         };
 
-            c.Strength = (Collator.PRIMARY);
+            c.Strength = (Collator.Primary);
             CompareArray(c, secondary);
         }
 
@@ -452,7 +452,7 @@ namespace ICU4N.Dev.Test.Collate
                 Errln("Failed to create collator for Locale.CANADA_FRENCH");
                 return;
             }
-            c.Strength = (Collator.SECONDARY);
+            c.Strength = (Collator.Secondary);
 
             String[] tests = {
                 "p\u00eache",    "<",    "p\u00e9ch\u00e9",    // Comparing accents from end, p\u00e9ch\u00e9 is greater
@@ -491,11 +491,11 @@ namespace ICU4N.Dev.Test.Collate
             // CollationElementIterator's. I'm pretty sure that
             // was wrong, so I've change the code to use c1 and c2
             RuleBasedCollator c1 = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            c1.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            c1.Decomposition = (Collator.CanonicalDecomposition);
             CollationElementIterator i1 = c1.GetCollationElementIterator(test1);
 
             RuleBasedCollator c2 = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            c2.Decomposition = (Collator.NO_DECOMPOSITION);
+            c2.Decomposition = (Collator.NoDecomposition);
             CollationElementIterator i2 = c2.GetCollationElementIterator(test2);
 
             assertEqual(i1, i2);
@@ -518,7 +518,7 @@ namespace ICU4N.Dev.Test.Collate
                 Errln("Failure creating collator for Locale.CANADA_FRENCH");
                 return;
             }
-            c.Strength = (Collator.SECONDARY);
+            c.Strength = (Collator.Secondary);
 
             String[] tests = {
             "\u00e0",   ">",     "\u01fa",       // a-grave <  A-ring-acute
@@ -539,7 +539,7 @@ namespace ICU4N.Dev.Test.Collate
             String s2 = "\u0041\u0302\u0300\u0301";
 
             RuleBasedCollator c = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            c.Strength = (Collator.TERTIARY);
+            c.Strength = (Collator.Tertiary);
 
             if (c.Compare(s1, s2) == 0)
             {
@@ -607,12 +607,12 @@ namespace ICU4N.Dev.Test.Collate
             String s2 = "\u0041\u0327\u0316\u0315\u0300";
 
             RuleBasedCollator c = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            c.Strength = (Collator.TERTIARY);
+            c.Strength = (Collator.Tertiary);
 
             // Now that the default collators are set to NO_DECOMPOSITION
             // (as a result of fixing bug 4114077), we must set it explicitly
             // when we're testing reordering behavior.  -- lwerner, 5/5/98
-            c.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            c.Decomposition = (Collator.CanonicalDecomposition);
             if (c.Compare(s1, s2) != 0)
             {
                 Errln("Combining chars were not reordered");
@@ -637,7 +637,7 @@ namespace ICU4N.Dev.Test.Collate
                 Errln("Failed to create collator for da_DK locale");
                 return;
             }
-            c.Strength = (Collator.SECONDARY);
+            c.Strength = (Collator.Secondary);
             String[] tests = {
             "\u007a",       "\u003c", "\u00E6",            // z        < ae
             "\u0061\u0308", "\u003c", "\u0061\u030A",      // a-umlaut < a-ring
@@ -654,7 +654,7 @@ namespace ICU4N.Dev.Test.Collate
         public void Test4087243(/* char* par */)
         {
             RuleBasedCollator c = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            c.Strength = (Collator.TERTIARY);
+            c.Strength = (Collator.Tertiary);
             String[] tests = {
             "\u0031\u0032\u0033", "\u003d", "\u0031\u0032\u0033\u0001"    // 1 2 3  =  1 2 3 ctrl-A
         };
@@ -681,7 +681,7 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
             // These now have tertiary differences in UCA
-            c.Strength = (Collator.SECONDARY);
+            c.Strength = (Collator.Secondary);
             String[] tests = {
             "\u00B5", "\u003d", "\u03BC",
         };
@@ -707,7 +707,7 @@ namespace ICU4N.Dev.Test.Collate
             // These now have tertiary differences in UCA
             //c->setStrength(Collator::TERTIARY);
             //c->setAttribute(UCOL_STRENGTH, UCOL_SECONDARY, status);
-            c.Strength = (Collator.SECONDARY);
+            c.Strength = (Collator.Secondary);
             String[] tests = {
             "\u03D4", "\u003d", "\u03AB",
         };
@@ -747,7 +747,7 @@ namespace ICU4N.Dev.Test.Collate
         public void Test4103436(/* char* par */)
         {
             RuleBasedCollator c = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            c.Strength = (Collator.TERTIARY);
+            c.Strength = (Collator.Tertiary);
             String[] tests = {
             "\u0066\u0069\u006c\u0065", "\u003c", "\u0066\u0069\u006c\u0065\u0020\u0061\u0063\u0063\u0065\u0073\u0073",
             "\u0066\u0069\u006c\u0065", "\u003c", "\u0066\u0069\u006c\u0065\u0061\u0063\u0063\u0065\u0073\u0073",
@@ -763,7 +763,7 @@ namespace ICU4N.Dev.Test.Collate
         public void Test4114076(/* char* par */)
         {
             RuleBasedCollator c = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            c.Strength = (Collator.TERTIARY);
+            c.Strength = (Collator.Tertiary);
 
             //
             // With Canonical decomposition, Hangul syllables should get decomposed
@@ -774,7 +774,7 @@ namespace ICU4N.Dev.Test.Collate
             "\ud4db", "\u003d", "\u1111\u1171\u11b6"
         };
 
-            c.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            c.Decomposition = (Collator.CanonicalDecomposition);
             CompareArray(c, test1);
 
             // From UTR #15:
@@ -805,7 +805,7 @@ namespace ICU4N.Dev.Test.Collate
             // Ensure that we get the same results with decomposition off
             // as we do with it on....
             RuleBasedCollator c = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US") /* Locale.US */);
-            c.Strength = (Collator.TERTIARY);
+            c.Strength = (Collator.Tertiary);
             String[] test1 = {
             "\u00C0",                         "\u003d", "\u0041\u0300",            // Should be equivalent
             "\u0070\u00ea\u0063\u0068\u0065", "\u003e", "\u0070\u00e9\u0063\u0068\u00e9",
@@ -815,14 +815,14 @@ namespace ICU4N.Dev.Test.Collate
             "\u0041\u0300\u0316",             "\u003c", "\u0041\u0316\u0300"        // No reordering --> unequal
         };
 
-            c.Decomposition = (Collator.NO_DECOMPOSITION);
+            c.Decomposition = (Collator.NoDecomposition);
             CompareArray(c, test1);
 
             String[] test2 = {
             "\u0041\u0300\u0316", "\u003d", "\u0041\u0316\u0300"      // Reordering --> equal
         };
 
-            c.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            c.Decomposition = (Collator.CanonicalDecomposition);
             CompareArray(c, test2);
         }
 
@@ -867,7 +867,7 @@ namespace ICU4N.Dev.Test.Collate
             try
             {
                 c = Collator.GetInstance(new CultureInfo("fr-CA") /* Locale.CANADA_FRENCH */);
-                c.Strength = (Collator.TERTIARY);
+                c.Strength = (Collator.Tertiary);
             }
             catch (Exception e)
             {
@@ -1055,7 +1055,7 @@ namespace ICU4N.Dev.Test.Collate
             CheckListOrder(englishList, english);
 
             Logln("Testing English order without decomposition...");
-            english.Decomposition = (Collator.NO_DECOMPOSITION);
+            english.Decomposition = (Collator.NoDecomposition);
             CheckListOrder(englishList, english);
         }
 
@@ -1191,7 +1191,7 @@ namespace ICU4N.Dev.Test.Collate
             //commented by Kevin 2003/10/21
             //for "FULL_DECOMPOSITION is not supported here." in ICU4J DOC
             //collator.setDecomposition(Collator.FULL_DECOMPOSITION);
-            collator.Strength = (Collator.IDENTICAL);
+            collator.Strength = (Collator.Identical);
 
             String[] tests = {
             "a\u0300", "=", "\u00e0",

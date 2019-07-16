@@ -28,49 +28,116 @@ namespace ICU4N.Text
 	/// </summary>
     public enum CollationStrength
     {
+        
+		//Default = -1,
+
         /// <summary>
-		/// Use the strength set in the locale or rules
-		/// </summary>
-		Default = -1,
-        /// <summary>
+		/// Strongest collator strength value. Typically used to denote differences
+        /// between base characters. See <see cref="Collator"/> documentation for more explanation.
+        /// <para/>
         /// Base letter represents a primary difference.  Set comparison
         /// level to Primary to ignore secondary and tertiary differences.
         /// Example of primary difference, "abc" &lt; "abd"
-        /// </summary>
+		/// </summary>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
         Primary = 0,
+
         /// <summary>
+        /// Second level collator strength value.
+        /// Accents in the characters are considered secondary differences.
+        /// Other differences between letters can also be considered secondary
+        /// differences, depending on the language.
+        /// See <see cref="Collator"/> documentation for more explanation.
+        /// <para/>
         /// Diacritical differences on the same base letter represent a secondary
         /// difference.  Set comparison level to Secondary to ignore tertiary
         /// differences.
         /// Example of secondary difference, "a&#x308;" >> "a".
         /// </summary>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
         Secondary = 1,
+
         /// <summary>
-        ///  Uppercase and lowercase versions of the same character represents a
-        /// tertiary difference.  Set comparison level to Tertiary to include
-        ///  all comparison differences.
-        ///  Example of tertiary difference, "abc" &lt;&lt;&lt; "ABC".
+        /// Third level collator strength value.
+        /// Upper and lower case differences in characters are distinguished at this
+        /// strength level. In addition, a variant of a letter differs from the base
+        /// form on the tertiary level.
+        /// See <see cref="Collator"/> documentation for more explanation.
+        /// <para/>
+        /// Set comparison level to Tertiary to include
+        /// all comparison differences.
+        /// Example of tertiary difference, "abc" &lt;&lt;&lt; "ABC".
         /// </summary>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
         Tertiary = 2,
+
         /// <summary>
+        /// <icu/>Fourth level collator strength value.
+        /// When punctuation is ignored
+        /// (see <a href="http://userguide.icu-project.org/collation/concepts#TOC-Ignoring-Punctuation">Ignoring Punctuation in the User Guide</a>) 
+        /// at <see cref="Primary"/> to <see cref="Tertiary"/>
+        /// strength, an additional strength level can
+        /// be used to distinguish words with and without punctuation.
+        /// See <see cref="Collator"/> documentation for more explanation.
+        /// <para/>
         /// Quaternary level is usually only affected by the number of
         /// non-ignorable code points in the string.
         /// </summary>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
         Quaternary = 3,
+
         /// <summary>
-        ///  Two characters are considered "identical" when they have the same
+        /// Smallest <see cref="Collator"/> strength value. When all other strengths are equal,
+        /// the IDENTICAL strength is used as a tiebreaker. The Unicode code point
+        /// values of the NFD form of each string are compared, just in case there
+        /// is no difference.
+        /// See <see cref="Collator"/> documentation for more explanation.
+        /// <para/>
+        /// Note this value is different from JDK's
+        /// <para/>
+        /// Two characters are considered "identical" when they have the same
         /// unicode spellings.
         /// For example, "a&#x308;" == "a&#x308;".
         /// </summary>
         /// <remarks>Identical strength is rarely useful, as it amounts to
         /// codepoints of the NFD form of the string</remarks>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
         Identical = 15
     }
 
     public enum NormalizationMode
     {
         //FullDecomposition = CollationStrength.Identical, // NOT SUPPORTED by ICU (was only for compatibility with Java APIs)
+
+        /// <summary>
+        /// Decomposition mode value. With <see cref="NoDecomposition"/> set, Strings
+        /// will not be decomposed for collation. This is the default
+        /// decomposition setting unless otherwise specified by the locale
+        /// used to create the <see cref="Collator"/>.
+        /// <para/>
+        /// <strong>Note</strong> this value is different from the JDK's.
+        /// </summary>
+        /// <seealso cref="CanonicalDecomposition"/>
+        /// <see cref="Decomposition"/>
+        /// <stable>ICU 2.8</stable>
         NoDecomposition = 16,
+
+        /// <summary>
+        /// Decomposition mode value. With CANONICAL_DECOMPOSITION set,
+        /// characters that are canonical variants according to the Unicode standard
+        /// will be decomposed for collation.
+        /// <para/>
+        /// CANONICAL_DECOMPOSITION corresponds to Normalization Form D as
+        /// described in <a href="http://www.unicode.org/unicode/reports/tr15/">Unicode Technical Report #15</a>.
+        /// </summary>
+        /// <see cref="NoDecomposition"/>
+        /// <see cref="Decomposition"/>
+        /// <stable>ICU 2.8</stable>
         CanonicalDecomposition = 17
     }
 
@@ -88,53 +155,62 @@ namespace ICU4N.Text
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public const int Default = -1;
+
         /// <summary>
         /// A special reordering code that is used to specify no reordering codes.
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public const int None = UScript.Unknown;
+
         /// <summary>
         /// A special reordering code that is used to specify all other codes used for reordering except
         /// for the codes listed as ReorderingCodes and those listed explicitly in a reordering.
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public const int Others = UScript.Unknown;
+
         /// <summary>
         /// Characters with the space property.
         /// This is equivalent to the rule value "space".
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public const int Space = 0x1000;
+
         /// <summary>
         /// The first entry in the enumeration of reordering groups. This is intended for use in
         /// range checking and enumeration of the reorder codes.
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public const int First = Space;
+
         /// <summary>
         /// Characters with the punctuation property.
         /// This is equivalent to the rule value "punct".
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public const int Punctuation = 0x1001;
+
         /// <summary>
         /// Characters with the symbol property.
         /// This is equivalent to the rule value "symbol".
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public const int Symbol = 0x1002;
+
         /// <summary>
         /// Characters with the currency property.
         /// This is equivalent to the rule value "currency".
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public const int Currency = 0x1003;
+
         /// <summary>
         /// Characters with the digit property.
         /// This is equivalent to the rule value "digit".
         /// </summary>
         /// <stable>ICU 4.8</stable>
         public const int Digit = 0x1004;
+
         /// <summary>
         /// One more than the highest normal <see cref="ReorderCodes"/> value.
         /// </summary>
@@ -142,7 +218,131 @@ namespace ICU4N.Text
         public const int Limit = 0x1005;
     }
 
-
+    /// <summary>
+    /// Collator performs locale-sensitive string comparison. A concrete
+    /// subclass, <see cref="RuleBasedCollator"/>, allows customization of the collation
+    /// ordering by the use of rule sets.
+    /// </summary>
+    /// <remarks>
+    /// A Collator is thread-safe only when frozen. See <see cref="IsFrozen"/> and <see cref="IFreezable{T}"/>.
+    /// <para/>
+    /// Following the <a href=http://www.unicode.org>Unicode Consortium</a>'s specifications for the
+    /// <a href="http://www.unicode.org/unicode/reports/tr10/">Unicode Collation Algorithm (UCA)</a>, 
+    /// there are 5 different levels of strength used in comparisons:
+    /// <list type="table">
+    ///     <item>
+    ///         <term><see cref="CollationStrength.Primary"/> strength:</term>
+    ///         <description>
+    ///             Typically, this is used to denote differences between
+    ///             base characters (for example, "a" &lt; "b").
+    ///             It is the strongest difference. For example, dictionaries are divided
+    ///             into different sections by base character.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CollationStrength.Secondary"/> strength:</term>
+    ///         <description>
+    ///             Accents in the characters are considered secondary
+    ///             differences (for example, "as" &lt; "&agrave;s" &lt; "at"). Other
+    ///             differences between letters can also be considered secondary differences, depending
+    ///             on the language. A secondary difference is ignored when there is a
+    ///             primary difference anywhere in the strings.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CollationStrength.Tertiary"/> strenth:</term>
+    ///         <description>
+    ///             Upper and lower case differences in characters are
+    ///             distinguished at tertiary strength (for example, "ao" &lt; "Ao" &lt;
+    ///             "a&ograve;"). In addition, a variant of a letter differs from the base
+    ///             form on the tertiary strength (such as "A" and "Ⓐ"). Another
+    ///             example is the difference between large and small Kana. A tertiary difference is ignored
+    ///             when there is a primary or secondary difference anywhere in the strings.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CollationStrength.Quaternary"/> strenth:</term>
+    ///         <description>
+    ///             When punctuation is ignored
+    ///             (see <a href="http://userguide.icu-project.org/collation/concepts#TOC-Ignoring-Punctuation">
+    ///             Ignoring Punctuations in the User Guide</a>) at <see cref="CollationStrength.Primary"/> to 
+    ///             <see cref="CollationStrength.Tertiary"/> strength, an additional strength level can
+    ///             be used to distinguish words with and without punctuation (for example,
+    ///             "ab" &lt; "a-b" &lt; "aB").
+    ///             This difference is ignored when there is a <see cref="CollationStrength.Primary"/>, 
+    ///             <see cref="CollationStrength.Secondary"/> or <see cref="CollationStrength.Tertiary"/>
+    ///             difference. The <see cref="CollationStrength.Quaternary"/> strength should only be used if ignoring
+    ///             punctuation is required.
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <term><see cref="CollationStrength.Identical"/> strength:</term>
+    ///         <description>
+    ///             When all other strengths are equal, the <see cref="CollationStrength.Identical"/> strength is used as a
+    ///             tiebreaker. The Unicode code point values of the NFD form of each string
+    ///             are compared, just in case there is no difference.
+    ///             For example, Hebrew cantellation marks are only distinguished at this
+    ///             strength. This strength should be used sparingly, as only code point
+    ///             value differences between two strings is an extremely rare occurrence.
+    ///             Using this strength substantially decreases the performance for both
+    ///             comparison and collation key generation APIs. This strength also
+    ///             increases the size of the collation key.
+    ///         </description>
+    ///     </item>
+    /// </list>
+    /// <para/>
+    /// Unlike the JDK, ICU4N's Collator deals only with 2 decomposition modes,
+    /// the canonical decomposition mode and one that does not use any decomposition.
+    /// The compatibility decomposition mode, java.text.Collator.FULL_DECOMPOSITION
+    /// is not supported here. If the canonical
+    /// decomposition mode is set, the Collator handles un-normalized text properly,
+    /// producing the same results as if the text were normalized in NFD. If
+    /// canonical decomposition is turned off, it is the user's responsibility to
+    /// ensure that all text is already in the appropriate form before performing
+    /// a comparison or before getting a <see cref="CollationKey"/>.
+    /// <para/>
+    /// For more information about the collation service see the
+    /// <a href="http://userguide.icu-project.org/collation">User Guide</a>.
+    /// <para/>
+    /// Examples of use
+    /// <code>
+    ///     // Get the Collator for US English and set its strength to CollationStrength.Primary
+    ///     Collator usCollator = Collator.GetInstance(new CultureInfo("en-us"));
+    ///     usCollator.Strength = CollationStrength.Primary;
+    ///     if (usCollator.Compare("abc", "ABC") == 0)
+    ///     {
+    ///         Console.WriteLine("Strings are equivalent");
+    ///     }
+    /// </code>
+    /// The following example shows how to compare two strings using the
+    /// <see cref="Collator"/> for the default locale.
+    /// <code>
+    ///     // Compare two strings in the default locale
+    ///     Collator myCollator = Collator.GetInstance();
+    ///     myCollator.Decomposition = NormalizationMode.NoDecomposition;
+    ///     if (myCollator.Compare("&agrave;&#92;u0325", "a&#92;u0325&#768;") != 0)
+    ///     {
+    ///         Console.WriteLine("&agrave;&#92;u0325 is not equals to a&#92;u0325&#768; without decomposition");
+    ///         myCollator.Decomposition = NormalizationMode.CanonicalDecomposition;
+    ///         if (myCollator.Compare("&agrave;&#92;u0325", "a&#92;u0325&#768;") != 0)
+    ///         {
+    ///             Console.WriteLine("Error: &agrave;&#92;u0325 should be equals to a&#92;u0325&#768; with decomposition");
+    ///         }
+    ///         else
+    ///         {
+    ///             Console.WriteLine("&agrave;&#92;u0325 is equals to a&#92;u0325&#768; with decomposition");
+    ///         }
+    ///     }
+    ///     else
+    ///     {
+    ///         Console.WriteLine("Error: &agrave;&#92;u0325 should be not equals to a&#92;u0325&#768; without decomposition");
+    ///     }
+    /// </code>
+    /// </remarks>
+    /// <seealso cref="RuleBasedCollator"/>
+    /// <seealso cref="CollationKey"/>
+    /// <author>Syn Wee Quek</author>
+    /// <stable>ICU 2.8</stable>
     public abstract class Collator : IComparer<object>, IFreezable<Collator>
 #if FEATURE_CLONEABLE
         , ICloneable
@@ -150,134 +350,143 @@ namespace ICU4N.Text
     {
         //// public data members ---------------------------------------------------
 
-        /**
-         * Strongest collator strength value. Typically used to denote differences
-         * between base characters. See class documentation for more explanation.
-         * @see #setStrength
-         * @see #getStrength
-         * @stable ICU 2.8
-         */
-        public const CollationStrength PRIMARY = CollationStrength.Primary;
+        /// <summary>
+		/// Strongest collator strength value. Typically used to denote differences
+        /// between base characters. See class documentation for more explanation.
+		/// </summary>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
+        public const CollationStrength Primary = CollationStrength.Primary; // ICU4N: changed API from public to internal, since we have CollationStrength enum
 
-        /**
-         * Second level collator strength value.
-         * Accents in the characters are considered secondary differences.
-         * Other differences between letters can also be considered secondary
-         * differences, depending on the language.
-         * See class documentation for more explanation.
-         * @see #setStrength
-         * @see #getStrength
-         * @stable ICU 2.8
-         */
-        public const CollationStrength SECONDARY = CollationStrength.Secondary;
+        /// <summary>
+        /// Second level collator strength value.
+        /// Accents in the characters are considered secondary differences.
+        /// Other differences between letters can also be considered secondary
+        /// differences, depending on the language.
+        /// See <see cref="Collator"/> documentation for more explanation.
+        /// <para/>
+        /// Diacritical differences on the same base letter represent a secondary
+        /// difference.  Set comparison level to Secondary to ignore tertiary
+        /// differences.
+        /// Example of secondary difference, "a&#x308;" >> "a".
+        /// </summary>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
+        public const CollationStrength Secondary = CollationStrength.Secondary; // ICU4N: changed API from public to internal, since we have CollationStrength enum
 
-        /**
-         * Third level collator strength value.
-         * Upper and lower case differences in characters are distinguished at this
-         * strength level. In addition, a variant of a letter differs from the base
-         * form on the tertiary level.
-         * See class documentation for more explanation.
-         * @see #setStrength
-         * @see #getStrength
-         * @stable ICU 2.8
-         */
-        public const CollationStrength TERTIARY = CollationStrength.Tertiary;
+        /// <summary>
+        /// Third level collator strength value.
+        /// Upper and lower case differences in characters are distinguished at this
+        /// strength level. In addition, a variant of a letter differs from the base
+        /// form on the tertiary level.
+        /// See <see cref="Collator"/> documentation for more explanation.
+        /// <para/>
+        /// Set comparison level to Tertiary to include
+        /// all comparison differences.
+        /// Example of tertiary difference, "abc" &lt;&lt;&lt; "ABC".
+        /// </summary>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
+        public const CollationStrength Tertiary = CollationStrength.Tertiary; // ICU4N: changed API from public to internal, since we have CollationStrength enum
 
-        /**
-         * {@icu} Fourth level collator strength value.
-         * When punctuation is ignored
-         * (see <a href="http://userguide.icu-project.org/collation/concepts#TOC-Ignoring-Punctuation">
-         * Ignoring Punctuation in the User Guide</a>) at PRIMARY to TERTIARY
-         * strength, an additional strength level can
-         * be used to distinguish words with and without punctuation.
-         * See class documentation for more explanation.
-         * @see #setStrength
-         * @see #getStrength
-         * @stable ICU 2.8
-         */
-        public const CollationStrength QUATERNARY = CollationStrength.Quaternary;
+        /// <summary>
+        /// <icu/>Fourth level collator strength value.
+        /// When punctuation is ignored
+        /// (see <a href="http://userguide.icu-project.org/collation/concepts#TOC-Ignoring-Punctuation">Ignoring Punctuation in the User Guide</a>) 
+        /// at <see cref="Primary"/> to <see cref="Tertiary"/>
+        /// strength, an additional strength level can
+        /// be used to distinguish words with and without punctuation.
+        /// See <see cref="Collator"/> documentation for more explanation.
+        /// <para/>
+        /// Quaternary level is usually only affected by the number of
+        /// non-ignorable code points in the string.
+        /// </summary>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
+        public const CollationStrength Quaternary = CollationStrength.Quaternary; // ICU4N: changed API from public to internal, since we have CollationStrength enum
 
-        /**
-         * Smallest Collator strength value. When all other strengths are equal,
-         * the IDENTICAL strength is used as a tiebreaker. The Unicode code point
-         * values of the NFD form of each string are compared, just in case there
-         * is no difference.
-         * See class documentation for more explanation.
-         * <p>
-         * Note this value is different from JDK's
-         * @stable ICU 2.8
-         */
-        public const CollationStrength IDENTICAL = CollationStrength.Identical;
+        /// <summary>
+        /// Smallest <see cref="Collator"/> strength value. When all other strengths are equal,
+        /// the IDENTICAL strength is used as a tiebreaker. The Unicode code point
+        /// values of the NFD form of each string are compared, just in case there
+        /// is no difference.
+        /// See <see cref="Collator"/> documentation for more explanation.
+        /// <para/>
+        /// Note this value is different from JDK's
+        /// <para/>
+        /// Two characters are considered "identical" when they have the same
+        /// unicode spellings.
+        /// For example, "a&#x308;" == "a&#x308;".
+        /// </summary>
+        /// <remarks>Identical strength is rarely useful, as it amounts to
+        /// codepoints of the NFD form of the string</remarks>
+        /// <seealso cref="Collator.Strength"/>
+        /// <stable>ICU 2.8</stable>
+        public const CollationStrength Identical = CollationStrength.Identical; // ICU4N: changed API from public to internal, since we have CollationStrength enum
 
-        ///**
-        // * {@icunote} This is for backwards compatibility with Java APIs only.  It
-        // * should not be used, IDENTICAL should be used instead.  ICU's
-        // * collation does not support Java's FULL_DECOMPOSITION mode.
-        // * @stable ICU 3.4
-        // */
-        //public const NormalizationMode FULL_DECOMPOSITION = (NormalizationMode)IDENTICAL;
+        /////**
+        //// * {@icunote} This is for backwards compatibility with Java APIs only.  It
+        //// * should not be used, IDENTICAL should be used instead.  ICU's
+        //// * collation does not support Java's FULL_DECOMPOSITION mode.
+        //// * @stable ICU 3.4
+        //// */
+        ////public const NormalizationMode FULL_DECOMPOSITION = (NormalizationMode)IDENTICAL;
 
-        /**
-         * Decomposition mode value. With NO_DECOMPOSITION set, Strings
-         * will not be decomposed for collation. This is the default
-         * decomposition setting unless otherwise specified by the locale
-         * used to create the Collator.
-         *
-         * <p><strong>Note</strong> this value is different from the JDK's.
-         * @see #CANONICAL_DECOMPOSITION
-         * @see #getDecomposition
-         * @see #setDecomposition
-         * @stable ICU 2.8
-         */
-        public const NormalizationMode NO_DECOMPOSITION = NormalizationMode.NoDecomposition;
+        /// <summary>
+        /// Decomposition mode value. With <see cref="NoDecomposition"/> set, Strings
+        /// will not be decomposed for collation. This is the default
+        /// decomposition setting unless otherwise specified by the locale
+        /// used to create the <see cref="Collator"/>.
+        /// <para/>
+        /// <strong>Note</strong> this value is different from the JDK's.
+        /// </summary>
+        /// <seealso cref="CanonicalDecomposition"/>
+        /// <see cref="Decomposition"/>
+        /// <stable>ICU 2.8</stable>
+        public const NormalizationMode NoDecomposition = NormalizationMode.NoDecomposition;
 
-        /**
-         * Decomposition mode value. With CANONICAL_DECOMPOSITION set,
-         * characters that are canonical variants according to the Unicode standard
-         * will be decomposed for collation.
-         *
-         * <p>CANONICAL_DECOMPOSITION corresponds to Normalization Form D as
-         * described in <a href="http://www.unicode.org/unicode/reports/tr15/">
-         * Unicode Technical Report #15</a>.
-         *
-         * @see #NO_DECOMPOSITION
-         * @see #getDecomposition
-         * @see #setDecomposition
-         * @stable ICU 2.8
-         */
-        public const NormalizationMode CANONICAL_DECOMPOSITION = NormalizationMode.CanonicalDecomposition;
+        /// <summary>
+        /// Decomposition mode value. With CANONICAL_DECOMPOSITION set,
+        /// characters that are canonical variants according to the Unicode standard
+        /// will be decomposed for collation.
+        /// <para/>
+        /// CANONICAL_DECOMPOSITION corresponds to Normalization Form D as
+        /// described in <a href="http://www.unicode.org/unicode/reports/tr15/">Unicode Technical Report #15</a>.
+        /// </summary>
+        /// <see cref="NoDecomposition"/>
+        /// <see cref="Decomposition"/>
+        /// <stable>ICU 2.8</stable>
+        public const NormalizationMode CanonicalDecomposition = NormalizationMode.CanonicalDecomposition;
 
         // ICU4N specific - De-nested ReorderCodes class
 
         // public methods --------------------------------------------------------
 
-        /**
-         * Compares the equality of two Collator objects. Collator objects are equal if they have the same
-         * collation (sorting &amp; searching) behavior.
-         *
-         * <p>The base class checks for null and for equal types.
-         * Subclasses should override.
-         *
-         * @param obj the Collator to compare to.
-         * @return true if this Collator has exactly the same collation behavior as obj, false otherwise.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Compares the equality of two <see cref="Collator"/> objects. <see cref="Collator"/> objects are equal if they have the same
+        /// collation (sorting &amp; searching) behavior.
+        /// <para/>
+        /// The base class checks for null and for equal types.
+        /// Subclasses should override.
+        /// </summary>
+        /// <param name="obj">the <see cref="Collator"/> to compare to.</param>
+        /// <returns>true if this <see cref="Collator"/> has exactly the same collation behavior as obj, false otherwise.</returns>
+        /// <stable>ICU 2.8</stable>
         public override bool Equals(object obj)
         {
             // Subclasses: Call this method and then add more specific checks.
             return this == obj || (obj != null && GetType() == obj.GetType());
         }
 
-        /**
-         * Generates a hash code for this Collator object.
-         *
-         * <p>The implementation exists just for consistency with {@link #equals(Object)}
-         * implementation in this class and does not generate a useful hash code.
-         * Subclasses should override this implementation.
-         *
-         * @return a hash code value.
-         * @stable ICU 58
-         */
+        /// <summary>
+        /// Generates a hash code for this <see cref="Collator"/> object.
+        /// <para/>
+        /// The implementation exists just for consistency with <see cref="Equals(object)"/>
+        /// implementation in this class and does not generate a useful hash code.
+        /// Subclasses should override this implementation.
+        /// </summary>
+        /// <returns>a hash code value.</returns>
+        /// <stable>ICU 58</stable>
         public override int GetHashCode()
         {
             // Dummy return to prevent compile warnings.
@@ -294,40 +503,34 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Sets this Collator's strength attribute. The strength attribute
-         * determines the minimum level of difference considered significant
-         * during comparison.
-         *
-         * <p>The base class method does nothing. Subclasses should override it if appropriate.
-         *
-         * <p>See the Collator class description for an example of use.
-         * @param newStrength the new strength value.
-         * @see #getStrength
-         * @see #PRIMARY
-         * @see #SECONDARY
-         * @see #TERTIARY
-         * @see #QUATERNARY
-         * @see #IDENTICAL
-         * @throws IllegalArgumentException if the new strength value is not valid.
-         * @stable ICU 2.8
-         */
-        //public void setStrength(int newStrength)
-        //{
-        //    CheckNotFrozen();
-        //}
-
+        /// <summary>
+        /// Gets or sets this <see cref="Collator"/>'s strength attribute. The strength attribute
+        /// determines the minimum level of difference considered significant
+        /// during comparison.
+        /// <para/>
+        /// The base class setter does nothing. The base class getter always 
+        /// returns <see cref="CollationStrength.Tertiary"/>. Subclasses should override it if appropriate.
+        /// <para/>
+        /// See the <see cref="Collator"/> class description for an example of use.
+        /// </summary>
+        /// <seealso cref="CollationStrength.Primary"/>
+        /// <seealso cref="CollationStrength.Secondary"/>
+        /// <seealso cref="CollationStrength.Tertiary"/>
+        /// <seealso cref="CollationStrength.Quaternary"/>
+        /// <seealso cref="CollationStrength.Identical"/>
+        /// <exception cref="ArgumentException">if the new strength value is not valid.</exception>
+        /// <stable>ICU 2.8</stable>
         public virtual CollationStrength Strength
         {
             get { return CollationStrength.Tertiary; }
             set { CheckNotFrozen(); }
         }
 
-        /**
-         * @return this, for chaining
-         * @internal Used in UnicodeTools
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Internal, used in UnicodeTools.
+        /// </summary>
+        /// <param name="newStrength"></param>
+        /// <returns>this, for chaining</returns>
         [Obsolete("This API is ICU internal only.")]
         public virtual Collator SetStrength2(CollationStrength newStrength)
         {
@@ -335,118 +538,106 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Sets the decomposition mode of this Collator.  Setting this
-         * decomposition attribute with CANONICAL_DECOMPOSITION allows the
-         * Collator to handle un-normalized text properly, producing the
-         * same results as if the text were normalized. If
-         * NO_DECOMPOSITION is set, it is the user's responsibility to
-         * insure that all text is already in the appropriate form before
-         * a comparison or before getting a CollationKey. Adjusting
-         * decomposition mode allows the user to select between faster and
-         * more complete collation behavior.
-         *
-         * <p>Since a great many of the world's languages do not require
-         * text normalization, most locales set NO_DECOMPOSITION as the
-         * default decomposition mode.
-         *
-         * <p>The base class method does nothing. Subclasses should override it if appropriate.
-         *
-         * <p>See getDecomposition for a description of decomposition
-         * mode.
-         *
-         * @param decomposition the new decomposition mode
-         * @see #getDecomposition
-         * @see #NO_DECOMPOSITION
-         * @see #CANONICAL_DECOMPOSITION
-         * @throws IllegalArgumentException If the given value is not a valid
-         *            decomposition mode.
-         * @stable ICU 2.8
-         */
-        //public void setDecomposition(int decomposition)
-        //{
-        //    CheckNotFrozen();
-        //}
-
+        /// <summary>
+        /// Gets or sets the decomposition mode of this <see cref="Collator"/>.  Setting this
+        /// decomposition attribute with <see cref="NormalizationMode.CanonicalDecomposition"/> allows the
+        /// <see cref="Collator"/> to handle un-normalized text properly, producing the
+        /// same results as if the text were normalized. If
+        /// <see cref="NormalizationMode.NoDecomposition"/> is set, it is the user's responsibility to
+        /// insure that all text is already in the appropriate form before
+        /// a comparison or before getting a <see cref="CollationKey"/>. Adjusting
+        /// decomposition mode allows the user to select between faster and
+        /// more complete collation behavior. The decomposition mode
+        /// determines how Unicode composed characters are handled.
+        /// See the <see cref="Collator"/> description for more details.
+        /// <para/>
+        /// Since a great many of the world's languages do not require
+        /// text normalization, most locales set <see cref="NormalizationMode.NoDecomposition"/> as the
+        /// default decomposition mode.
+        /// <para/>
+        /// The base class setter does nothing. The base class method always returns <see cref="NormalizationMode.NoDecomposition"/>
+        /// Subclasses should override it if appropriate.
+        /// </summary>
+        /// <seealso cref="NormalizationMode.NoDecomposition"/>
+        /// <seealso cref="NormalizationMode.CanonicalDecomposition"/>
+        /// <exception cref="ArgumentException">If the given value is not a valid decomposition mode.</exception>
+        /// <stable>ICU 2.8</stable>
         public virtual NormalizationMode Decomposition
         {
             get { return NormalizationMode.NoDecomposition; }
             set { CheckNotFrozen(); }
         }
 
-        /**
-         * Sets the reordering codes for this collator.
-         * Collation reordering allows scripts and some other groups of characters
-         * to be moved relative to each other. This reordering is done on top of
-         * the DUCET/CLDR standard collation order. Reordering can specify groups to be placed
-         * at the start and/or the end of the collation order. These groups are specified using
-         * UScript codes and {@link Collator.ReorderCodes} entries.
-         *
-         * <p>By default, reordering codes specified for the start of the order are placed in the
-         * order given after several special non-script blocks. These special groups of characters
-         * are space, punctuation, symbol, currency, and digit. These special groups are represented with
-         * {@link Collator.ReorderCodes} entries. Script groups can be intermingled with
-         * these special non-script groups if those special groups are explicitly specified in the reordering.
-         *
-         * <p>The special code {@link Collator.ReorderCodes#OTHERS OTHERS}
-         * stands for any script that is not explicitly
-         * mentioned in the list of reordering codes given. Anything that is after OTHERS
-         * will go at the very end of the reordering in the order given.
-         *
-         * <p>The special reorder code {@link Collator.ReorderCodes#DEFAULT DEFAULT}
-         * will reset the reordering for this collator
-         * to the default for this collator. The default reordering may be the DUCET/CLDR order or may be a reordering that
-         * was specified when this collator was created from resource data or from rules. The
-         * DEFAULT code <b>must</b> be the sole code supplied when it is used.
-         * If not, then an {@link IllegalArgumentException} will be thrown.
-         *
-         * <p>The special reorder code {@link Collator.ReorderCodes#NONE NONE}
-         * will remove any reordering for this collator.
-         * The result of setting no reordering will be to have the DUCET/CLDR ordering used. The
-         * NONE code <b>must</b> be the sole code supplied when it is used.
-         *
-         * @param order the reordering codes to apply to this collator; if this is null or an empty array
-         * then this clears any existing reordering
-         * @see #getReorderCodes
-         * @see #getEquivalentReorderCodes
-         * @see Collator.ReorderCodes
-         * @see UScript
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Sets the reordering codes for this collator.
+        /// Collation reordering allows scripts and some other groups of characters
+        /// to be moved relative to each other. This reordering is done on top of
+        /// the DUCET/CLDR standard collation order. Reordering can specify groups to be placed
+        /// at the start and/or the end of the collation order. These groups are specified using
+        /// <see cref="UScript"/> codes and <see cref="ReorderCodes"/> entries.
+        /// <para/>
+        /// By default, reordering codes specified for the start of the order are placed in the
+        /// order given after several special non-script blocks. These special groups of characters
+        /// are space, punctuation, symbol, currency, and digit. These special groups are represented with
+        /// <see cref="ReorderCodes"/> entries. Script groups can be intermingled with
+        /// these special non-script groups if those special groups are explicitly specified in the reordering.
+        /// <para/>
+        /// The special code <see cref="ReorderCodes.Others"/>
+        /// stands for any script that is not explicitly
+        /// mentioned in the list of reordering codes given. Anything that is after <see cref="ReorderCodes.Others"/>
+        /// will go at the very end of the reordering in the order given.
+        /// <para/>
+        /// The special reorder code <see cref="ReorderCodes.Default"/>
+        /// will reset the reordering for this collator
+        /// to the default for this collator. The default reordering may be the DUCET/CLDR order or may be a reordering that
+        /// was specified when this collator was created from resource data or from rules. The
+        /// DEFAULT code <b>must</b> be the sole code supplied when it is used.
+        /// If not, then an <see cref="ArgumentException"/> will be thrown.
+        /// <para/>
+        /// The special reorder code <see cref="ReorderCodes.None"/>
+        /// will remove any reordering for this collator.
+        /// The result of setting no reordering will be to have the DUCET/CLDR ordering used. The
+        /// <see cref="ReorderCodes.None"/> code <b>must</b> be the sole code supplied when it is used.
+        /// </summary>
+        /// <param name="order">
+        /// The reordering codes to apply to this collator; if this is null or an empty array
+        /// then this clears any existing reordering.
+        /// </param>
+        /// <seealso cref="GetReorderCodes"/>
+        /// <seealso cref="GetEquivalentReorderCodes(int)"/>
+        /// <seealso cref="ReorderCodes"/>
+        /// <seealso cref="UScript"/>
+        /// <stable>ICU 4.8</stable>
         public virtual void SetReorderCodes(params int[] order)
         {
             throw new NotSupportedException("Needs to be implemented by the subclass.");
         }
 
-        //public virtual ReorderCodes ReorderCodes
-        //{
-        //    get { return default(ReorderCodes); }
-        //    set { throw new NotSupportedException("Needs to be implemented by the subclass."); }
-        //}
-
         // public getters --------------------------------------------------------
 
-        /**
-         * Returns the Collator for the current default locale.
-         * The default locale is determined by java.util.Locale.getDefault().
-         * @return the Collator for the default locale (for example, en_US) if it
-         *         is created successfully. Otherwise if there is no Collator
-         *         associated with the current locale, the root collator
-         *         will be returned.
-         * @see java.util.Locale#getDefault()
-         * @see #getInstance(Locale)
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Returns the <see cref="Collator"/> for the current default locale.
+        /// The default locale is determined by <see cref="CultureInfo.CurrentCulture"/>.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Collator"/> for the default locale (for example, en-US) if it
+        /// is created successfully. Otherwise if there is no <see cref="Collator"/>
+        /// associated with the current locale, the root collator
+        /// will be returned.
+        /// </returns>
+        /// <seealso cref="CultureInfo.CurrentCulture"/>
+        /// <seealso cref="GetInstance(CultureInfo)"/>
+        /// <stable>ICU 2.8</stable>
         public static Collator GetInstance()
         {
             return GetInstance(ULocale.GetDefault());
         }
 
-        /**
-         * Clones the collator.
-         * @stable ICU 2.6
-         * @return a clone of this collator.
-         */
+        /// <summary>
+        /// Clones the collator.
+        /// </summary>
+        /// <returns>A clone of this collator.</returns>
+        /// <stable>ICU 2.6</stable>
         public virtual object Clone()
         {
             return base.MemberwiseClone();
@@ -454,83 +645,86 @@ namespace ICU4N.Text
 
         // begin registry stuff
 
-        /**
-         * A factory used with registerFactory to register multiple collators and provide
-         * display names for them.  If standard locale display names are sufficient,
-         * Collator instances may be registered instead.
-         * <p><b>Note:</b> as of ICU4J 3.2, the default API for CollatorFactory uses
-         * ULocale instead of Locale.  Instead of overriding createCollator(Locale),
-         * new implementations should override createCollator(ULocale).  Note that
-         * one of these two methods <b>MUST</b> be overridden or else an infinite
-         * loop will occur.
-         * @stable ICU 2.6
-         */
-        public abstract class CollatorFactory
+        /// <summary>
+        /// A factory used with <see cref="RegisterFactory(CollatorFactory)"/> to register multiple collators and provide
+        /// display names for them.  If standard locale display names are sufficient,
+        /// Collator instances may be registered instead.
+        /// <para/>
+        /// <b>Note:</b> as of ICU4N 3.2, the default API for <see cref="CollatorFactory"/> uses
+        /// <see cref="ULocale"/> instead of <see cref="CultureInfo"/>.  Instead of overriding <see cref="CreateCollator(CultureInfo)"/>,
+        /// new implementations should override <see cref="CreateCollator(ULocale)"/>.  Note that
+        /// one of these two methods <b>MUST</b> be overridden or else an infinite
+        /// loop will occur.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
+        public abstract class CollatorFactory // ICU4N TODO: API - De-nest?
         {
-            /**
-             * Return true if this factory will be visible.  Default is true.
-             * If not visible, the locales supported by this factory will not
-             * be listed by getAvailableLocales.
-             *
-             * @return true if this factory is visible
-             * @stable ICU 2.6
-             */
+            /// <summary>
+            /// Return true if this factory will be visible.  Default is true.
+            /// If not visible, the locales supported by this factory will not
+            /// be listed by <see cref="GetAvailableLocales"/>.
+            /// <para/>
+            /// true if this factory is visible.
+            /// </summary>
+            /// <stable>ICU 2.6</stable>
             public virtual bool Visible
             {
                 get { return true; }
             }
 
-            /**
-             * Return an instance of the appropriate collator.  If the locale
-             * is not supported, return null.
-             * <b>Note:</b> as of ICU4J 3.2, implementations should override
-             * this method instead of createCollator(Locale).
-             * @param loc the locale for which this collator is to be created.
-             * @return the newly created collator.
-             * @stable ICU 3.2
-             */
+            /// <summary>
+            /// Return an instance of the appropriate collator.  If the locale
+            /// is not supported, return null.
+            /// <para/>
+            /// <b>Note:</b> as of ICU4N 3.2, implementations should override
+            /// this method instead of <see cref="CreateCollator(CultureInfo)"/>.
+            /// </summary>
+            /// <param name="loc">the locale for which this collator is to be created.</param>
+            /// <returns>the newly created collator.</returns>
+            /// <stable>ICU 3.2</stable>
             public virtual Collator CreateCollator(ULocale loc)
             {
                 return CreateCollator(loc.ToLocale());
             }
 
-            /**
-             * Return an instance of the appropriate collator.  If the locale
-             * is not supported, return null.
-             * <p><b>Note:</b> as of ICU4J 3.2, implementations should override
-             * createCollator(ULocale) instead of this method, and inherit this
-             * method's implementation.  This method is no longer abstract
-             * and instead delegates to createCollator(ULocale).
-             * @param loc the locale for which this collator is to be created.
-             * @return the newly created collator.
-             * @stable ICU 2.6
-             */
+            /// <summary>
+            /// Return an instance of the appropriate collator.  If the locale
+            /// is not supported, return null.
+            /// <para/>
+            /// <b>Note:</b> as of ICU4J 3.2, implementations should override
+            /// createCollator(ULocale) instead of this method, and inherit this
+            /// method's implementation.  This method is no longer abstract
+            /// and instead delegates to createCollator(ULocale).
+            /// </summary>
+            /// <param name="loc">the locale for which this collator is to be created.</param>
+            /// <returns>the newly created collator.</returns>
+            /// <stable>ICU 2.6</stable>
             public virtual Collator CreateCollator(CultureInfo loc)
             {
                 return CreateCollator(ULocale.ForLocale(loc));
             }
 
-            /**
-             * Return the name of the collator for the objectLocale, localized for the displayLocale.
-             * If objectLocale is not visible or not defined by the factory, return null.
-             * @param objectLocale the locale identifying the collator
-             * @param displayLocale the locale for which the display name of the collator should be localized
-             * @return the display name
-             * @stable ICU 2.6
-             */
+            /// <summary>
+            /// Return the name of the collator for the <paramref name="objectLocale"/>, localized for the <paramref name="displayLocale"/>.
+            /// If <paramref name="objectLocale"/> is not visible or not defined by the factory, return null.
+            /// </summary>
+            /// <param name="objectLocale">the locale identifying the collator</param>
+            /// <param name="displayLocale">the locale for which the display name of the collator should be localized</param>
+            /// <returns>the display name</returns>
+            /// <stable>ICU 2.6</stable>
             public virtual string GetDisplayName(CultureInfo objectLocale, CultureInfo displayLocale)
             {
                 return Collator.GetDisplayName(ULocale.ForLocale(objectLocale), ULocale.ForLocale(displayLocale));
             }
 
-            /**
-             * Return the name of the collator for the objectLocale, localized for the displayLocale.
-             * If objectLocale is not visible or not defined by the factory, return null.
-             * @param objectLocale the locale identifying the collator
-             * @param displayLocale the locale for which the display name of the collator should be localized
-             * @return the display name
-             * @stable ICU 3.2
-             */
+            /// <summary>
+            /// Return the name of the collator for the <paramref name="objectLocale"/>, localized for the <paramref name="displayLocale"/>.
+            /// If <paramref name="objectLocale"/> is not visible or not defined by the factory, return null.
+            /// </summary>
+            /// <param name="objectLocale">the locale identifying the collator</param>
+            /// <param name="displayLocale">the locale for which the display name of the collator should be localized</param>
+            /// <returns>the display name</returns>
+            /// <stable>ICU 3.2</stable>
             public virtual string GetDisplayName(ULocale objectLocale, ULocale displayLocale)
             {
                 if (Visible)
@@ -545,19 +739,18 @@ namespace ICU4N.Text
                 return null;
             }
 
-            /**
-             * Return an unmodifiable collection of the locale names directly
-             * supported by this factory.
-             *
-             * @return the set of supported locale IDs.
-             * @stable ICU 2.6
-             */
-            public abstract ICollection<string> GetSupportedLocaleIDs(); // ICU4N TODO: API - property ?
+            /// <summary>
+            /// Return an unmodifiable collection of the locale names directly
+            /// supported by this factory.
+            /// </summary>
+            /// <returns>the set of supported locale IDs.</returns>
+            /// <stable>ICU 2.6</stable>
+            public abstract ICollection<string> GetSupportedLocaleIDs(); // ICU4N TODO: API - see if it is possible to return IReadOnlyCollection<T> here
 
-            /**
-             * Empty default constructor.
-             * @stable ICU 2.6
-             */
+            /// <summary>
+            /// Empty default constructor.
+            /// </summary>
+            /// <stable>ICU 2.6</stable>
             protected CollatorFactory()
             {
             }
@@ -568,7 +761,7 @@ namespace ICU4N.Text
             internal abstract Collator GetInstance(ULocale l);
             internal abstract object RegisterInstance(Collator c, ULocale l);
             internal abstract object RegisterFactory(CollatorFactory f);
-            internal abstract bool Unregister(Object k);
+            internal abstract bool Unregister(object k);
             internal abstract CultureInfo[] GetAvailableLocales(); // TODO remove
             internal abstract ULocale[] GetAvailableULocales();
             internal abstract string GetDisplayName(ULocale ol, ULocale dl);
@@ -608,10 +801,10 @@ namespace ICU4N.Text
             return shim;
         }
 
-        /**
-         * Simpler/faster methods for ASCII than ones based on Unicode data.
-         * TODO: There should be code like this somewhere already??
-         */
+        /// <summary>
+        /// Simpler/faster methods for ASCII than ones based on Unicode data.
+        /// TODO: There should be code like this somewhere already??
+        /// </summary>
         private sealed class ASCII
         {
             internal static bool EqualIgnoreCase(string left, string right) // ICU4N specific - changed params from ICharSequence to string
@@ -671,14 +864,17 @@ namespace ICU4N.Text
             // Avoid introducing synonyms/aliases.
         }
 
-        /**
-         * Sets collation attributes according to locale keywords. See
-         * http://www.unicode.org/reports/tr35/tr35-collation.html#Collation_Settings
-         *
-         * Using "alias" keywords and values where defined:
-         * http://www.unicode.org/reports/tr35/tr35.html#Old_Locale_Extension_Syntax
-         * http://unicode.org/repos/cldr/trunk/common/bcp47/collation.xml
-         */
+        /// <summary>
+        /// Sets collation attributes according to locale keywords. See
+        /// http://www.unicode.org/reports/tr35/tr35-collation.html#Collation_Settings
+        /// <para/>
+        /// Using "alias" keywords and values where defined:
+        /// http://www.unicode.org/reports/tr35/tr35.html#Old_Locale_Extension_Syntax
+        /// http://unicode.org/repos/cldr/trunk/common/bcp47/collation.xml
+        /// </summary>
+        /// <param name="loc"></param>
+        /// <param name="coll"></param>
+        /// <param name="rbc"></param>
         private static void SetAttributesFromKeywords(ULocale loc, Collator coll, RuleBasedCollator rbc)
         {
             // Check for collation keywords that were already deprecated
@@ -832,27 +1028,28 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@icu} Returns the Collator for the desired locale.
-         *
-         * <p>For some languages, multiple collation types are available;
-         * for example, "de@collation=phonebook".
-         * Starting with ICU 54, collation attributes can be specified via locale keywords as well,
-         * in the old locale extension syntax ("el@colCaseFirst=upper")
-         * or in language tag syntax ("el-u-kf-upper").
-         * See <a href="http://userguide.icu-project.org/collation/api">User Guide: Collation API</a>.
-         *
-         * @param locale the desired locale.
-         * @return Collator for the desired locale if it is created successfully.
-         *         Otherwise if there is no Collator
-         *         associated with the current locale, the root collator will
-         *         be returned.
-         * @see java.util.Locale
-         * @see java.util.ResourceBundle
-         * @see #getInstance(Locale)
-         * @see #getInstance()
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Returns the <see cref="Collator"/> for the desired locale.
+        /// <para/>
+        /// For some languages, multiple collation types are available;
+        /// for example, "de@collation=phonebook".
+        /// Starting with ICU 54, collation attributes can be specified via locale keywords as well,
+        /// in the old locale extension syntax ("el@colCaseFirst=upper")
+        /// or in language tag syntax ("el-u-kf-upper").
+        /// See <a href="http://userguide.icu-project.org/collation/api">User Guide: Collation API</a>.
+        /// </summary>
+        /// <param name="locale">the desired locale.</param>
+        /// <returns>
+        /// <see cref="Collator"/> for the desired locale if it is created successfully.
+        /// Otherwise if there is no Collator
+        /// associated with the current locale, the root collator will
+        /// be returned.
+        /// </returns>
+        /// <seealso cref="CultureInfo"/>
+        /// <seealso cref="ResourceBundle"/>
+        /// <seealso cref="GetInstance(CultureInfo)"/>
+        /// <seealso cref="GetInstance()"/>
+        /// <stable>ICU 3.0</stable>
         public static Collator GetInstance(ULocale locale)
         {
             // fetching from service cache is faster than instantiation
@@ -869,74 +1066,71 @@ namespace ICU4N.Text
             return coll;
         }
 
-        /**
-         * Returns the Collator for the desired locale.
-         *
-         * <p>For some languages, multiple collation types are available;
-         * for example, "de-u-co-phonebk".
-         * Starting with ICU 54, collation attributes can be specified via locale keywords as well,
-         * in the old locale extension syntax ("el@colCaseFirst=upper", only with {@link ULocale})
-         * or in language tag syntax ("el-u-kf-upper").
-         * See <a href="http://userguide.icu-project.org/collation/api">User Guide: Collation API</a>.
-         *
-         * @param locale the desired locale.
-         * @return Collator for the desired locale if it is created successfully.
-         *         Otherwise if there is no Collator
-         *         associated with the current locale, the root collator will
-         *         be returned.
-         * @see java.util.Locale
-         * @see java.util.ResourceBundle
-         * @see #getInstance(ULocale)
-         * @see #getInstance()
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Returns the <see cref="Collator"/> for the desired locale.
+        /// <para/>
+        /// For some languages, multiple collation types are available;
+        /// for example, "de-u-co-phonebk".
+        /// Starting with ICU 54, collation attributes can be specified via locale keywords as well,
+        /// in the old locale extension syntax ("el@colCaseFirst=upper", only with <see cref="ULocale"/>)
+        /// or in language tag syntax ("el-u-kf-upper").
+        /// See <a href="http://userguide.icu-project.org/collation/api">User Guide: Collation API</a>.
+        /// </summary>
+        /// <param name="locale">the desired locale.</param>
+        /// <returns>
+        /// <see cref="Collator"/> for the desired locale if it is created successfully.
+        /// Otherwise if there is no <see cref="Collator"/>
+        /// associated with the current locale, the root collator will
+        /// be returned.
+        /// </returns>
+        /// <seealso cref="CultureInfo"/>
+        /// <seealso cref="ResourceBundle"/>
+        /// <seealso cref="GetInstance(CultureInfo)"/>
+        /// <seealso cref="GetInstance()"/>
+        /// <stable>ICU 2.8</stable>
         public static Collator GetInstance(CultureInfo locale)
         {
             return GetInstance(ULocale.ForLocale(locale));
         }
 
-        /**
-         * {@icu} Registers a collator as the default collator for the provided locale.  The
-         * collator should not be modified after it is registered.
-         *
-         * <p>Because ICU may choose to cache Collator objects internally, this must
-         * be called at application startup, prior to any calls to
-         * Collator.getInstance to avoid undefined behavior.
-         *
-         * @param collator the collator to register
-         * @param locale the locale for which this is the default collator
-         * @return an object that can be used to unregister the registered collator.
-         *
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// <icu/> Registers a collator as the default collator for the provided locale.  The
+        /// collator should not be modified after it is registered.
+        /// <para/>
+        /// Because ICU may choose to cache Collator objects internally, this must
+        /// be called at application startup, prior to any calls to
+        /// <see cref="Collator.GetInstance()"/> to avoid undefined behavior.
+        /// </summary>
+        /// <param name="collator">the collator to register</param>
+        /// <param name="locale">the locale for which this is the default collator</param>
+        /// <returns>an object that can be used to unregister the registered collator.</returns>
+        /// <stable>ICU 3.2</stable>
         public static object RegisterInstance(Collator collator, ULocale locale)
         {
             return GetShim().RegisterInstance(collator, locale);
         }
 
-        /**
-         * {@icu} Registers a collator factory.
-         *
-         * <p>Because ICU may choose to cache Collator objects internally, this must
-         * be called at application startup, prior to any calls to
-         * Collator.getInstance to avoid undefined behavior.
-         *
-         * @param factory the factory to register
-         * @return an object that can be used to unregister the registered factory.
-         *
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// <icu/> Registers a collator factory.
+        /// <para/>
+        /// Because ICU may choose to cache Collator objects internally, this must
+        /// be called at application startup, prior to any calls to
+        /// <see cref="Collator.GetInstance()"/> to avoid undefined behavior.
+        /// </summary>
+        /// <param name="factory">the factory to register</param>
+        /// <returns>an object that can be used to unregister the registered factory.</returns>
+        /// <stable>ICU 2.6</stable>
         public static object RegisterFactory(CollatorFactory factory)
         {
             return GetShim().RegisterFactory(factory);
         }
 
-        /**
-         * {@icu} Unregisters a collator previously registered using registerInstance.
-         * @param registryKey the object previously returned by registerInstance.
-         * @return true if the collator was successfully unregistered.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// <icu/> Unregisters a collator previously registered using <see cref="RegisterInstance(Collator, ULocale)"/>.
+        /// </summary>
+        /// <param name="registryKey">the object previously returned by <see cref="RegisterInstance(Collator, ULocale)"/>.</param>
+        /// <returns>true if the collator was successfully unregistered.</returns>
+        /// <stable>ICU 2.6</stable>
         public static bool Unregister(object registryKey)
         {
             if (shim == null)
@@ -946,15 +1140,17 @@ namespace ICU4N.Text
             return shim.Unregister(registryKey);
         }
 
-        /**
-         * Returns the set of locales, as Locale objects, for which collators
-         * are installed.  Note that Locale objects do not support RFC 3066.
-         * @return the list of locales in which collators are installed.
-         * This list includes any that have been registered, in addition to
-         * those that are installed with ICU4J.
-         * @stable ICU 2.4
-         */
-        public static CultureInfo[] GetAvailableLocales()
+        /// <summary>
+        /// Returns the set of locales, as <see cref="CultureInfo"/> objects, for which collators
+        /// are installed.  Note that <see cref="CultureInfo"/> objects do not support RFC 3066.
+        /// </summary>
+        /// <returns>
+        /// the list of locales in which collators are installed.
+        /// This list includes any that have been registered, in addition to
+        /// those that are installed with ICU4N.
+        /// </returns>
+        /// <stable>ICU 2.4</stable>
+        public static CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetAvailableCultures()
         {
             // TODO make this wrap getAvailableULocales later
             if (shim == null)
@@ -965,14 +1161,16 @@ namespace ICU4N.Text
             return shim.GetAvailableLocales();
         }
 
-        /**
-         * {@icu} Returns the set of locales, as ULocale objects, for which collators
-         * are installed.  ULocale objects support RFC 3066.
-         * @return the list of locales in which collators are installed.
-         * This list includes any that have been registered, in addition to
-         * those that are installed with ICU4J.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Returns the set of locales, as <see cref="ULocale"/> objects, for which collators
+        /// are installed.  <see cref="ULocale"/> objects support RFC 3066.
+        /// </summary>
+        /// <returns>
+        /// the list of locales in which collators are installed.
+        /// This list includes any that have been registered, in addition to
+        /// those that are installed with ICU4N.
+        /// </returns>
+        /// <stable>ICU 3.0</stable>
         public static ULocale[] GetAvailableULocales()
         {
             if (shim == null)
@@ -983,47 +1181,46 @@ namespace ICU4N.Text
             return shim.GetAvailableULocales();
         }
 
-        /**
-         * The list of keywords for this service.  This must be kept in sync with
-         * the resource data.
-         * @since ICU 3.0
-         */
+        /// <summary>
+        /// The list of keywords for this service.  This must be kept in sync with
+        /// the resource data.
+        /// </summary>
+        /// <since>ICU 3.0</since>
         private static readonly string[] KEYWORDS = { "collation" };
 
-        /**
-         * The resource name for this service.  Note that this is not the same as
-         * the keyword for this service.
-         * @since ICU 3.0
-         */
+        /// <summary>
+        /// The resource name for this service.  Note that this is not the same as
+        /// the keyword for this service.
+        /// </summary>
+        /// <since>ICU 3.0</since>
         private static readonly string RESOURCE = "collations";
 
-        /**
-         * The resource bundle base name for this service.
-         * *since ICU 3.0
-         */
-
+        /// <summary>
+        /// The resource bundle base name for this service.
+        /// </summary>
+        /// <since>ICU 3.0</since>
         private static readonly string BASE = ICUData.ICU_COLLATION_BASE_NAME;
 
-        /**
-         * {@icu} Returns an array of all possible keywords that are relevant to
-         * collation. At this point, the only recognized keyword for this
-         * service is "collation".
-         * @return an array of valid collation keywords.
-         * @see #getKeywordValues
-         * @stable ICU 3.0
-         */
-        public static IList<string> Keywords // ICU4N specific - changed to IList, since returning Arrays from properties is not recommended by MSDN
+        /// <summary>
+        /// <icu/> Returns a list of all possible keywords that are relevant to
+        /// collation. At this point, the only recognized keyword for this
+        /// service is "collation".
+        /// </summary>
+        /// <seealso cref="GetKeywordValues(string)"/>
+        /// <stable>ICU 3.0</stable>
+        public static IList<string> Keywords // ICU4N TODO: Change this back to a method GetKeywords() that returns array - it enumerates the value before returning. // ICU4N specific - changed to IList, since returning Arrays from properties is not recommended by MSDN
         {
             get { return KEYWORDS; }
         }
 
-        /**
-         * {@icu} Given a keyword, returns an array of all values for
-         * that keyword that are currently in use.
-         * @param keyword one of the keywords returned by getKeywords.
-         * @see #getKeywords
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Given a keyword, returns an array of all values for
+        /// that keyword that are currently in use.
+        /// </summary>
+        /// <param name="keyword">one of the keywords returned by <see cref="Keywords"/>.</param>
+        /// <returns></returns>
+        /// <seealso cref="Keywords"/>
+        /// <stable>ICU 3.0</stable>
         public static string[] GetKeywordValues(string keyword)
         {
             if (!keyword.Equals(KEYWORDS[0]))
@@ -1033,21 +1230,24 @@ namespace ICU4N.Text
             return ICUResourceBundle.GetKeywordValues(BASE, RESOURCE, CollationData.ICU_DATA_CLASS_LOADER);
         }
 
-        /**
-         * {@icu} Given a key and a locale, returns an array of string values in a preferred
-         * order that would make a difference. These are all and only those values where
-         * the open (creation) of the service with the locale formed from the input locale
-         * plus input keyword and that value has different behavior than creation with the
-         * input locale alone.
-         * @param key           one of the keys supported by this service.  For now, only
-         *                      "collation" is supported.
-         * @param locale        the locale
-         * @param commonlyUsed  if set to true it will return only commonly used values
-         *                      with the given locale in preferred order.  Otherwise,
-         *                      it will return all the available values for the locale.
-         * @return an array of string values for the given key and the locale.
-         * @stable ICU 4.2
-         */
+        /// <summary>
+        /// <icu/> Given a key and a locale, returns an array of string values in a preferred
+        /// order that would make a difference. These are all and only those values where
+        /// the open (creation) of the service with the locale formed from the input locale
+        /// plus input keyword and that value has different behavior than creation with the
+        /// input locale alone.
+        /// </summary>
+        /// <param name="key">
+        /// one of the keys supported by this service.  For now, only
+        /// "collation" is supported.
+        /// </param>
+        /// <param name="locale">the locale</param>
+        /// <param name="commonlyUsed">if set to true it will return only commonly used values
+        /// with the given locale in preferred order.  Otherwise,
+        /// it will return all the available values for the locale.
+        /// </param>
+        /// <returns>An array of string values for the given key and the locale.</returns>
+        /// <stable>ICU 4.2</stable>
         public static string[] GetKeywordValuesForLocale(string key, ULocale locale,
                                                                bool commonlyUsed)
         {
@@ -1100,31 +1300,30 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@icu} Returns the functionally equivalent locale for the given
-         * requested locale, with respect to given keyword, for the
-         * collation service.  If two locales return the same result, then
-         * collators instantiated for these locales will behave
-         * equivalently.  The converse is not always true; two collators
-         * may in fact be equivalent, but return different results, due to
-         * internal details.  The return result has no other meaning than
-         * that stated above, and implies nothing as to the relationship
-         * between the two locales.  This is intended for use by
-         * applications who wish to cache collators, or otherwise reuse
-         * collators when possible.  The functional equivalent may change
-         * over time.  For more information, please see the <a
-         * href="http://userguide.icu-project.org/locale#TOC-Locales-and-Services">
-         * Locales and Services</a> section of the ICU User Guide.
-         * @param keyword a particular keyword as enumerated by
-         * getKeywords.
-         * @param locID The requested locale
-         * @param isAvailable If non-null, isAvailable[0] will receive and
-         * output boolean that indicates whether the requested locale was
-         * 'available' to the collation service. If non-null, isAvailable
-         * must have length &gt;= 1.
-         * @return the locale
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Returns the functionally equivalent locale for the given
+        /// requested locale, with respect to given keyword, for the
+        /// collation service.  If two locales return the same result, then
+        /// collators instantiated for these locales will behave
+        /// equivalently.  The converse is not always true; two collators
+        /// may in fact be equivalent, but return different results, due to
+        /// internal details.  The return result has no other meaning than
+        /// that stated above, and implies nothing as to the relationship
+        /// between the two locales.  This is intended for use by
+        /// applications who wish to cache collators, or otherwise reuse
+        /// collators when possible.  The functional equivalent may change
+        /// over time.  For more information, please see the <a
+        /// href="http://userguide.icu-project.org/locale#TOC-Locales-and-Services">
+        /// Locales and Services</a> section of the ICU User Guide.
+        /// </summary>
+        /// <param name="keyword">A particular keyword as enumerated by <see cref="Keywords"/>.</param>
+        /// <param name="locID">The requested locale</param>
+        /// <param name="isAvailable">If non-null, <paramref name="isAvailable"/>[0] will receive and
+        /// output boolean that indicates whether the requested locale was
+        /// 'available' to the collation service. If non-null, <paramref name="isAvailable"/>
+        /// must have length &gt;= 1.</param>
+        /// <returns>the locale</returns>
+        /// <stable>ICU 3.0</stable>
         public static ULocale GetFunctionalEquivalent(string keyword,
                                                             ULocale locID,
                                                             bool[] isAvailable)
@@ -1133,181 +1332,140 @@ namespace ICU4N.Text
                                                              keyword, locID, isAvailable, true);
         }
 
-        /**
-         * {@icu} Returns the functionally equivalent locale for the given
-         * requested locale, with respect to given keyword, for the
-         * collation service.
-         * @param keyword a particular keyword as enumerated by
-         * getKeywords.
-         * @param locID The requested locale
-         * @return the locale
-         * @see #getFunctionalEquivalent(String,ULocale,boolean[])
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Returns the functionally equivalent locale for the given
+        /// requested locale, with respect to given keyword, for the
+        /// collation service.
+        /// </summary>
+        /// <param name="keyword">a particular keyword as enumerated by <see cref="Keywords"/>.</param>
+        /// <param name="locID">The requested locale</param>
+        /// <returns>the locale</returns>
+        /// <seealso cref="GetFunctionalEquivalent(string, ULocale, bool[])"/>
+        /// <stable>ICU 3.0</stable>
         public static ULocale GetFunctionalEquivalent(string keyword,
                                                             ULocale locID)
         {
             return GetFunctionalEquivalent(keyword, locID, null);
         }
 
-        /**
-         * {@icu} Returns the name of the collator for the objectLocale, localized for the
-         * displayLocale.
-         * @param objectLocale the locale of the collator
-         * @param displayLocale the locale for the collator's display name
-         * @return the display name
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// <icu/> Returns the name of the collator for the <paramref name="objectLocale"/>, localized for the
+        /// <paramref name="displayLocale"/>.
+        /// </summary>
+        /// <param name="objectLocale">the locale of the collator</param>
+        /// <param name="displayLocale">the locale for the collator's display name</param>
+        /// <returns>the display name</returns>
+        /// <stable>ICU 2.6</stable>
         public static string GetDisplayName(CultureInfo objectLocale, CultureInfo displayLocale)
         {
             return GetShim().GetDisplayName(ULocale.ForLocale(objectLocale),
                                             ULocale.ForLocale(displayLocale));
         }
 
-        /**
-         * {@icu} Returns the name of the collator for the objectLocale, localized for the
-         * displayLocale.
-         * @param objectLocale the locale of the collator
-         * @param displayLocale the locale for the collator's display name
-         * @return the display name
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// <icu/> Returns the name of the collator for the <paramref name="objectLocale"/>, localized for the
+        /// <paramref name="displayLocale"/>.
+        /// </summary>
+        /// <param name="objectLocale">the locale of the collator</param>
+        /// <param name="displayLocale">the locale for the collator's display name</param>
+        /// <returns>the display name</returns>
+        /// <stable>ICU 3.2</stable>
         public static string GetDisplayName(ULocale objectLocale, ULocale displayLocale)
         {
             return GetShim().GetDisplayName(objectLocale, displayLocale);
         }
 
-        /**
-         * {@icu} Returns the name of the collator for the objectLocale, localized for the
-         * default <code>DISPLAY</code> locale.
-         * @param objectLocale the locale of the collator
-         * @return the display name
-         * @see com.ibm.icu.util.ULocale.Category#DISPLAY
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// <icu/> Returns the name of the collator for the objectLocale, localized for the
+        /// default <c>DISPLAY</c> locale.
+        /// </summary>
+        /// <param name="objectLocale">the locale of the collator</param>
+        /// <returns>the display name</returns>
+        /// <seealso cref="ULocale.Category.DISPLAY"/>
+        /// <stable>ICU 2.6</stable>
         public static string GetDisplayName(CultureInfo objectLocale)
         {
             return GetShim().GetDisplayName(ULocale.ForLocale(objectLocale), ULocale.GetDefault(Category.DISPLAY));
         }
 
-        /**
-         * {@icu} Returns the name of the collator for the objectLocale, localized for the
-         * default <code>DISPLAY</code> locale.
-         * @param objectLocale the locale of the collator
-         * @return the display name
-         * @see com.ibm.icu.util.ULocale.Category#DISPLAY
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// <icu/> Returns the name of the collator for the objectLocale, localized for the
+        /// default <c>DISPLAY</c> locale.
+        /// </summary>
+        /// <param name="objectLocale">the locale of the collator</param>
+        /// <returns>the display name</returns>
+        /// <stable>ICU 3.2</stable>
         public static string GetDisplayName(ULocale objectLocale)
         {
             return GetShim().GetDisplayName(objectLocale, ULocale.GetDefault(Category.DISPLAY));
         }
 
-        ///**
-        // * Returns this Collator's strength attribute. The strength attribute
-        // * determines the minimum level of difference considered significant.
-        // * {@icunote} This can return QUATERNARY strength, which is not supported by the
-        // * JDK version.
-        // * <p>
-        // * See the Collator class description for more details.
-        // * <p>The base class method always returns {@link #TERTIARY}.
-        // * Subclasses should override it if appropriate.
-        // *
-        // * @return this Collator's current strength attribute.
-        // * @see #setStrength
-        // * @see #PRIMARY
-        // * @see #SECONDARY
-        // * @see #TERTIARY
-        // * @see #QUATERNARY
-        // * @see #IDENTICAL
-        // * @stable ICU 2.8
-        // */
-        //public int getStrength()
-        //{
-        //    return TERTIARY;
-        //}
+        // ICU4N specific - combined getStrength() and setStrength() into a property named Strength
 
-        ///**
-        // * Returns the decomposition mode of this Collator. The decomposition mode
-        // * determines how Unicode composed characters are handled.
-        // * <p>
-        // * See the Collator class description for more details.
-        // * <p>The base class method always returns {@link #NO_DECOMPOSITION}.
-        // * Subclasses should override it if appropriate.
-        // *
-        // * @return the decomposition mode
-        // * @see #setDecomposition
-        // * @see #NO_DECOMPOSITION
-        // * @see #CANONICAL_DECOMPOSITION
-        // * @stable ICU 2.8
-        // */
-        //public int getDecomposition()
-        //{
-        //    return NO_DECOMPOSITION;
-        //}
+        // ICU4N specific - combined getDecomposition() and setDecomposition() into a property named Decomposition
 
         // public other methods -------------------------------------------------
 
-        /**
-         * Compares the equality of two text Strings using
-         * this Collator's rules, strength and decomposition mode.  Convenience method.
-         * @param source the source string to be compared.
-         * @param target the target string to be compared.
-         * @return true if the strings are equal according to the collation
-         *         rules, otherwise false.
-         * @see #compare
-         * @throws NullPointerException thrown if either arguments is null.
-         * @stable ICU 2.8
-         */
-        public virtual bool Equals(string source, string target)
+        /// <summary>
+        /// Compares the equality of two text Strings using
+        /// this <see cref="Collator"/>'s rules, strength and decomposition mode.  Convenience method.
+        /// </summary>
+        /// <param name="source">the source string to be compared.</param>
+        /// <param name="target">the target string to be compared.</param>
+        /// <returns>true if the strings are equal according to the collation rules, otherwise false.</returns>
+        /// <exception cref="ArgumentNullException">thrown if either arguments is null.</exception>
+        /// <stable>ICU 2.8</stable>
+        public virtual bool Equals(string source, string target) // ICU4N TODO: Throw ArgumentNullException ?
         {
             return (Compare(source, target) == 0);
         }
 
-        /**
-         * {@icu} Returns a UnicodeSet that contains all the characters and sequences tailored
-         * in this collator.
-         * @return a pointer to a UnicodeSet object containing all the
-         *         code points and sequences that may sort differently than
-         *         in the root collator.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// <icu/> Returns a <see cref="UnicodeSet"/> that contains all the characters and sequences tailored
+        /// in this collator.
+        /// </summary>
+        /// <returns>
+        /// A pointer to a UnicodeSet object containing all the
+        /// code points and sequences that may sort differently than
+        /// in the root collator.
+        /// </returns>
+        /// <stable>ICU 2.4</stable>
         public virtual UnicodeSet GetTailoredSet()
         {
             return new UnicodeSet(0, 0x10FFFF);
         }
 
-        /**
-         * Compares the source text String to the target text String according to
-         * this Collator's rules, strength and decomposition mode.
-         * Returns an integer less than,
-         * equal to or greater than zero depending on whether the source String is
-         * less than, equal to or greater than the target String. See the Collator
-         * class description for an example of use.
-         *
-         * @param source the source String.
-         * @param target the target String.
-         * @return Returns an integer value. Value is less than zero if source is
-         *         less than target, value is zero if source and target are equal,
-         *         value is greater than zero if source is greater than target.
-         * @see CollationKey
-         * @see #getCollationKey
-         * @throws NullPointerException thrown if either argument is null.
-         * @stable ICU 2.8
-         */
-        public abstract int Compare(string source, string target);
+        /// <summary>
+        /// Compares the source text <see cref="string"/> to the target text <see cref="string"/> according to
+        /// this <see cref="Collator"/>'s rules, strength and decomposition mode.
+        /// Returns an integer less than,
+        /// equal to or greater than zero depending on whether the source String is
+        /// less than, equal to or greater than the target <see cref="string"/>. See the <see cref="Collator"/>
+        /// class description for an example of use.
+        /// </summary>
+        /// <param name="source">the source string.</param>
+        /// <param name="target">the target string.</param>
+        /// <returns>
+        /// Returns an integer value. Value is less than zero if source is
+        /// less than target, value is zero if source and target are equal,
+        /// value is greater than zero if source is greater than target.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">thrown if either argument is null.</exception>
+        /// <stable>ICU 2.8</stable>
+        public abstract int Compare(string source, string target); // ICU4N TODO: Throw ArgumentNullException ?
 
-        /**
-         * Compares the source Object to the target Object.
-         *
-         * @param source the source Object.
-         * @param target the target Object.
-         * @return Returns an integer value. Value is less than zero if source is
-         *         less than target, value is zero if source and target are equal,
-         *         value is greater than zero if source is greater than target.
-         * @throws ClassCastException thrown if either arguments cannot be cast to CharSequence.
-         * @stable ICU 4.2
-         */
+        /// <summary>
+        /// Compares the source <see cref="object"/> to the target <see cref="object"/>.
+        /// </summary>
+        /// <param name="source">the source <see cref="object"/>.</param>
+        /// <param name="target">the target <see cref="object"/>.</param>
+        /// <returns>
+        /// Returns an integer value. Value is less than zero if source is
+        /// less than target, value is zero if source and target are equal,
+        /// value is greater than zero if source is greater than target.
+        /// </returns>
+        /// <exception cref="InvalidCastException">thrown if either arguments cannot be cast to <see cref="string"/>.</exception>
+        /// <stable>ICU 4.2</stable>
         public virtual int Compare(object source, object target)
         {
             return Compare(ObjectToString(source), ObjectToString(target));
@@ -1331,203 +1489,171 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Compares two CharSequences.
-         * The base class just calls compare(left.toString(), right.toString()).
-         * Subclasses should instead implement this method and have the String API call this method.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Compares two <see cref="ICharSequence"/>s.
+        /// The base class just calls <c>Compare(left.ToString(), right.ToString())</c>.
+        /// Subclasses should instead implement this method and have the String API call this method.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <returns></returns>
         [Obsolete("This API is ICU internal only.")]
         protected virtual int DoCompare(ICharSequence left, ICharSequence right)
         {
             return Compare(left.ToString(), right.ToString());
         }
 
-        /**
-         * <p>
-         * Transforms the String into a CollationKey suitable for efficient
-         * repeated comparison.  The resulting key depends on the collator's
-         * rules, strength and decomposition mode.
-         *
-         * <p>Note that collation keys are often less efficient than simply doing comparison.
-         * For more details, see the ICU User Guide.
-         *
-         * <p>See the CollationKey class documentation for more information.
-         * @param source the string to be transformed into a CollationKey.
-         * @return the CollationKey for the given String based on this Collator's
-         *         collation rules. If the source String is null, a null
-         *         CollationKey is returned.
-         * @see CollationKey
-         * @see #compare(String, String)
-         * @see #getRawCollationKey
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Transforms the <see cref="string"/> into a <see cref="CollationKey"/> suitable for efficient
+        /// repeated comparison.  The resulting key depends on the collator's
+        /// rules, strength and decomposition mode.
+        /// <para/>
+        /// Note that collation keys are often less efficient than simply doing comparison.
+        /// For more details, see the ICU User Guide.
+        /// <para/>
+        /// See the CollationKey class documentation for more information.
+        /// </summary>
+        /// <param name="source">the <see cref="string"/> to be transformed into a <see cref="CollationKey"/>.</param>
+        /// <returns>
+        /// The <see cref="CollationKey"/> for the given <see cref="string"/> based on this <see cref="Collator"/>'s
+        /// collation rules. If the source <see cref="string"/> is null, a null
+        /// <see cref="CollationKey"/> is returned.
+        /// </returns>
+        /// <seealso cref="CollationKey"/>
+        /// <seealso cref="Compare(string, string)"/>
+        /// <seealso cref="GetRawCollationKey(string, RawCollationKey)"/>
+        /// <stable>ICU 2.8</stable>
         public abstract CollationKey GetCollationKey(string source);
 
-        /**
-         * {@icu} Returns the simpler form of a CollationKey for the String source following
-         * the rules of this Collator and stores the result into the user provided argument
-         * key.  If key has a internal byte array of length that's too small for the result,
-         * the internal byte array will be grown to the exact required size.
-         *
-         * <p>Note that collation keys are often less efficient than simply doing comparison.
-         * For more details, see the ICU User Guide.
-         *
-         * @param source the text String to be transformed into a RawCollationKey
-         * @return If key is null, a new instance of RawCollationKey will be
-         *         created and returned, otherwise the user provided key will be
-         *         returned.
-         * @see #compare(String, String)
-         * @see #getCollationKey
-         * @see RawCollationKey
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// <icu/> Returns the simpler form of a <see cref="CollationKey"/> for the String source following
+        /// the rules of this Collator and stores the result into the user provided argument
+        /// key.  If key has a internal byte array of length that's too small for the result,
+        /// the internal byte array will be grown to the exact required size.
+        /// <para/>
+        /// Note that collation keys are often less efficient than simply doing comparison.
+        /// For more details, see the ICU User Guide.
+        /// </summary>
+        /// <param name="source">the text <see cref="string"/> to be transformed into a <see cref="RawCollationKey"/></param>
+        /// <param name="key"></param>
+        /// <returns>
+        /// If key is null, a new instance of <see cref="RawCollationKey"/> will be
+        /// created and returned, otherwise the user provided key will be
+        /// returned.
+        /// </returns>
+        /// <seealso cref="Compare(string, string)"/>
+        /// <seealso cref="GetCollationKey(string)"/>
+        /// <seealso cref="RawCollationKey"/>
+        /// <stable>ICU 2.8</stable>
         public abstract RawCollationKey GetRawCollationKey(string source,
                                                            RawCollationKey key);
 
-        ///**
-        // * {@icu} Sets the variable top to the top of the specified reordering group.
-        // * The variable top determines the highest-sorting character
-        // * which is affected by the alternate handling behavior.
-        // * If that attribute is set to UCOL_NON_IGNORABLE, then the variable top has no effect.
-        // *
-        // * <p>The base class implementation throws an UnsupportedOperationException.
-        // * @param group one of Collator.ReorderCodes.SPACE, Collator.ReorderCodes.PUNCTUATION,
-        // *              Collator.ReorderCodes.SYMBOL, Collator.ReorderCodes.CURRENCY;
-        // *              or Collator.ReorderCodes.DEFAULT to restore the default max variable group
-        // * @return this
-        // * @see #getMaxVariable
-        // * @stable ICU 53
-        // */
-        //public Collator setMaxVariable(int group)
-        //{
-        //    throw new UnsupportedOperationException("Needs to be implemented by the subclass.");
-        //}
-
-        ///**
-        // * {@icu} Returns the maximum reordering group whose characters are affected by
-        // * the alternate handling behavior.
-        // *
-        // * <p>The base class implementation returns Collator.ReorderCodes.PUNCTUATION.
-        // * @return the maximum variable reordering group.
-        // * @see #setMaxVariable
-        // * @stable ICU 53
-        // */
-        //public int getMaxVariable()
-        //{
-        //    return Collator.ReorderCodes.PUNCTUATION;
-        //}
-
+        /// <summary>
+        /// <icu/> Gets or sets the variable top to the top of the specified reordering group.
+        /// The variable top determines the highest-sorting character
+        /// which is affected by the alternate handling behavior.
+        /// If that attribute is set to UCOL_NON_IGNORABLE, then the variable top has no effect.
+        /// <para/>
+        /// The base class setter throws a <see cref="NotSupportedException"/> and the getter
+        /// returns <see cref="ReorderCodes.Punctuation"/>.
+        /// <para/>
+        /// Valid values are one of <see cref="ReorderCodes.Space"/>, <see cref="ReorderCodes.Punctuation"/>,
+        /// <see cref="ReorderCodes.Symbol"/>, <see cref="ReorderCodes.Currency"/>; 
+        /// or <see cref="ReorderCodes.Default"/> to restore the default max variable group.
+        /// </summary>
+        /// <stable>ICU 53</stable>
         public virtual int MaxVariable
         {
             get { return ReorderCodes.Punctuation; }
             set { throw new NotSupportedException("Needs to be implemented by the subclass."); }
         }
 
-        /**
-         * {@icu} Sets the variable top to the primary weight of the specified string.
-         *
-         * <p>Beginning with ICU 53, the variable top is pinned to
-         * the top of one of the supported reordering groups,
-         * and it must not be beyond the last of those groups.
-         * See {@link #setMaxVariable(int)}.
-         *
-         * @param varTop one or more (if contraction) characters to which the
-         *               variable top should be set
-         * @return variable top primary weight
-         * @exception IllegalArgumentException
-         *                is thrown if varTop argument is not a valid variable top element. A variable top element is
-         *                invalid when
-         *                <ul>
-         *                <li>it is a contraction that does not exist in the Collation order
-         *                <li>the variable top is beyond
-         *                    the last reordering group supported by setMaxVariable()
-         *                <li>when the varTop argument is null or zero in length.
-         *                </ul>
-         * @see #getVariableTop
-         * @see RuleBasedCollator#setAlternateHandlingShifted
-         * @deprecated ICU 53 Call {@link #setMaxVariable(int)} instead.
-         */
+        /// <summary>
+        /// <icu/> Sets the variable top to the primary weight of the specified string.
+        /// <para/>
+        /// Beginning with ICU 53, the variable top is pinned to
+        /// the top of one of the supported reordering groups,
+        /// and it must not be beyond the last of those groups.
+        /// See the setter of <see cref="MaxVariable"/>.
+        /// </summary>
+        /// <param name="varTop">
+        /// one or more (if contraction) characters to which the
+        /// variable top should be set
+        /// </param>
+        /// <returns>variable top primary weight</returns>
+        /// <exception cref="ArgumentException">
+        /// is thrown if varTop argument is not a valid variable top element. A variable top element is
+        /// invalid when
+        /// <list type="bullet">
+        ///     <item><description>it is a contraction that does not exist in the Collation order</description></item>
+        ///     <item><description>the variable top is beyond the last reordering group supported by <see cref="MaxVariable"/></description></item>
+        ///     <item><description>when the <paramref name="varTop"/> argument is null or zero in length.</description></item>
+        /// </list>
+        /// </exception>
+        /// <seealso cref="RuleBasedCollator.IsAlternateHandlingShifted"/>
         [Obsolete("ICU 53 Set MaxVariable instead.")]
         public abstract int SetVariableTop(string varTop);
 
-        ///**
-        // * {@icu} Gets the variable top value of a Collator.
-        // *
-        // * @return the variable top primary weight
-        // * @see #getMaxVariable
-        // * @stable ICU 2.6
-        // */
-        //public abstract int getVariableTop();
+        // ICU4N specific - combined SetVariableTop(int) and GetVariableTop() into property VariableTop
 
-
-
-        //    /**
-        //     * {@icu} Sets the variable top to the specified primary weight.
-        //     *
-        //     * <p>Beginning with ICU 53, the variable top is pinned to
-        //     * the top of one of the supported reordering groups,
-        //     * and it must not be beyond the last of those groups.
-        //     * See {@link #setMaxVariable(int)}.
-        //     *
-        //     * @param varTop primary weight, as returned by setVariableTop or getVariableTop
-        //     * @see #getVariableTop
-        //     * @see #setVariableTop(String)
-        //     * @deprecated ICU 53 Call setMaxVariable() instead.
-        //     */
-        //    @Deprecated
-        //public abstract void setVariableTop(int varTop);
-
+        /// <summary>
+        /// Gets or sets the variable top to the specified primary weight.
+        /// <para/>
+        /// Beginning with ICU 53, the variable top is pinned to
+        /// the top of one of the supported reordering groups,
+        /// and it must not be beyond the last of those groups.
+        /// See the setter for <see cref="MaxVariable"/>.
+        /// </summary>
+        /// <seealso cref="SetVariableTop(string)"/>
+        /// <stable>ICU 2.6</stable>
         [Obsolete("ICU 53 Set MaxVariable instead.")]
         public abstract int VariableTop { get; set; }
 
-
-
-        /**
-         * {@icu} Returns the version of this collator object.
-         * @return the version object associated with this collator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// <icu/> Returns the version of this collator object.
+        /// </summary>
+        /// <returns>the version object associated with this collator</returns>
+        /// <stable>ICU 2.8</stable>
         public abstract VersionInfo GetVersion();
 
-        /**
-         * {@icu} Returns the UCA version of this collator object.
-         * @return the version object associated with this collator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// <icu/> Returns the UCA version of this collator object.
+        /// </summary>
+        /// <returns>the version object associated with this collator</returns>
+        /// <stable>ICU 2.8</stable>
         public abstract VersionInfo GetUCAVersion();
 
-        /**
-         * Retrieves the reordering codes for this collator.
-         * These reordering codes are a combination of UScript codes and ReorderCodes.
-         * @return a copy of the reordering codes for this collator;
-         * if none are set then returns an empty array
-         * @see #setReorderCodes
-         * @see #getEquivalentReorderCodes
-         * @see Collator.ReorderCodes
-         * @see UScript
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Retrieves the reordering codes for this collator.
+        /// These reordering codes are a combination of <see cref="UScript"/> codes and <see cref="ReorderCodes"/>.
+        /// </summary>
+        /// <returns>
+        /// a copy of the reordering codes for this collator;
+        /// if none are set then returns an empty array
+        /// </returns>
+        /// <seealso cref="SetReorderCodes(int[])"/>
+        /// <seealso cref="GetEquivalentReorderCodes(int)"/>
+        /// <seealso cref="ReorderCodes"/>
+        /// <seealso cref="UScript"/>
+        /// <stable>ICU 4.8</stable>
         public virtual int[] GetReorderCodes()
         {
             throw new NotSupportedException("Needs to be implemented by the subclass.");
         }
 
-        /**
-         * Retrieves all the reorder codes that are grouped with the given reorder code. Some reorder
-         * codes are grouped and must reorder together.
-         * Beginning with ICU 55, scripts only reorder together if they are primary-equal,
-         * for example Hiragana and Katakana.
-         *
-         * @param reorderCode The reorder code to determine equivalence for.
-         * @return the set of all reorder codes in the same group as the given reorder code.
-         * @see #setReorderCodes
-         * @see #getReorderCodes
-         * @see Collator.ReorderCodes
-         * @see UScript
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Retrieves all the reorder codes that are grouped with the given reorder code. Some reorder
+        /// codes are grouped and must reorder together.
+        /// Beginning with ICU 55, scripts only reorder together if they are primary-equal,
+        /// for example Hiragana and Katakana.
+        /// </summary>
+        /// <param name="reorderCode">The reorder code to determine equivalence for.</param>
+        /// <returns>The set of all reorder codes in the same group as the given reorder code.</returns>
+        /// <seealso cref="SetReorderCodes(int[])"/>
+        /// <seealso cref="GetReorderCodes(int)"/>
+        /// <seealso cref="ReorderCodes"/>
+        /// <seealso cref="UScript"/>
+        /// <stable>ICU 4.8</stable>
         public static int[] GetEquivalentReorderCodes(int reorderCode)
         {
             CollationData baseData = CollationRoot.Data;
@@ -1537,42 +1663,42 @@ namespace ICU4N.Text
 
         // Freezable interface implementation -------------------------------------------------
 
-        /**
-         * Determines whether the object has been frozen or not.
-         *
-         * <p>An unfrozen Collator is mutable and not thread-safe.
-         * A frozen Collator is immutable and thread-safe.
-         *
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Determines whether the object has been frozen or not.
+        /// <para/>
+        /// An unfrozen <see cref="Collator"/> is mutable and not thread-safe.
+        /// A frozen <see cref="Collator"/> is immutable and thread-safe.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public virtual bool IsFrozen
         {
             get { return false; }
         }
 
-        /**
-         * Freezes the collator.
-         * @return the collator itself.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Freezes the collator.
+        /// </summary>
+        /// <returns>The collator itself.</returns>
+        /// <stable>ICU 4.8</stable>
         public virtual Collator Freeze()
         {
             throw new NotSupportedException("Needs to be implemented by the subclass.");
         }
 
-        /**
-         * Provides for the clone operation. Any clone is initially unfrozen.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Provides for the clone operation. Any clone is initially unfrozen.
+        /// </summary>
+        /// <returns></returns>
+        /// <stable>ICU 4.8</stable>
         public virtual Collator CloneAsThawed()
         {
             throw new NotSupportedException("Needs to be implemented by the subclass.");
         }
 
-        /**
-         * Empty default constructor to make javadocs happy
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Empty default constructor
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
         protected Collator()
         {
         }
@@ -1581,58 +1707,56 @@ namespace ICU4N.Text
 
         // -------- BEGIN ULocale boilerplate --------
 
-        /**
-         * {@icu} Returns the locale that was used to create this object, or null.
-         * This may may differ from the locale requested at the time of
-         * this object's creation.  For example, if an object is created
-         * for locale <tt>en_US_CALIFORNIA</tt>, the actual data may be
-         * drawn from <tt>en</tt> (the <i>actual</i> locale), and
-         * <tt>en_US</tt> may be the most specific locale that exists (the
-         * <i>valid</i> locale).
-         *
-         * <p>Note: This method will be implemented in ICU 3.0; ICU 2.8
-         * contains a partial preview implementation.  The * <i>actual</i>
-         * locale is returned correctly, but the <i>valid</i> locale is
-         * not, in most cases.
-         *
-         * <p>The base class method always returns {@link ULocale#ROOT}.
-         * Subclasses should override it if appropriate.
-         *
-         * @param type type of information requested, either {@link
-         * com.ibm.icu.util.ULocale#VALID_LOCALE} or {@link
-         * com.ibm.icu.util.ULocale#ACTUAL_LOCALE}.
-         * @return the information specified by <i>type</i>, or null if
-         * this object was not constructed from locale data.
-         * @see com.ibm.icu.util.ULocale
-         * @see com.ibm.icu.util.ULocale#VALID_LOCALE
-         * @see com.ibm.icu.util.ULocale#ACTUAL_LOCALE
-         * @draft ICU 2.8 (retain)
-         * @provisional This API might change or be removed in a future release.
-         */
+
+        /// <summary>
+        /// <icu/> Returns the locale that was used to create this object, or null.
+        /// This may may differ from the locale requested at the time of
+        /// this object's creation.  For example, if an object is created
+        /// for locale <c>en_US_CALIFORNIA</c>, the actual data may be
+        /// drawn from <c>en</c> (the <i>actual</i> locale), and
+        /// <c>en_US</c> may be the most specific locale that exists (the
+        /// <i>valid</i> locale).
+        /// <para/>
+        /// Note: This method will be implemented in ICU 3.0; ICU 2.8
+        /// contains a partial preview implementation.  The * <i>actual</i>
+        /// locale is returned correctly, but the <i>valid</i> locale is
+        /// not, in most cases.
+        /// <para/>
+        /// The base class method always returns <see cref="ULocale.ROOT"/>
+        /// Subclasses should override it if appropriate.
+        /// </summary>
+        /// <param name="type">type of information requested, either 
+        /// <see cref="ULocale.VALID_LOCALE"/> or <see cref="ULocale.ACTUAL_LOCALE"/>.</param>
+        /// <returns>
+        /// the information specified by <i>type</i>, or null if
+        /// this object was not constructed from locale data.
+        /// </returns>
+        /// <seealso cref="ULocale"/>
+        /// <seealso cref="ULocale.VALID_LOCALE"/>
+        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
+        /// <draft>ICU 2.8 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public virtual ULocale GetLocale(ULocale.Type type)
         {
             return ULocale.ROOT;
         }
 
-        /**
-         * Set information about the locales that were used to create this
-         * object.  If the object was not constructed from locale data,
-         * both arguments should be set to null.  Otherwise, neither
-         * should be null.  The actual locale must be at the same level or
-         * less specific than the valid locale.  This method is intended
-         * for use by factories or other entities that create objects of
-         * this class.
-         *
-         * <p>The base class method does nothing. Subclasses should override it if appropriate.
-         *
-         * @param valid the most specific locale containing any resource
-         * data, or null
-         * @param actual the locale containing data used to construct this
-         * object, or null
-         * @see com.ibm.icu.util.ULocale
-         * @see com.ibm.icu.util.ULocale#VALID_LOCALE
-         * @see com.ibm.icu.util.ULocale#ACTUAL_LOCALE
-         */
+        /// <summary>
+        /// Set information about the locales that were used to create this
+        /// object.  If the object was not constructed from locale data,
+        /// both arguments should be set to null.  Otherwise, neither
+        /// should be null.  The actual locale must be at the same level or
+        /// less specific than the valid locale.  This method is intended
+        /// for use by factories or other entities that create objects of
+        /// this class.
+        /// <para/>
+        /// The base class method does nothing. Subclasses should override it if appropriate.
+        /// </summary>
+        /// <param name="valid">the most specific locale containing any resource data, or null</param>
+        /// <param name="actual">the locale containing data used to construct this object, or null</param>
+        /// <seealso cref="ULocale"/>
+        /// <seealso cref="ULocale.VALID_LOCALE"/>
+        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
         internal virtual void SetLocale(ULocale valid, ULocale actual) { }
 
         // -------- END ULocale boilerplate --------

@@ -85,8 +85,8 @@ namespace ICU4N.Dev.Test.Collate
             }
 
             int i = 0;
-            myCollation.Strength = (Collator.TERTIARY);
-            myCollation.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            myCollation.Strength = (Collator.Tertiary);
+            myCollation.Decomposition = (Collator.CanonicalDecomposition);
             for (i = 0; i < 12; i++)
             {
                 doTest(testSourceCases[i], testTargetCases[i], results[i][1]);
@@ -110,8 +110,8 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
             int i;
-            myCollation.Strength = (Collator.PRIMARY);
-            myCollation.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            myCollation.Strength = (Collator.Primary);
+            myCollation.Decomposition = (Collator.CanonicalDecomposition);
             for (i = 0; i < 12; i++)
             {
                 doTest(testSourceCases[i], testTargetCases[i], results[i][0]);

@@ -36,15 +36,15 @@ namespace ICU4N.Dev.Test.Collate
                 myCollator.Freeze();
 
                 myPrimaryCollator = myCollator.CloneAsThawed();
-                myPrimaryCollator.Strength = (Collator.PRIMARY);
+                myPrimaryCollator.Strength = (Collator.Primary);
                 myPrimaryCollator.Freeze();
 
                 mySecondaryCollator = myPrimaryCollator.CloneAsThawed();
-                mySecondaryCollator.Strength = (Collator.SECONDARY);
+                mySecondaryCollator.Strength = (Collator.Secondary);
                 mySecondaryCollator.Freeze();
 
                 myTertiaryCollator = mySecondaryCollator.CloneAsThawed();
-                myTertiaryCollator.Strength = (Collator.TERTIARY);
+                myTertiaryCollator.Strength = (Collator.Tertiary);
                 myTertiaryCollator.Freeze();
             }
             catch (Exception e)
@@ -129,15 +129,15 @@ namespace ICU4N.Dev.Test.Collate
                 myCollator.Freeze();
 
                 myPrimaryCollator = myCollator.CloneAsThawed();
-                myPrimaryCollator.Strength = (Collator.PRIMARY);
+                myPrimaryCollator.Strength = (Collator.Primary);
                 myPrimaryCollator.Freeze();
 
                 mySecondaryCollator = myPrimaryCollator.CloneAsThawed();
-                mySecondaryCollator.Strength = (Collator.SECONDARY);
+                mySecondaryCollator.Strength = (Collator.Secondary);
                 mySecondaryCollator.Freeze();
 
                 myTertiaryCollator = mySecondaryCollator.CloneAsThawed();
-                myTertiaryCollator.Strength = (Collator.TERTIARY);
+                myTertiaryCollator.Strength = (Collator.Tertiary);
                 myTertiaryCollator.Freeze();
             }
             catch (Exception e)

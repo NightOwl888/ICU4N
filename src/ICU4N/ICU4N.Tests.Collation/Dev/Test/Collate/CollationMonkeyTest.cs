@@ -48,21 +48,21 @@ namespace ICU4N.Dev.Test.Collate
 
             CollationKey collationKey1, collationKey2;
 
-            myCollator.Strength = (Collator.TERTIARY);
+            myCollator.Strength = (Collator.Tertiary);
             collationKey1 = myCollator.GetCollationKey(subs);
             collationKey2 = myCollator.GetCollationKey(subt);
             int result = collationKey1.CompareTo(collationKey2);  // Tertiary
             int revResult = collationKey2.CompareTo(collationKey1);  // Tertiary
             report(subs, subt, result, revResult);
 
-            myCollator.Strength = (Collator.SECONDARY);
+            myCollator.Strength = (Collator.Secondary);
             collationKey1 = myCollator.GetCollationKey(subs);
             collationKey2 = myCollator.GetCollationKey(subt);
             result = collationKey1.CompareTo(collationKey2);  // Secondary
             revResult = collationKey2.CompareTo(collationKey1);   // Secondary
             report(subs, subt, result, revResult);
 
-            myCollator.Strength = (Collator.PRIMARY);
+            myCollator.Strength = (Collator.Primary);
             collationKey1 = myCollator.GetCollationKey(subs);
             collationKey2 = myCollator.GetCollationKey(subt);
             result = collationKey1.CompareTo(collationKey2);  // Primary
@@ -131,17 +131,17 @@ namespace ICU4N.Dev.Test.Collate
             String subs = source.Substring(Math.Min(s, slen), Math.Min(s + slen, source.Length) - Math.Min(s, slen)); // ICU4N: Corrected 2nd parameter
             String subt = source.Substring(Math.Min(t, tlen), Math.Min(t + tlen, source.Length) - Math.Min(t, tlen)); // ICU4N: Corrected 2nd parameter
 
-            myCollator.Strength = (Collator.TERTIARY);
+            myCollator.Strength = (Collator.Tertiary);
             int result = myCollator.Compare(subs, subt);  // Tertiary
             int revResult = myCollator.Compare(subt, subs);  // Tertiary
             report(subs, subt, result, revResult);
 
-            myCollator.Strength = (Collator.SECONDARY);
+            myCollator.Strength = (Collator.Secondary);
             result = myCollator.Compare(subs, subt);  // Secondary
             revResult = myCollator.Compare(subt, subs);  // Secondary
             report(subs, subt, result, revResult);
 
-            myCollator.Strength = (Collator.PRIMARY);
+            myCollator.Strength = (Collator.Primary);
             result = myCollator.Compare(subs, subt);  // Primary
             revResult = myCollator.Compare(subt, subs);  // Primary
             report(subs, subt, result, revResult);

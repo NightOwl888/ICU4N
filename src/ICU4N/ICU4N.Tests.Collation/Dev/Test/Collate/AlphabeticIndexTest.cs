@@ -223,7 +223,7 @@ namespace ICU4N.Dev.Test.Collate
 
             AlphabeticIndex<object> alphabeticIndex = new AlphabeticIndex<object>(new CultureInfo("en") /* Locale.ENGLISH */);
             RuleBasedCollator collator = alphabeticIndex.Collator;
-            collator.Strength = (Collator.IDENTICAL);
+            collator.Strength = (Collator.Identical);
             ICollection<String> firsts = alphabeticIndex.GetFirstCharactersInScripts();
             // Verify that each script is represented exactly once.
             // Exclude pseudo-scripts like Common (no letters).
@@ -1149,14 +1149,14 @@ namespace ICU4N.Dev.Test.Collate
         {
             // Ticket #9472
             RuleBasedCollator coll = (RuleBasedCollator)Collator.GetInstance(new ULocale("da"));
-            coll.Strength = (Collator.IDENTICAL);
+            coll.Strength = (Collator.Identical);
             coll.Freeze();
             // The AlphabeticIndex constructor used to throw an exception
             // because it cloned the collator (which preserves frozenness)
             // and set the clone's strength to PRIMARY.
             AlphabeticIndex<object> index = new AlphabeticIndex<object>(coll);
             assertEquals("same strength as input Collator",
-                    Collator.IDENTICAL, index.Collator.Strength);
+                    Collator.Identical, index.Collator.Strength);
         }
 
         [Test]

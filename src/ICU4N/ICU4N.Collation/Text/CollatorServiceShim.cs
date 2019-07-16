@@ -72,7 +72,7 @@ namespace ICU4N.Text
                 return @delegate.GetDisplayName(objectLocale, displayLocale);
             }
 
-            protected override ICollection<string> GetSupportedIDs() // ICU4N specific - return type changed from ISet<string> to ICollection<string>
+            protected override ICollection<string> GetSupportedIDs() // ICU4N specific - return type changed from ISet<string> to IReadOnlyCollection<string>
             {
                 return @delegate.GetSupportedLocaleIDs();
             }

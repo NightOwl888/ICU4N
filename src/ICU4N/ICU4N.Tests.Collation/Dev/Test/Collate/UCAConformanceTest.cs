@@ -117,10 +117,10 @@ namespace ICU4N.Dev.Test.Collate
         {
             if (coll != null)
             {
-                coll.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+                coll.Decomposition = (Collator.CanonicalDecomposition);
                 coll.IsLowerCaseFirst = (false);
                 coll.IsCaseLevel = (false);
-                coll.Strength = (isAtLeastUCA62 ? Collator.IDENTICAL : Collator.TERTIARY);
+                coll.Strength = (isAtLeastUCA62 ? Collator.Identical : Collator.Tertiary);
                 coll.IsAlternateHandlingShifted = (false);
             }
         }
@@ -129,10 +129,10 @@ namespace ICU4N.Dev.Test.Collate
         {
             if (coll != null)
             {
-                coll.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+                coll.Decomposition = (Collator.CanonicalDecomposition);
                 coll.IsLowerCaseFirst = (false);
                 coll.IsCaseLevel = (false);
-                coll.Strength = (isAtLeastUCA62 ? Collator.IDENTICAL : Collator.QUATERNARY);
+                coll.Strength = (isAtLeastUCA62 ? Collator.Identical : Collator.Quaternary);
                 coll.IsAlternateHandlingShifted = (true);
             }
         }

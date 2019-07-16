@@ -172,7 +172,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestTertiary()
         {
             int i = 0;
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
             for (i = 0; i < 17; i++)
             {
                 DoTest(myCollation, testSourceCases[i], testTargetCases[i], results[i]);
@@ -184,7 +184,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestPrimary()
         {
             // problem in strcollinc for unfinshed contractions
-            myCollation.Strength = (Collator.PRIMARY);
+            myCollation.Strength = (Collator.Primary);
             for (int i = 17; i < 26; i++)
             {
                 DoTest(myCollation, testSourceCases[i], testTargetCases[i], results[i]);
@@ -196,7 +196,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestSecondary()
         {
             int i;
-            myCollation.Strength = (Collator.SECONDARY);
+            myCollation.Strength = (Collator.Secondary);
             for (i = 26; i < 34; i++)
             {
                 DoTest(myCollation, testSourceCases[i], testTargetCases[i], results[i]);
@@ -208,7 +208,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestExtra()
         {
             int i, j;
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
             for (i = 0; i < testCases.Length - 1; i++)
             {
                 for (j = i + 1; j < testCases.Length; j += 1)
@@ -222,7 +222,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestIdentical()
         {
             int i;
-            myCollation.Strength = (Collator.IDENTICAL);
+            myCollation.Strength = (Collator.Identical);
             for (i = 34; i < 37; i++)
             {
                 DoTest(myCollation, testSourceCases[i], testTargetCases[i], results[i]);
@@ -254,7 +254,7 @@ namespace ICU4N.Dev.Test.Collate
             }
 
             // To compare them with just primary differences
-            coll.Strength = (Collator.PRIMARY);
+            coll.Strength = (Collator.Primary);
             result = coll.Compare(source, target);
             // result is 0
             if (result != 0)
@@ -309,7 +309,7 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
 
-            myCollation.Strength = (Collator.TERTIARY);
+            myCollation.Strength = (Collator.Tertiary);
             int count = 0;
             // logln("start of english collation supplementary characters test\n");
             while (count < 2)
@@ -392,8 +392,8 @@ namespace ICU4N.Dev.Test.Collate
                 Errln("Fail to create RuleBasedCollator with rules:" + rule);
                 return;
             }
-            enColl.Strength = (Collator.PRIMARY);
-            myColl.Strength = (Collator.PRIMARY);
+            enColl.Strength = (Collator.Primary);
+            myColl.Strength = (Collator.Primary);
 
             ((RuleBasedCollator)enColl).IsAlternateHandlingShifted = (true);
             ((RuleBasedCollator)myColl).IsAlternateHandlingShifted = (true);
@@ -456,7 +456,7 @@ namespace ICU4N.Dev.Test.Collate
                 Errln("ERROR: Failed to create the collator for ENGLISH");
                 return;
             }
-            myCollator.Decomposition = (Collator.CANONICAL_DECOMPOSITION);
+            myCollator.Decomposition = (Collator.CanonicalDecomposition);
             for (i = 0; ; i++)
             {
                 // Get the next funny character to be tested, and set up the
