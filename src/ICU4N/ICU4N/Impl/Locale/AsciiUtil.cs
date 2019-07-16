@@ -37,7 +37,7 @@ namespace ICU4N.Impl.Locale
             {
                 return 0;
             }
-            return AsciiUtil.ToLowerString(s1).CompareToOrdinal(AsciiUtil.ToLowerString(s2));
+            return AsciiUtil.ToLower(s1).CompareToOrdinal(AsciiUtil.ToLower(s2));
         }
 
 
@@ -59,7 +59,7 @@ namespace ICU4N.Impl.Locale
             return c;
         }
 
-        public static string ToLowerString(string s) // ICU4N TODO: API: Rename to ToLower
+        public static string ToLower(string s) // ICU4N specific - renamed from ToLowerString()
         {
             int idx = 0;
             for (; idx < s.Length; idx++)
@@ -82,7 +82,7 @@ namespace ICU4N.Impl.Locale
             return buf.ToString();
         }
 
-        public static string ToUpperString(string s) // ICU4N TODO: API: Rename to ToUpper
+        public static string ToUpper(string s) // ICU4N specific - renamed from ToUpperString()
         {
             int idx = 0;
             for (; idx < s.Length; idx++)
@@ -105,7 +105,7 @@ namespace ICU4N.Impl.Locale
             return buf.ToString();
         }
 
-        public static string ToTitleString(string s) // ICU4N TODO: API: Rename to ToTitle
+        public static string ToTitle(string s) // ICU4N specific - renamed from ToTitleString()
         {
             if (s.Length == 0)
             {
@@ -145,7 +145,7 @@ namespace ICU4N.Impl.Locale
             return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
         }
 
-        public static bool IsAlphaString(string s) // ICU4N TODO: API: Rename to IsAlpha
+        public static bool IsAlpha(string s) // ICU4N specific - renamed from ToAlphaString()
         {
             bool b = true;
             for (int i = 0; i < s.Length; i++)
@@ -164,7 +164,7 @@ namespace ICU4N.Impl.Locale
             return (c >= '0' && c <= '9');
         }
 
-        public static bool IsNumericString(string s) // ICU4N TODO: API: Rename to IsNumeric
+        public static bool IsNumeric(string s) // ICU4N specific - renamed from IsNumericString()
         {
             bool b = true;
             for (int i = 0; i < s.Length; i++)
@@ -183,7 +183,7 @@ namespace ICU4N.Impl.Locale
             return IsAlpha(c) || IsNumeric(c);
         }
 
-        public static bool IsAlphaNumericString(string s) // ICU4N TODO: API: Rename to IsAlphaNumeric
+        public static bool IsAlphaNumeric(string s) // ICU4N specific - renamed from IsAlphaNumericString()
         {
             bool b = true;
             for (int i = 0; i < s.Length; i++)
@@ -205,7 +205,7 @@ namespace ICU4N.Impl.Locale
             public CaseInsensitiveKey(string key)
             {
                 _key = key;
-                _hash = AsciiUtil.ToLowerString(key).GetHashCode();
+                _hash = AsciiUtil.ToLower(key).GetHashCode();
             }
 
             public override bool Equals(Object o)

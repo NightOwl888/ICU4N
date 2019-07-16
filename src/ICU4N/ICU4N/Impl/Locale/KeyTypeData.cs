@@ -38,7 +38,7 @@ namespace ICU4N.Impl.Locale
             internal abstract bool IsWellFormed(string value); // doesn't test validity, just whether it is well formed.
             internal string Canonicalize(string value)
             {
-                return AsciiUtil.ToLowerString(value);
+                return AsciiUtil.ToLower(value);
             }
         }
 
@@ -132,7 +132,7 @@ namespace ICU4N.Impl.Locale
 
         public static string ToBcpKey(string key)
         {
-            key = AsciiUtil.ToLowerString(key);
+            key = AsciiUtil.ToLower(key);
             KeyData keyData = KEYMAP.Get(key);
             if (keyData != null)
             {
@@ -143,7 +143,7 @@ namespace ICU4N.Impl.Locale
 
         public static string ToLegacyKey(string key)
         {
-            key = AsciiUtil.ToLowerString(key);
+            key = AsciiUtil.ToLower(key);
             KeyData keyData = KEYMAP.Get(key);
             if (keyData != null)
             {
@@ -158,8 +158,8 @@ namespace ICU4N.Impl.Locale
             isKnownKey = false;
             isSpecialType = false;
 
-            key = AsciiUtil.ToLowerString(key);
-            type = AsciiUtil.ToLowerString(type);
+            key = AsciiUtil.ToLower(key);
+            type = AsciiUtil.ToLower(type);
 
             KeyData keyData = KEYMAP.Get(key);
             if (keyData != null)
@@ -192,8 +192,8 @@ namespace ICU4N.Impl.Locale
             isKnownKey = false;
             isSpecialType = false;
 
-            key = AsciiUtil.ToLowerString(key);
-            type = AsciiUtil.ToLowerString(type);
+            key = AsciiUtil.ToLower(key);
+            type = AsciiUtil.ToLower(type);
 
             KeyData keyData = KEYMAP.Get(key);
             if (keyData != null)
@@ -411,10 +411,10 @@ namespace ICU4N.Impl.Locale
                                 // type under the same key. So we use a single
                                 // map for lookup.
                                 Type t = new Type(legacyTypeId, bcpTypeId);
-                                typeDataMap[AsciiUtil.ToLowerString(legacyTypeId)] = t;
+                                typeDataMap[AsciiUtil.ToLower(legacyTypeId)] = t;
                                 if (!hasSameType)
                                 {
-                                    typeDataMap[AsciiUtil.ToLowerString(bcpTypeId)] = t;
+                                    typeDataMap[AsciiUtil.ToLower(bcpTypeId)] = t;
                                 }
 
                                 // Also put aliases in the map
@@ -425,7 +425,7 @@ namespace ICU4N.Impl.Locale
                                     {
                                         foreach (string alias in typeAliasSet)
                                         {
-                                            typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
+                                            typeDataMap[AsciiUtil.ToLower(alias)] = t;
                                         }
                                     }
                                 }
@@ -436,7 +436,7 @@ namespace ICU4N.Impl.Locale
                                     {
                                         foreach (string alias in bcpTypeAliasSet)
                                         {
-                                            typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
+                                            typeDataMap[AsciiUtil.ToLower(alias)] = t;
                                         }
                                     }
                                 }
@@ -445,10 +445,10 @@ namespace ICU4N.Impl.Locale
 
                     KeyData keyData = new KeyData(legacyKeyId, bcpKeyId, typeDataMap, specialTypeSet);
 
-                    KEYMAP[AsciiUtil.ToLowerString(legacyKeyId)] = keyData;
+                    KEYMAP[AsciiUtil.ToLower(legacyKeyId)] = keyData;
                     if (!hasSameKey)
                     {
-                        KEYMAP[AsciiUtil.ToLowerString(bcpKeyId)] = keyData;
+                        KEYMAP[AsciiUtil.ToLower(bcpKeyId)] = keyData;
                     }
                 }
             
@@ -699,10 +699,10 @@ namespace ICU4N.Impl.Locale
                     // type under the same key. So we use a single
                     // map for lookup.
                     Type t = new Type(legacyTypeId, bcpTypeId);
-                    typeDataMap[AsciiUtil.ToLowerString(legacyTypeId)] = t;
+                    typeDataMap[AsciiUtil.ToLower(legacyTypeId)] = t;
                     if (!hasSameType)
                     {
-                        typeDataMap[AsciiUtil.ToLowerString(bcpTypeId)] = t;
+                        typeDataMap[AsciiUtil.ToLower(bcpTypeId)] = t;
                     }
 
                     // Also put aliases in the index
@@ -711,7 +711,7 @@ namespace ICU4N.Impl.Locale
                     {
                         foreach (string alias in typeAliasSet)
                         {
-                            typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
+                            typeDataMap[AsciiUtil.ToLower(alias)] = t;
                         }
                     }
                     ISet<string> bcpTypeAliasSet;
@@ -719,7 +719,7 @@ namespace ICU4N.Impl.Locale
                     {
                         foreach (string alias in bcpTypeAliasSet)
                         {
-                            typeDataMap[AsciiUtil.ToLowerString(alias)] = t;
+                            typeDataMap[AsciiUtil.ToLower(alias)] = t;
                         }
                     }
                 }
@@ -732,10 +732,10 @@ namespace ICU4N.Impl.Locale
 
                 KeyData keyData = new KeyData(legacyKeyId, bcpKeyId, typeDataMap, specialTypes);
 
-                KEYMAP[AsciiUtil.ToLowerString(legacyKeyId)] = keyData;
+                KEYMAP[AsciiUtil.ToLower(legacyKeyId)] = keyData;
                 if (!hasSameKey)
                 {
-                    KEYMAP[AsciiUtil.ToLowerString(bcpKeyId)] = keyData;
+                    KEYMAP[AsciiUtil.ToLower(bcpKeyId)] = keyData;
                 }
             }
         }

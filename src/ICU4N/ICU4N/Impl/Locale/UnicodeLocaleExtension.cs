@@ -96,19 +96,19 @@ namespace ICU4N.Impl.Locale
         public static bool IsAttribute(string s)
         {
             // 3*8alphanum
-            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumericString(s);
+            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
         public static bool IsKey(string s)
         {
             // 2alphanum
-            return (s.Length == 2) && AsciiUtil.IsAlphaNumericString(s);
+            return (s.Length == 2) && AsciiUtil.IsAlphaNumeric(s);
         }
 
         public static bool IsTypeSubtag(string s)
         {
             // 3*8alphanum
-            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumericString(s);
+            return (s.Length >= 3) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
         public static bool IsType(string s)

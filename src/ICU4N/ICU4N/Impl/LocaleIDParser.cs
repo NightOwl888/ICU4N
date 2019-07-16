@@ -670,7 +670,7 @@ namespace ICU4N.Impl
             {
             }
             --index;
-            return AsciiUtil.ToLowerString(new string(id, start, index - start).Trim());
+            return AsciiUtil.ToLower(new string(id, start, index - start).Trim());
         }
 
         private string GetValue()
@@ -793,7 +793,7 @@ namespace ICU4N.Impl
         public string GetKeywordValue(string keywordName)
         {
             var m = GetKeywordMap();
-            return !m.Any() ? null : m.Get(AsciiUtil.ToLowerString(keywordName.Trim()));
+            return !m.Any() ? null : m.Get(AsciiUtil.ToLower(keywordName.Trim()));
         }
 
         /// <summary>
@@ -833,7 +833,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                keywordName = AsciiUtil.ToLowerString(keywordName.Trim());
+                keywordName = AsciiUtil.ToLower(keywordName.Trim());
                 if (keywordName.Length == 0)
                 {
                     throw new ArgumentException("keyword must not be empty");

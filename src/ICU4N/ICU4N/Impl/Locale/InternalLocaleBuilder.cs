@@ -793,7 +793,7 @@ namespace ICU4N.Impl.Locale
 
             public override int GetHashCode()
             {
-                return AsciiUtil.ToLowerString(_s).GetHashCode();
+                return AsciiUtil.ToLower(_s).GetHashCode();
             }
 
             public override bool Equals(object obj)

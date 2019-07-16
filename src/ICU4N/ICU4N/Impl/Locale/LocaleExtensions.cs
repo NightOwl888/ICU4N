@@ -77,7 +77,7 @@ namespace ICU4N.Impl.Locale
                         }
                     }
 
-                    Extension e = new Extension(key, AsciiUtil.ToLowerString(value));
+                    Extension e = new Extension(key, AsciiUtil.ToLower(value));
                     _map[key] = e;
                 }
             }
@@ -92,7 +92,7 @@ namespace ICU4N.Impl.Locale
                     uaset = new SortedSet<string>(StringComparer.Ordinal);
                     foreach (CaseInsensitiveString cis in uattributes)
                     {
-                        uaset.Add(AsciiUtil.ToLowerString(cis.Value));
+                        uaset.Add(AsciiUtil.ToLower(cis.Value));
                     }
                 }
 
@@ -101,8 +101,8 @@ namespace ICU4N.Impl.Locale
                     ukmap = new SortedDictionary<string, string>();
                     foreach (var kwd in ukeywords)
                     {
-                        string key = AsciiUtil.ToLowerString(kwd.Key.Value);
-                        string type = AsciiUtil.ToLowerString(kwd.Value);
+                        string key = AsciiUtil.ToLower(kwd.Key.Value);
+                        string type = AsciiUtil.ToLower(kwd.Value);
                         ukmap[key] = type;
                     }
                 }
@@ -175,7 +175,7 @@ namespace ICU4N.Impl.Locale
                 return null;
             }
             Debug.Assert(ext is UnicodeLocaleExtension);
-            return ((UnicodeLocaleExtension)ext).GetUnicodeLocaleType(AsciiUtil.ToLowerString(unicodeLocaleKey));
+            return ((UnicodeLocaleExtension)ext).GetUnicodeLocaleType(AsciiUtil.ToLower(unicodeLocaleKey));
         }
 
         public virtual bool IsEmpty

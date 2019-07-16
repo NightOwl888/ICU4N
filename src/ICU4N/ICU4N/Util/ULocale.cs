@@ -994,7 +994,7 @@ namespace ICU4N.Util
             string region = locale.GetKeywordValue("rg");
             if (region != null && region.Length == 6)
             {
-                string regionUpper = AsciiUtil.ToUpperString(region);
+                string regionUpper = AsciiUtil.ToUpper(region);
                 if (regionUpper.EndsWith("ZZZZ", StringComparison.Ordinal))
                 {
                     return regionUpper.Substring(0, 2 - 0); // ICU4N: Checked 2nd parameter
@@ -1928,7 +1928,7 @@ namespace ICU4N.Util
         private static string GetDisplayKeywordValueInternal(ULocale locale, string keyword,
                 ULocale displayLocale)
         {
-            keyword = AsciiUtil.ToLowerString(keyword.Trim());
+            keyword = AsciiUtil.ToLower(keyword.Trim());
             string value = locale.GetKeywordValue(keyword);
             return LocaleDisplayNames.GetInstance(displayLocale).KeyValueDisplayName(keyword, value);
         }
@@ -3789,7 +3789,7 @@ namespace ICU4N.Util
             if (bcpKey == null && UnicodeLocaleExtension.IsKey(keyword))
             {
                 // unknown keyword, but syntax is fine..
-                bcpKey = AsciiUtil.ToLowerString(keyword);
+                bcpKey = AsciiUtil.ToLower(keyword);
             }
             return bcpKey;
         }
@@ -3828,7 +3828,7 @@ namespace ICU4N.Util
             if (bcpType == null && UnicodeLocaleExtension.IsType(value))
             {
                 // unknown keyword, but syntax is fine..
-                bcpType = AsciiUtil.ToLowerString(value);
+                bcpType = AsciiUtil.ToLower(value);
             }
             return bcpType;
         }
@@ -3863,7 +3863,7 @@ namespace ICU4N.Util
                 //  a valid key consist from [0-9a-zA-Z], no symbols.
                 if (legacyKeyCheck.IsMatch(keyword))
                 {
-                    legacyKey = AsciiUtil.ToLowerString(keyword);
+                    legacyKey = AsciiUtil.ToLower(keyword);
                 }
             }
             return legacyKey;
@@ -3912,7 +3912,7 @@ namespace ICU4N.Util
                 //  '-' '_' '/' in the middle.
                 if (legacyTypeCheck.IsMatch(value))
                 {
-                    legacyType = AsciiUtil.ToLowerString(value);
+                    legacyType = AsciiUtil.ToLower(value);
                 }
             }
             return legacyType;

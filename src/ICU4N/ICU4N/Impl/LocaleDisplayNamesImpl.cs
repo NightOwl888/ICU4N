@@ -598,7 +598,7 @@ namespace ICU4N.Impl
 
             if (key.Equals("currency"))
             {
-                keyValueName = currencyDisplayInfo.GetName(AsciiUtil.ToUpperString(value));
+                keyValueName = currencyDisplayInfo.GetName(AsciiUtil.ToUpper(value));
                 if (keyValueName == null)
                 {
                     keyValueName = value;

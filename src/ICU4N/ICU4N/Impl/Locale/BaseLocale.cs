@@ -24,15 +24,15 @@ namespace ICU4N.Impl.Locale
         {
             if (language != null)
             {
-                _language = AsciiUtil.ToLowerString(language).Intern();
+                _language = AsciiUtil.ToLower(language).Intern();
             }
             if (script != null)
             {
-                _script = AsciiUtil.ToTitleString(script).Intern();
+                _script = AsciiUtil.ToTitle(script).Intern();
             }
             if (region != null)
             {
-                _region = AsciiUtil.ToUpperString(region).Intern();
+                _region = AsciiUtil.ToUpper(region).Intern();
             }
             if (variant != null)
             {
@@ -43,7 +43,7 @@ namespace ICU4N.Impl.Locale
                 }
                 else
                 {
-                    _variant = AsciiUtil.ToUpperString(variant).Intern();
+                    _variant = AsciiUtil.ToUpper(variant).Intern();
                 }
             }
         }
@@ -308,9 +308,9 @@ namespace ICU4N.Impl.Locale
 
             public static Key Normalize(Key key)
             {
-                string lang = AsciiUtil.ToLowerString(key._lang).Intern();
-                string scrt = AsciiUtil.ToTitleString(key._scrt).Intern();
-                string regn = AsciiUtil.ToUpperString(key._regn).Intern();
+                string lang = AsciiUtil.ToLower(key._lang).Intern();
+                string scrt = AsciiUtil.ToTitle(key._scrt).Intern();
+                string regn = AsciiUtil.ToUpper(key._regn).Intern();
                 string vart;
                 if (JDKIMPL)
                 {
@@ -319,7 +319,7 @@ namespace ICU4N.Impl.Locale
                 }
                 else
                 {
-                    vart = AsciiUtil.ToUpperString(key._vart).Intern();
+                    vart = AsciiUtil.ToUpper(key._vart).Intern();
                 }
                 return new Key(lang, scrt, regn, vart);
             }

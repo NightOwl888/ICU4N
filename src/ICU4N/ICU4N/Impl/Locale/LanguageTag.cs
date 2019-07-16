@@ -554,7 +554,7 @@ namespace ICU4N.Impl.Locale
                         }
                         if (!JDKIMPL)
                         {
-                            prvv = AsciiUtil.ToLowerString(prvv);
+                            prvv = AsciiUtil.ToLower(prvv);
                         }
                         buf.Append(prvv);
                         varitr.MoveNext();
@@ -672,28 +672,28 @@ namespace ICU4N.Impl.Locale
             //                                     ;   extended language subtags
             //               / 4ALPHA              ; or reserved for future use
             //               / 5*8ALPHA            ; or registered language subtag
-            return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlphaString(s);
+            return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlpha(s);
         }
 
         public static bool IsExtlang(string s)
         {
             // extlang       = 3ALPHA              ; selected ISO 639 codes
             //                 *2("-" 3ALPHA)      ; permanently reserved
-            return (s.Length == 3) && AsciiUtil.IsAlphaString(s);
+            return (s.Length == 3) && AsciiUtil.IsAlpha(s);
         }
 
         public static bool IsScript(string s)
         {
             // script        = 4ALPHA              ; ISO 15924 code
-            return (s.Length == 4) && AsciiUtil.IsAlphaString(s);
+            return (s.Length == 4) && AsciiUtil.IsAlpha(s);
         }
 
         public static bool IsRegion(string s)
         {
             // region        = 2ALPHA              ; ISO 3166-1 code
             //               / 3DIGIT              ; UN M.49 code
-            return ((s.Length == 2) && AsciiUtil.IsAlphaString(s))
-                    || ((s.Length == 3) && AsciiUtil.IsNumericString(s));
+            return ((s.Length == 2) && AsciiUtil.IsAlpha(s))
+                    || ((s.Length == 3) && AsciiUtil.IsNumeric(s));
         }
 
         public static bool IsVariant(string s)
@@ -703,7 +703,7 @@ namespace ICU4N.Impl.Locale
             int len = s.Length;
             if (len >= 5 && len <= 8)
             {
-                return AsciiUtil.IsAlphaNumericString(s);
+                return AsciiUtil.IsAlphaNumeric(s);
             }
             if (len == 4)
             {
@@ -724,7 +724,7 @@ namespace ICU4N.Impl.Locale
             //               / %x79-7A             ; y - z
 
             return (s.Length == 1)
-                    && AsciiUtil.IsAlphaString(s)
+                    && AsciiUtil.IsAlpha(s)
                     && !AsciiUtil.CaseIgnoreMatch(PRIVATEUSE, s);
         }
 
@@ -736,7 +736,7 @@ namespace ICU4N.Impl.Locale
         public static bool IsExtensionSubtag(string s)
         {
             // extension     = singleton 1*("-" (2*8alphanum))
-            return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlphaNumericString(s);
+            return (s.Length >= 2) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
         public static bool IsPrivateusePrefix(string s)
@@ -754,7 +754,7 @@ namespace ICU4N.Impl.Locale
         public static bool IsPrivateuseSubtag(string s)
         {
             // privateuse    = "x" 1*("-" (1*8alphanum))
-            return (s.Length >= 1) && (s.Length <= 8) && AsciiUtil.IsAlphaNumericString(s);
+            return (s.Length >= 1) && (s.Length <= 8) && AsciiUtil.IsAlphaNumeric(s);
         }
 
         //
@@ -763,52 +763,52 @@ namespace ICU4N.Impl.Locale
 
         public static string CanonicalizeLanguage(string s)
         {
-            return AsciiUtil.ToLowerString(s);
+            return AsciiUtil.ToLower(s);
         }
 
         public static string CanonicalizeExtlang(string s)
         {
-            return AsciiUtil.ToLowerString(s);
+            return AsciiUtil.ToLower(s);
         }
 
         public static string CanonicalizeScript(string s)
         {
-            return AsciiUtil.ToTitleString(s);
+            return AsciiUtil.ToTitle(s);
         }
 
         public static string CanonicalizeRegion(string s)
         {
-            return AsciiUtil.ToUpperString(s);
+            return AsciiUtil.ToUpper(s);
         }
 
         public static string CanonicalizeVariant(string s)
         {
-            return AsciiUtil.ToLowerString(s);
+            return AsciiUtil.ToLower(s);
         }
 
         public static string CanonicalizeExtension(string s)
         {
-            return AsciiUtil.ToLowerString(s);
+            return AsciiUtil.ToLower(s);
         }
 
         public static string CanonicalizeExtensionSingleton(string s)
         {
-            return AsciiUtil.ToLowerString(s);
+            return AsciiUtil.ToLower(s);
         }
 
         public static string CanonicalizeExtensionSubtag(string s)
         {
-            return AsciiUtil.ToLowerString(s);
+            return AsciiUtil.ToLower(s);
         }
 
         public static string CanonicalizePrivateuse(string s)
         {
-            return AsciiUtil.ToLowerString(s);
+            return AsciiUtil.ToLower(s);
         }
 
         public static string CanonicalizePrivateuseSubtag(string s)
         {
-            return AsciiUtil.ToLowerString(s);
+            return AsciiUtil.ToLower(s);
         }
 
 
