@@ -582,23 +582,23 @@ namespace ICU4N.Text
 
         /// <icu/>
         /// <stable>ICU 2.4</stable>
-        public const int KIND_CHARACTER = 0; // ICU4N TODO: API - change to enum ? rename to follow .NET Conventions...?
+        internal const int KIND_CHARACTER = 0; // ICU4N specific - constant for obsolete API - changed from public to internal
 
         /// <icu/>
         /// <stable>ICU 2.4</stable>
-        public const int KIND_WORD = 1;
+        internal const int KIND_WORD = 1; // ICU4N specific - constant for obsolete API - changed from public to internal
 
         /// <icu/>
         /// <stable>ICU 2.4</stable>
-        public const int KIND_LINE = 2;
+        internal const int KIND_LINE = 2; // ICU4N specific - constant for obsolete API - changed from public to internal
 
         /// <icu/>
         /// <stable>ICU 2.4</stable>
-        public const int KIND_SENTENCE = 3;
+        internal const int KIND_SENTENCE = 3; // ICU4N specific - constant for obsolete API - changed from public to internal
 
         /// <icu/>
         /// <stable>ICU 2.4</stable>
-        public const int KIND_TITLE = 4;
+        internal const int KIND_TITLE = 4; // ICU4N specific - constant for obsolete API - changed from public to internal
 
         /// <since>ICU 2.8</since>
         private const int KIND_COUNT = 5;
@@ -915,7 +915,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public static BreakIterator GetBreakInstance(ULocale where, int kind)
+        internal static BreakIterator GetBreakInstance(ULocale where, int kind) // ICU4N specific - changed obsolete API from public to internal so we don't have to refactor kind
         {
             if (where == null)
             {
