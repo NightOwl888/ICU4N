@@ -2192,11 +2192,13 @@ namespace ICU4N.Dev.Test.Normalizers
                 //    result=s[i]. (s[j], opt[k].options);
                 if ((opt[k].options & Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I) == 0)
                 {
-                    comp.SetIgnoreCase(true, UTF16.StringComparer.FOLD_CASE_DEFAULT);
+                    comp.IgnoreCase = true;
+                    comp.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_DEFAULT;
                 }
                 else
                 {
-                    comp.SetIgnoreCase(true, UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I);
+                    comp.IgnoreCase = true;
+                    comp.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I;
                 }
 
                 result = comp.Compare(s[i], s[j]);
@@ -2258,11 +2260,13 @@ namespace ICU4N.Dev.Test.Normalizers
                             //    result=s[i]. (s[j], opt[k].options);
                             if ((opt[k].options & Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I) == 0)
                             {
-                                comp.SetIgnoreCase(true, UTF16.StringComparer.FOLD_CASE_DEFAULT);
+                                comp.IgnoreCase = true;
+                                comp.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_DEFAULT;
                             }
                             else
                             {
-                                comp.SetIgnoreCase(true, UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I);
+                                comp.IgnoreCase = true;
+                                comp.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I;
                             }
 
                             comp.CodePointCompare = (opt[k].options & Normalizer.COMPARE_CODE_POINT_ORDER) != 0;
@@ -2320,11 +2324,13 @@ namespace ICU4N.Dev.Test.Normalizers
                     {
                         if ((opt[k].options & Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I) == 0)
                         {
-                            comp.SetIgnoreCase(true, UTF16.StringComparer.FOLD_CASE_DEFAULT);
+                            comp.IgnoreCase = true;
+                            comp.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_DEFAULT;
                         }
                         else
                         {
-                            comp.SetIgnoreCase(true, UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I);
+                            comp.IgnoreCase = true;
+                            comp.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I;
                         }
 
                         comp.CodePointCompare = (opt[k].options & Normalizer.COMPARE_CODE_POINT_ORDER) != 0;

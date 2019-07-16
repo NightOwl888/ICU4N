@@ -2705,27 +2705,7 @@ namespace ICU4N.Text
 
             // ICU4N specific - SetCodePointCompare(bool) made into setter of CodePointCompare
 
-            /**
-             * Sets the Comparator to case-insensitive comparison mode if argument is true, otherwise
-             * case sensitive comparison mode if set to false.
-             *
-             * @param ignorecase True for case-insitive comparison, false for case sensitive comparison
-             * @param foldcaseoption FOLD_CASE_DEFAULT or FOLD_CASE_EXCLUDE_SPECIAL_I. This option is used only
-             *            when ignorecase is set to true. If ignorecase is false, this option is
-             *            ignored.
-             * @see #FOLD_CASE_DEFAULT
-             * @see #FOLD_CASE_EXCLUDE_SPECIAL_I
-             * @stable ICU 2.4
-             */
-            public void SetIgnoreCase(bool ignorecase, int foldcaseoption) // ICU4N TODO: API: Property ?
-            {
-                m_ignoreCase_ = ignorecase;
-                if (foldcaseoption < FOLD_CASE_DEFAULT || foldcaseoption > FOLD_CASE_EXCLUDE_SPECIAL_I)
-                {
-                    throw new ArgumentException("Invalid fold case option");
-                }
-                m_foldCase_ = foldcaseoption;
-            }
+            // ICU4N specific - Converted SetIgnoreCase(bool, int) into 2 separate property setters
 
             // public getters ----------------------------------------------------
 
@@ -2750,28 +2730,41 @@ namespace ICU4N.Text
                 }
             }
 
-            /**
-             * Checks if Comparator is in the case insensitive mode.
-             *
-             * @return true if Comparator performs case insensitive comparison, false otherwise
-             * @stable ICU 2.4
-             */
-            public bool GetIgnoreCase() // ICU4N TODO: API: Property
+            /// <summary>
+            /// Gets or sets whether <see cref="StringComparer"/> is in the case insensitive mode.
+            /// </summary>
+            /// <remarks>
+            /// <b>true</b> if <see cref="StringComparer"/> performs case insensitive comparison, <b>false</b> otherwise
+            /// </remarks>
+            /// <stable>ICU 2.4</stable>
+            public bool IgnoreCase 
             {
-                return m_ignoreCase_;
+                get { return m_ignoreCase_; }
+                set { m_ignoreCase_ = value; }
             }
 
-            /**
-             * Gets the fold case options set in Comparator to be used with case insensitive comparison.
-             *
-             * @return either FOLD_CASE_DEFAULT or FOLD_CASE_EXCLUDE_SPECIAL_I
-             * @see #FOLD_CASE_DEFAULT
-             * @see #FOLD_CASE_EXCLUDE_SPECIAL_I
-             * @stable ICU 2.4
-             */
-            public int GetIgnoreCaseOption() // ICU4N TODO: API: Property
+            /// <summary>
+            /// Gets or sets the fold case options set in <see cref="StringComparer"/> to be used with case insensitive comparison.
+            /// </summary>
+            /// <remarks>
+            /// <see cref="FOLD_CASE_DEFAULT"/> or <see cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/>. This option is used only
+            /// when ignorecase is set to true. If ignorecase is false, this option is
+            /// ignored.
+            /// </remarks>
+            /// <seealso cref="FOLD_CASE_DEFAULT"/>
+            /// <seealso cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/>
+            /// <stable>ICU 2.4</stable>
+            public int IgnoreCaseOption
             {
-                return m_foldCase_;
+                get { return m_foldCase_; }
+                set
+                {
+                    if (value < FOLD_CASE_DEFAULT || value > FOLD_CASE_EXCLUDE_SPECIAL_I)
+                    {
+                        throw new ArgumentException("Invalid fold case option");
+                    }
+                    m_foldCase_ = value;
+                }
             }
 
             // public other methods ----------------------------------------------
