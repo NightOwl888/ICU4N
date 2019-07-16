@@ -14,7 +14,7 @@
         /// A constant which indicates that there is no character at the current
         /// index.
         /// </summary>
-        public const char DONE = '\uffff'; // ICU4N TODO: API - rename to follow .NET Conventions
+        public const char Done = '\uffff';
 
 #if FEATURE_CLONEABLE
         /// <summary>
@@ -31,7 +31,7 @@
         public abstract object Clone();
 
         /// <summary>
-        /// Returns the character at the current index, or <see cref="CharacterIterator.DONE"/> if the current index is
+        /// Returns the character at the current index, or <see cref="CharacterIterator.Done"/> if the current index is
         /// past the beginning or end of the sequence.
         /// </summary>
         public abstract char Current { get; }
@@ -68,14 +68,14 @@
         /// <summary>
         /// Increments the current index and returns the character at the new index.
         /// </summary>
-        /// <returns>The character at the next index, or <see cref="CharacterIterator.DONE"/> if the next
+        /// <returns>The character at the next index, or <see cref="CharacterIterator.Done"/> if the next
         /// index would be past the end.</returns>
         public abstract char MoveNext();
 
         /// <summary>
         /// Decrements the current index and returns the character at the new index.
         /// </summary>
-        /// <returns>The character at the previous index, or <see cref="CharacterIterator.DONE"/> if the
+        /// <returns>The character at the previous index, or <see cref="CharacterIterator.Done"/> if the
         /// previous index would be past the beginning.</returns>
         public abstract char MovePrevious();
 
@@ -84,7 +84,7 @@
         /// new index.
         /// </summary>
         /// <param name="location">The new index that this character iterator is set to.</param>
-        /// <returns>The character at the new index, or <see cref="CharacterIterator.DONE"/> if the index is
+        /// <returns>The character at the new index, or <see cref="CharacterIterator.Done"/> if the index is
         /// past the end.</returns>
         /// <exception cref="System.ArgumentException">If <paramref name="location"/> is less than 
         /// the begin index or greater than the end index.</exception>

@@ -63,7 +63,7 @@ namespace ICU4N.Impl
         //        adjustment.
         public static int NextTrail32(CharacterIterator ci, int lead)
         {
-            if (lead == CharacterIterator.DONE && ci.Index >= ci.EndIndex)
+            if (lead == CharacterIterator.Done && ci.Index >= ci.EndIndex)
             {
                 return DONE32;
             }
@@ -131,7 +131,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                if (lead == CharacterIterator.DONE)
+                if (lead == CharacterIterator.Done)
                 {
                     if (ci.Index >= ci.EndIndex)
                     {

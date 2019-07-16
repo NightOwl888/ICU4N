@@ -109,7 +109,7 @@ namespace ICU4N.Support.Text
             {
                 if (offset == end)
                 {
-                    return DONE;
+                    return Done;
                 }
                 return str[offset];
             }
@@ -148,7 +148,7 @@ namespace ICU4N.Support.Text
         {
             if (start == end)
             {
-                return DONE;
+                return Done;
             }
             offset = start;
             return str[offset];
@@ -200,7 +200,7 @@ namespace ICU4N.Support.Text
         {
             if (start == end)
             {
-                return DONE;
+                return Done;
             }
             offset = end - 1;
             return str[offset];
@@ -217,7 +217,7 @@ namespace ICU4N.Support.Text
             if (offset >= (end - 1))
             {
                 offset = end;
-                return DONE;
+                return Done;
             }
             return str[++offset];
         }
@@ -232,7 +232,7 @@ namespace ICU4N.Support.Text
         {
             if (offset == start)
             {
-                return DONE;
+                return Done;
             }
             return str[--offset];
         }
@@ -257,7 +257,7 @@ namespace ICU4N.Support.Text
             offset = location;
             if (offset == end)
             {
-                return DONE;
+                return Done;
             }
             return str[offset];
         }

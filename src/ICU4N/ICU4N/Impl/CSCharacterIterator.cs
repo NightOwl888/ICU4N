@@ -49,7 +49,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns the character at the current index, or <see cref="CharacterIterator.DONE"/> if the current index is
+        /// Returns the character at the current index, or <see cref="CharacterIterator.Done"/> if the current index is
         /// past the beginning or end of the sequence.
         /// </summary>
         public override char Current
@@ -58,7 +58,7 @@ namespace ICU4N.Impl
             {
                 if (index == seq.Length)
                 {
-                    return DONE;
+                    return Done;
                 }
                 return seq[index];
             }
@@ -67,7 +67,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Increments the current index and returns the character at the new index.
         /// </summary>
-        /// <returns>The character at the next index, or <see cref="CharacterIterator.DONE"/> if the next
+        /// <returns>The character at the next index, or <see cref="CharacterIterator.Done"/> if the next
         /// index would be past the end.</returns>
         public override char MoveNext()
         {
@@ -81,13 +81,13 @@ namespace ICU4N.Impl
         /// <summary>
         /// Decrements the current index and returns the character at the new index.
         /// </summary>
-        /// <returns>The character at the previous index, or <see cref="CharacterIterator.DONE"/> if the
+        /// <returns>The character at the previous index, or <see cref="CharacterIterator.Done"/> if the
         /// previous index would be past the beginning.</returns>
         public override char MovePrevious()
         {
             if (index == 0)
             {
-                return DONE;
+                return Done;
             }
             --index;
             return Current;
@@ -98,7 +98,7 @@ namespace ICU4N.Impl
         /// new index.
         /// </summary>
         /// <param name="position">The new index that this character iterator is set to.</param>
-        /// <returns>The character at the new index, or <see cref="CharacterIterator.DONE"/> if the index is
+        /// <returns>The character at the new index, or <see cref="CharacterIterator.Done"/> if the index is
         /// past the end.</returns>
         /// <exception cref="System.ArgumentException">If <paramref name="position"/> is less than 
         /// the begin index or greater than the end index.</exception>

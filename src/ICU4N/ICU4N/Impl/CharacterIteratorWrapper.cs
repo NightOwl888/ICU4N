@@ -29,7 +29,7 @@ namespace ICU4N.Impl
             get
             {
                 int c = iterator.Current;
-                if (c == CharacterIterator.DONE)
+                if (c == CharacterIterator.Done)
                 {
                     return DONE;
                 }
@@ -65,7 +65,7 @@ namespace ICU4N.Impl
         {
             int i = iterator.Current;
             iterator.MoveNext();
-            if (i == CharacterIterator.DONE)
+            if (i == CharacterIterator.Done)
             {
                 return DONE;
             }
@@ -76,7 +76,7 @@ namespace ICU4N.Impl
         public override int MovePrevious()
         {
             int i = iterator.MovePrevious();
-            if (i == CharacterIterator.DONE)
+            if (i == CharacterIterator.Done)
             {
                 return DONE;
             }
@@ -99,7 +99,7 @@ namespace ICU4N.Impl
                 throw new IndexOutOfRangeException(length.ToString());
             }
 
-            for (char ch = iterator.MoveFirst(); ch != CharacterIterator.DONE; ch = iterator.MoveNext())
+            for (char ch = iterator.MoveFirst(); ch != CharacterIterator.Done; ch = iterator.MoveNext())
             {
                 fillIn[offset++] = ch;
             }

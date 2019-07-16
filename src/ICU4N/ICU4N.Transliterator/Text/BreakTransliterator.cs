@@ -296,7 +296,7 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        return DONE;
+                        return Done;
                     }
                 }
             }
@@ -315,7 +315,7 @@ namespace ICU4N.Text
                 else
                 {
                     pos = end;
-                    return DONE;
+                    return Done;
                 }
             }
 
@@ -332,7 +332,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    return DONE;
+                    return Done;
                 }
             }
 
