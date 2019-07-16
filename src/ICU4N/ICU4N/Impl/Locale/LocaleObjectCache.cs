@@ -90,7 +90,7 @@ namespace ICU4N.Impl.Locale
             {
                 lock (_map)
                 {
-                    _map.Remove(entry.GetKey());
+                    _map.Remove(entry.Key);
                 }
             }
         }
@@ -112,9 +112,9 @@ namespace ICU4N.Impl.Locale
                 _key = key;
             }
 
-            internal virtual K GetKey() // ICU4N TODO: API: make property
+            internal virtual K Key
             {
-                return _key;
+                get { return _key; }
             }
         }
     }
