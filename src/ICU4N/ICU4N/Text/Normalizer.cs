@@ -316,7 +316,7 @@ namespace ICU4N.Text
         /// This is guaranteed to have the same value as <see cref="UCharacterIterator.Done"/>.
         /// </summary>
         [Obsolete("ICU 56")]
-        public static readonly int DONE = UForwardCharacterIterator.Done;
+        public static readonly int Done = UForwardCharacterIterator.Done;
 
         /// <summary>
         /// Constants for normalization modes.
@@ -1579,7 +1579,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    return DONE;
+                    return Done;
                 }
             }
         }
@@ -1587,7 +1587,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Return the next character in the normalized text and advance
         /// the iteration position by one.  If the end
-        /// of the text has already been reached, <see cref="DONE"/> is returned.
+        /// of the text has already been reached, <see cref="Done"/> is returned.
         /// </summary>
         /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
@@ -1601,14 +1601,14 @@ namespace ICU4N.Text
             }
             else
             {
-                return DONE;
+                return Done;
             }
         }
 
         /// <summary>
         /// Return the previous character in the normalized text and decrement
         /// the iteration position by one.  If the beginning
-        /// of the text has already been reached, <see cref="DONE"/> is returned.
+        /// of the text has already been reached, <see cref="Done"/> is returned.
         /// </summary>
         /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
@@ -1622,7 +1622,7 @@ namespace ICU4N.Text
             }
             else
             {
-                return DONE;
+                return Done;
             }
         }
 

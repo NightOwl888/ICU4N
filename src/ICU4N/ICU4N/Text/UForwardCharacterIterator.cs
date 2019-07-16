@@ -44,7 +44,7 @@
     /// public void Function1(IUForwardCharacterIterator it)
     /// {
     ///     int c;
-    ///     while ((c = it.Next()) != UForwardCharacterIterator.DONE)
+    ///     while ((c = it.Next()) != UForwardCharacterIterator.Done)
     ///     {
     ///         // use c
     ///     }

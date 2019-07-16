@@ -423,7 +423,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int ch;
             if (dir > 0)
             {
-                for (ch = normalizer.MoveFirst(); ch != Normalizer.DONE;
+                for (ch = normalizer.MoveFirst(); ch != Normalizer.Done;
                      ch = normalizer.MoveNext())
                 {
                     buf.Append(UTF16.ValueOf(ch));
@@ -431,7 +431,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
             else
             {
-                for (ch = normalizer.MoveLast(); ch != Normalizer.DONE;
+                for (ch = normalizer.MoveLast(); ch != Normalizer.Done;
                      ch = normalizer.MovePrevious())
                 {
                     buf.Insert(0, UTF16.ValueOf(ch));
@@ -458,7 +458,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int ch;
             if (dir > 0)
             {
-                for (ch = normalizer.MoveFirst(); ch != Normalizer.DONE;
+                for (ch = normalizer.MoveFirst(); ch != Normalizer.Done;
                      ch = normalizer.MoveNext())
                 {
                     buf.Append(UTF16.ValueOf(ch));
@@ -466,7 +466,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
             else
             {
-                for (ch = normalizer.MoveLast(); ch != Normalizer.DONE;
+                for (ch = normalizer.MoveLast(); ch != Normalizer.Done;
                      ch = normalizer.MovePrevious())
                 {
                     buf.Insert(0, UTF16.ValueOf(ch));

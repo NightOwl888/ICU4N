@@ -784,13 +784,13 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 // Run through the iterator forwards and stick it into a StringBuffer
                 StringBuffer forward =  new StringBuffer();
-                for (int ch = iter.first(); ch != Normalizer.DONE; ch = iter.Next()) {
+                for (int ch = iter.first(); ch != Normalizer.Done; ch = iter.MoveNext()) {
                     forward.Append(ch);
                 }
 
                 // Now do it backwards
                 StringBuffer reverse = new StringBuffer();
-                for (int ch = iter.last(); ch != Normalizer.DONE; ch = iter.previous()) {
+                for (int ch = iter.last(); ch != Normalizer.Done; ch = iter.MovePrevious()) {
                     reverse.insert(0, ch);
                 }
 
@@ -812,14 +812,14 @@ namespace ICU4N.Dev.Test.Normalizers
                 // Run through the iterator forwards and stick it into a
                 // StringBuffer
                 StringBuffer forward = new StringBuffer();
-                for (int ch = iter.MoveFirst(); ch != Normalizer.DONE; ch = iter.MoveNext())
+                for (int ch = iter.MoveFirst(); ch != Normalizer.Done; ch = iter.MoveNext())
                 {
                     forward.Append(ch);
                 }
 
                 // Now do it backwards
                 StringBuffer reverse = new StringBuffer();
-                for (int ch = iter.MoveLast(); ch != Normalizer.DONE; ch = iter.MovePrevious())
+                for (int ch = iter.MoveLast(); ch != Normalizer.Done; ch = iter.MovePrevious())
                 {
                     reverse.Insert(0, ch);
                 }
@@ -1100,7 +1100,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int ch;
             UCharacterIterator cIter = UCharacterIterator.GetInstance(expected);
 
-            while ((ch = iter.MoveNext()) != Normalizer.DONE)
+            while ((ch = iter.MoveNext()) != Normalizer.Done)
             {
                 if (index >= expected.Length)
                 {
@@ -1126,7 +1126,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
 
             cIter.SetToLimit();
-            while ((ch = iter.MovePrevious()) != Normalizer.DONE)
+            while ((ch = iter.MovePrevious()) != Normalizer.Done)
             {
                 int want = cIter.MovePreviousCodePoint();
                 if (ch != want)
@@ -1211,7 +1211,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int ch;
             UCharacterIterator cIter = UCharacterIterator.GetInstance(expected);
 
-            while ((ch = iter.MoveNext()) != Normalizer.DONE)
+            while ((ch = iter.MoveNext()) != Normalizer.Done)
             {
                 if (index >= expected.Length)
                 {
@@ -1237,7 +1237,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
 
             cIter.SetToLimit();
-            while ((ch = iter.MovePrevious()) != Normalizer.DONE)
+            while ((ch = iter.MovePrevious()) != Normalizer.Done)
             {
                 int want = cIter.MovePreviousCodePoint();
                 if (ch != want)
@@ -1260,7 +1260,7 @@ namespace ICU4N.Dev.Test.Normalizers
             Normalizer iter = new Normalizer(new StringCharacterIterator(Utility.Unescape(input)),
                                                     Normalizer.NFKC, 0);
             StringBuffer got = new StringBuffer();
-            for (ch = iter.MoveFirst(); ch != Normalizer.DONE; ch = iter.MoveNext())
+            for (ch = iter.MoveFirst(); ch != Normalizer.Done; ch = iter.MoveNext())
             {
                 if (index >= expected.Length)
                 {
@@ -1286,7 +1286,7 @@ namespace ICU4N.Dev.Test.Normalizers
             Logln("Reverse Iteration\n");
             iter.SetIndexOnly(iter.EndIndex);
             got.Length = 0;
-            for (ch = iter.MovePrevious(); ch != Normalizer.DONE; ch = iter.MovePrevious())
+            for (ch = iter.MovePrevious(); ch != Normalizer.Done; ch = iter.MovePrevious())
             {
                 if (index >= expected.Length)
                 {

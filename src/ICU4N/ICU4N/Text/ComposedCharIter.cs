@@ -57,7 +57,7 @@ namespace ICU4N.Text
         /// over which to iterate.
         /// </summary>
         [Obsolete("ICU 2.2")]
-        public static readonly char DONE = (char)Normalizer.DONE;
+        public static readonly char DONE = (char)Normalizer.Done;
 
         /// <summary>
         /// Construct a new <see cref="ComposedCharIter"/>.  The iterator will return
@@ -99,11 +99,11 @@ namespace ICU4N.Text
         {
             get
             {
-                if (nextChar == Normalizer.DONE)
+                if (nextChar == Normalizer.Done)
                 {
                     FindNextChar();
                 }
-                return nextChar != Normalizer.DONE;
+                return nextChar != Normalizer.Done;
             }
         }
 
@@ -118,12 +118,12 @@ namespace ICU4N.Text
         [Obsolete("ICU 2.2")]
         public char Next()
         {
-            if (nextChar == Normalizer.DONE)
+            if (nextChar == Normalizer.Done)
             {
                 FindNextChar();
             }
             curChar = nextChar;
-            nextChar = Normalizer.DONE;
+            nextChar = Normalizer.Done;
             return (char)curChar;
         }
 
@@ -167,7 +167,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    c = Normalizer.DONE;
+                    c = Normalizer.Done;
                     break;
                 }
             }
@@ -177,6 +177,6 @@ namespace ICU4N.Text
         private readonly Normalizer2Impl n2impl;
         private string decompBuf;
         private int curChar = 0;
-        private int nextChar = Normalizer.DONE;
+        private int nextChar = Normalizer.Done;
     }
 }
