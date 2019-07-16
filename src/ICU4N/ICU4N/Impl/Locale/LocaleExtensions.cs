@@ -178,9 +178,9 @@ namespace ICU4N.Impl.Locale
             return ((UnicodeLocaleExtension)ext).GetUnicodeLocaleType(AsciiUtil.ToLowerString(unicodeLocaleKey));
         }
 
-        public virtual bool IsEmpty() // ICU4N TODO: API - make property
+        public virtual bool IsEmpty
         {
-            return _map.Count == 0;
+            get { return _map.Count == 0; }
         }
 
         public static bool IsValidKey(char c)
@@ -231,9 +231,9 @@ namespace ICU4N.Impl.Locale
             return _id;
         }
 
-        public virtual string GetID() // ICU4N TODO: API - make property
+        public virtual string ID
         {
-            return _id;
+            get { return _id; }
         }
 
         public override int GetHashCode()
