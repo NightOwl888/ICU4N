@@ -46,7 +46,7 @@ namespace ICU4N.Text
         /// <param name="info">Output container of IDNA processing details.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> abstract StringBuilder LabelToASCII(<#=charSequence#> label, StringBuilder dest, Info info);
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> abstract StringBuilder LabelToASCII(<#=charSequence#> label, StringBuilder dest, IDNAInfo info);
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
@@ -60,7 +60,7 @@ namespace ICU4N.Text
         /// <param name="info">Output container of IDNA processing details.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> abstract StringBuilder LabelToUnicode(<#=charSequence#> label, StringBuilder dest, Info info);
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> abstract StringBuilder LabelToUnicode(<#=charSequence#> label, StringBuilder dest, IDNAInfo info);
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
@@ -76,7 +76,7 @@ namespace ICU4N.Text
         /// <param name="info">Output container of IDNA processing details.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> abstract StringBuilder NameToASCII(<#=charSequence#> name, StringBuilder dest, Info info);
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> abstract StringBuilder NameToASCII(<#=charSequence#> name, StringBuilder dest, IDNAInfo info);
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
@@ -90,7 +90,7 @@ namespace ICU4N.Text
         /// <param name="info">Output container of IDNA processing details.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> abstract StringBuilder NameToUnicode(<#=charSequence#> name, StringBuilder dest, Info info);
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> abstract StringBuilder NameToUnicode(<#=charSequence#> name, StringBuilder dest, IDNAInfo info);
 <# } #>
 	}
 }

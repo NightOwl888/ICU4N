@@ -1937,7 +1937,7 @@ namespace ICU4N.Text
         /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
         /// <code>
-        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.SIMPLE)
+        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.Simple)
         /// </code>
         /// ... returns <c>"catbab"</c>.
         /// </summary>
@@ -1980,7 +1980,7 @@ namespace ICU4N.Text
         /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
         /// <code>
-        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.SIMPLE)
+        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.Simple)
         /// </code>
         /// ... returns <c>"catbab"</c>.
         /// </summary>
@@ -2023,7 +2023,7 @@ namespace ICU4N.Text
         /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
         /// <code>
-        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.SIMPLE)
+        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.Simple)
         /// </code>
         /// ... returns <c>"catbab"</c>.
         /// </summary>
@@ -2066,7 +2066,7 @@ namespace ICU4N.Text
         /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
         /// <code>
-        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.SIMPLE)
+        ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.Simple)
         /// </code>
         /// ... returns <c>"catbab"</c>.
         /// </summary>

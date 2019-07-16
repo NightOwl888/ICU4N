@@ -146,9 +146,9 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override NormalizerQuickCheckResult QuickCheck(<#=charSequence#> s)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> override QuickCheckResult QuickCheck(<#=charSequence#> s)
         {
-            NormalizerQuickCheckResult result = NormalizerQuickCheckResult.Yes;
+            QuickCheckResult result = QuickCheckResult.Yes;
             SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
@@ -159,13 +159,13 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    NormalizerQuickCheckResult qcResult =
+                    QuickCheckResult qcResult =
                         norm2.QuickCheck(s.SubSequence(prevSpanLimit, spanLimit));
-                    if (qcResult == NormalizerQuickCheckResult.No)
+                    if (qcResult == QuickCheckResult.No)
                     {
                         return qcResult;
                     }
-                    else if (qcResult == NormalizerQuickCheckResult.Maybe)
+                    else if (qcResult == QuickCheckResult.Maybe)
                     {
                         result = qcResult;
                     }
