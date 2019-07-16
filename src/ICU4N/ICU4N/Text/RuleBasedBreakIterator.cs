@@ -572,7 +572,7 @@ namespace ICU4N.Text
         /// any other break iterator functions that returns a boundary position.
         /// </remarks>
         /// <stable>ICU 60</stable>
-        public override int RuleStatus
+        public override RuleStatus RuleStatus
         {
             get
             {
@@ -586,7 +586,7 @@ namespace ICU4N.Text
                 //   This function returns the last (largest) of the array of status values.
                 int idx = fRuleStatusIndex + fRData.fStatusTable[fRuleStatusIndex];
                 int tagVal = fRData.fStatusTable[idx];
-                return tagVal;
+                return (RuleStatus)tagVal;
             }
         }
 

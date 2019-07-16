@@ -8,6 +8,77 @@ using System.Text;
 namespace ICU4N.Text
 {
     /// <summary>
+    /// For <see cref="RuleBasedBreakIterator"/>s, the status tag from the
+    /// break rule that determined the most recently
+    /// returned break position. Other <see cref="BreakIterator"/> types
+    /// always return <see cref="RuleStatus.WordNone"/>
+    /// </summary>
+    public enum RuleStatus
+    {
+        /// <summary>
+        /// Tag value for "words" that do not fit into any of other categories.
+        /// Includes spaces and most punctuation.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordNone = 0,
+
+        /// <summary>
+        /// Upper bound for tags for uncategorized words.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordNoneLimit = 100,
+
+        /// <summary>
+        /// Tag value for words that appear to be numbers, lower limit.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordNumber = 100,
+
+        /// <summary>
+        /// Tag value for words that appear to be numbers, upper limit.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordNumberLimit = 200,
+
+        /// <summary>
+        /// Tag value for words that contain letters, excluding
+        /// hiragana, katakana or ideographic characters, lower limit.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordLetter = 200,
+
+        /// <summary>
+        /// Tag value for words containing letters, upper limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordLetterLimit = 300,
+
+        /// <summary>
+        /// Tag value for words containing kana characters, lower limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordKana = 300,
+
+        /// <summary>
+        /// Tag value for words containing kana characters, upper limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordKanaLimit = 400,
+
+        /// <summary>
+        /// Tag value for words containing ideographic characters, lower limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordIdeo = 400,
+
+        /// <summary>
+        /// Tag value for words containing ideographic characters, upper limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        WordIdeoLimit = 500,
+    }
+
+    /// <summary>
     /// A class that locates boundaries in text.  This class defines a protocol for
     /// objects that break up a piece of natural-language text according to a set
     /// of criteria.  Instances or subclasses of <see cref="BreakIterator"/> can be provided, for
@@ -203,7 +274,7 @@ namespace ICU4N.Text
     ///             return BreakIterator.DONE;
     ///         }
     ///         int wordStatus = wb.RuleStatus;
-    ///         if (wordStatus != BreakIterator.WORD_NONE)
+    ///         if (wordStatus != RuleStatus.WordNone)
     ///         {
     ///             return wordStart;
     ///         }
@@ -391,67 +462,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public abstract int Current { get; }
 
-        /// <summary>
-        /// Tag value for "words" that do not fit into any of other categories.
-        /// Includes spaces and most punctuation.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_NONE = 0;
-
-        /// <summary>
-        /// Upper bound for tags for uncategorized words.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_NONE_LIMIT = 100;
-
-        /// <summary>
-        /// Tag value for words that appear to be numbers, lower limit.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_NUMBER = 100;
-
-        /// <summary>
-        /// Tag value for words that appear to be numbers, upper limit.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_NUMBER_LIMIT = 200;
-
-        /// <summary>
-        /// Tag value for words that contain letters, excluding
-        /// hiragana, katakana or ideographic characters, lower limit.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_LETTER = 200;
-
-        /// <summary>
-        /// Tag value for words containing letters, upper limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_LETTER_LIMIT = 300;
-
-        /// <summary>
-        /// Tag value for words containing kana characters, lower limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_KANA = 300;
-
-        /// <summary>
-        /// Tag value for words containing kana characters, upper limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_KANA_LIMIT = 400;
-
-        /// <summary>
-        /// Tag value for words containing ideographic characters, lower limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_IDEO = 400;
-
-        /// <summary>
-        /// Tag value for words containing ideographic characters, upper limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        public const int WORD_IDEO_LIMIT = 500;
+        // ICU4N specific - made WORD_ constants into enum named RuleStatus (to match the property)
 
         /// <summary>
         /// For <see cref="RuleBasedBreakIterator"/>s, return the status tag from the
@@ -462,9 +473,9 @@ namespace ICU4N.Text
         /// a default value of 0 is returned.
         /// </summary>
         /// <stable>ICU 52</stable>
-        public virtual int RuleStatus
+        public virtual RuleStatus RuleStatus
         {
-            get { return 0; }
+            get { return RuleStatus.WordNone; } // ICU4N: RuleStatus.WordNone == 0
         }
 
         /// <summary>
@@ -1030,13 +1041,13 @@ namespace ICU4N.Text
                 }
                 catch (Exception e)
                 {
-                    ///CLOVER:OFF
+                    ////CLOVER:OFF
                     //if (DEBUG)
                     //{
                     //    e.printStackTrace();
                     //}
                     throw new Exception(e.ToString(), e);
-                    ///CLOVER:ON
+                    ////CLOVER:ON
                 }
             }
             return shim;
@@ -1094,9 +1105,9 @@ namespace ICU4N.Text
             // Change the following to an assertion later
             if ((valid == null) != (actual == null))
             {
-                ///CLOVER:OFF
+                ////CLOVER:OFF
                 throw new ArgumentException();
-                ///CLOVER:ON
+                ////CLOVER:ON
             }
             // Another check we could do is that the actual locale is at
             // the same level or less specific than the valid locale.

@@ -523,7 +523,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         expectedTagVal = 0;
                     }
                     int line = t.srcLine[bp];
-                    int rs = t.bi.RuleStatus;
+                    int rs = (int)t.bi.RuleStatus;
                     if (rs != expectedTagVal)
                     {
                         Errln("Incorrect status for forward break.  Pos = " + bp +
@@ -592,7 +592,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         expectedTagVal = 0;
                     }
                     int line = t.srcLine[bp];
-                    int rs = t.bi.RuleStatus;
+                    int rs = (int)t.bi.RuleStatus;
                     if (rs != expectedTagVal)
                     {
                         Errln("Incorrect status for reverse break.  Pos = " + bp +
