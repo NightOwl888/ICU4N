@@ -47,10 +47,10 @@ namespace ICU4N.Dev.Test.Rbbi
 
             if (p != 0)
                 Errln("first() returned " + p + " instead of 0");
-            while (p != BreakIterator.DONE)
+            while (p != BreakIterator.Done)
             {
                 p = bi.MoveNext();
-                if (p != BreakIterator.DONE)
+                if (p != BreakIterator.Done)
                 {
                     if (p <= lastP)
                         Errln("next() failed to move forward: next() on position "
@@ -77,10 +77,10 @@ namespace ICU4N.Dev.Test.Rbbi
 
             if (p != text.Length)
                 Errln("last() returned " + p + " instead of " + text.Length);
-            while (p != BreakIterator.DONE)
+            while (p != BreakIterator.Done)
             {
                 p = bi.MovePrevious();
-                if (p != BreakIterator.DONE)
+                if (p != BreakIterator.Done)
                 {
                     if (p >= lastP)
                         Errln("previous() failed to move backward: previous() on position "
@@ -233,7 +233,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 {
                     work[3] = testChars[j];
                     tb.SetText(work.ToString());
-                    for (int k = tb.MoveFirst(); k != BreakIterator.DONE; k = tb.MoveNext())
+                    for (int k = tb.MoveFirst(); k != BreakIterator.Done; k = tb.MoveNext())
                         if (k == 2)
                         {
                             Errln("Break between CR and LF in string U+" +
@@ -264,7 +264,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         continue;
                     work[2] = c;
                     tb.SetText(work.ToString());
-                    for (int k = tb.MoveFirst(); k != BreakIterator.DONE; k = tb.MoveNext())
+                    for (int k = tb.MoveFirst(); k != BreakIterator.Done; k = tb.MoveNext())
                         if (k == 2)
                         {
                             Errln("Break between U+" + ((work[1])).ToHexString()
@@ -473,7 +473,7 @@ namespace ICU4N.Dev.Test.Rbbi
             brk.SetText("ＯＫです。");
             assertEquals("Starting point", 0, brk.Current);
             assertEquals("Next point", 5, brk.MoveNext());
-            assertEquals("Last point", BreakIterator.DONE, brk.MoveNext());
+            assertEquals("Last point", BreakIterator.Done, brk.MoveNext());
         }
 
         /*

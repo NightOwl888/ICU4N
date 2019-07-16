@@ -486,7 +486,7 @@ namespace ICU4N.Dev.Test.Rbbi
             //  Run the iterator forward
             //
             prevBP = -1;
-            for (bp = t.bi.MoveFirst(); bp != BreakIterator.DONE; bp = t.bi.MoveNext())
+            for (bp = t.bi.MoveFirst(); bp != BreakIterator.Done; bp = t.bi.MoveNext())
             {
                 if (prevBP == bp)
                 {
@@ -555,7 +555,7 @@ namespace ICU4N.Dev.Test.Rbbi
             //  Run the iterator backwards, verify that the same breaks are found.
             //
             prevBP = t.dataToBreak.Length + 2;  // start with a phony value for the last break pos seen.
-            for (bp = t.bi.MoveLast(); bp != BreakIterator.DONE; bp = t.bi.MovePrevious())
+            for (bp = t.bi.MoveLast(); bp != BreakIterator.Done; bp = t.bi.MovePrevious())
             {
                 if (prevBP == bp)
                 {
@@ -630,7 +630,7 @@ namespace ICU4N.Dev.Test.Rbbi
             for (i = 0; i <= t.dataToBreak.Length; i++)
             {
                 int actualBreak = t.bi.MoveFollowing(i);
-                int expectedBreak = BreakIterator.DONE;
+                int expectedBreak = BreakIterator.Done;
                 for (int j = i + 1; j < t.expectedBreaks.Length; j++)
                 {
                     if (t.expectedBreaks[j] != 0)
@@ -651,7 +651,7 @@ namespace ICU4N.Dev.Test.Rbbi
             for (i = t.dataToBreak.Length; i >= 0; i--)
             {
                 int actualBreak = t.bi.MovePreceding(i);
-                int expectedBreak = BreakIterator.DONE;
+                int expectedBreak = BreakIterator.Done;
 
                 for (int j = i - 1; j >= 0; j--)
                 {

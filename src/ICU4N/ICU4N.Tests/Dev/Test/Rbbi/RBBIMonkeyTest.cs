@@ -980,7 +980,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 fTestData.ClearActualBreaks();
                 fBI.SetText(fTestData.fString);
                 int previousBreak = -2;
-                for (int bk = fBI.MoveFirst(); bk != BreakIterator.DONE; bk = fBI.MoveNext())
+                for (int bk = fBI.MoveFirst(); bk != BreakIterator.Done; bk = fBI.MoveNext())
                 {
                     if (bk <= previousBreak)
                     {
@@ -1004,7 +1004,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 for (int i = -1; i < fTestData.fString.Length; ++i)
                 {
                     int bk = fBI.MoveFollowing(i);
-                    if (bk == BreakIterator.DONE && i == fTestData.fString.Length)
+                    if (bk == BreakIterator.Done && i == fTestData.fString.Length)
                     {
                         continue;
                     }
@@ -1030,7 +1030,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 fTestData.ClearActualBreaks();
                 fBI.SetText(fTestData.fString);
                 int previousBreak = int.MaxValue;
-                for (int bk = fBI.MoveLast(); bk != BreakIterator.DONE; bk = fBI.MovePrevious())
+                for (int bk = fBI.MoveLast(); bk != BreakIterator.Done; bk = fBI.MovePrevious())
                 {
                     if (bk >= previousBreak)
                     {
@@ -1073,7 +1073,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 {
                     int bk = fBI.MovePreceding(i);
                     // System.err.printf("testPreceding() i:%d  bk:%d  nextBreak:%d\n", i, bk, nextBreak);
-                    if (bk == BreakIterator.DONE && i == 0)
+                    if (bk == BreakIterator.Done && i == 0)
                     {
                         continue;
                     }

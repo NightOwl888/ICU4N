@@ -1042,7 +1042,7 @@ namespace ICU4N.Dev.Test.Translit
                 /*
                 if (UTF16.countCodePoint(sourceString) <= 1) return true;
                 thaiBreak.setText(sourceString);
-                for (int pos = thaiBreak.first(); pos != BreakIterator.DONE; pos = thaiBreak.next()) {
+                for (int pos = thaiBreak.first(); pos != BreakIterator.Done; pos = thaiBreak.next()) {
                     if (pos > 0 && pos < sourceString.Length) {
                         Console.Out.WriteLine("Skipping " + Utility.Escape(sourceString));
                         return false;

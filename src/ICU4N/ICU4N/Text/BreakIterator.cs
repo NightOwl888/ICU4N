@@ -13,6 +13,7 @@ namespace ICU4N.Text
     /// returned break position. Other <see cref="BreakIterator"/> types
     /// always return <see cref="RuleStatus.WordNone"/>
     /// </summary>
+    /// <draft>ICU4N 60.1</draft>
     public enum RuleStatus
     {
         /// <summary>
@@ -155,7 +156,7 @@ namespace ICU4N.Text
     ///         after the specified position, not _to_ the specified position).
     ///     </description></item>
     ///     <item><description>
-    ///         <see cref="DONE"/> is used as a flag to indicate when iteration has stopped.  <see cref="DONE"/> is only
+    ///         <see cref="Done"/> is used as a flag to indicate when iteration has stopped.  <see cref="Done"/> is only
     ///         returned when the current position is the end of the text and the user calls <see cref="MoveNext()"/>,
     ///         or when the current position is the beginning of the text and the user calls
     ///         <see cref="MovePrevious()"/>.
@@ -225,7 +226,7 @@ namespace ICU4N.Text
     /// {
     ///     int end = boundary.MoveLast();
     ///     for (int start = boundary.MovePrevious();
-    ///         start != BreakIterator.DONE;
+    ///         start != BreakIterator.Done;
     ///         end = start, start = boundary.MovePrevious())
     ///     {
     ///         Console.WriteLine(source.Substring(start, end - start));
@@ -269,9 +270,9 @@ namespace ICU4N.Text
     ///     while (true)
     ///     {
     ///         int wordLimit = wb.MoveNext();
-    ///         if (wordLimit == BreakIterator.DONE)
+    ///         if (wordLimit == BreakIterator.Done)
     ///         {
-    ///             return BreakIterator.DONE;
+    ///             return BreakIterator.Done;
     ///         }
     ///         int wordStatus = wb.RuleStatus;
     ///         if (wordStatus != RuleStatus.WordNone)
@@ -328,7 +329,7 @@ namespace ICU4N.Text
         /// boundaries have been returned.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const int DONE = -1; // ICU4N TODO: API - name according to .NET Conventions
+        public const int Done = -1;
 
         /// <summary>
         /// Set the iterator to the first boundary position.  This is always the beginning
@@ -356,7 +357,7 @@ namespace ICU4N.Text
         /// Move the iterator by the specified number of steps in the text.
         /// A positive number moves the iterator forward; a negative number
         /// moves the iterator backwards. If this causes the iterator
-        /// to move off either end of the text, this function returns <see cref="DONE"/>;
+        /// to move off either end of the text, this function returns <see cref="Done"/>;
         /// otherwise, this function returns the position of the appropriate
         /// boundary.  Calling this function is equivalent to calling <see cref="MoveNext()"/> or
         /// <see cref="MovePrevious()"/> <paramref name="n"/> times.
@@ -364,7 +365,7 @@ namespace ICU4N.Text
         /// <param name="n">The number of boundaries to advance over (if positive, moves
         /// forward; if negative, moves backwards).</param>
         /// <returns>The position of the boundary <paramref name="n"/> boundaries from the current
-        /// iteration position, or <see cref="DONE"/> if moving <paramref name="n"/> boundaries causes the iterator
+        /// iteration position, or <see cref="Done"/> if moving <paramref name="n"/> boundaries causes the iterator
         /// to advance off either end of the text.</returns>
         /// <stable>ICU 2.0</stable>
         public abstract int Move(int n); // ICU4N specific - renamed from Next(int)
@@ -374,8 +375,8 @@ namespace ICU4N.Text
         /// position is updated to point to the next boundary position after the
         /// current position, and this is also the value that is returned.  If
         /// the current position is equal to the value returned by <see cref="MoveLast()"/>, or to
-        /// <see cref="DONE"/>, this function returns <see cref="DONE"/> and sets the current position to
-        /// <see cref="DONE"/>.
+        /// <see cref="Done"/>, this function returns <see cref="Done"/> and sets the current position to
+        /// <see cref="Done"/>.
         /// </summary>
         /// <returns>The position of the first boundary position following the
         /// iteration position.</returns>
@@ -387,8 +388,8 @@ namespace ICU4N.Text
         /// position is updated to point to the last boundary position before
         /// the current position, and this is also the value that is returned.  If
         /// the current position is equal to the value returned by <see cref="MoveFirst()"/>, or to
-        /// <see cref="DONE"/>, this function returns <see cref="DONE"/> and sets the current position to
-        /// <see cref="DONE"/>.
+        /// <see cref="Done"/>, this function returns <see cref="Done"/> and sets the current position to
+        /// <see cref="Done"/>.
         /// </summary>
         /// <returns>position of the last boundary position preceding the
         /// iteration position.</returns>
@@ -401,12 +402,12 @@ namespace ICU4N.Text
         /// specified position is itself a boundary position or not doesn't
         /// matter-- this function always moves the iteration position to the
         /// first boundary after the specified position.)  If the specified
-        /// position is the past-the-end position, returns <see cref="DONE"/>.
+        /// position is the past-the-end position, returns <see cref="Done"/>.
         /// </summary>
         /// <param name="offset">The character position to start searching from.</param>
         /// <returns>The position of the first boundary position following
         /// "<paramref name="offset"/>" (whether or not "offset" itself is a boundary position),
-        /// or <see cref="DONE"/> if "<paramref name="offset"/>" is the past-the-end offset.</returns>
+        /// or <see cref="Done"/> if "<paramref name="offset"/>" is the past-the-end offset.</returns>
         /// <stable>ICU 2.0</stable>
         public abstract int MoveFollowing(int offset); // ICU4N specific - renamed from Following(int)
 
@@ -416,12 +417,12 @@ namespace ICU4N.Text
         /// specified position is itself a boundary position or not doesn't
         /// matter-- this function always moves the iteration position to the
         /// last boundary before the specified position.)  If the specified
-        /// position is the starting position, returns <see cref="DONE"/>.
+        /// position is the starting position, returns <see cref="Done"/>.
         /// </summary>
         /// <param name="offset">The character position to start searching from.</param>
         /// <returns>The position of the last boundary position preceding
         /// "<paramref name="offset"/>" (whether of not "offset" itself is a boundary position),
-        /// or <see cref="DONE"/> if "<paramref name="offset"/>" is the starting offset of the iterator.</returns>
+        /// or <see cref="Done"/> if "<paramref name="offset"/>" is the starting offset of the iterator.</returns>
         /// <stable>ICU 2.0</stable>
         public virtual int MovePreceding(int offset) // ICU4N specific - renamed from Preceding(int)
         {
@@ -429,7 +430,7 @@ namespace ICU4N.Text
             // abstract methods to an existing class.  There is almost ALWAYS a
             // better, faster way to do this.
             int pos = MoveFollowing(offset);
-            while (pos >= offset && pos != DONE)
+            while (pos >= offset && pos != Done)
                 pos = MovePrevious();
             return pos;
         }

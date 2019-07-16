@@ -92,7 +92,7 @@ namespace ICU4N.Text
                 // To make things much easier, we will stack the boundaries, and then insert at the end.
                 // generally, we won't need too many, since we will be filtered.
 
-                for (boundary = bi.MoveFirst(); boundary != BreakIterator.DONE && boundary < pos.Limit; boundary = bi.MoveNext())
+                for (boundary = bi.MoveFirst(); boundary != BreakIterator.Done && boundary < pos.Limit; boundary = bi.MoveNext())
                 {
                     if (boundary == 0) continue;
                     // HACK: Check to see that preceeding item was a letter

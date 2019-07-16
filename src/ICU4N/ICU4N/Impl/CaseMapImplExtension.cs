@@ -1056,7 +1056,7 @@ namespace ICU4N.Impl
                     {
                         index = titleIter.MoveNext();
                     }
-                    if (index == BreakIterator.DONE || index > srcLength)
+                    if (index == BreakIterator.Done || index > srcLength)
                     {
                         index = srcLength;
                     }
@@ -1191,7 +1191,7 @@ namespace ICU4N.Impl
                     {
                         index = titleIter.MoveNext();
                     }
-                    if (index == BreakIterator.DONE || index > srcLength)
+                    if (index == BreakIterator.Done || index > srcLength)
                     {
                         index = srcLength;
                     }
@@ -1326,7 +1326,7 @@ namespace ICU4N.Impl
                     {
                         index = titleIter.MoveNext();
                     }
-                    if (index == BreakIterator.DONE || index > srcLength)
+                    if (index == BreakIterator.Done || index > srcLength)
                     {
                         index = srcLength;
                     }
@@ -1461,7 +1461,7 @@ namespace ICU4N.Impl
                     {
                         index = titleIter.MoveNext();
                     }
-                    if (index == BreakIterator.DONE || index > srcLength)
+                    if (index == BreakIterator.Done || index > srcLength)
                     {
                         index = srcLength;
                     }
@@ -1596,7 +1596,7 @@ namespace ICU4N.Impl
                     {
                         index = titleIter.MoveNext();
                     }
-                    if (index == BreakIterator.DONE || index > srcLength)
+                    if (index == BreakIterator.Done || index > srcLength)
                     {
                         index = srcLength;
                     }
@@ -1731,7 +1731,7 @@ namespace ICU4N.Impl
                     {
                         index = titleIter.MoveNext();
                     }
-                    if (index == BreakIterator.DONE || index > srcLength)
+                    if (index == BreakIterator.Done || index > srcLength)
                     {
                         index = srcLength;
                     }
@@ -1866,7 +1866,7 @@ namespace ICU4N.Impl
                     {
                         index = titleIter.MoveNext();
                     }
-                    if (index == BreakIterator.DONE || index > srcLength)
+                    if (index == BreakIterator.Done || index > srcLength)
                     {
                         index = srcLength;
                     }
@@ -2001,7 +2001,7 @@ namespace ICU4N.Impl
                     {
                         index = titleIter.MoveNext();
                     }
-                    if (index == BreakIterator.DONE || index > srcLength)
+                    if (index == BreakIterator.Done || index > srcLength)
                     {
                         index = srcLength;
                     }

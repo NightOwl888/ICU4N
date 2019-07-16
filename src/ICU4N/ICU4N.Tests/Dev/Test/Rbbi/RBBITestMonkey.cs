@@ -2184,7 +2184,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     Console.Out.WriteLine("Breaks from BI...");
                 }
                 bi.SetText(testText.ToString());
-                for (i = bi.MoveFirst(); i != BreakIterator.DONE; i = bi.MoveNext())
+                for (i = bi.MoveFirst(); i != BreakIterator.Done; i = bi.MoveNext())
                 {
                     if (i < 0 || i > testText.Length)
                     {
@@ -2203,7 +2203,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 }
 
                 // Find the break positions using reverse iteration
-                for (i = bi.MoveLast(); i != BreakIterator.DONE; i = bi.MovePrevious())
+                for (i = bi.MoveLast(); i != BreakIterator.Done; i = bi.MovePrevious())
                 {
                     if (i < 0 || i > testText.Length)
                     {

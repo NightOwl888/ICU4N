@@ -139,7 +139,7 @@ namespace ICU4N.Dev.Test.Rbbi
             List<int> expected = new List<int>();
             expected.Add(0); expected.Add(7); expected.Add(14);
             lineIter.SetText(csText);
-            for (int pos = lineIter.MoveFirst(); pos != BreakIterator.DONE; pos = lineIter.MoveNext())
+            for (int pos = lineIter.MoveFirst(); pos != BreakIterator.Done; pos = lineIter.MoveNext())
             {
                 assertTrue("", expected.Contains(pos));
             }
@@ -181,7 +181,7 @@ namespace ICU4N.Dev.Test.Rbbi
             wordIter1.MoveLast();
             p = wordIter1.MoveNext();
             q = wordIter1.MoveFollowing(wordIter1.MoveLast());
-            if (p != BreakIterator.DONE || q != BreakIterator.DONE)
+            if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: next()/following() at last position returned #"
                         + p + " and " + q + " instead of" + testString.Length + "\n");
             RuleBasedBreakIterator charIter1 = (RuleBasedBreakIterator)BreakIterator.GetCharacterInstance(CultureInfo.CurrentCulture);
@@ -207,7 +207,7 @@ namespace ICU4N.Dev.Test.Rbbi
             doTest(testString, p, q, 17, " here.");
             p = charIter1.MoveFollowing(charIter1.MoveLast());
             q = charIter1.Move(charIter1.MoveLast());
-            if (p != BreakIterator.DONE || q != BreakIterator.DONE)
+            if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: following()/next() at last position returned #"
                         + p + " and " + q + " instead of" + testString.Length);
             testString = "Hello! how are you? I'am fine. Thankyou. How are you doing? This  costs $20,00,000.";
@@ -239,7 +239,7 @@ namespace ICU4N.Dev.Test.Rbbi
             doTest(testString, 20, q, 31, "I'am fine. ");
             p = sentIter1.MoveFollowing(sentIter1.MoveLast());
             q = sentIter1.Move(sentIter1.MoveLast());
-            if (p != BreakIterator.DONE || q != BreakIterator.DONE)
+            if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: following()/next() at last position returned #"
                         + p + " and " + q + " instead of" + testString.Length);
             testString = "Hello! how\r\n (are)\r you? I'am fine- Thankyou. foo\u00a0bar How, are, you? This, costs $20,00,000.";
@@ -277,7 +277,7 @@ namespace ICU4N.Dev.Test.Rbbi
             doTest(testString, 20, q, 25, "you? ");
             p = lineIter1.MoveFollowing(lineIter1.MoveLast());
             q = lineIter1.Move(lineIter1.MoveLast());
-            if (p != BreakIterator.DONE || q != BreakIterator.DONE)
+            if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: following()/next() at last position returned #"
                         + p + " and " + q + " instead of" + testString.Length);
         }
@@ -312,7 +312,7 @@ namespace ICU4N.Dev.Test.Rbbi
             q = wordIter1.MovePreceding(20);
             doTest(testString, 20, q, 15, "break");
             p = wordIter1.MovePreceding(wordIter1.MoveFirst());
-            if (p != BreakIterator.DONE)
+            if (p != BreakIterator.Done)
                 Errln("ERROR: preceding()  at starting position returned #" + p + " instead of 0");
             testString = "Hello! how are you? I'am fine. Thankyou. How are you doing? This  costs $20,00,000.";
             Logln("testing sentence iter - String:- \"" + testString + "\"");
@@ -333,7 +333,7 @@ namespace ICU4N.Dev.Test.Rbbi
             sentIter1.MoveFirst();
             p = sentIter1.MovePrevious();
             q = sentIter1.MovePreceding(sentIter1.MoveFirst());
-            if (p != BreakIterator.DONE || q != BreakIterator.DONE)
+            if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: previous()/preceding() at starting position returned #"
                         + p + " and " + q + " instead of 0\n");
             testString = "Hello! how are you? I'am fine. Thankyou. How are you doing? This\n costs $20,00,000.";
@@ -355,7 +355,7 @@ namespace ICU4N.Dev.Test.Rbbi
             lineIter1.MoveFirst();
             p = lineIter1.MovePrevious();
             q = lineIter1.MovePreceding(sentIter1.MoveFirst());
-            if (p != BreakIterator.DONE || q != BreakIterator.DONE)
+            if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: previous()/preceding() at starting position returned #"
                         + p + " and " + q + " instead of 0\n");
         }

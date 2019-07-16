@@ -18,12 +18,12 @@ namespace ICU4N.Dev.Test.Rbbi
                 if (position > LIMIT)
                 {
                     position = LIMIT;
-                    return DONE;
+                    return Done;
                 }
                 if (position < 0)
                 {
                     position = 0;
-                    return DONE;
+                    return Done;
                 }
                 return position;
             }
@@ -86,7 +86,7 @@ namespace ICU4N.Dev.Test.Rbbi
         public void TestPreceding()
         {
             int pos = bi.MovePreceding(0);
-            TestFmwk.assertEquals("BreakIterator preceding position not correct", BreakIterator.DONE, pos);
+            TestFmwk.assertEquals("BreakIterator preceding position not correct", BreakIterator.Done, pos);
 
             pos = bi.MovePreceding(5);
             TestFmwk.assertEquals("BreakIterator preceding position not correct", 4, pos);

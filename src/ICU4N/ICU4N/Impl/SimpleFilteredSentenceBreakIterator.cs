@@ -97,7 +97,7 @@ namespace ICU4N.Impl
 
                     Result rfwd = Result.IntermediateValue;
                     text.Index = bestPosn; // hope that's close ..
-                    while ((uch = text.MoveNextCodePoint()) != BreakIterator.DONE
+                    while ((uch = text.MoveNextCodePoint()) != BreakIterator.Done
                             && ((rfwd = forwardsPartialTrie.NextForCodePoint(uch)).HasNext()))
                     {
                     }
@@ -116,10 +116,10 @@ namespace ICU4N.Impl
         /// find the NEXT actual (non-suppressed) break.
         /// </summary>
         /// <param name="n">Initial position from delegate.</param>
-        /// <returns>New break position or <see cref="BreakIterator.DONE"/>.</returns>
+        /// <returns>New break position or <see cref="BreakIterator.Done"/>.</returns>
         private int InternalNext(int n)
         {
-            if (n == BreakIterator.DONE || // at end or
+            if (n == BreakIterator.Done || // at end or
                     backwardsTrie == null)
             { // .. no backwards table loaded == no exceptions
                 return n;
@@ -128,7 +128,7 @@ namespace ICU4N.Impl
 
             int textLen = text.Length;
 
-            while (n != BreakIterator.DONE && n != textLen)
+            while (n != BreakIterator.Done && n != textLen)
             {
                 // outer loop runs once per underlying break (from fDelegate).
                 // loops while 'n' points to an exception.
@@ -152,17 +152,17 @@ namespace ICU4N.Impl
         /// find the PREV actual (non-suppressed) break.
         /// </summary>
         /// <param name="n">Initial position from delegate.</param>
-        /// <returns>New break position or <see cref="BreakIterator.DONE"/>.</returns>
+        /// <returns>New break position or <see cref="BreakIterator.Done"/>.</returns>
         private int InternalPrev(int n)
         {
-            if (n == 0 || n == BreakIterator.DONE || // at end or
+            if (n == 0 || n == BreakIterator.Done || // at end or
                     backwardsTrie == null)
             { // .. no backwards table loaded == no exceptions
                 return n;
             }
             ResetState();
 
-            while (n != BreakIterator.DONE && n != 0)
+            while (n != BreakIterator.Done && n != 0)
             {
                 // outer loop runs once per underlying break (from fDelegate).
                 // loops while 'n' points to an exception.

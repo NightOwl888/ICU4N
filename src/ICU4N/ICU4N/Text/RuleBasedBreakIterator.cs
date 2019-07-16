@@ -223,12 +223,12 @@ namespace ICU4N.Text
 
         /// <summary>
         /// The iteration state - current position, rule status for the current position,
-        ///                       and whether the iterator ran off the end, yielding <see cref="BreakIterator.DONE"/>.
+        ///                       and whether the iterator ran off the end, yielding <see cref="BreakIterator.Done"/>.
         ///                       Current position is pinned to be 0 &lt; position &lt;= text.Length.
         ///                       Current position is always set to a boundary.
         /// <para/>
         /// The current  position of the iterator. Pinned, 0 &lt; fPosition &lt;= text.Length.
-        /// Never has the value <see cref="BreakIterator.DONE"/> (-1).
+        /// Never has the value <see cref="BreakIterator.Done"/> (-1).
         /// </summary>
         private int fPosition;
 
@@ -357,7 +357,7 @@ namespace ICU4N.Text
         {
             if (fText == null)
             {
-                return BreakIterator.DONE;
+                return BreakIterator.Done;
             }
             fText.MoveFirst();
             int start = fText.Index;
@@ -380,7 +380,7 @@ namespace ICU4N.Text
         {
             if (fText == null)
             {
-                return BreakIterator.DONE;
+                return BreakIterator.Done;
             }
             int endPos = fText.EndIndex;
             bool endShouldBeBoundary = IsBoundary(endPos);      // Has side effect of setting iterator position.
@@ -407,14 +407,14 @@ namespace ICU4N.Text
             int result = 0;
             if (n > 0)
             {
-                for (; n > 0 && result != DONE; --n)
+                for (; n > 0 && result != Done; --n)
                 {
                     result = MoveNext();
                 }
             }
             else if (n < 0)
             {
-                for (; n < 0 && result != DONE; ++n)
+                for (; n < 0 && result != Done; ++n)
                 {
                     result = MovePrevious();
                 }
@@ -434,7 +434,7 @@ namespace ICU4N.Text
         public override int MoveNext()
         {
             fBreakCache.Next();
-            return fDone ? DONE : fPosition;
+            return fDone ? Done : fPosition;
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace ICU4N.Text
         public override int MovePrevious()
         {
             fBreakCache.Previous();
-            return fDone ? DONE : fPosition;
+            return fDone ? Done : fPosition;
         }
 
         /// <summary>
@@ -468,7 +468,7 @@ namespace ICU4N.Text
             // Or it may be beyond the end of the text.
             startPos = CISetIndex32(fText, startPos);
             fBreakCache.Following(startPos);
-            return fDone ? DONE : fPosition;
+            return fDone ? Done : fPosition;
         }
 
         /// <summary>
@@ -493,7 +493,7 @@ namespace ICU4N.Text
             // int adjustedOffset = CISetIndex32(fText, offset);    // TODO: restore to match ICU4C behavior.
             int adjustedOffset = offset;
             fBreakCache.Preceding(adjustedOffset);
-            return fDone ? DONE : fPosition;
+            return fDone ? Done : fPosition;
         }
 
         /// <exception cref="ArgumentException">Unless begin &lt;= offset &lt; end.</exception>
@@ -541,15 +541,15 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns the current iteration position.  Note that <see cref="BreakIterator.DONE"/> is never
+        /// Returns the current iteration position.  Note that <see cref="BreakIterator.Done"/> is never
         /// returned from this function; if iteration has run to the end of a
         /// string, <see cref="Current"/> will return the length of the string while
-        /// <see cref="MoveNext()"/> will return <see cref="BreakIterator.DONE"/>.
+        /// <see cref="MoveNext()"/> will return <see cref="BreakIterator.Done"/>.
         /// </summary>
         /// <stable>ICU 2.0</stable>
         public override int Current
         {
-            get { return (fText != null) ? fPosition : BreakIterator.DONE; }
+            get { return (fText != null) ? fPosition : BreakIterator.Done; }
         }
 
         /// <summary>
@@ -884,7 +884,7 @@ namespace ICU4N.Text
                 if (c == CharacterIteration.DONE32)
                 {
                     fDone = true;
-                    return BreakIterator.DONE;
+                    return BreakIterator.Done;
                 }
             }
 
@@ -1077,7 +1077,7 @@ namespace ICU4N.Text
             CISetIndex32(fText, fromPosition);
             if (fromPosition == fText.BeginIndex)
             {
-                return BreakIterator.DONE;
+                return BreakIterator.Done;
             }
 
             // set up the starting char
@@ -1739,7 +1739,7 @@ namespace ICU4N.Text
 
                 outerInstance.fPosition = fromPosition;
                 pos = outerInstance.HandleNext();
-                if (pos == BreakIterator.DONE)
+                if (pos == BreakIterator.Done)
                 {
                     return false;
                 }
@@ -1771,7 +1771,7 @@ namespace ICU4N.Text
                 for (int count = 0; count < 6; ++count)
                 {
                     pos = outerInstance.HandleNext();
-                    if (pos == BreakIterator.DONE || outerInstance.fDictionaryCharCount > 0)
+                    if (pos == BreakIterator.Done || outerInstance.fDictionaryCharCount > 0)
                     {
                         break;
                     }
@@ -1817,7 +1817,7 @@ namespace ICU4N.Text
                     {
                         backupPosition = outerInstance.HandlePrevious(backupPosition);
                     }
-                    if (backupPosition == BreakIterator.DONE || backupPosition == textBegin)
+                    if (backupPosition == BreakIterator.Done || backupPosition == textBegin)
                     {
                         position = textBegin;
                         positionStatusIdx = 0;
@@ -1844,7 +1844,7 @@ namespace ICU4N.Text
                     int prevStatusIdx = positionStatusIdx;
                     position = outerInstance.HandleNext();
                     positionStatusIdx = outerInstance.fRuleStatusIndex;
-                    if (position == BreakIterator.DONE)
+                    if (position == BreakIterator.Done)
                     {
                         break;
                     }

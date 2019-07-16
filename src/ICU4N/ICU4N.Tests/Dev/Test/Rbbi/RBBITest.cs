@@ -50,7 +50,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             index = 0;
             // Test forward iteration
-            while ((position = b.MoveNext()) != BreakIterator.DONE)
+            while ((position = b.MoveNext()) != BreakIterator.Done)
             {
                 if (position != result[index++])
                 {
@@ -59,7 +59,7 @@ namespace ICU4N.Dev.Test.Rbbi
             }
 
             // Test backward iteration
-            while ((position = b.MovePrevious()) != BreakIterator.DONE)
+            while ((position = b.MovePrevious()) != BreakIterator.Done)
             {
                 if (position != result[index++])
                 {
@@ -82,7 +82,7 @@ namespace ICU4N.Dev.Test.Rbbi
             BreakIterator brk = BreakIterator.GetWordInstance(new ULocale("th"));
             brk.SetText(new String(text2));
             position = index = 0;
-            while ((position = brk.MoveNext()) != BreakIterator.DONE && position < text2.Length)
+            while ((position = brk.MoveNext()) != BreakIterator.Done && position < text2.Length)
             {
                 if (position != expectedWordResult[index++])
                 {
@@ -93,7 +93,7 @@ namespace ICU4N.Dev.Test.Rbbi
             brk = BreakIterator.GetLineInstance(new ULocale("th"));
             brk.SetText(new String(text2));
             position = index = 0;
-            while ((position = brk.MoveNext()) != BreakIterator.DONE && position < text2.Length)
+            while ((position = brk.MoveNext()) != BreakIterator.Done && position < text2.Length)
             {
                 if (position != expectedLineResult[index++])
                 {
@@ -170,7 +170,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 int[] foundOffsets = new int[maxOffsetCount];
                 int offset, foundOffsetsCount = 0;
                 // do forwards iteration test
-                while (foundOffsetsCount < maxOffsetCount && (offset = brkIter.MoveNext()) != BreakIterator.DONE)
+                while (foundOffsetsCount < maxOffsetCount && (offset = brkIter.MoveNext()) != BreakIterator.Done)
                 {
                     foundOffsets[foundOffsetsCount++] = offset;
                 }
@@ -307,7 +307,7 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "if (fText == null)" is true
             rbbi.SetText((CharacterIterator)null);
-            assertEquals("RuleBasedBreakIterator.First()", BreakIterator.DONE, rbbi.MoveFirst());
+            assertEquals("RuleBasedBreakIterator.First()", BreakIterator.Done, rbbi.MoveFirst());
 
             rbbi.SetText("abc");
             assertEquals("RuleBasedBreakIterator.First()", 0, rbbi.MoveFirst());
@@ -323,7 +323,7 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "if (fText == null)" is true
             rbbi.SetText((CharacterIterator)null);
-            if (rbbi.MoveLast() != BreakIterator.DONE)
+            if (rbbi.MoveLast() != BreakIterator.Done)
             {
                 Errln("RuleBasedBreakIterator.last() was suppose to return "
                         + "BreakIterator.DONE when the object has a null fText.");
@@ -355,7 +355,7 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "if (fText == null || offset > fText.getEndIndex())" is true
             rbbi.SetText((CharacterIterator)null);
-            if (rbbi.MovePreceding(-1) != BreakIterator.DONE)
+            if (rbbi.MovePreceding(-1) != BreakIterator.Done)
             {
                 Errln("RuleBasedBreakIterator.Preceding(-1) was suppose to return "
                         + "0 when the object has a fText of null.");
@@ -375,9 +375,9 @@ namespace ICU4N.Dev.Test.Rbbi
         public void TestCurrent()
         {
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
-            // Tests when "(fText != null) ? fText.getIndex() : BreakIterator.DONE" is true and false
+            // Tests when "(fText != null) ? fText.getIndex() : BreakIterator.Done" is true and false
             rbbi.SetText((CharacterIterator)null);
-            if (rbbi.Current != BreakIterator.DONE)
+            if (rbbi.Current != BreakIterator.Done)
             {
                 Errln("RuleBasedBreakIterator.Current was suppose to return "
                         + "BreakIterator.DONE when the object has a fText of null.");
@@ -441,7 +441,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     for (int loop = 0; loop < 100; loop++)
                     {
                         int nextExpectedBreak = 0;
-                        for (int actualBreak = localBI.MoveFirst(); actualBreak != BreakIterator.DONE;
+                        for (int actualBreak = localBI.MoveFirst(); actualBreak != BreakIterator.Done;
                                 actualBreak = localBI.MoveNext(), nextExpectedBreak += 4)
                         {
                             assertEquals("", nextExpectedBreak, actualBreak);
@@ -528,7 +528,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         (RuleBasedBreakIterator)BreakIterator.GetBreakInstance(ULocale.ENGLISH, breakKind);
                 bi.SetText(s);
                 int lastb = -1;
-                for (int b = bi.MoveFirst(); b != BreakIterator.DONE; b = bi.MoveNext())
+                for (int b = bi.MoveFirst(); b != BreakIterator.Done; b = bi.MoveNext())
                 {
                     assertTrue("(lastb < b) : (" + lastb + " < " + b + ")", lastb < b);
                 }
@@ -551,7 +551,7 @@ namespace ICU4N.Dev.Test.Rbbi
             iter.MoveFirst();
             int pos = 0;
             int lastPos = -1;
-            while ((pos = iter.MoveNext()) != BreakIterator.DONE)
+            while ((pos = iter.MoveNext()) != BreakIterator.Done)
             {
                 assertTrue("", pos > lastPos);
             }
