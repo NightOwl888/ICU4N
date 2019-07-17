@@ -363,7 +363,7 @@ namespace ICU4N.Dev.Test.Translit
 
         private void keyboardAux(Transliterator t, String[] DATA)
         {
-            Transliterator.Position index = new Transliterator.Position();
+            TransliterationPosition index = new TransliterationPosition();
             ReplaceableString s = new ReplaceableString();
             for (int i = 0; i < DATA.Length; i += 2)
             {
@@ -807,7 +807,7 @@ namespace ICU4N.Dev.Test.Translit
             for (int i = 0; i < n; i++)
             {
                 Transliterator t = Transliterator.CreateFromRules("<ID>", DATA[3 * i], Transliterator.Forward);
-                Transliterator.Position pos = new Transliterator.Position(
+                TransliterationPosition pos = new TransliterationPosition(
                         POS[4 * i], POS[4 * i + 1], POS[4 * i + 2], POS[4 * i + 3]);
                 ReplaceableString rsource = new ReplaceableString(DATA[3 * i + 1]);
                 t.Transliterate(rsource, pos);
@@ -1464,7 +1464,7 @@ namespace ICU4N.Dev.Test.Translit
         [Test]
         public void TestContext()
         {
-            Transliterator.Position pos = new Transliterator.Position(0, 2, 0, 1); // cs cl s l
+            TransliterationPosition pos = new TransliterationPosition(0, 2, 0, 1); // cs cl s l
 
             Expect("de > x; {d}e > y;",
                     "de",
@@ -1567,14 +1567,14 @@ namespace ICU4N.Dev.Test.Translit
             "baa(aaa)");
 
             // Make sure @ past ante context doesn't enter ante context
-            Transliterator.Position pos = new Transliterator.Position(0, 5, 3, 5);
+            TransliterationPosition pos = new TransliterationPosition(0, 5, 3, 5);
             Expect("a+ {b} > | @@ c; x > y; (a+ c) > '(' $1 ')';",
                     "xxxab",
                     "xxx(ac)",
                     pos);
 
             // Make sure @ past post context doesn't pass limit
-            Transliterator.Position pos2 = new Transliterator.Position(0, 4, 0, 2);
+            TransliterationPosition pos2 = new TransliterationPosition(0, 4, 0, 2);
             Expect("{b} a+ > c @@ |; x > y; a > A;",
                     "baxx",
                     "caxx",
@@ -1630,7 +1630,7 @@ namespace ICU4N.Dev.Test.Translit
             "bb x xb");
         }
 
-        internal class TestFact : Transliterator.IFactory
+        internal class TestFact : ITransliteratorFactory
         {
             internal class NameableNullTrans : Transliterator
             {
@@ -1640,7 +1640,7 @@ namespace ICU4N.Dev.Test.Translit
                 }
 
                 protected override void HandleTransliterate(IReplaceable text,
-                        Position offsets, bool incremental)
+                        TransliterationPosition offsets, bool incremental)
                 {
                     offsets.Start = offsets.Limit;
                 }
@@ -2963,7 +2963,7 @@ namespace ICU4N.Dev.Test.Translit
 
         // seems like there should be an easier way to just register an instance of a transliterator
 
-        internal class DummyFactory : Transliterator.IFactory
+        internal class DummyFactory : ITransliteratorFactory
         {
             static DummyFactory singleton = new DummyFactory();
             static IDictionary<string, Transliterator> m = new Dictionary<string, Transliterator>();
@@ -3205,7 +3205,7 @@ namespace ICU4N.Dev.Test.Translit
             TestUserFunctionFactory.Unregister();
         }
 
-        internal class TestUserFunctionFactory : Transliterator.IFactory
+        internal class TestUserFunctionFactory : ITransliteratorFactory
         {
             static TestUserFunctionFactory singleton = new TestUserFunctionFactory();
             static IDictionary<CaseInsensitiveString, Transliterator> m = new Dictionary<CaseInsensitiveString, Transliterator>();
@@ -3822,9 +3822,9 @@ namespace ICU4N.Dev.Test.Translit
         [Test]
         public void TestPositionAPI()
         {
-            Transliterator.Position a = new Transliterator.Position(3, 5, 7, 11);
-            Transliterator.Position b = new Transliterator.Position(a);
-            Transliterator.Position c = new Transliterator.Position();
+            TransliterationPosition a = new TransliterationPosition(3, 5, 7, 11);
+            TransliterationPosition b = new TransliterationPosition(a);
+            TransliterationPosition c = new TransliterationPosition();
             c.Set(a);
             // Call the toString() API:
             if (a.Equals(b) && a.Equals(c))
@@ -4383,7 +4383,7 @@ namespace ICU4N.Dev.Test.Translit
         internal static void Expect(String rules,
                 String source,
                 String expectedResult,
-                Transliterator.Position pos)
+                TransliterationPosition pos)
         {
             Transliterator t = Transliterator.CreateFromRules("<ID>", rules, Transliterator.Forward);
             Expect(t, source, expectedResult, pos);
@@ -4406,11 +4406,11 @@ namespace ICU4N.Dev.Test.Translit
 
         internal static void Expect(Transliterator t, String source, String expectedResult)
         {
-            Expect(t, source, expectedResult, (Transliterator.Position)null);
+            Expect(t, source, expectedResult, (TransliterationPosition)null);
         }
 
         internal static void Expect(Transliterator t, String source, String expectedResult,
-                Transliterator.Position pos)
+                TransliterationPosition pos)
         {
             if (pos == null)
             {
@@ -4418,14 +4418,14 @@ namespace ICU4N.Dev.Test.Translit
                 if (!ExpectAux(t.ID + ":String", source, result, expectedResult)) return;
             }
 
-            Transliterator.Position index = null;
+            TransliterationPosition index = null;
             if (pos == null)
             {
-                index = new Transliterator.Position(0, source.Length, 0, source.Length);
+                index = new TransliterationPosition(0, source.Length, 0, source.Length);
             }
             else
             {
-                index = new Transliterator.Position(pos.ContextStart, pos.ContextLimit,
+                index = new TransliterationPosition(pos.ContextStart, pos.ContextLimit,
                         pos.Start, pos.Limit);
             }
 
@@ -4448,11 +4448,11 @@ namespace ICU4N.Dev.Test.Translit
 
                 if (pos == null)
                 {
-                    index = new Transliterator.Position();
+                    index = new TransliterationPosition();
                 }
                 else
                 {
-                    index = new Transliterator.Position(pos.ContextStart, pos.ContextLimit,
+                    index = new TransliterationPosition(pos.ContextStart, pos.ContextLimit,
                             pos.Start, pos.Limit);
                 }
 

@@ -37,10 +37,10 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, Position, bool)"/>.
+        /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>.
         /// </summary>
         protected override void HandleTransliterate(IReplaceable text,
-                                           Position offsets, bool isIncremental)
+                                           TransliterationPosition offsets, bool isIncremental)
         {
             int cursor = offsets.Start;
             int limit = offsets.Limit;

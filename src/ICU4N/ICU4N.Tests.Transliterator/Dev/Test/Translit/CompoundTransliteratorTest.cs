@@ -155,7 +155,7 @@ namespace ICU4N.Dev.Test.Translit
 
             String s = "abcabc";
             expect(ct1, s, s);
-            Transliterator.Position index = new Transliterator.Position();
+            TransliterationPosition index = new TransliterationPosition();
             ReplaceableString rsource2 = new ReplaceableString(s);
             String expectedResult = s;
             ct1.Transliterate(rsource2, index);
@@ -163,7 +163,7 @@ namespace ICU4N.Dev.Test.Translit
             String result = rsource2.ToString();
             expectAux(ct1.ID + ":ReplaceableString, index(0,0,0,0)", s + "->" + rsource2, result.Equals(expectedResult), expectedResult);
 
-            Transliterator.Position index2 = new Transliterator.Position(1, 3, 2, 3);
+            TransliterationPosition index2 = new TransliterationPosition(1, 3, 2, 3);
             ReplaceableString rsource3 = new ReplaceableString(s);
             ct1.Transliterate(rsource3, index2);
             ct1.FinishTransliteration(rsource3, index2);
@@ -255,7 +255,7 @@ namespace ICU4N.Dev.Test.Translit
             // Test keyboard (incremental) transliteration -- this result
             // must be the same after we finalize (see below).
             rsource.Replace(0, rsource.Length, "");
-            Transliterator.Position index = new Transliterator.Position();
+            TransliterationPosition index = new TransliterationPosition();
             StringBuffer log = new StringBuffer();
 
             for (int i = 0; i < source.Length; ++i)

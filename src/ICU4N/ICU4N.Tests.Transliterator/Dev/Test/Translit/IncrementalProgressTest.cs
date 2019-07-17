@@ -30,7 +30,7 @@ namespace ICU4N.Dev.Test.Translit
         public void CheckIncrementalAux(Transliterator t, String input)
         {
             IReplaceable test = new ReplaceableString(input);
-            Transliterator.Position pos = new Transliterator.Position(0, test.Length, 0, test.Length);
+            TransliterationPosition pos = new TransliterationPosition(0, test.Length, 0, test.Length);
             t.Transliterate(test, pos);
             bool gotError = false;
 

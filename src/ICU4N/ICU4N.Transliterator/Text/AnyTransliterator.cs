@@ -61,10 +61,10 @@ namespace ICU4N.Text
         private Transliterator widthFix = Transliterator.GetInstance("[[:dt=Nar:][:dt=Wide:]] nfkd");
 
         /// <summary>
-        /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, Position, bool)"/>.
+        /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>.
         /// </summary>
         protected override void HandleTransliterate(IReplaceable text,
-                                           Position pos, bool isIncremental)
+                                           TransliterationPosition pos, bool isIncremental)
         {
             int allStart = pos.Start;
             int allLimit = pos.Limit;

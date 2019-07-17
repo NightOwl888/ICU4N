@@ -354,7 +354,7 @@ namespace ICU4N.Text
          * incremental is FALSE then U_PARTIAL_MATCH will not be returned.
          */
         public virtual MatchDegree MatchAndReplace(IReplaceable text,
-                                   Transliterator.Position pos,
+                                   TransliterationPosition pos,
                                    bool incremental)
         {
             // Matching and replacing are done in one method because the

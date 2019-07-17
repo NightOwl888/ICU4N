@@ -150,10 +150,10 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, Position, bool)"/>.
+        /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>.
         /// </summary>
         protected override void HandleTransliterate(IReplaceable text,
-                                           Position pos, bool incremental)
+                                           TransliterationPosition pos, bool incremental)
         {
             int start = pos.Start;
             int limit = pos.Limit;

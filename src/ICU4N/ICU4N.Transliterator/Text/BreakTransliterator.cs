@@ -73,7 +73,7 @@ namespace ICU4N.Text
             | (1 << UCharacterCategory.EnclosingMark.ToInt32())
             ;
 
-        protected override void HandleTransliterate(IReplaceable text, Position pos, bool incremental)
+        protected override void HandleTransliterate(IReplaceable text, TransliterationPosition pos, bool incremental)
         {
             lock (this)
             {

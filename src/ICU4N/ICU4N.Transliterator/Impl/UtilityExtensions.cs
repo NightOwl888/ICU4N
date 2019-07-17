@@ -52,7 +52,7 @@ namespace ICU4N.Impl
         /// and limit, and the || indicate the start and limit.
         /// </summary>
         public static string FormatInput(ReplaceableString input,
-                                         Transliterator.Position pos)
+                                         TransliterationPosition pos)
         {
             StringBuffer appendTo = new StringBuffer();
             FormatInput(appendTo, input, pos);
@@ -70,7 +70,7 @@ namespace ICU4N.Impl
         /// <returns></returns>
         public static StringBuffer FormatInput(StringBuffer appendTo,
                                                ReplaceableString input,
-                                               Transliterator.Position pos)
+                                               TransliterationPosition pos)
         {
             if (0 <= pos.ContextStart &&
                 pos.ContextStart <= pos.Start &&
@@ -106,7 +106,7 @@ namespace ICU4N.Impl
         /// Convenience method.
         /// </summary>
         public static string FormatInput(IReplaceable input,
-                                         Transliterator.Position pos)
+                                         TransliterationPosition pos)
         {
             return FormatInput((ReplaceableString)input, pos);
         }
@@ -116,7 +116,7 @@ namespace ICU4N.Impl
         /// </summary>
         public static StringBuffer FormatInput(StringBuffer appendTo,
                                                IReplaceable input,
-                                               Transliterator.Position pos)
+                                               TransliterationPosition pos)
         {
             return FormatInput(appendTo, (ReplaceableString)input, pos);
         }

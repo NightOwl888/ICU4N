@@ -50,7 +50,7 @@ namespace ICU4N.Text
          * Implements {@link Transliterator#handleTransliterate}.
          */
         protected override void HandleTransliterate(IReplaceable text,
-                                           Position offsets, bool isIncremental)
+                                           TransliterationPosition offsets, bool isIncremental)
         {
             lock (this)
             {

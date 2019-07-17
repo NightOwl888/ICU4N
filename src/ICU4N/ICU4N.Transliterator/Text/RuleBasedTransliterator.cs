@@ -59,7 +59,7 @@ namespace ICU4N.Text
          */
         [Obsolete("This API is ICU internal only.")]
         protected override void HandleTransliterate(IReplaceable text,
-                                       Position index, bool incremental)
+                                       TransliterationPosition index, bool incremental)
         {
             /* We keep start and limit fixed the entire time,
              * relative to the text -- limit may move numerically if text is

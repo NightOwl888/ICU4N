@@ -201,7 +201,7 @@ namespace ICU4N.Text
         /// indicating that transliteration should stop until more text
         /// arrives.</returns>
         public virtual bool Transliterate(IReplaceable text,
-                                     Transliterator.Position pos,
+                                     TransliterationPosition pos,
                                      bool incremental)
         {
             int indexByte = text.Char32At(pos.Start) & 0xFF;

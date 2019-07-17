@@ -351,10 +351,10 @@ namespace ICU4N.Text
         //    }
 
         /// <summary>
-        /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, Position, bool)"/>.
+        /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>.
         /// </summary>
         protected override void HandleTransliterate(IReplaceable text,
-                                           Position index, bool incremental)
+                                           TransliterationPosition index, bool incremental)
         {
             /* Call each transliterator with the same start value and
              * initial cursor index, but with the limit index as modified

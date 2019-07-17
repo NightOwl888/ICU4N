@@ -40,6 +40,213 @@ namespace ICU4N.Text
         Reverse = 1
     }
 
+    /// <summary>
+    /// The factory interface for transliterators.  Transliterator
+    /// subclasses can register factory objects for IDs using the
+    /// <see cref="Transliterator.RegisterFactory(string, ITransliteratorFactory)"/>
+    /// method of Transliterator.  When invoked, the
+    /// factory object will be passed the ID being instantiated.  This
+    /// makes it possible to register one factory method to more than
+    /// one ID, or for a factory method to parameterize its result
+    /// based on the variant.
+    /// </summary>
+    /// <stable>ICU 2.0</stable>
+    public interface ITransliteratorFactory
+    {
+        /// <summary>
+        /// Return a transliterator for the given id.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
+        Transliterator GetInstance(string id);
+    }
+
+    /**
+    * Position structure for incremental transliteration.  This data
+    * structure defines two substrings of the text being
+    * transliterated.  The first region, [contextStart,
+    * contextLimit), defines what characters the transliterator will
+    * read as context.  The second region, [start, limit), defines
+    * what characters will actually be transliterated.  The second
+    * region should be a subset of the first.
+    *
+    * <p>After a transliteration operation, some of the indices in this
+    * structure will be modified.  See the field descriptions for
+    * details.
+    *
+    * <p>contextStart &lt;= start &lt;= limit &lt;= contextLimit
+    *
+    * <p>Note: All index values in this structure must be at code point
+    * boundaries.  That is, none of them may occur between two code units
+    * of a surrogate pair.  If any index does split a surrogate pair,
+    * results are unspecified.
+    * @stable ICU 2.0
+    */
+    public class TransliterationPosition
+    {
+
+        /**
+         * Beginning index, inclusive, of the context to be considered for
+         * a transliteration operation.  The transliterator will ignore
+         * anything before this index.  INPUT/OUTPUT parameter: This parameter
+         * is updated by a transliteration operation to reflect the maximum
+         * amount of antecontext needed by a transliterator.
+         * @stable ICU 2.0
+         */
+        public int ContextStart { get; set; }
+
+        /**
+         * Ending index, exclusive, of the context to be considered for a
+         * transliteration operation.  The transliterator will ignore
+         * anything at or after this index.  INPUT/OUTPUT parameter: This
+         * parameter is updated to reflect changes in the length of the
+         * text, but points to the same logical position in the text.
+         * @stable ICU 2.0
+         */
+        public int ContextLimit { get; set; }
+
+        /**
+         * Beginning index, inclusive, of the text to be transliteratd.
+         * INPUT/OUTPUT parameter: This parameter is advanced past
+         * characters that have already been transliterated by a
+         * transliteration operation.
+         * @stable ICU 2.0
+         */
+        public int Start { get; set; }
+
+        /**
+         * Ending index, exclusive, of the text to be transliteratd.
+         * INPUT/OUTPUT parameter: This parameter is updated to reflect
+         * changes in the length of the text, but points to the same
+         * logical position in the text.
+         * @stable ICU 2.0
+         */
+        public int Limit { get; set; }
+
+        /**
+         * Constructs a Position object with start, limit,
+         * contextStart, and contextLimit all equal to zero.
+         * @stable ICU 2.0
+         */
+        public TransliterationPosition()
+            : this(0, 0, 0, 0)
+        {
+        }
+
+        /**
+         * Constructs a Position object with the given start,
+         * contextStart, and contextLimit.  The limit is set to the
+         * contextLimit.
+         * @stable ICU 2.0
+         */
+        public TransliterationPosition(int contextStart, int contextLimit, int start)
+            : this(contextStart, contextLimit, start, contextLimit)
+        {
+        }
+
+        /**
+         * Constructs a Position object with the given start, limit,
+         * contextStart, and contextLimit.
+         * @stable ICU 2.0
+         */
+        public TransliterationPosition(int contextStart, int contextLimit,
+                        int start, int limit)
+        {
+            this.ContextStart = contextStart;
+            this.ContextLimit = contextLimit;
+            this.Start = start;
+            this.Limit = limit;
+        }
+
+        /**
+         * Constructs a Position object that is a copy of another.
+         * @stable ICU 2.6
+         */
+        public TransliterationPosition(TransliterationPosition pos)
+        {
+            Set(pos);
+        }
+
+        /**
+         * Copies the indices of this position from another.
+         * @stable ICU 2.6
+         */
+        public virtual void Set(TransliterationPosition pos)
+        {
+            ContextStart = pos.ContextStart;
+            ContextLimit = pos.ContextLimit;
+            Start = pos.Start;
+            Limit = pos.Limit;
+        }
+
+        /**
+         * Returns true if this Position is equal to the given object.
+         * @stable ICU 2.6
+         */
+        public override bool Equals(object obj)
+        {
+            if (obj is TransliterationPosition)
+            {
+                TransliterationPosition pos = (TransliterationPosition)obj;
+                return ContextStart == pos.ContextStart &&
+                    ContextLimit == pos.ContextLimit &&
+                    Start == pos.Start &&
+                    Limit == pos.Limit;
+            }
+            return false;
+        }
+
+        /**
+         * Mock implementation of hashCode(). This implementation always returns a constant
+         * value. When Java assertion is enabled, this method triggers an assertion failure.
+         * @internal
+         * @deprecated This API is ICU internal only.
+         */
+        [Obsolete("This API is ICU internal only.")]
+        public override int GetHashCode()
+        {
+            Debug.Assert(false, "hashCode not designed");
+            return 42;
+        }
+
+        /**
+         * Returns a string representation of this Position.
+         * @stable ICU 2.6
+         */
+        public override string ToString()
+        {
+            return "[cs=" + ContextStart
+                + ", s=" + Start
+                + ", l=" + Limit
+                + ", cl=" + ContextLimit
+                + "]";
+        }
+
+        /**
+         * Check all bounds.  If they are invalid, throw an exception.
+         * @param length the length of the string this object applies to
+         * @exception IllegalArgumentException if any indices are out
+         * of bounds
+         * @stable ICU 2.0
+         */
+        public void Validate(int length)
+        {
+            if (ContextStart < 0 ||
+                Start < ContextStart ||
+                Limit < Start ||
+                ContextLimit < Limit ||
+                length < ContextLimit)
+            {
+                throw new ArgumentException("Invalid Position {cs=" +
+                                                   ContextStart + ", s=" +
+                                                   Start + ", l=" +
+                                                   Limit + ", cl=" +
+                                                   ContextLimit + "}, len=" +
+                                                   length);
+            }
+        }
+    }
+
+
     public abstract class Transliterator : IStringTransform
     {
         // ICU4N specific - need to use the current assembly for resources
@@ -63,191 +270,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static readonly TransliterationDirection Reverse = TransliterationDirection.Reverse; 
 
-        /**
-         * Position structure for incremental transliteration.  This data
-         * structure defines two substrings of the text being
-         * transliterated.  The first region, [contextStart,
-         * contextLimit), defines what characters the transliterator will
-         * read as context.  The second region, [start, limit), defines
-         * what characters will actually be transliterated.  The second
-         * region should be a subset of the first.
-         *
-         * <p>After a transliteration operation, some of the indices in this
-         * structure will be modified.  See the field descriptions for
-         * details.
-         *
-         * <p>contextStart &lt;= start &lt;= limit &lt;= contextLimit
-         *
-         * <p>Note: All index values in this structure must be at code point
-         * boundaries.  That is, none of them may occur between two code units
-         * of a surrogate pair.  If any index does split a surrogate pair,
-         * results are unspecified.
-         * @stable ICU 2.0
-         */
-        public class Position // ICU4N TODO: API - De-nest this class
-        {
-
-            /**
-             * Beginning index, inclusive, of the context to be considered for
-             * a transliteration operation.  The transliterator will ignore
-             * anything before this index.  INPUT/OUTPUT parameter: This parameter
-             * is updated by a transliteration operation to reflect the maximum
-             * amount of antecontext needed by a transliterator.
-             * @stable ICU 2.0
-             */
-            public int ContextStart { get; set; }
-
-            /**
-             * Ending index, exclusive, of the context to be considered for a
-             * transliteration operation.  The transliterator will ignore
-             * anything at or after this index.  INPUT/OUTPUT parameter: This
-             * parameter is updated to reflect changes in the length of the
-             * text, but points to the same logical position in the text.
-             * @stable ICU 2.0
-             */
-            public int ContextLimit { get; set; }
-
-            /**
-             * Beginning index, inclusive, of the text to be transliteratd.
-             * INPUT/OUTPUT parameter: This parameter is advanced past
-             * characters that have already been transliterated by a
-             * transliteration operation.
-             * @stable ICU 2.0
-             */
-            public int Start { get; set; }
-
-            /**
-             * Ending index, exclusive, of the text to be transliteratd.
-             * INPUT/OUTPUT parameter: This parameter is updated to reflect
-             * changes in the length of the text, but points to the same
-             * logical position in the text.
-             * @stable ICU 2.0
-             */
-            public int Limit { get; set; }
-
-            /**
-             * Constructs a Position object with start, limit,
-             * contextStart, and contextLimit all equal to zero.
-             * @stable ICU 2.0
-             */
-            public Position()
-                : this(0, 0, 0, 0)
-            {
-            }
-
-            /**
-             * Constructs a Position object with the given start,
-             * contextStart, and contextLimit.  The limit is set to the
-             * contextLimit.
-             * @stable ICU 2.0
-             */
-            public Position(int contextStart, int contextLimit, int start)
-                : this(contextStart, contextLimit, start, contextLimit)
-            {
-            }
-
-            /**
-             * Constructs a Position object with the given start, limit,
-             * contextStart, and contextLimit.
-             * @stable ICU 2.0
-             */
-            public Position(int contextStart, int contextLimit,
-                            int start, int limit)
-            {
-                this.ContextStart = contextStart;
-                this.ContextLimit = contextLimit;
-                this.Start = start;
-                this.Limit = limit;
-            }
-
-            /**
-             * Constructs a Position object that is a copy of another.
-             * @stable ICU 2.6
-             */
-            public Position(Position pos)
-            {
-                Set(pos);
-            }
-
-            /**
-             * Copies the indices of this position from another.
-             * @stable ICU 2.6
-             */
-            public virtual void Set(Position pos)
-            {
-                ContextStart = pos.ContextStart;
-                ContextLimit = pos.ContextLimit;
-                Start = pos.Start;
-                Limit = pos.Limit;
-            }
-
-            /**
-             * Returns true if this Position is equal to the given object.
-             * @stable ICU 2.6
-             */
-            public override bool Equals(object obj)
-            {
-                if (obj is Position)
-                {
-                    Position pos = (Position)obj;
-                    return ContextStart == pos.ContextStart &&
-                        ContextLimit == pos.ContextLimit &&
-                        Start == pos.Start &&
-                        Limit == pos.Limit;
-                }
-                return false;
-            }
-
-            /**
-             * Mock implementation of hashCode(). This implementation always returns a constant
-             * value. When Java assertion is enabled, this method triggers an assertion failure.
-             * @internal
-             * @deprecated This API is ICU internal only.
-             */
-            [Obsolete("This API is ICU internal only.")]
-            public override int GetHashCode()
-            {
-                Debug.Assert(false, "hashCode not designed");
-                return 42;
-            }
-
-            /**
-             * Returns a string representation of this Position.
-             * @stable ICU 2.6
-             */
-            public override string ToString()
-            {
-                return "[cs=" + ContextStart
-                    + ", s=" + Start
-                    + ", l=" + Limit
-                    + ", cl=" + ContextLimit
-                    + "]";
-            }
-
-            /**
-             * Check all bounds.  If they are invalid, throw an exception.
-             * @param length the length of the string this object applies to
-             * @exception IllegalArgumentException if any indices are out
-             * of bounds
-             * @stable ICU 2.0
-             */
-            public void Validate(int length)
-            {
-                if (ContextStart < 0 ||
-                    Start < ContextStart ||
-                    Limit < Start ||
-                    ContextLimit < Limit ||
-                    length < ContextLimit)
-                {
-                    throw new ArgumentException("Invalid Position {cs=" +
-                                                       ContextStart + ", s=" +
-                                                       Start + ", l=" +
-                                                       Limit + ", cl=" +
-                                                       ContextLimit + "}, len=" +
-                                                       length);
-                }
-            }
-        }
+        // ICU4N specific - de-nested the Postion class and renamed it TransliteratorPosition
 
         /**
          * Programmatic name, e.g., "Latin-Arabic".
@@ -363,7 +386,7 @@ namespace ICU4N.Text
                 return -1;
             }
 
-            Position pos = new Position(start, limit, start);
+            TransliterationPosition pos = new TransliterationPosition(start, limit, start);
             FilteredTransliterate(text, pos, false, true);
             return pos.Limit;
         }
@@ -440,7 +463,7 @@ namespace ICU4N.Text
          * is invalid
          * @stable ICU 2.0
          */
-        public void Transliterate(IReplaceable text, Position index,
+        public void Transliterate(IReplaceable text, TransliterationPosition index,
                                         string insertion)
         {
             index.Validate(text.Length);
@@ -489,7 +512,7 @@ namespace ICU4N.Text
          * @see #transliterate(Replaceable, Transliterator.Position, String)
          * @stable ICU 2.0
          */
-        public void Transliterate(IReplaceable text, Position index,
+        public void Transliterate(IReplaceable text, TransliterationPosition index,
                                         int insertion)
         {
             Transliterate(text, index, UTF16.ValueOf(insertion));
@@ -507,7 +530,7 @@ namespace ICU4N.Text
          * @see #transliterate(Replaceable, Transliterator.Position, String)
          * @stable ICU 2.0
          */
-        public void Transliterate(IReplaceable text, Position index)
+        public void Transliterate(IReplaceable text, TransliterationPosition index)
         {
             Transliterate(text, index, null);
         }
@@ -524,7 +547,7 @@ namespace ICU4N.Text
          * @stable ICU 2.0
          */
         public void FinishTransliteration(IReplaceable text,
-                                                Position index)
+                                                TransliterationPosition index)
         {
             index.Validate(text.Length);
             FilteredTransliterate(text, index, false, true);
@@ -610,7 +633,7 @@ namespace ICU4N.Text
          * @stable ICU 2.0
          */
         protected abstract void HandleTransliterate(IReplaceable text,
-                                                    Position pos, bool incremental);
+                                                    TransliterationPosition pos, bool incremental);
 
         /**
          * Top-level transliteration method, handling filtering, incremental and
@@ -640,7 +663,7 @@ namespace ICU4N.Text
          * parameter is ignored.
          */
         private void FilteredTransliterate(IReplaceable text,
-                                           Position index,
+                                           TransliterationPosition index,
                                            bool incremental,
                                            bool rollback)
         {
@@ -979,7 +1002,7 @@ namespace ICU4N.Text
          * @stable ICU 2.0
          */
         public virtual void FilteredTransliterate(IReplaceable text,
-                                             Position index,
+                                             TransliterationPosition index,
                                              bool incremental)
         {
             FilteredTransliterate(text, index, incremental, false);
@@ -1682,7 +1705,7 @@ namespace ICU4N.Text
          * @see #unregister
          * @stable ICU 2.0
          */
-        public static void RegisterClass(string id, Type transClass, string displayName) // ICU4N TODO: API - rename RegisterType
+        public static void RegisterType(string id, Type transClass, string displayName) // ICU4N specific - Renamed from RegisterClass to RegisterType
         {
             registry.Put(id, transClass, true); // ICU4N TODO: Indexer ?
             if (displayName != null)
@@ -1703,7 +1726,7 @@ namespace ICU4N.Text
          * @param factory the factory object
          * @stable ICU 2.0
          */
-        public static void RegisterFactory(string ID, IFactory factory)
+        public static void RegisterFactory(string ID, ITransliteratorFactory factory)
         {
             registry.Put(ID, factory, true);
         }
@@ -1820,7 +1843,7 @@ namespace ICU4N.Text
          * @see #registerClass
          * @stable ICU 2.0
          */
-        public static IEnumerable<string> GetAvailableIDs() // ICU4N TODO: API - property ?
+        public static IEnumerable<string> GetAvailableIDs()
         {
             return registry.GetAvailableIDs();
         }
@@ -1832,7 +1855,7 @@ namespace ICU4N.Text
          * source.
          * @stable ICU 2.0
          */
-        public static IEnumerable<string> GetAvailableSources() // ICU4N TODO: API - property ?
+        public static IEnumerable<string> GetAvailableSources()
         {
             return registry.GetAvailableSources();
         }
@@ -1957,7 +1980,7 @@ namespace ICU4N.Text
             RegisterSpecialInverse(NullTransliterator.SHORT_ID, NullTransliterator.SHORT_ID, false);
 
             // Register non-rule-based transliterators
-            RegisterClass(NullTransliterator._ID,
+            RegisterType(NullTransliterator._ID,
                           typeof(NullTransliterator), null);
             RemoveTransliterator.Register();
             EscapeTransliterator.Register();
@@ -2003,7 +2026,7 @@ namespace ICU4N.Text
         }
 
         // ICU4N specific class to make anonymous factories 
-        internal class Factory : IFactory
+        internal class Factory : ITransliteratorFactory
         {
             private readonly Func<string, Transliterator> getInstance;
 
@@ -2020,24 +2043,7 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * The factory interface for transliterators.  Transliterator
-         * subclasses can register factory objects for IDs using the
-         * registerFactory() method of Transliterator.  When invoked, the
-         * factory object will be passed the ID being instantiated.  This
-         * makes it possible to register one factory method to more than
-         * one ID, or for a factory method to parameterize its result
-         * based on the variant.
-         * @stable ICU 2.0
-         */
-        public interface IFactory
-        {
-            /**
-             * Return a transliterator for the given id.
-             * @stable ICU 2.0
-             */
-            Transliterator GetInstance(string id);
-        }
+        
 
         /**
          * Implements StringTransform via this method.

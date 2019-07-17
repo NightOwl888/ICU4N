@@ -21,7 +21,7 @@ namespace ICU4N.Dev.Test.Translit
                 new ReplaceableString("A quick fox jumped over the lazy dog.");
             String insertString = "cats and dogs";
             int stoppedAt = 0, len;
-            Transliterator.Position pos = new Transliterator.Position();
+            TransliterationPosition pos = new TransliterationPosition();
 
             Transliterator t =
                 Transliterator.GetInstance(trans, Transliterator.Forward);
@@ -245,7 +245,7 @@ namespace ICU4N.Dev.Test.Translit
                     Transliterator t =
                         Transliterator.CreateFromRules(id, rules, Transliterator.Reverse);
                     t.Filter = (set);
-                    Transliterator.RegisterClass(id, t.GetType(), null);
+                    Transliterator.RegisterType(id, t.GetType(), null);
                     Transliterator.Unregister(id);
                     try
                     {

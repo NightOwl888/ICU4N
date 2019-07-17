@@ -359,7 +359,7 @@ namespace ICU4N.Text
          * entry in the underlying static locale resource store is masked.
          */
         public virtual void Put(string id,
-                        Transliterator.IFactory factory,
+                        ITransliteratorFactory factory,
                         bool visible)
         {
             RegisterEntry(id, factory, visible);
@@ -971,9 +971,9 @@ namespace ICU4N.Text
                     aliasReturn.Append(((AliasEntry)entry).Alias);
                     return null;
                 }
-                else if (entry is Transliterator.IFactory)
+                else if (entry is ITransliteratorFactory)
                 {
-                    return ((Transliterator.IFactory)entry).GetInstance(ID);
+                    return ((ITransliteratorFactory)entry).GetInstance(ID);
                 }
                 else if (entry is CompoundRBTEntry)
                 {
