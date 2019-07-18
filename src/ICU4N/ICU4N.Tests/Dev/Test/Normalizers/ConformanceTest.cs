@@ -188,7 +188,7 @@ namespace ICU4N.Dev.Test.Normalizers
             compare(field[0], field[1]);
             compare(field[0], field[2]);
             // test quick checks
-            if (NormalizerQuickCheckResult.No == Normalizer.QuickCheck(field[1], Normalizer.NFC, options))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(field[1], Normalizer.NFC, options))
             {
                 Errln("Normalizer error: quickCheck(NFC(s), Normalizer.NFC) is Normalizer.NO");
                 pass = false;

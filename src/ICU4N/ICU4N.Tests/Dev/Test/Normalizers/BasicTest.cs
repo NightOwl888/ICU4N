@@ -420,28 +420,28 @@ namespace ICU4N.Dev.Test.Normalizers
             for (; count < SIZE; count++)
             {
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFD[count]),
-                        Normalizer.NFD, 0) != NormalizerQuickCheckResult.No)
+                        Normalizer.NFD, 0) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFD quick check at U+" +
                            (CPNFD[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFC[count]),
-                            Normalizer.NFC, 0) != NormalizerQuickCheckResult.No)
+                            Normalizer.NFC, 0) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                            (CPNFC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKD[count]),
-                                    Normalizer.NFKD, 0) != NormalizerQuickCheckResult.No)
+                                    Normalizer.NFKD, 0) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFKD quick check at U+" +
                            (CPNFKD[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                             Normalizer.NFKC, 0) != NormalizerQuickCheckResult.No)
+                                             Normalizer.NFKC, 0) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                            (CPNFKC[count]).ToHexString());
@@ -449,7 +449,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 // for improving coverage
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                             Normalizer.NFKC) != NormalizerQuickCheckResult.No)
+                                             Normalizer.NFKC) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                            (CPNFKC[count]).ToHexString());
@@ -482,28 +482,28 @@ namespace ICU4N.Dev.Test.Normalizers
             while (cp < 0xA0)
             {
                 if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFD, 0)
-                                                != NormalizerQuickCheckResult.Yes)
+                                                != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFD quick check at U+" +
                                                           (cp).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFC, 0)
-                                                 != NormalizerQuickCheckResult.Yes)
+                                                 != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                                                           (cp).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFKD, 0)
-                                                 != NormalizerQuickCheckResult.Yes)
+                                                 != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKD quick check at U+" +
                                                           (cp).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFKC, 0)
-                                                 != NormalizerQuickCheckResult.Yes)
+                                                 != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                                                            (cp).ToHexString());
@@ -511,7 +511,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 // improve the coverage
                 if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFKC)
-                                                 != NormalizerQuickCheckResult.Yes)
+                                                 != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                                                            (cp).ToHexString());
@@ -523,28 +523,28 @@ namespace ICU4N.Dev.Test.Normalizers
             for (; count < SIZE; count++)
             {
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFD[count]),
-                                             Normalizer.NFD, 0) != NormalizerQuickCheckResult.Yes)
+                                             Normalizer.NFD, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFD quick check at U+" +
                                                  (CPNFD[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFC[count]),
-                                             Normalizer.NFC, 0) != NormalizerQuickCheckResult.Yes)
+                                             Normalizer.NFC, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                                                  (CPNFC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKD[count]),
-                                             Normalizer.NFKD, 0) != NormalizerQuickCheckResult.Yes)
+                                             Normalizer.NFKD, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKD quick check at U+" +
                                         (CPNFKD[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                             Normalizer.NFKC, 0) != NormalizerQuickCheckResult.Yes)
+                                             Normalizer.NFKC, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                             (CPNFKC[count]).ToHexString());
@@ -552,7 +552,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 // improve the coverage
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                             Normalizer.NFKC) != NormalizerQuickCheckResult.Yes)
+                                             Normalizer.NFKC) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                             (CPNFKC[count]).ToHexString());
@@ -592,35 +592,35 @@ namespace ICU4N.Dev.Test.Normalizers
             for (; count < SIZE; count++)
             {
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFC[count]),
-                                            Normalizer.NFC, 0) != NormalizerQuickCheckResult.Maybe)
+                                            Normalizer.NFC, 0) != QuickCheckResult.Maybe)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                                                 (CPNFC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                           Normalizer.NFKC, 0) != NormalizerQuickCheckResult.Maybe)
+                                           Normalizer.NFKC, 0) != QuickCheckResult.Maybe)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                                                 (CPNFKC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(new char[] { CPNFC[count] },
-                                            Normalizer.NFC, 0) != NormalizerQuickCheckResult.Maybe)
+                                            Normalizer.NFC, 0) != QuickCheckResult.Maybe)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                                                 (CPNFC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(new char[] { CPNFKC[count] },
-                                           Normalizer.NFKC, 0) != NormalizerQuickCheckResult.Maybe)
+                                           Normalizer.NFKC, 0) != QuickCheckResult.Maybe)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                                                 (CPNFKC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(new char[] { CPNFKC[count] },
-                                           Normalizer.NONE, 0) != NormalizerQuickCheckResult.Yes)
+                                           Normalizer.NONE, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NONE quick check at U+" +
                                                 (CPNFKC[count]).ToHexString());
@@ -641,14 +641,14 @@ namespace ICU4N.Dev.Test.Normalizers
                 d = canonTests[count][1];
                 c = canonTests[count][2];
                 if (Normalizer.QuickCheck(d, Normalizer.NFD, 0)
-                                                != NormalizerQuickCheckResult.Yes)
+                                                != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFD quick check for string at count " + count);
                     return;
                 }
 
                 if (Normalizer.QuickCheck(c, Normalizer.NFC, 0)
-                                                == NormalizerQuickCheckResult.No)
+                                                == QuickCheckResult.No)
                 {
                     Errln("ERROR in NFC quick check for string at count " + count);
                     return;
@@ -660,14 +660,14 @@ namespace ICU4N.Dev.Test.Normalizers
                 d = compatTests[count][1];
                 c = compatTests[count][2];
                 if (Normalizer.QuickCheck(d, Normalizer.NFKD, 0)
-                                                != NormalizerQuickCheckResult.Yes)
+                                                != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKD quick check for string at count " + count);
                     return;
                 }
 
                 if (Normalizer.QuickCheck(c, Normalizer.NFKC, 0)
-                                                != NormalizerQuickCheckResult.Yes)
+                                                != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check for string at count " + count);
                     return;
@@ -675,13 +675,13 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-        static int qcToInt(NormalizerQuickCheckResult qc)
+        static int qcToInt(QuickCheckResult qc)
         {
-            if (qc == NormalizerQuickCheckResult.No)
+            if (qc == QuickCheckResult.No)
             {
                 return 0;
             }
-            else if (qc == NormalizerQuickCheckResult.Yes)
+            else if (qc == QuickCheckResult.Yes)
             {
                 return 1;
             }
@@ -1822,7 +1822,7 @@ namespace ICU4N.Dev.Test.Normalizers
                          new char[]  { (char)0x0061, (char)0x0323, (char)0x00E2, (char)0x0323, (char)0 },
                          new char[]  { (char)0x0061, (char)0x0323, (char)0x1E05, (char)0x0302, (char)0 }
                         };
-            NormalizerQuickCheckResult[] result = { NormalizerQuickCheckResult.Yes, NormalizerQuickCheckResult.No, NormalizerQuickCheckResult.No, NormalizerQuickCheckResult.Yes };
+            QuickCheckResult[] result = { QuickCheckResult.Yes, QuickCheckResult.No, QuickCheckResult.No, QuickCheckResult.Yes };
 
             char[] datachar =  {        (char)0x60, (char)0x61, (char)0x62, (char)0x63, (char)0x64, (char)0x65, (char)0x66, (char)0x67, (char)0x68, (char)0x69,
                                 (char)0x6a,
@@ -1838,17 +1838,17 @@ namespace ICU4N.Dev.Test.Normalizers
 
             int count = 0;
 
-            if (Normalizer.QuickCheck(FAST, 0, FAST.Length, Normalizer.FCD, 0) != NormalizerQuickCheckResult.Yes)
+            if (Normalizer.QuickCheck(FAST, 0, FAST.Length, Normalizer.FCD, 0) != QuickCheckResult.Yes)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for fast Normalizer.quickCheck is NormalizerQuickCheckResult.Yes\n");
-            if (Normalizer.QuickCheck(FALSE, 0, FALSE.Length, Normalizer.FCD, 0) != NormalizerQuickCheckResult.No)
+            if (Normalizer.QuickCheck(FALSE, 0, FALSE.Length, Normalizer.FCD, 0) != QuickCheckResult.No)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for error Normalizer.quickCheck is NormalizerQuickCheckResult.No\n");
-            if (Normalizer.QuickCheck(TRUE, 0, TRUE.Length, Normalizer.FCD, 0) != NormalizerQuickCheckResult.Yes)
+            if (Normalizer.QuickCheck(TRUE, 0, TRUE.Length, Normalizer.FCD, 0) != QuickCheckResult.Yes)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for correct Normalizer.quickCheck is NormalizerQuickCheckResult.Yes\n");
 
 
             while (count < 4)
             {
-                NormalizerQuickCheckResult fcdresult = Normalizer.QuickCheck(datastr[count], 0, datastr[count].Length, Normalizer.FCD, 0);
+                QuickCheckResult fcdresult = Normalizer.QuickCheck(datastr[count], 0, datastr[count].Length, Normalizer.FCD, 0);
                 if (result[count] != fcdresult)
                 {
                     Errln("Normalizer.QuickCheck(FCD) failed: Data set " + count
@@ -1864,7 +1864,7 @@ namespace ICU4N.Dev.Test.Normalizers
             for (count = 0; count < 50; count++)
             {
                 int size = 0;
-                NormalizerQuickCheckResult testresult = NormalizerQuickCheckResult.Yes;
+                QuickCheckResult testresult = QuickCheckResult.Yes;
                 char[] data = new char[20];
                 char[] norm = new char[100];
                 char[] nfd = new char[100];
@@ -1886,9 +1886,9 @@ namespace ICU4N.Dev.Test.Normalizers
                 //                      nfd, 100, &status);
                 if (nfdsize != normStart || Utility.ArrayRegionMatches(nfd, 0, norm, 0, nfdsize) == false)
                 {
-                    testresult = NormalizerQuickCheckResult.No;
+                    testresult = QuickCheckResult.No;
                 }
-                if (testresult == NormalizerQuickCheckResult.Yes)
+                if (testresult == QuickCheckResult.Yes)
                 {
                     Logln("result NormalizerQuickCheckResult.Yes\n");
                 }
@@ -1948,8 +1948,8 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             int normOptions = options >> Normalizer.COMPARE_NORM_OPTIONS_SHIFT;
 
-            if (NormalizerQuickCheckResult.Yes == Normalizer.QuickCheck(s1, Normalizer.FCD, normOptions) &&
-                NormalizerQuickCheckResult.Yes == Normalizer.QuickCheck(s2, Normalizer.FCD, normOptions))
+            if (QuickCheckResult.Yes == Normalizer.QuickCheck(s1, Normalizer.FCD, normOptions) &&
+                QuickCheckResult.Yes == Normalizer.QuickCheck(s2, Normalizer.FCD, normOptions))
             {
                 options |= Normalizer.INPUT_IS_FCD;
             }
@@ -2404,7 +2404,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int c;
             int count;
             int/*unsigned*/ cc, trailCC, foldCC, foldTrailCC;
-            NormalizerQuickCheckResult qcResult;
+            QuickCheckResult qcResult;
             UCharacterCategory category;
             bool isNFD;
 
@@ -2462,7 +2462,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 // - character maps to empty string: adjacent characters may then need reordering
                 // - folding has different leading/trailing cc's, and they don't become just 0
                 // - folding itself is not FCD
-                if (qcResult != NormalizerQuickCheckResult.Yes ||
+                if (qcResult != QuickCheckResult.Yes ||
                     s.Length == 0 ||
                     (cc != foldCC && foldCC != 0) || (trailCC != foldTrailCC && foldTrailCC != 0)
                 )
@@ -2476,7 +2476,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 // also bad:
                 // if a code point is in NFD but its case folding is not, then
                 // unorm_compare will also fail
-                if (isNFD && NormalizerQuickCheckResult.Yes != Normalizer.QuickCheck(s, Normalizer.NFD, 0))
+                if (isNFD && QuickCheckResult.Yes != Normalizer.QuickCheck(s, Normalizer.NFD, 0))
                 {
                     ++count;
                     Errln("U+" + Hex(c) + ": case-folding may un-FCD a string (folding options 0x" + Hex(foldingOptions) + ")");
@@ -3126,7 +3126,7 @@ namespace ICU4N.Dev.Test.Normalizers
             assertFalse("soft hyphen is not normalized", n2.IsNormalized(sh));
             string result = n2.Normalize(sh);
             assertTrue("soft hyphen normalizes to empty", result == string.Empty);
-            assertEquals("soft hyphen QC=No", NormalizerQuickCheckResult.No, n2.QuickCheck(sh));
+            assertEquals("soft hyphen QC=No", QuickCheckResult.No, n2.QuickCheck(sh));
             assertEquals("soft hyphen spanQuickCheckYes", 0, n2.SpanQuickCheckYes(sh));
 
             string s = "\u00ADÄ\u00AD\u0323";
@@ -3300,13 +3300,13 @@ namespace ICU4N.Dev.Test.Normalizers
 
             internal override bool IsNormalized(ICharSequence s) { return false; }
 
-            public override NormalizerQuickCheckResult QuickCheck(string s) { return (NormalizerQuickCheckResult)(-1); }
+            public override QuickCheckResult QuickCheck(string s) { return (QuickCheckResult)(-1); }
 
-            public override NormalizerQuickCheckResult QuickCheck(StringBuffer s) { return (NormalizerQuickCheckResult)(-1); }
+            public override QuickCheckResult QuickCheck(StringBuffer s) { return (QuickCheckResult)(-1); }
 
-            public override NormalizerQuickCheckResult QuickCheck(char[] s) { return (NormalizerQuickCheckResult)(-1); }
+            public override QuickCheckResult QuickCheck(char[] s) { return (QuickCheckResult)(-1); }
 
-            internal override NormalizerQuickCheckResult QuickCheck(ICharSequence s) { return (NormalizerQuickCheckResult)(-1); }
+            internal override QuickCheckResult QuickCheck(ICharSequence s) { return (QuickCheckResult)(-1); }
 
             public override int SpanQuickCheckYes(string s) { return 0; }
 

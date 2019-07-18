@@ -15,7 +15,7 @@ namespace ICU4N.Text
     /// <see cref="Normalizer2.QuickCheck(string)"/>.
     /// For details see Unicode Technical Report 15.
     /// </summary>
-    public enum NormalizerQuickCheckResult // ICU4N TODO: API - rename QuickCheckResult
+    public enum QuickCheckResult
     {
         /// <summary>
         /// Indicates that string is not in the normalized format.
@@ -40,7 +40,7 @@ namespace ICU4N.Text
     /// This API has been replaced by the <see cref="Normalizer2"/> class and is only available
     /// for backward compatibility. This class simply delegates to the Normalizer2 class.
     /// There are two exceptions: The new API does not provide a replacement for
-    /// <see cref="NormalizerQuickCheckResult"/> and <see cref="Compare(string, string, int)"/>.
+    /// <see cref="QuickCheckResult"/> and <see cref="Compare(string, string, int)"/>.
     /// </summary>
     /// <remarks>
     /// <see cref="Normalize(string, Normalizer.Mode, int)"/> transforms Unicode text into an equivalent composed or
@@ -536,20 +536,20 @@ namespace ICU4N.Text
         /// Indicates that string is not in the normalized format
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        internal static readonly NormalizerQuickCheckResult NO = NormalizerQuickCheckResult.No; // ICU4N specific - marked internal for testing (we use the enum in .NET)
+        internal static readonly QuickCheckResult NO = QuickCheckResult.No; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
         /// <summary>
         /// Indicates that string is in the normalized format
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        internal static readonly NormalizerQuickCheckResult YES = NormalizerQuickCheckResult.Yes; // ICU4N specific - marked internal for testing (we use the enum in .NET)
+        internal static readonly QuickCheckResult YES = QuickCheckResult.Yes; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
         /// <summary>
         /// Indicates it cannot be determined if string is in the normalized
         /// format without further thorough checks.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        internal static readonly NormalizerQuickCheckResult MAYBE = NormalizerQuickCheckResult.Maybe; // ICU4N specific - marked internal for testing (we use the enum in .NET)
+        internal static readonly QuickCheckResult MAYBE = QuickCheckResult.Maybe; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
         /// <summary>
         /// Option bit for compare:
@@ -1022,7 +1022,7 @@ namespace ICU4N.Text
         /// <returns>Return code to specify if the text is normalized or not
         /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static NormalizerQuickCheckResult QuickCheck(string source, Mode mode)
+        public static QuickCheckResult QuickCheck(string source, Mode mode)
         {
             return QuickCheck(source, mode, 0);
         }
@@ -1046,7 +1046,7 @@ namespace ICU4N.Text
         /// <returns>Return code to specify if the text is normalized or not
         /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static NormalizerQuickCheckResult QuickCheck(string source, Mode mode, int options)
+        public static QuickCheckResult QuickCheck(string source, Mode mode, int options)
         {
             return mode.GetNormalizer2(options).QuickCheck(source);
         }
@@ -1063,7 +1063,7 @@ namespace ICU4N.Text
         /// <returns>Return code to specify if the text is normalized or not
         /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static NormalizerQuickCheckResult QuickCheck(char[] source, Mode mode, int options)
+        public static QuickCheckResult QuickCheck(char[] source, Mode mode, int options)
         {
             return QuickCheck(source, 0, source.Length, mode, options);
         }
@@ -1089,7 +1089,7 @@ namespace ICU4N.Text
         /// <returns>Return code to specify if the text is normalized or not
         /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static NormalizerQuickCheckResult QuickCheck(char[] source, int start,
+        public static QuickCheckResult QuickCheck(char[] source, int start,
                                               int limit, Mode mode, int options)
         {
             CharBuffer srcBuffer = CharBuffer.Wrap(source, start, limit - start);
@@ -1591,7 +1591,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
-        public int Next() // ICU4N TODO: API - rename MoveNext() ?
+        public int Next()
         {
             if (bufferPos < buffer.Length || NextNormalize())
             {
@@ -1821,7 +1821,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="SetMode(Mode)"/>
         [Obsolete("ICU 56")]
-        public Mode GetMode() // ICU4N TODO: API - make property
+        public Mode GetMode() // ICU4N: Property would conflict with the nested Mode class, and both are obsolete anyway
         {
             return mode;
         }

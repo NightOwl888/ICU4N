@@ -349,9 +349,9 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
-        public override NormalizerQuickCheckResult QuickCheck(string s)
+        public override QuickCheckResult QuickCheck(string s)
         {
-            NormalizerQuickCheckResult result = NormalizerQuickCheckResult.Yes;
+            QuickCheckResult result = QuickCheckResult.Yes;
             SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
@@ -362,13 +362,13 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    NormalizerQuickCheckResult qcResult =
+                    QuickCheckResult qcResult =
                         norm2.QuickCheck(s.SubSequence(prevSpanLimit, spanLimit));
-                    if (qcResult == NormalizerQuickCheckResult.No)
+                    if (qcResult == QuickCheckResult.No)
                     {
                         return qcResult;
                     }
-                    else if (qcResult == NormalizerQuickCheckResult.Maybe)
+                    else if (qcResult == QuickCheckResult.Maybe)
                     {
                         result = qcResult;
                     }
@@ -391,9 +391,9 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
-        public override NormalizerQuickCheckResult QuickCheck(StringBuilder s)
+        public override QuickCheckResult QuickCheck(StringBuilder s)
         {
-            NormalizerQuickCheckResult result = NormalizerQuickCheckResult.Yes;
+            QuickCheckResult result = QuickCheckResult.Yes;
             SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
@@ -404,13 +404,13 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    NormalizerQuickCheckResult qcResult =
+                    QuickCheckResult qcResult =
                         norm2.QuickCheck(s.SubSequence(prevSpanLimit, spanLimit));
-                    if (qcResult == NormalizerQuickCheckResult.No)
+                    if (qcResult == QuickCheckResult.No)
                     {
                         return qcResult;
                     }
-                    else if (qcResult == NormalizerQuickCheckResult.Maybe)
+                    else if (qcResult == QuickCheckResult.Maybe)
                     {
                         result = qcResult;
                     }
@@ -433,9 +433,9 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
-        public override NormalizerQuickCheckResult QuickCheck(char[] s)
+        public override QuickCheckResult QuickCheck(char[] s)
         {
-            NormalizerQuickCheckResult result = NormalizerQuickCheckResult.Yes;
+            QuickCheckResult result = QuickCheckResult.Yes;
             SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
@@ -446,13 +446,13 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    NormalizerQuickCheckResult qcResult =
+                    QuickCheckResult qcResult =
                         norm2.QuickCheck(s.SubSequence(prevSpanLimit, spanLimit));
-                    if (qcResult == NormalizerQuickCheckResult.No)
+                    if (qcResult == QuickCheckResult.No)
                     {
                         return qcResult;
                     }
-                    else if (qcResult == NormalizerQuickCheckResult.Maybe)
+                    else if (qcResult == QuickCheckResult.Maybe)
                     {
                         result = qcResult;
                     }
@@ -475,9 +475,9 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
-        internal override NormalizerQuickCheckResult QuickCheck(ICharSequence s)
+        internal override QuickCheckResult QuickCheck(ICharSequence s)
         {
-            NormalizerQuickCheckResult result = NormalizerQuickCheckResult.Yes;
+            QuickCheckResult result = QuickCheckResult.Yes;
             SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
             {
@@ -488,13 +488,13 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    NormalizerQuickCheckResult qcResult =
+                    QuickCheckResult qcResult =
                         norm2.QuickCheck(s.SubSequence(prevSpanLimit, spanLimit));
-                    if (qcResult == NormalizerQuickCheckResult.No)
+                    if (qcResult == QuickCheckResult.No)
                     {
                         return qcResult;
                     }
-                    else if (qcResult == NormalizerQuickCheckResult.Maybe)
+                    else if (qcResult == QuickCheckResult.Maybe)
                     {
                         result = qcResult;
                     }

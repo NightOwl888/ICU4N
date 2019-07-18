@@ -142,13 +142,13 @@ namespace ICU4N.Impl
 
             internal override bool IsNormalized(ICharSequence s) { return true; }
 
-            public override NormalizerQuickCheckResult QuickCheck(string s) { return NormalizerQuickCheckResult.Yes; }
+            public override QuickCheckResult QuickCheck(string s) { return QuickCheckResult.Yes; }
 
-            public override NormalizerQuickCheckResult QuickCheck(StringBuilder s) { return NormalizerQuickCheckResult.Yes; }
+            public override QuickCheckResult QuickCheck(StringBuilder s) { return QuickCheckResult.Yes; }
 
-            public override NormalizerQuickCheckResult QuickCheck(char[] s) { return NormalizerQuickCheckResult.Yes; }
+            public override QuickCheckResult QuickCheck(char[] s) { return QuickCheckResult.Yes; }
 
-            internal override NormalizerQuickCheckResult QuickCheck(ICharSequence s) { return NormalizerQuickCheckResult.Yes; }
+            internal override QuickCheckResult QuickCheck(ICharSequence s) { return QuickCheckResult.Yes; }
 
             public override int SpanQuickCheckYes(string s) { return s.Length; }
 
@@ -374,24 +374,24 @@ namespace ICU4N.Impl
                 return s.Length == SpanQuickCheckYes(s);
             }
 
-            public override NormalizerQuickCheckResult QuickCheck(string s)
+            public override QuickCheckResult QuickCheck(string s)
             {
-                return IsNormalized(s) ? NormalizerQuickCheckResult.Yes : NormalizerQuickCheckResult.No;
+                return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
             }
 
-            public override NormalizerQuickCheckResult QuickCheck(StringBuilder s)
+            public override QuickCheckResult QuickCheck(StringBuilder s)
             {
-                return IsNormalized(s) ? NormalizerQuickCheckResult.Yes : NormalizerQuickCheckResult.No;
+                return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
             }
 
-            public override NormalizerQuickCheckResult QuickCheck(char[] s)
+            public override QuickCheckResult QuickCheck(char[] s)
             {
-                return IsNormalized(s) ? NormalizerQuickCheckResult.Yes : NormalizerQuickCheckResult.No;
+                return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
             }
 
-            internal override NormalizerQuickCheckResult QuickCheck(ICharSequence s)
+            internal override QuickCheckResult QuickCheck(ICharSequence s)
             {
-                return IsNormalized(s) ? NormalizerQuickCheckResult.Yes : NormalizerQuickCheckResult.No;
+                return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
             }
 
             public abstract int GetQuickCheck(int c);
@@ -565,71 +565,71 @@ namespace ICU4N.Impl
                                     new Normalizer2Impl.ReorderingBuffer(impl, new StringBuilder(), 5));
             }
 
-            public override NormalizerQuickCheckResult QuickCheck(string s)
+            public override QuickCheckResult QuickCheck(string s)
             {
                 int spanLengthAndMaybe = impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
                 if ((spanLengthAndMaybe & 1) != 0)
                 {
-                    return NormalizerQuickCheckResult.Maybe;
+                    return QuickCheckResult.Maybe;
                 }
                 else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
                 {
-                    return NormalizerQuickCheckResult.Yes;
+                    return QuickCheckResult.Yes;
                 }
                 else
                 {
-                    return NormalizerQuickCheckResult.No;
+                    return QuickCheckResult.No;
                 }
             }
 
-            public override NormalizerQuickCheckResult QuickCheck(StringBuilder s)
+            public override QuickCheckResult QuickCheck(StringBuilder s)
             {
                 int spanLengthAndMaybe = impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
                 if ((spanLengthAndMaybe & 1) != 0)
                 {
-                    return NormalizerQuickCheckResult.Maybe;
+                    return QuickCheckResult.Maybe;
                 }
                 else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
                 {
-                    return NormalizerQuickCheckResult.Yes;
+                    return QuickCheckResult.Yes;
                 }
                 else
                 {
-                    return NormalizerQuickCheckResult.No;
+                    return QuickCheckResult.No;
                 }
             }
 
-            public override NormalizerQuickCheckResult QuickCheck(char[] s)
+            public override QuickCheckResult QuickCheck(char[] s)
             {
                 int spanLengthAndMaybe = impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
                 if ((spanLengthAndMaybe & 1) != 0)
                 {
-                    return NormalizerQuickCheckResult.Maybe;
+                    return QuickCheckResult.Maybe;
                 }
                 else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
                 {
-                    return NormalizerQuickCheckResult.Yes;
+                    return QuickCheckResult.Yes;
                 }
                 else
                 {
-                    return NormalizerQuickCheckResult.No;
+                    return QuickCheckResult.No;
                 }
             }
 
-            internal override NormalizerQuickCheckResult QuickCheck(ICharSequence s)
+            internal override QuickCheckResult QuickCheck(ICharSequence s)
             {
                 int spanLengthAndMaybe = impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
                 if ((spanLengthAndMaybe & 1) != 0)
                 {
-                    return NormalizerQuickCheckResult.Maybe;
+                    return QuickCheckResult.Maybe;
                 }
                 else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
                 {
-                    return NormalizerQuickCheckResult.Yes;
+                    return QuickCheckResult.Yes;
                 }
                 else
                 {
-                    return NormalizerQuickCheckResult.No;
+                    return QuickCheckResult.No;
                 }
             }
 

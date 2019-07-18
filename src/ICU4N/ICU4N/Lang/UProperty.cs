@@ -701,28 +701,28 @@ namespace ICU4N.Lang
 
         /// <summary>
         /// Enumerated property NFD_Quick_Check.
-        /// Returns numeric values compatible with <see cref="Text.NormalizerQuickCheckResult"/>.
+        /// Returns numeric values compatible with <see cref="Text.QuickCheckResult"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
         NFD_Quick_Check = 0x100C,
 
         /// <summary>
         /// Enumerated property NFKD_Quick_Check.
-        /// Returns numeric values compatible with <see cref="Text.NormalizerQuickCheckResult"/>.
+        /// Returns numeric values compatible with <see cref="Text.QuickCheckResult"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
         NFKD_Quick_Check = 0x100D,
 
         /// <summary>
         /// Enumerated property NFC_Quick_Check.
-        /// Returns numeric values compatible with <see cref="Text.NormalizerQuickCheckResult"/>.
+        /// Returns numeric values compatible with <see cref="Text.QuickCheckResult"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
         NFC_Quick_Check = 0x100E,
 
         /// <summary>
         /// Enumerated property NFKC_Quick_Check.
-        /// Returns numeric values compatible with <see cref="Text.NormalizerQuickCheckResult"/>.
+        /// Returns numeric values compatible with <see cref="Text.QuickCheckResult"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
         NFKC_Quick_Check = 0x100F,

@@ -526,7 +526,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
-        public abstract NormalizerQuickCheckResult QuickCheck(string s);
+        public abstract QuickCheckResult QuickCheck(string s);
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -539,7 +539,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
-        public abstract NormalizerQuickCheckResult QuickCheck(StringBuilder s);
+        public abstract QuickCheckResult QuickCheck(StringBuilder s);
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -552,7 +552,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
-        public abstract NormalizerQuickCheckResult QuickCheck(char[] s);
+        public abstract QuickCheckResult QuickCheck(char[] s);
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -565,7 +565,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
-        internal abstract NormalizerQuickCheckResult QuickCheck(ICharSequence s);
+        internal abstract QuickCheckResult QuickCheck(ICharSequence s);
 
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
