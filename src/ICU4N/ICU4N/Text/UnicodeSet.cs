@@ -15,9 +15,9 @@ using System.Text;
 namespace ICU4N.Text
 {
     /// <summary>
-    /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, int)"/> constructor, 
+    /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, PatternOptions)"/> constructor, 
     /// <see cref="UnicodeSet.ApplyPattern(string, PatternOptions)"/>, 
-    /// and <see cref="UnicodeSet.CloseOver(int)"/>.
+    /// and <see cref="UnicodeSet.CloseOver(PatternOptions)"/>.
     /// </summary>
     [Flags]
     public enum PatternOptions
@@ -4481,7 +4481,7 @@ namespace ICU4N.Text
 
             public void Dispose()
             {
-                // Nothing to do
+                stringIterator?.Dispose();
             }
 
             public virtual bool MoveNext()
