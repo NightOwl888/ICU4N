@@ -2092,23 +2092,22 @@ namespace ICU4N.Text
             {
                 return true;
             }
-            try
-            {
-                UnicodeSet that = (UnicodeSet)o;
-                if (len != that.len) return false;
-                for (int i = 0; i < len; ++i)
-                {
-                    if (list[i] != that.list[i]) return false;
-                }
-
-                // ICU4N: In .NET, the Equals method of collections do not compare contents,
-                // so we must do a manual check here.
-                if (!strings.SequenceEqual(that.strings)) return false; // ICU4N TODO: This could be optimized so it doesn't create an enumerator by implementing a custom collection
-            }
-            catch (Exception) // ICU4N TODO: Can we eliminate this exception?
+            // ICU4N specific - removed the try/catch and 
+            // added an extra check for null so we don't throw during a cast
+            UnicodeSet that = o as UnicodeSet;
+            if (that == null)
             {
                 return false;
             }
+            if (len != that.len) return false;
+            for (int i = 0; i < len; ++i)
+            {
+                if (list[i] != that.list[i]) return false;
+            }
+
+            // ICU4N: In .NET, the Equals method of collections do not compare contents,
+            // so we must do a manual check here.
+            if (!strings.SequenceEqual(that.strings)) return false; // ICU4N TODO: This could be optimized so it doesn't create an enumerator by implementing a custom collection
             return true;
         }
 
@@ -3038,7 +3037,7 @@ namespace ICU4N.Text
                         break;
                 }
             }
-            main_break: { }
+        main_break: { }
             buffer[k++] = HIGH;    // terminate
             len = k;
             // swap list and buffer
@@ -3133,7 +3132,7 @@ namespace ICU4N.Text
                         break;
                 }
             }
-            main_break: { }
+        main_break: { }
             buffer[k++] = HIGH;    // terminate
             len = k;
             // swap list and buffer
@@ -4101,7 +4100,7 @@ namespace ICU4N.Text
         /// Is this frozen, according to the <see cref="IFreezable{T}"/> interface?
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public virtual bool IsFrozen 
+        public virtual bool IsFrozen
         {
             get { return (bmpSet != null || stringSpan != null); }
         }
