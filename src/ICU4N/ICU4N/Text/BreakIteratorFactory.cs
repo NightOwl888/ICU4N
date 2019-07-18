@@ -30,7 +30,7 @@ namespace ICU4N.Text
             return service.UnregisterFactory((IFactory)key);
         }
 
-        public override CultureInfo[] GetAvailableLocales()
+        public override CultureInfo[] GetAvailableCultures()
         {
             if (service == null)
             {

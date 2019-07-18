@@ -354,7 +354,7 @@ namespace ICU4N.Dev.Test.Rbbi
         [Test]
         public void TestGetAvailableLocales()
         {
-            CultureInfo[] locList = BreakIterator.GetAvailableLocales();
+            CultureInfo[] locList = BreakIterator.GetAvailableCultures();
 
             if (locList.Length == 0)
                 Errln("getAvailableLocales() returned an empty list!");

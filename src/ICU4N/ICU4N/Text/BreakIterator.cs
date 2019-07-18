@@ -890,7 +890,7 @@ namespace ICU4N.Text
             // dependencies in getBreakInstance by rewriting part of the
             // LocaleData code, or perhaps by accepting it into the
             // module.
-            ///CLOVER:OFF
+            ////CLOVER:OFF
             if (shim != null)
             {
                 // Unfortunately, we don't know what is being unregistered
@@ -904,7 +904,7 @@ namespace ICU4N.Text
                 return shim.Unregister(key);
             }
             return false;
-            ///CLOVER:ON
+            ////CLOVER:ON
         }
 
         // end of registration
@@ -953,12 +953,12 @@ namespace ICU4N.Text
         /// <returns>An array of <see cref="CultureInfo"/>s.  All of the locales in the array can
         /// be used when creating a <see cref="BreakIterator"/>.</returns>
         /// <stable>ICU 2.6</stable>
-        public static CultureInfo[] GetAvailableLocales()
+        public static CultureInfo[] GetAvailableCultures() // ICU4N specific - renamed from GetAvailableLocales()
         {
             lock (syncLock)
             {
                 // to avoid linking ICULocaleData
-                return GetShim().GetAvailableLocales();
+                return GetShim().GetAvailableCultures();
             }
         }
 
@@ -1004,7 +1004,7 @@ namespace ICU4N.Text
         {
             public abstract object RegisterInstance(BreakIterator iter, ULocale l, int k);
             public abstract bool Unregister(Object key);
-            public abstract CultureInfo[] GetAvailableLocales();
+            public abstract CultureInfo[] GetAvailableCultures();  // ICU4N specific - renamed from GetAvailableLocales()
             public abstract ULocale[] GetAvailableULocales();
             public abstract BreakIterator CreateBreakIterator(ULocale l, int k);
         }
