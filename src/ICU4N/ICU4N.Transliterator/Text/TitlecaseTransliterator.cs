@@ -115,7 +115,7 @@ namespace ICU4N.Text
                 // If there is a case change, modify corresponding position in replaceable
                 int delta;
 
-                while ((c = iter.MoveNextCaseMapCP()) >= 0)
+                while ((c = iter.NextCaseMapCP()) >= 0)
                 {
                     type = csp.GetTypeOrIgnorable(c);
                     if (type >= 0)

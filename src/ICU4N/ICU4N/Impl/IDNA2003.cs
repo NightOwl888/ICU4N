@@ -208,7 +208,7 @@ namespace ICU4N.Impl
             bool useSTD3ASCIIRules = ((options & IDNA2003Options.UseSTD3Rules) != 0);
             int ch;
             // step 1
-            while ((ch = src.MoveNext()) != UCharacterIterator.Done)
+            while ((ch = src.Next()) != UCharacterIterator.Done)
             {
                 if (ch > 0x7f)
                 {
@@ -376,7 +376,7 @@ namespace ICU4N.Impl
             int ch;
             int saveIndex = src.Index;
             // step 1: find out if all the codepoints in src are ASCII  
-            while ((ch = src.MoveNext()) != UCharacterIterator.Done)
+            while ((ch = src.Next()) != UCharacterIterator.Done)
             {
                 if (ch > 0x7F)
                 {

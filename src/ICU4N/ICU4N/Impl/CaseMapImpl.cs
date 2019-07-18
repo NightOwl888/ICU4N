@@ -56,11 +56,11 @@ namespace ICU4N.Impl
             }
 
             /// <summary>
-            /// Set the iteration limit for <see cref="MoveNextCaseMapCP()"/> to an index within the string.
+            /// Set the iteration limit for <see cref="NextCaseMapCP()"/> to an index within the string.
             /// If the limit parameter is negative or past the string, then the
             /// string length is restored as the iteration limit.
             /// <para/>
-            /// This limit does not affect the <see cref="MoveNext()"/> function which always
+            /// This limit does not affect the <see cref="Next()"/> function which always
             /// iterates to the very end of the string.
             /// </summary>
             /// <param name="lim">The iteration limit.</param>
@@ -92,10 +92,10 @@ namespace ICU4N.Impl
             /// When the iteration limit is reached (and -1 is returned),
             /// <see cref="CPStart"/> will be at the iteration limit.
             /// <para/>
-            /// Iteration with <see cref="MoveNext()"/> does not affect the position for <see cref="MoveNextCaseMapCP()"/>.
+            /// Iteration with <see cref="Next()"/> does not affect the position for <see cref="NextCaseMapCP()"/>.
             /// </remarks>
             /// <returns>The next code point to be case-mapped, or &lt;0 when the iteration is done.</returns>
-            public int MoveNextCaseMapCP()
+            public int NextCaseMapCP()
             {
                 cpStart = cpLimit;
                 if (cpLimit < limit)
@@ -112,7 +112,7 @@ namespace ICU4N.Impl
 
             /// <summary>
             /// Gets the start of the code point that was last returned 
-            /// by <see cref="MoveNextCaseMapCP()"/>.
+            /// by <see cref="NextCaseMapCP()"/>.
             /// </summary>
             public int CPStart
             {
@@ -121,7 +121,7 @@ namespace ICU4N.Impl
 
             /// <summary>
             /// Gets the limit of the code point that was last returned
-            /// by <see cref="MoveNextCaseMapCP()"/>.
+            /// by <see cref="NextCaseMapCP()"/>.
             /// </summary>
             public int CPLimit
             {
@@ -130,7 +130,7 @@ namespace ICU4N.Impl
 
             /// <summary>
             /// Gets the length of the code point that was last returned
-            /// by <see cref="MoveNextCaseMapCP()"/>.
+            /// by <see cref="NextCaseMapCP()"/>.
             /// </summary>
             public int CPLength
             {
@@ -161,7 +161,7 @@ namespace ICU4N.Impl
                 }
             }
 
-            public int MoveNext()
+            public int Next()
             {
                 int c;
 

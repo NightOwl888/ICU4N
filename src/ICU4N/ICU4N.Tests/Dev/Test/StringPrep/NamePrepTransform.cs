@@ -101,7 +101,7 @@ namespace ICU4N.Dev.Test.StringPrep
             String caseMapOut = mapTransform.Transliterate(src);
             UCharacterIterator iter = UCharacterIterator.GetInstance(caseMapOut);
             int ch;
-            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.Done)
+            while ((ch = iter.NextCodePoint()) != UCharacterIterator.Done)
             {
                 if (transform.unassignedSet.Contains(ch) == true && allowUnassigned == false)
                 {
@@ -123,7 +123,7 @@ namespace ICU4N.Dev.Test.StringPrep
             int rtlPos = -1, ltrPos = -1;
             bool rightToLeft = false, leftToRight = false;
 
-            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.Done)
+            while ((ch = iter.NextCodePoint()) != UCharacterIterator.Done)
             {
 
 

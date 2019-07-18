@@ -147,14 +147,14 @@ namespace ICU4N.Text
                 {
                     // advance the index to get the
                     // next code point
-                    MoveNext();
+                    Next();
                     // due to post increment semantics
                     // current() after next() actually
                     // returns the char we want
                     int ch2 = Current;
                     // current should never change
                     // the current index so back off
-                    MovePrevious();
+                    Previous();
 
                     if (UTF16.IsTrailSurrogate((char)ch2))
                     {
@@ -186,21 +186,21 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The next UTF16 code unit, or <see cref="UForwardCharacterIterator.Done"/> if the index is at the limit of the text.</returns>
         /// <stable>ICU 2.4</stable>
-        public abstract int MoveNext();
+        public abstract int Next();
 
         /// <summary>
         /// Returns the code point at index, and increments to the next code point (post-increment semantics). If index does
-        /// not point to a valid surrogate pair, the behavior is the same as <see cref="MoveNext()"/>. Otherwise the iterator is
+        /// not point to a valid surrogate pair, the behavior is the same as <see cref="Next()"/>. Otherwise the iterator is
         /// incremented past the surrogate pair, and the code point represented by the pair is returned.
         /// </summary>
         /// <returns>The next codepoint in text, or <see cref="UForwardCharacterIterator.Done"/> if the index is at the limit of the text.</returns>
         /// <stable>ICU 2.4</stable>
-        public virtual int MoveNextCodePoint()
+        public virtual int NextCodePoint()
         {
-            int ch1 = MoveNext();
+            int ch1 = Next();
             if (UTF16.IsLeadSurrogate((char)ch1))
             {
-                int ch2 = MoveNext();
+                int ch2 = Next();
                 if (UTF16.IsTrailSurrogate((char)ch2))
                 {
                     return Character.ToCodePoint((char)ch1, (char)ch2);
@@ -208,7 +208,7 @@ namespace ICU4N.Text
                 else if (ch2 != Done)
                 {
                     // unmatched surrogate so back out
-                    MovePrevious();
+                    Previous();
                 }
             }
             return ch1;
@@ -220,22 +220,22 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The previous code unit in the text, or <see cref="UForwardCharacterIterator.Done"/> if the new index is before the start of the text.</returns>
         /// <stable>ICU 2.4</stable>
-        public abstract int MovePrevious();
+        public abstract int Previous();
 
         /// <summary>
         /// Retreat to the start of the previous code point in the text, and return it (pre-decrement semantics). If the
-        /// index is not preceeded by a valid surrogate pair, the behavior is the same as <see cref="MovePrevious()"/>. Otherwise
+        /// index is not preceeded by a valid surrogate pair, the behavior is the same as <see cref="Previous()"/>. Otherwise
         /// the iterator is decremented to the start of the surrogate pair, and the code point represented by the pair is
         /// returned.
         /// </summary>
         /// <returns>The previous code point in the text, or <see cref="UForwardCharacterIterator.Done"/> if the new index is before the start of the text.</returns>
         /// <stable>ICU 2.4</stable>
-        public virtual int MovePreviousCodePoint()
+        public virtual int PreviousCodePoint()
         {
-            int ch1 = MovePrevious();
+            int ch1 = Previous();
             if (UTF16.IsTrailSurrogate((char)ch1))
             {
-                int ch2 = MovePrevious();
+                int ch2 = Previous();
                 if (UTF16.IsLeadSurrogate((char)ch2))
                 {
                     return Character.ToCodePoint((char)ch2, (char)ch1);
@@ -243,7 +243,7 @@ namespace ICU4N.Text
                 else if (ch2 != Done)
                 {
                     // unmatched trail surrogate so back out
-                    MoveNext();
+                    Next();
                 }
             }
             return ch1;
@@ -359,14 +359,14 @@ namespace ICU4N.Text
         {
             if (delta > 0)
             {
-                while (delta > 0 && MoveNextCodePoint() != Done)
+                while (delta > 0 && NextCodePoint() != Done)
                 {
                     delta--;
                 }
             }
             else
             {
-                while (delta < 0 && MovePreviousCodePoint() != Done)
+                while (delta < 0 && PreviousCodePoint() != Done)
                 {
                     delta++;
                 }

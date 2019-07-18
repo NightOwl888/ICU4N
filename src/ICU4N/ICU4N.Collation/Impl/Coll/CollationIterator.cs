@@ -349,7 +349,7 @@ namespace ICU4N.Impl.Coll
             }
             offsets.Clear();
             int limitOffset = Offset;
-            int c = MovePreviousCodePoint();
+            int c = PreviousCodePoint();
             if (c < 0) { return Collation.NO_CE; }
             if (data.IsUnsafeBackward(c, isNumeric))
             {
@@ -415,13 +415,13 @@ namespace ICU4N.Impl.Coll
          * Returns the next code point (with post-increment).
          * Public for identical-level comparison and for testing.
          */
-        public abstract int MoveNextCodePoint();
+        public abstract int NextCodePoint();
 
         /**
          * Returns the previous code point (with pre-decrement).
          * Public for identical-level comparison and for testing.
          */
-        public abstract int MovePreviousCodePoint();
+        public abstract int PreviousCodePoint();
 
         protected void Reset()
         {
@@ -457,7 +457,7 @@ namespace ICU4N.Impl.Coll
          */
         protected virtual long HandleNextCE32()
         {
-            int c = MoveNextCodePoint();
+            int c = NextCodePoint();
             if (c < 0) { return NO_CP_AND_CE32; }
             return MakeCodePointAndCE32Pair(c, data.GetCE32(c));
         }
@@ -588,7 +588,7 @@ namespace ICU4N.Impl.Coll
                             {
                                 // Some portion of nextCE32FromContraction() pulled out here as an ASCII fast path,
                                 // avoiding the function call and the nextSkippedCodePoint() overhead.
-                                nextCp = MoveNextCodePoint();
+                                nextCp = NextCodePoint();
                                 if (nextCp < 0)
                                 {
                                     // No more text.
@@ -777,7 +777,7 @@ namespace ICU4N.Impl.Coll
             CharsTrie prefixes = new CharsTrie(d.contexts, index);
             for (; ; )
             {
-                int c = MovePreviousCodePoint();
+                int c = PreviousCodePoint();
                 if (c < 0) { break; }
                 ++lookBehind;
                 Result match = prefixes.NextForCodePoint(c);
@@ -795,7 +795,7 @@ namespace ICU4N.Impl.Coll
         {
             if (skipped != null && skipped.HasNext) { return skipped.Next(); }
             if (numCpFwd == 0) { return Collation.SENTINEL_CP; }
-            int c = MoveNextCodePoint();
+            int c = NextCodePoint();
             if (skipped != null && !skipped.IsEmpty && c >= 0) { skipped.IncBeyond(); }
             if (numCpFwd > 0 && c >= 0) { --numCpFwd; }
             return c;
@@ -942,10 +942,10 @@ namespace ICU4N.Impl.Coll
                 {
                     // Replay the partial match so far.
                     BackwardNumCodePoints(lookAhead);
-                    suffixes.FirstForCodePoint(MoveNextCodePoint());
+                    suffixes.FirstForCodePoint(NextCodePoint());
                     for (int i = 3; i < lookAhead; ++i)
                     {
-                        suffixes.NextForCodePoint(MoveNextCodePoint());
+                        suffixes.NextForCodePoint(NextCodePoint());
                     }
                     // Skip c (which did not match) and nextCp (which we will try now).
                     ForwardNumCodePoints(2);
@@ -1050,7 +1050,7 @@ namespace ICU4N.Impl.Coll
             // complex optimizations.
             // Find the first safe character before c.
             int numBackward = 1;
-            while ((c = MovePreviousCodePoint()) >= 0)
+            while ((c = PreviousCodePoint()) >= 0)
             {
                 ++numBackward;
                 if (!data.IsUnsafeBackward(c, isNumeric))
@@ -1121,7 +1121,7 @@ namespace ICU4N.Impl.Coll
                     char digit = Collation.DigitFromCE32(ce32);
                     digits.Append(digit);
                     if (numCpFwd == 0) { break; }
-                    int c = MoveNextCodePoint();
+                    int c = NextCodePoint();
                     if (c < 0) { break; }
                     ce32 = data.GetCE32(c);
                     if (ce32 == Collation.FALLBACK_CE32)
@@ -1142,7 +1142,7 @@ namespace ICU4N.Impl.Coll
                 {
                     char digit = Collation.DigitFromCE32(ce32);
                     digits.Append(digit);
-                    int c = MovePreviousCodePoint();
+                    int c = PreviousCodePoint();
                     if (c < 0) { break; }
                     ce32 = data.GetCE32(c);
                     if (ce32 == Collation.FALLBACK_CE32)

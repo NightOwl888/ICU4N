@@ -103,7 +103,7 @@ namespace ICU4N.Impl.Coll
             checkDir = 1;
         }
 
-        public override int MoveNextCodePoint()
+        public override int NextCodePoint()
         {
             char c;
             for (; ; )
@@ -150,7 +150,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        public override int MovePreviousCodePoint()
+        public override int PreviousCodePoint()
         {
             char c;
             for (; ; )
@@ -240,7 +240,7 @@ namespace ICU4N.Impl.Coll
         {
             // Specify the class to avoid a virtual-function indirection.
             // In Java, we would declare this class final.
-            while (num > 0 && MoveNextCodePoint() >= 0)
+            while (num > 0 && NextCodePoint() >= 0)
             {
                 --num;
             }
@@ -250,7 +250,7 @@ namespace ICU4N.Impl.Coll
         {
             // Specify the class to avoid a virtual-function indirection.
             // In Java, we would declare this class final.
-            while (num > 0 && MovePreviousCodePoint() >= 0)
+            while (num > 0 && PreviousCodePoint() >= 0)
             {
                 --num;
             }

@@ -665,7 +665,7 @@ namespace ICU4N.Impl
                 get { return fResults; }
             }
 
-            private Trie2.CharSequenceValues Next() // ICU4N specific - made private (replaced with MoveNext() and Current)
+            protected virtual Trie2.CharSequenceValues Next()
             {
                 int c = Character.CodePointAt(text, index);
                 int val = outerInstance.Get(c);
@@ -682,7 +682,7 @@ namespace ICU4N.Impl
             }
 
 
-            private Trie2.CharSequenceValues Previous() // ICU4N specific - made private (replaced with MovePrevious() and Current)
+            protected virtual Trie2.CharSequenceValues Previous()
             {
                 int c = Character.CodePointBefore(text, index);
                 int val = outerInstance.Get(c);

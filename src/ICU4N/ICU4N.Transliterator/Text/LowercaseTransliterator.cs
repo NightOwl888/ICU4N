@@ -81,7 +81,7 @@ namespace ICU4N.Text
                 iter.SetIndex(offsets.Start);
                 iter.SetLimit(offsets.Limit);
                 iter.SetContextLimits(offsets.ContextStart, offsets.ContextLimit);
-                while ((c = iter.MoveNextCaseMapCP()) >= 0)
+                while ((c = iter.NextCaseMapCP()) >= 0)
                 {
                     c = csp.ToFullLower(c, iter, result, caseLocale);
 

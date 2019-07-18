@@ -30,8 +30,8 @@ namespace ICU4N.Dev.Test.Iterator
             int completed = 0;
             while (completed != UCharacterIterator.Done)
             {
-                completed = iterator.MoveNext();
-                if (completed != cloned.MoveNext())
+                completed = iterator.Next();
+                if (completed != cloned.Next())
                 {
                     Errln("Cloned operation failed");
                 }
@@ -75,7 +75,7 @@ namespace ICU4N.Dev.Test.Iterator
                 Errln("Iterator failed retrieving first character");
             }
             iterator.SetToLimit();
-            if (iterator.MovePrevious() != ITERATION_STRING_[
+            if (iterator.Previous() != ITERATION_STRING_[
                                            ITERATION_STRING_.Length - 1])
             {
                 Errln("Iterator failed retrieving last character");
@@ -90,10 +90,10 @@ namespace ICU4N.Dev.Test.Iterator
             while (ch != UCharacterIterator.Done)
             {
                 int index = iterator2.Index;
-                ch = iterator2.MoveNextCodePoint();
+                ch = iterator2.NextCodePoint();
                 if (index != ITERATION_SUPPLEMENTARY_INDEX)
                 {
-                    if (ch != iterator.MoveNext() &&
+                    if (ch != iterator.Next() &&
                         ch != UCharacterIterator.Done)
                     {
                         Errln("Error mismatch in next() and nextCodePoint()");
@@ -101,8 +101,8 @@ namespace ICU4N.Dev.Test.Iterator
                 }
                 else
                 {
-                    if (UTF16.GetLeadSurrogate(ch) != iterator.MoveNext() ||
-                        UTF16.GetTrailSurrogate(ch) != iterator.MoveNext())
+                    if (UTF16.GetLeadSurrogate(ch) != iterator.Next() ||
+                        UTF16.GetTrailSurrogate(ch) != iterator.Next())
                     {
                         Errln("Error mismatch in next and nextCodePoint for " +
                               "supplementary characters");
@@ -114,10 +114,10 @@ namespace ICU4N.Dev.Test.Iterator
             while (ch != UCharacterIterator.Done)
             {
                 int index = iterator2.Index;
-                ch = iterator2.MovePreviousCodePoint();
+                ch = iterator2.PreviousCodePoint();
                 if (index != ITERATION_SUPPLEMENTARY_INDEX)
                 {
-                    if (ch != iterator.MovePrevious() &&
+                    if (ch != iterator.Previous() &&
                         ch != UCharacterIterator.Done)
                     {
                         Errln("Error mismatch in previous() and " +
@@ -126,8 +126,8 @@ namespace ICU4N.Dev.Test.Iterator
                 }
                 else
                 {
-                    if (UTF16.GetLeadSurrogate(ch) != iterator.MovePrevious() ||
-                        UTF16.GetTrailSurrogate(ch) != iterator.MovePrevious())
+                    if (UTF16.GetLeadSurrogate(ch) != iterator.Previous() ||
+                        UTF16.GetTrailSurrogate(ch) != iterator.Previous())
                     {
                         Errln("Error mismatch in previous and " +
                               "previousCodePoint for supplementary characters");
@@ -185,7 +185,7 @@ namespace ICU4N.Dev.Test.Iterator
                 //testing first32PostInc, nextCodePointPostInc, setTostart
                 i = 0;
                 iter.SetToStart();
-                c = iter.MoveNext();
+                c = iter.Next();
                 if (c != UTF16.CharAt(text, i))
                     Errln("first32PostInc failed.  Expected->" + Hex(UTF16.CharAt(text, i)) + " Got-> " + Hex(c));
                 if (iter.Index != UTF16.GetCharCount(c) + i)
@@ -200,7 +200,7 @@ namespace ICU4N.Dev.Test.Iterator
                 do
                 {
                     if (c != UCharacterIterator.Done)
-                        c = iter.MoveNextCodePoint();
+                        c = iter.NextCodePoint();
 
                     if (c != UTF16.CharAt(text, i))
                         Errln("Character mismatch at position " + i + ", iterator has " + Hex(c) + ", string has " + Hex(UTF16.CharAt(text, i)));
@@ -213,7 +213,7 @@ namespace ICU4N.Dev.Test.Iterator
                         Errln("current() after nextCodePointPostInc() isn't working right");
 
                 } while (c != UCharacterIterator.Done);
-                c = iter.MoveNextCodePoint();
+                c = iter.NextCodePoint();
                 if (c != UCharacterIterator.Done)
                     Errln("nextCodePointPostInc() didn't return DONE at the beginning");
 
@@ -389,7 +389,7 @@ namespace ICU4N.Dev.Test.Iterator
                 m = moves[movesIndex++];
                 if (m == '-')
                 {
-                    c1 = iter.MovePreviousCodePoint();
+                    c1 = iter.PreviousCodePoint();
                     c2 = iter32.Previous();
                 }
                 else if (m == '0')
@@ -399,7 +399,7 @@ namespace ICU4N.Dev.Test.Iterator
                 }
                 else
                 {// m=='+'
-                    c1 = iter.MoveNextCodePoint();
+                    c1 = iter.NextCodePoint();
                     c2 = iter32.Next();
                 }
 
@@ -524,7 +524,7 @@ namespace ICU4N.Dev.Test.Iterator
             int ch;
             // this should never go into a infinite loop
             // if it does then we have a problem
-            while ((ch = iter.MovePreviousCodePoint()) != UCharacterIterator.Done)
+            while ((ch = iter.PreviousCodePoint()) != UCharacterIterator.Done)
             {
                 if (ch != 0xDc00)
                 {
@@ -532,7 +532,7 @@ namespace ICU4N.Dev.Test.Iterator
                 }
             }
             iter.Index = (5);
-            while ((ch = iter.MoveNextCodePoint()) != UCharacterIterator.Done)
+            while ((ch = iter.NextCodePoint()) != UCharacterIterator.Done)
             {
                 if (ch != 0xDC03)
                 {

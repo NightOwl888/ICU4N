@@ -51,12 +51,12 @@ namespace ICU4N.Impl
             }
         }
 
-        public override int MoveNext()
+        public override int Next()
         {
             return pos < limit ? text[pos++] : Done;
         }
 
-        public override int MovePrevious()
+        public override int Previous()
         {
             return pos > start ? text[--pos] : Done;
         }

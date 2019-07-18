@@ -673,7 +673,7 @@ namespace ICU4N.Impl
             /// determined by the <see cref="Reset(int)"/> call.
             /// </summary>
             /// <returns>Next code point, or &lt;0 when the iteration is done.</returns>
-            int MoveNext();
+            int Next();
         }
 
         /// <summary>
@@ -770,7 +770,7 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            for (iter.Reset(dir); (c = iter.MoveNext()) >= 0;)
+            for (iter.Reset(dir); (c = iter.Next()) >= 0;)
             {
                 int type = GetTypeOrIgnorable(c);
                 if ((type & 4) != 0)
@@ -801,7 +801,7 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            for (iter.Reset(-1); (c = iter.MoveNext()) >= 0;)
+            for (iter.Reset(-1); (c = iter.Next()) >= 0;)
             {
                 dotType = GetDotType(c);
                 if (dotType == SOFT_DOTTED)
@@ -862,7 +862,7 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            for (iter.Reset(-1); (c = iter.MoveNext()) >= 0;)
+            for (iter.Reset(-1); (c = iter.Next()) >= 0;)
             {
                 if (c == 0x49)
                 {
@@ -889,7 +889,7 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            for (iter.Reset(1); (c = iter.MoveNext()) >= 0;)
+            for (iter.Reset(1); (c = iter.Next()) >= 0;)
             {
                 dotType = GetDotType(c);
                 if (dotType == ABOVE)
@@ -916,7 +916,7 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            for (iter.Reset(1); (c = iter.MoveNext()) >= 0;)
+            for (iter.Reset(1); (c = iter.Next()) >= 0;)
             {
                 if (c == 0x307)
                 {

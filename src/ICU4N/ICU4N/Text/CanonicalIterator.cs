@@ -74,30 +74,6 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// The current canonically equivalent string. 
-        /// Call <see cref="MoveNext()"/> to increment to the next.
-        /// </summary>
-        /// <draft>ICU4N 60.1</draft>
-        public string Current // ICU4N specific - implementation for .NET
-        {
-            get { return currentString; }
-        }
-
-        /// <summary>
-        /// Get the next canonically equivalent string.
-        /// <para/>
-        /// <b>Warning: The strings are not guaranteed to be in any particular order.</b>
-        /// </summary>
-        /// <returns>The next string that is canonically equivalent. The value null is returned when
-        /// the iteration is done.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        public bool MoveNext() // ICU4N specific - implementation for .NET
-        {
-            currentString = Next();
-            return (current != null);
-        }
-
-        /// <summary>
         /// Get the next canonically equivalent string.
         /// <para/>
         /// <b>Warning: The strings are not guaranteed to be in any particular order.</b>
@@ -105,7 +81,7 @@ namespace ICU4N.Text
         /// <returns>The next string that is canonically equivalent. The value null is returned when
         /// the iteration is done.</returns>
         /// <stable>ICU 2.4</stable>
-        internal /*public*/ string Next() // ICU4N specific - made internal (use MoveNext instead)
+        public string Next() // ICU4N TODO: API - change to MoveNext(), Current
         {
             if (done) return null;
 
@@ -280,9 +256,6 @@ namespace ICU4N.Text
 
         // transient fields
         private StringBuilder buffer = new StringBuilder();
-
-        // ICU4N specific - Keep track of the string for the Current property
-        private string currentString;
 
 
         // we have a segment, in NFD. Find all the strings that are canonically equivalent to it.

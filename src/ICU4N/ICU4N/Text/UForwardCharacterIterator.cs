@@ -62,20 +62,20 @@
         /// </summary>
         /// <returns>The next UTF16 code unit, or <see cref="UForwardCharacterIterator.Done"/> if the index is at the limit of the text.</returns>
         /// <stable>ICU 2.4</stable>
-        int MoveNext();
+        int Next();
 
         /// <summary>
         /// Returns the code point at index, and increments to the next code
         /// point (post-increment semantics).  If index does not point to a
         /// valid surrogate pair, the behavior is the same as
-        /// <see cref="MoveNext()"/>.  Otherwise the iterator is incremented past
+        /// <see cref="Next()"/>.  Otherwise the iterator is incremented past
         /// the surrogate pair, and the code point represented by the pair
         /// is returned.
         /// </summary>
         /// <returns>The next codepoint in text, or <see cref="UForwardCharacterIterator.Done"/> if the index is at
         /// the limit of the text.</returns>
         /// <stable>ICU 2.4</stable>
-        int MoveNextCodePoint();
+        int NextCodePoint();
     }
 
     /// <summary>

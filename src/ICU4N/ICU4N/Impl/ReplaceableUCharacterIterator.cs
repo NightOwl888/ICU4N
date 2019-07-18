@@ -102,12 +102,12 @@ namespace ICU4N.Impl
                 if (UTF16.IsLeadSurrogate((char)ch))
                 {
                     // advance the index to get the next code point
-                    MoveNext();
+                    Next();
                     // due to post increment semantics current() after next()
                     // actually returns the next char which is what we want
                     int ch2 = Current;
                     // current should never change the current index so back off
-                    MovePrevious();
+                    Previous();
 
                     if (UTF16.IsTrailSurrogate((char)ch2))
                     {
@@ -154,7 +154,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>Next UTF16 character in text or <see cref="UForwardCharacterIterator.Done"/> if the new <see cref="currentIndex"/> is off the
         ///         end of the text range.</returns>
-        public override int MoveNext()
+        public override int Next()
         {
             if (currentIndex < replaceable.Length)
             {
@@ -171,7 +171,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <returns>Next UTF16 character in text or <see cref="UForwardCharacterIterator.Done"/> if the new <see cref="currentIndex"/> is off the
         ///         start of the text range.</returns>
-        public override int MovePrevious()
+        public override int Previous()
         {
             if (currentIndex > 0)
             {

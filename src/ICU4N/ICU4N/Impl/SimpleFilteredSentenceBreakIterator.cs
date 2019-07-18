@@ -55,18 +55,18 @@ namespace ICU4N.Impl
 
 
             // Assume a space is following the '.' (so we handle the case: "Mr. /Brown")
-            if ((uch = text.MovePreviousCodePoint()) == ' ')
+            if ((uch = text.PreviousCodePoint()) == ' ')
             { // TODO: skip a class of chars here??
               // TODO only do this the 1st time?
             }
             else
             {
-                uch = text.MoveNextCodePoint();
+                uch = text.NextCodePoint();
             }
 
             Result r = Result.IntermediateValue;
 
-            while ((uch = text.MovePreviousCodePoint()) != UCharacterIterator.Done && // more to consume backwards and..
+            while ((uch = text.PreviousCodePoint()) != UCharacterIterator.Done && // more to consume backwards and..
                     ((r = backwardsTrie.NextForCodePoint(uch)).HasNext()))
             {// more in the trie
                 if (r.HasValue())
@@ -97,7 +97,7 @@ namespace ICU4N.Impl
 
                     Result rfwd = Result.IntermediateValue;
                     text.Index = bestPosn; // hope that's close ..
-                    while ((uch = text.MoveNextCodePoint()) != BreakIterator.Done
+                    while ((uch = text.NextCodePoint()) != BreakIterator.Done
                             && ((rfwd = forwardsPartialTrie.NextForCodePoint(uch)).HasNext()))
                     {
                     }

@@ -49,14 +49,14 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        public override int MoveNextCodePoint()
+        public override int NextCodePoint()
         {
             int c;
             for (; ; )
             {
                 if (state == State.IterCheckFwd)
                 {
-                    c = iter.MoveNext();
+                    c = iter.Next();
                     if (c < 0)
                     {
                         return c;
@@ -66,7 +66,7 @@ namespace ICU4N.Impl.Coll
                         if (CollationFCD.MaybeTibetanCompositeVowel(c) ||
                                 CollationFCD.HasLccc(iter.Current))
                         {
-                            iter.MovePrevious();
+                            iter.Previous();
                             if (!NextSegment())
                             {
                                 return Collation.SENTINEL_CP;
@@ -76,21 +76,21 @@ namespace ICU4N.Impl.Coll
                     }
                     if (IsLeadSurrogate(c))
                     {
-                        int trail = iter.MoveNext();
+                        int trail = iter.Next();
                         if (IsTrailSurrogate(trail))
                         {
                             return Character.ToCodePoint((char)c, (char)trail);
                         }
                         else if (trail >= 0)
                         {
-                            iter.MovePrevious();
+                            iter.Previous();
                         }
                     }
                     return c;
                 }
                 else if (state == State.IterInFCDSegment && pos != limit)
                 {
-                    c = iter.MoveNextCodePoint();
+                    c = iter.NextCodePoint();
                     pos += Character.CharCount(c);
                     Debug.Assert(c >= 0);
                     return c;
@@ -109,14 +109,14 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        public override int MovePreviousCodePoint()
+        public override int PreviousCodePoint()
         {
             int c;
             for (; ; )
             {
                 if (state == State.IterCheckBwd)
                 {
-                    c = iter.MovePrevious();
+                    c = iter.Previous();
                     if (c < 0)
                     {
                         start = pos = 0;
@@ -127,12 +127,12 @@ namespace ICU4N.Impl.Coll
                     {
                         int prev = Collation.SENTINEL_CP;
                         if (CollationFCD.MaybeTibetanCompositeVowel(c) ||
-                                CollationFCD.HasTccc(prev = iter.MovePrevious()))
+                                CollationFCD.HasTccc(prev = iter.Previous()))
                         {
-                            iter.MoveNext();
+                            iter.Next();
                             if (prev >= 0)
                             {
-                                iter.MoveNext();
+                                iter.Next();
                             }
                             if (!PreviousSegment())
                             {
@@ -145,7 +145,7 @@ namespace ICU4N.Impl.Coll
                         {
                             if (prev < 0)
                             {
-                                prev = iter.MovePrevious();
+                                prev = iter.Previous();
                             }
                             if (IsLeadSurrogate(prev))
                             {
@@ -154,14 +154,14 @@ namespace ICU4N.Impl.Coll
                         }
                         if (prev >= 0)
                         {
-                            iter.MoveNext();
+                            iter.Next();
                         }
                     }
                     return c;
                 }
                 else if (state == State.IterInFCDSegment && pos != start)
                 {
-                    c = iter.MovePreviousCodePoint();
+                    c = iter.PreviousCodePoint();
                     pos -= Character.CharCount(c);
                     Debug.Assert(c >= 0);
                     return c;
@@ -186,7 +186,7 @@ namespace ICU4N.Impl.Coll
             {
                 if (state == State.IterCheckFwd)
                 {
-                    c = iter.MoveNext();
+                    c = iter.Next();
                     if (c < 0)
                     {
                         return NO_CP_AND_CE32;
@@ -196,7 +196,7 @@ namespace ICU4N.Impl.Coll
                         if (CollationFCD.MaybeTibetanCompositeVowel(c) ||
                                 CollationFCD.HasLccc(iter.Current))
                         {
-                            iter.MovePrevious();
+                            iter.Previous();
                             if (!NextSegment())
                             {
                                 c = Collation.SENTINEL_CP;
@@ -209,7 +209,7 @@ namespace ICU4N.Impl.Coll
                 }
                 else if (state == State.IterInFCDSegment && pos != limit)
                 {
-                    c = iter.MoveNext();
+                    c = iter.Next();
                     ++pos;
                     Debug.Assert(c >= 0);
                     break;
@@ -232,14 +232,14 @@ namespace ICU4N.Impl.Coll
         {
             if (state.CompareTo(State.IterInFCDSegment) <= 0)
             {
-                int trail = iter.MoveNext();
+                int trail = iter.Next();
                 if (IsTrailSurrogate(trail))
                 {
                     if (state == State.IterInFCDSegment) { ++pos; }
                 }
                 else if (trail >= 0)
                 {
-                    iter.MovePrevious();
+                    iter.Previous();
                 }
                 return (char)trail;
             }
@@ -256,7 +256,7 @@ namespace ICU4N.Impl.Coll
         {
             // Specify the class to avoid a virtual-function indirection.
             // In Java, we would declare this class final.
-            while (num > 0 && MoveNextCodePoint() >= 0)
+            while (num > 0 && NextCodePoint() >= 0)
             {
                 --num;
             }
@@ -266,7 +266,7 @@ namespace ICU4N.Impl.Coll
         {
             // Specify the class to avoid a virtual-function indirection.
             // In Java, we would declare this class final.
-            while (num > 0 && MovePreviousCodePoint() >= 0)
+            while (num > 0 && PreviousCodePoint() >= 0)
             {
                 --num;
             }
@@ -336,14 +336,14 @@ namespace ICU4N.Impl.Coll
             for (; ; )
             {
                 // Fetch the next character and its fcd16 value.
-                int c = iter.MoveNextCodePoint();
+                int c = iter.NextCodePoint();
                 if (c < 0) { break; }
                 int fcd16 = nfcImpl.GetFCD16(c);
                 int leadCC = fcd16 >> 8;
                 if (leadCC == 0 && s.Length != 0)
                 {
                     // FCD boundary before this character.
-                    iter.MovePreviousCodePoint();
+                    iter.PreviousCodePoint();
                     break;
                 }
                 s.AppendCodePoint(c);
@@ -352,11 +352,11 @@ namespace ICU4N.Impl.Coll
                     // Fails FCD check. Find the next FCD boundary and normalize.
                     for (; ; )
                     {
-                        c = iter.MoveNextCodePoint();
+                        c = iter.NextCodePoint();
                         if (c < 0) { break; }
                         if (nfcImpl.GetFCD16(c) <= 0xff)
                         {
-                            iter.MovePreviousCodePoint();
+                            iter.PreviousCodePoint();
                             break;
                         }
                         s.AppendCodePoint(c);
@@ -446,14 +446,14 @@ namespace ICU4N.Impl.Coll
             for (; ; )
             {
                 // Fetch the previous character and its fcd16 value.
-                int c = iter.MovePreviousCodePoint();
+                int c = iter.PreviousCodePoint();
                 if (c < 0) { break; }
                 int fcd16 = nfcImpl.GetFCD16(c);
                 int trailCC = fcd16 & 0xff;
                 if (trailCC == 0 && s.Length != 0)
                 {
                     // FCD boundary after this character.
-                    iter.MoveNextCodePoint();
+                    iter.NextCodePoint();
                     break;
                 }
                 s.AppendCodePoint(c);
@@ -463,12 +463,12 @@ namespace ICU4N.Impl.Coll
                     // Fails FCD check. Find the previous FCD boundary and normalize.
                     while (fcd16 > 0xff)
                     {
-                        c = iter.MovePreviousCodePoint();
+                        c = iter.PreviousCodePoint();
                         if (c < 0) { break; }
                         fcd16 = nfcImpl.GetFCD16(c);
                         if (fcd16 == 0)
                         {
-                            iter.MoveNextCodePoint();
+                            iter.NextCodePoint();
                             break;
                         }
                         s.AppendCodePoint(c);

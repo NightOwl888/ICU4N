@@ -60,8 +60,8 @@ namespace ICU4N.Impl
             }
         }
 
-        /// <seealso cref="UCharacterIterator.MoveNext()"/>
-        public override int MoveNext()
+        /// <seealso cref="UCharacterIterator.Next()"/>
+        public override int Next()
         {
             int i = iterator.Current;
             iterator.MoveNext();
@@ -72,8 +72,8 @@ namespace ICU4N.Impl
             return i;
         }
 
-        /// <seealso cref="UCharacterIterator.MovePrevious()"/>
-        public override int MovePrevious()
+        /// <seealso cref="UCharacterIterator.Previous()"/>
+        public override int Previous()
         {
             int i = iterator.MovePrevious();
             if (i == CharacterIterator.Done)

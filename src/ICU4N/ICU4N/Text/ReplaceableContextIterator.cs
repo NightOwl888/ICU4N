@@ -111,7 +111,7 @@ namespace ICU4N.Text
         /// to be case-mapped, and set the context indexes for it.
         /// </summary>
         /// <returns>The next code point to be case-mapped, or &lt;0 when the iteration is done.</returns>
-        public virtual int MoveNextCaseMapCP()
+        public virtual int NextCaseMapCP()
         {
             int c;
             if (cpLimit < limit)
@@ -175,7 +175,7 @@ namespace ICU4N.Text
             reachedLimit = false;
         }
 
-        public virtual int MoveNext()
+        public virtual int Next()
         {
             int c;
 
