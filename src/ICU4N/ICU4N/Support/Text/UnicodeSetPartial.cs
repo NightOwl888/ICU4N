@@ -132,7 +132,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// This is equivalent to
-        /// <c>Complement(<see cref="MIN_VALUE"/>, <see cref="MAX_VALUE"/>)</c>
+        /// <c>Complement(<see cref="MinValue"/>, <see cref="MaxValue"/>)</c>
         /// </summary>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>

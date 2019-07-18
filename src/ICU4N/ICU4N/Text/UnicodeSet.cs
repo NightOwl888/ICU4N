@@ -48,7 +48,7 @@ namespace ICU4N.Text
     /// union, <see cref="Retain(string)"/> is an intersection, <see cref="Remove(string)"/>
     /// is an asymmetric difference, and <see cref="Complement()"/> with no
     /// argument is a set complement with respect to the superset range
-    /// <c><see cref="MIN_VALUE"/>-<see cref="MAX_VALUE"/></c>.
+    /// <c><see cref="MinValue"/>-<see cref="MaxValue"/></c>.
     /// <para/>
     /// The second API is the
     /// <see cref="ApplyPattern(string)"/>/<see cref="ToPattern(StringBuilder, bool)"/> API from the
@@ -301,14 +301,14 @@ namespace ICU4N.Text
         /// Constant for the empty set.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public static readonly UnicodeSet EMPTY = new UnicodeSet().Freeze();
+        public static readonly UnicodeSet Empty = new UnicodeSet().Freeze();
 
         /// <summary>
         /// Constant for the set of all code points. (Since <see cref="UnicodeSet"/>s can include strings, 
         /// does not include everything that a <see cref="UnicodeSet"/> can.)
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public static readonly UnicodeSet ALL_CODE_POINTS = new UnicodeSet(0, 0x10FFFF).Freeze();
+        public static readonly UnicodeSet AllCodePoints = new UnicodeSet(0, 0x10FFFF).Freeze();
 
         private static XSymbolTable XSYMBOL_TABLE = null; // for overriding the the function processing
 
@@ -320,13 +320,13 @@ namespace ICU4N.Text
         /// Minimum value that can be stored in a <see cref="UnicodeSet"/>.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const int MIN_VALUE = LOW; // ICU4N TODO: API - rename pascal case to follow .NET conventions
+        public const int MinValue = LOW;
 
         /// <summary>
         /// Maximum value that can be stored in a <see cref="UnicodeSet"/>.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const int MAX_VALUE = HIGH - 1; // ICU4N TODO: API - rename pascal case to follow .NET conventions
+        public const int MaxValue = HIGH - 1;
 
         private int len;      // length used; list may be longer to minimize reallocs
         private int[] list;   // MUST be terminated with HIGH
@@ -962,7 +962,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual int IndexOf(int c)
         {
-            if (c < MIN_VALUE || c > MAX_VALUE)
+            if (c < MinValue || c > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(c, 6));
             }
@@ -1057,11 +1057,11 @@ namespace ICU4N.Text
         // for internal use, after checkFrozen has been called
         private UnicodeSet AddUnchecked(int start, int end)
         {
-            if (start < MIN_VALUE || start > MAX_VALUE)
+            if (start < MinValue || start > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(start, 6));
             }
-            if (end < MIN_VALUE || end > MAX_VALUE)
+            if (end < MinValue || end > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(end, 6));
             }
@@ -1110,7 +1110,7 @@ namespace ICU4N.Text
         // for internal use only, after checkFrozen has been called
         private UnicodeSet AddUnchecked(int c)
         {
-            if (c < MIN_VALUE || c > MAX_VALUE)
+            if (c < MinValue || c > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(c, 6));
             }
@@ -1143,7 +1143,7 @@ namespace ICU4N.Text
                 // c is before start of next range
                 list[i] = c;
                 // if we touched the HIGH mark, then add a new one
-                if (c == MAX_VALUE)
+                if (c == MaxValue)
                 {
                     EnsureCapacity(len + 1);
                     list[len++] = HIGH;
@@ -1250,11 +1250,11 @@ namespace ICU4N.Text
         internal virtual UnicodeSet Retain(int start, int end) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
         {
             CheckFrozen();
-            if (start < MIN_VALUE || start > MAX_VALUE)
+            if (start < MinValue || start > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(start, 6));
             }
-            if (end < MIN_VALUE || end > MAX_VALUE)
+            if (end < MinValue || end > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(end, 6));
             }
@@ -1298,11 +1298,11 @@ namespace ICU4N.Text
         public virtual UnicodeSet Remove(int start, int end)
         {
             CheckFrozen();
-            if (start < MIN_VALUE || start > MAX_VALUE)
+            if (start < MinValue || start > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(start, 6));
             }
-            if (end < MIN_VALUE || end > MAX_VALUE)
+            if (end < MinValue || end > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(end, 6));
             }
@@ -1341,11 +1341,11 @@ namespace ICU4N.Text
         internal virtual UnicodeSet Complement(int start, int end) // ICU4N specific - changed from public to internal (we are using SymetricExceptWithChars in .NET)
         {
             CheckFrozen();
-            if (start < MIN_VALUE || start > MAX_VALUE)
+            if (start < MinValue || start > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(start, 6));
             }
-            if (end < MIN_VALUE || end > MAX_VALUE)
+            if (end < MinValue || end > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(end, 6));
             }
@@ -1370,7 +1370,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// This is equivalent to
-        /// <c>Complement(<see cref="MIN_VALUE"/>, <see cref="MAX_VALUE"/>)</c>
+        /// <c>Complement(<see cref="MinValue"/>, <see cref="MaxValue"/>)</c>
         /// </summary>
         /// <stable>ICU 2.0</stable>
         internal virtual UnicodeSet Complement() // ICU4N specific - changed from public to internal (we are using SymetricExceptWithChars in .NET)
@@ -1402,7 +1402,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public override bool Contains(int c)
         {
-            if (c < MIN_VALUE || c > MAX_VALUE)
+            if (c < MinValue || c > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(c, 6));
             }
@@ -1434,7 +1434,7 @@ namespace ICU4N.Text
         /// must ensure that <paramref name="c"/> is a legal value or this method will enter
         /// an infinite loop.  This method performs a binary search.
         /// </summary>
-        /// <param name="c">A character in the range <see cref="MIN_VALUE"/>..<see cref="MAX_VALUE"/>.</param>
+        /// <param name="c">A character in the range <see cref="MinValue"/>..<see cref="MaxValue"/>.</param>
         /// <returns>The smallest integer i in the range 0..len-1,
         /// inclusive, such that <paramref name="c"/> &lt; list[i].</returns>
         private int FindCodePoint(int c)
@@ -1599,11 +1599,11 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual bool Contains(int start, int end)
         {
-            if (start < MIN_VALUE || start > MAX_VALUE)
+            if (start < MinValue || start > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(start, 6));
             }
-            if (end < MIN_VALUE || end > MAX_VALUE)
+            if (end < MinValue || end > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(end, 6));
             }
@@ -1797,11 +1797,11 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public virtual bool ContainsNone(int start, int end)
         {
-            if (start < MIN_VALUE || start > MAX_VALUE)
+            if (start < MinValue || start > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(start, 6));
             }
-            if (end < MIN_VALUE || end > MAX_VALUE)
+            if (end < MinValue || end > MaxValue)
             {
                 throw new ArgumentException("Invalid code point U+" + Utility.Hex(end, 6));
             }
@@ -3609,7 +3609,7 @@ namespace ICU4N.Text
                         {
                             if (0 == UPropertyAliases.Compare(ANY_ID, propertyAlias))
                             {
-                                Set(MIN_VALUE, MAX_VALUE);
+                                Set(MinValue, MaxValue);
                                 return this;
                             }
                             else if (0 == UPropertyAliases.Compare(ASCII_ID, propertyAlias))

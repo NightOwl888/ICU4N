@@ -193,7 +193,7 @@ namespace ICU4N.Util
             if (extype == ES_CURRENCY)
             {
                 // currency symbol exemplar is no longer available
-                return noSubstitute ? null : UnicodeSet.EMPTY;
+                return noSubstitute ? null : UnicodeSet.Empty;
             }
 
             try
@@ -214,7 +214,7 @@ namespace ICU4N.Util
             }
             catch (Exception ex)
             {
-                return noSubstitute ? null : UnicodeSet.EMPTY;
+                return noSubstitute ? null : UnicodeSet.Empty;
             }
         }
 

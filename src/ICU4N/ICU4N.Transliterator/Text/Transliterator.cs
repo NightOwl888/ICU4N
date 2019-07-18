@@ -1538,7 +1538,7 @@ namespace ICU4N.Text
         public UnicodeSet GetSourceSet()
         {
             UnicodeSet result = new UnicodeSet();
-            AddSourceTargetSet(GetFilterAsUnicodeSet(UnicodeSet.ALL_CODE_POINTS), result, new UnicodeSet());
+            AddSourceTargetSet(GetFilterAsUnicodeSet(UnicodeSet.AllCodePoints), result, new UnicodeSet());
             return result;
         }
 
@@ -1584,7 +1584,7 @@ namespace ICU4N.Text
         public virtual UnicodeSet GetTargetSet()
         {
             UnicodeSet result = new UnicodeSet();
-            AddSourceTargetSet(GetFilterAsUnicodeSet(UnicodeSet.ALL_CODE_POINTS), new UnicodeSet(), result);
+            AddSourceTargetSet(GetFilterAsUnicodeSet(UnicodeSet.AllCodePoints), new UnicodeSet(), result);
             return result;
         }
 

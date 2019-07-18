@@ -3566,7 +3566,7 @@ namespace ICU4N.Dev.Test.Translit
                 new string[] {"[] title"},
                 new string[] {"[] upper"},
         };
-            UnicodeSet expectedSource = UnicodeSet.EMPTY;
+            UnicodeSet expectedSource = UnicodeSet.Empty;
             foreach (String[] testPair in tests)
             {
                 String test = testPair[0];

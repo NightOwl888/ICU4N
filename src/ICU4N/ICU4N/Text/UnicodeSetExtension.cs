@@ -1192,8 +1192,8 @@ namespace ICU4N.Text
                 // MIN_VALUE and MAX_VALUE, then the inverse representation will
                 // be more economical.
                 if (count > 1 &&
-                        GetRangeStart(0) == MIN_VALUE &&
-                        GetRangeEnd(count - 1) == MAX_VALUE)
+                        GetRangeStart(0) == MinValue &&
+                        GetRangeEnd(count - 1) == MaxValue)
                 {
 
                     // Emit the inverse
@@ -1264,8 +1264,8 @@ namespace ICU4N.Text
                 // MIN_VALUE and MAX_VALUE, then the inverse representation will
                 // be more economical.
                 if (count > 1 &&
-                        GetRangeStart(0) == MIN_VALUE &&
-                        GetRangeEnd(count - 1) == MAX_VALUE)
+                        GetRangeStart(0) == MinValue &&
+                        GetRangeEnd(count - 1) == MaxValue)
                 {
 
                     // Emit the inverse

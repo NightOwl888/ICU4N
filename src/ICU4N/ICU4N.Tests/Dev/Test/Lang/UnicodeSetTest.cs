@@ -674,7 +674,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             c.Complement();
             exp.Set((char)0, (char)2);
-            exp.Add((char)16, UnicodeSet.MAX_VALUE);
+            exp.Add((char)16, UnicodeSet.MaxValue);
             if (c.Equals(exp))
             {
                 Logln("c.Complement(): " + c);
@@ -2783,8 +2783,8 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestConstants()
         {
-            assertEquals("Empty", new UnicodeSet(), UnicodeSet.EMPTY);
-            assertEquals("All", new UnicodeSet(0, 0x10FFFF), UnicodeSet.ALL_CODE_POINTS);
+            assertEquals("Empty", new UnicodeSet(), UnicodeSet.Empty);
+            assertEquals("All", new UnicodeSet(0, 0x10FFFF), UnicodeSet.AllCodePoints);
         }
 
         [Test]
@@ -3107,15 +3107,15 @@ namespace ICU4N.Dev.Test.Lang
         public void TestCompareTo()
         {
             ISet<String> test_set = new HashSet<string>();
-            assertEquals("UnicodeSet not empty", 0, UnicodeSet.EMPTY.CompareTo(test_set));
+            assertEquals("UnicodeSet not empty", 0, UnicodeSet.Empty.CompareTo(test_set));
             assertEquals("UnicodeSet comparison wrong",
                     0, UnicodeSet.FromAll("a").CompareTo(new string[] { "a" }));
 
             // Longer is bigger
             assertTrue("UnicodeSet is empty",
-                    UnicodeSet.ALL_CODE_POINTS.CompareTo(test_set) > 0);
+                    UnicodeSet.AllCodePoints.CompareTo(test_set) > 0);
             assertTrue("UnicodeSet not empty",
-                    UnicodeSet.EMPTY.CompareTo(new string[] { "a" }) < 0);
+                    UnicodeSet.Empty.CompareTo(new string[] { "a" }) < 0);
 
             // Equal length compares on first difference.
             assertTrue("UnicodeSet comparison wrong",
