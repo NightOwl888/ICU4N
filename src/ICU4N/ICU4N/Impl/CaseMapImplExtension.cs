@@ -1050,11 +1050,11 @@ namespace ICU4N.Impl
                     if (isFirstIndex)
                     {
                         isFirstIndex = false;
-                        index = titleIter.First();
+                        index = titleIter.MoveFirst();
                     }
                     else
                     {
-                        index = titleIter.Next();
+                        index = titleIter.MoveNext();
                     }
                     if (index == BreakIterator.DONE || index > srcLength)
                     {
@@ -1185,11 +1185,11 @@ namespace ICU4N.Impl
                     if (isFirstIndex)
                     {
                         isFirstIndex = false;
-                        index = titleIter.First();
+                        index = titleIter.MoveFirst();
                     }
                     else
                     {
-                        index = titleIter.Next();
+                        index = titleIter.MoveNext();
                     }
                     if (index == BreakIterator.DONE || index > srcLength)
                     {
@@ -1320,11 +1320,11 @@ namespace ICU4N.Impl
                     if (isFirstIndex)
                     {
                         isFirstIndex = false;
-                        index = titleIter.First();
+                        index = titleIter.MoveFirst();
                     }
                     else
                     {
-                        index = titleIter.Next();
+                        index = titleIter.MoveNext();
                     }
                     if (index == BreakIterator.DONE || index > srcLength)
                     {
@@ -1455,11 +1455,11 @@ namespace ICU4N.Impl
                     if (isFirstIndex)
                     {
                         isFirstIndex = false;
-                        index = titleIter.First();
+                        index = titleIter.MoveFirst();
                     }
                     else
                     {
-                        index = titleIter.Next();
+                        index = titleIter.MoveNext();
                     }
                     if (index == BreakIterator.DONE || index > srcLength)
                     {
@@ -1590,11 +1590,11 @@ namespace ICU4N.Impl
                     if (isFirstIndex)
                     {
                         isFirstIndex = false;
-                        index = titleIter.First();
+                        index = titleIter.MoveFirst();
                     }
                     else
                     {
-                        index = titleIter.Next();
+                        index = titleIter.MoveNext();
                     }
                     if (index == BreakIterator.DONE || index > srcLength)
                     {
@@ -1725,11 +1725,11 @@ namespace ICU4N.Impl
                     if (isFirstIndex)
                     {
                         isFirstIndex = false;
-                        index = titleIter.First();
+                        index = titleIter.MoveFirst();
                     }
                     else
                     {
-                        index = titleIter.Next();
+                        index = titleIter.MoveNext();
                     }
                     if (index == BreakIterator.DONE || index > srcLength)
                     {
@@ -1860,11 +1860,11 @@ namespace ICU4N.Impl
                     if (isFirstIndex)
                     {
                         isFirstIndex = false;
-                        index = titleIter.First();
+                        index = titleIter.MoveFirst();
                     }
                     else
                     {
-                        index = titleIter.Next();
+                        index = titleIter.MoveNext();
                     }
                     if (index == BreakIterator.DONE || index > srcLength)
                     {
@@ -1995,11 +1995,11 @@ namespace ICU4N.Impl
                     if (isFirstIndex)
                     {
                         isFirstIndex = false;
-                        index = titleIter.First();
+                        index = titleIter.MoveFirst();
                     }
                     else
                     {
-                        index = titleIter.Next();
+                        index = titleIter.MoveNext();
                     }
                     if (index == BreakIterator.DONE || index > srcLength)
                     {

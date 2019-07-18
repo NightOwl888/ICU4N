@@ -2674,7 +2674,7 @@ namespace ICU4N.Lang
         public const int TITLECASE_NO_LOWERCASE = 0x100; // ICU4N TODO: API make into [Flags] enum
 
         /// <summary>
-        /// Do not adjust the titlecasing indexes from <see cref="BreakIterator.Next()"/> indexes;
+        /// Do not adjust the titlecasing indexes from <see cref="BreakIterator.MoveNext()"/> indexes;
         /// titlecase exactly the characters at breaks from the iterator.
         /// Option bit for titlecasing APIs that take an options bit set.
         /// </summary>

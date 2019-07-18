@@ -41,7 +41,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
         private List<String> _testFirstAndNext(BreakIterator bi, String text)
         {
-            int p = bi.First();
+            int p = bi.MoveFirst();
             int lastP = p;
             List<String> result = new List<String>();
 
@@ -49,7 +49,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 Errln("first() returned " + p + " instead of 0");
             while (p != BreakIterator.DONE)
             {
-                p = bi.Next();
+                p = bi.MoveNext();
                 if (p != BreakIterator.DONE)
                 {
                     if (p <= lastP)
@@ -71,7 +71,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
         private List<String> _testLastAndPrevious(BreakIterator bi, String text)
         {
-            int p = bi.Last();
+            int p = bi.MoveLast();
             int lastP = p;
             List<String> result = new List<String>();
 
@@ -79,7 +79,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 Errln("last() returned " + p + " instead of " + text.Length);
             while (p != BreakIterator.DONE)
             {
-                p = bi.Previous();
+                p = bi.MovePrevious();
                 if (p != BreakIterator.DONE)
                 {
                     if (p >= lastP)
@@ -171,7 +171,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 if (i == boundaries[p])
                     ++p;
 
-                int b = bi.Following(i);
+                int b = bi.MoveFollowing(i);
                 Logln("bi.following(" + i + ") -> " + b);
                 if (b != boundaries[p])
                     Errln("Wrong result from following() for " + i + ": expected " + boundaries[p]
@@ -185,7 +185,7 @@ namespace ICU4N.Dev.Test.Rbbi
             int p = 0;
             for (int i = 0; i <= text.Length; i++)
             {
-                int b = bi.Preceding(i);
+                int b = bi.MovePreceding(i);
                 Logln("bi.preceding(" + i + ") -> " + b);
                 if (b != boundaries[p])
                     Errln("Wrong result from preceding() for " + i + ": expected " + boundaries[p]
@@ -233,7 +233,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 {
                     work[3] = testChars[j];
                     tb.SetText(work.ToString());
-                    for (int k = tb.First(); k != BreakIterator.DONE; k = tb.Next())
+                    for (int k = tb.MoveFirst(); k != BreakIterator.DONE; k = tb.MoveNext())
                         if (k == 2)
                         {
                             Errln("Break between CR and LF in string U+" +
@@ -264,7 +264,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         continue;
                     work[2] = c;
                     tb.SetText(work.ToString());
-                    for (int k = tb.First(); k != BreakIterator.DONE; k = tb.Next())
+                    for (int k = tb.MoveFirst(); k != BreakIterator.DONE; k = tb.MoveNext())
                         if (k == 2)
                         {
                             Errln("Break between U+" + ((work[1])).ToHexString()
@@ -382,11 +382,11 @@ namespace ICU4N.Dev.Test.Rbbi
             BreakIterator wb = BreakIterator.GetWordInstance();
             wb.SetText(testString);
 
-            if (wb.First() != 0)
+            if (wb.MoveFirst() != 0)
                 Errln("Didn't get break at beginning of string.");
-            if (wb.Next() != 3)
+            if (wb.MoveNext() != 3)
                 Errln("Didn't get break before period in \"boo.\"");
-            if (wb.Current != 4 && wb.Next() != 4)
+            if (wb.Current != 4 && wb.MoveNext() != 4)
                 Errln("Didn't get break at end of string.");
         }
 
@@ -404,14 +404,14 @@ namespace ICU4N.Dev.Test.Rbbi
             String words3 = "aaa bbb ccc";
             BreakIterator e = BreakIterator.GetWordInstance(CultureInfo.CurrentCulture);
             e.SetText(words3);
-            e.First();
-            int p1 = e.Next();
-            int p2 = e.Next();
-            int p3 = e.Next();
-            int p4 = e.Next();
+            e.MoveFirst();
+            int p1 = e.MoveNext();
+            int p2 = e.MoveNext();
+            int p3 = e.MoveNext();
+            int p4 = e.MoveNext();
 
-            int f = e.Following(p2 + 1);
-            int p = e.Preceding(p2 + 1);
+            int f = e.MoveFollowing(p2 + 1);
+            int p = e.MovePreceding(p2 + 1);
             if (f != p3)
                 Errln("IntlTestTextBoundary::TestPreceding: f!=p3");
             if (p != p2)
@@ -472,8 +472,8 @@ namespace ICU4N.Dev.Test.Rbbi
                     .WrapIteratorWithFilter(BreakIterator.GetSentenceInstance(loc));
             brk.SetText("ＯＫです。");
             assertEquals("Starting point", 0, brk.Current);
-            assertEquals("Next point", 5, brk.Next());
-            assertEquals("Last point", BreakIterator.DONE, brk.Next());
+            assertEquals("Next point", 5, brk.MoveNext());
+            assertEquals("Last point", BreakIterator.DONE, brk.MoveNext());
         }
 
         /*
@@ -606,10 +606,10 @@ namespace ICU4N.Dev.Test.Rbbi
 
                 Logln("Testing:");
                 filteredBI.SetText(text);
-                assertEquals("2nd next", 84, filteredBI.Next());
-                assertEquals("2nd next", 90, filteredBI.Next());
-                assertEquals("2nd next", 278, filteredBI.Next());
-                filteredBI.First();
+                assertEquals("2nd next", 84, filteredBI.MoveNext());
+                assertEquals("2nd next", 90, filteredBI.MoveNext());
+                assertEquals("2nd next", 278, filteredBI.MoveNext());
+                filteredBI.MoveFirst();
             }
 
 
@@ -629,9 +629,9 @@ namespace ICU4N.Dev.Test.Rbbi
 
                 Logln("Testing:");
                 filteredBI.SetText(text);
-                assertEquals("3rd next", 84, filteredBI.Next());
-                assertEquals("3rd next", 278, filteredBI.Next());
-                filteredBI.First();
+                assertEquals("3rd next", 84, filteredBI.MoveNext());
+                assertEquals("3rd next", 278, filteredBI.MoveNext());
+                filteredBI.MoveFirst();
             }
 
             {
@@ -651,10 +651,10 @@ namespace ICU4N.Dev.Test.Rbbi
                 {
                     Logln("Testing:");
                     filteredBI.SetText(text);
-                    assertEquals("4th next", 84, filteredBI.Next());
-                    assertEquals("4th next", 90, filteredBI.Next());
-                    assertEquals("4th next", 278, filteredBI.Next());
-                    filteredBI.First();
+                    assertEquals("4th next", 84, filteredBI.MoveNext());
+                    assertEquals("4th next", 90, filteredBI.MoveNext());
+                    assertEquals("4th next", 278, filteredBI.MoveNext());
+                    filteredBI.MoveFirst();
                 }
             }
 
@@ -729,9 +729,9 @@ namespace ICU4N.Dev.Test.Rbbi
         {
             Logln("Testing French behavior:");
             filteredBI.SetText(text);
-            assertEquals("6th next", 20, filteredBI.Next());
-            assertEquals("6th next", 84, filteredBI.Next());
-            filteredBI.First();
+            assertEquals("6th next", 20, filteredBI.MoveNext());
+            assertEquals("6th next", 84, filteredBI.MoveNext());
+            filteredBI.MoveFirst();
         }
 
         /**
@@ -743,9 +743,9 @@ namespace ICU4N.Dev.Test.Rbbi
             Logln("Testing English filtered behavior:");
             filteredBI.SetText(text);
 
-            assertEquals("5th next", 84, filteredBI.Next());
-            assertEquals("5th next", 278, filteredBI.Next());
-            filteredBI.First();
+            assertEquals("5th next", 84, filteredBI.MoveNext());
+            assertEquals("5th next", 278, filteredBI.MoveNext());
+            filteredBI.MoveFirst();
         }
 
         /**
@@ -756,12 +756,12 @@ namespace ICU4N.Dev.Test.Rbbi
         {
             Logln("Testing Default Behavior:");
             filteredBI.SetText(text);
-            assertEquals("1st next", 20, filteredBI.Next());
-            assertEquals("1st next", 84, filteredBI.Next());
-            assertEquals("1st next", 90, filteredBI.Next());
-            assertEquals("1st next", 181, filteredBI.Next());
-            assertEquals("1st next", 278, filteredBI.Next());
-            filteredBI.First();
+            assertEquals("1st next", 20, filteredBI.MoveNext());
+            assertEquals("1st next", 84, filteredBI.MoveNext());
+            assertEquals("1st next", 90, filteredBI.MoveNext());
+            assertEquals("1st next", 181, filteredBI.MoveNext());
+            assertEquals("1st next", 278, filteredBI.MoveNext());
+            filteredBI.MoveFirst();
         }
     }
 }

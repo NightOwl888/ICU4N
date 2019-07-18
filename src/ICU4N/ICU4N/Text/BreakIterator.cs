@@ -68,8 +68,8 @@ namespace ICU4N.Text
     /// <a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>.
     /// <para/>
     /// BreakIterator's interface follows an "iterator" model (hence the name), meaning it
-    /// has a concept of a "current position" and methods like <see cref="First()"/>, <see cref="Last()"/>, <see cref="Next()"/>,
-    /// and <see cref="Previous()"/> that update the current position.  All <see cref="BreakIterator"/>s uphold the
+    /// has a concept of a "current position" and methods like <see cref="MoveFirst()"/>, <see cref="MoveLast()"/>, <see cref="MoveNext()"/>,
+    /// and <see cref="MovePrevious()"/> that update the current position.  All <see cref="BreakIterator"/>s uphold the
     /// following invariants:
     /// <list type="bullet">
     ///     <item><description>
@@ -85,9 +85,9 @@ namespace ICU4N.Text
     ///     </description></item>
     ///     <item><description>
     ///         <see cref="DONE"/> is used as a flag to indicate when iteration has stopped.  <see cref="DONE"/> is only
-    ///         returned when the current position is the end of the text and the user calls <see cref="Next()"/>,
+    ///         returned when the current position is the end of the text and the user calls <see cref="MoveNext()"/>,
     ///         or when the current position is the beginning of the text and the user calls
-    ///         <see cref="Previous()"/>.
+    ///         <see cref="MovePrevious()"/>.
     ///     </description></item>
     ///     <item><description>
     ///         Break positions are numbered by the positions of the characters that follow
@@ -139,10 +139,10 @@ namespace ICU4N.Text
     /// <code>
     /// public static void PrintEachForward(BreakIterator boundary, string source)
     /// {
-    ///     int start = boundary.First();
-    ///     for (int end = boundary.Next();
+    ///     int start = boundary.MoveFirst();
+    ///     for (int end = boundary.MoveNext();
     ///         end != BreakIterator.DONE;
-    ///         start = end, end = boundary.Next())
+    ///         start = end, end = boundary.MoveNext())
     ///     {
     ///         Console.WriteLine(source.Substring(start, end - start));
     ///     }
@@ -152,10 +152,10 @@ namespace ICU4N.Text
     /// <code>
     /// public static void PrintEachBackward(BreakIterator boundary, string source)
     /// {
-    ///     int end = boundary.Last();
-    ///     for (int start = boundary.Previous();
+    ///     int end = boundary.MoveLast();
+    ///     for (int start = boundary.MovePrevious();
     ///         start != BreakIterator.DONE;
-    ///         end = start, start = boundary.Previous())
+    ///         end = start, start = boundary.MovePrevious())
     ///     {
     ///         Console.WriteLine(source.Substring(start, end - start));
     ///     }
@@ -165,8 +165,8 @@ namespace ICU4N.Text
     /// <code>
     /// public static void PrintFirst(BreakIterator boundary, string source)
     /// {
-    ///     int start = boundary.First();
-    ///     int end = boundary.Next();
+    ///     int start = boundary.MoveFirst();
+    ///     int end = boundary.MoveNext();
     ///     Console.WriteLine(source.Substring(start, end - start));
     /// }
     /// </code>
@@ -174,8 +174,8 @@ namespace ICU4N.Text
     /// <code>
     /// public static void PrintLast(BreakIterator boundary, string source)
     /// {
-    ///     int end = boundary.Last();
-    ///     int start = boundary.Previous();
+    ///     int end = boundary.MoveLast();
+    ///     int start = boundary.MovePrevious();
     ///     Console.WriteLine(source.Substring(start, end - start));
     /// }
     /// </code>
@@ -183,8 +183,8 @@ namespace ICU4N.Text
     /// <code>
     /// public static void PrintAt(BreakIterator boundary, int pos, string source)
     /// {
-    ///     int end = boundary.Following(pos);
-    ///     int start = boundary.Previous();
+    ///     int end = boundary.MoveFollowing(pos);
+    ///     int start = boundary.MovePrevious();
     ///     Console.WriteLine(source.Substring(start, end - start));
     /// }
     /// </code>
@@ -194,10 +194,10 @@ namespace ICU4N.Text
     /// {
     ///     BreakIterator wb = BreakIterator.GetWordInstance();
     ///     wb.SetText(text);
-    ///     int wordStart = wb.Following(pos);
+    ///     int wordStart = wb.MoveFollowing(pos);
     ///     while (true)
     ///     {
-    ///         int wordLimit = wb.Next();
+    ///         int wordLimit = wb.MoveNext();
     ///         if (wordLimit == BreakIterator.DONE)
     ///         {
     ///             return BreakIterator.DONE;
@@ -253,7 +253,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// DONE is returned by <see cref="Previous()"/> and <see cref="Next()"/> after all valid
+        /// DONE is returned by <see cref="MovePrevious()"/> and <see cref="MoveNext()"/> after all valid
         /// boundaries have been returned.
         /// </summary>
         /// <stable>ICU 2.0</stable>
@@ -268,7 +268,7 @@ namespace ICU4N.Text
         /// <returns>The character offset of the beginning of the stretch of text
         /// being broken.</returns>
         /// <stable>ICU 2.0</stable>
-        public abstract int First();
+        public abstract int MoveFirst(); // ICU4N specific - renamed from First()
 
         /// <summary>
         /// Set the iterator to the last boundary position.  This is always the "past-the-end"
@@ -279,7 +279,7 @@ namespace ICU4N.Text
         /// <returns>The character offset of the end of the stretch of text
         /// being broken.</returns>
         /// <stable>ICU 2.0</stable>
-        public abstract int Last();
+        public abstract int MoveLast(); // ICU4N specific - renamed from Last()
 
         /// <summary>
         /// Move the iterator by the specified number of steps in the text.
@@ -287,8 +287,8 @@ namespace ICU4N.Text
         /// moves the iterator backwards. If this causes the iterator
         /// to move off either end of the text, this function returns <see cref="DONE"/>;
         /// otherwise, this function returns the position of the appropriate
-        /// boundary.  Calling this function is equivalent to calling <see cref="Next()"/> or
-        /// <see cref="Previous()"/> <paramref name="n"/> times.
+        /// boundary.  Calling this function is equivalent to calling <see cref="MoveNext()"/> or
+        /// <see cref="MovePrevious()"/> <paramref name="n"/> times.
         /// </summary>
         /// <param name="n">The number of boundaries to advance over (if positive, moves
         /// forward; if negative, moves backwards).</param>
@@ -296,33 +296,33 @@ namespace ICU4N.Text
         /// iteration position, or <see cref="DONE"/> if moving <paramref name="n"/> boundaries causes the iterator
         /// to advance off either end of the text.</returns>
         /// <stable>ICU 2.0</stable>
-        public abstract int Next(int n);
+        public abstract int Move(int n); // ICU4N specific - renamed from Next(int)
 
         /// <summary>
         /// Advances the iterator forward one boundary.  The current iteration
         /// position is updated to point to the next boundary position after the
         /// current position, and this is also the value that is returned.  If
-        /// the current position is equal to the value returned by <see cref="Last()"/>, or to
+        /// the current position is equal to the value returned by <see cref="MoveLast()"/>, or to
         /// <see cref="DONE"/>, this function returns <see cref="DONE"/> and sets the current position to
         /// <see cref="DONE"/>.
         /// </summary>
         /// <returns>The position of the first boundary position following the
         /// iteration position.</returns>
         /// <stable>ICU 2.0</stable>
-        public abstract int Next();
+        public abstract int MoveNext(); // ICU4N specific - renamed from Next()
 
         /// <summary>
         /// Move the iterator backward one boundary.  The current iteration
         /// position is updated to point to the last boundary position before
         /// the current position, and this is also the value that is returned.  If
-        /// the current position is equal to the value returned by <see cref="First()"/>, or to
+        /// the current position is equal to the value returned by <see cref="MoveFirst()"/>, or to
         /// <see cref="DONE"/>, this function returns <see cref="DONE"/> and sets the current position to
         /// <see cref="DONE"/>.
         /// </summary>
         /// <returns>position of the last boundary position preceding the
         /// iteration position.</returns>
         /// <stable>ICU 2.0</stable>
-        public abstract int Previous();
+        public abstract int MovePrevious(); // ICU4N specific - renamed from Previous()
 
         /// <summary>
         /// Sets the iterator's current iteration position to be the first
@@ -337,7 +337,7 @@ namespace ICU4N.Text
         /// "<paramref name="offset"/>" (whether or not "offset" itself is a boundary position),
         /// or <see cref="DONE"/> if "<paramref name="offset"/>" is the past-the-end offset.</returns>
         /// <stable>ICU 2.0</stable>
-        public abstract int Following(int offset);
+        public abstract int MoveFollowing(int offset); // ICU4N specific - renamed from Following(int)
 
         /// <summary>
         /// Sets the iterator's current iteration position to be the last
@@ -352,14 +352,14 @@ namespace ICU4N.Text
         /// "<paramref name="offset"/>" (whether of not "offset" itself is a boundary position),
         /// or <see cref="DONE"/> if "<paramref name="offset"/>" is the starting offset of the iterator.</returns>
         /// <stable>ICU 2.0</stable>
-        public virtual int Preceding(int offset)
+        public virtual int MovePreceding(int offset) // ICU4N specific - renamed from Preceding(int)
         {
             // NOTE:  This implementation is here solely because we can't add new
             // abstract methods to an existing class.  There is almost ALWAYS a
             // better, faster way to do this.
-            int pos = Following(offset);
+            int pos = MoveFollowing(offset);
             while (pos >= offset && pos != DONE)
-                pos = Previous();
+                pos = MovePrevious();
             return pos;
         }
 
@@ -367,7 +367,7 @@ namespace ICU4N.Text
         /// Return true if the specified position is a boundary position.  If the
         /// function returns true, the current iteration position is set to the
         /// specified position; if the function returns false, the current
-        /// iteration position is set as though <see cref="Following(int)"/> had been called.
+        /// iteration position is set as though <see cref="MoveFollowing(int)"/> had been called.
         /// </summary>
         /// <param name="offset">The offset to check.</param>
         /// <returns>True if "<paramref name="offset"/>" is a boundary position.</returns>
@@ -382,7 +382,7 @@ namespace ICU4N.Text
                 return true;
             }
             else
-                return Following(offset - 1) == offset;
+                return MoveFollowing(offset - 1) == offset;
         }
 
         /// <summary>

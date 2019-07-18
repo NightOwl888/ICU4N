@@ -136,7 +136,7 @@ namespace ICU4N.Impl
                 if (BreakExceptionAt(n))
                 {
                     // n points to a break exception
-                    n = @delegate.Next();
+                    n = @delegate.MoveNext();
                 }
                 else
                 {
@@ -170,7 +170,7 @@ namespace ICU4N.Impl
                 if (BreakExceptionAt(n))
                 {
                     // n points to a break exception
-                    n = @delegate.Previous();
+                    n = @delegate.MovePrevious();
                 }
                 else
                 {
@@ -206,20 +206,20 @@ namespace ICU4N.Impl
         }
 
 
-        public override int First()
+        public override int MoveFirst()
         {
             // Don't suppress a break opportunity at the beginning of text.
-            return @delegate.First();
+            return @delegate.MoveFirst();
         }
 
-        public override int Preceding(int offset)
+        public override int MovePreceding(int offset)
         {
-            return InternalPrev(@delegate.Preceding(offset));
+            return InternalPrev(@delegate.MovePreceding(offset));
         }
 
-        public override int Previous()
+        public override int MovePrevious()
         {
-            return InternalPrev(@delegate.Previous());
+            return InternalPrev(@delegate.MovePrevious());
         }
 
         public override int Current
@@ -244,25 +244,25 @@ namespace ICU4N.Impl
             return !BreakExceptionAt(offset); // if there's an exception: no break.
         }
 
-        public override int Next()
+        public override int MoveNext()
         {
-            return InternalNext(@delegate.Next());
+            return InternalNext(@delegate.MoveNext());
         }
 
-        public override int Next(int n)
+        public override int Move(int n)
         {
-            return InternalNext(@delegate.Next(n));
+            return InternalNext(@delegate.Move(n));
         }
 
-        public override int Following(int offset)
+        public override int MoveFollowing(int offset)
         {
-            return InternalNext(@delegate.Following(offset));
+            return InternalNext(@delegate.MoveFollowing(offset));
         }
 
-        public override int Last()
+        public override int MoveLast()
         {
             // Don't suppress a break opportunity at the end of text.
-            return @delegate.Last();
+            return @delegate.MoveLast();
         }
 
         public override CharacterIterator Text

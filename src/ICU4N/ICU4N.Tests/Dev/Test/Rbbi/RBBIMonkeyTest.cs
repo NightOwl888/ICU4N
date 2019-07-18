@@ -980,7 +980,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 fTestData.ClearActualBreaks();
                 fBI.SetText(fTestData.fString);
                 int previousBreak = -2;
-                for (int bk = fBI.First(); bk != BreakIterator.DONE; bk = fBI.Next())
+                for (int bk = fBI.MoveFirst(); bk != BreakIterator.DONE; bk = fBI.MoveNext())
                 {
                     if (bk <= previousBreak)
                     {
@@ -1003,7 +1003,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 int nextBreak = -1;
                 for (int i = -1; i < fTestData.fString.Length; ++i)
                 {
-                    int bk = fBI.Following(i);
+                    int bk = fBI.MoveFollowing(i);
                     if (bk == BreakIterator.DONE && i == fTestData.fString.Length)
                     {
                         continue;
@@ -1030,7 +1030,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 fTestData.ClearActualBreaks();
                 fBI.SetText(fTestData.fString);
                 int previousBreak = int.MaxValue;
-                for (int bk = fBI.Last(); bk != BreakIterator.DONE; bk = fBI.Previous())
+                for (int bk = fBI.MoveLast(); bk != BreakIterator.DONE; bk = fBI.MovePrevious())
                 {
                     if (bk >= previousBreak)
                     {
@@ -1071,7 +1071,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 int nextBreak = fTestData.fString.Length + 1;
                 for (int i = fTestData.fString.Length + 1; i >= 0; --i)
                 {
-                    int bk = fBI.Preceding(i);
+                    int bk = fBI.MovePreceding(i);
                     // System.err.printf("testPreceding() i:%d  bk:%d  nextBreak:%d\n", i, bk, nextBreak);
                     if (bk == BreakIterator.DONE && i == 0)
                     {
@@ -1087,7 +1087,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         // i indexes to a trailing surrogate.
                         // Break Iterators treat an index to either half as referring to the supplemental code point,
                         // with preceding going to some preceding code point.
-                        if (fBI.Preceding(i) != fBI.Preceding(GetChar32Start(fTestData.fString, i)))
+                        if (fBI.MovePreceding(i) != fBI.MovePreceding(GetChar32Start(fTestData.fString, i)))
                         {
                             throw new MonkeyException("preceding of trailing surrogate error", i);
                         }

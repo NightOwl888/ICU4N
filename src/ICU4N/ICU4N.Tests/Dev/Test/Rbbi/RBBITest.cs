@@ -50,7 +50,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             index = 0;
             // Test forward iteration
-            while ((position = b.Next()) != BreakIterator.DONE)
+            while ((position = b.MoveNext()) != BreakIterator.DONE)
             {
                 if (position != result[index++])
                 {
@@ -59,7 +59,7 @@ namespace ICU4N.Dev.Test.Rbbi
             }
 
             // Test backward iteration
-            while ((position = b.Previous()) != BreakIterator.DONE)
+            while ((position = b.MovePrevious()) != BreakIterator.DONE)
             {
                 if (position != result[index++])
                 {
@@ -82,7 +82,7 @@ namespace ICU4N.Dev.Test.Rbbi
             BreakIterator brk = BreakIterator.GetWordInstance(new ULocale("th"));
             brk.SetText(new String(text2));
             position = index = 0;
-            while ((position = brk.Next()) != BreakIterator.DONE && position < text2.Length)
+            while ((position = brk.MoveNext()) != BreakIterator.DONE && position < text2.Length)
             {
                 if (position != expectedWordResult[index++])
                 {
@@ -93,7 +93,7 @@ namespace ICU4N.Dev.Test.Rbbi
             brk = BreakIterator.GetLineInstance(new ULocale("th"));
             brk.SetText(new String(text2));
             position = index = 0;
-            while ((position = brk.Next()) != BreakIterator.DONE && position < text2.Length)
+            while ((position = brk.MoveNext()) != BreakIterator.DONE && position < text2.Length)
             {
                 if (position != expectedLineResult[index++])
                 {
@@ -101,11 +101,11 @@ namespace ICU4N.Dev.Test.Rbbi
                 }
             }
             // Improve code coverage
-            if (brk.Preceding(expectedLineResult[1]) != expectedLineResult[0])
+            if (brk.MovePreceding(expectedLineResult[1]) != expectedLineResult[0])
             {
                 Errln("Incorrect preceding position.");
             }
-            if (brk.Following(expectedLineResult[1]) != expectedLineResult[2])
+            if (brk.MoveFollowing(expectedLineResult[1]) != expectedLineResult[2])
             {
                 Errln("Incorrect following position.");
             }
@@ -170,7 +170,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 int[] foundOffsets = new int[maxOffsetCount];
                 int offset, foundOffsetsCount = 0;
                 // do forwards iteration test
-                while (foundOffsetsCount < maxOffsetCount && (offset = brkIter.Next()) != BreakIterator.DONE)
+                while (foundOffsetsCount < maxOffsetCount && (offset = brkIter.MoveNext()) != BreakIterator.DONE)
                 {
                     foundOffsets[foundOffsetsCount++] = offset;
                 }
@@ -188,7 +188,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     --foundOffsetsCount; // back off one from the end offset
                     while (foundOffsetsCount > 0)
                     {
-                        offset = brkIter.Previous();
+                        offset = brkIter.MovePrevious();
                         if (offset != foundOffsets[--foundOffsetsCount])
                         {
                             // log error for backwards test
@@ -307,11 +307,11 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "if (fText == null)" is true
             rbbi.SetText((CharacterIterator)null);
-            assertEquals("RuleBasedBreakIterator.First()", BreakIterator.DONE, rbbi.First());
+            assertEquals("RuleBasedBreakIterator.First()", BreakIterator.DONE, rbbi.MoveFirst());
 
             rbbi.SetText("abc");
-            assertEquals("RuleBasedBreakIterator.First()", 0, rbbi.First());
-            assertEquals("RuleBasedBreakIterator.Next()", 1, rbbi.Next());
+            assertEquals("RuleBasedBreakIterator.First()", 0, rbbi.MoveFirst());
+            assertEquals("RuleBasedBreakIterator.Next()", 1, rbbi.MoveNext());
         }
 
         /*
@@ -323,7 +323,7 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "if (fText == null)" is true
             rbbi.SetText((CharacterIterator)null);
-            if (rbbi.Last() != BreakIterator.DONE)
+            if (rbbi.MoveLast() != BreakIterator.DONE)
             {
                 Errln("RuleBasedBreakIterator.last() was suppose to return "
                         + "BreakIterator.DONE when the object has a null fText.");
@@ -339,7 +339,7 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "else if (offset < fText.getBeginIndex())" is true
             rbbi.SetText("dummy");
-            if (rbbi.Following(-1) != 0)
+            if (rbbi.MoveFollowing(-1) != 0)
             {
                 Errln("RuleBasedBreakIterator.following(-1) was suppose to return "
                         + "0 when the object has a fText of dummy.");
@@ -355,7 +355,7 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator rbbi = new RuleBasedBreakIterator(".;");
             // Tests when "if (fText == null || offset > fText.getEndIndex())" is true
             rbbi.SetText((CharacterIterator)null);
-            if (rbbi.Preceding(-1) != BreakIterator.DONE)
+            if (rbbi.MovePreceding(-1) != BreakIterator.DONE)
             {
                 Errln("RuleBasedBreakIterator.Preceding(-1) was suppose to return "
                         + "0 when the object has a fText of null.");
@@ -363,7 +363,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             // Tests when "else if (offset < fText.getBeginIndex())" is true
             rbbi.SetText("dummy");
-            if (rbbi.Preceding(-1) != 0)
+            if (rbbi.MovePreceding(-1) != 0)
             {
                 Errln("RuleBasedBreakIterator.Preceding(-1) was suppose to return "
                         + "0 when the object has a fText of dummy.");
@@ -415,8 +415,8 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator bi = new RuleBasedBreakIterator(rules);
 
             bi.SetText("abc");
-            bi.First();
-            assertEquals("Rule chaining test", 3, bi.Next());
+            bi.MoveFirst();
+            assertEquals("Rule chaining test", 3, bi.MoveNext());
         }
 
         internal class WorkerThread : ThreadWrapper
@@ -441,8 +441,8 @@ namespace ICU4N.Dev.Test.Rbbi
                     for (int loop = 0; loop < 100; loop++)
                     {
                         int nextExpectedBreak = 0;
-                        for (int actualBreak = localBI.First(); actualBreak != BreakIterator.DONE;
-                                actualBreak = localBI.Next(), nextExpectedBreak += 4)
+                        for (int actualBreak = localBI.MoveFirst(); actualBreak != BreakIterator.DONE;
+                                actualBreak = localBI.MoveNext(), nextExpectedBreak += 4)
                         {
                             assertEquals("", nextExpectedBreak, actualBreak);
                         }
@@ -528,7 +528,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         (RuleBasedBreakIterator)BreakIterator.GetBreakInstance(ULocale.ENGLISH, breakKind);
                 bi.SetText(s);
                 int lastb = -1;
-                for (int b = bi.First(); b != BreakIterator.DONE; b = bi.Next())
+                for (int b = bi.MoveFirst(); b != BreakIterator.DONE; b = bi.MoveNext())
                 {
                     assertTrue("(lastb < b) : (" + lastb + " < " + b + ")", lastb < b);
                 }
@@ -548,10 +548,10 @@ namespace ICU4N.Dev.Test.Rbbi
             String crasherString = "\u3325\u4a16";
             BreakIterator iter = BreakIterator.GetWordInstance(ULocale.ENGLISH);
             iter.SetText(crasherString);
-            iter.First();
+            iter.MoveFirst();
             int pos = 0;
             int lastPos = -1;
-            while ((pos = iter.Next()) != BreakIterator.DONE)
+            while ((pos = iter.MoveNext()) != BreakIterator.DONE)
             {
                 assertTrue("", pos > lastPos);
             }

@@ -330,35 +330,35 @@ namespace ICU4N.Impl
                 throw new NotSupportedException("should not occur");
             }
 
-            public override int First()
+            public override int MoveFirst()
             {
                 return 0;
             }
 
-            public override int Last()
-            {
-                NotImplemented();
-                return 0;
-            }
-
-            public override int Next(int n)
+            public override int MoveLast()
             {
                 NotImplemented();
                 return 0;
             }
 
-            public override int Next()
+            public override int Move(int n)
+            {
+                NotImplemented();
+                return 0;
+            }
+
+            public override int MoveNext()
             {
                 return length;
             }
 
-            public override int Previous()
+            public override int MovePrevious()
             {
                 NotImplemented();
                 return 0;
             }
 
-            public override int Following(int offset)
+            public override int MoveFollowing(int offset)
             {
                 NotImplemented();
                 return 0;
