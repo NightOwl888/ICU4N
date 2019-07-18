@@ -1797,7 +1797,7 @@ namespace ICU4N.Dev.Test.Lang
                 compare: (o1, o2) =>
                 {
                     // TODO Auto-generated method stub
-                    return o1.CompareTo(o2, ComparisonStyle.LONGER_FIRST);
+                    return o1.CompareTo(o2, ComparisonStyle.LongerFirst);
                 }));
 
             //sorted1.AddAll(unsorted);
@@ -1810,7 +1810,7 @@ namespace ICU4N.Dev.Test.Lang
                 compare: (o1, o2) =>
                 {
                     // TODO Auto-generated method stub
-                    return o1.CompareTo(o2, ComparisonStyle.LEXICOGRAPHIC);
+                    return o1.CompareTo(o2, ComparisonStyle.Lexicographic);
                 }));
             //sorted1.AddAll(unsorted);
             sorted1.UnionWith(unsorted);

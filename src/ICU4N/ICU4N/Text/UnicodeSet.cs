@@ -4552,20 +4552,7 @@ namespace ICU4N.Text
 
         // ICU4N specific - RetainAll<T>(IEnumerable<T> collection) where T : ICharSequence moved to UnicodeSetExtension.tt
 
-
-        /// <summary>
-        /// Comparison style enums used by <see cref="CompareTo(UnicodeSet, ComparisonStyle)"/>.
-        /// </summary>
-        /// <stable>ICU 4.4</stable>
-        public enum ComparisonStyle // ICU4N TODO: API - de-nest and name according to .NET conventions
-        {
-            /// <stable>ICU 4.4</stable>
-            SHORTER_FIRST,
-            /// <stable>ICU 4.4</stable>
-            LEXICOGRAPHIC,
-            /// <stable>ICU 4.4</stable>
-            LONGER_FIRST
-        }
+        // ICU4N specific - De-nested ComparisonStyle enum
 
         /// <summary>
         /// Compares <see cref="UnicodeSet"/>s, where shorter come first, and otherwise lexigraphically
@@ -4575,7 +4562,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual int CompareTo(UnicodeSet o)
         {
-            return CompareTo(o, ComparisonStyle.SHORTER_FIRST);
+            return CompareTo(o, ComparisonStyle.ShorterFirst);
         }
 
         /// <summary>
@@ -4585,12 +4572,12 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual int CompareTo(UnicodeSet o, ComparisonStyle style)
         {
-            if (style != ComparisonStyle.LEXICOGRAPHIC)
+            if (style != ComparisonStyle.Lexicographic)
             {
                 int diff = Count - o.Count;
                 if (diff != 0)
                 {
-                    return (diff < 0) == (style == ComparisonStyle.SHORTER_FIRST) ? -1 : 1;
+                    return (diff < 0) == (style == ComparisonStyle.ShorterFirst) ? -1 : 1;
                 }
             }
             int result;
@@ -4688,12 +4675,12 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public static int Compare<T>(ICollection<T> collection1, ICollection<T> collection2, ComparisonStyle style) where T : IComparable<T>
         {
-            if (style != ComparisonStyle.LEXICOGRAPHIC)
+            if (style != ComparisonStyle.Lexicographic)
             {
                 int diff = collection1.Count - collection2.Count;
                 if (diff != 0)
                 {
-                    return (diff < 0) == (style == ComparisonStyle.SHORTER_FIRST) ? -1 : 1;
+                    return (diff < 0) == (style == ComparisonStyle.ShorterFirst) ? -1 : 1;
                 }
             }
             return Compare(collection1, collection2);
@@ -4803,6 +4790,20 @@ namespace ICU4N.Text
             INCLUSIONS = null; // If the properties override inclusions, these have to be regenerated.
             XSYMBOL_TABLE = xSymbolTable;
         }
+    }
+
+    /// <summary>
+    /// Comparison style enums used by <see cref="UnicodeSet.CompareTo(UnicodeSet, ComparisonStyle)"/>.
+    /// </summary>
+    /// <stable>ICU 4.4</stable>
+    public enum ComparisonStyle
+    {
+        /// <stable>ICU 4.4</stable>
+        ShorterFirst,
+        /// <stable>ICU 4.4</stable>
+        Lexicographic,
+        /// <stable>ICU 4.4</stable>
+        LongerFirst
     }
 
     /// <summary>
