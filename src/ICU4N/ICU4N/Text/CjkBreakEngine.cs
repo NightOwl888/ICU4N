@@ -119,7 +119,7 @@ namespace ICU4N.Text
             charPositions[0] = 0;
             while (index < normalizer.EndIndex)
             {
-                normalizer.Next();
+                normalizer.MoveNext();
                 numChars++;
                 index = normalizer.Index;
                 charPositions[numChars] = index;

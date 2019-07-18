@@ -812,14 +812,14 @@ namespace ICU4N.Dev.Test.Normalizers
                 // Run through the iterator forwards and stick it into a
                 // StringBuffer
                 StringBuffer forward = new StringBuffer();
-                for (int ch = iter.First(); ch != Normalizer.DONE; ch = iter.Next())
+                for (int ch = iter.MoveFirst(); ch != Normalizer.DONE; ch = iter.MoveNext())
                 {
                     forward.Append(ch);
                 }
 
                 // Now do it backwards
                 StringBuffer reverse = new StringBuffer();
-                for (int ch = iter.Last(); ch != Normalizer.DONE; ch = iter.Previous())
+                for (int ch = iter.MoveLast(); ch != Normalizer.DONE; ch = iter.MovePrevious())
                 {
                     reverse.Insert(0, ch);
                 }
@@ -1100,7 +1100,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int ch;
             UCharacterIterator cIter = UCharacterIterator.GetInstance(expected);
 
-            while ((ch = iter.Next()) != Normalizer.DONE)
+            while ((ch = iter.MoveNext()) != Normalizer.DONE)
             {
                 if (index >= expected.Length)
                 {
@@ -1126,7 +1126,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
 
             cIter.SetToLimit();
-            while ((ch = iter.Previous()) != Normalizer.DONE)
+            while ((ch = iter.MovePrevious()) != Normalizer.DONE)
             {
                 int want = cIter.PreviousCodePoint();
                 if (ch != want)
@@ -1211,7 +1211,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int ch;
             UCharacterIterator cIter = UCharacterIterator.GetInstance(expected);
 
-            while ((ch = iter.Next()) != Normalizer.DONE)
+            while ((ch = iter.MoveNext()) != Normalizer.DONE)
             {
                 if (index >= expected.Length)
                 {
@@ -1237,7 +1237,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
 
             cIter.SetToLimit();
-            while ((ch = iter.Previous()) != Normalizer.DONE)
+            while ((ch = iter.MovePrevious()) != Normalizer.DONE)
             {
                 int want = cIter.PreviousCodePoint();
                 if (ch != want)
@@ -1260,7 +1260,7 @@ namespace ICU4N.Dev.Test.Normalizers
             Normalizer iter = new Normalizer(new StringCharacterIterator(Utility.Unescape(input)),
                                                     Normalizer.NFKC, 0);
             StringBuffer got = new StringBuffer();
-            for (ch = iter.First(); ch != Normalizer.DONE; ch = iter.Next())
+            for (ch = iter.MoveFirst(); ch != Normalizer.DONE; ch = iter.MoveNext())
             {
                 if (index >= expected.Length)
                 {
@@ -1286,7 +1286,7 @@ namespace ICU4N.Dev.Test.Normalizers
             Logln("Reverse Iteration\n");
             iter.SetIndexOnly(iter.EndIndex);
             got.Length = 0;
-            for (ch = iter.Previous(); ch != Normalizer.DONE; ch = iter.Previous())
+            for (ch = iter.MovePrevious(); ch != Normalizer.DONE; ch = iter.MovePrevious())
             {
                 if (index >= expected.Length)
                 {
@@ -1427,7 +1427,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 m = moves[movesIndex++];
                 if (m == '-')
                 {
-                    c1 = iter.Previous();
+                    c1 = iter.MovePrevious();
                     c2 = iter32.Previous();
                 }
                 else if (m == '0')
@@ -1437,7 +1437,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 else /* m=='+' */
                 {
-                    c1 = iter.Next();
+                    c1 = iter.MoveNext();
                     c2 = iter32.Next();
                 }
 
@@ -1521,7 +1521,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 m = moves[movesIndex++];
                 if (m == '-')
                 {
-                    c1 = iter.Previous();
+                    c1 = iter.MovePrevious();
                     c2 = iter32.Previous();
                 }
                 else if (m == '0')
@@ -1531,7 +1531,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 else /* m=='+' */
                 {
-                    c1 = iter.Next();
+                    c1 = iter.MoveNext();
                     c2 = iter32.Next();
                 }
 
@@ -1569,7 +1569,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 // make s a bit longer and more interesting
                 UCharacterIterator iter = UCharacterIterator.GetInstance(s + s);
                 Normalizer norm = new Normalizer(iter, Normalizer.NFC, 0);
-                if (norm.Next() != 0xe4)
+                if (norm.MoveNext() != 0xe4)
                 {
                     Errln("error in Normalizer(CharacterIterator).Next()");
                 }
@@ -1589,11 +1589,11 @@ namespace ICU4N.Dev.Test.Normalizers
                 //if(clone.hashCode()!=norm.hashCode()) {
                 //    Errln("error in Normalizer(Normalizer(CharacterIterator)).clone().hashCode()!=copy.hashCode()");
                 //}
-                if (clone.Next() != 0xac00)
+                if (clone.MoveNext() != 0xac00)
                 {
                     Errln("error in Normalizer(Normalizer(CharacterIterator)).Next()");
                 }
-                int ch = clone.Next();
+                int ch = clone.MoveNext();
                 if (ch != 0x4e3d)
                 {
                     Errln("error in Normalizer(Normalizer(CharacterIterator)).clone().Next()");
@@ -1669,7 +1669,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     Errln("error in Normalizer::setMode() or Normalizer::getMode()");
                 }
-                if (clone.Next() != 0x308 || clone.Next() != 0x1100)
+                if (clone.MoveNext() != 0x308 || clone.MoveNext() != 0x1100)
                 {
                     Errln("error in Normalizer::setText() or Normalizer::setMode()");
                 }
@@ -1678,14 +1678,14 @@ namespace ICU4N.Dev.Test.Normalizers
                 StringBuffer buf = new StringBuffer("aaaaaaaaaa");
                 buf[10 - 1] = '\u0308';
                 clone.SetText(buf);
-                if (clone.Last() != 0x308)
+                if (clone.MoveLast() != 0x308)
                 {
                     Errln("error in Normalizer(10*U+0308).last()");
                 }
 
                 // test UNORM_NONE
                 norm.SetMode(Normalizer.NONE);
-                if (norm.First() != 0x61 || norm.Next() != 0x308 || norm.Last() != 0x2f800)
+                if (norm.MoveFirst() != 0x61 || norm.MoveNext() != 0x308 || norm.MoveLast() != 0x2f800)
                 {
                     Errln("error in Normalizer(UNORM_NONE).first()/next()/last()");
                 }
