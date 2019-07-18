@@ -1172,7 +1172,7 @@ namespace ICU4N.Text
             startPos = fScanIndex;
             try
             {
-                uset = new UnicodeSet(fRB.fRules, pos, fSymbolTable, UnicodeSet.IGNORE_SPACE);
+                uset = new UnicodeSet(fRB.fRules, pos, fSymbolTable, UnicodeSet.IgnoreSpace);
             }
             catch (Exception)
             { // TODO:  catch fewer exception types.

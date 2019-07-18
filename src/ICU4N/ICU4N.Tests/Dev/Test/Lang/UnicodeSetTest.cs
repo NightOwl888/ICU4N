@@ -1429,7 +1429,7 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestCloseOver()
         {
-            String CASE = (UnicodeSet.CASE).ToString(CultureInfo.InvariantCulture);
+            String CASE = (UnicodeSet.Case).ToString();
             String[] DATA = {
                 // selector, input, output
                 CASE,
@@ -1460,7 +1460,7 @@ namespace ICU4N.Dev.Test.Lang
             UnicodeSet t = new UnicodeSet();
             for (int i = 0; i < DATA.Length; i += 3)
             {
-                int selector = int.Parse(DATA[i], CultureInfo.InvariantCulture);
+                PatternOptions selector = (PatternOptions)Enum.Parse(typeof(PatternOptions), DATA[i]);
                 String pat = DATA[i + 1];
                 String exp = DATA[i + 2];
                 s.ApplyPattern(pat);
@@ -1478,9 +1478,9 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             // Test the pattern API
-            s.ApplyPattern("[abc]", UnicodeSet.CASE);
+            s.ApplyPattern("[abc]", UnicodeSet.Case);
             expectContainment(s, "abcABC", "defDEF");
-            s = new UnicodeSet("[^abc]", UnicodeSet.CASE);
+            s = new UnicodeSet("[^abc]", UnicodeSet.Case);
             expectContainment(s, "defDEF", "abcABC");
         }
 
@@ -1613,7 +1613,7 @@ namespace ICU4N.Dev.Test.Lang
 
                 //cover Unicode(String,ParsePosition,SymbolTable,int)
                 ParsePosition inpos = new ParsePosition(0);
-                UnicodeSet inSet = new UnicodeSet(inpat, inpos, sym, UnicodeSet.IGNORE_SPACE);
+                UnicodeSet inSet = new UnicodeSet(inpat, inpos, sym, UnicodeSet.IgnoreSpace);
                 UnicodeSet expSet = new UnicodeSet(exppat);
                 if (!inSet.Equals(expSet))
                 {
@@ -2031,7 +2031,7 @@ namespace ICU4N.Dev.Test.Lang
                         case 9: test.ApplyPattern("[ab]", 0); break;
                         case 10: test.ApplyPropertyAlias("hex", "true"); break;
                         case 11: test.ApplyPropertyAlias("hex", "true", null); break;
-                        case 12: test.CloseOver(UnicodeSet.CASE); break;
+                        case 12: test.CloseOver(UnicodeSet.Case); break;
                         case 13: test.Compact(); checkEquals = false; break;
                         case 14: test.Complement(0); break;
                         case 15: test.Complement(0, 0); break;

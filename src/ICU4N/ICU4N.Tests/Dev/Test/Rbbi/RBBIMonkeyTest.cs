@@ -155,7 +155,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 UnicodeSet s;
                 try
                 {
-                    s = new UnicodeSet(expandedDefString, UnicodeSet.IGNORE_SPACE);
+                    s = new UnicodeSet(expandedDefString, UnicodeSet.IgnoreSpace);
                 }
                 catch (ArgumentException e)
                 {

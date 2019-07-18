@@ -32,7 +32,7 @@ namespace ICU4N.Util
          *   http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
          * @stable ICU 3.4
          */
-        public static readonly int ES_STANDARD = 0;
+        public static readonly int ES_STANDARD = 0; // ICU4N TODO: API - Make enum
 
         /**
          * EXType for {@link #getExemplarSet(int, int)}.
@@ -41,7 +41,7 @@ namespace ICU4N.Util
          *   http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
          * @stable ICU 3.4
          */
-        public static readonly int ES_AUXILIARY = 1;
+        public static readonly int ES_AUXILIARY = 1; // ICU4N TODO: API - Make enum
 
         /**
          * EXType for {@link #getExemplarSet(int, int)}.
@@ -50,7 +50,7 @@ namespace ICU4N.Util
          *   http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
          * @stable ICU 4.4
          */
-        public static readonly int ES_INDEX = 2;
+        public static readonly int ES_INDEX = 2; // ICU4N TODO: API - Make enum
 
         /**
          * EXType for {@link #getExemplarSet(int, int)}.
@@ -61,7 +61,7 @@ namespace ICU4N.Util
          * @deprecated ICU 51
          */
         [Obsolete("ICU 51 This type is no longer supported.")]
-        public static readonly int ES_CURRENCY = 3;
+        public static readonly int ES_CURRENCY = 3; // ICU4N TODO: API - Make enum
 
         /**
          * Corresponds to the 'punctuation' CLDR exemplars in
@@ -70,45 +70,45 @@ namespace ICU4N.Util
          * EXType for {@link #getExemplarSet(int, int)}.
          * @stable ICU 49
          */
-        public static readonly int ES_PUNCTUATION = 4;
+        public static readonly int ES_PUNCTUATION = 4; // ICU4N TODO: API - Make enum
 
         /**
          * Count of EXTypes for {@link #getExemplarSet(int, int)}.
          * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
          */
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public static readonly int ES_COUNT = 5;
+        public static readonly int ES_COUNT = 5; // ICU4N TODO: API - Make enum
 
         /**
          * Delimiter type for {@link #getDelimiter(int)}.
          * @stable ICU 3.4
          */
-        public static readonly int QUOTATION_START = 0;
+        public static readonly int QUOTATION_START = 0; // ICU4N TODO: API - Make enum
 
         /**
          * Delimiter type for {@link #getDelimiter(int)}.
          * @stable ICU 3.4
          */
-        public static readonly int QUOTATION_END = 1;
+        public static readonly int QUOTATION_END = 1; // ICU4N TODO: API - Make enum
 
         /**
          * Delimiter type for {@link #getDelimiter(int)}.
          * @stable ICU 3.4
          */
-        public static readonly int ALT_QUOTATION_START = 2;
+        public static readonly int ALT_QUOTATION_START = 2; // ICU4N TODO: API - Make enum
 
         /**
          * Delimiter type for {@link #getDelimiter(int)}.
          * @stable ICU 3.4
          */
-        public static readonly int ALT_QUOTATION_END = 3;
+        public static readonly int ALT_QUOTATION_END = 3; // ICU4N TODO: API - Make enum
 
         /**
          * Count of delimiter types for {@link #getDelimiter(int)}.
          * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
          */
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public static readonly int DELIMITER_COUNT = 4;
+        public static readonly int DELIMITER_COUNT = 4; // ICU4N TODO: API - Make enum
 
         // private constructor to prevent default construction
         ///CLOVER:OFF
@@ -132,7 +132,7 @@ namespace ICU4N.Util
          * @return          The set of exemplar characters for the given locale.
          * @stable ICU 3.0
          */
-        public static UnicodeSet GetExemplarSet(ULocale locale, int options)
+        public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options)
         {
             return LocaleData.GetInstance(locale).GetExemplarSet(options, ES_STANDARD);
         }
@@ -155,7 +155,7 @@ namespace ICU4N.Util
          * @return          The set of exemplar characters for the given locale.
          * @stable ICU 3.0
          */
-        public static UnicodeSet GetExemplarSet(ULocale locale, int options, int extype)
+        public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options, int extype)
         {
             return LocaleData.GetInstance(locale).GetExemplarSet(options, extype);
         }
@@ -180,7 +180,7 @@ namespace ICU4N.Util
          * @exception       RuntimeException if the extype is invalid.
          * @stable ICU 3.4
          */
-        public UnicodeSet GetExemplarSet(int options, int extype)
+        public UnicodeSet GetExemplarSet(PatternOptions options, int extype)
         {
             string[] exemplarSetTypes = {
                     "ExemplarCharacters",
@@ -206,7 +206,7 @@ namespace ICU4N.Util
                     return null;
                 }
                 String unicodeSetPattern = stringBundle.GetString();
-                return new UnicodeSet(unicodeSetPattern, UnicodeSet.IGNORE_SPACE | options);
+                return new UnicodeSet(unicodeSetPattern, UnicodeSet.IgnoreSpace | options);
             }
             catch (IndexOutOfRangeException aiooe)
             {

@@ -15,6 +15,81 @@ using System.Text;
 namespace ICU4N.Text
 {
     /// <summary>
+    /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, int)"/> constructor, 
+    /// <see cref="UnicodeSet.ApplyPattern(string, PatternOptions)"/>, 
+    /// and <see cref="UnicodeSet.CloseOver(int)"/>.
+    /// </summary>
+    [Flags]
+    public enum PatternOptions
+    {
+        /// <summary>
+        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, PatternOptions)"/> constructor, 
+        /// <see cref="UnicodeSet.ApplyPattern(string, PatternOptions)"/>, and <see cref="UnicodeSet.CloseOver(PatternOptions)"/>.
+        /// indicating letter case.  This may be ORed together with other
+        /// selectors.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        IgnoreSpace = 1,
+
+        /// <summary>
+        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, PatternOptions)"/> constructor, 
+        /// <see cref="UnicodeSet.ApplyPattern(string, PatternOptions)"/>, and <see cref="UnicodeSet.CloseOver(PatternOptions)"/>.
+        /// indicating letter case.  This may be ORed together with other
+        /// selectors.
+        /// <para/>
+        /// Enable case insensitive matching.  E.g., "[ab]" with this flag
+        /// will match 'a', 'A', 'b', and 'B'.  "[^ab]" with this flag will
+        /// match all except 'a', 'A', 'b', and 'B'. This performs a full
+        /// closure over case mappings, e.g. U+017F for s.
+        /// <para/>
+        /// The resulting set is a superset of the input for the code points but
+        /// not for the strings.
+        /// It performs a case mapping closure of the code points and adds
+        /// full case folding strings for the code points, and reduces strings of
+        /// the original set to their full case folding equivalents.
+        /// </summary>
+        /// <remarks>
+        /// This is designed for case-insensitive matches, for example
+        /// in regular expressions. The full code point case closure allows checking of
+        /// an input character directly against the closure set.
+        /// Strings are matched by comparing the case-folded form from the closure
+        /// set with an incremental case folding of the string in question.
+        /// <para/>
+        /// The closure set will also contain single code points if the original
+        /// set contained case-equivalent strings (like U+00DF for "ss" or "Ss" etc.).
+        /// This is not necessary (that is, redundant) for the above matching method
+        /// but results in the same closure sets regardless of whether the original
+        /// set contained the code point or a string.
+        /// </remarks>
+        /// <stable>ICU 3.8</stable>
+        Case = 2,
+
+        /// <summary>
+        /// Alias for <see cref="UnicodeSet.Case"/>, for ease of porting from C++ where ICU4C
+        /// also has both USET_CASE and USET_CASE_INSENSITIVE (see uset.h).
+        /// </summary>
+        /// <seealso cref="Case"/>
+        /// <stable>ICU 3.4</stable>
+        CaseInsensitive = 2,
+
+        /// <summary>
+        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, PatternOptions)"/> constructor, 
+        /// <see cref="UnicodeSet.ApplyPattern(string, PatternOptions)"/>, and <see cref="UnicodeSet.CloseOver(PatternOptions)"/>.
+        /// indicating letter case.  This may be ORed together with other
+        /// selectors.
+        /// <para/>
+        /// Enable case insensitive matching.  E.g., "[ab]" with this flag
+        /// will match 'a', 'A', 'b', and 'B'.  "[^ab]" with this flag will
+        /// match all except 'a', 'A', 'b', and 'B'. This adds the lower-,
+        /// title-, and uppercase mappings as well as the case folding
+        /// of each existing element in the set.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        AddCaseMappings = 4,
+    }
+
+
+    /// <summary>
     /// A mutable set of Unicode characters and multicharacter strings.
     /// Objects of this class represent <em>character classes</em> used
     /// in regular expressions. A character specifies a subset of Unicode
@@ -455,7 +530,7 @@ namespace ICU4N.Text
         public UnicodeSet(string pattern)
             : this()
         {
-            ApplyPattern(pattern, null, null, IGNORE_SPACE);
+            ApplyPattern(pattern, null, null, IgnoreSpace);
         }
 
         /// <summary>
@@ -471,7 +546,7 @@ namespace ICU4N.Text
         public UnicodeSet(string pattern, bool ignoreWhitespace)
             : this()
         {
-            ApplyPattern(pattern, null, null, ignoreWhitespace ? IGNORE_SPACE : 0);
+            ApplyPattern(pattern, null, null, ignoreWhitespace ? IgnoreSpace : 0);
         }
 
         /// <summary>
@@ -481,12 +556,12 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="pattern">A string specifying what characters are in the set.</param>
         /// <param name="options">A bitmask indicating which options to apply.
-        /// Valid options are <see cref="IGNORE_SPACE"/> and <see cref="CASE"/>.
+        /// Valid options are <see cref="IgnoreSpace"/> and <see cref="Case"/>.
         /// </param>
         /// <exception cref="ArgumentException">If the <paramref name="pattern"/>
         /// contains a syntax error.</exception>
         /// <stable>ICU 3.8</stable>
-        public UnicodeSet(string pattern, int options)
+        public UnicodeSet(string pattern, PatternOptions options)
             : this()
         {
             ApplyPattern(pattern, null, null, options);
@@ -508,7 +583,7 @@ namespace ICU4N.Text
         public UnicodeSet(string pattern, ParsePosition pos, ISymbolTable symbols)
             : this()
         {
-            ApplyPattern(pattern, pos, symbols, IGNORE_SPACE);
+            ApplyPattern(pattern, pos, symbols, IgnoreSpace);
         }
 
         /// <summary>
@@ -522,12 +597,12 @@ namespace ICU4N.Text
         /// <param name="symbols">A symbol table mapping variables to char[] arrays
         /// and chars to <see cref="UnicodeSet"/>s.</param>
         /// <param name="options">A bitmask indicating which options to apply.
-        /// Valid options are <see cref="IGNORE_SPACE"/> and <see cref="CASE"/>.
+        /// Valid options are <see cref="IgnoreSpace"/> and <see cref="Case"/>.
         /// </param>
         /// <exception cref="ArgumentException">If the <paramref name="pattern"/>
         /// contains a syntax error.</exception>
         /// <stable>ICU 3.2</stable>
-        public UnicodeSet(string pattern, ParsePosition pos, ISymbolTable symbols, int options)
+        public UnicodeSet(string pattern, ParsePosition pos, ISymbolTable symbols, PatternOptions options)
             : this()
         {
             ApplyPattern(pattern, pos, symbols, options);
@@ -594,7 +669,7 @@ namespace ICU4N.Text
         {
             CheckFrozen();
 #pragma warning disable 612, 618
-            return ApplyPattern(pattern, null, null, IGNORE_SPACE);
+            return ApplyPattern(pattern, null, null, IgnoreSpace);
 #pragma warning restore 612, 618
         }
 
@@ -611,7 +686,7 @@ namespace ICU4N.Text
         {
             CheckFrozen();
 #pragma warning disable 612, 618
-            return ApplyPattern(pattern, null, null, ignoreWhitespace ? IGNORE_SPACE : 0);
+            return ApplyPattern(pattern, null, null, ignoreWhitespace ? IgnoreSpace : 0);
 #pragma warning restore 612, 618
         }
 
@@ -622,10 +697,10 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="pattern">A string specifying what characters are in the set.</param>
         /// <param name="options">A bitmask indicating which options to apply.
-        /// Valid options are <see cref="IGNORE_SPACE"/> and <see cref="CASE"/>.</param>
+        /// Valid options are <see cref="IgnoreSpace"/> and <see cref="Case"/>.</param>
         /// <exception cref="ArgumentException">If the <paramref name="pattern"/> contains a syntax error.</exception>
         /// <stable>ICU 3.8</stable>
-        public virtual UnicodeSet ApplyPattern(string pattern, int options)
+        public virtual UnicodeSet ApplyPattern(string pattern, PatternOptions options)
         {
             CheckFrozen();
 #pragma warning disable 612, 618
@@ -2170,7 +2245,7 @@ namespace ICU4N.Text
         public virtual UnicodeSet ApplyPattern(string pattern,
                 ParsePosition pos,
                 ISymbolTable symbols,
-                int options)
+                PatternOptions options)
         {
 
             // Need to build the pattern in a temporary string because
@@ -2195,7 +2270,7 @@ namespace ICU4N.Text
                 int i = pos.Index;
 
                 // Skip over trailing whitespace
-                if ((options & IGNORE_SPACE) != 0)
+                if ((options & IgnoreSpace) != 0)
                 {
                     i = PatternProps.SkipWhiteSpace(pattern, i);
                 }
@@ -2244,10 +2319,10 @@ namespace ICU4N.Text
         /// </param>
         /// <param name="options">
         /// A bit mask of zero or more of the following:
-        /// <see cref="IGNORE_SPACE"/>, <see cref="CASE"/>.
+        /// <see cref="IgnoreSpace"/>, <see cref="Case"/>.
         /// </param>
         private void ApplyPattern(RuleCharacterIterator chars, ISymbolTable symbols,
-            IAppendable rebuiltPat, int options) // ICU4N TODO: API - Make [Flags] enum for options
+            IAppendable rebuiltPat, PatternOptions options)
         {
 
             // Syntax characters: [ ] ^ - & { }
@@ -2256,7 +2331,7 @@ namespace ICU4N.Text
 
             RuleCharacterIteratorOptions opts = RuleCharacterIteratorOptions.ParseVariables |
                     RuleCharacterIteratorOptions.ParseEscapes;
-            if ((options & IGNORE_SPACE) != 0)
+            if ((options & IgnoreSpace) != 0)
             {
                 opts |= RuleCharacterIteratorOptions.SkipWhitespace;
             }
@@ -2691,9 +2766,9 @@ namespace ICU4N.Text
              * to close over case BEFORE COMPLEMENTING.  This makes
              * patterns like /[^abc]/i work.
              */
-            if ((options & CASE) != 0)
+            if ((options & Case) != 0)
             {
-                CloseOver(CASE);
+                CloseOver(Case);
             }
             if (invert)
             {
@@ -3827,15 +3902,17 @@ namespace ICU4N.Text
         //----------------------------------------------------------------
 
         /// <summary>
-        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, int)"/> constructor, <see cref="ApplyPattern(string, int)"/>, and <see cref="CloseOver(int)"/>.
+        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, PatternOptions)"/> constructor, 
+        /// <see cref="ApplyPattern(string, PatternOptions)"/>, and <see cref="CloseOver(PatternOptions)"/>.
         /// indicating letter case.  This may be ORed together with other
         /// selectors.
         /// </summary>
         /// <stable>ICU 3.8</stable>
-        public static readonly int IGNORE_SPACE = 1; // ICU4N TODO: API - make [Flags] enum
+        public static readonly PatternOptions IgnoreSpace = PatternOptions.IgnoreSpace;
 
         /// <summary>
-        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, int)"/> constructor, <see cref="ApplyPattern(string, int)"/>, and <see cref="CloseOver(int)"/>.
+        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, PatternOptions)"/> constructor, 
+        /// <see cref="ApplyPattern(string, PatternOptions)"/>, and <see cref="CloseOver(PatternOptions)"/>.
         /// indicating letter case.  This may be ORed together with other
         /// selectors.
         /// <para/>
@@ -3864,18 +3941,19 @@ namespace ICU4N.Text
         /// set contained the code point or a string.
         /// </remarks>
         /// <stable>ICU 3.8</stable>
-        public static readonly int CASE = 2; // ICU4N TODO: API - make [Flags] enum
+        public static readonly PatternOptions Case = PatternOptions.Case;
 
         /// <summary>
-        /// Alias for <see cref="UnicodeSet.CASE"/>, for ease of porting from C++ where ICU4C
+        /// Alias for <see cref="UnicodeSet.Case"/>, for ease of porting from C++ where ICU4C
         /// also has both USET_CASE and USET_CASE_INSENSITIVE (see uset.h).
         /// </summary>
-        /// <seealso cref="CASE"/>
+        /// <seealso cref="Case"/>
         /// <stable>ICU 3.4</stable>
-        public static readonly int CASE_INSENSITIVE = 2; // ICU4N TODO: API - make [Flags] enum
+        public static readonly PatternOptions CaseInsensitive = PatternOptions.CaseInsensitive;
 
         /// <summary>
-        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, int)"/> constructor, <see cref="ApplyPattern(string, int)"/>, and <see cref="CloseOver(int)"/>.
+        /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, PatternOptions)"/> constructor, 
+        /// <see cref="ApplyPattern(string, PatternOptions)"/>, and <see cref="CloseOver(PatternOptions)"/>.
         /// indicating letter case.  This may be ORed together with other
         /// selectors.
         /// <para/>
@@ -3886,7 +3964,7 @@ namespace ICU4N.Text
         /// of each existing element in the set.
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public static readonly int ADD_CASE_MAPPINGS = 4; // ICU4N TODO: API - make [Flags] enum
+        public static readonly PatternOptions AddCaseMappings = PatternOptions.AddCaseMappings;
 
         //  add the result of a full case mapping to the set
         //  use str as a temporary string to avoid constructing one
@@ -3914,7 +3992,7 @@ namespace ICU4N.Text
         /// Close this set over the given <paramref name="attribute"/>. 
         /// </summary>
         /// <remarks>
-        /// For the attribute <see cref="CASE"/>, the result is to modify 
+        /// For the attribute <see cref="Case"/>, the result is to modify 
         /// this set so that:
         /// <list type="number">
         ///     <item><description>
@@ -3941,10 +4019,10 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>A reference to this set.</returns>
         /// <stable>ICU 3.8</stable>
-        public virtual UnicodeSet CloseOver(int attribute)
+        public virtual UnicodeSet CloseOver(PatternOptions attribute)
         {
             CheckFrozen();
-            if ((attribute & (CASE | ADD_CASE_MAPPINGS)) != 0)
+            if ((attribute & (Case | AddCaseMappings)) != 0)
             {
                 UCaseProps csp = UCaseProps.Instance;
                 UnicodeSet foldSet = new UnicodeSet(this);
@@ -3953,7 +4031,7 @@ namespace ICU4N.Text
                 // start with input set to guarantee inclusion
                 // CASE: remove strings because the strings will actually be reduced (folded);
                 //       therefore, start with no strings and add only those needed
-                if ((attribute & CASE) != 0)
+                if ((attribute & Case) != 0)
                 {
                     foldSet.strings.Clear();
                 }
@@ -3967,7 +4045,7 @@ namespace ICU4N.Text
                     int start = GetRangeStart(i);
                     int end = GetRangeEnd(i);
 
-                    if ((attribute & CASE) != 0)
+                    if ((attribute & Case) != 0)
                     {
                         // full case closure
                         for (int cp = start; cp <= end; ++cp)
@@ -3997,7 +4075,7 @@ namespace ICU4N.Text
                 }
                 if (strings.Count > 0)
                 {
-                    if ((attribute & CASE) != 0)
+                    if ((attribute & Case) != 0)
                     {
                         foreach (String s in strings)
                         {
