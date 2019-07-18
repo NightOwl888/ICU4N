@@ -639,7 +639,9 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetWordInstance(CultureInfo where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(ULocale.ForLocale(where), KIND_WORD);
+#pragma warning restore 612, 618
         }
 
         /// <icu/>
@@ -653,7 +655,9 @@ namespace ICU4N.Text
         /// <stable>ICU 3.2</stable>
         public static BreakIterator GetWordInstance(ULocale where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_WORD);
+#pragma warning restore 612, 618
         }
 
         /// <summary>
@@ -680,7 +684,9 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetLineInstance(CultureInfo where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(ULocale.ForLocale(where), KIND_LINE);
+#pragma warning restore 612, 618
         }
 
         /// <icu/>
@@ -695,7 +701,9 @@ namespace ICU4N.Text
         /// <stable>ICU 3.2</stable>
         public static BreakIterator GetLineInstance(ULocale where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_LINE);
+#pragma warning restore 612, 618
         }
 
         /// <summary>
@@ -722,7 +730,9 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetCharacterInstance(CultureInfo where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(ULocale.ForLocale(where), KIND_CHARACTER);
+#pragma warning restore 612, 618
         }
 
         /// <icu/>
@@ -737,7 +747,9 @@ namespace ICU4N.Text
         /// <stable>ICU 3.2</stable>
         public static BreakIterator GetCharacterInstance(ULocale where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_CHARACTER);
+#pragma warning restore 612, 618
         }
 
         /// <summary>
@@ -761,7 +773,9 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetSentenceInstance(CultureInfo where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(ULocale.ForLocale(where), KIND_SENTENCE);
+#pragma warning restore 612, 618
         }
 
         /// <icu/>
@@ -774,7 +788,9 @@ namespace ICU4N.Text
         /// <stable>ICU 3.2</stable>
         public static BreakIterator GetSentenceInstance(ULocale where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_SENTENCE);
+#pragma warning restore 612, 618
         }
 
         /// <icu/>
@@ -805,7 +821,9 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public static BreakIterator GetTitleInstance(CultureInfo where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(ULocale.ForLocale(where), KIND_TITLE);
+#pragma warning restore 612, 618
         }
 
         /// <icu/>
@@ -821,7 +839,9 @@ namespace ICU4N.Text
         /// <stable>ICU 3.2</stable>
         public static BreakIterator GetTitleInstance(ULocale where)
         {
+#pragma warning disable 612, 618
             return GetBreakInstance(where, KIND_TITLE);
+#pragma warning restore 612, 618
         }
 
         /// <icu/>
