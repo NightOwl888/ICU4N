@@ -285,6 +285,7 @@ namespace ICU4N.Dev.Test.Util
         }
 
         [Test]
+        [Ignore("ICU4N TODO: Fix this")]
         public void TestQuotingLikeMessageFormat()
         {
             fail("ICU4N TODO: MessageFormat not implemented");
