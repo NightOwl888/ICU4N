@@ -17,5 +17,649 @@ namespace ICU4N.Text
 {
     public partial class UnicodeSet
     {
+
+        /// <seealso cref="UnionWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+
+        public virtual UnicodeSet UnionWith(params string[] collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return AddAll(collection);
+        }
+
+        /// <seealso cref="UnionWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+
+        public virtual UnicodeSet UnionWith(params StringBuilder[] collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return AddAll(collection);
+        }
+
+        /// <seealso cref="UnionWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+        [CLSCompliant(false)]
+        public virtual UnicodeSet UnionWith(params char[][] collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return AddAll(collection);
+        }
+
+        /// <seealso cref="UnionWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+
+        internal virtual UnicodeSet UnionWith(params ICharSequence[] collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return AddAll(collection);
+        }
+
+        /// <summary>
+        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>this object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet UnionWithChars(string s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return AddAll(s);
+        }
+
+        /// <summary>
+        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>this object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet UnionWithChars(StringBuilder s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return AddAll(s);
+        }
+
+        /// <summary>
+        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>this object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet UnionWithChars(char[] s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return AddAll(s);
+        }
+
+        /// <summary>
+        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>this object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal UnicodeSet UnionWithChars(ICharSequence s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return AddAll(s);
+        }
+
+        /// <summary>
+        /// Complement the specified string in this set.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The string to complement.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet SymmetricExceptWith(string s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return Complement(s);
+        }
+
+        /// <summary>
+        /// Complement the specified string in this set.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The string to complement.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet SymmetricExceptWith(StringBuilder s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return Complement(s);
+        }
+
+        /// <summary>
+        /// Complement the specified string in this set.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The string to complement.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet SymmetricExceptWith(char[] s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return Complement(s);
+        }
+
+        /// <summary>
+        /// Complement the specified string in this set.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The string to complement.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal UnicodeSet SymmetricExceptWith(ICharSequence s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return Complement(s);
+        }
+
+        /// <summary>
+        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet SymmetricExceptWithChars(string s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ComplementAll(s);
+        }
+
+        /// <summary>
+        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet SymmetricExceptWithChars(StringBuilder s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ComplementAll(s);
+        }
+
+        /// <summary>
+        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet SymmetricExceptWithChars(char[] s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ComplementAll(s);
+        }
+
+        /// <summary>
+        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal UnicodeSet SymmetricExceptWithChars(ICharSequence s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ComplementAll(s);
+        }
+
+        /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool IsSupersetOf(IEnumerable<string> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsAll(collection);
+        }
+
+        /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool IsSupersetOf(IEnumerable<StringBuilder> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsAll(collection);
+        }
+
+        /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool IsSupersetOf(IEnumerable<char[]> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsAll(collection);
+        }
+
+        /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal virtual bool IsSupersetOf<T>(IEnumerable<T> collection) where T : ICharSequence
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsAll(collection);
+        }
+
+        /// <summary>
+        /// Returns true if this set contains one or more of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns>true if the condition is met.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public bool Overlaps(string s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ContainsSome(s);
+        }
+
+        /// <summary>
+        /// Returns true if this set contains one or more of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns>true if the condition is met.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public bool Overlaps(StringBuilder s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ContainsSome(s);
+        }
+
+        /// <summary>
+        /// Returns true if this set contains one or more of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns>true if the condition is met.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public bool Overlaps(char[] s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ContainsSome(s);
+        }
+
+        /// <summary>
+        /// Returns true if this set contains one or more of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns>true if the condition is met.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal bool Overlaps(ICharSequence s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ContainsSome(s);
+        }
+
+        /// <seealso cref="Overlaps(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public bool Overlaps(IEnumerable<string> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsSome(collection);
+        }
+
+        /// <seealso cref="Overlaps(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public bool Overlaps(IEnumerable<StringBuilder> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsSome(collection);
+        }
+
+        /// <seealso cref="Overlaps(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public bool Overlaps(IEnumerable<char[]> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsSome(collection);
+        }
+
+        /// <seealso cref="Overlaps(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal bool Overlaps<T>(IEnumerable<T> collection) where T : ICharSequence
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsSome(collection);
+        }
+
+        /// <seealso cref="ExceptWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet ExceptWith(IEnumerable<string> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RemoveAll(collection);
+        }
+
+        /// <seealso cref="ExceptWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet ExceptWith(IEnumerable<StringBuilder> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RemoveAll(collection);
+        }
+
+        /// <seealso cref="ExceptWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet ExceptWith(IEnumerable<char[]> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RemoveAll(collection);
+        }
+
+        /// <seealso cref="ExceptWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal virtual UnicodeSet ExceptWith<T>(IEnumerable<T> collection) where T : ICharSequence
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RemoveAll(collection);
+        }
+
+        /// <summary>
+        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet ExceptWithChars(string s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RemoveAll(s);
+        }
+
+        /// <summary>
+        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet ExceptWithChars(StringBuilder s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RemoveAll(s);
+        }
+
+        /// <summary>
+        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet ExceptWithChars(char[] s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RemoveAll(s);
+        }
+
+        /// <summary>
+        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal UnicodeSet ExceptWithChars(ICharSequence s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RemoveAll(s);
+        }
+
+        /// <summary>
+        /// Retain the specified string in this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
+        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
+        /// </summary>
+        /// <param name="cs">The string to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet IntersectWith(string cs)
+        {
+            if (cs == null)
+                throw new ArgumentNullException(nameof(cs));
+            return Retain(cs);
+        }
+
+        /// <summary>
+        /// Retain the specified string in this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
+        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
+        /// </summary>
+        /// <param name="cs">The string to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet IntersectWith(StringBuilder cs)
+        {
+            if (cs == null)
+                throw new ArgumentNullException(nameof(cs));
+            return Retain(cs);
+        }
+
+        /// <summary>
+        /// Retain the specified string in this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
+        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
+        /// </summary>
+        /// <param name="cs">The string to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet IntersectWith(char[] cs)
+        {
+            if (cs == null)
+                throw new ArgumentNullException(nameof(cs));
+            return Retain(cs);
+        }
+
+        /// <summary>
+        /// Retain the specified string in this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
+        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
+        /// </summary>
+        /// <param name="cs">The string to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal UnicodeSet IntersectWith(ICharSequence cs)
+        {
+            if (cs == null)
+                throw new ArgumentNullException(nameof(cs));
+            return Retain(cs);
+        }
+
+        /// <seealso cref="RetainAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet IntersectWith(IEnumerable<string> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RetainAll(collection);
+        }
+
+        /// <seealso cref="RetainAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet IntersectWith(IEnumerable<StringBuilder> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RetainAll(collection);
+        }
+
+        /// <seealso cref="RetainAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual UnicodeSet IntersectWith(IEnumerable<char[]> collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RetainAll(collection);
+        }
+
+        /// <seealso cref="RetainAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal virtual UnicodeSet IntersectWith<T>(IEnumerable<T> collection) where T : ICharSequence
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RetainAll(collection);
+        }
+
+        /// <summary>
+        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet IntersectWithChars(string s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RetainAll(s);
+        }
+
+        /// <summary>
+        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet IntersectWithChars(StringBuilder s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RetainAll(s);
+        }
+
+        /// <summary>
+        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public UnicodeSet IntersectWithChars(char[] s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RetainAll(s);
+        }
+
+        /// <summary>
+        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal UnicodeSet IntersectWithChars(ICharSequence s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RetainAll(s);
+        }
     }
 }

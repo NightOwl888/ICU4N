@@ -34,8 +34,23 @@ using System.Text;
 
 namespace ICU4N.Text
 {
-    internal static partial class UnicodeSetExtensions
+    public static partial class UnicodeSetExtensions
     {
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="UnicodeSet.AddAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+<# if (charSequence == "char[]") { #>        [CLSCompliant(false)]<# } #>
+
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static UnicodeSet AddAll(this UnicodeSet set, params <#=charSequence#>[] collection)
+        {
+            if (set == null)
+                throw new ArgumentNullException(nameof(set));
+            return set.AddAll(collection);
+        }
+<# } #>
 <# foreach (var charSequence in charSequences) { #>
 
         /// <summary>
@@ -72,7 +87,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Complement(s); // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+            return set.Complement(s);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -90,7 +105,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ComplementAll(s); // ICU4N TODO: API - rename  SymmetricExceptWithChars (exclusive or)
+            return set.ComplementAll(s);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -106,7 +121,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsAll(collection); // ICU4N TODO: API - rename IsSupersetOf
+            return set.ContainsAll(collection);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -124,7 +139,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(s); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(s);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -140,7 +155,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(collection); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(collection);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -158,7 +173,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(s); // ICU4N TODO: Change to ExceptWithChars
+            return set.RemoveAll(s);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -174,7 +189,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(collection); // ICU4N TODO: Change to ExceptWith
+            return set.RemoveAll(collection);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -193,7 +208,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Retain(cs); // ICU4N TODO: Change to IntersectWith
+            return set.Retain(cs);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -209,7 +224,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(collection); // ICU4N TODO: API - rename IntersectWith
+            return set.RetainAll(collection);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -227,7 +242,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(s); // ICU4N TODO: Change to IntersectWithChars
+            return set.RetainAll(s);
         }
 <# } #>
     }

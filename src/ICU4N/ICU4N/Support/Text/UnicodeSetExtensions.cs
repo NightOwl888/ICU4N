@@ -6,9 +6,9 @@ using System.Text;
 namespace ICU4N.Support.Text
 {
     /// <summary>
-    /// ICU4J compatible method names for tests
+    /// ICU4J compatible method names, in case you don't like the rewiring of ICU4N.
     /// </summary>
-    internal static partial class UnicodeSetExtensions
+    public static partial class UnicodeSetExtensions
     {
         /// <summary>
         /// Add a collection (as strings) into this <see cref="UnicodeSet"/>.
@@ -24,7 +24,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.AddAll(source); // ICU4N TODO: API - rename UnionWith
+            return set.AddAll(source);
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.AddAll(source); // ICU4N TODO: API - rename UnionWith
+            return set.AddAll(source);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.AddAll(start, end); // ICU4N TODO: API - rename UnionWith
+            return set.AddAll(start, end);
         }
 
         /// <summary>
@@ -72,36 +72,36 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.AddAllTo(target); // ICU4N TODO: API - rename CopyTo
+            return set.AddAllTo(target);
         }
 
-        /// <summary>
-        /// Utility for adding the contents of an enumerable to a collection.
-        /// </summary>
-        /// <typeparam name="T">The source element type.</typeparam>
-        /// <typeparam name="U">The target type (must implement <see cref="ICollection{T}"/>).</typeparam>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static U AddAllTo<T, U>(this UnicodeSet set, IEnumerable<T> source, U target) where U : ICollection<T>
-        {
-            if (set == null)
-                throw new ArgumentNullException(nameof(set));
-            return set.AddAllTo<T, U>(source, target); // ICU4N TODO: API - rename CopyTo
-        }
+        ///// <summary>
+        ///// Utility for adding the contents of an enumerable to a collection.
+        ///// </summary>
+        ///// <typeparam name="T">The source element type.</typeparam>
+        ///// <typeparam name="U">The target type (must implement <see cref="ICollection{T}"/>).</typeparam>
+        ///// <draft>ICU4N 60.1</draft>
+        ///// <provisional>This API might change or be removed in a future release.</provisional>
+        //public static U AddAllTo<T, U>(this UnicodeSet set, IEnumerable<T> source, U target) where U : ICollection<T>
+        //{
+        //    if (set == null)
+        //        throw new ArgumentNullException(nameof(set));
+        //    return set.AddAllTo<T, U>(source, target);
+        //}
 
 
-        /// <summary>
-        /// Utility for adding the contents of an enumerable to a collection.
-        /// </summary>
-        /// <typeparam name="T">The type of items to add.</typeparam>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public static T[] AddAllTo<T>(this UnicodeSet set, IEnumerable<T> source, T[] target)
-        {
-            if (set == null)
-                throw new ArgumentNullException(nameof(set));
-            return set.AddAllTo<T>(source, target); // ICU4N TODO: API - rename CopyTo
-        }
+        ///// <summary>
+        ///// Utility for adding the contents of an enumerable to a collection.
+        ///// </summary>
+        ///// <typeparam name="T">The type of items to add.</typeparam>
+        ///// <draft>ICU4N 60.1</draft>
+        ///// <provisional>This API might change or be removed in a future release.</provisional>
+        //public static T[] AddAllTo<T>(this UnicodeSet set, IEnumerable<T> source, T[] target)
+        //{
+        //    if (set == null)
+        //        throw new ArgumentNullException(nameof(set));
+        //    return set.AddAllTo<T>(source, target);
+        //}
 
         /// <summary>
         /// Complements the specified range in this set.  Any character in
@@ -118,7 +118,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Complement(start, end); // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+            return set.Complement(start, end);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Complement(c); // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+            return set.Complement(c);
         }
 
         /// <summary>
@@ -149,7 +149,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ComplementAll(c); // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+            return set.ComplementAll(c);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsAll(b); // ICU4N TODO: API change to IsSupersetOf
+            return set.ContainsAll(b);
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsAll(s); // ICU4N TODO: API - rename IsSupersetOf
+            return set.ContainsAll(s);
         }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(start, end); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(start, end);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(s); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(s);
         }
 
         /// <summary>
@@ -236,7 +236,19 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(c); // ICU4N TODO: API rename ExceptWith
+            return set.RemoveAll(c);
+        }
+
+        /// <summary>
+        /// Remove all strings from this <see cref="UnicodeSet"/>
+        /// </summary>
+        /// <param name="set">This set.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public static UnicodeSet RemoveAllStrings(this UnicodeSet set)
+        {
+            return set.RemoveAllStrings();
         }
 
         /// <summary>
@@ -255,7 +267,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Retain(start, end); // ICU4N TODO: API - rename IntersectWith
+            return set.Retain(start, end);
         }
 
         /// <summary>
@@ -272,7 +284,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Retain(c); // ICU4N TODO: API - rename IntersectWith
+            return set.Retain(c);
         }
 
         /// <summary>
@@ -289,7 +301,7 @@ namespace ICU4N.Support.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(c); // ICU4N TODO: API - rename IntersectWith
+            return set.RetainAll(c);
         }
     }
 }

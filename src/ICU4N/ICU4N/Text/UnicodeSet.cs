@@ -725,7 +725,7 @@ namespace ICU4N.Text
         /// Returns <c>true</c> if this set contains no elements.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public virtual bool IsEmpty // ICU4N TODO: API - this is weird in .NET, but Count alone or LINQ Any() doesn't cut it.
+        internal virtual bool IsEmpty // ICU4N specific - changed from public to internal (we are using Any() in .NET)
         {
             get { return len == 1 && strings.Count == 0; }
         }
@@ -1048,7 +1048,7 @@ namespace ICU4N.Text
         /// <param name="end">The index of where to end on adding all characters.</param>
         /// <returns>A reference to this object.</returns>
         /// <stable>ICU 4.4</stable>
-        public virtual UnicodeSet AddAll(int start, int end)
+        internal virtual UnicodeSet AddAll(int start, int end) // ICU4N specific - changed from public to internal (we are using UnionWithChars in .NET)
         {
             CheckFrozen();
             return AddUnchecked(start, end);
@@ -1222,7 +1222,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 4.2</stable>
-        public UnicodeSet RemoveAllStrings()
+        internal UnicodeSet RemoveAllStrings() // ICU4N specific - changed from public to internal (we are using ClearStrings() in .NET)
         {
             CheckFrozen();
             if (strings.Count != 0)
@@ -1247,7 +1247,7 @@ namespace ICU4N.Text
         /// <param name="end">Last character, inclusive, of range to be retained
         /// to this set.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual UnicodeSet Retain(int start, int end) // ICU4N TODO: API - rename ?
+        internal virtual UnicodeSet Retain(int start, int end) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
         {
             CheckFrozen();
             if (start < MIN_VALUE || start > MAX_VALUE)
@@ -1277,7 +1277,7 @@ namespace ICU4N.Text
         /// <param name="c">The character to be retained.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        public UnicodeSet Retain(int c) // ICU4N TODO: API - rename ?
+        internal UnicodeSet Retain(int c) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
         {
             return Retain(c, c);
         }
@@ -1338,7 +1338,7 @@ namespace ICU4N.Text
         /// <param name="start">First character, inclusive, of range to be removed from this set.</param>
         /// <param name="end">Last character, inclusive, of range to be removed from this set.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual UnicodeSet Complement(int start, int end) // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+        internal virtual UnicodeSet Complement(int start, int end) // ICU4N specific - changed from public to internal (we are using SymetricExceptWithChars in .NET)
         {
             CheckFrozen();
             if (start < MIN_VALUE || start > MAX_VALUE)
@@ -1363,7 +1363,7 @@ namespace ICU4N.Text
         /// not in this set.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public UnicodeSet Complement(int c) // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+        internal UnicodeSet Complement(int c) // ICU4N specific - changed from public to internal (we are using SymetricExceptWith in .NET)
         {
             return Complement(c, c);
         }
@@ -1373,7 +1373,7 @@ namespace ICU4N.Text
         /// <c>Complement(<see cref="MIN_VALUE"/>, <see cref="MAX_VALUE"/>)</c>
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public virtual UnicodeSet Complement() // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+        internal virtual UnicodeSet Complement() // ICU4N specific - changed from public to internal (we are using SymetricExceptWithChars in .NET)
         {
             CheckFrozen();
             if (list[0] == LOW)
@@ -1624,7 +1624,7 @@ namespace ICU4N.Text
         /// <param name="b">Set to be checked for containment.</param>
         /// <returns>true if the test condition is met.</returns>
         /// <stable>ICU 2.0</stable>
-        public virtual bool ContainsAll(UnicodeSet b) // ICU4N TODO: API change to IsSupersetOf ?
+        internal virtual bool ContainsAll(UnicodeSet b) // ICU4N specific - changed public to internal (we are using IsSupersetOf in .NET)
         {
             // The specified set is a subset if all of its pairs are contained in
             // this set. This implementation accesses the lists directly for speed.
@@ -1719,7 +1719,7 @@ namespace ICU4N.Text
         /// <param name="s">String containing characters to be checked for containment.</param>
         /// <returns>true if the test condition is met.</returns>
         /// <stable>ICU 2.0</stable>
-        public virtual bool ContainsAll(string s) // ICU4N TODO: API - rename IsSupersetOf
+        internal virtual bool ContainsAll(string s) // ICU4N specific - changed public to internal (we are using IsSupersetOf in .NET)
         {
             int cp;
             for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
@@ -1743,7 +1743,7 @@ namespace ICU4N.Text
         /// <param name="s">Source string.</param>
         /// <param name="i">Point to match to the end on.</param>
         /// <returns>true if ok.</returns>
-        private bool ContainsAll(string s, int i) // ICU4N TODO: API change to IsSupersetOf ?
+        private bool ContainsAll(string s, int i)
         {
             if (i >= s.Length)
             {
@@ -1795,7 +1795,7 @@ namespace ICU4N.Text
         /// <param name="end">Last character, inclusive, of the range.</param>
         /// <returns>true if the test condition is met.</returns>
         /// <stable>ICU 2.0</stable>
-        public virtual bool ContainsNone(int start, int end) // ICU4N TODO: API Rename ?
+        public virtual bool ContainsNone(int start, int end)
         {
             if (start < MIN_VALUE || start > MAX_VALUE)
             {
@@ -1824,7 +1824,7 @@ namespace ICU4N.Text
         /// <param name="b">Set to be checked for containment.</param>
         /// <returns>true if the test condition is met.</returns>
         /// <stable>2.0</stable>
-        public virtual bool ContainsNone(UnicodeSet b) // ICU4N TODO: API Rename ?
+        public virtual bool ContainsNone(UnicodeSet b)
         {
             // The specified set is a subset if some of its pairs overlap with some of this set's pairs.
             // This implementation accesses the lists directly for speed.
@@ -1914,7 +1914,7 @@ namespace ICU4N.Text
         /// <param name="end">Last character, inclusive, of the range.</param>
         /// <returns>true if the condition is met.</returns>
         /// <stable>ICU 2.0</stable>
-        public bool ContainsSome(int start, int end) // ICU4N TODO: API Rename IsSubsetOf
+        internal bool ContainsSome(int start, int end) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
         {
             return !ContainsNone(start, end);
         }
@@ -1926,7 +1926,7 @@ namespace ICU4N.Text
         /// <param name="s">Set to be checked for containment.</param>
         /// <returns>True if the condition is met.</returns>
         /// <stable>ICU 2.0</stable>
-        public bool ContainsSome(UnicodeSet s)  // ICU4N TODO: API Rename IsSubsetOf
+        internal bool ContainsSome(UnicodeSet s) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
         {
             return !ContainsNone(s);
         }
@@ -1942,7 +1942,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="c">Set whose elements are to be added to this set.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual UnicodeSet AddAll(UnicodeSet c) // ICU4N TODO: API Rename UnionWith? Or maybe just make an additional function to satisfy the ISet<T> contract ?
+        internal virtual UnicodeSet AddAll(UnicodeSet c) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
         {
             CheckFrozen();
             Add(c.list, c.len, 0);
@@ -1959,7 +1959,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="c">Set that defines which elements this set will retain.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual UnicodeSet RetainAll(UnicodeSet c) // ICU4N TODO: API - rename IntersectWith
+        internal virtual UnicodeSet RetainAll(UnicodeSet c) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
         {
             CheckFrozen();
             Retain(c.list, c.len, 0);
@@ -1976,7 +1976,7 @@ namespace ICU4N.Text
         /// <param name="c">Set that defines which elements will be removed from
         /// this set.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual UnicodeSet RemoveAll(UnicodeSet c) // ICU4N TODO: API rename ExceptWith or make extra ExceptWith method that calls this
+        internal virtual UnicodeSet RemoveAll(UnicodeSet c) // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
         {
             CheckFrozen();
             Retain(c.list, c.len, 2);
@@ -1992,7 +1992,7 @@ namespace ICU4N.Text
         /// <param name="c">Set that defines which elements will be complemented from
         /// this set.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual UnicodeSet ComplementAll(UnicodeSet c) // ICU4N TODO: API - find ISet<T> method that corresponds to this and rename
+        internal virtual UnicodeSet ComplementAll(UnicodeSet c) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
         {
             CheckFrozen();
             Xor(c.list, c.len, 0);
@@ -2732,7 +2732,7 @@ namespace ICU4N.Text
         /// <typeparam name="T">Collection type.</typeparam>
         /// <param name="target">Collection to add into.</param>
         /// <stable>ICU 4.4</stable>
-        public virtual T AddAllTo<T>(T target) where T : ICollection<string> // ICU4N TODO: API - rename CopyTo...?
+        internal virtual T AddAllTo<T>(T target) where T : ICollection<string> // ICU4N specific - changed from public to internal (we are using CopyTo in .NET)
         {
             return AddAllTo(this, target);
         }
@@ -2769,7 +2769,7 @@ namespace ICU4N.Text
         /// <returns>A reference to this object.</returns>
         /// <draft>ICU4N 60</draft>
         // ICU4N specific overload to optimize for string
-        public virtual UnicodeSet AddAll(IEnumerable<string> source) // ICU4N TODO: API - rename UnionWith
+        internal virtual UnicodeSet AddAll(IEnumerable<string> source) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
         {
             CheckFrozen();
             foreach (var o in source)
@@ -2791,7 +2791,7 @@ namespace ICU4N.Text
         /// <returns>A reference to this object.</returns>
         /// <draft>ICU4N 60</draft>
         // ICU4N specific overload to properly convert char array to string
-        public virtual UnicodeSet AddAll(IEnumerable<char[]> source) // ICU4N TODO: API - rename UnionWith
+        internal virtual UnicodeSet AddAll(IEnumerable<char[]> source) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
         {
             CheckFrozen();
             foreach (var o in source)
@@ -2809,7 +2809,7 @@ namespace ICU4N.Text
         /// <param name="source">Source collection to add into.</param>
         /// <returns>A reference to this object.</returns>
         /// <stable>ICU 4.4</stable>
-        public virtual UnicodeSet AddAll<T>(IEnumerable<T> source) // ICU4N TODO: API - rename UnionWith
+        internal virtual UnicodeSet AddAll<T>(IEnumerable<T> source) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
         {
             CheckFrozen();
             foreach (object o in source)
@@ -4627,7 +4627,7 @@ namespace ICU4N.Text
         /// <typeparam name="T">The source element type.</typeparam>
         /// <typeparam name="U">The target type (must implement <see cref="ICollection{T}"/>).</typeparam>
         /// <stable>ICU 4.4</stable>
-        public static U AddAllTo<T, U>(IEnumerable<T> source, U target) where U : ICollection<T>
+        private static U AddAllTo<T, U>(IEnumerable<T> source, U target) where U : ICollection<T> // ICU4N specific - this is a general copy method and has no business being in UnicodeSet. Changed from public to private.
         {
             foreach (T item in source)
             {
@@ -4641,7 +4641,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <typeparam name="T">The type of items to add.</typeparam>
         /// <stable>ICU 4.4</stable>
-        public static T[] AddAllTo<T>(IEnumerable<T> source, T[] target)
+        private static T[] AddAllTo<T>(IEnumerable<T> source, T[] target) // ICU4N specific - this is a general copy method and has no business being in UnicodeSet. Changed from public to private.
         {
             int i = 0;
             foreach (T item in source)
@@ -4773,7 +4773,7 @@ namespace ICU4N.Text
     /// boundaries, never in the middle of a surrogate pair.
     /// </remarks>
     /// <stable>ICU 4.4</stable>
-    public enum SpanCondition // ICU4N TODO: API - de-nest and name according to .NET conventions
+    public enum SpanCondition
     {
         /// <summary>
         /// Continues a <see cref="UnicodeSet.Span(string, int, SpanCondition)"/> while there is no set element at the current position.

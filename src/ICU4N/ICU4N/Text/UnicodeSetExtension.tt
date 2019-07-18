@@ -40,6 +40,236 @@ namespace ICU4N.Text
 {
     public partial class UnicodeSet 
     {
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="AddAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+        // See ticket #11395, this is safe.
+<# if (charSequence == "char[]") { #>[CLSCompliant(false)]<# } #>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> virtual UnicodeSet AddAll(params <#=charSequence#>[] collection) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
+        {
+            CheckFrozen();
+            foreach (var csq in collection)
+            {
+                Add(csq);
+            }
+            return this;
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>this object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet AddAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using UnionWithChars in .NET)
+        {
+            CheckFrozen();
+            int cp;
+            for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
+            {
+                cp = UTF16.CharAt(s, i);
+                AddUnchecked(cp, cp);
+            }
+            return this;
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Complement the specified string in this set.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The string to complement.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet Complement(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWith in .NET)
+        {
+            CheckFrozen();
+            int cp = GetSingleCP(s);
+            if (cp < 0)
+            {
+                string s2 = s.ToString();
+                if (strings.Contains(s2))
+                {
+                    strings.Remove(s2);
+                }
+                else
+                {
+                    strings.Add(s2);
+                }
+                pat = null;
+            }
+            else
+            {
+                Complement(cp, cp);
+            }
+            return this;
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet ComplementAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWithChars in .NET)
+        {
+            return ComplementAll(FromAll(s));
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="ContainsAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+<# if (charSequence == "ICharSequence") { #>
+        <#=charSequenceAccessibility#> virtual bool ContainsAll<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+<# } else { #>
+        internal virtual bool ContainsAll(IEnumerable<<#=charSequence#>> collection) // ICU4N specific - changed from public to internal (we are using IsSupersetOf in .NET)
+<# } #>
+        {
+            foreach (var o in collection)
+            {
+                if (!Contains(o))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Returns true if this set contains one or more of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns>true if the condition is met.</returns>
+        /// <stable>ICU 2.0</stable>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> bool ContainsSome(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
+        {
+            return !ContainsNone(s);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="ContainsSome(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+<# if (charSequence == "ICharSequence") { #>
+        <#=charSequenceAccessibility#> bool ContainsSome<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+<# } else { #>
+        internal bool ContainsSome(IEnumerable<<#=charSequence#>> collection) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
+<# } #>
+        {
+            return !ContainsNone(collection);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="RemoveAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+<# if (charSequence == "ICharSequence") { #>
+        <#=charSequenceAccessibility#> virtual UnicodeSet RemoveAll<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+<# } else { #>
+        internal virtual UnicodeSet RemoveAll(IEnumerable<<#=charSequence#>> collection) // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
+<# } #>
+        {
+            CheckFrozen();
+            foreach (var o in collection)
+            {
+                Remove(o);
+            }
+            return this;
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet RemoveAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using ExceptWithChars in .NET)
+        {
+            return RemoveAll(FromAll(s));
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Retain the specified string in this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
+        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
+        /// </summary>
+        /// <param name="cs">The string to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet Retain(<#=charSequence#> cs) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
+        {
+            int cp = GetSingleCP(cs);
+            if (cp < 0)
+            {
+                string s = cs.ToString();
+                bool isIn = strings.Contains(s);
+                if (isIn && Count == 1)
+                {
+                    return this;
+                }
+                Clear();
+                strings.Add(s);
+                pat = null;
+            }
+            else
+            {
+                Retain(cp, cp);
+            }
+            return this;
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="RetainAll(UnicodeSet)"/>
+        /// <stable>ICU 4.4</stable>
+<# if (charSequence == "ICharSequence") { #>
+        <#=charSequenceAccessibility#> virtual UnicodeSet RetainAll<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+<# } else { #>
+        internal virtual UnicodeSet RetainAll(IEnumerable<<#=charSequence#>> collection) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
+<# } #>
+        {
+            CheckFrozen();
+            // TODO optimize
+            UnicodeSet toRetain = new UnicodeSet();
+            toRetain.AddAll(collection);
+            RetainAll(toRetain);
+            return this;
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <stable>ICU 2.0</stable>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet RetainAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using IntersectWithChars in .NET)
+        {
+            return RetainAll(FromAll(s));
+        }
+<# } #>
 <# foreach (var appendable in appendables) { #>
 
         // TODO: create IAppendable version of UTF16.Append(buf, c),
@@ -434,69 +664,7 @@ namespace ICU4N.Text
             return -1;
         }
 <# } #>
-<# foreach (var charSequence in charSequences) { #>
 
-        /// <summary>
-        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>this object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet AddAll(<#=charSequence#> s) // ICU4N TODO: Change to UnionWith?
-        {
-            CheckFrozen();
-            int cp;
-            for (int i = 0; i < s.Length; i += UTF16.GetCharCount(cp))
-            {
-                cp = UTF16.CharAt(s, i);
-                AddUnchecked(cp, cp);
-            }
-            return this;
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <summary>
-        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet RetainAll(<#=charSequence#> s) // ICU4N TODO: Change to IntersectWith?
-        {
-            return RetainAll(FromAll(s));
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <summary>
-        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet ComplementAll(<#=charSequence#> s)
-        {
-            return ComplementAll(FromAll(s));
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <summary>
-        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
-        /// If this set already any particular character, it has no effect on that character.
-        /// </summary>
-        /// <param name="s">The source string.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet RemoveAll(<#=charSequence#> s)  // ICU4N TODO: Change to ExceptWith?
-        {
-            return RemoveAll(FromAll(s));
-        }
-<# } #>
 <# foreach (var charSequence in charSequences) { #>
 
         /// <summary>
@@ -528,38 +696,6 @@ namespace ICU4N.Text
 <# foreach (var charSequence in charSequences) { #>
 
         /// <summary>
-        /// Retain the specified string in this set if it is present.
-        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
-        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
-        /// </summary>
-        /// <param name="cs">The string to be retained.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet Retain(<#=charSequence#> cs)
-        {
-            int cp = GetSingleCP(cs);
-            if (cp < 0)
-            {
-                string s = cs.ToString();
-                bool isIn = strings.Contains(s);
-                if (isIn && Count == 1)
-                {
-                    return this;
-                }
-                Clear();
-                strings.Add(s);
-                pat = null;
-            }
-            else
-            {
-                Retain(cp, cp);
-            }
-            return this;
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <summary>
         /// Removes the specified string from this set if it is present.
         /// The set will not contain the specified string once the call
         /// returns.
@@ -578,42 +714,6 @@ namespace ICU4N.Text
             else
             {
                 Remove(cp, cp);
-            }
-            return this;
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <summary>
-        /// Complement the specified string in this set.
-        /// The set will not contain the specified string once the call
-        /// returns.
-        /// <para/>
-        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
-        /// </summary>
-        /// <param name="s">The string to complement.</param>
-        /// <returns>This object, for chaining.</returns>
-        /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet Complement(<#=charSequence#> s)
-        {
-            CheckFrozen();
-            int cp = GetSingleCP(s);
-            if (cp < 0)
-            {
-                string s2 = s.ToString();
-                if (strings.Contains(s2))
-                {
-                    strings.Remove(s2);
-                }
-                else
-                {
-                    strings.Add(s2);
-                }
-                pat = null;
-            }
-            else
-            {
-                Complement(cp, cp);
             }
             return this;
         }
@@ -652,20 +752,6 @@ namespace ICU4N.Text
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual bool ContainsNone(<#=charSequence#> s)
         {
             return Span(s, SpanCondition.NotContained) == s.Length;
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <summary>
-        /// Returns true if this set contains one or more of the characters
-        /// of the given string.
-        /// </summary>
-        /// <param name="s">String containing characters to be checked for containment.</param>
-        /// <returns>true if the condition is met.</returns>
-        /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> bool ContainsSome(<#=charSequence#> s)
-        {
-            return !ContainsNone(s);
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
@@ -888,26 +974,6 @@ namespace ICU4N.Text
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
-        /// <seealso cref="ContainsAll(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-<# if (charSequence == "ICharSequence") { #>
-        <#=charSequenceAccessibility#> virtual bool ContainsAll<T>(IEnumerable<T> collection) where T : <#=charSequence#>
-<# } else { #>
-        public virtual bool ContainsAll(IEnumerable<<#=charSequence#>> collection)
-<# } #>
-        {
-            foreach (var o in collection)
-            {
-                if (!Contains(o))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
         /// <seealso cref="ContainsNone(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
 <# if (charSequence == "ICharSequence") { #>
@@ -924,71 +990,6 @@ namespace ICU4N.Text
                 }
             }
             return true;
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <seealso cref="ContainsSome(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-<# if (charSequence == "ICharSequence") { #>
-        <#=charSequenceAccessibility#> bool ContainsSome<T>(IEnumerable<T> collection) where T : <#=charSequence#>
-<# } else { #>
-        public bool ContainsSome(IEnumerable<<#=charSequence#>> collection)
-<# } #>
-        {
-            return !ContainsNone(collection);
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <seealso cref="AddAll(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-        // See ticket #11395, this is safe.
-<# if (charSequence == "char[]") { #>[CLSCompliant(false)]<# } #>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual UnicodeSet AddAll(params <#=charSequence#>[] collection)
-        {
-            CheckFrozen();
-            foreach (var csq in collection)
-            {
-                Add(csq);
-            }
-            return this;
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <seealso cref="RemoveAll(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-<# if (charSequence == "ICharSequence") { #>
-        <#=charSequenceAccessibility#> virtual UnicodeSet RemoveAll<T>(IEnumerable<T> collection) where T : <#=charSequence#>
-<# } else { #>
-        public virtual UnicodeSet RemoveAll(IEnumerable<<#=charSequence#>> collection)
-<# } #>
-        {
-            CheckFrozen();
-            foreach (var o in collection)
-            {
-                Remove(o);
-            }
-            return this;
-        }
-<# } #>
-<# foreach (var charSequence in charSequences) { #>
-
-        /// <seealso cref="RetainAll(UnicodeSet)"/>
-        /// <stable>ICU 4.4</stable>
-<# if (charSequence == "ICharSequence") { #>
-        <#=charSequenceAccessibility#> virtual UnicodeSet RetainAll<T>(IEnumerable<T> collection) where T : <#=charSequence#>
-<# } else { #>
-        public virtual UnicodeSet RetainAll(IEnumerable<<#=charSequence#>> collection)
-<# } #>
-        {
-            CheckFrozen();
-            // TODO optimize
-            UnicodeSet toRetain = new UnicodeSet();
-            toRetain.AddAll(collection);
-            RetainAll(toRetain);
-            return this;
         }
 <# } #>
 <# foreach (var charSequence in charSequences) { #>

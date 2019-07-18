@@ -36,5 +36,207 @@ namespace ICU4N.Text
 {
     public partial class UnicodeSet
     {
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="UnionWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+<# if (charSequence == "char[]") { #>        [CLSCompliant(false)]<# } #>
+
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual UnicodeSet UnionWith(params <#=charSequence#>[] collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return AddAll(collection);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>this object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet UnionWithChars(<#=charSequence#> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return AddAll(s);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Complement the specified string in this set.
+        /// The set will not contain the specified string once the call
+        /// returns.
+        /// <para/>
+        /// <b>Warning: you cannot add an empty string ("") to a UnicodeSet.</b>
+        /// </summary>
+        /// <param name="s">The string to complement.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet SymmetricExceptWith(<#=charSequence#> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return Complement(s);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Complement EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet SymmetricExceptWithChars(<#=charSequence#> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ComplementAll(s);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+<# if (charSequence == "ICharSequence") { #>
+        <#=charSequenceAccessibility#> virtual bool IsSupersetOf<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+<# } else { #>
+        public virtual bool IsSupersetOf(IEnumerable<<#=charSequence#>> collection)
+<# } #>
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsAll(collection);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Returns true if this set contains one or more of the characters
+        /// of the given string.
+        /// </summary>
+        /// <param name="s">String containing characters to be checked for containment.</param>
+        /// <returns>true if the condition is met.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> bool Overlaps(<#=charSequence#> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return ContainsSome(s);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="Overlaps(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+<# if (charSequence == "ICharSequence") { #>
+        <#=charSequenceAccessibility#> bool Overlaps<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+<# } else { #>
+        public bool Overlaps(IEnumerable<<#=charSequence#>> collection)
+<# } #>
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return ContainsSome(collection);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="ExceptWith(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+<# if (charSequence == "ICharSequence") { #>
+        <#=charSequenceAccessibility#> virtual UnicodeSet ExceptWith<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+<# } else { #>
+        public virtual UnicodeSet ExceptWith(IEnumerable<<#=charSequence#>> collection)
+<# } #>
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RemoveAll(collection);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Remove EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet ExceptWithChars(<#=charSequence#> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RemoveAll(s);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Retain the specified string in this set if it is present.
+        /// Upon return this set will be empty if it did not contain <paramref name="cs"/>, or
+        /// will only contain <paramref name="cs"/> if it did contain <paramref name="cs"/>.
+        /// </summary>
+        /// <param name="cs">The string to be retained.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet IntersectWith(<#=charSequence#> cs)
+        {
+            if (cs == null)
+                throw new ArgumentNullException(nameof(cs));
+            return Retain(cs);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <seealso cref="RetainAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+<# if (charSequence == "ICharSequence") { #>
+        <#=charSequenceAccessibility#> virtual UnicodeSet IntersectWith<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+<# } else { #>
+        public virtual UnicodeSet IntersectWith(IEnumerable<<#=charSequence#>> collection)
+<# } #>
+        {
+            if (collection == null)
+                throw new ArgumentNullException(nameof(collection));
+            return RetainAll(collection);
+        }
+<# } #>
+<# foreach (var charSequence in charSequences) { #>
+
+        /// <summary>
+        /// Retains EACH of the characters in this string. Note: "ch" == {"c", "h"}
+        /// If this set already any particular character, it has no effect on that character.
+        /// </summary>
+        /// <param name="s">The source string.</param>
+        /// <returns>This object, for chaining.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> UnicodeSet IntersectWithChars(<#=charSequence#> s)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            return RetainAll(s);
+        }
+<# } #>
     }
 }

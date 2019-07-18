@@ -15,8 +15,56 @@ using System.Text;
 
 namespace ICU4N.Text
 {
-    internal static partial class UnicodeSetExtensions
+    public static partial class UnicodeSetExtensions
     {
+
+        /// <seealso cref="UnicodeSet.AddAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+
+        public static UnicodeSet AddAll(this UnicodeSet set, params string[] collection)
+        {
+            if (set == null)
+                throw new ArgumentNullException(nameof(set));
+            return set.AddAll(collection);
+        }
+
+        /// <seealso cref="UnicodeSet.AddAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+
+        public static UnicodeSet AddAll(this UnicodeSet set, params StringBuilder[] collection)
+        {
+            if (set == null)
+                throw new ArgumentNullException(nameof(set));
+            return set.AddAll(collection);
+        }
+
+        /// <seealso cref="UnicodeSet.AddAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+        [CLSCompliant(false)]
+        public static UnicodeSet AddAll(this UnicodeSet set, params char[][] collection)
+        {
+            if (set == null)
+                throw new ArgumentNullException(nameof(set));
+            return set.AddAll(collection);
+        }
+
+        /// <seealso cref="UnicodeSet.AddAll(UnicodeSet)"/>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        // See ticket #11395, this is safe.
+
+        internal static UnicodeSet AddAll(this UnicodeSet set, params ICharSequence[] collection)
+        {
+            if (set == null)
+                throw new ArgumentNullException(nameof(set));
+            return set.AddAll(collection);
+        }
 
         /// <summary>
         /// Adds each of the characters in this string to the set. Thus "ch" =&gt; {"c", "h"}
@@ -98,7 +146,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Complement(s); // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+            return set.Complement(s);
         }
 
         /// <summary>
@@ -117,7 +165,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Complement(s); // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+            return set.Complement(s);
         }
 
         /// <summary>
@@ -136,7 +184,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Complement(s); // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+            return set.Complement(s);
         }
 
         /// <summary>
@@ -155,7 +203,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Complement(s); // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
+            return set.Complement(s);
         }
 
         /// <summary>
@@ -171,7 +219,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ComplementAll(s); // ICU4N TODO: API - rename  SymmetricExceptWithChars (exclusive or)
+            return set.ComplementAll(s);
         }
 
         /// <summary>
@@ -187,7 +235,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ComplementAll(s); // ICU4N TODO: API - rename  SymmetricExceptWithChars (exclusive or)
+            return set.ComplementAll(s);
         }
 
         /// <summary>
@@ -203,7 +251,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ComplementAll(s); // ICU4N TODO: API - rename  SymmetricExceptWithChars (exclusive or)
+            return set.ComplementAll(s);
         }
 
         /// <summary>
@@ -219,7 +267,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ComplementAll(s); // ICU4N TODO: API - rename  SymmetricExceptWithChars (exclusive or)
+            return set.ComplementAll(s);
         }
 
         /// <seealso cref="UnicodeSet.ContainsAll(UnicodeSet)"/>
@@ -229,7 +277,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsAll(collection); // ICU4N TODO: API - rename IsSupersetOf
+            return set.ContainsAll(collection);
         }
 
         /// <seealso cref="UnicodeSet.ContainsAll(UnicodeSet)"/>
@@ -239,7 +287,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsAll(collection); // ICU4N TODO: API - rename IsSupersetOf
+            return set.ContainsAll(collection);
         }
 
         /// <seealso cref="UnicodeSet.ContainsAll(UnicodeSet)"/>
@@ -249,7 +297,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsAll(collection); // ICU4N TODO: API - rename IsSupersetOf
+            return set.ContainsAll(collection);
         }
 
         /// <seealso cref="UnicodeSet.ContainsAll(UnicodeSet)"/>
@@ -259,7 +307,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsAll(collection); // ICU4N TODO: API - rename IsSupersetOf
+            return set.ContainsAll(collection);
         }
 
         /// <summary>
@@ -275,7 +323,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(s); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(s);
         }
 
         /// <summary>
@@ -291,7 +339,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(s); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(s);
         }
 
         /// <summary>
@@ -307,7 +355,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(s); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(s);
         }
 
         /// <summary>
@@ -323,7 +371,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(s); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(s);
         }
 
         /// <seealso cref="UnicodeSet.ContainsSome(UnicodeSet)"/>
@@ -333,7 +381,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(collection); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(collection);
         }
 
         /// <seealso cref="UnicodeSet.ContainsSome(UnicodeSet)"/>
@@ -343,7 +391,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(collection); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(collection);
         }
 
         /// <seealso cref="UnicodeSet.ContainsSome(UnicodeSet)"/>
@@ -353,7 +401,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(collection); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(collection);
         }
 
         /// <seealso cref="UnicodeSet.ContainsSome(UnicodeSet)"/>
@@ -363,7 +411,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.ContainsSome(collection); // ICU4N TODO: API Rename IsSubsetOf
+            return set.ContainsSome(collection);
         }
 
         /// <summary>
@@ -379,7 +427,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(s); // ICU4N TODO: Change to ExceptWithChars
+            return set.RemoveAll(s);
         }
 
         /// <summary>
@@ -395,7 +443,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(s); // ICU4N TODO: Change to ExceptWithChars
+            return set.RemoveAll(s);
         }
 
         /// <summary>
@@ -411,7 +459,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(s); // ICU4N TODO: Change to ExceptWithChars
+            return set.RemoveAll(s);
         }
 
         /// <summary>
@@ -427,7 +475,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(s); // ICU4N TODO: Change to ExceptWithChars
+            return set.RemoveAll(s);
         }
 
         /// <seealso cref="UnicodeSet.RemoveAll(UnicodeSet)"/>
@@ -437,7 +485,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(collection); // ICU4N TODO: Change to ExceptWith
+            return set.RemoveAll(collection);
         }
 
         /// <seealso cref="UnicodeSet.RemoveAll(UnicodeSet)"/>
@@ -447,7 +495,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(collection); // ICU4N TODO: Change to ExceptWith
+            return set.RemoveAll(collection);
         }
 
         /// <seealso cref="UnicodeSet.RemoveAll(UnicodeSet)"/>
@@ -457,7 +505,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(collection); // ICU4N TODO: Change to ExceptWith
+            return set.RemoveAll(collection);
         }
 
         /// <seealso cref="UnicodeSet.RemoveAll(UnicodeSet)"/>
@@ -467,7 +515,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RemoveAll(collection); // ICU4N TODO: Change to ExceptWith
+            return set.RemoveAll(collection);
         }
 
         /// <summary>
@@ -484,7 +532,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Retain(cs); // ICU4N TODO: Change to IntersectWith
+            return set.Retain(cs);
         }
 
         /// <summary>
@@ -501,7 +549,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Retain(cs); // ICU4N TODO: Change to IntersectWith
+            return set.Retain(cs);
         }
 
         /// <summary>
@@ -518,7 +566,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Retain(cs); // ICU4N TODO: Change to IntersectWith
+            return set.Retain(cs);
         }
 
         /// <summary>
@@ -535,7 +583,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.Retain(cs); // ICU4N TODO: Change to IntersectWith
+            return set.Retain(cs);
         }
 
         /// <seealso cref="UnicodeSet.RetainAll(UnicodeSet)"/>
@@ -545,7 +593,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(collection); // ICU4N TODO: API - rename IntersectWith
+            return set.RetainAll(collection);
         }
 
         /// <seealso cref="UnicodeSet.RetainAll(UnicodeSet)"/>
@@ -555,7 +603,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(collection); // ICU4N TODO: API - rename IntersectWith
+            return set.RetainAll(collection);
         }
 
         /// <seealso cref="UnicodeSet.RetainAll(UnicodeSet)"/>
@@ -565,7 +613,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(collection); // ICU4N TODO: API - rename IntersectWith
+            return set.RetainAll(collection);
         }
 
         /// <seealso cref="UnicodeSet.RetainAll(UnicodeSet)"/>
@@ -575,7 +623,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(collection); // ICU4N TODO: API - rename IntersectWith
+            return set.RetainAll(collection);
         }
 
         /// <summary>
@@ -591,7 +639,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(s); // ICU4N TODO: Change to IntersectWithChars
+            return set.RetainAll(s);
         }
 
         /// <summary>
@@ -607,7 +655,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(s); // ICU4N TODO: Change to IntersectWithChars
+            return set.RetainAll(s);
         }
 
         /// <summary>
@@ -623,7 +671,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(s); // ICU4N TODO: Change to IntersectWithChars
+            return set.RetainAll(s);
         }
 
         /// <summary>
@@ -639,7 +687,7 @@ namespace ICU4N.Text
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
-            return set.RetainAll(s); // ICU4N TODO: Change to IntersectWithChars
+            return set.RetainAll(s);
         }
     }
 }
