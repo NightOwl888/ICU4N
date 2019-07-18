@@ -28,32 +28,32 @@ namespace ICU4N.Dev.Test.Rbbi
                 return position;
             }
 
-            public override int MoveFirst()
+            public override int First()
             {
                 return Set(0);
             }
 
-            public override int MoveLast()
+            public override int Last()
             {
                 return Set(LIMIT);
             }
 
-            public override int Move(int n)
+            public override int Next(int n)
             {
                 return Set(position + n);
             }
 
-            public override int MoveNext()
+            public override int Next()
             {
-                return Move(1);
+                return Next(1);
             }
 
-            public override int MovePrevious()
+            public override int Previous()
             {
-                return Move(-1);
+                return Next(-1);
             }
 
-            public override int MoveFollowing(int offset)
+            public override int Following(int offset)
             {
                 return Set(offset + 1);
             }
@@ -85,10 +85,10 @@ namespace ICU4N.Dev.Test.Rbbi
         [Test]
         public void TestPreceding()
         {
-            int pos = bi.MovePreceding(0);
+            int pos = bi.Preceding(0);
             TestFmwk.assertEquals("BreakIterator preceding position not correct", BreakIterator.Done, pos);
 
-            pos = bi.MovePreceding(5);
+            pos = bi.Preceding(5);
             TestFmwk.assertEquals("BreakIterator preceding position not correct", 4, pos);
         }
 

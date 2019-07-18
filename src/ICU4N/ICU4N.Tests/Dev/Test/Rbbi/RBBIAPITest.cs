@@ -125,7 +125,7 @@ namespace ICU4N.Dev.Test.Rbbi
             if (wordIter1.Current != 0)
                 Errln("ERROR:1 setText did not set the iteration position to the beginning of the text, it is"
                        + wordIter1.Current + "\n");
-            wordIter1.Move(2);
+            wordIter1.Next(2);
             wordIter1.SetText(str2);
             if (wordIter1.Current != 0)
                 Errln("ERROR:2 setText did not reset the iteration position to the beginning of the text, it is"
@@ -139,7 +139,7 @@ namespace ICU4N.Dev.Test.Rbbi
             List<int> expected = new List<int>();
             expected.Add(0); expected.Add(7); expected.Add(14);
             lineIter.SetText(csText);
-            for (int pos = lineIter.MoveFirst(); pos != BreakIterator.Done; pos = lineIter.MoveNext())
+            for (int pos = lineIter.First(); pos != BreakIterator.Done; pos = lineIter.Next())
             {
                 assertTrue("", expected.Contains(pos));
             }
@@ -160,27 +160,27 @@ namespace ICU4N.Dev.Test.Rbbi
             Logln("testing word iterator - string :- \"" + testString + "\"\n");
             RuleBasedBreakIterator wordIter1 = (RuleBasedBreakIterator)BreakIterator.GetWordInstance(CultureInfo.CurrentCulture);
             wordIter1.SetText(testString);
-            p = wordIter1.MoveFirst();
+            p = wordIter1.First();
             if (p != 0)
                 Errln("ERROR: first() returned" + p + "instead of 0");
-            q = wordIter1.Move(9);
+            q = wordIter1.Next(9);
             doTest(testString, p, q, 20, "This is a word break");
             p = q;
-            q = wordIter1.MoveNext();
+            q = wordIter1.Next();
             doTest(testString, p, q, 21, ".");
             p = q;
-            q = wordIter1.Move(3);
+            q = wordIter1.Next(3);
             doTest(testString, p, q, 28, " Isn't ");
             p = q;
-            q = wordIter1.Move(2);
+            q = wordIter1.Next(2);
             doTest(testString, p, q, 31, "it?");
-            q = wordIter1.MoveFollowing(2);
+            q = wordIter1.Following(2);
             doTest(testString, 2, q, 4, "is");
-            q = wordIter1.MoveFollowing(22);
+            q = wordIter1.Following(22);
             doTest(testString, 22, q, 27, "Isn't");
-            wordIter1.MoveLast();
-            p = wordIter1.MoveNext();
-            q = wordIter1.MoveFollowing(wordIter1.MoveLast());
+            wordIter1.Last();
+            p = wordIter1.Next();
+            q = wordIter1.Following(wordIter1.Last());
             if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: next()/following() at last position returned #"
                         + p + " and " + q + " instead of" + testString.Length + "\n");
@@ -188,25 +188,25 @@ namespace ICU4N.Dev.Test.Rbbi
             testString = "Write hindi here. ";
             Logln("testing char iter - string:- \"" + testString + "\"");
             charIter1.SetText(testString);
-            p = charIter1.MoveFirst();
+            p = charIter1.First();
             if (p != 0)
                 Errln("ERROR: first() returned" + p + "instead of 0");
-            q = charIter1.MoveNext();
+            q = charIter1.Next();
             doTest(testString, p, q, 1, "W");
             p = q;
-            q = charIter1.Move(4);
+            q = charIter1.Next(4);
             doTest(testString, p, q, 5, "rite");
             p = q;
-            q = charIter1.Move(12);
+            q = charIter1.Next(12);
             doTest(testString, p, q, 17, " hindi here.");
             p = q;
-            q = charIter1.Move(-6);
+            q = charIter1.Next(-6);
             doTest(testString, p, q, 11, " here.");
             p = q;
-            q = charIter1.Move(6);
+            q = charIter1.Next(6);
             doTest(testString, p, q, 17, " here.");
-            p = charIter1.MoveFollowing(charIter1.MoveLast());
-            q = charIter1.Move(charIter1.MoveLast());
+            p = charIter1.Following(charIter1.Last());
+            q = charIter1.Next(charIter1.Last());
             if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: following()/next() at last position returned #"
                         + p + " and " + q + " instead of" + testString.Length);
@@ -214,31 +214,31 @@ namespace ICU4N.Dev.Test.Rbbi
             RuleBasedBreakIterator sentIter1 = (RuleBasedBreakIterator)BreakIterator.GetSentenceInstance(CultureInfo.CurrentCulture);
             Logln("testing sentence iter - String:- \"" + testString + "\"");
             sentIter1.SetText(testString);
-            p = sentIter1.MoveFirst();
+            p = sentIter1.First();
             if (p != 0)
                 Errln("ERROR: first() returned" + p + "instead of 0");
-            q = sentIter1.MoveNext();
+            q = sentIter1.Next();
             doTest(testString, p, q, 7, "Hello! ");
             p = q;
-            q = sentIter1.Move(2);
+            q = sentIter1.Next(2);
             doTest(testString, p, q, 31, "how are you? I'am fine. ");
             p = q;
-            q = sentIter1.Move(-2);
+            q = sentIter1.Next(-2);
             doTest(testString, p, q, 7, "how are you? I'am fine. ");
             p = q;
-            q = sentIter1.Move(4);
+            q = sentIter1.Next(4);
             doTest(testString, p, q, 60, "how are you? I'am fine. Thankyou. How are you doing? ");
             p = q;
-            q = sentIter1.MoveNext();
+            q = sentIter1.Next();
             doTest(testString, p, q, 83, "This  costs $20,00,000.");
-            q = sentIter1.MoveFollowing(1);
+            q = sentIter1.Following(1);
             doTest(testString, 1, q, 7, "ello! ");
-            q = sentIter1.MoveFollowing(10);
+            q = sentIter1.Following(10);
             doTest(testString, 10, q, 20, " are you? ");
-            q = sentIter1.MoveFollowing(20);
+            q = sentIter1.Following(20);
             doTest(testString, 20, q, 31, "I'am fine. ");
-            p = sentIter1.MoveFollowing(sentIter1.MoveLast());
-            q = sentIter1.Move(sentIter1.MoveLast());
+            p = sentIter1.Following(sentIter1.Last());
+            q = sentIter1.Next(sentIter1.Last());
             if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: following()/next() at last position returned #"
                         + p + " and " + q + " instead of" + testString.Length);
@@ -246,37 +246,37 @@ namespace ICU4N.Dev.Test.Rbbi
             Logln("(UnicodeString)testing line iter - String:- \"" + testString + "\"");
             RuleBasedBreakIterator lineIter1 = (RuleBasedBreakIterator)BreakIterator.GetLineInstance(CultureInfo.CurrentCulture);
             lineIter1.SetText(testString);
-            p = lineIter1.MoveFirst();
+            p = lineIter1.First();
             if (p != 0)
                 Errln("ERROR: first() returned" + p + "instead of 0");
-            q = lineIter1.MoveNext();
+            q = lineIter1.Next();
             doTest(testString, p, q, 7, "Hello! ");
             p = q;
             p = q;
-            q = lineIter1.Move(4);
+            q = lineIter1.Next(4);
             doTest(testString, p, q, 20, "how\r\n (are)\r ");
             p = q;
-            q = lineIter1.Move(-4);
+            q = lineIter1.Next(-4);
             doTest(testString, p, q, 7, "how\r\n (are)\r ");
             p = q;
-            q = lineIter1.Move(6);
+            q = lineIter1.Next(6);
             doTest(testString, p, q, 30, "how\r\n (are)\r you? I'am ");
             p = q;
-            q = lineIter1.MoveNext();
+            q = lineIter1.Next();
             doTest(testString, p, q, 36, "fine- ");
             p = q;
-            q = lineIter1.Move(2);
+            q = lineIter1.Next(2);
             doTest(testString, p, q, 54, "Thankyou. foo\u00a0bar ");
-            q = lineIter1.MoveFollowing(60);
+            q = lineIter1.Following(60);
             doTest(testString, 60, q, 64, "re, ");
-            q = lineIter1.MoveFollowing(1);
+            q = lineIter1.Following(1);
             doTest(testString, 1, q, 7, "ello! ");
-            q = lineIter1.MoveFollowing(10);
+            q = lineIter1.Following(10);
             doTest(testString, 10, q, 12, "\r\n");
-            q = lineIter1.MoveFollowing(20);
+            q = lineIter1.Following(20);
             doTest(testString, 20, q, 25, "you? ");
-            p = lineIter1.MoveFollowing(lineIter1.MoveLast());
-            q = lineIter1.Move(lineIter1.MoveLast());
+            p = lineIter1.Following(lineIter1.Last());
+            q = lineIter1.Next(lineIter1.Last());
             if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: following()/next() at last position returned #"
                         + p + " and " + q + " instead of" + testString.Length);
@@ -294,45 +294,45 @@ namespace ICU4N.Dev.Test.Rbbi
             Logln("testing word iteration for string \"" + testString + "\"");
             RuleBasedBreakIterator wordIter1 = (RuleBasedBreakIterator)BreakIterator.GetWordInstance(new CultureInfo("en"));
             wordIter1.SetText(testString);
-            p = wordIter1.MoveLast();
+            p = wordIter1.Last();
             if (p != testString.Length)
             {
                 Errln("ERROR: last() returned" + p + "instead of" + testString.Length);
             }
-            q = wordIter1.MovePrevious();
+            q = wordIter1.Previous();
             doTest(testString, p, q, 37, "dollars");
             p = q;
-            q = wordIter1.MovePrevious();
+            q = wordIter1.Previous();
             doTest(testString, p, q, 36, " ");
-            q = wordIter1.MovePreceding(25);
+            q = wordIter1.Preceding(25);
             doTest(testString, 25, q, 22, "Isn");
             p = q;
-            q = wordIter1.MovePrevious();
+            q = wordIter1.Previous();
             doTest(testString, p, q, 21, " ");
-            q = wordIter1.MovePreceding(20);
+            q = wordIter1.Preceding(20);
             doTest(testString, 20, q, 15, "break");
-            p = wordIter1.MovePreceding(wordIter1.MoveFirst());
+            p = wordIter1.Preceding(wordIter1.First());
             if (p != BreakIterator.Done)
                 Errln("ERROR: preceding()  at starting position returned #" + p + " instead of 0");
             testString = "Hello! how are you? I'am fine. Thankyou. How are you doing? This  costs $20,00,000.";
             Logln("testing sentence iter - String:- \"" + testString + "\"");
             RuleBasedBreakIterator sentIter1 = (RuleBasedBreakIterator)BreakIterator.GetSentenceInstance(CultureInfo.CurrentCulture);
             sentIter1.SetText(testString);
-            p = sentIter1.MoveLast();
+            p = sentIter1.Last();
             if (p != testString.Length)
                 Errln("ERROR: last() returned" + p + "instead of " + testString.Length);
-            q = sentIter1.MovePrevious();
+            q = sentIter1.Previous();
             doTest(testString, p, q, 60, "This  costs $20,00,000.");
             p = q;
-            q = sentIter1.MovePrevious();
+            q = sentIter1.Previous();
             doTest(testString, p, q, 41, "How are you doing? ");
-            q = sentIter1.MovePreceding(40);
+            q = sentIter1.Preceding(40);
             doTest(testString, 40, q, 31, "Thankyou.");
-            q = sentIter1.MovePreceding(25);
+            q = sentIter1.Preceding(25);
             doTest(testString, 25, q, 20, "I'am ");
-            sentIter1.MoveFirst();
-            p = sentIter1.MovePrevious();
-            q = sentIter1.MovePreceding(sentIter1.MoveFirst());
+            sentIter1.First();
+            p = sentIter1.Previous();
+            q = sentIter1.Preceding(sentIter1.First());
             if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: previous()/preceding() at starting position returned #"
                         + p + " and " + q + " instead of 0\n");
@@ -340,21 +340,21 @@ namespace ICU4N.Dev.Test.Rbbi
             Logln("testing line iter - String:- \"" + testString + "\"");
             RuleBasedBreakIterator lineIter1 = (RuleBasedBreakIterator)BreakIterator.GetLineInstance(CultureInfo.CurrentCulture);
             lineIter1.SetText(testString);
-            p = lineIter1.MoveLast();
+            p = lineIter1.Last();
             if (p != testString.Length)
                 Errln("ERROR: last() returned" + p + "instead of " + testString.Length);
-            q = lineIter1.MovePrevious();
+            q = lineIter1.Previous();
             doTest(testString, p, q, 72, "$20,00,000.");
             p = q;
-            q = lineIter1.MovePrevious();
+            q = lineIter1.Previous();
             doTest(testString, p, q, 66, "costs ");
-            q = lineIter1.MovePreceding(40);
+            q = lineIter1.Preceding(40);
             doTest(testString, 40, q, 31, "Thankyou.");
-            q = lineIter1.MovePreceding(25);
+            q = lineIter1.Preceding(25);
             doTest(testString, 25, q, 20, "I'am ");
-            lineIter1.MoveFirst();
-            p = lineIter1.MovePrevious();
-            q = lineIter1.MovePreceding(sentIter1.MoveFirst());
+            lineIter1.First();
+            p = lineIter1.Previous();
+            q = lineIter1.Preceding(sentIter1.First());
             if (p != BreakIterator.Done || q != BreakIterator.Done)
                 Errln("ERROR: previous()/preceding() at starting position returned #"
                         + p + " and " + q + " instead of 0\n");
@@ -386,30 +386,30 @@ namespace ICU4N.Dev.Test.Rbbi
             BreakIterator bi = BreakIterator.GetWordInstance(ULocale.ENGLISH);
 
             bi.SetText("# ");
-            assertEquals(null, bi.MoveNext(), 1);
+            assertEquals(null, bi.Next(), 1);
             assertTrue(null, bi.RuleStatus >= RuleStatus.WordNone);
             assertTrue(null, bi.RuleStatus < RuleStatus.WordNoneLimit);
 
             bi.SetText("3 ");
-            assertEquals(null, bi.MoveNext(), 1);
+            assertEquals(null, bi.Next(), 1);
             assertTrue(null, bi.RuleStatus >= RuleStatus.WordNumber);
             assertTrue(null, bi.RuleStatus < RuleStatus.WordNumberLimit);
 
             bi.SetText("a ");
-            assertEquals(null, bi.MoveNext(), 1);
+            assertEquals(null, bi.Next(), 1);
             assertTrue(null, bi.RuleStatus >= RuleStatus.WordLetter);
             assertTrue(null, bi.RuleStatus < RuleStatus.WordLetterLimit);
 
 
             bi.SetText("イ  ");
-            assertEquals(null, bi.MoveNext(), 1);
+            assertEquals(null, bi.Next(), 1);
             assertTrue(null, bi.RuleStatus >= RuleStatus.WordKana);
             // TODO: ticket #10261, Kana is not returning the correct status.
             // assertTrue(null, bi.getRuleStatus() < RuleStatus.WordKanaLimit);
             // System.out.println("\n" + bi.getRuleStatus());
 
             bi.SetText("退 ");
-            assertEquals(null, bi.MoveNext(), 1);
+            assertEquals(null, bi.Next(), 1);
             assertTrue(null, bi.RuleStatus >= RuleStatus.WordIdeo);
             assertTrue(null, bi.RuleStatus < RuleStatus.WordIdeoLimit);
         }
@@ -480,9 +480,9 @@ namespace ICU4N.Dev.Test.Rbbi
         public void TestGetTitleInstance()
         {
             BreakIterator bi = BreakIterator.GetTitleInstance(new CultureInfo("en-CA"));
-            TestFmwk.assertNotEquals("Title instance break iterator not correctly instantiated", bi.MoveFirst(), null);
+            TestFmwk.assertNotEquals("Title instance break iterator not correctly instantiated", bi.First(), null);
             bi.SetText("Here is some Text");
-            TestFmwk.assertEquals("Title instance break iterator not correctly instantiated", bi.MoveFirst(), 0);
+            TestFmwk.assertEquals("Title instance break iterator not correctly instantiated", bi.First(), 0);
         }
     }
 }

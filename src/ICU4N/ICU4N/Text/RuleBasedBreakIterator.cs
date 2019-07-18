@@ -353,7 +353,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The offset of the beginning of the text.</returns>
         /// <stable>ICU 2.0</stable>
-        public override int MoveFirst()
+        public override int First()
         {
             if (fText == null)
             {
@@ -376,7 +376,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The text's past-the-end offset.</returns>
         /// <stable>ICU 2.0</stable>
-        public override int MoveLast()
+        public override int Last()
         {
             if (fText == null)
             {
@@ -395,28 +395,28 @@ namespace ICU4N.Text
         /// <summary>
         /// Advances the iterator either forward or backward the specified number of steps.
         /// Negative values move backward, and positive values move forward.  This is
-        /// equivalent to repeatedly calling <see cref="MoveNext()"/> or <see cref="MovePrevious()"/>.
+        /// equivalent to repeatedly calling <see cref="Next()"/> or <see cref="Previous()"/>.
         /// </summary>
         /// <param name="n">The number of steps to move.  The sign indicates the direction
         /// (negative is backwards, and positive is forwards).</param>
         /// <returns>The character offset of the boundary position n boundaries away from
         /// the current one.</returns>
         /// <stable>ICU 2.0</stable>
-        public override int Move(int n)
+        public override int Next(int n)
         {
             int result = 0;
             if (n > 0)
             {
                 for (; n > 0 && result != Done; --n)
                 {
-                    result = MoveNext();
+                    result = Next();
                 }
             }
             else if (n < 0)
             {
                 for (; n < 0 && result != Done; ++n)
                 {
-                    result = MovePrevious();
+                    result = Previous();
                 }
             }
             else
@@ -431,7 +431,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The position of the first boundary after this one.</returns>
         /// <stable>ICU 2.0</stable>
-        public override int MoveNext()
+        public override int Next()
         {
             fBreakCache.Next();
             return fDone ? Done : fPosition;
@@ -442,7 +442,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The position of the boundary position immediately preceding the starting position.</returns>
         /// <stable>ICU 2.0</stable>
-        public override int MovePrevious()
+        public override int Previous()
         {
             fBreakCache.Previous();
             return fDone ? Done : fPosition;
@@ -455,13 +455,13 @@ namespace ICU4N.Text
         /// <param name="startPos">The position from which to begin searching for a break position.</param>
         /// <returns>The position of the first break after the current position.</returns>
         /// <stable>ICU 2.0</stable>
-        public override int MoveFollowing(int startPos)
+        public override int Following(int startPos)
         {
             // if the supplied position is before the beginning, return the
             // text's starting offset
             if (startPos < fText.BeginIndex)
             {
-                return MoveFirst();
+                return First();
             }
 
             // Move requested offset to a code point start. It might be on a trail surrogate.
@@ -478,15 +478,15 @@ namespace ICU4N.Text
         /// <param name="offset">The position to begin searching for a break from.</param>
         /// <returns>The position of the last boundary before the starting position.</returns>
         /// <stable>ICU 2.0</stable>
-        public override int MovePreceding(int offset)
+        public override int Preceding(int offset)
         {
             if (fText == null || offset > fText.EndIndex)
             {
-                return MoveLast();
+                return Last();
             }
             else if (offset < fText.BeginIndex)
             {
-                return MoveFirst();
+                return First();
             }
 
             // Move requested offset to a code point start. It might be on a trail surrogate.
@@ -535,7 +535,7 @@ namespace ICU4N.Text
             {
                 // Not on a boundary. isBoundary() must leave iterator on the following boundary.
                 // fBreakCache.seek(), above, left us on the preceding boundary, so advance one.
-                MoveNext();
+                Next();
             }
             return result;
         }
@@ -544,7 +544,7 @@ namespace ICU4N.Text
         /// Returns the current iteration position.  Note that <see cref="BreakIterator.Done"/> is never
         /// returned from this function; if iteration has run to the end of a
         /// string, <see cref="Current"/> will return the length of the string while
-        /// <see cref="MoveNext()"/> will return <see cref="BreakIterator.Done"/>.
+        /// <see cref="Next()"/> will return <see cref="BreakIterator.Done"/>.
         /// </summary>
         /// <stable>ICU 2.0</stable>
         public override int Current
@@ -568,7 +568,7 @@ namespace ICU4N.Text
         /// that contain alphabetic letters, "words" that appear to be numbers,
         /// punctuation and spaces, words containing ideographic characters, and
         /// more.  Call <see cref="RuleStatus"/> after obtaining a boundary
-        /// position from <see cref="MoveNext()"/>, <see cref="MovePrevious()"/>, or
+        /// position from <see cref="Next()"/>, <see cref="Previous()"/>, or
         /// any other break iterator functions that returns a boundary position.
         /// </remarks>
         /// <stable>ICU 60</stable>
@@ -660,7 +660,7 @@ namespace ICU4N.Text
             }
             fDictionaryCache.Reset();
             fText = newText;
-            this.MoveFirst();
+            this.First();
         }
 
         /// <summary>
@@ -848,7 +848,7 @@ namespace ICU4N.Text
         /// <para/>
         /// A note on supplementary characters and the position of underlying
         /// <see cref="CharacterIterator"/>:   Normally, a character iterator is positioned at
-        /// the char most recently returned by <see cref="MoveNext()"/>.  Within this function, when
+        /// the char most recently returned by <see cref="Next()"/>.  Within this function, when
         /// a supplementary char is being processed, the char iterator is left
         /// sitting on the trail surrogate, in the middle of the code point.
         /// This is different from everywhere else, where an iterator always
