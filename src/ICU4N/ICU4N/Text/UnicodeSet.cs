@@ -1338,7 +1338,7 @@ namespace ICU4N.Text
         /// <param name="start">First character, inclusive, of range to be removed from this set.</param>
         /// <param name="end">Last character, inclusive, of range to be removed from this set.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual UnicodeSet Complement(int start, int end) // ICU4N TODO: API - rename...?
+        public virtual UnicodeSet Complement(int start, int end) // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
         {
             CheckFrozen();
             if (start < MIN_VALUE || start > MAX_VALUE)
@@ -1363,7 +1363,7 @@ namespace ICU4N.Text
         /// not in this set.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public UnicodeSet Complement(int c)
+        public UnicodeSet Complement(int c) // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
         {
             return Complement(c, c);
         }
@@ -1373,7 +1373,7 @@ namespace ICU4N.Text
         /// <c>Complement(<see cref="MIN_VALUE"/>, <see cref="MAX_VALUE"/>)</c>
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public virtual UnicodeSet Complement() // ICU4N TODO: API - rename...?
+        public virtual UnicodeSet Complement() // ICU4N TODO: API - rename  SymmetricExceptWith (exclusive or)
         {
             CheckFrozen();
             if (list[0] == LOW)
@@ -1743,7 +1743,7 @@ namespace ICU4N.Text
         /// <param name="s">Source string.</param>
         /// <param name="i">Point to match to the end on.</param>
         /// <returns>true if ok.</returns>
-        private bool ContainsAll(string s, int i)
+        private bool ContainsAll(string s, int i) // ICU4N TODO: API change to IsSupersetOf ?
         {
             if (i >= s.Length)
             {

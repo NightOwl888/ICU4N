@@ -136,6 +136,16 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>UCharacterExtension.tt</DependentUpon>
     </Compile>
+    <Compile Update="Support\Text\UnicodeSetExtensionsExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UnicodeSetExtensionsExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Support\Text\UnicodeSetPartialExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UnicodeSetPartialExtension.tt</DependentUpon>
+    </Compile>
     <Compile Update="Text\CaseMapExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -250,6 +260,14 @@
     <None Update="Lang\UCharacterExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UCharacterExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Support\Text\UnicodeSetExtensionsExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>UnicodeSetExtensionsExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Support\Text\UnicodeSetPartialExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>UnicodeSetPartialExtension.cs</LastGenOutput>
     </None>
     <None Update="Text\CaseMapExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
