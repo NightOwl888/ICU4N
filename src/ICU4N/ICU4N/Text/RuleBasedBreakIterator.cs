@@ -359,7 +359,7 @@ namespace ICU4N.Text
             {
                 return BreakIterator.Done;
             }
-            fText.MoveFirst();
+            fText.First();
             int start = fText.Index;
             if (!fBreakCache.Seek(start))
             {
@@ -958,7 +958,7 @@ namespace ICU4N.Text
                     // Advance to the next character.
                     // If this is a beginning-of-input loop iteration, don't advance.
                     //    The next iteration will be processing the first real input character.
-                    c = text.MoveNext();
+                    c = text.Next();
                     if (c >= UTF16.LEAD_SURROGATE_MIN_VALUE)
                     {
                         c = CharacterIteration.NextTrail32(text, c);
@@ -1231,7 +1231,7 @@ namespace ICU4N.Text
         {
             if (index <= ci.BeginIndex)
             {
-                ci.MoveFirst();
+                ci.First();
             }
             else if (index >= ci.EndIndex)
             {
@@ -1239,9 +1239,9 @@ namespace ICU4N.Text
             }
             else if (char.IsLowSurrogate(ci.SetIndex(index)))
             {
-                if (!char.IsHighSurrogate(ci.MovePrevious()))
+                if (!char.IsHighSurrogate(ci.Previous()))
                 {
-                    ci.MoveNext();
+                    ci.Next();
                 }
             }
             return ci.Index;

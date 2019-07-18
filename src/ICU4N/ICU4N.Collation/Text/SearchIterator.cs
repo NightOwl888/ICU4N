@@ -399,7 +399,7 @@ namespace ICU4N.Text
                     while (it.Index < limit)
                     {
                         result.Append(it.Current);
-                        it.MoveNext();
+                        it.Next();
                     }
                     it.SetIndex(search_.matchedIndex_);
                     return result.ToString();

@@ -21,23 +21,23 @@ namespace ICU4N.Dev.Test.Impl
             assertEquals("", sci.SetIndex(6), csci.SetIndex(6));
             assertEquals("", sci.Index, csci.Index);
             assertEquals("", sci.Current, csci.Current);
-            assertEquals("", sci.MovePrevious(), csci.MovePrevious());
-            assertEquals("", sci.MoveNext(), csci.MoveNext());
+            assertEquals("", sci.Previous(), csci.Previous());
+            assertEquals("", sci.Next(), csci.Next());
             assertEquals("", sci.BeginIndex, csci.BeginIndex);
             assertEquals("", sci.EndIndex, csci.EndIndex);
-            assertEquals("", sci.MoveFirst(), csci.MoveFirst());
-            assertEquals("", sci.MoveLast(), csci.MoveLast());
+            assertEquals("", sci.First(), csci.First());
+            assertEquals("", sci.Last(), csci.Last());
 
             csci.SetIndex(4);
             sci.SetIndex(4);
             CharacterIterator clci = (CharacterIterator)csci.Clone();
             for (int i = 0; i < 50; ++i)
             {
-                assertEquals("", sci.MoveNext(), clci.MoveNext());
+                assertEquals("", sci.Next(), clci.Next());
             }
             for (int i = 0; i < 50; ++i)
             {
-                assertEquals("", sci.MovePrevious(), clci.MovePrevious());
+                assertEquals("", sci.Previous(), clci.Previous());
             }
         }
     }

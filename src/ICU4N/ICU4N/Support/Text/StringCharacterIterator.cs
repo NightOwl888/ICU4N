@@ -144,7 +144,7 @@ namespace ICU4N.Support.Text
          * @return the character at the begin index or {@code DONE} if the begin
          *         index is equal to the end index.
          */
-        public override char MoveFirst()
+        public override char First()
         {
             if (start == end)
             {
@@ -196,7 +196,7 @@ namespace ICU4N.Support.Text
          * @return the character before the end index or {@code DONE} if the begin
          *         index is equal to the end index.
          */
-        public override char MoveLast()
+        public override char Last()
         {
             if (start == end)
             {
@@ -212,7 +212,7 @@ namespace ICU4N.Support.Text
          * @return the character at the next index, or {@code DONE} if the next
          *         index would be past the end.
          */
-        public override char MoveNext()
+        public override char Next()
         {
             if (offset >= (end - 1))
             {
@@ -228,7 +228,7 @@ namespace ICU4N.Support.Text
          * @return the character at the previous index, or {@code DONE} if the
          *         previous index would be past the beginning.
          */
-        public override char MovePrevious()
+        public override char Previous()
         {
             if (offset == start)
             {

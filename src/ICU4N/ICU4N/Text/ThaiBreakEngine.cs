@@ -192,7 +192,7 @@ namespace ICU4N.Text
                         int chars = 0;
                         for (; ; )
                         {
-                            fIter.MoveNext();
+                            fIter.Next();
                             uc = fIter.Current;
                             chars += 1;
                             if (--remaining <= 0)
@@ -236,7 +236,7 @@ namespace ICU4N.Text
                 int currPos;
                 while ((currPos = fIter.Index) < rangeEnd && fMarkSet.Contains(fIter.Current))
                 {
-                    fIter.MoveNext();
+                    fIter.Next();
                     wordLength += fIter.Index - currPos;
                 }
 
@@ -251,33 +251,33 @@ namespace ICU4N.Text
                     {
                         if (uc == THAI_PAIYANNOI)
                         {
-                            if (!fSuffixSet.Contains(fIter.MovePrevious()))
+                            if (!fSuffixSet.Contains(fIter.Previous()))
                             {
                                 // Skip over previous end and PAIYANNOI
-                                fIter.MoveNext();
-                                fIter.MoveNext();
+                                fIter.Next();
+                                fIter.Next();
                                 wordLength += 1;
                                 uc = fIter.Current;
                             }
                             else
                             {
                                 // Restore prior position
-                                fIter.MoveNext();
+                                fIter.Next();
                             }
                         }
                         if (uc == THAI_MAIYAMOK)
                         {
-                            if (fIter.MovePrevious() != THAI_MAIYAMOK)
+                            if (fIter.Previous() != THAI_MAIYAMOK)
                             {
                                 // Skip over previous end and MAIYAMOK
-                                fIter.MoveNext();
-                                fIter.MoveNext();
+                                fIter.Next();
+                                fIter.Next();
                                 wordLength += 1;
                             }
                             else
                             {
                                 // restore prior position
-                                fIter.MoveNext();
+                                fIter.Next();
                             }
                         }
                     }

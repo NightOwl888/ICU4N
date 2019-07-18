@@ -119,7 +119,7 @@ namespace ICU4N.Dev.Test.Rbbi
         {
             StringBuffer buf = new StringBuffer(ci.EndIndex - ci.BeginIndex + 2);
             buf.Append("'");
-            for (char c = ci.MoveFirst(); c != CharacterIterator.Done; c = ci.MoveNext())
+            for (char c = ci.First(); c != CharacterIterator.Done; c = ci.Next())
             {
                 buf.Append(c);
             }

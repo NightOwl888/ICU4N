@@ -26,15 +26,15 @@ namespace ICU4N.Impl
             int c = ci.Current;
             if (c >= UTF16.LEAD_SURROGATE_MIN_VALUE && c <= UTF16.LEAD_SURROGATE_MAX_VALUE)
             {
-                c = ci.MoveNext();
+                c = ci.Next();
                 if (c < UTF16.TRAIL_SURROGATE_MIN_VALUE || c > UTF16.TRAIL_SURROGATE_MAX_VALUE)
                 {
-                    ci.MovePrevious();
+                    ci.Previous();
                 }
             }
 
             // For BMP chars, this next() is the real deal.
-            c = ci.MoveNext();
+            c = ci.Next();
 
             // If we might have a lead surrogate, we need to peak ahead to get the trail 
             //  even though we don't want to really be positioned there.
@@ -47,7 +47,7 @@ namespace ICU4N.Impl
             {
                 // We got a supplementary char.  Back the iterator up to the postion
                 // of the lead surrogate.
-                ci.MovePrevious();
+                ci.Previous();
             }
             return c;
         }
@@ -70,7 +70,7 @@ namespace ICU4N.Impl
             int retVal = lead;
             if (lead <= UTF16.LEAD_SURROGATE_MAX_VALUE)
             {
-                char cTrail = ci.MoveNext();
+                char cTrail = ci.Next();
                 if (UTF16.IsTrailSurrogate(cTrail))
                 {
                     retVal = ((lead - UTF16.LEAD_SURROGATE_MIN_VALUE) << 10) +
@@ -79,7 +79,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    ci.MovePrevious();
+                    ci.Previous();
                 }
             }
             return retVal;
@@ -91,11 +91,11 @@ namespace ICU4N.Impl
             {
                 return Done32;
             }
-            char trail = ci.MovePrevious();
+            char trail = ci.Previous();
             int retVal = trail;
             if (UTF16.IsTrailSurrogate(trail) && ci.Index > ci.BeginIndex)
             {
-                char lead = ci.MovePrevious();
+                char lead = ci.Previous();
                 if (UTF16.IsLeadSurrogate(lead))
                 {
                     retVal = (((int)lead - UTF16.LEAD_SURROGATE_MIN_VALUE) << 10) +
@@ -104,7 +104,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    ci.MoveNext();
+                    ci.Next();
                 }
             }
             return retVal;
@@ -120,8 +120,8 @@ namespace ICU4N.Impl
             }
             if (UTF16.IsLeadSurrogate(lead))
             {
-                int trail = (int)ci.MoveNext();
-                ci.MovePrevious();
+                int trail = (int)ci.Next();
+                ci.Previous();
                 if (UTF16.IsTrailSurrogate((char)trail))
                 {
                     retVal = ((lead - UTF16.LEAD_SURROGATE_MIN_VALUE) << 10) +

@@ -181,7 +181,7 @@ namespace ICU4N.Text
                         int chars = 0;
                         for (; ; )
                         {
-                            fIter.MoveNext();
+                            fIter.Next();
                             uc = fIter.Current;
                             chars += 1;
                             if (--remaining <= 0)
@@ -221,7 +221,7 @@ namespace ICU4N.Text
                 int currPos;
                 while ((currPos = fIter.Index) < rangeEnd && fMarkSet.Contains(fIter.Current))
                 {
-                    fIter.MoveNext();
+                    fIter.Next();
                     wordLength += fIter.Index - currPos;
                 }
 
