@@ -303,3 +303,11 @@ __pycache__/
 
 # OpenCover UI analysis results
 OpenCover/
+
+
+###########################################
+#                 Custom
+###########################################
+
+# BeyondCompare .orig files (when doing conflict resolution)
+*.orig
