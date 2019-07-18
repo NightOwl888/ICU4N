@@ -23,12 +23,12 @@ namespace ICU4N.Dev.Test.Normalizers
             CharacterIterator iter = new StringCharacterIterator(s + s);
             //test deprecated constructors
             Normalizer norm = new Normalizer(iter, Normalizer.NFC, 0);
-            if (norm.MoveNext() != 0xe4)
+            if (norm.Next() != 0xe4)
             {
                 Errln("error in Normalizer(CharacterIterator).next()");
             }
             Normalizer norm2 = new Normalizer(s, Normalizer.NFC, 0);
-            if (norm2.MoveNext() != 0xe4)
+            if (norm2.Next() != 0xe4)
             {
                 Errln("error in Normalizer(CharacterIterator).next()");
             }

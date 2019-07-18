@@ -133,10 +133,10 @@ namespace ICU4N.Text
     /// <para/>
     /// Note: The <see cref="Normalizer"/> class also provides API for iterative normalization.
     /// While the <see cref="SetIndex(int)"/> and <see cref="Index"/> refer to indices in the
-    /// underlying Unicode input text, the <see cref="MoveNext()"/> and <see cref="MovePrevious()"/> methods
+    /// underlying Unicode input text, the <see cref="Next()"/> and <see cref="Previous()"/> methods
     /// iterate through characters in the normalized output.
     /// This means that there is not necessarily a one-to-one correspondence
-    /// between characters returned by <see cref="MoveNext()"/> and <see cref="MovePrevious()"/> and the indices
+    /// between characters returned by <see cref="Next()"/> and <see cref="Previous()"/> and the indices
     /// passed to and returned from <see cref="SetIndex(int)"/> and <see cref="Index"/>.
     /// It is for this reason that <see cref="Normalizer"/> does not implement the <see cref="CharacterIterator"/> interface.
     /// </remarks>
@@ -1363,7 +1363,7 @@ namespace ICU4N.Text
         /// </code>
         ///
         /// With the input strings already being normalized,
-        /// this function will use <see cref="MoveNext()"/> and <see cref="MovePrevious()"/>
+        /// this function will use <see cref="Next()"/> and <see cref="Previous()"/>
         /// to find the adjacent end pieces of the input strings.
         /// Only the concatenation of these end pieces will be normalized and
         /// then concatenated with the remaining parts of the input strings.
@@ -1385,8 +1385,8 @@ namespace ICU4N.Text
         /// <returns>Length of output (number of chars) when successful or <see cref="IndexOutOfRangeException"/>.</returns>
         /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
         /// <see cref="Normalize(string, Mode, int)"/>
-        /// <see cref="MoveNext()"/>
-        /// <see cref="MovePrevious()"/>
+        /// <see cref="Next()"/>
+        /// <see cref="Previous()"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static int Concatenate(char[] left, int leftStart, int leftLimit,
                                   char[] right, int rightStart, int rightLimit,
@@ -1446,8 +1446,8 @@ namespace ICU4N.Text
         /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
         /// <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, Mode, int)"/>
         /// <see cref="Normalize(string, Mode, int)"/>
-        /// <see cref="MoveNext()"/>
-        /// <see cref="MovePrevious()"/>
+        /// <see cref="Next()"/>
+        /// <see cref="Previous()"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Concatenate(char[] left, char[] right, Mode mode, int options)
         {
@@ -1469,7 +1469,7 @@ namespace ICU4N.Text
         /// </code>
         ///
         /// With the input strings already being normalized,
-        /// this function will use <see cref="MoveNext()"/> and <see cref="MovePrevious()"/>
+        /// this function will use <see cref="Next()"/> and <see cref="Previous()"/>
         /// to find the adjacent end pieces of the input strings.
         /// Only the concatenation of these end pieces will be normalized and
         /// then concatenated with the remaining parts of the input strings.
@@ -1482,8 +1482,8 @@ namespace ICU4N.Text
         /// <exception cref="IndexOutOfRangeException">If target capacity is less than the required length.</exception>
         /// <see cref="Concatenate(char[], int, int, char[], int, int, char[], int, int, Mode, int)"/>
         /// <see cref="Normalize(string, Mode, int)"/>
-        /// <see cref="MoveNext()"/>
-        /// <see cref="MovePrevious()"/>
+        /// <see cref="Next()"/>
+        /// <see cref="Previous()"/>
         /// <see cref="Concatenate(char[], char[], Mode, int)"/>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static string Concatenate(string left, string right, Mode mode, int options)
@@ -1591,7 +1591,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
-        public int MoveNext() // ICU4N specific - renamed from Next()
+        public int Next()
         {
             if (bufferPos < buffer.Length || NextNormalize())
             {
@@ -1612,7 +1612,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
-        public int MovePrevious() // ICU4N specific - renamed from Previous()
+        public int Previous()
         {
             if (bufferPos > 0 || PreviousNormalize())
             {
@@ -1658,10 +1658,10 @@ namespace ICU4N.Text
         /// and return the first normalized character at that position.
         /// <para/>
         /// <b>Note:</b> This method sets the position in the <em>input</em> text,
-        /// while <see cref="MoveNext()"/> and <see cref="MovePrevious()"/> iterate through characters
+        /// while <see cref="Next()"/> and <see cref="Previous()"/> iterate through characters
         /// in the normalized <em>output</em>.  This means that there is not
         /// necessarily a one-to-one correspondence between characters returned
-        /// by see <see cref="MoveNext()"/> and <see cref="MovePrevious()"/> and the indices passed to and
+        /// by see <see cref="Next()"/> and <see cref="Previous()"/> and the indices passed to and
         /// returned from <see cref="SetIndex(int)"/> and <see cref="Index"/>.
         /// </summary>
         /// <param name="index">The desired index in the input text.</param>
@@ -1710,10 +1710,10 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
-        public int MoveFirst() // ICU4N specific - renamed from First()
+        public int First()
         {
             Reset();
-            return MoveNext();
+            return Next();
         }
 
         /// <summary>
@@ -1723,12 +1723,12 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The codepoint as an int.</returns>
         [Obsolete("ICU 56")]
-        public int MoveLast() // ICU4N specific - renamed from Last()
+        public int Last()
         {
             text.SetToLimit();
             currentIndex = nextIndex = text.Index;
             ClearBuffer();
-            return MovePrevious();
+            return Previous();
         }
 
         /// <summary>
@@ -1738,9 +1738,9 @@ namespace ICU4N.Text
         /// the input text that corresponds to a given normalized output character.
         /// <para/>
         /// <b>Note:</b> This method sets the position in the <em>input</em>, while
-        /// <see cref="MoveNext()"/> and <see cref="MovePrevious()"/> iterate through characters in the
+        /// <see cref="Next()"/> and <see cref="Previous()"/> iterate through characters in the
         /// <em>output</em>.  This means that there is not necessarily a one-to-one
-        /// correspondence between characters returned by <see cref="MoveNext()"/> and <see cref="MovePrevious()"/>
+        /// correspondence between characters returned by <see cref="Next()"/> and <see cref="Previous()"/>
         /// and the indices passed to and returned from <see cref="SetIndex(int)"/> and <see cref="Index"/>.
         /// </summary>
         /// <returns>The current iteration position.</returns>
@@ -1792,11 +1792,11 @@ namespace ICU4N.Text
         /// Set the normalization mode for this object.
         /// <para/>
         /// <b>Note:</b>If the normalization mode is changed while iterating
-        /// over a string, calls to <see cref="MoveNext()"/> and <see cref="MovePrevious()"/> may
+        /// over a string, calls to <see cref="Next()"/> and <see cref="Previous()"/> may
         /// return previously buffers characters in the old normalization mode
         /// until the iteration is able to re-sync at the next base character.
-        /// It is safest to call <see cref="SetText(string)"/>, <see cref="MoveFirst()"/>,
-        /// <see cref="MoveLast()"/>, etc. after calling <see cref="SetMode(Mode)"/>.
+        /// It is safest to call <see cref="SetText(string)"/>, <see cref="First()"/>,
+        /// <see cref="Last()"/>, etc. after calling <see cref="SetMode(Mode)"/>.
         /// </summary>
         /// <param name="newMode">The new mode for this <see cref="Normalizer"/>.
         /// The supported modes are:
