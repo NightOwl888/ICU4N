@@ -10,6 +10,38 @@ using System.Text;
 
 namespace ICU4N.Lang
 {
+    /// <summary>
+    /// Option values for case folding
+    /// </summary>
+    public enum FoldCase
+    {
+        /// <icu/>
+        /// <summary>
+        /// Option value for case folding: use default mappings defined in
+        /// CaseFolding.txt.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
+        Default = 0x0000, // ICU4N specific - removed FOLD_CASE_ because it is redundant
+
+        /// <icu/>
+        /// <summary>
+        /// Option value for case folding:
+        /// Use the modified set of mappings provided in CaseFolding.txt to handle dotted I
+        /// and dotless i appropriately for Turkic languages (tr, az).
+        /// </summary>
+        /// <remarks>
+        /// Before Unicode 3.2, CaseFolding.txt contains mappings marked with 'I' that
+        /// are to be included for default mappings and
+        /// excluded for the Turkic-specific mappings.
+        /// <para/>
+        /// Unicode 3.2 CaseFolding.txt instead contains mappings marked with 'T' that
+        /// are to be excluded for default mappings and
+        /// included for the Turkic-specific mappings.
+        /// </remarks>
+        /// <stable>ICU 2.6</stable>
+        ExcludeSpecialI = 0x0001 // ICU4N specific - removed FOLD_CASE_ because it is redundant
+    }
+
     /// <icuenhanced cref="System.Char"/>.<icu>_usage_</icu>
     /// <summary>
     /// The <see cref="UCharacter"/> class provides extensions to the <see cref="System.Char"/> class.
@@ -4433,7 +4465,7 @@ namespace ICU4N.Lang
         /// CaseFolding.txt.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public const int FOLD_CASE_DEFAULT = 0x0000; // ICU4N TODO: API Make [Flags] enum
+        public const int FOLD_CASE_DEFAULT = (int)Lang.FoldCase.Default;
 
         /// <icu/>
         /// <summary>
@@ -4451,7 +4483,7 @@ namespace ICU4N.Lang
         /// included for the Turkic-specific mappings.
         /// </remarks>
         /// <stable>ICU 2.6</stable>
-        public const int FOLD_CASE_EXCLUDE_SPECIAL_I = 0x0001; // ICU4N TODO: API Make [Flags] enum
+        public const int FOLD_CASE_EXCLUDE_SPECIAL_I = (int)Lang.FoldCase.ExcludeSpecialI;
 
         /// <icu/>
         /// <summary>
@@ -4476,7 +4508,7 @@ namespace ICU4N.Lang
         /// character itself.</returns>
         /// <seealso cref="FoldCase(string, int)"/>
         /// <stable>ICU 2.6</stable>
-        public static int FoldCase(int ch, int options) // ICU4N TODO: API Make options into [Flags] enum
+        public static int FoldCase(int ch, int options)
         {
             return UCaseProps.Instance.Fold(ch, options);
         }

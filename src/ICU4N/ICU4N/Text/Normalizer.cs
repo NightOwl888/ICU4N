@@ -35,6 +35,60 @@ namespace ICU4N.Text
     }
 
     /// <summary>
+    /// <see cref="Normalizer"/> Unicode version options.
+    /// </summary>
+    public enum NormalizerUnicodeVersion
+    {
+        /// <summary>
+        /// Optionto select the default Unicode normalization
+        /// (except NormalizationCorrections).
+        /// </summary>
+        Default = 0x00,
+
+        /// <summary>
+        /// Option to select Unicode 3.2 normalization
+        /// (except NormalizationCorrections).
+        /// </summary>
+        [Obsolete("ICU 56 Use FilteredNormalizer2 instead.")]
+        Unicode3_2 = 0x20
+    }
+
+    /// <summary>
+    /// Options for <see cref="Normalizer"/> text comparison
+    /// </summary>
+    [Flags]
+    public enum NormalizerComparison
+    {
+        /// <summary>
+        /// Option bit for compare:
+        /// Use when no other option is required. This has no effect if it is ORed with other options.
+        /// </summary>
+        /// <draft>ICU4N 60.1</draft>
+        Default = 0,
+
+        /// <summary>
+        /// Option bit for compare:
+        /// Both input strings are assumed to fulfill FCD conditions.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        InputIsFCD = 0x20000,
+
+        /// <summary>
+        /// Option bit for compare:
+        /// Perform case-insensitive comparison.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        IgnoreCase = 0x10000, // ICU4N specific - removed COMPARE_
+
+        /// <summary>
+        /// Option bit for compare:
+        /// Compare strings in code point order instead of code unit order.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        CodePointOrder = 0x8000, // ICU4N specific - removed COMPARE_
+    }
+
+    /// <summary>
     /// Old Unicode normalization API.
     /// <para/>
     /// This API has been replaced by the <see cref="Normalizer2"/> class and is only available
@@ -530,7 +584,7 @@ namespace ICU4N.Text
         [Obsolete("ICU 2.8. This option is no longer supported.")]
         public static readonly int IGNORE_HANGUL = 0x0001;
 
-        // ICU4N specific - de-nested QuickCheckResult and renamed NormalizerQuickCheckResult
+        // ICU4N specific - de-nested QuickCheckResult
 
         /// <summary>
         /// Indicates that string is not in the normalized format
@@ -556,28 +610,28 @@ namespace ICU4N.Text
         /// Case sensitively compare the strings
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public static readonly int FOLD_CASE_DEFAULT = UCharacter.FOLD_CASE_DEFAULT; // ICU4N TODO: API - make into [Flags] enum ?
+        internal static readonly int FOLD_CASE_DEFAULT = UCharacter.FOLD_CASE_DEFAULT; // ICU4N specific - marked internal (we use the enum in .NET)
 
         /// <summary>
         /// Option bit for compare:
         /// Both input strings are assumed to fulfill FCD conditions.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public static readonly int INPUT_IS_FCD = 0x20000;
+        internal static readonly int INPUT_IS_FCD = 0x20000; // ICU4N specific - marked internal (we use the enum in .NET)
 
         /// <summary>
         /// Option bit for compare:
         /// Perform case-insensitive comparison.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public static readonly int COMPARE_IGNORE_CASE = 0x10000;
+        internal static readonly int COMPARE_IGNORE_CASE = 0x10000; // ICU4N specific - marked internal (we use the enum in .NET)
 
         /// <summary>
         /// Option bit for compare:
         /// Compare strings in code point order instead of code unit order.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public static readonly int COMPARE_CODE_POINT_ORDER = 0x8000;
+        internal static readonly int COMPARE_CODE_POINT_ORDER = 0x8000; // ICU4N specific - marked internal (we use the enum in .NET)
 
         /// <summary>
         /// Option value for case folding:
@@ -586,7 +640,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I"/>
         /// <stable>ICU 2.8</stable>
-        public static readonly int FOLD_CASE_EXCLUDE_SPECIAL_I = UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I;
+        internal static readonly int FOLD_CASE_EXCLUDE_SPECIAL_I = UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I; // ICU4N specific - marked internal (we use the enum in .NET)
 
         /// <summary>
         /// Lowest-order bit number of <see cref="Compare(string, string, int)"/> options bits corresponding to
@@ -623,6 +677,7 @@ namespace ICU4N.Text
         /// If you want the default behavior corresponding to one of the
         /// standard Unicode Normalization Forms, use 0 for this argument.
         /// </param>
+        /// <draft>ICU4N 60.1</draft>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public Normalizer(string str, Mode mode, int opt)
         {
@@ -640,18 +695,33 @@ namespace ICU4N.Text
         /// <param name="iter">The input text to be normalized.  The normalization
         /// will start at the beginning of the string.</param>
         /// <param name="mode">The normalization mode.</param>
-        /// <param name="opt">Any optional features to be enabled.
-        /// Currently the only available option is <see cref="UNICODE_3_2"/>.
-        /// If you want the default behavior corresponding to one of the
-        /// standard Unicode Normalization Forms, use 0 for this argument.
-        /// </param>
+        /// <draft>ICU4N 60.1</draft>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public Normalizer(CharacterIterator iter, Mode mode, int opt)
+        public Normalizer(CharacterIterator iter, Mode mode)
+            : this(iter, mode, NormalizerUnicodeVersion.Default)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of the given text.
+        /// </summary>
+        /// <param name="iter">The input text to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <draft>ICU4N 60.1</draft>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public Normalizer(CharacterIterator iter, Mode mode, NormalizerUnicodeVersion unicodeVersion)
         {
             this.text = UCharacterIterator.GetInstance((CharacterIterator)iter.Clone());
             this.mode = mode;
-            this.options = opt;
-            norm2 = mode.GetNormalizer2(opt);
+            this.options = (int)unicodeVersion;
+            norm2 = mode.GetNormalizer2((int)unicodeVersion);
             buffer = new StringBuilder();
         }
 
@@ -662,22 +732,69 @@ namespace ICU4N.Text
         /// <param name="iter">The input text to be normalized.  The normalization
         /// will start at the beginning of the string.</param>
         /// <param name="mode">The normalization mode.</param>
-        /// <param name="options">The normalization options, ORed together (0 for no options).</param>
+        /// <draft>ICU4N 60.1</draft>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public Normalizer(UCharacterIterator iter, Mode mode, int options)
+        public Normalizer(UCharacterIterator iter, Mode mode)
+            : this(iter, mode, NormalizerComparison.Default, FoldCase.Default, NormalizerUnicodeVersion.Default)
         {
-            //try
-            //{
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of the given text.
+        /// </summary>
+        /// <param name="iter">The input text to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison, which can be ORed together.</param>
+        /// <draft>ICU4N 60.1</draft>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public Normalizer(UCharacterIterator iter, Mode mode, NormalizerComparison comparison)
+            : this(iter, mode, comparison, FoldCase.Default, NormalizerUnicodeVersion.Default)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of the given text.
+        /// </summary>
+        /// <param name="iter">The input text to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison, which can be ORed together.</param>
+        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
+        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
+        /// <draft>ICU4N 60.1</draft>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public Normalizer(UCharacterIterator iter, Mode mode, NormalizerComparison comparison, FoldCase foldCase)
+            : this(iter, mode, comparison, foldCase, NormalizerUnicodeVersion.Default)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="Normalizer"/> object for iterating over the
+        /// normalized form of the given text.
+        /// </summary>
+        /// <param name="iter">The input text to be normalized.  The normalization
+        /// will start at the beginning of the string.</param>
+        /// <param name="mode">The normalization mode.</param>
+        /// <param name="comparison"><see cref="NormalizerComparison"/> flags to control the text comparison.</param>
+        /// <param name="foldCase"><see cref="FoldCase"/> option, such as 
+        /// <see cref="FoldCase.ExcludeSpecialI"/> or <see cref="FoldCase.Default"/>.</param>
+        /// <param name="unicodeVersion">The Unicode version to use.
+        /// Currently the only available option is <see cref="NormalizerUnicodeVersion.Unicode3_2"/>.
+        /// If you want the default behavior corresponding to one of the
+        /// standard Unicode Normalization Forms, use <see cref="NormalizerUnicodeVersion.Default"/> for this argument.
+        /// </param>
+        /// <draft>ICU4N 60.1</draft>
+        [Obsolete("ICU 56 Use Normalizer2 instead.")]
+        public Normalizer(UCharacterIterator iter, Mode mode, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
+        {
             this.text = (UCharacterIterator)iter.Clone();
             this.mode = mode;
-            this.options = options;
-            norm2 = mode.GetNormalizer2(options);
+            this.options = (int)unicodeVersion | (int)comparison | (int)unicodeVersion;
+            norm2 = mode.GetNormalizer2(this.options);
             buffer = new StringBuilder();
-            //}
-            //catch (CloneNotSupportedException e)
-            //{
-            //    throw new ICUCloneNotSupportedException(e);
-            //}
         }
 
         /// <summary>
@@ -693,8 +810,6 @@ namespace ICU4N.Text
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public object Clone()
         {
-            //try
-            //{
             Normalizer copy = (Normalizer)base.MemberwiseClone();
             copy.text = (UCharacterIterator)text.Clone();
             copy.mode = mode;
@@ -705,11 +820,6 @@ namespace ICU4N.Text
             copy.currentIndex = currentIndex;
             copy.nextIndex = nextIndex;
             return copy;
-            //}
-            //catch (CloneNotSupportedException e)
-            //{
-            //    throw new ICUCloneNotSupportedException(e);
-            //}
         }
 
         //--------------------------------------------------------------------------
@@ -1161,59 +1271,58 @@ namespace ICU4N.Text
             return IsNormalized(UTF16.ValueOf(char32), mode, options);
         }
 
-        /**
-         * Compare two strings for canonical equivalence.
-         * Further options include case-insensitive comparison and
-         * code point order (as opposed to code unit order).
-         *
-         * Canonical equivalence between two strings is defined as their normalized
-         * forms (NFD or NFC) being identical.
-         * This function compares strings incrementally instead of normalizing
-         * (and optionally case-folding) both strings entirely,
-         * improving performance significantly.
-         *
-         * Bulk normalization is only necessary if the strings do not fulfill the
-         * FCD conditions. Only in this case, and only if the strings are relatively
-         * long, is memory allocated temporarily.
-         * For FCD strings and short non-FCD strings there is no memory allocation.
-         *
-         * Semantically, this is equivalent to
-         *   strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))
-         * where code point order and foldCase are all optional.
-         *
-         * @param s1        First source character array.
-         * @param s1Start   start index of source
-         * @param s1Limit   limit of the source
-         *
-         * @param s2        Second source character array.
-         * @param s2Start   start index of the source
-         * @param s2Limit   limit of the source
-         *
-         * @param options A bit set of options:
-         *   - FOLD_CASE_DEFAULT or 0 is used for default options:
-         *     Case-sensitive comparison in code unit order, and the input strings
-         *     are quick-checked for FCD.
-         *
-         *   - INPUT_IS_FCD
-         *     Set if the caller knows that both s1 and s2 fulfill the FCD
-         *     conditions.If not set, the function will quickCheck for FCD
-         *     and normalize if necessary.
-         *
-         *   - COMPARE_CODE_POINT_ORDER
-         *     Set to choose code point order instead of code unit order
-         *
-         *   - COMPARE_IGNORE_CASE
-         *     Set to compare strings case-insensitively using case folding,
-         *     instead of case-sensitively.
-         *     If set, then the following case folding options are used.
-         *
-         *
-         * @return &lt;0 or 0 or &gt;0 as usual for string comparisons
-         *
-         * @see #normalize
-         * @see #FCD
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Compare two strings for canonical equivalence.
+        /// Further options include case-insensitive comparison and
+        /// code point order (as opposed to code unit order).
+        /// </summary>
+        /// <remarks>
+        /// Canonical equivalence between two strings is defined as their normalized
+        /// forms (NFD or NFC) being identical.
+        /// This function compares strings incrementally instead of normalizing
+        /// (and optionally case-folding) both strings entirely,
+        /// improving performance significantly.
+        /// <para/>
+        /// Bulk normalization is only necessary if the strings do not fulfill the
+        /// FCD conditions. Only in this case, and only if the strings are relatively
+        /// long, is memory allocated temporarily.
+        /// For FCD strings and short non-FCD strings there is no memory allocation.
+        /// <para/>
+        /// Semantically, this is equivalent to
+        /// <code>strcmp[CodePointOrder](foldCase(NFD(s1)), foldCase(NFD(s2)))</code>
+        /// where code point order and foldCase are all optional.
+        /// </remarks>
+        /// <param name="s1">First source character array.</param>
+        /// <param name="s1Start">start index of source</param>
+        /// <param name="s1Limit">limit of the source</param>
+        /// <param name="s2">Second source character array.</param>
+        /// <param name="s2Start">start index of the source</param>
+        /// <param name="s2Limit">limit of the source</param>
+        /// <param name="options">A bit set of options:
+        /// <list type="table">
+        ///     <item><term><see cref="FOLD_CASE_DEFAULT"/> or 0 is used for default options</term><description>
+        ///         Case-sensitive comparison in code unit order, and the input strings
+        ///         are quick-checked for FCD.
+        ///     </description></item>
+        ///     <item><see cref="INPUT_IS_FCD"/><term></term><description>
+        ///         Set if the caller knows that both <paramref name="s1"/> and <paramref name="s2"/> fulfill the FCD
+        ///         conditions. If not set, the function will quickCheck for FCD
+        ///         and normalize if necessary.
+        ///     </description></item>
+        ///     <item><term><see cref="COMPARE_CODE_POINT_ORDER"/></term><description>
+        ///         Set to choose code point order instead of code unit order.
+        ///     </description></item>
+        ///     <item><term><see cref="COMPARE_IGNORE_CASE"/></term><description>
+        ///         Set to compare strings case-insensitively using case folding,
+        ///         instead of case-sensitively.
+        ///         If set, then the following case folding options are used.
+        ///     </description></item>
+        /// </list>
+        /// </param>
+        /// <returns>&lt;0 or 0 or &gt;0 as usual for string comparisons</returns>
+        /// <seealso cref="Normalize(char[], int, int, char[], int, int, Mode, int)"/>
+        /// <seealso cref="FCD"/>
+        /// <stable>ICU 2.8</stable>
         public static int Compare(char[] s1, int s1Start, int s1Limit,
                                   char[] s2, int s2Start, int s2Limit,
                                   int options)

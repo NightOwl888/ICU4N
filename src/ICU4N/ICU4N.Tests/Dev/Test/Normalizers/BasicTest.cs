@@ -1568,7 +1568,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 string s = Utility.Unescape("a\u0308\uac00\\U0002f800");
                 // make s a bit longer and more interesting
                 UCharacterIterator iter = UCharacterIterator.GetInstance(s + s);
-                Normalizer norm = new Normalizer(iter, Normalizer.NFC, 0);
+                Normalizer norm = new Normalizer(iter, Normalizer.NFC /*, 0*/); // ICU4N specific - to specify default options, leave them out of the constructor
                 if (norm.Next() != 0xe4)
                 {
                     Errln("error in Normalizer(CharacterIterator).Next()");
