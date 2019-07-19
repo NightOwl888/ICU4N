@@ -44,7 +44,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -52,7 +52,7 @@ namespace ICU4N.Lang
         /// <returns>a <see cref="UProperty"/> enum.</returns>
         /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="TryGetPropertyEnum(<#=charSequence#>, out int)"/>
+        /// <seealso cref="TryGetPropertyEnum(<#=charSequence#>, out int)"/>
         /// <stable>ICU 2.4</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int GetPropertyEnum(<#=charSequence#> propertyAlias)
         {
@@ -74,7 +74,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -84,7 +84,7 @@ namespace ICU4N.Lang
         /// true if <paramref name="propertyAlias"/> is valid, othewise false.
         /// </returns>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="GetPropertyEnum(<#=charSequence#>)"/>
+        /// <seealso cref="GetPropertyEnum(<#=charSequence#>)"/>
         /// <stable>ICU4N 60.1.0</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static bool TryGetPropertyEnum(<#=charSequence#> propertyAlias, out int result) // ICU4N TODO: Tests
         {
@@ -107,15 +107,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -123,7 +123,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -153,15 +153,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -169,7 +169,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -200,7 +200,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int CodePointAt(<#=charSequence#> seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -232,7 +232,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int CodePointBefore(<#=charSequence#> seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -265,7 +265,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int CodePointCount(<#=charSequence#> text, int start, int limit)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
@@ -306,7 +306,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int OffsetByCodePoints(<#=charSequence#> text, int index, int codePointOffset)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 

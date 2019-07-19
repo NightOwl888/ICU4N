@@ -24,7 +24,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -32,7 +32,7 @@ namespace ICU4N.Lang
         /// <returns>a <see cref="UProperty"/> enum.</returns>
         /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="TryGetPropertyEnum(string, out int)"/>
+        /// <seealso cref="TryGetPropertyEnum(string, out int)"/>
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyEnum(string propertyAlias)
         {
@@ -52,7 +52,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -60,7 +60,7 @@ namespace ICU4N.Lang
         /// <returns>a <see cref="UProperty"/> enum.</returns>
         /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="TryGetPropertyEnum(StringBuilder, out int)"/>
+        /// <seealso cref="TryGetPropertyEnum(StringBuilder, out int)"/>
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyEnum(StringBuilder propertyAlias)
         {
@@ -80,7 +80,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -88,7 +88,7 @@ namespace ICU4N.Lang
         /// <returns>a <see cref="UProperty"/> enum.</returns>
         /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="TryGetPropertyEnum(char[], out int)"/>
+        /// <seealso cref="TryGetPropertyEnum(char[], out int)"/>
         /// <stable>ICU 2.4</stable>
         public static int GetPropertyEnum(char[] propertyAlias)
         {
@@ -108,7 +108,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -116,7 +116,7 @@ namespace ICU4N.Lang
         /// <returns>a <see cref="UProperty"/> enum.</returns>
         /// <exception cref="ArgumentException">thrown if <paramref name="propertyAlias"/> is not recognized.</exception>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="TryGetPropertyEnum(ICharSequence, out int)"/>
+        /// <seealso cref="TryGetPropertyEnum(ICharSequence, out int)"/>
         /// <stable>ICU 2.4</stable>
         internal static int GetPropertyEnum(ICharSequence propertyAlias)
         {
@@ -136,7 +136,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -146,7 +146,7 @@ namespace ICU4N.Lang
         /// true if <paramref name="propertyAlias"/> is valid, othewise false.
         /// </returns>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="GetPropertyEnum(string)"/>
+        /// <seealso cref="GetPropertyEnum(string)"/>
         /// <stable>ICU4N 60.1.0</stable>
         public static bool TryGetPropertyEnum(string propertyAlias, out int result) // ICU4N TODO: Tests
         {
@@ -168,7 +168,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -178,7 +178,7 @@ namespace ICU4N.Lang
         /// true if <paramref name="propertyAlias"/> is valid, othewise false.
         /// </returns>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="GetPropertyEnum(StringBuilder)"/>
+        /// <seealso cref="GetPropertyEnum(StringBuilder)"/>
         /// <stable>ICU4N 60.1.0</stable>
         public static bool TryGetPropertyEnum(StringBuilder propertyAlias, out int result) // ICU4N TODO: Tests
         {
@@ -200,7 +200,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -210,7 +210,7 @@ namespace ICU4N.Lang
         /// true if <paramref name="propertyAlias"/> is valid, othewise false.
         /// </returns>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="GetPropertyEnum(char[])"/>
+        /// <seealso cref="GetPropertyEnum(char[])"/>
         /// <stable>ICU4N 60.1.0</stable>
         public static bool TryGetPropertyEnum(char[] propertyAlias, out int result) // ICU4N TODO: Tests
         {
@@ -232,7 +232,7 @@ namespace ICU4N.Lang
         /// <remarks>
         /// In addition, this function maps the synthetic names "gcm" /
         /// "General_Category_Mask" to the property
-        /// <see cref="UProperty.GENERAL_CATEGORY_MASK"/>.  These names are not in
+        /// <see cref="UProperty.General_Category_Mask"/>.  These names are not in
         /// PropertyAliases.txt.
         /// </remarks>
         /// <param name="propertyAlias">The property name to be matched.  The name
@@ -242,7 +242,7 @@ namespace ICU4N.Lang
         /// true if <paramref name="propertyAlias"/> is valid, othewise false.
         /// </returns>
         /// <seealso cref="UProperty"/>
-		/// <seealso cref="GetPropertyEnum(ICharSequence)"/>
+        /// <seealso cref="GetPropertyEnum(ICharSequence)"/>
         /// <stable>ICU4N 60.1.0</stable>
         internal static bool TryGetPropertyEnum(ICharSequence propertyAlias, out int result) // ICU4N TODO: Tests
         {
@@ -263,15 +263,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -279,7 +279,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -307,15 +307,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -323,7 +323,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -351,15 +351,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -367,7 +367,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -395,15 +395,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -411,7 +411,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <returns>
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -439,15 +439,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -455,7 +455,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -480,15 +480,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -496,7 +496,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -521,15 +521,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -537,7 +537,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -562,15 +562,15 @@ namespace ICU4N.Lang
         /// </summary>
         /// <remarks>
         /// Some of the names in PropertyValueAliases.txt will only be
-        /// recognized with <see cref="UProperty.GENERAL_CATEGORY_MASK"/>, not
-        /// <see cref="UProperty.GENERAL_CATEGORY"/>.  These include: "C" / "Other", "L" /
+        /// recognized with <see cref="UProperty.General_Category_Mask"/>, not
+        /// <see cref="UProperty.General_Category"/>.  These include: "C" / "Other", "L" /
         /// "Letter", "LC" / "Cased_Letter", "M" / "Mark", "N" / "Number", "P"
         /// / "Punctuation", "S" / "Symbol", and "Z" / "Separator".
         /// </remarks>
         /// <param name="property">UProperty selector constant.
-        /// <see cref="UProperty.INT_START"/> &lt;= property &lt; <see cref="UProperty.INT_LIMIT"/> or
-        /// <see cref="UProperty.BINARY_START"/> &lt;= property &lt; <see cref="UProperty.BINARY_LIMIT"/> or
-        /// <see cref="UProperty.MASK_START"/> &lt; = property &lt; <see cref="UProperty.MASK_LIMIT"/>.
+        /// <see cref="UProperty.Int_Start"/> &lt;= property &lt; <see cref="UProperty.Int_Limit"/> or
+        /// <see cref="UProperty.Binary_Start"/> &lt;= property &lt; <see cref="UProperty.Binary_Limit"/> or
+        /// <see cref="UProperty.Mask_Start"/> &lt; = property &lt; <see cref="UProperty.Mask_Limit"/>.
         /// Only these properties can be enumerated.
         /// </param>
         /// <param name="valueAlias">the value name to be matched.  The name is
@@ -578,7 +578,7 @@ namespace ICU4N.Lang
         /// PropertyValueAliases.txt.
         /// </param>
         /// <param name="result">
-        /// A value integer.  Note: <see cref="UProperty.GENERAL_CATEGORY"/>
+        /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
         /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
@@ -607,7 +607,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointAt(string seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -637,7 +637,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointAt(StringBuilder seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -667,7 +667,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointAt(char[] seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -697,7 +697,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         internal static int CodePointAt(ICharSequence seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -727,7 +727,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointBefore(string seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -757,7 +757,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointBefore(StringBuilder seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -787,7 +787,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointBefore(char[] seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -817,7 +817,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         internal static int CodePointBefore(ICharSequence seq, int index)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
                 throw new ArgumentNullException(nameof(seq));
 
@@ -848,7 +848,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointCount(string text, int start, int limit)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
@@ -888,7 +888,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointCount(StringBuilder text, int start, int limit)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
@@ -928,7 +928,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int CodePointCount(char[] text, int start, int limit)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
@@ -968,7 +968,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         internal static int CodePointCount(ICharSequence text, int start, int limit)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
@@ -1007,7 +1007,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int OffsetByCodePoints(string text, int index, int codePointOffset)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
@@ -1069,7 +1069,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int OffsetByCodePoints(StringBuilder text, int index, int codePointOffset)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
@@ -1131,7 +1131,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static int OffsetByCodePoints(char[] text, int index, int codePointOffset)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
@@ -1193,7 +1193,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         internal static int OffsetByCodePoints(ICharSequence text, int index, int codePointOffset)
         {
-			// ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
+            // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
