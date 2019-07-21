@@ -1252,10 +1252,9 @@ namespace ICU4N.Text
                 //throw errors[0];
                 // if initCause not supported: throw new IllegalArgumentException(errors.toString());
 
-                // ICU4N: In .NET this isn't supported, so we just use AggregateException
-                // and wrap it in IcuArgumentException so any catch blocks looking for ArgumentException
-                // will still work.
-                throw new IcuArgumentException(new AggregateException(errors));
+                // ICU4N: Catch blocks are using ArgumentException, and we need to 
+                // aggregate our error messages in order for the tests to pass.
+                throw new ArgumentException(CollectionUtil.ToString(errors));
             }
         }
 
