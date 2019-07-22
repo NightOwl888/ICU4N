@@ -244,13 +244,13 @@ namespace ICU4N.Text
             // Iterate over (ARG_SELECTOR, message) pairs until ARG_LIMIT or end of select-only pattern.
             do
             {
-                Part part = pattern.GetPart(partIndex++);
-                PartType type = part.PartType;
-                if (type == PartType.ArgLimit)
+                MessagePatternPart part = pattern.GetPart(partIndex++);
+                MessagePatternPartType type = part.Type;
+                if (type == MessagePatternPartType.ArgLimit)
                 {
                     break;
                 }
-                Debug.Assert(type == PartType.ArgSelector);
+                Debug.Assert(type == MessagePatternPartType.ArgSelector);
                 // part is an ARG_SELECTOR followed by a message
                 if (pattern.PartSubstringMatches(part, keyword))
                 {
@@ -299,10 +299,10 @@ namespace ICU4N.Text
             int prevIndex = msgPattern.GetPart(msgStart).Limit;
             for (int i = msgStart; ;)
             {
-                Part part = msgPattern.GetPart(++i);
-                PartType type = part.PartType;
+                MessagePatternPart part = msgPattern.GetPart(++i);
+                MessagePatternPartType type = part.Type;
                 int index = part.Index;
-                if (type == PartType.MsgLimit)
+                if (type == MessagePatternPartType.MsgLimit)
                 {
                     if (result == null)
                     {
@@ -313,7 +313,7 @@ namespace ICU4N.Text
                         return result.Append(pattern, prevIndex, index).ToString();
                     }
                 }
-                else if (type == PartType.SkipSyntax)
+                else if (type == MessagePatternPartType.SkipSyntax)
                 {
                     if (result == null)
                     {
@@ -322,7 +322,7 @@ namespace ICU4N.Text
                     result.Append(pattern, prevIndex, index);
                     prevIndex = part.Limit;
                 }
-                else if (type == PartType.ArgStart)
+                else if (type == MessagePatternPartType.ArgStart)
                 {
                     if (result == null)
                     {

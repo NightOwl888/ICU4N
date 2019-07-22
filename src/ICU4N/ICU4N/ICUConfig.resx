@@ -148,9 +148,9 @@ at run time.
 internal</comment>
   </data>
   <data name="MessagePattern_ApostropheMode" xml:space="preserve">
-    <value>DOUBLE_OPTIONAL</value>
+    <value>DoubleOptional</value>
     <comment>The default mode for when an apostrophe starts quoted literal text for
-MessageFormat output. See the API documentation for MessagePattern for the details  [ DOUBLE_OPTIONAL | DOUBLE_REQUIRED ]
+MessageFormat output. See the API documentation for MessagePattern for the details  [ DoubleOptional | DoubleRequired ]
 stable ICU 4.8</comment>
   </data>
   <data name="TimeZone_DefaultTimeZoneType" xml:space="preserve">
