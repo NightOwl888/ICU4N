@@ -451,7 +451,7 @@ namespace ICU4N.Dev.Test.Translit
             check(map1, map2, -1);
             Logln("Comparing Values");
             ISet<String> values1 = new SortedSet<String>(StringComparer.Ordinal); map1.GetAvailableValues(values1);
-            ISet<String> values2 = new SortedSet<String>(map2.Values, StringComparer.Ordinal);
+            ISet<String> values2 = new SortedSet<String>(map2.Values.Distinct(), StringComparer.Ordinal); // ICU4N NOTE: Added Distinct()
             if (!TestBoilerplate<string>.VerifySetsIdentical(this, values1, values2))
             {
                 throw new ArgumentException("Halting");
