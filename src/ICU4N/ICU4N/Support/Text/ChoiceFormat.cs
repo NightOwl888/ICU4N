@@ -164,7 +164,7 @@ namespace ICU4N.Support.Text
          *         {@code false} otherwise.
          * @see #hashCode
          */
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             if (this == obj)
             {
@@ -175,8 +175,8 @@ namespace ICU4N.Support.Text
                 return false;
             }
             ChoiceFormat choice = (ChoiceFormat)obj;
-            return Array.Equals(choiceLimits, choice.choiceLimits)
-                && Array.Equals(choiceFormats, choice.choiceFormats);
+            return choiceLimits.SequenceEqual(choice.choiceLimits)
+                && choiceFormats.SequenceEqual(choice.choiceFormats);
         }
 
         /**
@@ -505,7 +505,7 @@ namespace ICU4N.Support.Text
             if (obj.IsNumber())
             {
                 double dv = Convert.ToDouble(obj);
-                long lv = Convert.ToInt64(obj);
+                long lv = BitConverter.DoubleToInt64Bits(dv);
                 if (dv == lv)
                 {
                     return Format(lv, buffer, field);
