@@ -2,33 +2,33 @@
 {
     public class Extension
     {
-        private char _key;
-        protected string _value;
+        private char key;
+        protected string m_value;
 
         protected Extension(char key)
         {
-            _key = key;
+            this.key = key;
         }
 
         internal Extension(char key, string value)
         {
-            _key = key;
-            _value = value;
+            this.key = key;
+            this.m_value = value;
         }
 
         public virtual char Key
         {
-            get { return _key; }
+            get { return key; }
         }
 
         public virtual string Value
         {
-            get { return _value; }
+            get { return m_value; }
         }
 
         public virtual string GetID() // ICU4N TODO: Make property ?
         {
-            return _key + LanguageTag.SEP + _value;
+            return key + LanguageTag.SEP + m_value;
         }
 
         public override string ToString()

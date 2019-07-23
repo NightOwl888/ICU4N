@@ -23,12 +23,12 @@ namespace ICU4N.Impl.Locale
             CA_JAPANESE = new UnicodeLocaleExtension();
             CA_JAPANESE._keywords = new SortedDictionary<string, string>(StringComparer.Ordinal);
             CA_JAPANESE._keywords["ca"] = "japanese";
-            CA_JAPANESE._value = "ca-japanese";
+            CA_JAPANESE.m_value = "ca-japanese";
 
             NU_THAI = new UnicodeLocaleExtension();
             NU_THAI._keywords = new SortedDictionary<string, string>(StringComparer.Ordinal);
             NU_THAI._keywords["nu"] = "thai";
-            NU_THAI._value = "nu-thai";
+            NU_THAI.m_value = "nu-thai";
         }
 
         private UnicodeLocaleExtension()
@@ -67,7 +67,7 @@ namespace ICU4N.Impl.Locale
                         sb.Append(LanguageTag.SEP).Append(value);
                     }
                 }
-                _value = sb.ToString(1, sb.Length - 1);   // skip leading '-'
+                m_value = sb.ToString(1, sb.Length - 1);   // skip leading '-'
             }
         }
 
