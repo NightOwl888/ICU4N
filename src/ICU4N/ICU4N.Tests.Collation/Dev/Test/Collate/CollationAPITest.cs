@@ -1188,7 +1188,7 @@ namespace ICU4N.Dev.Test.Collate
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestGetLocale()
         {
             String rules = "&a<x<y<z";

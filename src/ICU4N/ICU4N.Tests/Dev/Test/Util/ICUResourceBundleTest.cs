@@ -1064,7 +1064,7 @@ namespace ICU4N.Dev.Test.Util
             }
         }
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestJavaULocaleBundleLoading()
         {
             string baseName = "com.ibm.icu.dev.data.resources.TestDataElements";
@@ -1221,7 +1221,7 @@ namespace ICU4N.Dev.Test.Util
          * same package.  See Ticket#6844
          */
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestT6844()
         {
             try
@@ -1241,7 +1241,7 @@ namespace ICU4N.Dev.Test.Util
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestUResourceBundleCoverage()
         {
             CultureInfo locale = null;

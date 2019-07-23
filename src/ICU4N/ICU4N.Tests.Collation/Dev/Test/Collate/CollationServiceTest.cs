@@ -236,7 +236,6 @@ namespace ICU4N.Dev.Test.Collate
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
         public void TestRegisterFactory()
         {
 

@@ -18,7 +18,7 @@ namespace ICU4N.Dev.Test.Util
         private static readonly String STANDARD_NAME = "standard";
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestFunctionalEquivalent()
         {
             String[] collCases = {

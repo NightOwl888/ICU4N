@@ -1,5 +1,6 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
+using ICU4N.Util;
 using NUnit.Framework;
 using System;
 using System.Text;
@@ -285,16 +286,14 @@ namespace ICU4N.Dev.Test.Util
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
         public void TestQuotingLikeMessageFormat()
         {
-            fail("ICU4N TODO: MessageFormat not implemented");
-            //string pattern = "{0} don't can''t '{5}''}{a' again '}'{1} to the '{end";
-            //SimpleFormatter spf = SimpleFormatter.Compile(pattern);
-            //MessageFormat mf = new MessageFormat(pattern, ULocale.ROOT);
-            //String expected = "X don't can't {5}'}{a again }Y to the {end";
-            //assertEquals("MessageFormat", expected, mf.format(new Object[] { "X", "Y" }));
-            //assertEquals("SimpleFormatter", expected, spf.Format("X", "Y"));
+            string pattern = "{0} don't can''t '{5}''}{a' again '}'{1} to the '{end";
+            SimpleFormatter spf = SimpleFormatter.Compile(pattern);
+            MessageFormat mf = new MessageFormat(pattern, ULocale.ROOT);
+            String expected = "X don't can't {5}'}{a again }Y to the {end";
+            assertEquals("MessageFormat", expected, mf.Format(new Object[] { "X", "Y" }));
+            assertEquals("SimpleFormatter", expected, spf.Format("X", "Y"));
         }
 
         private void verifyOffsets(int[] expected, int[] actual)

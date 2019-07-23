@@ -54,7 +54,7 @@ namespace ICU4N.Dev.Test.Util
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestCollator()
         {
             CheckService("ja_JP_YOKOHAMA", new ServiceFacade(create: (req) =>
