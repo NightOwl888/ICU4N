@@ -17,7 +17,7 @@ namespace ICU4N.Text
          * @see BreakIterator
          * @stable ICU 2.0
          */
-        protected BreakIterator breakIterator;
+        protected BreakIterator m_breakIterator;
 
         /**
          * Target text for searching.
@@ -25,7 +25,7 @@ namespace ICU4N.Text
          * @see #getTarget
          * @stable ICU 2.0
          */
-        protected CharacterIterator targetText;
+        protected CharacterIterator m_targetText;
         /**
          * Length of the most current match in target text. 
          * Value 0 is the default value.
@@ -33,7 +33,7 @@ namespace ICU4N.Text
          * @see #getMatchLength
          * @stable ICU 2.0
          */
-        protected int matchLength;
+        protected int m_matchLength;
 
         /**
          * Java port of ICU4C struct USearch (usrchimp.h)
@@ -61,12 +61,12 @@ namespace ICU4N.Text
 
             internal CharacterIterator Text
             {
-                get { return outerInstance.targetText; }
+                get { return outerInstance.m_targetText; }
             }
 
             internal void SetTarget(CharacterIterator text)
             {
-                outerInstance.targetText = text;
+                outerInstance.m_targetText = text;
             }
 
             /** Flag to indicate if overlapping search is to be done.
@@ -81,16 +81,16 @@ namespace ICU4N.Text
 
             internal BreakIterator BreakIterator
             {
-                get { return outerInstance.breakIterator; }
-                set { outerInstance.breakIterator = value; }
+                get { return outerInstance.m_breakIterator; }
+                set { outerInstance.m_breakIterator = value; }
             }
 
             internal int matchedIndex_;
 
             internal int MatchedLength
             {
-                get { return outerInstance.matchLength; }
-                set { outerInstance.matchLength = value; }
+                get { return outerInstance.m_matchLength; }
+                set { outerInstance.m_matchLength = value; }
             }
 
             /** Flag indicates if we are doing a forwards search */
@@ -106,11 +106,11 @@ namespace ICU4N.Text
             {
                 get
                 {
-                    if (outerInstance.targetText == null)
+                    if (outerInstance.m_targetText == null)
                     {
                         return 0;
                     }
-                    return outerInstance.targetText.BeginIndex;
+                    return outerInstance.m_targetText.BeginIndex;
                 }
             }
 
@@ -118,11 +118,11 @@ namespace ICU4N.Text
         {
             get
             {
-                if (outerInstance.targetText == null)
+                if (outerInstance.m_targetText == null)
                 {
                     return 0;
                 }
-                return outerInstance.targetText.EndIndex;
+                return outerInstance.m_targetText.EndIndex;
             }
         }
         }
