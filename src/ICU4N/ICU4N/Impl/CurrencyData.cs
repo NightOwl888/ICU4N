@@ -24,7 +24,9 @@ namespace ICU4N.Impl
         public abstract class CurrencyDisplayInfo : CurrencyDisplayNames // ICU4N TODO: API de-nest
         {
             public CurrencyDisplayInfo()
+#pragma warning disable 612, 618
                 : base()
+#pragma warning restore 612, 618
             {
             }
 

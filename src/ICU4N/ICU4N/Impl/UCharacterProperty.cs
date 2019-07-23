@@ -475,7 +475,9 @@ namespace ICU4N.Impl
                         return NtvGetType(GetNumericTypeValue(GetProperty(c)));
                     }, getMaxValue: (which) =>
                     {
+#pragma warning disable 612, 618
                         return NumericType.Count - 1;
+#pragma warning restore 612, 618
                     }),
                 new AnonymousIntProperty(this, 0, SCRIPT_MASK_, 0, getValue: (c) =>
                     {
@@ -495,7 +497,9 @@ namespace ICU4N.Impl
                         }
                     }, getMaxValue: (which) =>
                     {
+#pragma warning disable 612, 618
                         return HangulSyllableType.COUNT - 1;
+#pragma warning restore 612, 618
                     }),
                 // max=1=YES -- these are never "maybe", only "no" or "yes"
                 new NormQuickCheckIntProperty(this, SRC_NFC, (int)UProperty.NFD_Quick_Check, 1),
@@ -527,7 +531,10 @@ namespace ICU4N.Impl
 
         public bool HasBinaryProperty(int c, int which)
         {
-            if (which < (int)UProperty.Binary_Start || (int)UProperty.Binary_Limit <= which)
+            if (which < (int)UProperty.Binary_Start
+#pragma warning disable 612, 618
+                || (int)UProperty.Binary_Limit <= which)
+#pragma warning restore 612, 618
             {
                 // not a known binary property
                 return false;
@@ -702,12 +709,17 @@ namespace ICU4N.Impl
         {
             if (which < (int)UProperty.Int_Start)
             {
-                if ((int)UProperty.Binary_Start <= which && which < (int)UProperty.Binary_Limit)
+                if ((int)UProperty.Binary_Start <= which
+#pragma warning disable 612, 618
+                    && which < (int)UProperty.Binary_Limit)
+#pragma warning restore 612, 618
                 {
                     return binProps[which].Contains(c) ? 1 : 0;
                 }
             }
+#pragma warning disable 612, 618
             else if (which < (int)UProperty.Int_Limit)
+#pragma warning restore 612, 618
             {
                 return intProps[which - (int)UProperty.Int_Start].GetValue(c);
             }
@@ -723,12 +735,17 @@ namespace ICU4N.Impl
         {
             if (which < (int)UProperty.Int_Start)
             {
-                if ((int)UProperty.Binary_Start <= which && which < (int)UProperty.Binary_Limit)
+                if ((int)UProperty.Binary_Start <= which
+#pragma warning disable 612, 618
+                    && which < (int)UProperty.Binary_Limit)
+#pragma warning restore 612, 618
                 {
                     return 1;  // maximum TRUE for all binary properties
                 }
             }
+#pragma warning disable 612, 618
             else if (which < (int)UProperty.Int_Limit)
+#pragma warning restore 612, 618
             {
                 return intProps[which - (int)UProperty.Int_Start].GetMaxValue(which);
             }
@@ -741,7 +758,9 @@ namespace ICU4N.Impl
             {
                 return SRC_NONE; /* undefined */
             }
+#pragma warning disable 612, 618
             else if (which < UProperty.Binary_Limit)
+#pragma warning restore 612, 618
             {
                 return binProps[(int)which].GetSource();
             }
@@ -749,7 +768,9 @@ namespace ICU4N.Impl
             {
                 return SRC_NONE; /* undefined */
             }
+#pragma warning disable 612, 618
             else if (which < UProperty.Int_Limit)
+#pragma warning restore 612, 618
             {
                 return intProps[which - UProperty.Int_Start].GetSource();
             }
@@ -765,7 +786,9 @@ namespace ICU4N.Impl
                         return SRC_NONE;
                 }
             }
+#pragma warning disable 612, 618
             else if (which < UProperty.String_Limit)
+#pragma warning restore 612, 618
             {
                 switch (which)
                 {
@@ -785,9 +808,11 @@ namespace ICU4N.Impl
                     case UProperty.Uppercase_Mapping:
                         return SRC_CASE;
 
+#pragma warning disable 612, 618
                     case UProperty.ISO_Comment:
                     case UProperty.Name:
                     case UProperty.Unicode_1_Name:
+#pragma warning restore 612, 618
                         return SRC_NAMES;
 
                     default:
@@ -1398,6 +1423,7 @@ namespace ICU4N.Impl
             Init();
 
             // consistency check
+#pragma warning disable 612, 618
             if (binProps.Length != (int)UProperty.Binary_Limit)
             {
                 throw new ICUException("binProps.length!=UProperty.BINARY_LIMIT");
@@ -1406,6 +1432,7 @@ namespace ICU4N.Impl
             {
                 throw new ICUException("intProps.length!=(UProperty.INT_LIMIT-UProperty.INT_START)");
             }
+#pragma warning restore 612, 618
 
             // jar access
             ByteBuffer bytes = ICUBinary.GetRequiredData(DATA_FILE_NAME_);

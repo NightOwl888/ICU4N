@@ -654,7 +654,9 @@ namespace ICU4N.Impl
                 if (values.Count == 1)
                 {
                     ULocale locale = values.First();
+#pragma warning disable 612, 618
                     result.Add(NewRow(ULocale.MinimizeSubtags(locale, ULocale.Minimize.FAVOR_SCRIPT), capContext));
+#pragma warning restore 612, 618
                 }
                 else
                 {
@@ -692,7 +694,9 @@ namespace ICU4N.Impl
 
         private UiListItem NewRow(ULocale modified, DisplayContext capContext)
         {
+#pragma warning disable 612, 618
             ULocale minimized = ULocale.MinimizeSubtags(modified, ULocale.Minimize.FAVOR_SCRIPT);
+#pragma warning restore 612, 618
             string tempName = modified.GetDisplayName(locale);
             bool titlecase = capContext == DisplayContext.CapitalizationForUIListOrMenu;
             string nameInDisplayLocale =

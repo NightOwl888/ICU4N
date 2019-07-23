@@ -18,7 +18,11 @@ namespace ICU4N.Util
         /// Constructs an empty builder.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public BytesTrieBuilder() { }
+        public BytesTrieBuilder()
+#pragma warning disable 612, 618
+            : base()
+#pragma warning restore 612, 618
+        { }
 
         // Used in Add() to wrap the bytes into a ICharSequence for StringTrieBuilder.AddImpl().
         private sealed class BytesAsCharSequence : ICharSequence
@@ -49,7 +53,9 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public BytesTrieBuilder Add(byte[] sequence, int length, int value)
         {
+#pragma warning disable 612, 618
             AddImpl(new BytesAsCharSequence(sequence, length), value);
+#pragma warning restore 612, 618
             return this;
         }
 
@@ -105,7 +111,9 @@ namespace ICU4N.Util
             {
                 bytes = new byte[1024];
             }
+#pragma warning disable 612, 618
             BuildImpl(buildOption);
+#pragma warning restore 612, 618
         }
 
         /// <summary>
@@ -116,7 +124,9 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public BytesTrieBuilder Clear()
         {
+#pragma warning disable 612, 618
             ClearImpl();
+#pragma warning restore 612, 618
             bytes = null;
             bytesLength = 0;
             return this;

@@ -483,7 +483,7 @@ namespace ICU4N.Util
         /// <summary>
         /// Unicode data version used by the current release.
         /// Defined here privately for printing by the <see cref="PrintVersionInfo(string[])"/> method in this class.
-        /// Should be the same as <see cref="Lang.UCharacter.GetUnicodeVersion()"/>
+        /// Should be the same as <see cref="Lang.UCharacter.UnicodeVersion"/>
         /// which gets the version number from a data file.
         /// We do not want <see cref="VersionInfo"/> to have an import dependency on <see cref="Lang.UCharacter"/>.
         /// </summary>
@@ -548,12 +548,16 @@ namespace ICU4N.Util
             UNICODE_10_0 = GetInstance(10, 0, 0, 0);
 
             ICU_VERSION = GetInstance(60, 1, 0, 0);
+#pragma warning disable 612, 618
             ICU_DATA_VERSION = GetInstance(60, 0, 1, 0);
+#pragma warning restore 612, 618
             UNICODE_VERSION = UNICODE_10_0;
 
             UCOL_RUNTIME_VERSION = GetInstance(9);
             UCOL_BUILDER_VERSION = GetInstance(9);
+#pragma warning disable 612, 618
             UCOL_TAILORINGS_VERSION = GetInstance(1);
+#pragma warning restore 612, 618
         }
 
         // private constructor -----------------------------------------------
@@ -604,7 +608,9 @@ namespace ICU4N.Util
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     icuApiVer = ICU_VERSION.GetVersionString(2, 2);
+#pragma warning restore 612, 618
                 }
             }
             else
@@ -616,7 +622,9 @@ namespace ICU4N.Util
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     icuApiVer = ICU_VERSION.GetVersionString(2, 2);
+#pragma warning restore 612, 618
                 }
             }
 
@@ -624,9 +632,11 @@ namespace ICU4N.Util
             Console.Out.WriteLine("International Components for Unicode for Java " + icuApiVer);
 
             Console.Out.WriteLine("");
+#pragma warning disable 612, 618
             Console.Out.WriteLine("Implementation Version: " + ICU_VERSION.GetVersionString(2, 4));
             Console.Out.WriteLine("Unicode Data Version:   " + UNICODE_VERSION.GetVersionString(2, 4));
             Console.Out.WriteLine("CLDR Data Version:      " + LocaleData.GetCLDRVersion().GetVersionString(2, 4));
+#pragma warning restore 612, 618
             Console.Out.WriteLine("Time Zone Data Version: " + GetTZDataVersion());
         }
 
@@ -689,7 +699,9 @@ namespace ICU4N.Util
                     if (TZDATA_VERSION == null)
                     {
                         UResourceBundle tzbundle = UResourceBundle.GetBundleInstance("Impl/Data/icudt"
+#pragma warning disable 612, 618
                                 + VersionInfo.ICU_DATA_VERSION_PATH, "zoneinfo64");
+#pragma warning restore 612, 618
                         TZDATA_VERSION = tzbundle.GetString("TZVersion");
                     }
                 }

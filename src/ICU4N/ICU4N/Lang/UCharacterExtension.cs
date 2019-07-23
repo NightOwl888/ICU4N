@@ -37,7 +37,9 @@ namespace ICU4N.Lang
         public static int GetPropertyEnum(string propertyAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
             }
@@ -65,7 +67,9 @@ namespace ICU4N.Lang
         public static int GetPropertyEnum(StringBuilder propertyAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
             }
@@ -93,7 +97,9 @@ namespace ICU4N.Lang
         public static int GetPropertyEnum(char[] propertyAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
             }
@@ -121,7 +127,9 @@ namespace ICU4N.Lang
         internal static int GetPropertyEnum(ICharSequence propertyAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + propertyAlias);
             }
@@ -152,7 +160,9 @@ namespace ICU4N.Lang
         {
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 return false;
             }
@@ -184,7 +194,9 @@ namespace ICU4N.Lang
         {
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 return false;
             }
@@ -216,7 +228,9 @@ namespace ICU4N.Lang
         {
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 return false;
             }
@@ -248,7 +262,9 @@ namespace ICU4N.Lang
         {
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 return false;
             }
@@ -293,7 +309,9 @@ namespace ICU4N.Lang
         public static int GetPropertyValueEnum(UProperty property, string valueAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
             }
@@ -337,7 +355,9 @@ namespace ICU4N.Lang
         public static int GetPropertyValueEnum(UProperty property, StringBuilder valueAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
             }
@@ -381,7 +401,9 @@ namespace ICU4N.Lang
         public static int GetPropertyValueEnum(UProperty property, char[] valueAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
             }
@@ -425,7 +447,9 @@ namespace ICU4N.Lang
         internal static int GetPropertyValueEnum(UProperty property, ICharSequence valueAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
+#pragma warning disable 612, 618
             if (propEnum == (int)UProperty.Undefined)
+#pragma warning restore 612, 618
             {
                 throw new IcuArgumentException("Invalid name: " + valueAlias);
             }

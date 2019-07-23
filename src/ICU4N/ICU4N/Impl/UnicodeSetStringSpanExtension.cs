@@ -2314,7 +2314,9 @@ namespace ICU4N.Impl
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NotContained, out outCount);
+#pragma warning restore 612, 618
                     outCount = count = count + outCount;
                 }
                 if (spanLimit == length)
@@ -2416,7 +2418,9 @@ namespace ICU4N.Impl
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NotContained, out outCount);
+#pragma warning restore 612, 618
                     outCount = count = count + outCount;
                 }
                 if (spanLimit == length)
@@ -2518,7 +2522,9 @@ namespace ICU4N.Impl
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NotContained, out outCount);
+#pragma warning restore 612, 618
                     outCount = count = count + outCount;
                 }
                 if (spanLimit == length)
@@ -2620,7 +2626,9 @@ namespace ICU4N.Impl
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     spanLimit = spanNotSet.SpanAndCount(s, pos, SpanCondition.NotContained, out outCount);
+#pragma warning restore 612, 618
                     outCount = count = count + outCount;
                 }
                 if (spanLimit == length)

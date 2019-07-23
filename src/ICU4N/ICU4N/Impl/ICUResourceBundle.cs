@@ -363,12 +363,16 @@ namespace ICU4N.Impl
 
         new public ICUResourceBundle FindTopLevel(int index)
         {
+#pragma warning disable 612, 618
             return (ICUResourceBundle)base.FindTopLevel(index);
+#pragma warning restore 612, 618
         }
 
         new public ICUResourceBundle FindTopLevel(string aKey)
         {
+#pragma warning disable 612, 618
             return (ICUResourceBundle)base.FindTopLevel(aKey);
+#pragma warning restore 612, 618
         }
 
         /// <summary>

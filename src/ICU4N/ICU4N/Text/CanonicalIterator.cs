@@ -274,7 +274,9 @@ namespace ICU4N.Text
                 {
                     string item = it.Current;
                     permutations.Clear();
+#pragma warning disable 612, 618
                     Permute(item, SKIP_ZEROS, permutations);
+#pragma warning restore 612, 618
                     using (IEnumerator<string> it2 = permutations.GetEnumerator())
                     {
                         while (it2.MoveNext())

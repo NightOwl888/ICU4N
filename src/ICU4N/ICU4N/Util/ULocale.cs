@@ -1724,8 +1724,10 @@ namespace ICU4N.Util
 
         private static string GetDisplayScriptInContextInternal(ULocale locale, ULocale displayLocale)
         {
+#pragma warning disable 612, 618
             return LocaleDisplayNames.GetInstance(displayLocale)
                     .ScriptDisplayNameInContext(locale.GetScript());
+#pragma warning restore 612, 618
         }
 
         /**
@@ -2774,7 +2776,9 @@ namespace ICU4N.Util
          */
         public static ULocale MinimizeSubtags(ULocale loc)
         {
+#pragma warning disable 612, 618
             return MinimizeSubtags(loc, Minimize.FAVOR_REGION);
+#pragma warning restore 612, 618
         }
 
         /**

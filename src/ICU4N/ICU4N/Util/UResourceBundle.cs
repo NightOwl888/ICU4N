@@ -489,7 +489,9 @@ namespace ICU4N.Util
          */
         public virtual UResourceBundle Get(string aKey) // ICU4N TODO: API make into indexer property
         {
+#pragma warning disable 612, 618
             UResourceBundle obj = FindTopLevel(aKey);
+#pragma warning restore 612, 618
             if (obj == null)
             {
                 string fullName = ICUResourceBundleReader.GetFullName(GetBaseName(), GetLocaleID());

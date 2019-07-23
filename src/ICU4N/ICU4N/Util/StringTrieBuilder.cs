@@ -331,7 +331,9 @@ namespace ICU4N.Util
 
             public override void Write(StringTrieBuilder builder)
             {
+#pragma warning disable 612, 618
                 offset = builder.WriteValueAndFinal(value, true);
+#pragma warning restore 612, 618
             }
 
             protected bool hasValue;
@@ -379,7 +381,9 @@ namespace ICU4N.Util
             public override void Write(StringTrieBuilder builder)
             {
                 next.Write(builder);
+#pragma warning disable 612, 618
                 offset = builder.WriteValueAndFinal(value, false);
+#pragma warning restore 612, 618
             }
 
             private Node next;
@@ -507,7 +511,9 @@ namespace ICU4N.Util
             {
                 next = next.Register(builder);
                 // Break the linear-match sequence into chunks of at most kMaxLinearMatchLength.
+#pragma warning disable 612, 618
                 int maxLinearMatchLength = builder.MaxLinearMatchLength;
+#pragma warning restore 612, 618
                 while (length > maxLinearMatchLength)
                 {
                     int nextOffset = stringOffset + length - maxLinearMatchLength;
@@ -518,7 +524,9 @@ namespace ICU4N.Util
                     next = builder.RegisterNode(suffixNode);
                 }
                 Node result;
+#pragma warning disable 612, 618
                 if (hasValue && !builder.MatchNodesCanHaveValues)
+#pragma warning restore 612, 618
                 {
                     int intermediateValue = value;
                     value = 0;
@@ -546,8 +554,10 @@ namespace ICU4N.Util
             public override void Write(StringTrieBuilder builder)
             {
                 next.Write(builder);
+#pragma warning disable 612, 618
                 builder.Write(stringOffset, length);
                 offset = builder.WriteValueAndType(hasValue, value, builder.MinLinearMatch + length - 1);
+#pragma warning restore 612, 618
             }
 
             // Must be called just before registerNode(this).
@@ -617,7 +627,9 @@ namespace ICU4N.Util
                 Node result = head;
                 if (hasValue)
                 {
+#pragma warning disable 612, 618
                     if (builder.MatchNodesCanHaveValues)
+#pragma warning restore 612, 618
                     {
                         head.SetValue(value);
                     }
@@ -631,7 +643,9 @@ namespace ICU4N.Util
             private Node Register(StringTrieBuilder builder, int start, int limit)
             {
                 int length = limit - start;
+#pragma warning disable 612, 618
                 if (length > builder.MaxBranchLinearSubNodeLength)
+#pragma warning restore 612, 618
                 {
                     // Branch on the middle unit.
                     int middle = start + length / 2;
@@ -777,13 +791,17 @@ namespace ICU4N.Util
                 unitNumber = length - 1;
                 if (rightEdge == null)
                 {
+#pragma warning disable 612, 618
                     builder.WriteValueAndFinal(values[unitNumber], true);
+#pragma warning restore 612, 618
                 }
                 else
                 {
                     rightEdge.Write(builder);
                 }
+#pragma warning disable 612, 618
                 offset = builder.Write(units[unitNumber]);
+#pragma warning restore 612, 618
                 // Write the rest of this node's unit-value pairs.
                 while (--unitNumber >= 0)
                 {
@@ -802,8 +820,10 @@ namespace ICU4N.Util
                         value = offset - equal[unitNumber].Offset;
                         isFinal = false;
                     }
+#pragma warning disable 612, 618
                     builder.WriteValueAndFinal(value, isFinal);
                     offset = builder.Write(units[unitNumber]);
+#pragma warning restore 612, 618
                 }
             }
             // Adds a unit with a final value.
@@ -884,8 +904,10 @@ namespace ICU4N.Util
                 greaterOrEqual.Write(builder);
                 // Write this node.
                 Debug.Assert(lessThan.Offset > 0);
+#pragma warning disable 612, 618
                 builder.WriteDeltaTo(lessThan.Offset);  // less-than
                 offset = builder.Write(unit);
+#pragma warning restore 612, 618
             }
 
             private char unit;
@@ -933,6 +955,7 @@ namespace ICU4N.Util
             public override void Write(StringTrieBuilder builder)
             {
                 next.Write(builder);
+#pragma warning disable 612, 618
                 if (length <= builder.MinLinearMatch)
                 {
                     offset = builder.WriteValueAndType(hasValue, value, length - 1);
@@ -941,6 +964,7 @@ namespace ICU4N.Util
                 {
                     builder.Write(length - 1);
                     offset = builder.WriteValueAndType(hasValue, value, 0);
+#pragma warning restore 612, 618
                 }
             }
 
@@ -953,9 +977,11 @@ namespace ICU4N.Util
             ValueNode node = RegisterFinalValue(sValue);
             if (start < s.Length)
             {
+#pragma warning disable 612, 618
                 int offset = strings.Length;
                 strings.Append(s, start, s.Length - start); // ICU4N: Corrected 3rd parameter
                 node = new LinearMatchNode(strings.ToCharSequence(), offset, s.Length - start, node);
+#pragma warning restore 612, 618
             }
             return node;
         }

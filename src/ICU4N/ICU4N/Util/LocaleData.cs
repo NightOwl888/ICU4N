@@ -190,7 +190,9 @@ namespace ICU4N.Util
                     "ExemplarCharactersPunctuation"
             };
 
+#pragma warning disable 612, 618
             if (extype == ES_CURRENCY)
+#pragma warning restore 612, 618
             {
                 // currency symbol exemplar is no longer available
                 return noSubstitute ? null : UnicodeSet.Empty;
@@ -316,7 +318,9 @@ namespace ICU4N.Util
         {
             // Much of this is taken from getCalendarType in impl/CalendarUtil.java
             UResourceBundle measTypeBundle = null;
+#pragma warning disable 612, 618
             string region = ULocale.GetRegionForSupplementalData(locale, true);
+#pragma warning restore 612, 618
             try
             {
                 UResourceBundle rb = UResourceBundle.GetBundleInstance(

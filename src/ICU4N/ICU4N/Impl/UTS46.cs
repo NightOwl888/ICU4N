@@ -231,7 +231,9 @@ namespace ICU4N.Impl
                 }
                 catch (StringPrepParseException e)
                 {
+#pragma warning disable 612, 618
                     AddLabelError(info, IDNAError.Punycode);
+#pragma warning restore 612, 618
                     return MarkBadACELabel(dest, labelStart, labelLength, toASCII, info);
                 }
                 // Check for NFC, and for characters that are not
@@ -244,7 +246,9 @@ namespace ICU4N.Impl
                 bool isValid = uts46Norm2.IsNormalized(fromPunycode);
                 if (!isValid)
                 {
+#pragma warning disable 612, 618
                     AddLabelError(info, IDNAError.InvalidAceLabel);
+#pragma warning restore 612, 618
                     return MarkBadACELabel(dest, labelStart, labelLength, toASCII, info);
                 }
                 labelString = fromPunycode;
@@ -259,6 +263,7 @@ namespace ICU4N.Impl
             // Validity check
             if (labelLength == 0)
             {
+#pragma warning disable 612, 618
                 AddLabelError(info, IDNAError.EmptyLabel);
                 return ReplaceLabel(dest, destLabelStart, destLabelLength, labelString, labelLength);
             }
@@ -278,6 +283,7 @@ namespace ICU4N.Impl
                 // label ends with "-"
                 AddLabelError(info, IDNAError.TrailingHyphen);
             }
+#pragma warning restore 612, 618
             // If the label was not a Punycode label, then it was the result of
             // mapping, normalization and label segmentation.
             // If the label was in Punycode, then we mapped it again above
@@ -299,12 +305,16 @@ namespace ICU4N.Impl
                 {
                     if (c == '.')
                     {
+#pragma warning disable 612, 618
                         AddLabelError(info, IDNAError.LabelHasDot);
+#pragma warning restore 612, 618
                         labelString[i] = '\ufffd';
                     }
                     else if (disallowNonLDHDot && asciiData[c] < 0)
                     {
+#pragma warning disable 612, 618
                         AddLabelError(info, IDNAError.Disallowed);
+#pragma warning restore 612, 618
                         labelString[i] = '\ufffd';
                     }
                 }
@@ -313,12 +323,16 @@ namespace ICU4N.Impl
                     oredChars |= c;
                     if (disallowNonLDHDot && IsNonASCIIDisallowedSTD3Valid(c))
                     {
+#pragma warning disable 612, 618
                         AddLabelError(info, IDNAError.Disallowed);
+#pragma warning restore 612, 618
                         labelString[i] = '\ufffd';
                     }
                     else if (c == 0xfffd)
                     {
+#pragma warning disable 612, 618
                         AddLabelError(info, IDNAError.Disallowed);
+#pragma warning restore 612, 618
                     }
                 }
                 ++i;
@@ -330,7 +344,9 @@ namespace ICU4N.Impl
             c2 = labelString.CodePointAt(labelStart);
             if ((U_GET_GC_MASK(c2) & U_GC_M_MASK) != 0)
             {
+#pragma warning disable 612, 618
                 AddLabelError(info, IDNAError.LeadingCombiningMark);
+#pragma warning restore 612, 618
                 labelString[labelStart] = '\ufffd';
                 if (c2 > 0xffff)
                 {
@@ -343,11 +359,16 @@ namespace ICU4N.Impl
                     }
                 }
             }
+#pragma warning disable 612, 618
             if (!HasCertainLabelErrors(info, severeErrors))
+#pragma warning restore 612, 618
             {
                 // Do contextual checks only if we do not have U+FFFD from a severe error
                 // because U+FFFD can make these checks fail.
-                if ((options & UTS46Options.CheckBiDi) != 0 && (!IsBiDi(info) || IsOkBiDi(info)))
+                if ((options & UTS46Options.CheckBiDi) != 0 &&
+#pragma warning disable 612, 618
+                    (!IsBiDi(info) || IsOkBiDi(info)))
+#pragma warning restore 612, 618
                 {
                     CheckLabelBiDi(labelString, labelStart, labelLength, info);
                 }
@@ -355,7 +376,9 @@ namespace ICU4N.Impl
                     !IsLabelOkContextJ(labelString, labelStart, labelLength)
                 )
                 {
+#pragma warning disable 612, 618
                     AddLabelError(info, IDNAError.ContextJ);
+#pragma warning restore 612, 618
                 }
                 if ((options & UTS46Options.CheckContextO) != 0 && oredChars >= 0xb7)
                 {
@@ -368,7 +391,9 @@ namespace ICU4N.Impl
                         // Leave a Punycode label unchanged if it has no severe errors.
                         if (destLabelLength > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
+#pragma warning restore 612, 618
                         }
                         return destLabelLength;
                     }
@@ -387,7 +412,9 @@ namespace ICU4N.Impl
                         punycode.Insert(0, "xn--");
                         if (punycode.Length > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
+#pragma warning restore 612, 618
                         }
                         return ReplaceLabel(dest, destLabelStart, destLabelLength,
                                             punycode, punycode.Length);
@@ -397,7 +424,9 @@ namespace ICU4N.Impl
                         // all-ASCII label
                         if (labelLength > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
+#pragma warning restore 612, 618
                         }
                     }
                 }
@@ -408,7 +437,9 @@ namespace ICU4N.Impl
                 // then leave it but make sure it does not look valid.
                 if (wasPunycode)
                 {
+#pragma warning disable 612, 618
                     AddLabelError(info, IDNAError.InvalidAceLabel);
+#pragma warning restore 612, 618
                     return MarkBadACELabel(dest, destLabelStart, destLabelLength, toASCII, info);
                 }
             }
@@ -430,7 +461,9 @@ namespace ICU4N.Impl
                 {
                     if (c == '.')
                     {
+#pragma warning disable 612, 618
                         AddLabelError(info, IDNAError.LabelHasDot);
+#pragma warning restore 612, 618
                         dest[i] = '\ufffd';
                         isASCII = onlyLDH = false;
                     }
@@ -458,7 +491,9 @@ namespace ICU4N.Impl
             {
                 if (toASCII && isASCII && labelLength > 63)
                 {
+#pragma warning disable 612, 618
                     AddLabelError(info, IDNAError.LabelTooLong);
+#pragma warning restore 612, 618
                 }
             }
             return labelLength;

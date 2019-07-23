@@ -157,7 +157,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     start = unicodeSet.SpanAndCount(sequence, endOfSpan, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                     count += spanCount;
                 }
             }
@@ -200,7 +202,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     start = unicodeSet.SpanAndCount(sequence, endOfSpan, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                     count += spanCount;
                 }
             }
@@ -243,7 +247,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     start = unicodeSet.SpanAndCount(sequence, endOfSpan, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                     count += spanCount;
                 }
             }
@@ -286,7 +292,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     start = unicodeSet.SpanAndCount(sequence, endOfSpan, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                     count += spanCount;
                 }
             }
@@ -885,7 +893,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -944,7 +954,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1003,7 +1015,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1062,7 +1076,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1121,7 +1137,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1180,7 +1198,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1239,7 +1259,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1298,7 +1320,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1357,7 +1381,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1416,7 +1442,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1475,7 +1503,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1534,7 +1564,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1593,7 +1625,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1652,7 +1686,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1711,7 +1747,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {
@@ -1770,7 +1808,9 @@ namespace ICU4N.Text
                 }
                 else
                 {
+#pragma warning disable 612, 618
                     endModify = unicodeSet.SpanAndCount(sequence, endCopy, spanCondition, out spanCount);
+#pragma warning restore 612, 618
                 }
                 if (remove || endModify == 0)
                 {

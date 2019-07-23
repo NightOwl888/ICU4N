@@ -188,7 +188,9 @@ namespace ICU4N.Impl
             private readonly Range[] ranges;
             public Ranges(string s)
             {
+#pragma warning disable 612, 618
                 int[] array = CharSequences.CodePoints(s);
+#pragma warning restore 612, 618
                 ranges = new Range[array.Length];
                 for (int i = 0; i < array.Length; ++i)
                 {
@@ -292,8 +294,10 @@ namespace ICU4N.Impl
             {
                 throw new ICUException("Range must have 2 valid strings");
             }
+#pragma warning disable 612, 618
             int[] startCps = CharSequences.CodePoints(start);
             int[] endCps = CharSequences.CodePoints(end);
+#pragma warning restore 612, 618
             int startOffset = startCps.Length - endCps.Length;
 
             if (requireSameLength && startOffset != 0)

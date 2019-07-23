@@ -202,7 +202,9 @@ namespace ICU4N.Text
         // The input text and our position in it
         private UCharacterIterator text;
         private Normalizer2 norm2;
+#pragma warning disable 612, 618
         private Mode mode;
+#pragma warning restore 612, 618
         private int options;
 
         // The normalization buffer is the result of normalization
@@ -828,11 +830,15 @@ namespace ICU4N.Text
 
         private static Normalizer2 GetComposeNormalizer2(bool compat, int options)
         {
+#pragma warning disable 612, 618
             return (compat ? NFKC : NFC).GetNormalizer2(options);
+#pragma warning restore 612, 618
         }
         private static Normalizer2 GetDecomposeNormalizer2(bool compat, int options)
         {
+#pragma warning disable 612, 618
             return (compat ? NFKD : NFD).GetNormalizer2(options);
+#pragma warning restore 612, 618
         }
 
         /// <summary>
@@ -2170,7 +2176,9 @@ namespace ICU4N.Text
         // TODO: Broaden the public compare(string, string, options) API like this. Ticket #7407
         private static int InternalCompare(ICharSequence s1, ICharSequence s2, int options)
         {
+#pragma warning disable 612, 618
             int normOptions = options.TripleShift(COMPARE_NORM_OPTIONS_SHIFT);
+#pragma warning restore 612, 618
             options |= COMPARE_EQUIV;
 
             /*
@@ -2199,11 +2207,13 @@ namespace ICU4N.Text
                 Normalizer2 n2;
                 if ((options & FOLD_CASE_EXCLUDE_SPECIAL_I) != 0)
                 {
+#pragma warning disable 612, 618
                     n2 = NFD.GetNormalizer2(normOptions);
                 }
                 else
                 {
                     n2 = FCD.GetNormalizer2(normOptions);
+#pragma warning restore 612, 618
                 }
 
                 // check if s1 and/or s2 fulfill the FCD conditions

@@ -15,8 +15,8 @@ namespace ICU4N.Text
     /// <provisional>This API might change or be removed in a future release.</provisional>
     public abstract partial class CaseMap
     {
-        [Obsolete("This API is ICU internal only.")]
-        protected int internalOptions;
+        //[Obsolete("This API is ICU internal only.")]
+        private int internalOptions; // ICU4N specific - made internalOptions private, since this is not intended for use by subclasses
 
         private CaseMap(int opt) { internalOptions = opt; } // ICU4N TODO: API - see whether it makes sense to make a [Flags] enum for opt
 

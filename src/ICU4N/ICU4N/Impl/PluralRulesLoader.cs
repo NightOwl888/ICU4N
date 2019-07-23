@@ -22,7 +22,9 @@ namespace ICU4N.Impl
         private IDictionary<string, string> localeIdToCardinalRulesId;
         private IDictionary<string, string> localeIdToOrdinalRulesId;
         private IDictionary<string, ULocale> rulesIdToEquivalentULocale;
+#pragma warning disable 612, 618
         private static IDictionary<string, PluralRanges> localeIdToPluralRanges;
+#pragma warning restore 612, 618
 
         private readonly object syncLock = new object();
         private readonly object rulesIdToRulesLock = new object();
@@ -306,17 +308,21 @@ namespace ICU4N.Impl
             return false;
         }
 
-        private static readonly PluralRanges UnknownRange 
 #pragma warning disable 612, 618
+        private static readonly PluralRanges UnknownRange 
            = new PluralRanges().Freeze();
 #pragma warning restore 612, 618
 
 #pragma warning disable 1591 // No doc comments available
+#pragma warning disable 612, 618
         public virtual PluralRanges GetPluralRanges(ULocale locale)
+#pragma warning restore 612, 618
         {
             // TODO markdavis Fix the bad fallback, here and elsewhere in this file.
             string localeId = ULocale.Canonicalize(locale.GetBaseName());
+#pragma warning disable 612, 618
             PluralRanges result;
+#pragma warning restore 612, 618
             while (!localeIdToPluralRanges.TryGetValue(localeId, out result) || null == result)
             {
                 int ix = localeId.LastIndexOf("_");
@@ -529,9 +535,11 @@ namespace ICU4N.Impl
                 new string[] {"other", "many", "many"},
                 new string[] {"other", "other", "other"},
             };
+#pragma warning disable 612, 618
             PluralRanges pr = null;
             string[] locales = null;
             IDictionary<string, PluralRanges> tempLocaleIdToPluralRanges = new Dictionary<string, PluralRanges>();
+#pragma warning restore 612, 618
             foreach (string[] row in pluralRangeData)
             {
                 if (row[0].Equals("locales"))

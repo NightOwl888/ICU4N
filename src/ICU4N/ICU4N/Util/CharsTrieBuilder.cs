@@ -19,7 +19,11 @@ namespace ICU4N.Util
         /// Constructs an empty builder.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public CharsTrieBuilder() { }
+        public CharsTrieBuilder()
+#pragma warning disable 612, 618
+            : base()
+#pragma warning restore 612, 618
+        { }
 
         /// <summary>
         /// Adds a (string, value) pair.
@@ -33,7 +37,9 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public CharsTrieBuilder Add(string s, int value) // ICU4N TODO: API Generate
         {
+#pragma warning disable 612, 618
             AddImpl(s.ToCharSequence(), value);
+#pragma warning restore 612, 618
             return this;
         }
 
@@ -49,7 +55,9 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public CharsTrieBuilder Add(StringBuilder s, int value) // ICU4N TODO: API Generate
         {
+#pragma warning disable 612, 618
             AddImpl(s.ToCharSequence(), value);
+#pragma warning restore 612, 618
             return this;
         }
 
@@ -65,7 +73,9 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public CharsTrieBuilder Add(char[] s, int value) // ICU4N TODO: API Generate
         {
+#pragma warning disable 612, 618
             AddImpl(s.ToCharSequence(), value);
+#pragma warning restore 612, 618
             return this;
         }
 
@@ -81,7 +91,9 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         internal CharsTrieBuilder Add(ICharSequence s, int value) // ICU4N TODO: API Generate
         {
+#pragma warning disable 612, 618
             AddImpl(s, value);
+#pragma warning restore 612, 618
             return this;
         }
 
@@ -133,7 +145,9 @@ namespace ICU4N.Util
             {
                 chars = new char[1024];
             }
+#pragma warning disable 612, 618
             BuildImpl(buildOption);
+#pragma warning restore 612, 618
         }
 
         /// <summary>
@@ -144,7 +158,9 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public CharsTrieBuilder Clear()
         {
+#pragma warning disable 612, 618
             ClearImpl();
+#pragma warning restore 612, 618
             chars = null;
             charsLength = 0;
             return this;

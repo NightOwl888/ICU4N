@@ -65,7 +65,9 @@ namespace ICU4N.Impl
                 (dest.Length > 254 || dest[253] != '.')
             )
             {
+#pragma warning disable 612, 618
                 AddError(info, IDNAError.DomainNameTooLong);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -78,7 +80,9 @@ namespace ICU4N.Impl
                 (dest.Length > 254 || dest[253] != '.')
             )
             {
+#pragma warning disable 612, 618
                 AddError(info, IDNAError.DomainNameTooLong);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -91,7 +95,9 @@ namespace ICU4N.Impl
                 (dest.Length > 254 || dest[253] != '.')
             )
             {
+#pragma warning disable 612, 618
                 AddError(info, IDNAError.DomainNameTooLong);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -104,7 +110,9 @@ namespace ICU4N.Impl
                 (dest.Length > 254 || dest[253] != '.')
             )
             {
+#pragma warning disable 612, 618
                 AddError(info, IDNAError.DomainNameTooLong);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -188,11 +196,15 @@ namespace ICU4N.Impl
         {
             // Arguments are fine, reset output values.
             dest.Delete(0, 0x7fffffff);
+#pragma warning disable 612, 618
             ResetInfo(info);
+#pragma warning restore 612, 618
             int srcLength = src.Length;
             if (srcLength == 0)
             {
+#pragma warning disable 612, 618
                 AddError(info, IDNAError.EmptyLabel);
+#pragma warning restore 612, 618
                 return dest;
             }
             // ASCII fastpath
@@ -207,15 +219,19 @@ namespace ICU4N.Impl
                     {
                         if ((i - labelStart) > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
+#pragma warning restore 612, 618
                         }
                         // There is a trailing dot if labelStart==i.
                         if (!isLabel && i >= 254 && (i > 254 || labelStart < i))
                         {
+#pragma warning disable 612, 618
                             AddError(info, IDNAError.DomainNameTooLong);
                         }
                     }
                     PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                     return dest;
                 }
                 char c = src[i];
@@ -243,6 +259,7 @@ namespace ICU4N.Impl
                             ++i;  // '-' was copied to dest already
                             break;
                         }
+#pragma warning disable 612, 618
                         if (i == labelStart)
                         {
                             // label starts with "-"
@@ -253,6 +270,7 @@ namespace ICU4N.Impl
                             // label ends with "-"
                             AddLabelError(info, IDNAError.TrailingHyphen);
                         }
+#pragma warning restore 612, 618
                     }
                     else if (c == '.')
                     {  // dot
@@ -264,17 +282,22 @@ namespace ICU4N.Impl
                         }
                         if (i == labelStart)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.EmptyLabel);
+#pragma warning restore 612, 618
                         }
                         if (toASCII && (i - labelStart) > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                         labelStart = i + 1;
                     }
                 }
             }
+#pragma warning disable 612, 618
             PromoteAndResetLabelErrors(info);
             ProcessUnicode(src, labelStart, i, isLabel, toASCII, dest, info);
             if (IsBiDi(info) && !HasCertainErrors(info, severeErrors) &&
@@ -282,6 +305,7 @@ namespace ICU4N.Impl
             )
             {
                 AddError(info, IDNAError.BiDi);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -300,11 +324,15 @@ namespace ICU4N.Impl
             }
             // Arguments are fine, reset output values.
             dest.Delete(0, 0x7fffffff);
+#pragma warning disable 612, 618
             ResetInfo(info);
+#pragma warning restore 612, 618
             int srcLength = src.Length;
             if (srcLength == 0)
             {
+#pragma warning disable 612, 618
                 AddError(info, IDNAError.EmptyLabel);
+#pragma warning restore 612, 618
                 return dest;
             }
             // ASCII fastpath
@@ -319,15 +347,19 @@ namespace ICU4N.Impl
                     {
                         if ((i - labelStart) > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
+#pragma warning restore 612, 618
                         }
                         // There is a trailing dot if labelStart==i.
                         if (!isLabel && i >= 254 && (i > 254 || labelStart < i))
                         {
+#pragma warning disable 612, 618
                             AddError(info, IDNAError.DomainNameTooLong);
                         }
                     }
                     PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                     return dest;
                 }
                 char c = src[i];
@@ -355,6 +387,7 @@ namespace ICU4N.Impl
                             ++i;  // '-' was copied to dest already
                             break;
                         }
+#pragma warning disable 612, 618
                         if (i == labelStart)
                         {
                             // label starts with "-"
@@ -365,6 +398,7 @@ namespace ICU4N.Impl
                             // label ends with "-"
                             AddLabelError(info, IDNAError.TrailingHyphen);
                         }
+#pragma warning restore 612, 618
                     }
                     else if (c == '.')
                     {  // dot
@@ -376,17 +410,22 @@ namespace ICU4N.Impl
                         }
                         if (i == labelStart)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.EmptyLabel);
+#pragma warning restore 612, 618
                         }
                         if (toASCII && (i - labelStart) > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                         labelStart = i + 1;
                     }
                 }
             }
+#pragma warning disable 612, 618
             PromoteAndResetLabelErrors(info);
             ProcessUnicode(src, labelStart, i, isLabel, toASCII, dest, info);
             if (IsBiDi(info) && !HasCertainErrors(info, severeErrors) &&
@@ -394,6 +433,7 @@ namespace ICU4N.Impl
             )
             {
                 AddError(info, IDNAError.BiDi);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -405,11 +445,15 @@ namespace ICU4N.Impl
         {
             // Arguments are fine, reset output values.
             dest.Delete(0, 0x7fffffff);
+#pragma warning disable 612, 618
             ResetInfo(info);
+#pragma warning restore 612, 618
             int srcLength = src.Length;
             if (srcLength == 0)
             {
+#pragma warning disable 612, 618
                 AddError(info, IDNAError.EmptyLabel);
+#pragma warning restore 612, 618
                 return dest;
             }
             // ASCII fastpath
@@ -424,15 +468,19 @@ namespace ICU4N.Impl
                     {
                         if ((i - labelStart) > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
+#pragma warning restore 612, 618
                         }
                         // There is a trailing dot if labelStart==i.
                         if (!isLabel && i >= 254 && (i > 254 || labelStart < i))
                         {
+#pragma warning disable 612, 618
                             AddError(info, IDNAError.DomainNameTooLong);
                         }
                     }
                     PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                     return dest;
                 }
                 char c = src[i];
@@ -460,6 +508,7 @@ namespace ICU4N.Impl
                             ++i;  // '-' was copied to dest already
                             break;
                         }
+#pragma warning disable 612, 618
                         if (i == labelStart)
                         {
                             // label starts with "-"
@@ -470,6 +519,7 @@ namespace ICU4N.Impl
                             // label ends with "-"
                             AddLabelError(info, IDNAError.TrailingHyphen);
                         }
+#pragma warning restore 612, 618
                     }
                     else if (c == '.')
                     {  // dot
@@ -481,17 +531,22 @@ namespace ICU4N.Impl
                         }
                         if (i == labelStart)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.EmptyLabel);
+#pragma warning restore 612, 618
                         }
                         if (toASCII && (i - labelStart) > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                         labelStart = i + 1;
                     }
                 }
             }
+#pragma warning disable 612, 618
             PromoteAndResetLabelErrors(info);
             ProcessUnicode(src, labelStart, i, isLabel, toASCII, dest, info);
             if (IsBiDi(info) && !HasCertainErrors(info, severeErrors) &&
@@ -499,6 +554,7 @@ namespace ICU4N.Impl
             )
             {
                 AddError(info, IDNAError.BiDi);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -517,11 +573,15 @@ namespace ICU4N.Impl
             }
             // Arguments are fine, reset output values.
             dest.Delete(0, 0x7fffffff);
+#pragma warning disable 612, 618
             ResetInfo(info);
+#pragma warning restore 612, 618
             int srcLength = src.Length;
             if (srcLength == 0)
             {
+#pragma warning disable 612, 618
                 AddError(info, IDNAError.EmptyLabel);
+#pragma warning restore 612, 618
                 return dest;
             }
             // ASCII fastpath
@@ -536,15 +596,19 @@ namespace ICU4N.Impl
                     {
                         if ((i - labelStart) > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
+#pragma warning restore 612, 618
                         }
                         // There is a trailing dot if labelStart==i.
                         if (!isLabel && i >= 254 && (i > 254 || labelStart < i))
                         {
+#pragma warning disable 612, 618
                             AddError(info, IDNAError.DomainNameTooLong);
                         }
                     }
                     PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                     return dest;
                 }
                 char c = src[i];
@@ -572,6 +636,7 @@ namespace ICU4N.Impl
                             ++i;  // '-' was copied to dest already
                             break;
                         }
+#pragma warning disable 612, 618
                         if (i == labelStart)
                         {
                             // label starts with "-"
@@ -582,6 +647,7 @@ namespace ICU4N.Impl
                             // label ends with "-"
                             AddLabelError(info, IDNAError.TrailingHyphen);
                         }
+#pragma warning restore 612, 618
                     }
                     else if (c == '.')
                     {  // dot
@@ -593,17 +659,22 @@ namespace ICU4N.Impl
                         }
                         if (i == labelStart)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.EmptyLabel);
+#pragma warning restore 612, 618
                         }
                         if (toASCII && (i - labelStart) > 63)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.LabelTooLong);
                         }
                         PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                         labelStart = i + 1;
                     }
                 }
             }
+#pragma warning disable 612, 618
             PromoteAndResetLabelErrors(info);
             ProcessUnicode(src, labelStart, i, isLabel, toASCII, dest, info);
             if (IsBiDi(info) && !HasCertainErrors(info, severeErrors) &&
@@ -611,6 +682,7 @@ namespace ICU4N.Impl
             )
             {
                 AddError(info, IDNAError.BiDi);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -642,13 +714,17 @@ namespace ICU4N.Impl
                     int labelLength = labelLimit - labelStart;
                     int newLength = ProcessLabel(dest, labelStart, labelLength,
                                                     toASCII, info);
+#pragma warning disable 612, 618
                     PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                     destLength += newLength - labelLength;
                     labelLimit = labelStart += newLength + 1;
                 }
                 else if (0xdf <= c && c <= 0x200d && (c == 0xdf || c == 0x3c2 || c >= 0x200c))
                 {
+#pragma warning disable 612, 618
                     SetTransitionalDifferent(info);
+#pragma warning restore 612, 618
                     if (doMapDevChars)
                     {
                         destLength = MapDevChars(dest, labelStart, labelLimit);
@@ -672,7 +748,9 @@ namespace ICU4N.Impl
             if (0 == labelStart || labelStart < labelLimit)
             {
                 ProcessLabel(dest, labelStart, labelLimit - labelStart, toASCII, info);
+#pragma warning disable 612, 618
                 PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -704,13 +782,17 @@ namespace ICU4N.Impl
                     int labelLength = labelLimit - labelStart;
                     int newLength = ProcessLabel(dest, labelStart, labelLength,
                                                     toASCII, info);
+#pragma warning disable 612, 618
                     PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                     destLength += newLength - labelLength;
                     labelLimit = labelStart += newLength + 1;
                 }
                 else if (0xdf <= c && c <= 0x200d && (c == 0xdf || c == 0x3c2 || c >= 0x200c))
                 {
+#pragma warning disable 612, 618
                     SetTransitionalDifferent(info);
+#pragma warning restore 612, 618
                     if (doMapDevChars)
                     {
                         destLength = MapDevChars(dest, labelStart, labelLimit);
@@ -734,7 +816,9 @@ namespace ICU4N.Impl
             if (0 == labelStart || labelStart < labelLimit)
             {
                 ProcessLabel(dest, labelStart, labelLimit - labelStart, toASCII, info);
+#pragma warning disable 612, 618
                 PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -766,13 +850,17 @@ namespace ICU4N.Impl
                     int labelLength = labelLimit - labelStart;
                     int newLength = ProcessLabel(dest, labelStart, labelLength,
                                                     toASCII, info);
+#pragma warning disable 612, 618
                     PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                     destLength += newLength - labelLength;
                     labelLimit = labelStart += newLength + 1;
                 }
                 else if (0xdf <= c && c <= 0x200d && (c == 0xdf || c == 0x3c2 || c >= 0x200c))
                 {
+#pragma warning disable 612, 618
                     SetTransitionalDifferent(info);
+#pragma warning restore 612, 618
                     if (doMapDevChars)
                     {
                         destLength = MapDevChars(dest, labelStart, labelLimit);
@@ -796,7 +884,9 @@ namespace ICU4N.Impl
             if (0 == labelStart || labelStart < labelLimit)
             {
                 ProcessLabel(dest, labelStart, labelLimit - labelStart, toASCII, info);
+#pragma warning disable 612, 618
                 PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -828,13 +918,17 @@ namespace ICU4N.Impl
                     int labelLength = labelLimit - labelStart;
                     int newLength = ProcessLabel(dest, labelStart, labelLength,
                                                     toASCII, info);
+#pragma warning disable 612, 618
                     PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
                     destLength += newLength - labelLength;
                     labelLimit = labelStart += newLength + 1;
                 }
                 else if (0xdf <= c && c <= 0x200d && (c == 0xdf || c == 0x3c2 || c >= 0x200c))
                 {
+#pragma warning disable 612, 618
                     SetTransitionalDifferent(info);
+#pragma warning restore 612, 618
                     if (doMapDevChars)
                     {
                         destLength = MapDevChars(dest, labelStart, labelLimit);
@@ -858,7 +952,9 @@ namespace ICU4N.Impl
             if (0 == labelStart || labelStart < labelLimit)
             {
                 ProcessLabel(dest, labelStart, labelLimit - labelStart, toASCII, info);
+#pragma warning disable 612, 618
                 PromoteAndResetLabelErrors(info);
+#pragma warning restore 612, 618
             }
             return dest;
         }
@@ -948,7 +1044,9 @@ namespace ICU4N.Impl
             // has the L property, it is an LTR label.
             if ((firstMask & ~L_R_AL_MASK) != 0)
             {
+#pragma warning disable 612, 618
                 SetNotOkBiDi(info);
+#pragma warning restore 612, 618
             }
             // Get the directionality of the last non-NSM character.
             int lastMask;
@@ -980,7 +1078,9 @@ namespace ICU4N.Impl
                     (lastMask & ~R_AL_EN_AN_MASK) != 0
             )
             {
+#pragma warning disable 612, 618
                 SetNotOkBiDi(info);
+#pragma warning restore 612, 618
             }
             // Add the directionalities of the intervening characters.
             int mask = firstMask | lastMask;
@@ -996,7 +1096,9 @@ namespace ICU4N.Impl
                 // ES, CS, ET, ON, BN and NSM are allowed.
                 if ((mask & ~L_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
             }
             else
@@ -1005,13 +1107,17 @@ namespace ICU4N.Impl
                 // AN, EN, ES, CS, ET, ON, BN and NSM are allowed.
                 if ((mask & ~R_AL_AN_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
                 // 4. In an RTL label, if an EN is present, no AN may be present, and
                 // vice versa.
                 if ((mask & EN_AN_MASK) == EN_AN_MASK)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
             }
             // An RTL label is a label that contains at least one character of type
@@ -1022,7 +1128,9 @@ namespace ICU4N.Impl
             // in BIDI domain names.
             if ((mask & R_AL_AN_MASK) != 0)
             {
+#pragma warning disable 612, 618
                 SetBiDi(info);
+#pragma warning restore 612, 618
             }
         }
 
@@ -1045,7 +1153,9 @@ namespace ICU4N.Impl
             // has the L property, it is an LTR label.
             if ((firstMask & ~L_R_AL_MASK) != 0)
             {
+#pragma warning disable 612, 618
                 SetNotOkBiDi(info);
+#pragma warning restore 612, 618
             }
             // Get the directionality of the last non-NSM character.
             int lastMask;
@@ -1077,7 +1187,9 @@ namespace ICU4N.Impl
                     (lastMask & ~R_AL_EN_AN_MASK) != 0
             )
             {
+#pragma warning disable 612, 618
                 SetNotOkBiDi(info);
+#pragma warning restore 612, 618
             }
             // Add the directionalities of the intervening characters.
             int mask = firstMask | lastMask;
@@ -1093,7 +1205,9 @@ namespace ICU4N.Impl
                 // ES, CS, ET, ON, BN and NSM are allowed.
                 if ((mask & ~L_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
             }
             else
@@ -1102,13 +1216,17 @@ namespace ICU4N.Impl
                 // AN, EN, ES, CS, ET, ON, BN and NSM are allowed.
                 if ((mask & ~R_AL_AN_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
                 // 4. In an RTL label, if an EN is present, no AN may be present, and
                 // vice versa.
                 if ((mask & EN_AN_MASK) == EN_AN_MASK)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
             }
             // An RTL label is a label that contains at least one character of type
@@ -1119,7 +1237,9 @@ namespace ICU4N.Impl
             // in BIDI domain names.
             if ((mask & R_AL_AN_MASK) != 0)
             {
+#pragma warning disable 612, 618
                 SetBiDi(info);
+#pragma warning restore 612, 618
             }
         }
 
@@ -1142,7 +1262,9 @@ namespace ICU4N.Impl
             // has the L property, it is an LTR label.
             if ((firstMask & ~L_R_AL_MASK) != 0)
             {
+#pragma warning disable 612, 618
                 SetNotOkBiDi(info);
+#pragma warning restore 612, 618
             }
             // Get the directionality of the last non-NSM character.
             int lastMask;
@@ -1174,7 +1296,9 @@ namespace ICU4N.Impl
                     (lastMask & ~R_AL_EN_AN_MASK) != 0
             )
             {
+#pragma warning disable 612, 618
                 SetNotOkBiDi(info);
+#pragma warning restore 612, 618
             }
             // Add the directionalities of the intervening characters.
             int mask = firstMask | lastMask;
@@ -1190,7 +1314,9 @@ namespace ICU4N.Impl
                 // ES, CS, ET, ON, BN and NSM are allowed.
                 if ((mask & ~L_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
             }
             else
@@ -1199,13 +1325,17 @@ namespace ICU4N.Impl
                 // AN, EN, ES, CS, ET, ON, BN and NSM are allowed.
                 if ((mask & ~R_AL_AN_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
                 // 4. In an RTL label, if an EN is present, no AN may be present, and
                 // vice versa.
                 if ((mask & EN_AN_MASK) == EN_AN_MASK)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
             }
             // An RTL label is a label that contains at least one character of type
@@ -1216,7 +1346,9 @@ namespace ICU4N.Impl
             // in BIDI domain names.
             if ((mask & R_AL_AN_MASK) != 0)
             {
+#pragma warning disable 612, 618
                 SetBiDi(info);
+#pragma warning restore 612, 618
             }
         }
 
@@ -1239,7 +1371,9 @@ namespace ICU4N.Impl
             // has the L property, it is an LTR label.
             if ((firstMask & ~L_R_AL_MASK) != 0)
             {
+#pragma warning disable 612, 618
                 SetNotOkBiDi(info);
+#pragma warning restore 612, 618
             }
             // Get the directionality of the last non-NSM character.
             int lastMask;
@@ -1271,7 +1405,9 @@ namespace ICU4N.Impl
                     (lastMask & ~R_AL_EN_AN_MASK) != 0
             )
             {
+#pragma warning disable 612, 618
                 SetNotOkBiDi(info);
+#pragma warning restore 612, 618
             }
             // Add the directionalities of the intervening characters.
             int mask = firstMask | lastMask;
@@ -1287,7 +1423,9 @@ namespace ICU4N.Impl
                 // ES, CS, ET, ON, BN and NSM are allowed.
                 if ((mask & ~L_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
             }
             else
@@ -1296,13 +1434,17 @@ namespace ICU4N.Impl
                 // AN, EN, ES, CS, ET, ON, BN and NSM are allowed.
                 if ((mask & ~R_AL_AN_EN_ES_CS_ET_ON_BN_NSM_MASK) != 0)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
                 // 4. In an RTL label, if an EN is present, no AN may be present, and
                 // vice versa.
                 if ((mask & EN_AN_MASK) == EN_AN_MASK)
                 {
+#pragma warning disable 612, 618
                     SetNotOkBiDi(info);
+#pragma warning restore 612, 618
                 }
             }
             // An RTL label is a label that contains at least one character of type
@@ -1313,7 +1455,9 @@ namespace ICU4N.Impl
             // in BIDI domain names.
             if ((mask & R_AL_AN_MASK) != 0)
             {
+#pragma warning disable 612, 618
                 SetBiDi(info);
+#pragma warning restore 612, 618
             }
         }
 
@@ -1928,7 +2072,9 @@ namespace ICU4N.Impl
                         if (!(labelStart < i && label[i - 1] == 'l' &&
                              i < labelEnd && label[i + 1] == 'l'))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (c == 0x375)
@@ -1940,7 +2086,9 @@ namespace ICU4N.Impl
                         if (!(i < labelEnd &&
                              UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (c == 0x5f3 || c == 0x5f4)
@@ -1957,7 +2105,9 @@ namespace ICU4N.Impl
                         if (!(labelStart < i &&
                              UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (0x660 <= c /* && c<=0x6f9 */)
@@ -1979,7 +2129,9 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits > 0)
                             {
+#pragma warning disable 612, 618
                                 AddLabelError(info, IDNAError.ContextODigits);
+#pragma warning restore 612, 618
                             }
                             arabicDigits = -1;
                         }
@@ -1987,7 +2139,9 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits < 0)
                             {
+#pragma warning disable 612, 618
                                 AddLabelError(info, IDNAError.ContextODigits);
+#pragma warning restore 612, 618
                             }
                             arabicDigits = 1;
                         }
@@ -2005,7 +2159,9 @@ namespace ICU4N.Impl
                     {
                         if (j > labelEnd)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                             break;
                         }
                         c = Character.CodePointAt(label, j);
@@ -2042,7 +2198,9 @@ namespace ICU4N.Impl
                         if (!(labelStart < i && label[i - 1] == 'l' &&
                              i < labelEnd && label[i + 1] == 'l'))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (c == 0x375)
@@ -2054,7 +2212,9 @@ namespace ICU4N.Impl
                         if (!(i < labelEnd &&
                              UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (c == 0x5f3 || c == 0x5f4)
@@ -2071,7 +2231,9 @@ namespace ICU4N.Impl
                         if (!(labelStart < i &&
                              UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (0x660 <= c /* && c<=0x6f9 */)
@@ -2093,7 +2255,9 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits > 0)
                             {
+#pragma warning disable 612, 618
                                 AddLabelError(info, IDNAError.ContextODigits);
+#pragma warning restore 612, 618
                             }
                             arabicDigits = -1;
                         }
@@ -2101,7 +2265,9 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits < 0)
                             {
+#pragma warning disable 612, 618
                                 AddLabelError(info, IDNAError.ContextODigits);
+#pragma warning restore 612, 618
                             }
                             arabicDigits = 1;
                         }
@@ -2119,7 +2285,9 @@ namespace ICU4N.Impl
                     {
                         if (j > labelEnd)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                             break;
                         }
                         c = Character.CodePointAt(label, j);
@@ -2156,7 +2324,9 @@ namespace ICU4N.Impl
                         if (!(labelStart < i && label[i - 1] == 'l' &&
                              i < labelEnd && label[i + 1] == 'l'))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (c == 0x375)
@@ -2168,7 +2338,9 @@ namespace ICU4N.Impl
                         if (!(i < labelEnd &&
                              UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (c == 0x5f3 || c == 0x5f4)
@@ -2185,7 +2357,9 @@ namespace ICU4N.Impl
                         if (!(labelStart < i &&
                              UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (0x660 <= c /* && c<=0x6f9 */)
@@ -2207,7 +2381,9 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits > 0)
                             {
+#pragma warning disable 612, 618
                                 AddLabelError(info, IDNAError.ContextODigits);
+#pragma warning restore 612, 618
                             }
                             arabicDigits = -1;
                         }
@@ -2215,7 +2391,9 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits < 0)
                             {
+#pragma warning disable 612, 618
                                 AddLabelError(info, IDNAError.ContextODigits);
+#pragma warning restore 612, 618
                             }
                             arabicDigits = 1;
                         }
@@ -2233,7 +2411,9 @@ namespace ICU4N.Impl
                     {
                         if (j > labelEnd)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                             break;
                         }
                         c = Character.CodePointAt(label, j);
@@ -2270,7 +2450,9 @@ namespace ICU4N.Impl
                         if (!(labelStart < i && label[i - 1] == 'l' &&
                              i < labelEnd && label[i + 1] == 'l'))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (c == 0x375)
@@ -2282,7 +2464,9 @@ namespace ICU4N.Impl
                         if (!(i < labelEnd &&
                              UScript.Greek == UScript.GetScript(Character.CodePointAt(label, i + 1))))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (c == 0x5f3 || c == 0x5f4)
@@ -2299,7 +2483,9 @@ namespace ICU4N.Impl
                         if (!(labelStart < i &&
                              UScript.Hebrew == UScript.GetScript(Character.CodePointBefore(label, i))))
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                         }
                     }
                     else if (0x660 <= c /* && c<=0x6f9 */)
@@ -2321,7 +2507,9 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits > 0)
                             {
+#pragma warning disable 612, 618
                                 AddLabelError(info, IDNAError.ContextODigits);
+#pragma warning restore 612, 618
                             }
                             arabicDigits = -1;
                         }
@@ -2329,7 +2517,9 @@ namespace ICU4N.Impl
                         {
                             if (arabicDigits < 0)
                             {
+#pragma warning disable 612, 618
                                 AddLabelError(info, IDNAError.ContextODigits);
+#pragma warning restore 612, 618
                             }
                             arabicDigits = 1;
                         }
@@ -2347,7 +2537,9 @@ namespace ICU4N.Impl
                     {
                         if (j > labelEnd)
                         {
+#pragma warning disable 612, 618
                             AddLabelError(info, IDNAError.ContextOPunctuation);
+#pragma warning restore 612, 618
                             break;
                         }
                         c = Character.CodePointAt(label, j);
