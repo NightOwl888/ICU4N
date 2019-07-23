@@ -138,7 +138,7 @@ namespace ICU4N.Text
          * @see #next
          * @stable ICU 2.0
          */
-        public const int DONE = -1;
+        public const int Done = -1;
 
         // public methods -----------------------------------------------------
 
@@ -166,7 +166,7 @@ namespace ICU4N.Text
             }
             search_.reset_ = false;
             search_.MatchedLength =0;
-            search_.matchedIndex_ = DONE;
+            search_.matchedIndex_ = Done;
         }
 
         /**
@@ -354,7 +354,7 @@ namespace ICU4N.Text
 
                 value.SetIndex(value.BeginIndex);
                 search_.SetTarget(value);
-                search_.matchedIndex_ = DONE;
+                search_.matchedIndex_ = Done;
                 search_.MatchedLength = 0;
                 search_.reset_ = true;
                 search_.isForwardSearching_ = true;
@@ -434,13 +434,13 @@ namespace ICU4N.Text
             {
                 int endIdx = search_.EndIndex;
                 if (index == endIdx || matchindex == endIdx ||
-                        (matchindex != DONE &&
+                        (matchindex != Done &&
                         matchindex + matchlength >= endIdx))
                 {
 #pragma warning disable 612, 618
                     SetMatchNotFound();
 #pragma warning restore 612, 618
-                    return DONE;
+                    return Done;
                 }
             }
             else
@@ -451,7 +451,7 @@ namespace ICU4N.Text
                 // string. the iterator would have been set to offset 0 if a 
                 // match is not found.
                 search_.isForwardSearching_ = true;
-                if (search_.matchedIndex_ != DONE)
+                if (search_.matchedIndex_ != Done)
                 {
                     // there's no need to set the collation element iterator
                     // the next call to next will set the offset.
@@ -512,7 +512,7 @@ namespace ICU4N.Text
                 // string. the iterator would have been set to offset textLength if 
                 // a match is not found.
                 search_.isForwardSearching_ = false;
-                if (matchindex != DONE)
+                if (matchindex != Done)
                 {
                     return matchindex;
                 }
@@ -526,11 +526,11 @@ namespace ICU4N.Text
 #pragma warning disable 612, 618
                     SetMatchNotFound();
 #pragma warning restore 612, 618
-                    return DONE;
+                    return Done;
                 }
             }
 
-            if (matchindex != DONE)
+            if (matchindex != Done)
             {
                 if (search_.isOverlap_)
                 {
@@ -713,7 +713,7 @@ namespace ICU4N.Text
             search_.elementComparisonType_ = SearchIteratorElementComparisonType.StandardElementComparison;
             search_.isForwardSearching_ = true;
             search_.reset_ = true;
-            search_.matchedIndex_ = DONE;
+            search_.matchedIndex_ = Done;
             search_.MatchedLength = 0;
         }
 
@@ -783,7 +783,7 @@ namespace ICU4N.Text
     //TODO: This protected method is @stable 2.0 in ICU4C
     protected void SetMatchNotFound()
         {
-            search_.matchedIndex_ = DONE;
+            search_.matchedIndex_ = Done;
             search_.MatchedLength=0;
         }
 
