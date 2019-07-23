@@ -1136,7 +1136,7 @@ namespace ICU4N.Text
         /// <param name="mode">Normalization format (<see cref="Normalizer.NFC"/>,<see cref="Normalizer.NFD"/>,
         /// <see cref="Normalizer.NFKC"/>,<see cref="Normalizer.NFKD"/>).</param>
         /// <returns>Return code to specify if the text is normalized or not
-        /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
+        /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static QuickCheckResult QuickCheck(string source, Mode mode)
         {
@@ -1146,11 +1146,11 @@ namespace ICU4N.Text
         /// <summary>
         /// Performing quick check on a string, to quickly determine if the string is
         /// in a particular normalization format.
-        /// Three types of result can be returned <see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or
-        /// <see cref="Normalizer.MAYBE"/>. Result <see cref="Normalizer.YES"/> indicates that the argument
-        /// string is in the desired normalized format, <see cref="Normalizer.NO"/> determines that
+        /// Three types of result can be returned <see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or
+        /// <see cref="QuickCheckResult.Maybe"/>. Result <see cref="QuickCheckResult.Yes"/> indicates that the argument
+        /// string is in the desired normalized format, <see cref="QuickCheckResult.No"/> determines that
         /// argument string is not in the desired normalized format. A
-        /// <see cref="Normalizer.MAYBE"/> result indicates that a more thorough check is required,
+        /// <see cref="QuickCheckResult.Maybe"/> result indicates that a more thorough check is required,
         /// the user may have to put the string in its normalized form and compare
         /// the results.
         /// </summary>
@@ -1160,7 +1160,7 @@ namespace ICU4N.Text
         /// <param name="options">Options for use with exclusion set and tailored Normalization
         /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
         /// <returns>Return code to specify if the text is normalized or not
-        /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
+        /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static QuickCheckResult QuickCheck(string source, Mode mode, int options)
         {
@@ -1177,7 +1177,7 @@ namespace ICU4N.Text
         /// <param name="options">Options for use with exclusion set and tailored Normalization
         /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
         /// <returns>Return code to specify if the text is normalized or not
-        /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
+        /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static QuickCheckResult QuickCheck(char[] source, Mode mode, int options)
         {
@@ -1187,11 +1187,11 @@ namespace ICU4N.Text
         /// <summary>
         /// Performing quick check on a string, to quickly determine if the string is
         /// in a particular normalization format.
-        /// Three types of result can be returned <see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or
-        /// <see cref="Normalizer.MAYBE"/>. Result <see cref="Normalizer.YES"/> indicates that the argument
-        /// string is in the desired normalized format, <see cref="Normalizer.NO"/> determines that
+        /// Three types of result can be returned <see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or
+        /// <see cref="QuickCheckResult.Maybe"/>. Result <see cref="QuickCheckResult.Yes"/> indicates that the argument
+        /// string is in the desired normalized format, <see cref="QuickCheckResult.No"/> determines that
         /// argument string is not in the desired normalized format. A
-        /// <see cref="Normalizer.MAYBE"/> result indicates that a more thorough check is required,
+        /// <see cref="QuickCheckResult.Maybe"/> result indicates that a more thorough check is required,
         /// the user may have to put the string in its normalized form and compare
         /// the results.
         /// </summary>
@@ -1203,7 +1203,7 @@ namespace ICU4N.Text
         /// <param name="options">Options for use with exclusion set and tailored Normalization
         /// The only option that is currently recognized is <see cref="UNICODE_3_2"/>.</param>
         /// <returns>Return code to specify if the text is normalized or not
-        /// (<see cref="Normalizer.YES"/>, <see cref="Normalizer.NO"/> or <see cref="Normalizer.MAYBE"/>)</returns>
+        /// (<see cref="QuickCheckResult.Yes"/>, <see cref="QuickCheckResult.No"/> or <see cref="QuickCheckResult.Maybe"/>)</returns>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
         public static QuickCheckResult QuickCheck(char[] source, int start,
                                               int limit, Mode mode, int options)
