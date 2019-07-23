@@ -129,7 +129,8 @@ namespace ICU4N.Impl
 
             public void Dispose()
             {
-                this.setEnumerator.Dispose();
+                this.setEnumerator?.Dispose();
+                this.dataEnumerator.Dispose();
             }
 
             public bool MoveNext()
