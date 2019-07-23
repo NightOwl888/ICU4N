@@ -16,7 +16,27 @@ using static ICU4N.Text.LocaleDisplayNames;
 
 namespace ICU4N.Util
 {
-    public sealed class ULocale : IComparable<ULocale> // ICU4N TODO: API: Change to UCulture or UCultureInfo and fixup API members to match .NET
+    // ICU4N TODO: API - The approach done in ULocale will not be completely compatible in .NET becauuse there is no way to apply
+    // it to the current thread. Thus, using ICU functionality in a multi-threaded environment is only truely possible using
+    // CultureInfo.
+
+    // The approach we need to take is to subclass CultureInfo (preferably in an ICU4N.Globalization namespace) in order to make
+    // it possible to use ICU functionality on the current thread. ULocale.Category should not be used:
+
+    // ULocale.Category.FORMAT =>      CultureInfo.CurrentCulture
+    // ULocale.Category.DISPLAY =>     CultureInfo.CurrentUICulture
+
+    // The subclass could be made to distinguish between .NET style locale names (en-US) and ICU style locale names (en_US).
+    // If the former, it could simply wrap an instance of CultureInfo. If the latter, it would act more like ULocale, overriding
+    // calendars, numbering sytems, and dates for the type.
+
+    // Should UCultureInfo also control culture sensitive info throughout the whole .NET architecture, or was ULocale intended to
+    // only be used with ICU compoenents? Being that the Locale class is sealed in Java, it is difficult to tell if ULocale was
+    // intended to completely override Locale, or simply to control what happens within the boundaries of ICU.
+    // But the answer to this will determine if ICU should override the calendars, numbering systems, and dates, of CultureInfo 
+    // or should simply add additional properties and/or extension methods to CultureInfo that only apply to ICU types.
+
+    public sealed class ULocale : IComparable<ULocale>
     {
         private static readonly object syncLock = new object();
 
@@ -205,18 +225,18 @@ namespace ICU4N.Util
          * the specific functionality represented by the category.
          * @stable ICU 49
          */
-        public enum Category
+        public enum Category // ICU4N TODO: API - de-nest this enum
         {
             /**
              * Category used to represent the default locale for displaying user interfaces.
              * @stable ICU 49
              */
-            DISPLAY,
+            DISPLAY, // ICU4N TODO: API - this corresponds to CultureInfo.CurrentUICulture in .NET
             /**
              * Category used to represent the default locale for formatting date, number and/or currency.
              * @stable ICU 49
              */
-            FORMAT
+            FORMAT // ICU4N TODO: API - this corresponds to CultureInfo.CurrentCulture in .NET
         }
 
         private static readonly SoftCache<CultureInfo, ULocale, object> CACHE = new ULocaleCache();
@@ -2212,28 +2232,35 @@ namespace ICU4N.Util
                             }
                         }
                     }
+                    CultureInfo loc = aLocale.ToLocale();
                     CultureInfo parent = null;
-                    try
-                    {
-                        CultureInfo loc = aLocale.ToLocale();
-#if NETSTANDARD1_3
-                        // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-                        // to be created, but will be "unknown" languages. We need to manually
-                        // ignore these.
-                        if (!loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-                        {
-#endif
-                            parent = LocaleUtility.Fallback(loc);
-#if NETSTANDARD1_3
-                        }
-#endif
-                    }
-                    // ICU4N: In .NET Framework and .NET Standard 2.x+, unknown cultures throw a 
-                    // CultureNotFoundException.
-                    catch (CultureNotFoundException)
-                    {
-                        parent = null;
-                    }
+                    if (loc != null)
+                        parent = LocaleUtility.Fallback(loc.DisplayName);
+                    else
+                        parent = LocaleUtility.Fallback(aLocale.GetName());
+
+
+                    //                    try
+                    //                    {
+                    //                        CultureInfo loc = aLocale.ToLocale();
+                    //#if NETSTANDARD1_3
+                    //                        // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+                    //                        // to be created, but will be "unknown" languages. We need to manually
+                    //                        // ignore these.
+                    //                        if (!loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+                    //                        {
+                    //#endif
+                    //                            parent = LocaleUtility.Fallback(loc);
+                    //#if NETSTANDARD1_3
+                    //                        }
+                    //#endif
+                    //                    }
+                    //                    // ICU4N: In .NET Framework and .NET Standard 2.x+, unknown cultures throw a 
+                    //                    // CultureNotFoundException.
+                    //                    catch (CultureNotFoundException)
+                    //                    {
+                    //                        parent = LocaleUtility.Fallback(aLocale);
+                    //                    }
 
                     if (parent != null)
                     {
@@ -4503,23 +4530,42 @@ namespace ICU4N.Util
              * to Java locale "no_NO_NY".
              */
 
-            ///// <summary>
-            ///// This table is used for mapping between ICU and special .NET locales.
-            ///// When an ICU locale matches &lt;minumum base&gt; with
-            ///// &lt;keyword>/&tl;value>, the ICU locale is mapped to &lt;.NET> locale.
-            ///// </summary>
+            /// <summary>
+            /// This table is used for mapping between ICU and special .NET locales.
+            /// When an ICU locale matches &lt;minumum base&gt; with
+            /// &lt;keyword>/&tl;value>, the ICU locale is mapped to &lt;.NET> locale.
+            /// </summary>
             //private static readonly string[][] NET_MAPDATA = { // ICU4N TODO: Do we need different values for .NET Framework/.NET Standard ?
             //    //  { <Java>,       <ICU base>, <keyword>,  <value>,    <minimum base>
             //    new string[] { "ja-JP",   "ja_JP",    "calendar", "japanese", "ja"},
-            //    new string[] { "nn-NO",   "nn_NO",    null,       null,       "nn"},
+            //    //new string[] { "nn-NO",   "nn_NO",    null,       null,       "nn"},
             //    new string[] { "th-TH",   "th_TH",    "numbers",  "thai",     "th"},
             //};
+
+            private static readonly string[][] NET_MAPDATA = { // ICU4N TODO: Do we need different values for .NET Framework/.NET Standard ?
+                //  { <Java>,       <ICU base>, <keyword>,  <value>,    <minimum base>
+                //new string[] { "ja-JP",   "ja_JP",    "calendar", "japanese", "ja"},
+                //new string[] { "nn-NO",   "nn_NO",    null,       null,       "nn"},
+                new string[] { "th-TH",   "th_TH",    "numbers",  "thai", "",     "th"},
+            };
+
+            private static readonly IDictionary<System.Type, string> DOTNET_CALENDARS = new Dictionary<System.Type, string>
+            {
+                { typeof(JapaneseCalendar), "japanese" },
+                { typeof(ThaiBuddhistCalendar), "buddhist" },
+                { typeof(ChineseLunisolarCalendar), "chinese" },
+                { typeof(PersianCalendar), "persian" },
+                { typeof(HijriCalendar), "islamic" },
+                { typeof(HebrewCalendar), "hebrew" },
+                { typeof(TaiwanCalendar), "taiwan" },
+            };
+
 
             public static ULocale ToULocale(CultureInfo loc)
             {
                 if (loc == CultureInfo.InvariantCulture)
                 {
-                    return new ULocale("root");
+                    return new ULocale("");
                 }
 
                 var name = loc.Name;
@@ -4528,23 +4574,65 @@ namespace ICU4N.Util
 
 
                 // ICU4N TODO: Need to append currency, number, and collation data
-                name = name.Replace('-', '_');
+                //name = name.Replace('-', '_');
+                var segments = name.Split(new char[] { '-', '_' });
+                string newName = "";
+                for (int i = 0; i < segments.Length; i++)
+                {
+                    if (newName.Length > 0)
+                        newName += '_';
+                    if (i == 0)
+                        newName += segments[i].ToLowerInvariant();
+                    else
+                        newName += segments[i].ToUpperInvariant(); // Special case - .NET makes the variant lower case, but ULocale expects upper case
+                }
 
-                return new ULocale(name, loc);
+                // Special cases...
+
+                string language = segments.Length > 0 ? segments[0] : "";
+                string country = segments.Length > 1 ? segments[1] : "";
+                string variant = segments.Length > 2 ? segments[2] : "";
+
+                // .NET doesn't recognize no-NO-NY any more than ICU does, but if it is input,
+                // we need to patch it (at least for the tests)
+
+                if (language.Equals("no") && country.Equals("NO") && variant.Equals("NY", StringComparison.OrdinalIgnoreCase))
+                {
+                    newName = "nn_NO";
+                }
+
+                // Calander info
+                var calandarType = loc.Calendar.GetType();
+                if (!calandarType.Equals(typeof(GregorianCalendar)) && 
+                    DOTNET_CALENDARS.TryGetValue(calandarType, out string calendar))
+                {
+                    string sep = newName.Contains("@") ? ";" : "@";
+                    newName += string.Concat(sep, "calandar=", calendar);
+                }
+
+                //for (int i = 0; i < NET_MAPDATA.Length; i++)
+                //{
+                //    if (newName.StartsWith(NET_MAPDATA[i][1]) & NET_MAPDATA[i][2] != null)
+                //    {
+                //        string sep = newName.Contains("@") ? ";" : "@";
+                //        newName += string.Concat(sep, NET_MAPDATA[i][2], "=", NET_MAPDATA[i][3]);
+                //    }
+                //}
+
+
+                return new ULocale(newName, loc);
             }
 
             public static CultureInfo ToLocale(ULocale uloc)
             {
                 var name = uloc.GetName();
 
-                if (name == "root")
+                if (name.Equals("root", StringComparison.OrdinalIgnoreCase) || name.Equals("any", StringComparison.OrdinalIgnoreCase))
                 {
                     return CultureInfo.InvariantCulture;
                 }
 
-                // ICU4N TODO: Need to convert
-                name = name.Replace('_', '-');
-
+                // Strip off the config options
                 int optionsIndex = name.IndexOf("@");
                 if (optionsIndex > -1)
                 {
@@ -4554,7 +4642,41 @@ namespace ICU4N.Util
                     name = name.Substring(0, optionsIndex); // ICU4N: Checked 2nd parameter
                 }
 
-                return new CultureInfo(name);
+                string newName = name.Replace('_', '-').Trim('-');
+
+                // ICU4N special cases...
+
+                var language = uloc.GetLanguage();
+                var country = uloc.GetCountry();
+                var variant = uloc.GetVariant();
+
+                // .NET doesn't recognize no-NO-NY any more than ICU does, but if it is input,
+                // we need to patch it (at least for the tests)
+
+                if (language.Equals("no") && country.Equals("NO") && variant.Equals("NY"))
+                {
+                    newName = "nn-NO";
+                }
+
+                try
+                {
+                    CultureInfo culture = new CultureInfo(newName);
+
+#if NETSTANDARD1_3
+                    // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+                    // to be created, but will be "unknown" languages. We need to manually
+                    // ignore these.
+                    if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+                    {
+                        return null;
+                    }
+#endif
+                    return culture;
+                }
+                catch (CultureNotFoundException)
+                {
+                    return null;
+                }
             }
 
             public static CultureInfo GetDefault(Category category)

@@ -1,6 +1,8 @@
-﻿using System;
+﻿using ICU4N.Util;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace ICU4N.Impl
@@ -16,14 +18,54 @@ namespace ICU4N.Impl
          */
         public static CultureInfo GetLocaleFromName(string name)
         {
-            // ICU4N TODO: Not sure what to do with "any". It is in the
-            // IANA subtag registry, but not supported in .NET.
-            if (name.Equals("any", StringComparison.OrdinalIgnoreCase))
+            if (name.Equals("root", StringComparison.OrdinalIgnoreCase) || name.Equals("any", StringComparison.OrdinalIgnoreCase))
             {
                 return CultureInfo.InvariantCulture;
             }
 
-            return new CultureInfo(name);
+            // Strip off the config options
+            int optionsIndex = name.IndexOf("@");
+            if (optionsIndex > -1)
+            {
+                // ICU4N TODO: Need to convert calendar, currency, number, and collation options by
+                // creating a custom CultureInfo subclass...where possible
+
+                name = name.Substring(0, optionsIndex); // ICU4N: Checked 2nd parameter
+            }
+
+            string newName = name.Replace('_', '-').Trim('-');
+
+
+            try
+            {
+                CultureInfo culture = new CultureInfo(newName);
+
+#if NETSTANDARD1_3
+                // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+                // to be created, but will be "unknown" languages. We need to manually
+                // ignore these.
+                if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+                {
+                    return null;
+                }
+#endif
+                return culture;
+            }
+            catch (CultureNotFoundException)
+            {
+                return null;
+            }
+
+
+
+            //// ICU4N TODO: Not sure what to do with "any". It is in the
+            //// IANA subtag registry, but not supported in .NET.
+            //if (name.Equals("any", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    return CultureInfo.InvariantCulture;
+            //}
+
+            //return new CultureInfo(name);
 
             //string language = "";
             //string country = "";
@@ -117,14 +159,55 @@ namespace ICU4N.Impl
         //       return id;
         //   }*/
 
+        //        /**
+        //         * Fallback from the given locale name by removing the rightmost _-delimited
+        //         * element. If there is none, return the root locale ("", "", ""). If this
+        //         * is the root locale, return null. NOTE: The string "root" is not
+        //         * recognized; do not use it.
+        //         * 
+        //         * @return a new Locale that is a fallback from the given locale, or null.
+        //         */
+        //        public static CultureInfo Fallback(CultureInfo loc)
+        //        {
+        //            if (loc.Equals(CultureInfo.InvariantCulture))
+        //            {
+        //                return null;
+        //            }
+
+        //#if NETSTANDARD1_3
+        //            // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+        //            // to be created, but will be "unknown" languages. We need to manually
+        //            // ignore these.
+        //            if (loc.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+        //            {
+        //                return CultureInfo.InvariantCulture;
+        //            }
+        //#endif
+        //            // ICU4N: We use the original ICU fallback scheme rather than
+        //            // simply using loc.Parent.
+
+        //            // Split the locale into parts and remove the rightmost part
+        //            string[] parts = loc.Name.Split('-');
+        //            if (parts.Length == 1)
+        //            {
+        //                return null; // All parts were empty
+        //            }
+        //            string culture = parts[0];
+        //            for (int i = 1; i < parts.Length - 1; i++)
+        //            {
+        //                culture += '-' + parts[i];
+        //            }
+        //            return new CultureInfo(culture);
+        //        }
+
         /**
-         * Fallback from the given locale name by removing the rightmost _-delimited
-         * element. If there is none, return the root locale ("", "", ""). If this
-         * is the root locale, return null. NOTE: The string "root" is not
-         * recognized; do not use it.
-         * 
-         * @return a new Locale that is a fallback from the given locale, or null.
-         */
+ * Fallback from the given locale name by removing the rightmost _-delimited
+ * element. If there is none, return the root locale ("", "", ""). If this
+ * is the root locale, return null. NOTE: The string "root" is not
+ * recognized; do not use it.
+ * 
+ * @return a new Locale that is a fallback from the given locale, or null.
+ */
         public static CultureInfo Fallback(CultureInfo loc)
         {
             if (loc.Equals(CultureInfo.InvariantCulture))
@@ -156,6 +239,72 @@ namespace ICU4N.Impl
                 culture += '-' + parts[i];
             }
             return new CultureInfo(culture);
+        }
+
+        public static CultureInfo Fallback(ULocale locale)
+        {
+            return Fallback(locale.GetName());
+        }
+
+        /// <summary>
+        /// Fallback from the given ICU locale name 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static CultureInfo Fallback(string name)
+        {
+            //if (name.Equals("root", StringComparison.OrdinalIgnoreCase) || name.Equals("any", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    return CultureInfo.InvariantCulture;
+            //}
+
+            //// Strip off the config options
+            //int optionsIndex = name.IndexOf("@");
+            //if (optionsIndex > -1)
+            //{
+            //    // ICU4N TODO: Need to convert calendar, currency, number, and collation options by
+            //    // creating a custom CultureInfo subclass...where possible
+
+            //    name = name.Substring(0, optionsIndex); // ICU4N: Checked 2nd parameter
+            //}
+
+            // There should be no more than 3...
+            string[] segments = name.Split(new char[] { '_', '-' });
+
+            CultureInfo culture = null;
+
+            // Fallback to more general culture...
+            for (int i = Math.Max(3, segments.Length); i > 0; i--)
+            {
+                try
+                {
+                    string newName = string.Join("-", segments.Take(i));
+                    culture = new CultureInfo(newName);
+
+#if NETSTANDARD1_3
+                    // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+                    // to be created, but will be "unknown" languages. We need to manually
+                    // ignore these.
+                    if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+                    {
+                        continue;
+                    }
+#endif
+                    break;
+                }
+                catch (CultureNotFoundException)
+                {
+                    continue;
+                }
+            }
+
+            //if (culture == null)
+            //{
+            //    // Hopefully we don't get here...the only logical fallback is InvariantCulture
+            //    culture = CultureInfo.InvariantCulture;
+            //}
+
+            return culture;
         }
     }
 }

@@ -1159,7 +1159,7 @@ namespace ICU4N.Dev.Test.Util
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestDisplayNames()
         {
             // consistency check, also check that all data is available
@@ -1743,7 +1743,7 @@ namespace ICU4N.Dev.Test.Util
 
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestAcceptLanguage()
         {
             for (int i = 0; i < (ACCEPT_LANGUAGE_HTTP.Length); i++)
@@ -1890,7 +1890,7 @@ namespace ICU4N.Dev.Test.Util
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestAcceptLanguage2()
         {
             for (int i = 0; i < (ACCEPT_LANGUAGE_HTTP.Length); i++)
@@ -4677,17 +4677,17 @@ namespace ICU4N.Dev.Test.Util
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestForLocale()
         {
             object[][] DATA = {
-                    new object[]{CultureInfo.InvariantCulture,                    ""},
+                    new object[]{CultureInfo.InvariantCulture,                    ""}, 
                     new object[]{new CultureInfo("en-US"),            "en_US"},
-                    new object[]{new CultureInfo("en-US"/*, "POSIX"*/),   "en_US_POSIX"},
-                    new object[]{new CultureInfo("US"),              "_US"},
-                    new object[]{new CultureInfo("en"/*, "", "POSIX"*/),     "en__POSIX"},
-                    new object[]{new CultureInfo("nn-NO"),      "nn_NO"},
-                    new object[]{new CultureInfo("en-BOGUS"),         "en__BOGUS"}, // ill-formed country is mapped to variant - see #8383 and #8384
+                    new object[]{new CultureInfo("en-US-POSIX"),   "en_US_POSIX"},
+                    //new object[]{new CultureInfo("-US"),              "_US"}, // This ugliness is not supported in .NET
+                    //new object[]{new CultureInfo("en--POSIX"),     "en__POSIX"}, // This ugliness is not supported in .NET
+                    new object[]{new CultureInfo("no-NO-NY"),      "nn_NO"},
+                    //new object[]{new CultureInfo("en-BOGUS"),         "en__BOGUS"}, // This ugliness is not supported in .NET // ill-formed country is mapped to variant - see #8383 and #8384
             };
 
             for (int i = 0; i < DATA.Length; i++)
@@ -4735,8 +4735,8 @@ namespace ICU4N.Dev.Test.Util
 
             //        } else {
             object[][] DATA6 = {
-                    new object[]{new CultureInfo("ja-JP" /*, "JP"*/),      "ja_JP@calendar=japanese"},
-                    new object[]{new CultureInfo("th-TH" /*, "TH"*/),      "th_TH@numbers=thai"},
+                    new object[]{new CultureInfo("ja-JP-JP"),      "ja_JP@calendar=japanese"},
+                    new object[]{new CultureInfo("th-TH-TH"),      "th_TH@numbers=thai"},
             };
             for (int i = 0; i < DATA6.Length; i++)
             {
@@ -4747,14 +4747,25 @@ namespace ICU4N.Dev.Test.Util
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        // ICU4N specific - make sure all ICU cultures will convert to .NET cultures
+        public void TestToLocale_AllCultures()
+        {
+            var locales = ULocale.GetAvailableLocales();
+            CultureInfo ci = null;
+            foreach (var locale in locales)
+            {
+                ci = locale.ToLocale();
+            }
+        }
+
+        [Test]
         public void TestToLocale()
         {
             object[][] DATA = {
                     new object[]{"",                CultureInfo.InvariantCulture},
                     new object[]{"en_US",           new CultureInfo("en-US")},
                     new object[]{"_US",             new CultureInfo("US")},
-                    new object[]{"en__POSIX",       new CultureInfo("en"/*, "", "POSIX"*/)},
+                    //new object[]{"en__POSIX",       new CultureInfo("en"/*, "", "POSIX"*/)}, // ICU4N: Not supported in .NET
             };
 
             for (int i = 0; i < DATA.Length; i++)
@@ -4765,40 +4776,40 @@ namespace ICU4N.Dev.Test.Util
 
             //    if (JAVA7_OR_LATER)
             //    {
-            //        Object[][] DATA7 = {
-            //                    {"nn_NO",                       new Locale("nn", "NO")},
-            //                    {"no_NO_NY",                    new Locale("no", "NO", "NY")},
-            //            };
-            //        for (int i = 0; i < DATA7.Length; i++)
-            //        {
-            //            Locale loc = new ULocale((String)DATA7[i][0]).toLocale();
-            //            assertEquals("toLocale with " + DATA7[i][0], DATA7[i][1], loc);
-            //        }
-
-            //        try
-            //        {
-            //            Method localeForLanguageTag = Locale.class.getMethod("forLanguageTag", String.class);
-
-            //                String[][] DATA7EXT = {
-            //                        {"en_Latn_US",                  "en-Latn-US"},
-            //                        {"zh_Hant_TW",                  "zh-Hant-TW"},
-            //                        {"ja_JP@calendar=japanese",     "ja-JP-u-ca-japanese"},
-            //                        {"ja_JP_JP@calendar=japanese",  "ja-JP-u-ca-japanese-x-lvariant-JP"},
-            //                        {"th_TH@numbers=thai",          "th-TH-u-nu-thai"},
-            //                        {"th_TH_TH@numbers=thai",       "th-TH-u-nu-thai-x-lvariant-TH"},
-            //                        {"de@collation=phonebook",      "de-u-co-phonebk"},
-            //                        {"en@a=exta;b=extb;x=privu",    "en-a-exta-b-extb-x-privu"},
-            //                        {"fr@attribute=attr1-attr2;currency=eur",   "fr-u-attr1-attr2-cu-eur"},
-            //                };
-
-            //                for (int i = 0; i<DATA7EXT.Length; i++) {
-            //                    Locale loc = new ULocale(DATA7EXT[i][0]).toLocale();
-            //Locale expected = (Locale)localeForLanguageTag.invoke(null, DATA7EXT[i][1]);
-            //                    assertEquals("toLocale with " + DATA7EXT[i][0], expected, loc);
-            //                }
-            //            } catch (Exception e) {
-            //                throw new RuntimeException(e);
+            //            Object[][] DATA7 = {
+            //                                new object[]{"nn_NO",                       new CultureInfo("nn-NO")},
+            //                                new object[]{"no_NO_NY",                    new CultureInfo("no-NO")}, // .NET doesn't support this
+            //                        };
+            //            for (int i = 0; i < DATA7.Length; i++)
+            //            {
+            //                CultureInfo loc = new ULocale((String)DATA7[i][0]).ToLocale();
+            //                assertEquals("toLocale with " + DATA7[i][0], DATA7[i][1], loc);
             //            }
+
+            //            try
+            //            {
+            //                Method localeForLanguageTag = Locale.class.getMethod("forLanguageTag", String.class);
+
+            //                            String[][] DATA7EXT = {
+            //                                    new string[]{"en_Latn_US",                  "en-Latn-US"},
+            //                                    new string[]{"zh_Hant_TW",                  "zh-Hant-TW"},
+            //                                    new string[]{"ja_JP@calendar=japanese",     "ja-JP-u-ca-japanese"},
+            //                                    new string[]{"ja_JP_JP@calendar=japanese",  "ja-JP-u-ca-japanese-x-lvariant-JP"},
+            //                                    new string[]{"th_TH@numbers=thai",          "th-TH-u-nu-thai"},
+            //                                    new string[]{"th_TH_TH@numbers=thai",       "th-TH-u-nu-thai-x-lvariant-TH"},
+            //                                    new string[]{"de@collation=phonebook",      "de-u-co-phonebk"},
+            //                                    new string[]{"en@a=exta;b=extb;x=privu",    "en-a-exta-b-extb-x-privu"},
+            //                                    new string[]{"fr@attribute=attr1-attr2;currency=eur",   "fr-u-attr1-attr2-cu-eur"},
+            //                            };
+
+            //                            for (int i = 0; i<DATA7EXT.Length; i++) {
+            //                                CultureInfo loc = new ULocale(DATA7EXT[i][0]).ToLocale();
+            //        Locale expected = (Locale)localeForLanguageTag.invoke(null, DATA7EXT[i][1]);
+            //        assertEquals("toLocale with " + DATA7EXT[i][0], expected, loc);
+            //    }
+            //} catch (Exception e) {
+            //                            throw new RuntimeException(e);
+            //                        }
 
             //        } else {
             object[][] DATA6 = {
@@ -4816,7 +4827,7 @@ namespace ICU4N.Dev.Test.Util
         }
 
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
+        [Ignore("ICU4N TOOD: Fix this")]
         public void TestCategoryDefault()
         {
             CultureInfo backupDefault = CultureInfo.CurrentCulture;
