@@ -46,7 +46,7 @@ namespace ICU4N.Impl
                         rb = ICUResourceBundle.GetBundleInstance(
                                 ICUData.ICU_CURR_BASE_NAME, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LOCALE_ONLY);
                     }
-                    catch (MissingManifestResourceException e)
+                    catch (MissingManifestResourceException)
                     {
                         return null;
                     }
