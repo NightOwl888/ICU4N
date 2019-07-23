@@ -145,7 +145,7 @@ namespace ICU4N.Support.Text
          * 
          * @see java.lang.Cloneable
          */
-        public object Clone()
+        public override object Clone()
         {
             ChoiceFormat clone = (ChoiceFormat)base.MemberwiseClone();
             clone.choiceLimits = (double[])choiceLimits.Clone();
