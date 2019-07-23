@@ -12,10 +12,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using StringBuffer = System.Text.StringBuilder;
 
-#if FEATURE_STACKTRACE
-using System.Diagnostics;
-#endif
-
 namespace ICU4N.Dev.Test
 {
     /// <summary>

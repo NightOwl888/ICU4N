@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'net45' ">
-    <DefineConstants>$(DefineConstants);FEATURE_STACKTRACE</DefineConstants>
+    <DefineConstants>$(DefineConstants);FEATURE_STACKTRACE;FEATURE_SERIALIZABLE</DefineConstants>
     <DebugType>full</DebugType>
   </PropertyGroup>
 

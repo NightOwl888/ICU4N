@@ -11,7 +11,10 @@ namespace ICU4N.Support
     /// UTF32 characters expressed like <c>\U00010000</c> or UTF32 ranges expressed
     /// like <c>\U00010000-\U00010001</c>.
     /// </summary>
-    public class Utf32Regex : Regex
+#if FEATURE_SERIALIZABLE
+    [Serializable]
+#endif
+    public class Utf32Regex : Regex // ICU4N TODO: This might be a useful tool to have in ICU4N.dll
     {
         private const char MinLowSurrogate = '\uDC00';
         private const char MaxLowSurrogate = '\uDFFF';
@@ -49,6 +52,13 @@ namespace ICU4N.Support
             : base(ConvertUTF32Characters(pattern), options, matchTimeout)
         {
         }
+
+#if FEATURE_SERIALIZABLE
+        protected Utf32Regex(System.Runtime.Serialization.SerializationInfo serializationInfo, System.Runtime.Serialization.StreamingContext streamingContext)
+            : base(serializationInfo, streamingContext)
+        {
+        }
+#endif
 
         private static string ConvertUTF32Characters(string regexString)
         {
