@@ -123,11 +123,6 @@ namespace ICU4N.Dev.Test.Collate
 
             while (ch < 0xFFFF)
             {
-                if (ch == 'ç')
-                {
-                    string foo = "";
-                }
-
                 int count = 1;
                 ch++;
                 str = ch + "";

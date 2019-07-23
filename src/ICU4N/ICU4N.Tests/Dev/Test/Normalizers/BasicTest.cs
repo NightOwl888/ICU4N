@@ -2241,11 +2241,6 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     for (k = 0; k < opt.Length; ++k)
                     {
-                        if (i == 0 && j == 3 && k == 2)
-                        {
-                            String foo = "";
-                        }
-
                         // test Normalizer::compare
                         result = norm_compare(s[i], s[j], opt[k].options);
                         refResult = ref_norm_compare(s[i], s[j], opt[k].options);

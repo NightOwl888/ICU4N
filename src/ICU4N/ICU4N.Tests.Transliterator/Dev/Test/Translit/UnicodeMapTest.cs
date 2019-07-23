@@ -156,11 +156,6 @@ namespace ICU4N.Dev.Test.Translit
             // try modifications
             for (int i = 0; i < iterations; ++i)
             {
-                if (i == 148)
-                {
-                    string foo = "";
-                }
-
                 switch (i == 0 ? 0 : rand.Next(20))
                 {
                     case 0:
