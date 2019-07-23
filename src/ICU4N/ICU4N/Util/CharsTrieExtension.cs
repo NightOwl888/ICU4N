@@ -64,17 +64,17 @@ namespace ICU4N.Util
         /// Constructs a CharsTrie reader instance.
         /// </summary>
         /// <remarks>
-        /// The <see cref="char[]"/> must contain a copy of a char sequence from the <see cref="CharsTrieBuilder"/>,
+        /// The <see cref="T:char[]"/> must contain a copy of a char sequence from the <see cref="CharsTrieBuilder"/>,
         /// with the offset indicating the first char of that sequence.
         /// The <see cref="CharsTrie"/> object will not read more chars than
         /// the <see cref="CharsTrieBuilder"/> generated in the corresponding 
         /// <see cref="CharsTrieBuilder.Build(StringTrieBuilder.Option)"/> call.
         /// <para/>
-        /// The <see cref="char[]"/> is not copied/cloned and must not be modified while
+        /// The <see cref="T:char[]"/> is not copied/cloned and must not be modified while
         /// the <see cref="CharsTrie"/> object is in use.
         /// </remarks>
-        /// <param name="trieChars"><see cref="char[]"/> that contains the serialized trie.</param>
-        /// <param name="offset">Root offset of the trie in the <see cref="char[]"/>.</param>
+        /// <param name="trieChars"><see cref="T:char[]"/> that contains the serialized trie.</param>
+        /// <param name="offset">Root offset of the trie in the <see cref="T:char[]"/>.</param>
         /// <stable>ICU 4.8</stable>
         public CharsTrie(char[] trieChars, int offset) 
         {

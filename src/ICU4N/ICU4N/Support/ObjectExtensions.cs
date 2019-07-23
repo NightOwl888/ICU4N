@@ -9,7 +9,7 @@ namespace ICU4N.Support
     {
         /// <summary>
         /// If <paramref name="obj"/> is type <see cref="string"/>, <see cref="StringBuilder"/>, or
-        /// <see cref="char[]"/>, it is wrapped in an adapter class that implements <see cref="ICharSequence"/>
+        /// <see cref="T:char[]"/>, it is wrapped in an adapter class that implements <see cref="ICharSequence"/>
         /// and returned. If the object already is <see cref="ICharSequence"/> it is cast to <see cref="ICharSequence"/>
         /// unchanged. If <paramref name="obj"/> is another type, the result is null.
         /// </summary>
