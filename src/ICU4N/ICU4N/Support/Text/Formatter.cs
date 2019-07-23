@@ -120,7 +120,7 @@ namespace ICU4N.Support.Text
         /// <returns>An <see cref="AttributedCharacterIterator"/> with the formatted object
         /// and attributes.</returns>
         /// <exception cref="ArgumentException">if the object cannot be formatted by this format.</exception>
-        public AttributedCharacterIterator FormatToCharacterIterator(object obj)
+        public virtual AttributedCharacterIterator FormatToCharacterIterator(object obj)
         {
             return new AttributedString(Format(obj)).GetIterator();
         }
@@ -131,7 +131,7 @@ namespace ICU4N.Support.Text
         /// <param name="str">The string to parse.</param>
         /// <returns>The object resulting from the parse.</returns>
         /// <exception cref="FormatException">If an error occurs during parsing.</exception>
-        public object ParseObject(string str)
+        public virtual object ParseObject(string str)
         {
             ParsePosition position = new ParsePosition(0);
             object result = ParseObject(str, position);

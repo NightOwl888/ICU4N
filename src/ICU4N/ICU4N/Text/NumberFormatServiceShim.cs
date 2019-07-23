@@ -30,9 +30,9 @@ namespace ICU4N.Text
 
         private sealed class NFFactory : LocaleKeyFactory
         {
-            private NumberFormat.NumberFormatFactory @delegate;
+            private NumberFormatFactory @delegate;
 
-            internal NFFactory(NumberFormat.NumberFormatFactory @delegate)
+            internal NFFactory(NumberFormatFactory @delegate)
             : base(@delegate.Visible ? VISIBLE : INVISIBLE)
             {
 
@@ -47,7 +47,7 @@ namespace ICU4N.Text
                 }
 
                 LocaleKey lkey = (LocaleKey)key;
-                Object result = @delegate.CreateFormat(lkey.GetCanonicalLocale(), lkey.Kind);
+                object result = @delegate.CreateFormat(lkey.GetCanonicalLocale(), lkey.Kind);
                 if (result == null)
                 {
                     result = srvc.GetKey(key, null, this);
@@ -61,7 +61,7 @@ namespace ICU4N.Text
             }
         }
 
-        internal override object RegisterFactory(NumberFormat.NumberFormatFactory factory)
+        internal override object RegisterFactory(NumberFormatFactory factory)
         {
             return service.RegisterFactory(new NFFactory(factory));
         }
@@ -71,7 +71,7 @@ namespace ICU4N.Text
             return service.UnregisterFactory((ICUService.IFactory)registryKey);
         }
 
-        internal override NumberFormat CreateInstance(ULocale desiredLocale, int choice)
+        internal override NumberFormat CreateInstance(ULocale desiredLocale, NumberFormatStyle choice)
         {
 
             // use service cache
@@ -80,7 +80,7 @@ namespace ICU4N.Text
             //          }
 
             ULocale[] actualLoc = new ULocale[1];
-            NumberFormat fmt = (NumberFormat)service.Get(desiredLocale, choice,
+            NumberFormat fmt = (NumberFormat)service.Get(desiredLocale, (int)choice,
                                                          actualLoc);
             if (fmt == null)
             {
