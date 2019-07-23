@@ -539,7 +539,9 @@ namespace ICU4N.Impl
             return skipAdjust ? scriptName : AdjustForUsageAndContext(CapitalizationContextUsage.SCRIPT, scriptName);
         }
 
+#pragma warning disable 672
         public override string ScriptDisplayNameInContext(string script)
+#pragma warning restore 672
         {
             return ScriptDisplayNameInContext(script, false);
         }

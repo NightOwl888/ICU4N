@@ -1894,7 +1894,9 @@ namespace ICU4N.Impl
             return HandleKeySet();
         }
 
+#pragma warning disable 672
         protected override bool IsTopLevelResource
+#pragma warning restore 672
         {
             get { return container == null; }
         }

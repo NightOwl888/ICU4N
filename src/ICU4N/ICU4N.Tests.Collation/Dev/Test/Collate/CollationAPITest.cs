@@ -846,7 +846,9 @@ namespace ICU4N.Dev.Test.Collate
                 return key;
             }
 
+#pragma warning disable 672
             public override int VariableTop
+#pragma warning restore 672
             {
                 get { return 0; }
                 set
@@ -858,8 +860,9 @@ namespace ICU4N.Dev.Test.Collate
                 }
             }
 
-
-            public override int SetVariableTop(String str)
+#pragma warning disable 672
+            public override int SetVariableTop(string str)
+#pragma warning restore 672
             {
                 if (IsFrozen)
                 {

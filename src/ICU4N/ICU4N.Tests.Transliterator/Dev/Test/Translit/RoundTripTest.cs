@@ -93,7 +93,9 @@ namespace ICU4N.Dev.Test.Translit
                 }
             }
 
+#pragma warning disable 672
             protected override void LoadRange(int myRange)
+#pragma warning restore 672
             {
                 base.LoadRange(myRange);
                 if (abbreviated && (endElement > nextElement + perRange))

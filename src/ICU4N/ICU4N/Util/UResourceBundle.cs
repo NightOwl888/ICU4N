@@ -625,7 +625,9 @@ namespace ICU4N.Util
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
+#pragma warning disable 809
         public override ISet<string> KeySet() // ICU4N TODO: API - change to KeySet property
+#pragma warning disable 809
         {
             // TODO: Java 6 ResourceBundle has keySet() which calls handleKeySet()
             // and caches the results.
@@ -691,7 +693,9 @@ namespace ICU4N.Util
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
+#pragma warning disable 809
         protected override ISet<string> HandleKeySet()
+#pragma warning disable 809
         {
             return new HashSet<string>();
         }
