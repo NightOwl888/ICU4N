@@ -331,7 +331,7 @@ namespace ICU4N.Impl.Coll
                 previousTer = Collation.BEFORE_WEIGHT16;
                 secTer = GetFirstSecTerForPrimary(index);
             }
-            long st = ((long)s << 16) | t;
+            long st = ((long)s << 16) | (uint)t;
             while (st > secTer)
             {
                 if ((int)(secTer >> 16) == s) { previousTer = (int)secTer; }
@@ -468,7 +468,7 @@ namespace ICU4N.Impl.Coll
                 // If this is an explicit sec/ter unit, then it will be read once more.
                 terLimit = TertiaryBoundary;
             }
-            long st = (((long)s & 0xffffffffL) << 16) | t;
+            long st = (((long)s & 0xffffffffL) << 16) | (uint)t;
             for (; ; )
             {
                 if (secTer > st)

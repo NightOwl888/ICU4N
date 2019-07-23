@@ -280,7 +280,7 @@ namespace ICU4N.Impl.Coll
                // Normal CE from the main data.
                // Forced-inline of ceFromSimpleCE32(ce32).
                 return ceBuffer[cesIndex++] =
-                        ((long)(ce32 & 0xffff0000) << 32) | ((long)(ce32 & 0xff00) << 16) | (t << 8);
+                        ((long)(ce32 & 0xffff0000) << 32) | ((long)(ce32 & 0xff00) << 16) | (uint)(t << 8);
             }
             CollationData d;
             // The compiler should be able to optimize the previous and the following
@@ -298,7 +298,7 @@ namespace ICU4N.Impl.Coll
                 {
                     // Normal CE from the base data.
                     return ceBuffer[cesIndex++] =
-                            ((long)(ce32 & 0xffff0000) << 32) | ((long)(ce32 & 0xff00) << 16) | (t << 8);
+                            ((long)(ce32 & 0xffff0000) << 32) | ((long)(ce32 & 0xff00) << 16) | (uint)(t << 8);
                 }
             }
             else
@@ -1200,7 +1200,7 @@ namespace ICU4N.Impl.Coll
                 if (value < numBytes)
                 {
                     // Two-byte primary for 0..73, good for day & month numbers etc.
-                    long primary2 = numericPrimary | ((firstByte + value) << 16);
+                    long primary2 = numericPrimary | (uint)((firstByte + value) << 16);
                     ceBuffer.Append(Collation.MakeCE(primary2));
                     return;
                 }
@@ -1211,7 +1211,7 @@ namespace ICU4N.Impl.Coll
                 {
                     // Three-byte primary for 74..10233=74+40*254-1, good for year numbers and more.
                     long primary3 = numericPrimary |
-                        ((firstByte + value / 254) << 16) | ((2 + value % 254) << 8);
+                        (uint)((firstByte + value / 254) << 16) | (uint)((2 + value % 254) << 8);
                     ceBuffer.Append(Collation.MakeCE(primary3));
                     return;
                 }
@@ -1221,11 +1221,11 @@ namespace ICU4N.Impl.Coll
                 if (value < numBytes * 254 * 254)
                 {
                     // Four-byte primary for 10234..1042489=10234+16*254*254-1.
-                    long primary4 = numericPrimary | (2 + value % 254);
+                    long primary4 = numericPrimary | (uint)(2 + value % 254);
                     value /= 254;
-                    primary4 |= (2 + value % 254) << 8;
+                    primary4 |= (uint)(2 + value % 254) << 8;
                     value /= 254;
-                    primary4 |= (firstByte + value % 254) << 16;
+                    primary4 |= (uint)(firstByte + value % 254) << 16;
                     ceBuffer.Append(Collation.MakeCE(primary4));
                     return;
                 }
@@ -1240,7 +1240,7 @@ namespace ICU4N.Impl.Coll
 
             // Set the exponent. 4 pairs.132, 5 pairs.133, ..., 127 pairs.255.
             int numPairs = (length + 1) / 2;
-            long primary = numericPrimary | ((132 - 4 + numPairs) << 16);
+            long primary = numericPrimary | (uint)((132 - 4 + numPairs) << 16);
             // Find the length without trailing 00 pairs.
             while (digits[length - 1] == 0 && digits[length - 2] == 0)
             {
@@ -1269,20 +1269,20 @@ namespace ICU4N.Impl.Coll
                 {
                     // Every three pairs/bytes we need to store a 4-byte-primary CE
                     // and start with a new CE with the '0' primary lead byte.
-                    primary |= pair;
+                    primary |= (uint)pair;
                     ceBuffer.Append(Collation.MakeCE(primary));
                     primary = numericPrimary;
                     shift = 16;
                 }
                 else
                 {
-                    primary |= pair << shift;
+                    primary |= (uint)pair << shift;
                     shift -= 8;
                 }
                 pair = 11 + 2 * (digits[pos] * 10 + digits[pos + 1]);
                 pos += 2;
             }
-            primary |= (pair - 1) << shift;
+            primary |= (uint)(pair - 1) << shift;
             ceBuffer.Append(Collation.MakeCE(primary));
         }
 

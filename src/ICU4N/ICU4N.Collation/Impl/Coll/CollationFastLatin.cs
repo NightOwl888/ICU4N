@@ -894,7 +894,7 @@ namespace ICU4N.Impl.Coll
                 }
                 else
                 {
-                    result = ((long)table[index + 2] << 16) | ce;
+                    result = ((long)table[index + 2] << 16) | (uint)ce;
                 }
                 return inc ? ~result : result;
             }

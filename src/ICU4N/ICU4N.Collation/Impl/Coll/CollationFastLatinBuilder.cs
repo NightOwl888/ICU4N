@@ -455,7 +455,7 @@ namespace ICU4N.Impl.Coll
             // when there is a non-fast-Latin character following.
             // For example: Danish &Y<<u+umlaut, when we compare Y vs. u\u0308 we need to see the
             // following umlaut and bail out, rather than return the difference of Y vs. u.
-            ce0 = (Collation.NO_CE_PRIMARY << 32) | CONTRACTION_FLAG | contractionIndex;
+            ce0 = (Collation.NO_CE_PRIMARY << 32) | CONTRACTION_FLAG | (uint)contractionIndex;
             ce1 = 0;
             return true;
         }
@@ -725,16 +725,16 @@ namespace ICU4N.Impl.Coll
                     int miniCE = EncodeTwoCEs(cce0, cce1);
                     if (miniCE == CollationFastLatin.BAIL_OUT)
                     {
-                        result.Append((char)(x | (1 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
+                        result.Append((char)(x | (uint)(1 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
                     }
                     else if ((miniCE.TripleShift(16)) == 0)
                     {  // if ((unsigned)miniCE <= 0xffff)
-                        result.Append((char)(x | (2 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
+                        result.Append((char)(x | (uint)(2 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
                         result.Append((char)miniCE);
                     }
                     else
                     {
-                        result.Append((char)(x | (3 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
+                        result.Append((char)(x | (uint)(3 << CollationFastLatin.CONTR_LENGTH_SHIFT)));
                         result.Append((char)(miniCE >> 16)).Append((char)miniCE);
                     }
                     firstTriple = false;

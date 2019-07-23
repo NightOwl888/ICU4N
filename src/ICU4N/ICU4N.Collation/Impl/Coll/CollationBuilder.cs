@@ -744,7 +744,7 @@ namespace ICU4N.Impl.Coll
                         commonNode |= node & HAS_BEFORE3;
                         node &= ~(long)HAS_BEFORE3;
                     }
-                    nodes[index] = (node | hasThisLevelBefore);
+                    nodes[index] = (node | (uint)hasThisLevelBefore);
                     // Insert below-common-weight node.
                     int nextIndex2 = NextIndexFromNode(node);
                     node = NodeFromWeight16(weight16) | NodeFromStrength(level);
@@ -1591,7 +1591,7 @@ namespace ICU4N.Impl.Coll
                 if (CollationBuilder.IsTempCE32(ce32))
                 {
                     // retain case bits
-                    return finalCEs[CollationBuilder.IndexFromTempCE32(ce32)] | ((ce32 & 0xc0) << 8);
+                    return finalCEs[CollationBuilder.IndexFromTempCE32(ce32)] | (uint)((ce32 & 0xc0) << 8);
                 }
                 else
                 {

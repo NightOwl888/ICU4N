@@ -250,7 +250,7 @@ namespace ICU4N.Impl.Coll
                 --result;
                 modulo += factor;
             }
-            return (result << 32) | modulo;
+            return (result << 32) | (uint)modulo;
         }
 
         /// <summary>

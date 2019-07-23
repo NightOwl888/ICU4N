@@ -392,7 +392,7 @@ namespace ICU4N.Impl.Coll
         /// <seealso cref="LATIN_EXPANSION_TAG"/>
         internal static long LatinCE0FromCE32(int ce32)
         {
-            return ((long)(ce32 & 0xff000000) << 32) | COMMON_SECONDARY_CE | ((ce32 & 0xff0000) >> 8);
+            return ((long)(ce32 & 0xff000000) << 32) | COMMON_SECONDARY_CE | (uint)((ce32 & 0xff0000) >> 8);
         }
 
         /// <summary>
@@ -433,7 +433,7 @@ namespace ICU4N.Impl.Coll
         {
             // normal form ppppsstt -> pppp0000ss00tt00
             Debug.Assert((ce32 & 0xff) < SPECIAL_CE32_LOW_BYTE);
-            return ((long)(ce32 & 0xffff0000) << 32) | ((long)(ce32 & 0xff00) << 16) | ((ce32 & 0xff) << 8);
+            return ((long)(ce32 & 0xffff0000) << 32) | (uint)((long)(ce32 & 0xff00) << 16) | (uint)((ce32 & 0xff) << 8);
         }
 
         /// <summary>Returns a 64-bit CE from a simple/long-primary/long-secondary CE32.</summary>
@@ -443,7 +443,7 @@ namespace ICU4N.Impl.Coll
             if (tertiary < SPECIAL_CE32_LOW_BYTE)
             {
                 // normal form ppppsstt -> pppp0000ss00tt00
-                return ((long)(ce32 & 0xffff0000) << 32) | ((long)(ce32 & 0xff00) << 16) | (tertiary << 8);
+                return ((long)(ce32 & 0xffff0000) << 32) | ((long)(ce32 & 0xff00) << 16) | (uint)(tertiary << 8);
             }
             else
             {
@@ -473,7 +473,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal static long MakeCE(long p, int s, int t, int q)
         {
-            return (p << 32) | ((long)s << 16) | t | (q << 6);
+            return (p << 32) | ((long)s << 16) | (uint)t | (uint)(q << 6);
         }
 
         /// <summary>
@@ -518,13 +518,13 @@ namespace ICU4N.Impl.Coll
             if (isCompressible)
             {
                 offset += ((int)(basePrimary >> 16) & 0xff) - 4;
-                primary |= ((offset % 251) + 4) << 16;
+                primary |= (uint)((offset % 251) + 4) << 16;
                 offset /= 251;
             }
             else
             {
                 offset += ((int)(basePrimary >> 16) & 0xff) - 2;
-                primary |= ((offset % 254) + 2) << 16;
+                primary |= (uint)((offset % 254) + 2) << 16;
                 offset /= 254;
             }
             // First byte, assume no further overflow.
@@ -558,7 +558,7 @@ namespace ICU4N.Impl.Coll
                     basePrimary -= 0x1000000;
                 }
             }
-            return (basePrimary & 0xff000000L) | (byte2 << 16);
+            return (basePrimary & 0xff000000L) | (uint)(byte2 << 16);
         }
 
         /// <summary>
@@ -572,7 +572,7 @@ namespace ICU4N.Impl.Coll
             int byte3 = ((int)(basePrimary >> 8) & 0xff) - step;
             if (byte3 >= 2)
             {
-                return (basePrimary & 0xffff0000L) | (byte3 << 8);
+                return (basePrimary & 0xffff0000L) | (uint)(byte3 << 8);
             }
             byte3 += 254;
             // Same with the second byte,
@@ -595,7 +595,7 @@ namespace ICU4N.Impl.Coll
                 }
             }
             // First byte, assume no further underflow.
-            return (basePrimary & 0xff000000L) | (byte2 << 16) | (byte3 << 8);
+            return (basePrimary & 0xff000000L) | (uint)(byte2 << 16) | (uint)(byte3 << 8);
         }
 
         /// <summary>
@@ -621,10 +621,10 @@ namespace ICU4N.Impl.Coll
             long primary = 2 + (c % 18) * 14;
             c /= 18;
             // Third byte: 254 values.
-            primary |= (2 + (c % 254)) << 8;
+            primary |= (uint)(2 + (c % 254)) << 8;
             c /= 254;
             // Second byte: 251 values 04..FE excluding the primary compression bytes.
-            primary |= (4 + (c % 251)) << 16;
+            primary |= (uint)(4 + (c % 251)) << 16;
             // One lead byte covers all code points (c < 0x1182B4 = 1*251*254*18).
             return primary | ((long)UNASSIGNED_IMPLICIT_BYTE << 24);
         }
