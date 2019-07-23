@@ -1420,8 +1420,10 @@ namespace ICU4N.Impl.Coll
                                     }
                                     tIsTailored = true;
                                 }
-                                t = (int)tertiaries.NextWeight();
-                                Debug.Assert(t != 0xffffffff);
+                                // ICU4N: Need to capture the value as long so we can use it in the assert
+                                long temp = tertiaries.NextWeight();
+                                t = (int)temp;
+                                Debug.Assert(temp != 0xffffffff);
                             }
                             else
                             {
