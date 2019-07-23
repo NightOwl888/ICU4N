@@ -1492,8 +1492,9 @@ namespace ICU4N.Impl.Coll
                                         }
                                         sIsTailored = true;
                                     }
-                                    s = (int)secondaries.NextWeight();
-                                    Debug.Assert(s != 0xffffffff);
+                                    long temp = secondaries.NextWeight();
+                                    s = (int)temp;
+                                    Debug.Assert(temp != 0xffffffff);
                                 }
                                 else
                                 {
