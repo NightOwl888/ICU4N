@@ -268,11 +268,15 @@ namespace ICU4N.Text
         {
             private string id;
             private IList<string> idBlockVector;
+#pragma warning disable 612, 618
             private IList<Data> dataVector;
+#pragma warning restore 612, 618
             private UnicodeSet compoundFilter;
 
             public CompoundRBTEntry(string theID, IList<string> theIDBlockVector,
+#pragma warning disable 612, 618
                                     IList<Data> theDataVector,
+#pragma warning restore 612, 618
                                     UnicodeSet theCompoundFilter)
             {
                 id = theID;
@@ -297,8 +301,10 @@ namespace ICU4N.Text
                     }
                     if (i < dataVector.Count)
                     {
+#pragma warning disable 612, 618
                         Data data = dataVector[i];
                         transliterators.Add(new RuleBasedTransliterator("%Pass" + passNumber++, data, null));
+#pragma warning restore 612, 618
                     }
                 }
 
@@ -947,11 +953,12 @@ namespace ICU4N.Text
             for (; ; )
             {
                 object entry = entryWrapper[0];
-
+#pragma warning disable 612, 618
                 if (entry is RuleBasedTransliterator.Data)
                 {
                     RuleBasedTransliterator.Data data = (RuleBasedTransliterator.Data)entry;
                     return new RuleBasedTransliterator(ID, data, null);
+#pragma warning restore 612, 618
                 }
                 else if (entry is Type)
                 {
@@ -984,11 +991,13 @@ namespace ICU4N.Text
                     AnyTransliterator temp = (AnyTransliterator)entry;
                     return temp.SafeClone();
                 }
+#pragma warning disable 612, 618
                 else if (entry is RuleBasedTransliterator)
                 {
                     RuleBasedTransliterator temp = (RuleBasedTransliterator)entry;
                     return temp.SafeClone();
                 }
+#pragma warning restore 612, 618
                 else if (entry is CompoundTransliterator)
                 {
                     CompoundTransliterator temp = (CompoundTransliterator)entry;

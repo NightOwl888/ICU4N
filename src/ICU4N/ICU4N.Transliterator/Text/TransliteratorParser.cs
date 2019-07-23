@@ -21,7 +21,9 @@ namespace ICU4N.Text
          * A Vector of RuleBasedTransliterator.Data objects, one for each discrete group
          * of rules in the rule set
          */
+#pragma warning disable 612, 618
         public IList<Data> DataVector { get; set; }
+#pragma warning restore 612, 618
 
         /**
          * PUBLIC data member.
@@ -32,7 +34,9 @@ namespace ICU4N.Text
         /**
          * The current data object for which we are parsing rules
          */
+#pragma warning disable 612, 618
         private Data curData;
+#pragma warning restore 612, 618
 
         /**
          * PUBLIC data member containing the parsed compound filter, if any.
@@ -990,7 +994,9 @@ namespace ICU4N.Text
             bool parsingIDs = true;
             int ruleCount = 0;
 
+#pragma warning disable 612, 618
             DataVector = new List<Data>();
+#pragma warning restore 612, 618
             IdBlockVector = new List<string>();
             curData = null;
             direction = dir;
@@ -1140,7 +1146,9 @@ namespace ICU4N.Text
                                     IdBlockVector.Insert(0, idBlockResult.ToString());
                                 idBlockResult.Delete(0, idBlockResult.Length);
                                 parsingIDs = false;
+#pragma warning disable 612, 618
                                 curData = new RuleBasedTransliterator.Data();
+#pragma warning restore 612, 618
 
                                 // By default, rules use part of the private use area
                                 // E000..F8FF for variables and other stand-ins.  Currently
@@ -1200,7 +1208,9 @@ namespace ICU4N.Text
             // Convert the set vector to an array
             for (int i = 0; i < DataVector.Count; i++)
             {
+#pragma warning disable 612, 618
                 Data data = DataVector[i];
+#pragma warning restore 612, 618
                 data.variables = new Object[variablesVector.Count];
                 variablesVector.CopyTo(data.variables);
                 data.variableNames = new Dictionary<string, char[]>();
@@ -1224,7 +1234,9 @@ namespace ICU4N.Text
 
                 for (int i = 0; i < DataVector.Count; i++)
                 {
+#pragma warning disable 612, 618
                     Data data = DataVector[i];
+#pragma warning restore 612, 618
                     data.RuleSet.Freeze();
                 }
 
@@ -1524,7 +1536,9 @@ namespace ICU4N.Text
          * Begin normalizing all rules using the given mode, in response
          * to a pragma statement.
          */
+#pragma warning disable 612, 618
         private void PragmaNormalizeRules(Normalizer.Mode mode)
+#pragma warning restore 612, 618
         {
             //TODO Finish
             throw new IcuArgumentException("use normalize rules pragma not implemented yet");
@@ -1582,14 +1596,18 @@ namespace ICU4N.Text
             p = Utility.ParsePattern(rule, pos, limit, "~nfd rules~;", null);
             if (p >= 0)
             {
+#pragma warning disable 612, 618
                 PragmaNormalizeRules(Normalizer.NFD);
+#pragma warning restore 612, 618
                 return p;
             }
 
             p = Utility.ParsePattern(rule, pos, limit, "~nfc rules~;", null);
             if (p >= 0)
             {
+#pragma warning disable 612, 618
                 PragmaNormalizeRules(Normalizer.NFC);
+#pragma warning restore 612, 618
                 return p;
             }
 

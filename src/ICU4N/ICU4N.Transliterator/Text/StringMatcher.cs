@@ -49,7 +49,9 @@ namespace ICU4N.Text
         /// Context object that maps stand-ins to matcher and replacer
         /// objects.
         /// </summary>
+#pragma warning disable 612, 618
         private readonly RuleBasedTransliterator.Data data;
+#pragma warning restore 612, 618
 
         /// <summary>
         /// Construct a matcher that matches the given pattern string.
@@ -61,7 +63,9 @@ namespace ICU4N.Text
         /// <param name="theData">Context object mapping stand-ins to <see cref="IUnicodeMatcher"/> objects.</param>
         public StringMatcher(string theString,
                              int segmentNum,
+#pragma warning disable 612, 618
                              RuleBasedTransliterator.Data theData)
+#pragma warning restore 612, 618
         {
             data = theData;
             pattern = theString;
@@ -83,7 +87,9 @@ namespace ICU4N.Text
                              int start,
                              int limit,
                              int segmentNum,
+#pragma warning disable 612, 618
                              RuleBasedTransliterator.Data theData)
+#pragma warning restore 612, 618
             : this(theString.Substring(start, limit - start), segmentNum, theData) // ICU4N: Corrected 2nd substring parameter
         {
         }

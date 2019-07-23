@@ -260,12 +260,16 @@ namespace ICU4N.Text
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
+#pragma warning disable 672
         public override void AddSourceTargetSet(UnicodeSet inputFilter, UnicodeSet sourceSet, UnicodeSet targetSet)
+#pragma warning restore 672
         {
             // Each form consists of a prefix, suffix,
             // * radix, minimum digit count, and maximum digit count.  These
             // * values are stored as a five character header. ...
+#pragma warning disable 612, 618
             UnicodeSet myFilter = GetFilterAsUnicodeSet(inputFilter);
+#pragma warning restore 612, 618
             UnicodeSet items = new UnicodeSet();
             StringBuilder buffer = new StringBuilder();
             for (int i = 0; spec[i] != END;)

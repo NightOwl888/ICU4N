@@ -49,10 +49,14 @@
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
+#pragma warning disable 672
         public override void AddSourceTargetSet(UnicodeSet inputFilter, UnicodeSet sourceSet, UnicodeSet targetSet)
         {
+#pragma warning restore 672
+#pragma warning disable 612, 618
             // intersect myFilter with the input filter
             UnicodeSet myFilter = GetFilterAsUnicodeSet(inputFilter);
+#pragma warning restore 612, 618
             sourceSet.AddAll(myFilter);
             // do nothing with the target
         }

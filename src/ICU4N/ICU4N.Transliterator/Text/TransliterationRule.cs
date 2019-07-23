@@ -82,7 +82,9 @@ namespace ICU4N.Text
          * An alias pointer to the data for this rule.  The data provides
          * lookup services for matchers and segments.
          */
+#pragma warning disable 612, 618
         private readonly RuleBasedTransliterator.Data data;
+#pragma warning restore 612, 618
 
 
         /**
@@ -119,7 +121,9 @@ namespace ICU4N.Text
                                    int cursorPos, int cursorOffset,
                                    IUnicodeMatcher[] segs,
                                    bool anchorStart, bool anchorEnd,
+#pragma warning disable 612, 618
                                    RuleBasedTransliterator.Data theData)
+#pragma warning restore 612, 618
         {
             data = theData;
 

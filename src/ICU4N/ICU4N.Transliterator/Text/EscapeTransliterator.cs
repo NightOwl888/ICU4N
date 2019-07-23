@@ -203,9 +203,13 @@ namespace ICU4N.Text
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
+#pragma warning disable 672
         public override void AddSourceTargetSet(UnicodeSet inputFilter, UnicodeSet sourceSet, UnicodeSet targetSet)
         {
+#pragma warning disable 672
+#pragma warning disable 612, 618
             sourceSet.AddAll(GetFilterAsUnicodeSet(inputFilter));
+#pragma warning restore 612, 618
             for (EscapeTransliterator it = this; it != null; it = it.supplementalHandler)
             {
                 if (inputFilter.Count != 0)

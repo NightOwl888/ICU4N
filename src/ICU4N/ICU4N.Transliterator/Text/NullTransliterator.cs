@@ -32,7 +32,9 @@
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
+#pragma warning disable 672
         public override void AddSourceTargetSet(UnicodeSet inputFilter, UnicodeSet sourceSet, UnicodeSet targetSet)
+#pragma warning restore 672
         {
             // do nothing
         }

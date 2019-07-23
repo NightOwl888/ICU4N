@@ -58,8 +58,10 @@ namespace ICU4N.Text
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
+#pragma warning disable 809
         protected override void HandleTransliterate(IReplaceable text,
                                        TransliterationPosition index, bool incremental)
+#pragma warning disable 809
         {
             /* We keep start and limit fixed the entire time,
              * relative to the text -- limit may move numerically if text is

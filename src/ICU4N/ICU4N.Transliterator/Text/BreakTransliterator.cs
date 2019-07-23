@@ -419,9 +419,13 @@ namespace ICU4N.Text
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
+#pragma warning disable 672
         public override void AddSourceTargetSet(UnicodeSet inputFilter, UnicodeSet sourceSet, UnicodeSet targetSet)
+#pragma warning restore 672
         {
+#pragma warning disable 612, 618
             UnicodeSet myFilter = GetFilterAsUnicodeSet(inputFilter);
+#pragma warning restore 612, 618
             // Doesn't actually modify the source characters, so leave them alone.
             // add the characters inserted
             if (myFilter.Count != 0)

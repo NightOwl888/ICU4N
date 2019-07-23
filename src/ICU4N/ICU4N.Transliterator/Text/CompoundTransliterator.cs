@@ -322,16 +322,22 @@ namespace ICU4N.Text
         }
 
         /// <seealso cref="Transliterator.AddSourceTargetSet(UnicodeSet, UnicodeSet, UnicodeSet)"/>
+#pragma warning disable 672
         public override void AddSourceTargetSet(UnicodeSet filter, UnicodeSet sourceSet, UnicodeSet targetSet)
+#pragma warning restore 672
         {
+#pragma warning disable 612, 618
             UnicodeSet myFilter = new UnicodeSet(GetFilterAsUnicodeSet(filter));
+#pragma warning restore 612, 618
             UnicodeSet tempTargetSet = new UnicodeSet();
             for (int i = 0; i < trans.Length; ++i)
             {
                 // each time we produce targets, those can be used by subsequent items, despite the filter.
                 // so we get just those items, and add them to the filter each time.
                 tempTargetSet.Clear();
+#pragma warning disable 612, 618
                 trans[i].AddSourceTargetSet(myFilter, sourceSet, tempTargetSet);
+#pragma warning restore 612, 618
                 targetSet.AddAll(tempTargetSet);
                 myFilter.AddAll(tempTargetSet);
             }

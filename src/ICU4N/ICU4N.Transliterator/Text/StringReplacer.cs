@@ -43,7 +43,9 @@ namespace ICU4N.Text
         /// Object that translates stand-in characters in 'output' to
         /// <see cref="IUnicodeReplacer"/> objects.
         /// </summary>
+#pragma warning disable 612, 618
         private readonly RuleBasedTransliterator.Data data;
+#pragma warning restore 612, 618
 
         /// <summary>
         /// Construct a <see cref="StringReplacer"/> that sets the emits the given output
@@ -58,7 +60,9 @@ namespace ICU4N.Text
         /// stand-in characters to <see cref="IUnicodeReplacer"/> objects.</param>
         public StringReplacer(string theOutput,
                               int theCursorPos,
+#pragma warning disable 612, 618
                               RuleBasedTransliterator.Data theData)
+#pragma warning restore 612, 618
         {
             output = theOutput;
             cursorPos = theCursorPos;
@@ -77,7 +81,9 @@ namespace ICU4N.Text
         /// <param name="theData">Transliterator context object that translates
         /// stand-in characters to <see cref="IUnicodeReplacer"/> objects.</param>
         public StringReplacer(string theOutput,
+#pragma warning disable 612, 618
                               RuleBasedTransliterator.Data theData)
+#pragma warning restore 612, 618
         {
             output = theOutput;
             cursorPos = 0;

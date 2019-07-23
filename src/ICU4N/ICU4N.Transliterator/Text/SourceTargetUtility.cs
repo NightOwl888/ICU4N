@@ -60,7 +60,9 @@ namespace ICU4N.Text
             {
                 string s = transform.Transform(UTF16.ValueOf(i));
                 bool added = false;
+#pragma warning disable 612, 618
                 if (!CharSequences.Equals(i, s))
+#pragma warning restore 612, 618
                 {
                     sourceCache.Add(i);
                     added = true;
@@ -119,7 +121,9 @@ namespace ICU4N.Text
         public virtual void AddSourceTargetSet(Transliterator transliterator, UnicodeSet inputFilter, UnicodeSet sourceSet,
                 UnicodeSet targetSet)
         {
+#pragma warning disable 612, 618
             UnicodeSet myFilter = transliterator.GetFilterAsUnicodeSet(inputFilter);
+#pragma warning restore 612, 618
             UnicodeSet affectedCharacters = new UnicodeSet(sourceCache).RetainAll(myFilter);
             sourceSet.AddAll(affectedCharacters);
             foreach (string s in affectedCharacters)
