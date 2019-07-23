@@ -202,7 +202,9 @@ namespace ICU4N.Text
          * @deprecated This API is ICU internal only.
          */
         [Obsolete("This API is ICU internal only.")]
+#pragma warning disable 809
         public override int GetHashCode()
+#pragma warning restore 809
         {
             Debug.Assert(false, "hashCode not designed");
             return 42;
@@ -1165,14 +1167,15 @@ namespace ICU4N.Text
             {
                 return bundle.GetString(RB_DISPLAY_NAME_PREFIX + ID);
             }
-            catch (MissingManifestResourceException e) { }
+            catch (MissingManifestResourceException) { }
 
             try
             {
-                //// Construct the formatter first; if getString() fails
-                //// we'll exit the try block
-                //MessageFormat format = new MessageFormat(
-                //        bundle.GetString(RB_DISPLAY_NAME_PATTERN));
+                // Construct the formatter first; if getString() fails
+                // we'll exit the try block
+                MessageFormat format = new ICU4N.Text.MessageFormat( // ICU4N specific - we are using ICU's MessageFormat, original code was using JDK
+                        bundle.GetString(RB_DISPLAY_NAME_PATTERN));
+
                 // Construct the argument array
                 object[] args = new object[] { 2, stv[0], stv[1] };
 
@@ -1184,19 +1187,15 @@ namespace ICU4N.Text
                         args[j] = bundle.GetString(RB_SCRIPT_DISPLAY_NAME_PREFIX +
                                                    (string)args[j]);
                     }
-                    catch (MissingManifestResourceException e) { }
+                    catch (MissingManifestResourceException) { }
                 }
 
                 // Format it using the pattern in the resource
-                //return (stv[2].length() > 0) ?
-                //    (format.format(args) + '/' + stv[2]) :
-                //    format.format(args);
-
-                string pattern = bundle.GetString(RB_DISPLAY_NAME_PATTERN);
-
-                return (stv[2].Length > 0) ? string.Format(CultureInfo.InvariantCulture, pattern, args) + '/' + stv[2] : string.Format(CultureInfo.InvariantCulture, pattern, args);
+                return (stv[2].Length > 0) ?
+                    (format.Format(args) + '/' + stv[2]) :
+                    format.Format(args);
             }
-            catch (MissingManifestResourceException e2) { }
+            catch (MissingManifestResourceException) { }
 
             // We should not reach this point unless there is something
             // wrong with the build or the RB_DISPLAY_NAME_PATTERN has
@@ -1383,7 +1382,9 @@ namespace ICU4N.Text
             }
             else if (parser.IdBlockVector.Count == 0 && parser.DataVector.Count == 1)
             {
+#pragma warning disable 612, 618
                 t = new RuleBasedTransliterator(id, parser.DataVector[0], parser.CompoundFilter);
+#pragma warning restore 612, 618
             }
             else if (parser.IdBlockVector.Count == 1 && parser.DataVector.Count == 0)
             {
@@ -1427,7 +1428,9 @@ namespace ICU4N.Text
                     if (i < parser.DataVector.Count)
                     {
                         var data = parser.DataVector[i];
+#pragma warning disable 612, 618
                         transliterators.Add(new RuleBasedTransliterator("%Pass" + passNumber++, data, null));
+#pragma warning restore 612, 618
                     }
                 }
 
@@ -1538,7 +1541,9 @@ namespace ICU4N.Text
         public UnicodeSet GetSourceSet()
         {
             UnicodeSet result = new UnicodeSet();
+#pragma warning disable 612, 618
             AddSourceTargetSet(GetFilterAsUnicodeSet(UnicodeSet.AllCodePoints), result, new UnicodeSet());
+#pragma warning restore 612, 618
             return result;
         }
 
@@ -1584,7 +1589,9 @@ namespace ICU4N.Text
         public virtual UnicodeSet GetTargetSet()
         {
             UnicodeSet result = new UnicodeSet();
+#pragma warning disable 612, 618
             AddSourceTargetSet(GetFilterAsUnicodeSet(UnicodeSet.AllCodePoints), new UnicodeSet(), result);
+#pragma warning restore 612, 618
             return result;
         }
 

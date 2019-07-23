@@ -2728,7 +2728,6 @@ namespace ICU4N.Dev.Test.Translit
          * Make sure display names of variants look reasonable.
          */
         [Test]
-        [Ignore("ICU4N TODO: Fix this")]
         public void TestDisplayName()
         {
             String[] DATA = {
@@ -2744,7 +2743,7 @@ namespace ICU4N.Dev.Test.Translit
 
                 // Target-only IDs
                 "NFC", "Any to NFC", "Any to NFD",
-        };
+            };
 
             CultureInfo US = new CultureInfo("en-US");
 
