@@ -671,7 +671,7 @@ namespace ICU4N.Text
             {
                 collatorPrimaryOnly.InternalAddContractions(BASE[0], contractions);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

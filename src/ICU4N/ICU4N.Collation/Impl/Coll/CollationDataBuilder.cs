@@ -1555,7 +1555,7 @@ namespace ICU4N.Impl.Coll
                         {
                             cond.BuiltCE32 = builder.BuildContext(cond);
                         }
-                        catch (IndexOutOfRangeException e) // ICU4N TODO: Try to factor out this exception
+                        catch (IndexOutOfRangeException) // ICU4N TODO: Try to factor out this exception
                         {
                             builder.ClearContexts();
                             cond.BuiltCE32 = builder.BuildContext(cond);

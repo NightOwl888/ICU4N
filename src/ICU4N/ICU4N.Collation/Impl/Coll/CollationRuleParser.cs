@@ -930,7 +930,7 @@ namespace ICU4N.Impl.Coll
                     return script;
                 }
             }
-            catch (IcuArgumentException e)
+            catch (IcuArgumentException)
             {
                 // fall through
             }

@@ -173,7 +173,7 @@ namespace ICU4N.Text
                 {
                     return MakeInstance(ULocale.ROOT);
                 }
-                catch (MissingManifestResourceException e)
+                catch (MissingManifestResourceException)
                 {
                     return null;
                 }

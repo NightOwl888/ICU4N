@@ -117,7 +117,7 @@ namespace ICU4N.Impl.Coll
                         CollationData.ICU_DATA_CLASS_LOADER, 
                         ICUResourceBundle.OpenType.LOCALE_ROOT);
             }
-            catch (MissingManifestResourceException e)
+            catch (MissingManifestResourceException)
             {
                 outValidLocale = ULocale.ROOT;
                 return root;
@@ -143,7 +143,7 @@ namespace ICU4N.Impl.Coll
                     return root;
                 }
             }
-            catch (MissingManifestResourceException ignored)
+            catch (MissingManifestResourceException)
             {
                 return root;
             }
@@ -239,7 +239,7 @@ namespace ICU4N.Impl.Coll
             {
                 t.SetRulesResource(data.Get("Sequence"));
             }
-            catch (MissingManifestResourceException ignored)
+            catch (MissingManifestResourceException)
             {
             }
 
