@@ -42,6 +42,9 @@ namespace ICU4N.Text
     /// </summary>
     /// <author>Ram Viswanadha</author>
     /// <stable>ICU 2.8</stable>
+#if FEATURE_SERIALIZABLE_EXCEPTIONS
+    [Serializable]
+#endif
     public class StringPrepParseException : FormatException
     {
         /// <summary>
@@ -97,6 +100,18 @@ namespace ICU4N.Text
             SetContext(rules, pos);
             this.line = lineNumber;
         }
+
+#if FEATURE_SERIALIZABLE_EXCEPTIONS
+        /// <summary>
+        /// Initializes a new instance of this class with serialized data.
+        /// </summary>
+        /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination.</param>
+        protected StringPrepParseException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
+            : base(info, context)
+        {
+        }
+#endif
 
         /// <summary>
         /// Compare this ParseException to another and evaluate if they are equal.
