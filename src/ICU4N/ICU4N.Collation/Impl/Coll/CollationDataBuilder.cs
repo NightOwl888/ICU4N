@@ -441,7 +441,7 @@ namespace ICU4N.Impl.Coll
             internal int Next { get; set; }
         }
 
-        protected int GetCE32FromOffsetCE32(bool fromBase, int c, int ce32)
+        internal int GetCE32FromOffsetCE32(bool fromBase, int c, int ce32) // ICU4N: In Java, this was protected, but this is a sealed class
         {
             int i = Collation.IndexFromCE32(ce32);
             long dataCE = fromBase ? base_.ces[i] : ce64s[i];
@@ -449,7 +449,7 @@ namespace ICU4N.Impl.Coll
             return Collation.MakeLongPrimaryCE32(p);
         }
 
-        protected int AddCE(long ce)
+        internal int AddCE(long ce) // ICU4N: In Java, this was protected, but this is a sealed class
         {
             int length = ce64s.Count;
             for (int i = 0; i < length; ++i)
@@ -460,7 +460,7 @@ namespace ICU4N.Impl.Coll
             return length;
         }
 
-        protected int AddCE32(int ce32)
+        internal int AddCE32(int ce32) // ICU4N: In Java, this was protected, but this is a sealed class
         {
             int length = ce32s.Count;
             for (int i = 0; i < length; ++i)
@@ -471,7 +471,7 @@ namespace ICU4N.Impl.Coll
             return length;
         }
 
-        protected int AddConditionalCE32(String context, int ce32)
+        internal int AddConditionalCE32(string context, int ce32) // ICU4N: In Java, this was protected, but this is a sealed class
         {
             Debug.Assert(context.Length != 0);
             int index = conditionalCE32s.Count;
@@ -1573,7 +1573,7 @@ namespace ICU4N.Impl.Coll
             private int pos;
         }
 
-        protected bool IsMutable
+        internal bool IsMutable // ICU4N: In Java, this was protected, but this is a sealed class
         {
             get
             {
