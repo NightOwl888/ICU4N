@@ -229,7 +229,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
                         // store composition pair in single integer
 
-                        pair = ((long)first << 32) | second;
+                        pair = ((long)first << 32) | (uint)second;
                         if (DEBUG && value == '\u00C0')
                         {
                             Console.Out.WriteLine("debug2: " + line);

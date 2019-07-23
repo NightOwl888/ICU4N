@@ -13,7 +13,7 @@ namespace ICU4N.Dev.Test.Normalizers
     /// <author>
     /// Mark Davis
     /// Updates for supplementary code points:
-    /// Vladimir Weinstein & Markus Scherer
+    /// Vladimir Weinstein & Markus Scher
     /// </author>
     public class NormalizerData
     {
@@ -44,7 +44,7 @@ namespace ICU4N.Dev.Test.Normalizers
         */
         public int GetPairwiseComposition(int first, int second)
         {
-            return compose.Get(((long)first << 32) | second);
+            return compose.Get(((long)first << 32) | (uint)second);
         }
 
 
