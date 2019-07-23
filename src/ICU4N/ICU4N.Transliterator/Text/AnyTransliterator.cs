@@ -190,7 +190,7 @@ namespace ICU4N.Text
                 {
                     t = Transliterator.GetInstance(id, Forward);
                 }
-                catch (Exception e) { }
+                catch (Exception) { }
                 if (t == null)
                 {
 
@@ -200,7 +200,7 @@ namespace ICU4N.Text
                     {
                         t = Transliterator.GetInstance(id, Forward);
                     }
-                    catch (Exception e) { }
+                    catch (Exception) { }
                 }
 
                 if (t != null)

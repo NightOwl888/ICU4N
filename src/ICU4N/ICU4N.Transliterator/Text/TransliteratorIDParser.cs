@@ -290,7 +290,7 @@ namespace ICU4N.Text
                 {
                     filter = new UnicodeSet(id, ppos, null);
                 }
-                catch (ArgumentException e)
+                catch (ArgumentException)
                 {
                     pos[0] = start;
                     return null;

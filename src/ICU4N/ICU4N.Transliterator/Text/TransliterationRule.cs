@@ -592,7 +592,7 @@ namespace ICU4N.Text
                         }
                         matcher.AddMatchSetTo(tempSource);
                     }
-                    catch (InvalidCastException e)
+                    catch (InvalidCastException)
                     { // if the matcher is not a UnicodeSet
                         temp.Clear();
                         matcher.AddMatchSetTo(temp);

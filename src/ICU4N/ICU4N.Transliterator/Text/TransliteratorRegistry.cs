@@ -123,7 +123,7 @@ namespace ICU4N.Text
                         }
                     }
                 }
-                catch (MissingManifestResourceException e)
+                catch (MissingManifestResourceException)
                 {
                     ///CLOVER:OFF
                     // The constructor is called from multiple private methods
@@ -960,10 +960,10 @@ namespace ICU4N.Text
                         //return (Transliterator)((Type)entry).newInstance();
                         return (Transliterator)Activator.CreateInstance((Type)entry);
                     }
-                    catch (TargetInvocationException e)
+                    catch (TargetInvocationException)
                     {
                     }
-                    catch (MethodAccessException e2) { }
+                    catch (MethodAccessException) { }
                     return null;
                 }
                 else if (entry is AliasEntry)
@@ -1014,7 +1014,7 @@ namespace ICU4N.Text
                     parser.Parse(re.Resource, re.Direction);
 
                 }
-                catch (InvalidCastException e)
+                catch (InvalidCastException)
                 {
                     // If we pull a rule from a locale resource bundle it will
                     // be a LocaleEntry.
