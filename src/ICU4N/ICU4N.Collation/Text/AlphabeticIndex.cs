@@ -308,7 +308,9 @@ namespace ICU4N.Text
             collatorPrimaryOnly.Strength = CollationStrength.Primary;
             collatorPrimaryOnly.Freeze();
 
+#pragma warning disable 612, 618
             firstCharsInScripts = GetFirstCharactersInScripts();
+#pragma warning restore 612, 618
             firstCharsInScripts.Sort(collatorPrimaryOnly);
             // Guard against a degenerate collator where
             // some script boundary strings are primary ignorable.
@@ -1154,7 +1156,9 @@ namespace ICU4N.Text
             long variableTop;
             if (collatorPrimaryOnly.IsAlternateHandlingShifted)
             {
+#pragma warning disable 612, 618
                 variableTop = collatorPrimaryOnly.VariableTop & 0xffffffffL;
+#pragma warning restore 612, 618
             }
             else
             {
@@ -1392,7 +1396,9 @@ namespace ICU4N.Text
         private static bool HasMultiplePrimaryWeights(
                 RuleBasedCollator coll, long variableTop, string s)
         {
+#pragma warning disable 612, 618
             long[] ces = coll.InternalGetCEs(s.ToCharSequence());
+#pragma warning restore 612, 618
             bool seenPrimary = false;
             for (int i = 0; i < ces.Length; ++i)
             {

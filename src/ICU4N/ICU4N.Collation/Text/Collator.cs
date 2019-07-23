@@ -986,7 +986,9 @@ namespace ICU4N.Text
             value = loc.GetKeywordValue("colReorder");
             if (value != null)
             {
+#pragma warning disable 612, 618
                 int[] codes = new int[UScript.CodeLimit + ReorderCodes.Limit - ReorderCodes.First];
+#pragma warning restore 612, 618
                 int codesLength = 0;
                 int scriptNameStart = 0;
                 for (; ; )

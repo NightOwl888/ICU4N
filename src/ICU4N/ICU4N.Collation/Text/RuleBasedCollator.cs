@@ -1666,7 +1666,9 @@ namespace ICU4N.Text
          */
         public override int Compare(string source, string target)
         {
+#pragma warning disable 612, 618
             return DoCompare(source.ToCharSequence(), target.ToCharSequence());
+#pragma warning restore 612, 618
         }
 
         /**

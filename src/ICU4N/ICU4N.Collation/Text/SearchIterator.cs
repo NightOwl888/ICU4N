@@ -437,7 +437,9 @@ namespace ICU4N.Text
                         (matchindex != DONE &&
                         matchindex + matchlength >= endIdx))
                 {
+#pragma warning disable 612, 618
                     SetMatchNotFound();
+#pragma warning restore 612, 618
                     return DONE;
                 }
             }
@@ -521,7 +523,9 @@ namespace ICU4N.Text
                 if (index == startIdx || matchindex == startIdx)
                 {
                     // not enough characters to match
+#pragma warning disable 612, 618
                     SetMatchNotFound();
+#pragma warning restore 612, 618
                     return DONE;
                 }
             }
@@ -567,7 +571,9 @@ namespace ICU4N.Text
         */
         public virtual void Reset()
         {
+#pragma warning disable 612, 618
             SetMatchNotFound();
+#pragma warning restore 612, 618
             SetIndex(search_.BeginIndex);
             search_.isOverlap_ = false;
             search_.isCanonicalMatch_ = false;
