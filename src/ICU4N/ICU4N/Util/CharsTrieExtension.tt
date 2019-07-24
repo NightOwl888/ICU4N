@@ -31,24 +31,24 @@ using System.Text;
 namespace ICU4N.Util
 {
     public sealed partial class CharsTrie
-	{
+    {
 <# foreach (var charSequence in charSequences) { #>
 
         /// <summary>
         /// Constructs a CharsTrie reader instance.
         /// </summary>
         /// <remarks>
-        /// The <see cref="<#=charSequence#>"/> must contain a copy of a char sequence from the <see cref="CharsTrieBuilder"/>,
+        /// The <see cref="<#=charSequence == "char[]" ? "T:"+charSequence : charSequence#>"/> must contain a copy of a char sequence from the <see cref="CharsTrieBuilder"/>,
         /// with the offset indicating the first char of that sequence.
         /// The <see cref="CharsTrie"/> object will not read more chars than
         /// the <see cref="CharsTrieBuilder"/> generated in the corresponding 
         /// <see cref="CharsTrieBuilder.Build(StringTrieBuilder.Option)"/> call.
         /// <para/>
-        /// The <see cref="<#=charSequence#>"/> is not copied/cloned and must not be modified while
+        /// The <see cref="<#=charSequence == "char[]" ? "T:"+charSequence : charSequence#>"/> is not copied/cloned and must not be modified while
         /// the <see cref="CharsTrie"/> object is in use.
         /// </remarks>
-        /// <param name="trieChars"><see cref="<#=charSequence#>"/> that contains the serialized trie.</param>
-        /// <param name="offset">Root offset of the trie in the <see cref="<#=charSequence#>"/>.</param>
+        /// <param name="trieChars"><see cref="<#=charSequence == "char[]" ? "T:"+charSequence : charSequence#>"/> that contains the serialized trie.</param>
+        /// <param name="offset">Root offset of the trie in the <see cref="<#=charSequence == "char[]" ? "T:"+charSequence : charSequence#>"/>.</param>
         /// <stable>ICU 4.8</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> CharsTrie(<#=charSequence#> trieChars, int offset) 
         {
@@ -169,5 +169,5 @@ namespace ICU4N.Util
             }
         }
 <# } #>
-	}
+    }
 }

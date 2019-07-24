@@ -12,7 +12,7 @@ using System.Text;
 namespace ICU4N.Util
 {
     public sealed partial class CharsTrie
-	{
+    {
 
         /// <summary>
         /// Constructs a CharsTrie reader instance.
@@ -545,5 +545,5 @@ namespace ICU4N.Util
                 }
             }
         }
-	}
+    }
 }
