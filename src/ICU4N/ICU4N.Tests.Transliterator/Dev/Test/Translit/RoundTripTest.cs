@@ -993,7 +993,7 @@ namespace ICU4N.Dev.Test.Translit
                 try
                 {
                     int t;
-                    String decomp = Normalizer.Normalize(sourceString, Normalizer.NFD);
+                    String decomp = Normalizer.Normalize(sourceString, NormalizerMode.NFD);
                     for (int i = 0; i < decomp.Length; ++i)
                     { // don't worry about surrogates
                         switch (GetType(decomp[i]))
@@ -1112,7 +1112,7 @@ namespace ICU4N.Dev.Test.Translit
             {
                 try
                 {
-                    String decomp = Normalizer.Normalize(sourceString, Normalizer.NFD);
+                    String decomp = Normalizer.Normalize(sourceString, NormalizerMode.NFD);
 
                     // modern is simpler: don't care about anything but a grave
                     if (!full)
@@ -1227,8 +1227,8 @@ namespace ICU4N.Dev.Test.Translit
             {
                 if (a.Equals(b)) return true;
                 if (a.Equals(b, StringComparison.OrdinalIgnoreCase) && IsCamel(a)) return true;
-                a = Normalizer.Normalize(a, Normalizer.NFD);
-                b = Normalizer.Normalize(b, Normalizer.NFD);
+                a = Normalizer.Normalize(a, NormalizerMode.NFD);
+                b = Normalizer.Normalize(b, NormalizerMode.NFD);
                 if (a.Equals(b)) return true;
                 if (a.Equals(b, StringComparison.OrdinalIgnoreCase) && IsCamel(a)) return true;
                 return false;
@@ -1552,7 +1552,7 @@ namespace ICU4N.Dev.Test.Translit
                     if (!toTarget.ContainsAll(targ)
                             || badCharacters.ContainsSome(targ))
                     {
-                        String targD = Normalizer.Normalize(targ, Normalizer.NFD);
+                        String targD = Normalizer.Normalize(targ, NormalizerMode.NFD);
                         if (!toTarget.ContainsAll(targD)
                                 || badCharacters.ContainsSome(targD))
                         {
@@ -1562,7 +1562,7 @@ namespace ICU4N.Dev.Test.Translit
                         }
                     }
 
-                    String cs2 = Normalizer.Normalize(cs, Normalizer.NFD);
+                    String cs2 = Normalizer.Normalize(cs, NormalizerMode.NFD);
                     String targ2 = sourceToTarget.Transliterate(cs2);
                     if (!targ.Equals(targ2))
                     {
@@ -1615,7 +1615,7 @@ namespace ICU4N.Dev.Test.Translit
                         if (!toTarget.ContainsAll(targ)
                                 || badCharacters.ContainsSome(targ))
                         {
-                            String targD = Normalizer.Normalize(targ, Normalizer.NFD);
+                            String targD = Normalizer.Normalize(targ, NormalizerMode.NFD);
                             if (!toTarget.ContainsAll(targD)
                                     || badCharacters.ContainsSome(targD))
                             {
@@ -1623,7 +1623,7 @@ namespace ICU4N.Dev.Test.Translit
                                 continue;
                             }
                         }
-                        String cs2 = Normalizer.Normalize(cs, Normalizer.NFD);
+                        String cs2 = Normalizer.Normalize(cs, NormalizerMode.NFD);
                         String targ2 = sourceToTarget.Transliterate(cs2);
                         if (!targ.Equals(targ2))
                         {
@@ -1667,7 +1667,7 @@ namespace ICU4N.Dev.Test.Translit
                     if (!toSource.ContainsAll(targ)
                             || badCharacters.ContainsSome(targ))
                     {
-                        String targD = Normalizer.Normalize(targ, Normalizer.NFD);
+                        String targD = Normalizer.Normalize(targ, NormalizerMode.NFD);
                         if (!toSource.ContainsAll(targD)
                                 || badCharacters.ContainsSome(targD))
                         {
@@ -1685,7 +1685,7 @@ namespace ICU4N.Dev.Test.Translit
                         failRound.Add(c);
                         continue;
                     }
-                    String targ2 = Normalizer.Normalize(targ, Normalizer.NFD);
+                    String targ2 = Normalizer.Normalize(targ, NormalizerMode.NFD);
                     String reverse2 = sourceToTarget.Transliterate(targ2);
                     if (!reverse.Equals(reverse2))
                     {
@@ -1747,7 +1747,7 @@ namespace ICU4N.Dev.Test.Translit
                         if (!toSource.ContainsAll(targ) /*&& !failTargSource.Contains(c) && !failTargSource.Contains(d)*/
                                 || badCharacters.ContainsSome(targ))
                         {
-                            String targD = Normalizer.Normalize(targ, Normalizer.NFD);
+                            String targD = Normalizer.Normalize(targ, NormalizerMode.NFD);
                             if (!toSource.ContainsAll(targD) /*&& !failTargSource.Contains(c) && !failTargSource.Contains(d)*/
                                     || badCharacters.ContainsSome(targD))
                             {
@@ -1763,7 +1763,7 @@ namespace ICU4N.Dev.Test.Translit
                             LogRoundTripFailure(cs, targetToSource.ID, targ, sourceToTarget.ID, reverse);
                             continue;
                         }
-                        String targ2 = Normalizer.Normalize(targ, Normalizer.NFD);
+                        String targ2 = Normalizer.Normalize(targ, NormalizerMode.NFD);
                         String reverse2 = sourceToTarget.Transliterate(targ2);
                         if (!reverse.Equals(reverse2))
                         {
@@ -1817,7 +1817,7 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     throw new TestTruncated("Test truncated; too many failures");
                 }
-                String toD = Normalizer.Normalize(to, Normalizer.NFD);
+                String toD = Normalizer.Normalize(to, NormalizerMode.NFD);
                 UnicodeSet temp = new UnicodeSet().AddAll(toD);
                 UnicodeSet bad = new UnicodeSet(shouldNotContainAny).RetainAll(temp)
                         .AddAll(new UnicodeSet(temp).RemoveAll(shouldContainAll));

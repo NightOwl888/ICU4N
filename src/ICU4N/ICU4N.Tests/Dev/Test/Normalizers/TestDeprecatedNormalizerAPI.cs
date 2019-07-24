@@ -22,12 +22,12 @@ namespace ICU4N.Dev.Test.Normalizers
             // make s a bit longer and more interesting
             CharacterIterator iter = new StringCharacterIterator(s + s);
             //test deprecated constructors
-            Normalizer norm = new Normalizer(iter, Normalizer.NFC, 0);
+            Normalizer norm = new Normalizer(iter, NormalizerMode.NFC, 0);
             if (norm.Next() != 0xe4)
             {
                 Errln("error in Normalizer(CharacterIterator).next()");
             }
-            Normalizer norm2 = new Normalizer(s, Normalizer.NFC, 0);
+            Normalizer norm2 = new Normalizer(s, NormalizerMode.NFC, 0);
             if (norm2.Next() != 0xe4)
             {
                 Errln("error in Normalizer(CharacterIterator).next()");
@@ -59,7 +59,7 @@ namespace ICU4N.Dev.Test.Normalizers
             assertEquals("error in Normalizer.UnicodeVersion property", NormalizerUnicodeVersion.Default, clone.UnicodeVersion);
 
             //test deprecated normalize method
-            Normalizer.Normalize(s, Normalizer.NFC, 0);
+            Normalizer.Normalize(s, NormalizerMode.NFC, 0);
             //test deprecated compose method
             Normalizer.Compose(s, false, 0);
             //test deprecated decompose method

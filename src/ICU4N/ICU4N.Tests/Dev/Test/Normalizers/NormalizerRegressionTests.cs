@@ -13,7 +13,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             // submitter's test case
             String tamil = "\u0b87\u0ba8\u0bcd\u0ba4\u0bbf\u0baf\u0bbe";
-            Logln("Normalized: " + Normalizer.IsNormalized(tamil, Normalizer.NFC, 0));
+            Logln("Normalized: " + Normalizer.IsNormalized(tamil, NormalizerMode.NFC, 0));
 
             // markus's test case
             // the combining cedilla can't be applied to 'b', so this is in normalized form.
@@ -31,12 +31,12 @@ namespace ICU4N.Dev.Test.Normalizers
             // this should return true, since the string is normalized (and it should
             // not throw an exception!)
             string sample = "aaab\u0327";
-            Logln("Normalized: " + Normalizer.IsNormalized(sample, Normalizer.NFC, 0));
+            Logln("Normalized: " + Normalizer.IsNormalized(sample, NormalizerMode.NFC, 0));
 
             // this should return false, since the string is _not_ normalized (and it should
             // not throw an exception!)
             string sample2 = "aaac\u0327";
-            Logln("Normalized: " + Normalizer.IsNormalized(sample2, Normalizer.NFC, 0));
+            Logln("Normalized: " + Normalizer.IsNormalized(sample2, NormalizerMode.NFC, 0));
         }
     }
 }

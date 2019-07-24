@@ -98,8 +98,8 @@ namespace ICU4N.Text
             }
             string prenormstr = s.ToString();
 #pragma warning disable 612, 618
-            bool isNormalized = Normalizer.QuickCheck(prenormstr, Normalizer.NFKC) == Normalizer.YES ||
-                               Normalizer.IsNormalized(prenormstr, Normalizer.NFKC, 0);
+            bool isNormalized = Normalizer.QuickCheck(prenormstr, NormalizerMode.NFKC) == QuickCheckResult.Yes ||
+                               Normalizer.IsNormalized(prenormstr, NormalizerMode.NFKC, 0);
 #pragma warning restore 612, 618
             CharacterIterator text;
             int numChars = 0;
@@ -119,10 +119,10 @@ namespace ICU4N.Text
             else
             {
 #pragma warning disable 612, 618
-                string normStr = Normalizer.Normalize(prenormstr, Normalizer.NFKC);
+                string normStr = Normalizer.Normalize(prenormstr, NormalizerMode.NFKC);
                 text = new StringCharacterIterator(normStr);
                 charPositions = new int[normStr.Length + 1];
-                Normalizer normalizer = new Normalizer(prenormstr, Normalizer.NFKC, 0);
+                Normalizer normalizer = new Normalizer(prenormstr, NormalizerMode.NFKC, 0);
                 int index = 0;
                 charPositions[0] = 0;
                 while (index < normalizer.EndIndex)

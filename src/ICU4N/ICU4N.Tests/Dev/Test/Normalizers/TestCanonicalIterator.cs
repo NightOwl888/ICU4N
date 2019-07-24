@@ -153,7 +153,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     Errln("CanonicalIterator.reset() failed");
                 }
-                if (!it.Source.Equals(Normalizer.Normalize(testArray[i][0], Normalizer.NFD)))
+                if (!it.Source.Equals(Normalizer.Normalize(testArray[i][0], NormalizerMode.NFD)))
                 {
                     Errln("CanonicalIterator.getSource() does not return NFD of input source");
                 }

@@ -45,7 +45,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 Logln("Test source:" + source);
                 //NFD
                 String uncodeNorm = unicode_NFD.normalize(source);
-                String icuNorm = Normalizer.Normalize(source, Normalizer.NFD);
+                String icuNorm = Normalizer.Normalize(source, NormalizerMode.NFD);
                 Logln("\tNFD(Unicode): " + uncodeNorm);
                 Logln("\tNFD(icu4j)  : " + icuNorm);
                 if (!uncodeNorm.Equals(icuNorm))
@@ -54,7 +54,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 //NFC
                 uncodeNorm = unicode_NFC.normalize(source);
-                icuNorm = Normalizer.Normalize(source, Normalizer.NFC);
+                icuNorm = Normalizer.Normalize(source, NormalizerMode.NFC);
                 Logln("\tNFC(Unicode): " + uncodeNorm);
                 Logln("\tNFC(icu4j)  : " + icuNorm);
                 if (!uncodeNorm.Equals(icuNorm))
@@ -63,7 +63,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 //NFKD
                 uncodeNorm = unicode_NFKD.normalize(source);
-                icuNorm = Normalizer.Normalize(source, Normalizer.NFKD);
+                icuNorm = Normalizer.Normalize(source, NormalizerMode.NFKD);
                 Logln("\tNFKD(Unicode): " + uncodeNorm);
                 Logln("\tNFKD(icu4j)  : " + icuNorm);
                 if (!uncodeNorm.Equals(icuNorm))
@@ -72,7 +72,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 //NFKC
                 uncodeNorm = unicode_NFKC.normalize(source);
-                icuNorm = Normalizer.Normalize(source, Normalizer.NFKC);
+                icuNorm = Normalizer.Normalize(source, NormalizerMode.NFKC);
                 Logln("\tNFKC(Unicode): " + uncodeNorm);
                 Logln("\tNFKC(icu4j)  : " + icuNorm);
                 if (!uncodeNorm.Equals(icuNorm))

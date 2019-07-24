@@ -9,12 +9,12 @@ using System.Text;
 namespace ICU4N.Text
 {
     /// <summary>
-	/// Constants for normalization modes.
-	/// For details about standard Unicode normalization forms
-	/// and about the algorithms which are also used with custom mapping tables
-	/// see http://www.unicode.org/unicode/reports/tr15/
-	/// </summary>
-	public enum Normalizer2Mode
+    /// Constants for normalization modes.
+    /// For details about standard Unicode normalization forms
+    /// and about the algorithms which are also used with custom mapping tables
+    /// see http://www.unicode.org/unicode/reports/tr15/
+    /// </summary>
+    public enum Normalizer2Mode
     {
         /// <summary>
         /// Decomposition followed by composition.
@@ -37,7 +37,7 @@ namespace ICU4N.Text
         /// <summary>
         /// "Fast C or D" form.
         /// If a string is in this form, then further decomposition <i>without reordering</i>
-        /// would yield the same form as DECOMPOSE.
+        /// would yield the same form as <see cref="Decompose"/>.
         /// Text in "Fast C or D" form can be processed efficiently with data tables
         /// that are "canonically closed", that is, that provide equivalent data for
         /// equivalent text, without having to be fully normalized.

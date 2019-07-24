@@ -71,8 +71,8 @@ namespace ICU4N.Dev.Test.Collate
             {
                 String comp = UTF16.ValueOf(u);
                 int len = comp.Length;
-                t[noCases].NFC = Normalizer.Normalize(u, Normalizer.NFC);
-                t[noCases].NFD = Normalizer.Normalize(u, Normalizer.NFD);
+                t[noCases].NFC = Normalizer.Normalize(u, NormalizerMode.NFC);
+                t[noCases].NFD = Normalizer.Normalize(u, NormalizerMode.NFD);
 
                 if (t[noCases].NFC.Length != t[noCases].NFD.Length
                     || (t[noCases].NFC.CompareToOrdinal(t[noCases].NFD) != 0)

@@ -102,20 +102,20 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             // Make sure that the static composition methods work
             Logln("Canonical composition...");
-            staticTest(Normalizer.NFC, hangulCanon, 2);
+            staticTest(NormalizerMode.NFC, hangulCanon, 2);
             Logln("Compatibility composition...");
-            staticTest(Normalizer.NFKC, hangulCompat, 2);
+            staticTest(NormalizerMode.NFKC, hangulCompat, 2);
             // Now try iterative composition....
             Logln("Iterative composition...");
-            Normalizer norm = new Normalizer("", Normalizer.NFC, 0);
+            Normalizer norm = new Normalizer("", NormalizerMode.NFC, 0);
             iterateTest(norm, hangulCanon, 2);
 
-            norm.SetMode(Normalizer.NFKD);
+            norm.SetMode(NormalizerMode.NFKD);
             iterateTest(norm, hangulCompat, 2);
 
             // And finally, make sure you can do it in reverse too
             Logln("Reverse iteration...");
-            norm.SetMode(Normalizer.NFC);
+            norm.SetMode(NormalizerMode.NFC);
             backAndForth(norm, hangulCanon);
         }
 
@@ -124,64 +124,64 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             // Make sure that the static decomposition methods work
             Logln("Canonical decomposition...");
-            staticTest(Normalizer.NFD, hangulCanon, 1);
+            staticTest(NormalizerMode.NFD, hangulCanon, 1);
             Logln("Compatibility decomposition...");
-            staticTest(Normalizer.NFKD, hangulCompat, 1);
+            staticTest(NormalizerMode.NFKD, hangulCompat, 1);
 
             // Now the iterative decomposition methods...
             Logln("Iterative decomposition...");
-            Normalizer norm = new Normalizer("", Normalizer.NFD, 0);
+            Normalizer norm = new Normalizer("", NormalizerMode.NFD, 0);
             iterateTest(norm, hangulCanon, 1);
 
-            norm.SetMode(Normalizer.NFKD);
+            norm.SetMode(NormalizerMode.NFKD);
             iterateTest(norm, hangulCompat, 1);
 
             // And finally, make sure you can do it in reverse too
             Logln("Reverse iteration...");
-            norm.SetMode(Normalizer.NFD);
+            norm.SetMode(NormalizerMode.NFD);
             backAndForth(norm, hangulCanon);
         }
         [Test]
         public void TestNone()
         {
-            Normalizer norm = new Normalizer("", Normalizer.NONE, 0);
+            Normalizer norm = new Normalizer("", NormalizerMode.None, 0);
             iterateTest(norm, canonTests, 0);
-            staticTest(Normalizer.NONE, canonTests, 0);
+            staticTest(NormalizerMode.None, canonTests, 0);
         }
         [Test]
         public void TestDecomp()
         {
-            Normalizer norm = new Normalizer("", Normalizer.NFD, 0);
+            Normalizer norm = new Normalizer("", NormalizerMode.NFD, 0);
             iterateTest(norm, canonTests, 1);
-            staticTest(Normalizer.NFD, canonTests, 1);
-            decomposeTest(Normalizer.NFD, canonTests, 1);
+            staticTest(NormalizerMode.NFD, canonTests, 1);
+            decomposeTest(NormalizerMode.NFD, canonTests, 1);
         }
 
         [Test]
         public void TestCompatDecomp()
         {
-            Normalizer norm = new Normalizer("", Normalizer.NFKD, 0);
+            Normalizer norm = new Normalizer("", NormalizerMode.NFKD, 0);
             iterateTest(norm, compatTests, 1);
-            staticTest(Normalizer.NFKD, compatTests, 1);
-            decomposeTest(Normalizer.NFKD, compatTests, 1);
+            staticTest(NormalizerMode.NFKD, compatTests, 1);
+            decomposeTest(NormalizerMode.NFKD, compatTests, 1);
         }
 
         [Test]
         public void TestCanonCompose()
         {
-            Normalizer norm = new Normalizer("", Normalizer.NFC, 0);
-            staticTest(Normalizer.NFC, canonTests, 2);
+            Normalizer norm = new Normalizer("", NormalizerMode.NFC, 0);
+            staticTest(NormalizerMode.NFC, canonTests, 2);
             iterateTest(norm, canonTests, 2);
-            composeTest(Normalizer.NFC, canonTests, 2);
+            composeTest(NormalizerMode.NFC, canonTests, 2);
         }
 
         [Test]
         public void TestCompatCompose()
         {
-            Normalizer norm = new Normalizer("", Normalizer.NFKC, 0);
+            Normalizer norm = new Normalizer("", NormalizerMode.NFKC, 0);
             iterateTest(norm, compatTests, 2);
-            staticTest(Normalizer.NFKC, compatTests, 2);
-            composeTest(Normalizer.NFKC, compatTests, 2);
+            staticTest(NormalizerMode.NFKC, compatTests, 2);
+            composeTest(NormalizerMode.NFKC, compatTests, 2);
         }
 
         [Test]
@@ -202,11 +202,11 @@ namespace ICU4N.Dev.Test.Normalizers
             new string[] { "\u1e9b",        "s\u0307",        "\u1e61"      },
         };
 
-            staticTest(Normalizer.NFD, canon, 1);
-            staticTest(Normalizer.NFC, canon, 2);
+            staticTest(NormalizerMode.NFD, canon, 1);
+            staticTest(NormalizerMode.NFC, canon, 2);
 
-            staticTest(Normalizer.NFKD, compat, 1);
-            staticTest(Normalizer.NFKC, compat, 2);
+            staticTest(NormalizerMode.NFKD, compat, 1);
+            staticTest(NormalizerMode.NFKC, compat, 2);
 
         }
 
@@ -225,10 +225,10 @@ namespace ICU4N.Dev.Test.Normalizers
                 new string[] { "\u0fb2\u0f71\u0f80", "\u0fb2\u0f71\u0f80", "\u0fb2\u0f71\u0f80" }
             };
 
-            staticTest(Normalizer.NFD, decomp, 1);
-            staticTest(Normalizer.NFKD, decomp, 2);
-            staticTest(Normalizer.NFC, compose, 1);
-            staticTest(Normalizer.NFKC, compose, 2);
+            staticTest(NormalizerMode.NFD, decomp, 1);
+            staticTest(NormalizerMode.NFKD, decomp, 2);
+            staticTest(NormalizerMode.NFC, compose, 1);
+            staticTest(NormalizerMode.NFKC, compose, 2);
         }
 
         /**
@@ -261,8 +261,8 @@ namespace ICU4N.Dev.Test.Normalizers
             for (int i = 0; i < EXCLUDED.Length; ++i)
             {
                 string a = Convert.ToString(EXCLUDED[i]);
-                string b = Normalizer.Normalize(a, Normalizer.NFKD);
-                string c = Normalizer.Normalize(b, Normalizer.NFC);
+                string b = Normalizer.Normalize(a, NormalizerMode.NFKD);
+                string c = Normalizer.Normalize(b, NormalizerMode.NFC);
                 if (c.Equals(a))
                 {
                     Errln("FAIL: " + Hex(a) + " x DECOMP_COMPAT => " +
@@ -332,7 +332,7 @@ namespace ICU4N.Dev.Test.Normalizers
             for (int i = 0; i < DATA.Length; i += 3)
             {
                 string a = DATA[i];
-                string b = Normalizer.Normalize(a, Normalizer.NFKC);
+                string b = Normalizer.Normalize(a, NormalizerMode.NFKC);
                 string exp = DATA[i + 1];
                 if (b.Equals(exp))
                 {
@@ -343,7 +343,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     Errln("FAIL: " + Hex(a) + " x COMPOSE_COMPAT => " + Hex(b) +
                           ", expect " + Hex(exp));
                 }
-                a = Normalizer.Normalize(b, Normalizer.NFD);
+                a = Normalizer.Normalize(b, NormalizerMode.NFD);
                 exp = DATA[i + 2];
                 if (a.Equals(exp))
                 {
@@ -420,28 +420,28 @@ namespace ICU4N.Dev.Test.Normalizers
             for (; count < SIZE; count++)
             {
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFD[count]),
-                        Normalizer.NFD, 0) != QuickCheckResult.No)
+                        NormalizerMode.NFD, 0) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFD quick check at U+" +
                            (CPNFD[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFC[count]),
-                            Normalizer.NFC, 0) != QuickCheckResult.No)
+                            NormalizerMode.NFC, 0) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                            (CPNFC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKD[count]),
-                                    Normalizer.NFKD, 0) != QuickCheckResult.No)
+                                    NormalizerMode.NFKD, 0) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFKD quick check at U+" +
                            (CPNFKD[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                             Normalizer.NFKC, 0) != QuickCheckResult.No)
+                                             NormalizerMode.NFKC, 0) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                            (CPNFKC[count]).ToHexString());
@@ -449,7 +449,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 // for improving coverage
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                             Normalizer.NFKC) != QuickCheckResult.No)
+                                             NormalizerMode.NFKC) != QuickCheckResult.No)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                            (CPNFKC[count]).ToHexString());
@@ -481,28 +481,28 @@ namespace ICU4N.Dev.Test.Normalizers
             char cp = (char)0;
             while (cp < 0xA0)
             {
-                if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFD, 0)
+                if (Normalizer.QuickCheck(Convert.ToString(cp), NormalizerMode.NFD, 0)
                                                 != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFD quick check at U+" +
                                                           (cp).ToHexString());
                     return;
                 }
-                if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFC, 0)
+                if (Normalizer.QuickCheck(Convert.ToString(cp), NormalizerMode.NFC, 0)
                                                  != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                                                           (cp).ToHexString());
                     return;
                 }
-                if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFKD, 0)
+                if (Normalizer.QuickCheck(Convert.ToString(cp), NormalizerMode.NFKD, 0)
                                                  != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKD quick check at U+" +
                                                           (cp).ToHexString());
                     return;
                 }
-                if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFKC, 0)
+                if (Normalizer.QuickCheck(Convert.ToString(cp), NormalizerMode.NFKC, 0)
                                                  != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
@@ -510,7 +510,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     return;
                 }
                 // improve the coverage
-                if (Normalizer.QuickCheck(Convert.ToString(cp), Normalizer.NFKC)
+                if (Normalizer.QuickCheck(Convert.ToString(cp), NormalizerMode.NFKC)
                                                  != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
@@ -523,28 +523,28 @@ namespace ICU4N.Dev.Test.Normalizers
             for (; count < SIZE; count++)
             {
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFD[count]),
-                                             Normalizer.NFD, 0) != QuickCheckResult.Yes)
+                                             NormalizerMode.NFD, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFD quick check at U+" +
                                                  (CPNFD[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFC[count]),
-                                             Normalizer.NFC, 0) != QuickCheckResult.Yes)
+                                             NormalizerMode.NFC, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                                                  (CPNFC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKD[count]),
-                                             Normalizer.NFKD, 0) != QuickCheckResult.Yes)
+                                             NormalizerMode.NFKD, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKD quick check at U+" +
                                         (CPNFKD[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                             Normalizer.NFKC, 0) != QuickCheckResult.Yes)
+                                             NormalizerMode.NFKC, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                             (CPNFKC[count]).ToHexString());
@@ -552,7 +552,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 // improve the coverage
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                             Normalizer.NFKC) != QuickCheckResult.Yes)
+                                             NormalizerMode.NFKC) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                             (CPNFKC[count]).ToHexString());
@@ -564,7 +564,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestBengali()
         {
             string input = "\u09bc\u09be\u09cd\u09be";
-            string output = Normalizer.Normalize(input, Normalizer.NFC);
+            string output = Normalizer.Normalize(input, NormalizerMode.NFC);
             if (!input.Equals(output))
             {
                 Errln("ERROR in NFC of string");
@@ -592,35 +592,35 @@ namespace ICU4N.Dev.Test.Normalizers
             for (; count < SIZE; count++)
             {
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFC[count]),
-                                            Normalizer.NFC, 0) != QuickCheckResult.Maybe)
+                                            NormalizerMode.NFC, 0) != QuickCheckResult.Maybe)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                                                 (CPNFC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(Convert.ToString(CPNFKC[count]),
-                                           Normalizer.NFKC, 0) != QuickCheckResult.Maybe)
+                                           NormalizerMode.NFKC, 0) != QuickCheckResult.Maybe)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                                                 (CPNFKC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(new char[] { CPNFC[count] },
-                                            Normalizer.NFC, 0) != QuickCheckResult.Maybe)
+                                            NormalizerMode.NFC, 0) != QuickCheckResult.Maybe)
                 {
                     Errln("ERROR in NFC quick check at U+" +
                                                 (CPNFC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(new char[] { CPNFKC[count] },
-                                           Normalizer.NFKC, 0) != QuickCheckResult.Maybe)
+                                           NormalizerMode.NFKC, 0) != QuickCheckResult.Maybe)
                 {
                     Errln("ERROR in NFKC quick check at U+" +
                                                 (CPNFKC[count]).ToHexString());
                     return;
                 }
                 if (Normalizer.QuickCheck(new char[] { CPNFKC[count] },
-                                           Normalizer.NONE, 0) != QuickCheckResult.Yes)
+                                           NormalizerMode.None, 0) != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NONE quick check at U+" +
                                                 (CPNFKC[count]).ToHexString());
@@ -640,14 +640,14 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 d = canonTests[count][1];
                 c = canonTests[count][2];
-                if (Normalizer.QuickCheck(d, Normalizer.NFD, 0)
+                if (Normalizer.QuickCheck(d, NormalizerMode.NFD, 0)
                                                 != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFD quick check for string at count " + count);
                     return;
                 }
 
-                if (Normalizer.QuickCheck(c, Normalizer.NFC, 0)
+                if (Normalizer.QuickCheck(c, NormalizerMode.NFC, 0)
                                                 == QuickCheckResult.No)
                 {
                     Errln("ERROR in NFC quick check for string at count " + count);
@@ -659,14 +659,14 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 d = compatTests[count][1];
                 c = compatTests[count][2];
-                if (Normalizer.QuickCheck(d, Normalizer.NFKD, 0)
+                if (Normalizer.QuickCheck(d, NormalizerMode.NFKD, 0)
                                                 != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKD quick check for string at count " + count);
                     return;
                 }
 
-                if (Normalizer.QuickCheck(c, Normalizer.NFKC, 0)
+                if (Normalizer.QuickCheck(c, NormalizerMode.NFKC, 0)
                                                 != QuickCheckResult.Yes)
                 {
                     Errln("ERROR in NFKC quick check for string at count " + count);
@@ -721,34 +721,34 @@ namespace ICU4N.Dev.Test.Normalizers
                 s = UTF16.ValueOf(c);
 
                 qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFC_Quick_Check);
-                qc2 = qcToInt(Normalizer.QuickCheck(s, Normalizer.NFC));
+                qc2 = qcToInt(Normalizer.QuickCheck(s, NormalizerMode.NFC));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFC)=" + qc1 + " != " + qc2 + "=quickCheck(NFC) for U+" + (c).ToHexString());
                 }
 
                 qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFD_Quick_Check);
-                qc2 = qcToInt(Normalizer.QuickCheck(s, Normalizer.NFD));
+                qc2 = qcToInt(Normalizer.QuickCheck(s, NormalizerMode.NFD));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFD)=" + qc1 + " != " + qc2 + "=quickCheck(NFD) for U+" + (c).ToHexString());
                 }
 
                 qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFKC_Quick_Check);
-                qc2 = qcToInt(Normalizer.QuickCheck(s, Normalizer.NFKC));
+                qc2 = qcToInt(Normalizer.QuickCheck(s, NormalizerMode.NFKC));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFKC)=" + qc1 + " != " + qc2 + "=quickCheck(NFKC) for U+" + (c).ToHexString());
                 }
 
                 qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFKD_Quick_Check);
-                qc2 = qcToInt(Normalizer.QuickCheck(s, Normalizer.NFKD));
+                qc2 = qcToInt(Normalizer.QuickCheck(s, NormalizerMode.NFKD));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFKD)=" + qc1 + " != " + qc2 + "=quickCheck(NFKD) for U+" + (c).ToHexString());
                 }
 
-                nfd = Normalizer.Normalize(s, Normalizer.NFD);
+                nfd = Normalizer.Normalize(s, NormalizerMode.NFD);
                 lead = UTF16.CharAt(nfd, 0);
                 trail = UTF16.CharAt(nfd, nfd.Length - 1);
 
@@ -839,7 +839,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-        private void staticTest(Normalizer.Mode mode,
+        private void staticTest(NormalizerMode mode,
                                  string[][] tests, int outCol)
         {
             for (int i = 0; i < tests.Length; i++)
@@ -892,7 +892,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
             }
         }
-        private void decomposeTest(Normalizer.Mode mode,
+        private void decomposeTest(NormalizerMode mode,
                                  string[][] tests, int outCol)
         {
             for (int i = 0; i < tests.Length; i++)
@@ -902,7 +902,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 Logln("Normalizing '" + input + "' (" + Hex(input) + ")");
 
-                string output2 = Normalizer.Decompose(input, mode == Normalizer.NFKD);
+                string output2 = Normalizer.Decompose(input, mode == NormalizerMode.NFKD);
 
                 if (!output2.Equals(expect))
                 {
@@ -924,7 +924,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     try
                     {
-                        reqLength = Normalizer.Decompose(input, output, mode == Normalizer.NFKD, 0);
+                        reqLength = Normalizer.Decompose(input, output, mode == NormalizerMode.NFKD, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
@@ -957,7 +957,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     try
                     {
-                        reqLength = Normalizer.Decompose(input, 0, input.Length, output, 0, output.Length, mode == Normalizer.NFKD, 0);
+                        reqLength = Normalizer.Decompose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKD, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
@@ -978,7 +978,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 char[] output2 = new char[reqLength * 2];
                 System.Array.Copy(output, 0, output2, 0, reqLength);
-                int retLength = Normalizer.Decompose(input, 0, input.Length, output2, reqLength, output2.Length, mode == Normalizer.NFKC, 0);
+                int retLength = Normalizer.Decompose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
                 if (retLength != reqLength)
                 {
                     Logln("FAIL: Normalizer.compose did not return the expected length. Expected: " + reqLength + " Got: " + retLength);
@@ -986,7 +986,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-        private void composeTest(Normalizer.Mode mode,
+        private void composeTest(NormalizerMode mode,
                                  string[][] tests, int outCol)
         {
             for (int i = 0; i < tests.Length; i++)
@@ -996,7 +996,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 Logln("Normalizing '" + input + "' (" + Hex(input) + ")");
 
-                string output2 = Normalizer.Compose(input, mode == Normalizer.NFKC);
+                string output2 = Normalizer.Compose(input, mode == NormalizerMode.NFKC);
 
                 if (!output2.Equals(expect))
                 {
@@ -1018,7 +1018,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     try
                     {
-                        reqLength = Normalizer.Compose(input, output, mode == Normalizer.NFKC, 0);
+                        reqLength = Normalizer.Compose(input, output, mode == NormalizerMode.NFKC, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
@@ -1051,7 +1051,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     try
                     {
-                        reqLength = Normalizer.Compose(input, 0, input.Length, output, 0, output.Length, mode == Normalizer.NFKC, 0);
+                        reqLength = Normalizer.Compose(input, 0, input.Length, output, 0, output.Length, mode == NormalizerMode.NFKC, 0);
                         if (reqLength <= output.Length)
                         {
                             break;
@@ -1073,7 +1073,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 char[] output2 = new char[reqLength * 2];
                 System.Array.Copy(output, 0, output2, 0, reqLength);
-                int retLength = Normalizer.Compose(input, 0, input.Length, output2, reqLength, output2.Length, mode == Normalizer.NFKC, 0);
+                int retLength = Normalizer.Compose(input, 0, input.Length, output2, reqLength, output2.Length, mode == NormalizerMode.NFKC, 0);
                 if (retLength != reqLength)
                 {
                     Logln("FAIL: Normalizer.compose did not return the expected length. Expected: " + reqLength + " Got: " + retLength);
@@ -1148,7 +1148,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestDebugStatic()
         {
             string @in = Utility.Unescape("\\U0001D157\\U0001D165");
-            if (!Normalizer.IsNormalized(@in, Normalizer.NFC, 0))
+            if (!Normalizer.IsNormalized(@in, NormalizerMode.NFC, 0))
             {
                 Errln("isNormalized failed");
             }
@@ -1191,7 +1191,7 @@ namespace ICU4N.Dev.Test.Normalizers
                             "\u1100\u116F\u11AA\u1100\u116F\u11AA\u1100\u116F" +
                             "\u11AA\u1100\u116F\u11AA\u0064\u031B\u0323\u0307";
             string output = Normalizer.Normalize(Utility.Unescape(input),
-                            Normalizer.NFD);
+                            NormalizerMode.NFD);
             if (!expect.Equals(output))
             {
                 Errln("FAIL expected: " + Hex(expect) + " got: " + Hex(output));
@@ -1206,7 +1206,7 @@ namespace ICU4N.Dev.Test.Normalizers
             string src = Utility.Unescape("\\U0001d15e\\U0001d157\\U0001d165\\U0001d15e");
             string expected = Utility.Unescape("\\U0001d15e\\U0001d157\\U0001d165\\U0001d15e");
             Normalizer iter = new Normalizer(new StringCharacterIterator(Utility.Unescape(src)),
-                                                    Normalizer.NONE, 0);
+                                                    NormalizerMode.None, 0);
             int index = 0;
             int ch;
             UCharacterIterator cIter = UCharacterIterator.GetInstance(expected);
@@ -1258,7 +1258,7 @@ namespace ICU4N.Dev.Test.Normalizers
             int index = 0;
             int ch;
             Normalizer iter = new Normalizer(new StringCharacterIterator(Utility.Unescape(input)),
-                                                    Normalizer.NFKC, 0);
+                                                    NormalizerMode.NFKC, 0);
             StringBuffer got = new StringBuffer();
             for (ch = iter.First(); ch != Normalizer.Done; ch = iter.Next())
             {
@@ -1409,7 +1409,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             // iterators
             Normalizer iter = new Normalizer(new string(src),
-                                                    Normalizer.NFD, 0);
+                                                    NormalizerMode.NFD, 0);
             UCharIterator iter32 = new UCharIterator(expect, expect.Length,
                                                          EXPECT_MIDDLE);
 
@@ -1503,7 +1503,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             // iterators
             StringCharacterIterator text = new StringCharacterIterator(new string(src));
-            Normalizer iter = new Normalizer(text, Normalizer.NFD, 0);
+            Normalizer iter = new Normalizer(text, NormalizerMode.NFD, 0);
             UCharIterator iter32 = new UCharIterator(expect, expect.Length,
                                                          EXPECT_MIDDLE);
 
@@ -1568,7 +1568,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 string s = Utility.Unescape("a\u0308\uac00\\U0002f800");
                 // make s a bit longer and more interesting
                 UCharacterIterator iter = UCharacterIterator.GetInstance(s + s);
-                Normalizer norm = new Normalizer(iter, Normalizer.NFC /*, 0*/); // ICU4N specific - to specify default options, leave them out of the constructor
+                Normalizer norm = new Normalizer(iter, NormalizerMode.NFC /*, 0*/); // ICU4N specific - to specify default options, leave them out of the constructor
                 if (norm.Next() != 0xe4)
                 {
                     Errln("error in Normalizer(CharacterIterator).Next()");
@@ -1664,8 +1664,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 // test setText(UChar *), getUMode() and setMode()
                 clone.SetText(s);
                 clone.SetIndexOnly(1);
-                clone.SetMode(Normalizer.NFD);
-                if (clone.GetMode() != Normalizer.NFD)
+                clone.SetMode(NormalizerMode.NFD);
+                if (clone.GetMode() != NormalizerMode.NFD)
                 {
                     Errln("error in Normalizer::setMode() or Normalizer::getMode()");
                 }
@@ -1684,24 +1684,24 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
 
                 // test UNORM_NONE
-                norm.SetMode(Normalizer.NONE);
+                norm.SetMode(NormalizerMode.None);
                 if (norm.First() != 0x61 || norm.Next() != 0x308 || norm.Last() != 0x2f800)
                 {
                     Errln("error in Normalizer(UNORM_NONE).first()/next()/last()");
                 }
-                @out = Normalizer.Normalize(s, Normalizer.NONE);
+                @out = Normalizer.Normalize(s, NormalizerMode.None);
                 if (!@out.Equals(s))
                 {
                     Errln("error in Normalizer::normalize(UNORM_NONE)");
                 }
                 ch = 0x1D15E;
                 string exp = "\\U0001D157\\U0001D165";
-                string ns = Normalizer.Normalize(ch, Normalizer.NFC);
+                string ns = Normalizer.Normalize(ch, NormalizerMode.NFC);
                 if (!ns.Equals(Utility.Unescape(exp)))
                 {
                     Errln("error in Normalizer.Normalize(int,Mode)");
                 }
-                ns = Normalizer.Normalize(ch, Normalizer.NFC, 0);
+                ns = Normalizer.Normalize(ch, NormalizerMode.NFC, 0);
                 if (!ns.Equals(Utility.Unescape(exp)))
                 {
                     Errln("error in Normalizer.Normalize(int,Mode,int)");
@@ -1720,20 +1720,20 @@ namespace ICU4N.Dev.Test.Normalizers
             object[][] cases = new object[][]{
                 /* mode, left, right, result */
                 new object[]{
-                    Normalizer.NFC,
+                    NormalizerMode.NFC,
                     "re",
                     "\u0301sum\u00e9",
                     "r\u00e9sum\u00e9"
                 },
                 new object[]{
-                    Normalizer.NFC,
+                    NormalizerMode.NFC,
                     "a\u1100",
                     "\u1161bcdefghijk",
                     "a\uac00bcdefghijk"
                 },
                 /* ### TODO: add more interesting cases */
                 new object[]{
-                    Normalizer.NFD,
+                    NormalizerMode.NFD,
                     "\u03B1\u0345",
                     "\u0C4D\uD804\uDCBA\uD834\uDD69",  // 0C4D 110BA 1D169
                     "\u03B1\uD834\uDD69\uD804\uDCBA\u0C4D\u0345"  // 03B1 1D169 110BA 0C4D 0345
@@ -1741,13 +1741,13 @@ namespace ICU4N.Dev.Test.Normalizers
             };
 
             string left, right, expect, result;
-            Normalizer.Mode mode;
+            NormalizerMode mode;
             int i;
 
             /* test concatenation */
             for (i = 0; i < cases.Length; ++i)
             {
-                mode = (Normalizer.Mode)cases[i][0];
+                mode = (NormalizerMode)cases[i][0];
 
                 left = (string)cases[i][1];
                 right = (string)cases[i][2];
@@ -1772,7 +1772,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
             }
 
-            mode = Normalizer.NFC; // (Normalizer.Mode)cases2[0][0];
+            mode = NormalizerMode.NFC; // (Normalizer.Mode)cases2[0][0];
             char[] destination = "My resume is here".ToCharArray();
             left = "resume";
             right = "re\u0301sum\u00e9 is HERE";
@@ -1838,17 +1838,17 @@ namespace ICU4N.Dev.Test.Normalizers
 
             int count = 0;
 
-            if (Normalizer.QuickCheck(FAST, 0, FAST.Length, Normalizer.FCD, 0) != QuickCheckResult.Yes)
+            if (Normalizer.QuickCheck(FAST, 0, FAST.Length, NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for fast Normalizer.quickCheck is NormalizerQuickCheckResult.Yes\n");
-            if (Normalizer.QuickCheck(FALSE, 0, FALSE.Length, Normalizer.FCD, 0) != QuickCheckResult.No)
+            if (Normalizer.QuickCheck(FALSE, 0, FALSE.Length, NormalizerMode.FCD, 0) != QuickCheckResult.No)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for error Normalizer.quickCheck is NormalizerQuickCheckResult.No\n");
-            if (Normalizer.QuickCheck(TRUE, 0, TRUE.Length, Normalizer.FCD, 0) != QuickCheckResult.Yes)
+            if (Normalizer.QuickCheck(TRUE, 0, TRUE.Length, NormalizerMode.FCD, 0) != QuickCheckResult.Yes)
                 Errln("Normalizer.QuickCheck(FCD) failed: expected value for correct Normalizer.quickCheck is NormalizerQuickCheckResult.Yes\n");
 
 
             while (count < 4)
             {
-                QuickCheckResult fcdresult = Normalizer.QuickCheck(datastr[count], 0, datastr[count].Length, Normalizer.FCD, 0);
+                QuickCheckResult fcdresult = Normalizer.QuickCheck(datastr[count], 0, datastr[count].Length, NormalizerMode.FCD, 0);
                 if (result[count] != fcdresult)
                 {
                     Errln("Normalizer.QuickCheck(FCD) failed: Data set " + count
@@ -1876,12 +1876,12 @@ namespace ICU4N.Dev.Test.Normalizers
                     Logln("0x" + data[size]);
                     normStart += Normalizer.Normalize(data, size, size + 1,
                                                         norm, normStart, 100,
-                                                        Normalizer.NFD, 0);
+                                                        NormalizerMode.NFD, 0);
                     size++;
                 }
                 Logln("\n");
 
-                nfdsize = Normalizer.Normalize(data, 0, size, nfd, 0, nfd.Length, Normalizer.NFD, 0);
+                nfdsize = Normalizer.Normalize(data, 0, size, nfd, 0, nfd.Length, NormalizerMode.NFD, 0);
                 //    nfdsize = unorm_normalize(data, size, UNORM_NFD, UCOL_IGNORE_HANGUL,
                 //                      nfd, 100, &status);
                 if (nfdsize != normStart || Utility.ArrayRegionMatches(nfd, 0, norm, 0, nfdsize) == false)
@@ -1897,7 +1897,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     Logln("result NormalizerQuickCheckResult.No\n");
                 }
 
-                if (Normalizer.QuickCheck(data, 0, data.Length, Normalizer.FCD, 0) != testresult)
+                if (Normalizer.QuickCheck(data, 0, data.Length, NormalizerMode.FCD, 0) != testresult)
                 {
                     Errln("Normalizer.QuickCheck(FCD) failed: expected " + testresult + " for random data: " + Hex(new string(data)));
                 }
@@ -1956,8 +1956,8 @@ namespace ICU4N.Dev.Test.Normalizers
             var unicodeVersion = options.AsFlagsToEnum<NormalizerUnicodeVersion>();
 
 
-            if (QuickCheckResult.Yes == Normalizer.QuickCheck(s1, Normalizer.FCD, unicodeVersion) &&
-                QuickCheckResult.Yes == Normalizer.QuickCheck(s2, Normalizer.FCD, unicodeVersion))
+            if (QuickCheckResult.Yes == Normalizer.QuickCheck(s1, NormalizerMode.FCD, unicodeVersion) &&
+                QuickCheckResult.Yes == Normalizer.QuickCheck(s2, NormalizerMode.FCD, unicodeVersion))
             {
                 options |= (int)NormalizerComparison.InputIsFCD; //Normalizer.INPUT_IS_FCD;
             }
@@ -2467,7 +2467,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 foldCC = UCharacter.GetCombiningClass(UTF16.CharAt(d, 0));
                 foldTrailCC = UCharacter.GetCombiningClass(UTF16.CharAt(d, d.Length - 1));
 
-                qcResult = Normalizer.QuickCheck(s, Normalizer.FCD, 0);
+                qcResult = Normalizer.QuickCheck(s, NormalizerMode.FCD, 0);
 
 
                 // bad:
@@ -2488,7 +2488,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 // also bad:
                 // if a code point is in NFD but its case folding is not, then
                 // unorm_compare will also fail
-                if (isNFD && QuickCheckResult.Yes != Normalizer.QuickCheck(s, Normalizer.NFD, 0))
+                if (isNFD && QuickCheckResult.Yes != Normalizer.QuickCheck(s, NormalizerMode.NFD, 0))
                 {
                     ++count;
                     Errln("U+" + Hex(c) + ": case-folding may un-FCD a string (folding options 0x" + Hex(foldingOptions) + ")");
@@ -2777,7 +2777,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             string sample = "The quick brown fox jumped over the lazy dog";
             UCharacterIterator text = UCharacterIterator.GetInstance(sample);
-            Normalizer norm = new Normalizer(text, Normalizer.NFC, 0);
+            Normalizer norm = new Normalizer(text, NormalizerMode.NFC, 0);
             text.Index = 4;
             if (text.Current == norm.Current)
             {
@@ -2854,10 +2854,10 @@ namespace ICU4N.Dev.Test.Normalizers
 
         private sealed class TestCompositionCase
         {
-            public Normalizer.Mode mode;
+            public NormalizerMode mode;
             public int options;
             public string input, expect;
-            internal TestCompositionCase(Normalizer.Mode mode, int options, string input, string expect)
+            internal TestCompositionCase(NormalizerMode mode, int options, string input, string expect)
             {
                 this.mode = mode;
                 this.options = options;
@@ -2876,10 +2876,10 @@ namespace ICU4N.Dev.Test.Normalizers
              * at http://unicode.org/versions/corrigendum5.html
              * (was Public Review Issue #29)
              */
-            new TestCompositionCase(Normalizer.NFC, 0, "\u1100\u0300\u1161\u0327",      "\u1100\u0300\u1161\u0327"),
-            new TestCompositionCase(Normalizer.NFC, 0, "\u1100\u0300\u1161\u0327\u11a8","\u1100\u0300\u1161\u0327\u11a8"),
-            new TestCompositionCase(Normalizer.NFC, 0, "\uac00\u0300\u0327\u11a8",      "\uac00\u0327\u0300\u11a8"),
-            new TestCompositionCase(Normalizer.NFC, 0, "\u0b47\u0300\u0b3e",            "\u0b47\u0300\u0b3e"),
+            new TestCompositionCase(NormalizerMode.NFC, 0, "\u1100\u0300\u1161\u0327",      "\u1100\u0300\u1161\u0327"),
+            new TestCompositionCase(NormalizerMode.NFC, 0, "\u1100\u0300\u1161\u0327\u11a8","\u1100\u0300\u1161\u0327\u11a8"),
+            new TestCompositionCase(NormalizerMode.NFC, 0, "\uac00\u0300\u0327\u11a8",      "\uac00\u0327\u0300\u11a8"),
+            new TestCompositionCase(NormalizerMode.NFC, 0, "\u0b47\u0300\u0b3e",            "\u0b47\u0300\u0b3e"),
 
             /* TODO: add test cases for UNORM_FCC here (j2151) */
         };
@@ -3251,8 +3251,8 @@ namespace ICU4N.Dev.Test.Normalizers
             // Use the deprecated Mode Normalizer.NONE for coverage of the internal NoopNormalizer2
             // as far as its methods are reachable that way.
             assertEquals("NONE.Concatenate()", "ä\u0327",
-                    Normalizer.Concatenate("ä", "\u0327", Normalizer.NONE, 0));
-            assertTrue("NONE.IsNormalized()", Normalizer.IsNormalized("ä\u0327", Normalizer.NONE, 0));
+                    Normalizer.Concatenate("ä", "\u0327", NormalizerMode.None, 0));
+            assertTrue("NONE.IsNormalized()", Normalizer.IsNormalized("ä\u0327", NormalizerMode.None, 0));
         }
 
         [Test]

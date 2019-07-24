@@ -2946,10 +2946,10 @@ namespace ICU4N.Dev.Test.Translit
                 // Automatic generation of targets, to make it simpler to add test cases (and more fail-safe)
 
                 if (testCases[i].Length > 2) target = testCases[i][2];
-                else if (id.Equals("NFD", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, Normalizer.NFD);
-                else if (id.Equals("NFC", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, Normalizer.NFC);
-                else if (id.Equals("NFKD", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, Normalizer.NFKD);
-                else if (id.Equals("NFKC", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, Normalizer.NFKC);
+                else if (id.Equals("NFD", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, NormalizerMode.NFD);
+                else if (id.Equals("NFC", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, NormalizerMode.NFC);
+                else if (id.Equals("NFKD", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, NormalizerMode.NFKD);
+                else if (id.Equals("NFKC", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, NormalizerMode.NFKC);
                 else if (id.Equals("Lower", StringComparison.OrdinalIgnoreCase)) target = UCharacter.ToLower(new CultureInfo("en-US"), source);
                 else if (id.Equals("Upper", StringComparison.OrdinalIgnoreCase)) target = UCharacter.ToUpper(new CultureInfo("en-US"), source);
 

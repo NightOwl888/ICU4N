@@ -19,7 +19,7 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             // Doesn't matter what the string and mode are; we'll change
             // them later as needed.
-            normalizer = new Normalizer("", Normalizer.NFC, 0);
+            normalizer = new Normalizer("", NormalizerMode.NFC, 0);
         }
         // more interesting conformance test cases, not in the unicode.org NormalizationTest.txt
         static String[] moreCases ={
@@ -176,13 +176,13 @@ namespace ICU4N.Dev.Test.Normalizers
                 int fieldNum = i + 1;
                 if (i < 3)
                 {
-                    pass &= checkNorm(Normalizer.NFC, options, field[i], field[1], fieldNum);
-                    pass &= checkNorm(Normalizer.NFD, options, field[i], field[2], fieldNum);
+                    pass &= checkNorm(NormalizerMode.NFC, options, field[i], field[1], fieldNum);
+                    pass &= checkNorm(NormalizerMode.NFD, options, field[i], field[2], fieldNum);
                 }
-                pass &= checkNorm(Normalizer.NFKC, options, field[i], field[3], fieldNum);
-                pass &= checkNorm(Normalizer.NFKD, options, field[i], field[4], fieldNum);
-                cross(field[4] /*NFKD String*/, field[3]/*NFKC String*/, Normalizer.NFKC);
-                cross(field[3] /*NFKC String*/, field[4]/*NFKD String*/, Normalizer.NFKD);
+                pass &= checkNorm(NormalizerMode.NFKC, options, field[i], field[3], fieldNum);
+                pass &= checkNorm(NormalizerMode.NFKD, options, field[i], field[4], fieldNum);
+                cross(field[4] /*NFKD String*/, field[3]/*NFKC String*/, NormalizerMode.NFKC);
+                cross(field[3] /*NFKC String*/, field[4]/*NFKD String*/, NormalizerMode.NFKD);
 
             }
             compare(field[1], field[2]);
@@ -193,62 +193,62 @@ namespace ICU4N.Dev.Test.Normalizers
             var normalizerVersion = options.AsFlagsToEnum<NormalizerUnicodeVersion>();
 
             // test quick checks
-            if (QuickCheckResult.No == Normalizer.QuickCheck(field[1], Normalizer.NFC, normalizerVersion))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(field[1], NormalizerMode.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFC(s), Normalizer.NFC) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[2], Normalizer.NFD, normalizerVersion))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[2], NormalizerMode.NFD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFD(s), Normalizer.NFD) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[3], Normalizer.NFKC, normalizerVersion))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[3], NormalizerMode.NFKC, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFKC(s), Normalizer.NFKC) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[4], Normalizer.NFKD, normalizerVersion))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[4], NormalizerMode.NFKD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFKD(s), Normalizer.NFKD) is Normalizer.NO");
                 pass = false;
             }
 
-            if (!Normalizer.IsNormalized(field[1], Normalizer.NFC, normalizerVersion))
+            if (!Normalizer.IsNormalized(field[1], NormalizerMode.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFC(s), Normalizer.NFC) is false");
                 pass = false;
             }
-            if (!field[0].Equals(field[1]) && Normalizer.IsNormalized(field[0], Normalizer.NFC, normalizerVersion))
+            if (!field[0].Equals(field[1]) && Normalizer.IsNormalized(field[0], NormalizerMode.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(s, Normalizer.NFC) is TRUE");
                 pass = false;
             }
-            if (!Normalizer.IsNormalized(field[3], Normalizer.NFKC, normalizerVersion))
+            if (!Normalizer.IsNormalized(field[3], NormalizerMode.NFKC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFKC(s), Normalizer.NFKC) is false");
                 pass = false;
             }
-            if (!field[0].Equals(field[3]) && Normalizer.IsNormalized(field[0], Normalizer.NFKC, normalizerVersion))
+            if (!field[0].Equals(field[3]) && Normalizer.IsNormalized(field[0], NormalizerMode.NFKC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(s, Normalizer.NFKC) is TRUE");
                 pass = false;
             }
             // test api that takes a char[]
-            if (!Normalizer.IsNormalized(field[1].ToCharArray(), 0, field[1].Length, Normalizer.NFC, normalizerVersion))
+            if (!Normalizer.IsNormalized(field[1].ToCharArray(), 0, field[1].Length, NormalizerMode.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFC(s), Normalizer.NFC) is false");
                 pass = false;
             }
             // test api that takes a codepoint
-            if (!Normalizer.IsNormalized(UTF16.CharAt(field[1], 0), Normalizer.NFC, normalizerVersion))
+            if (!Normalizer.IsNormalized(UTF16.CharAt(field[1], 0), NormalizerMode.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFC(s), Normalizer.NFC) is false");
                 pass = false;
             }
             // test FCD quick check and "makeFCD"
-            fcd = Normalizer.Normalize(field[0], Normalizer.FCD);
-            if (Normalizer.NO == Normalizer.QuickCheck(fcd, Normalizer.FCD, normalizerVersion))
+            fcd = Normalizer.Normalize(field[0], NormalizerMode.FCD);
+            if (Normalizer.NO == Normalizer.QuickCheck(fcd, NormalizerMode.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(FCD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
@@ -257,39 +257,39 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 char[] fcd2 = new char[fcd.Length * 2];
                 char[] src = field[0].ToCharArray();
-                int fcdLen = Normalizer.Normalize(src, 0, src.Length, fcd2, fcd.Length, fcd2.Length, Normalizer.FCD, 0);
+                int fcdLen = Normalizer.Normalize(src, 0, src.Length, fcd2, fcd.Length, fcd2.Length, NormalizerMode.FCD, 0);
                 if (fcdLen != fcd.Length)
                 {
                     Errln("makeFCD did not return the correct length");
                 }
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(fcd, Normalizer.FCD, normalizerVersion))
+            if (Normalizer.NO == Normalizer.QuickCheck(fcd, NormalizerMode.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(FCD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[2], Normalizer.FCD, normalizerVersion))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[2], NormalizerMode.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
             }
 
-            if (Normalizer.NO == Normalizer.QuickCheck(field[4], Normalizer.FCD, normalizerVersion))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[4], NormalizerMode.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFKD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
             }
 
-            @out = iterativeNorm(new StringCharacterIterator(field[0]), Normalizer.FCD, buf, +1, options);
-            @out = iterativeNorm(new StringCharacterIterator(field[0]), Normalizer.FCD, buf, -1, options);
+            @out = iterativeNorm(new StringCharacterIterator(field[0]), NormalizerMode.FCD, buf, +1, options);
+            @out = iterativeNorm(new StringCharacterIterator(field[0]), NormalizerMode.FCD, buf, -1, options);
 
-            @out = iterativeNorm(new StringCharacterIterator(field[2]), Normalizer.FCD, buf, +1, options);
-            @out = iterativeNorm(new StringCharacterIterator(field[2]), Normalizer.FCD, buf, -1, options);
+            @out = iterativeNorm(new StringCharacterIterator(field[2]), NormalizerMode.FCD, buf, +1, options);
+            @out = iterativeNorm(new StringCharacterIterator(field[2]), NormalizerMode.FCD, buf, -1, options);
 
-            @out = iterativeNorm(new StringCharacterIterator(field[4]), Normalizer.FCD, buf, +1, options);
-            @out = iterativeNorm(new StringCharacterIterator(field[4]), Normalizer.FCD, buf, -1, options);
+            @out = iterativeNorm(new StringCharacterIterator(field[4]), NormalizerMode.FCD, buf, +1, options);
+            @out = iterativeNorm(new StringCharacterIterator(field[4]), NormalizerMode.FCD, buf, -1, options);
 
-            @out = Normalizer.Normalize(fcd, Normalizer.NFD);
+            @out = Normalizer.Normalize(fcd, NormalizerMode.NFD);
             if (!@out.Equals(field[2]))
             {
                 Errln("Normalizer error: NFD(FCD(s))!=NFD(s)");
@@ -322,12 +322,12 @@ namespace ICU4N.Dev.Test.Normalizers
             return pass;
         }
 
-        private static int getModeNumber(Normalizer.Mode mode)
+        private static int getModeNumber(NormalizerMode mode)
         {
-            if (mode == Normalizer.NFD) { return 0; }
-            if (mode == Normalizer.NFKD) { return 1; }
-            if (mode == Normalizer.NFC) { return 2; }
-            if (mode == Normalizer.NFKC) { return 3; }
+            if (mode == NormalizerMode.NFD) { return 0; }
+            if (mode == NormalizerMode.NFKD) { return 1; }
+            if (mode == NormalizerMode.NFC) { return 2; }
+            if (mode == NormalizerMode.NFKC) { return 3; }
             return -1;
         }
         private static readonly String[] kModeStrings = {
@@ -337,7 +337,7 @@ namespace ICU4N.Dev.Test.Normalizers
             "c3!=D(c%d)", "c5!=KC(c%d)", "c2!=C(c%d)", "c4!=KC(c%d)" // ICU4N TODO: Change string format
         };
 
-        bool checkNorm(Normalizer.Mode mode, int options,  // Normalizer2 norm2,
+        bool checkNorm(NormalizerMode mode, int options,  // Normalizer2 norm2,
                 String s, String exp, int field)
         {
             String modeString = kModeStrings[getModeNumber(mode)];
@@ -411,7 +411,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
             }
         }
-        private void cross(String s1, String s2, Normalizer.Mode mode)
+        private void cross(String s1, String s2, NormalizerMode mode)
         {
             String result = Normalizer.Normalize(s1, mode);
             if (!result.Equals(s2))
@@ -425,7 +425,7 @@ namespace ICU4N.Dev.Test.Normalizers
          * @param buf scratch buffer
          * @param dir either +1 or -1
          */
-        private String iterativeNorm(String str, Normalizer.Mode mode,
+        private String iterativeNorm(String str, NormalizerMode mode,
                                      StringBuffer buf, int dir, int options)
         {
             normalizer.SetText(str);
@@ -460,7 +460,7 @@ namespace ICU4N.Dev.Test.Normalizers
          * @param buf scratch buffer
          * @param dir either +1 or -1
          */
-        private String iterativeNorm(StringCharacterIterator str, Normalizer.Mode mode,
+        private String iterativeNorm(StringCharacterIterator str, NormalizerMode mode,
                                      StringBuffer buf, int dir, int options)
         {
             normalizer.SetText(str);

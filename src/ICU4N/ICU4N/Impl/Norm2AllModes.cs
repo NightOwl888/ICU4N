@@ -857,7 +857,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static readonly NoopNormalizer2 NOOP_NORMALIZER2 = new NoopNormalizer2();
+        public static readonly NoopNormalizer2 NOOP_NORMALIZER2 = new NoopNormalizer2(); // ICU4N TODO: API - rename to follow .NET conventions
 
         /// <summary>
         /// Gets the FCD normalizer, with the FCD data initialized.
