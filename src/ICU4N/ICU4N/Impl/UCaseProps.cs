@@ -1013,7 +1013,7 @@ namespace ICU4N.Impl
         private static readonly int FOLD_CASE_OPTIONS_MASK = 7;
 
         /// <summary>Returns the simple case folding mapping for <paramref name="c"/>.</summary>
-        public int Fold(int c, int options)
+        public int Fold(int c, FoldCase options)
         {
             int props = trie.Get(c);
             if (!PropsHasException(props))
@@ -1031,7 +1031,7 @@ namespace ICU4N.Impl
                 if ((excWord & EXC_CONDITIONAL_FOLD) != 0)
                 {
                     /* special case folding mappings, hardcoded */
-                    if ((options & FOLD_CASE_OPTIONS_MASK) == UCharacter.FOLD_CASE_DEFAULT)
+                    if (((int)options & FOLD_CASE_OPTIONS_MASK) == (int)FoldCase.Default)
                     {
                         /* default mappings */
                         if (c == 0x49)

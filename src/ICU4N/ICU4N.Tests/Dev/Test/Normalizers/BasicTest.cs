@@ -1914,14 +1914,15 @@ namespace ICU4N.Dev.Test.Normalizers
             // as we have fixed this by using separate enums
             //int normOptions = options >> Normalizer.COMPARE_NORM_OPTIONS_SHIFT;
             var normalizerVersion = options.AsFlagsToEnum<NormalizerUnicodeVersion>();
+            var foldCase = options.AsFlagsToEnum<FoldCase>();
 
             if ((options & Normalizer.COMPARE_IGNORE_CASE) != 0)
             {
                 // NFD(toCasefold(NFD(X))) = NFD(toCasefold(NFD(Y)))
                 r1 = Normalizer.Decompose(s1, false, normalizerVersion);
                 r2 = Normalizer.Decompose(s2, false, normalizerVersion);
-                r1 = UCharacter.FoldCase(r1, options);
-                r2 = UCharacter.FoldCase(r2, options);
+                r1 = UCharacter.FoldCase(r1, foldCase);
+                r2 = UCharacter.FoldCase(r2, foldCase);
             }
             else
             {

@@ -4431,7 +4431,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.1</stable>
         public static int FoldCase(int ch, bool defaultmapping)
         {
-            return FoldCase(ch, defaultmapping ? FOLD_CASE_DEFAULT : FOLD_CASE_EXCLUDE_SPECIAL_I);
+            return FoldCase(ch, defaultmapping ? Lang.FoldCase.Default : Lang.FoldCase.ExcludeSpecialI);
         }
 
         /// <icu/>
@@ -4456,7 +4456,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.1</stable>
         public static string FoldCase(string str, bool defaultmapping) // ICU4N TODO: API - Make context-sensitive overload based on current culture
         {
-            return FoldCase(str, defaultmapping ? FOLD_CASE_DEFAULT : FOLD_CASE_EXCLUDE_SPECIAL_I);
+            return FoldCase(str, defaultmapping ? Lang.FoldCase.Default : Lang.FoldCase.ExcludeSpecialI);
         }
 
         /// <icu/>
@@ -4465,7 +4465,7 @@ namespace ICU4N.Lang
         /// CaseFolding.txt.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public const int FOLD_CASE_DEFAULT = (int)Lang.FoldCase.Default;
+        internal const int FOLD_CASE_DEFAULT = (int)Lang.FoldCase.Default; // ICU4N specific - changed from public to internal because we use enum in .NET
 
         /// <icu/>
         /// <summary>
@@ -4483,7 +4483,7 @@ namespace ICU4N.Lang
         /// included for the Turkic-specific mappings.
         /// </remarks>
         /// <stable>ICU 2.6</stable>
-        public const int FOLD_CASE_EXCLUDE_SPECIAL_I = (int)Lang.FoldCase.ExcludeSpecialI;
+        internal const int FOLD_CASE_EXCLUDE_SPECIAL_I = (int)Lang.FoldCase.ExcludeSpecialI; // ICU4N specific - changed from public to internal because we use enum in .NET
 
         /// <icu/>
         /// <summary>
@@ -4502,15 +4502,15 @@ namespace ICU4N.Lang
         /// http://www.icu-project.org/userguide/posix.html#case_mappings</a>
         /// </summary>
         /// <param name="ch">The character to be converted.</param>
-        /// <param name="options">A bit set for special processing. Currently the recognised options
-        /// are <see cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/> and <see cref="FOLD_CASE_DEFAULT"/>.</param>
+        /// <param name="foldCase">Option for special processing. Currently the recognised options
+        /// are <see cref="Lang.FoldCase.ExcludeSpecialI"/> and <see cref="Lang.FoldCase.Default"/>.</param>
         /// <returns>The case folding equivalent of the character, if any; otherwise the
         /// character itself.</returns>
-        /// <seealso cref="FoldCase(string, int)"/>
+        /// <seealso cref="FoldCase(string, FoldCase)"/>
         /// <stable>ICU 2.6</stable>
-        public static int FoldCase(int ch, int options)
+        public static int FoldCase(int ch, FoldCase foldCase)
         {
-            return UCaseProps.Instance.Fold(ch, options);
+            return UCaseProps.Instance.Fold(ch, foldCase);
         }
 
         /// <icu/>
@@ -4520,18 +4520,18 @@ namespace ICU4N.Lang
         /// folding equivalent, the character itself is returned.
         /// "Full", multiple-code point case folding mappings are returned here.
         /// For "simple" single-code point mappings use the API
-        /// <see cref="FoldCase(int, int)"/>.
+        /// <see cref="FoldCase(int, FoldCase)"/>.
         /// </summary>
         /// <param name="str">The string to be converted.</param>
-        /// <param name="options">A bit set for special processing. Currently the recognised options
-        /// are <see cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/> and <see cref="FOLD_CASE_DEFAULT"/>.</param>
+        /// <param name="foldCase">Option for special processing. Currently the recognised options
+        /// are <see cref="Lang.FoldCase.ExcludeSpecialI"/> and <see cref="Lang.FoldCase.Default"/>.</param>
         /// <returns>The case folding equivalent of the character, if any; otherwise the
         /// character itself.</returns>
-        /// <seealso cref="FoldCase(int, int)"/>
+        /// <seealso cref="FoldCase(int, FoldCase)"/>
         /// <stable>ICU 2.6</stable>
-        public static string FoldCase(string str, int options) // ICU4N TODO: API Make options into [Flags] enum
+        public static string FoldCase(string str, FoldCase foldCase)
         {
-            return CaseMapImpl.Fold(options, str);
+            return CaseMapImpl.Fold((int)foldCase, str);
         }
 
         /// <icu/>

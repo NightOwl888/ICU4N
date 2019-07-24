@@ -104,8 +104,8 @@ namespace ICU4N.Dev.Test.Lang
                           ", true) should be \\u" + Hex(FOLDING_SIMPLE_[i + 1]));
                 }
                 if (UCharacter.FoldCase(FOLDING_SIMPLE_[i],
-                                        UCharacter.FOLD_CASE_DEFAULT) !=
-                                                          FOLDING_SIMPLE_[i + 1])
+                                        FoldCase.Default) !=
+                                        FOLDING_SIMPLE_[i + 1])
                 {
                     Errln("FAIL: foldCase(\\u" + Hex(FOLDING_SIMPLE_[i]) +
                           ", UCharacter.FOLD_CASE_DEFAULT) should be \\u"
@@ -118,7 +118,7 @@ namespace ICU4N.Dev.Test.Lang
                           ", false) should be \\u" + Hex(FOLDING_SIMPLE_[i + 2]));
                 }
                 if (UCharacter.FoldCase(FOLDING_SIMPLE_[i],
-                                        UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I) !=
+                                        FoldCase.ExcludeSpecialI) !=
                                         FOLDING_SIMPLE_[i + 2])
                 {
                     Errln("FAIL: foldCase(\\u" + Hex(FOLDING_SIMPLE_[i]) +
@@ -136,10 +136,10 @@ namespace ICU4N.Dev.Test.Lang
                       " should be " + Prettify(FOLDING_DEFAULT_[0]));
             }
 
-            if (!FOLDING_DEFAULT_[0].Equals(UCharacter.FoldCase(FOLDING_MIXED_[0], UCharacter.FOLD_CASE_DEFAULT)))
+            if (!FOLDING_DEFAULT_[0].Equals(UCharacter.FoldCase(FOLDING_MIXED_[0], FoldCase.Default)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[0]) +
-                      ", UCharacter.FOLD_CASE_DEFAULT)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[0], UCharacter.FOLD_CASE_DEFAULT))
+                      ", UCharacter.FOLD_CASE_DEFAULT)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[0], FoldCase.Default))
                       + " should be " + Prettify(FOLDING_DEFAULT_[0]));
             }
 
@@ -152,10 +152,10 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             if (!FOLDING_EXCLUDE_SPECIAL_I_[0].Equals(
-                                        UCharacter.FoldCase(FOLDING_MIXED_[0], UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)))
+                                        UCharacter.FoldCase(FOLDING_MIXED_[0], FoldCase.ExcludeSpecialI)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[0]) +
-                      ", UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[0], UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I))
+                      ", UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[0], FoldCase.ExcludeSpecialI))
                       + " should be " + Prettify(FOLDING_EXCLUDE_SPECIAL_I_[0]));
             }
 
@@ -166,10 +166,10 @@ namespace ICU4N.Dev.Test.Lang
                       + " should be " + Prettify(FOLDING_DEFAULT_[1]));
             }
 
-            if (!FOLDING_DEFAULT_[1].Equals(UCharacter.FoldCase(FOLDING_MIXED_[1], UCharacter.FOLD_CASE_DEFAULT)))
+            if (!FOLDING_DEFAULT_[1].Equals(UCharacter.FoldCase(FOLDING_MIXED_[1], FoldCase.Default)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[1]) +
-                             ", UCharacter.FOLD_CASE_DEFAULT)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[1], UCharacter.FOLD_CASE_DEFAULT))
+                             ", UCharacter.FOLD_CASE_DEFAULT)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[1], FoldCase.Default))
                              + " should be " + Prettify(FOLDING_DEFAULT_[1]));
             }
 
@@ -183,10 +183,10 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             if (!FOLDING_EXCLUDE_SPECIAL_I_[1].Equals(
-                                    UCharacter.FoldCase(FOLDING_MIXED_[1], UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)))
+                                    UCharacter.FoldCase(FOLDING_MIXED_[1], FoldCase.ExcludeSpecialI)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[1]) +
-                      ", UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[1], UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I))
+                      ", UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[1], FoldCase.ExcludeSpecialI))
                       + " should be "
                       + Prettify(FOLDING_EXCLUDE_SPECIAL_I_[1]));
             }
