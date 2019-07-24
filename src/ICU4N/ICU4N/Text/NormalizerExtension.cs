@@ -14,7 +14,7 @@ namespace ICU4N.Text
 {
     public sealed partial class Normalizer
     {
-		private sealed partial class CharsAppendable : IAppendable
+        private sealed partial class CharsAppendable : IAppendable
         {
 
             public IAppendable Append(string s)
@@ -105,6 +105,6 @@ namespace ICU4N.Text
                 return this;
             }
 
-		}
-	}
+        }
+    }
 }

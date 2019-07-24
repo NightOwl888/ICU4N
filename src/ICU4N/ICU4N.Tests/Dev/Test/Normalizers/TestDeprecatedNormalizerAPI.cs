@@ -43,6 +43,7 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 Errln("error in Normalizer.getEndIndex()");
             }
+
             // test setOption() and getOption()
             clone.SetOption(0xaa0000, true);
             clone.SetOption(0x20000, false);
@@ -50,6 +51,13 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 Errln("error in Normalizer::setOption() or Normalizer::getOption()");
             }
+
+            // ICU4N specific - test setting normalizer options via enum
+            clone.UnicodeVersion = NormalizerUnicodeVersion.Unicode3_2;
+            assertEquals("error in Normalizer.UnicodeVersion property", NormalizerUnicodeVersion.Unicode3_2, clone.UnicodeVersion);
+            clone.UnicodeVersion = NormalizerUnicodeVersion.Default;
+            assertEquals("error in Normalizer.UnicodeVersion property", NormalizerUnicodeVersion.Default, clone.UnicodeVersion);
+
             //test deprecated normalize method
             Normalizer.Normalize(s, Normalizer.NFC, 0);
             //test deprecated compose method

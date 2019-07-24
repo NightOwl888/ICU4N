@@ -511,8 +511,8 @@ namespace ICU4N.Text
             return new StringBuffer(
                 Normalizer.Normalize(
                     src.ToString(),
-                    Normalizer.NFKC,
-                    Normalizer.UNICODE_3_2));
+                    Normalizer.NFKC, 
+                    NormalizerUnicodeVersion.Unicode3_2));
 #pragma warning restore 612, 618
         }
         /*

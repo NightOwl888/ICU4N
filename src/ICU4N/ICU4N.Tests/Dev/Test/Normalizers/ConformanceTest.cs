@@ -1,4 +1,5 @@
 ﻿using ICU4N.Impl;
+using ICU4N.Lang;
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Text;
@@ -187,63 +188,67 @@ namespace ICU4N.Dev.Test.Normalizers
             compare(field[1], field[2]);
             compare(field[0], field[1]);
             compare(field[0], field[2]);
+
+            
+            var normalizerVersion = options.AsFlagsToEnum<NormalizerUnicodeVersion>();
+
             // test quick checks
-            if (QuickCheckResult.No == Normalizer.QuickCheck(field[1], Normalizer.NFC, options))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(field[1], Normalizer.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFC(s), Normalizer.NFC) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[2], Normalizer.NFD, options))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[2], Normalizer.NFD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFD(s), Normalizer.NFD) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[3], Normalizer.NFKC, options))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[3], Normalizer.NFKC, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFKC(s), Normalizer.NFKC) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[4], Normalizer.NFKD, options))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[4], Normalizer.NFKD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFKD(s), Normalizer.NFKD) is Normalizer.NO");
                 pass = false;
             }
 
-            if (!Normalizer.IsNormalized(field[1], Normalizer.NFC, options))
+            if (!Normalizer.IsNormalized(field[1], Normalizer.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFC(s), Normalizer.NFC) is false");
                 pass = false;
             }
-            if (!field[0].Equals(field[1]) && Normalizer.IsNormalized(field[0], Normalizer.NFC, options))
+            if (!field[0].Equals(field[1]) && Normalizer.IsNormalized(field[0], Normalizer.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(s, Normalizer.NFC) is TRUE");
                 pass = false;
             }
-            if (!Normalizer.IsNormalized(field[3], Normalizer.NFKC, options))
+            if (!Normalizer.IsNormalized(field[3], Normalizer.NFKC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFKC(s), Normalizer.NFKC) is false");
                 pass = false;
             }
-            if (!field[0].Equals(field[3]) && Normalizer.IsNormalized(field[0], Normalizer.NFKC, options))
+            if (!field[0].Equals(field[3]) && Normalizer.IsNormalized(field[0], Normalizer.NFKC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(s, Normalizer.NFKC) is TRUE");
                 pass = false;
             }
             // test api that takes a char[]
-            if (!Normalizer.IsNormalized(field[1].ToCharArray(), 0, field[1].Length, Normalizer.NFC, options))
+            if (!Normalizer.IsNormalized(field[1].ToCharArray(), 0, field[1].Length, Normalizer.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFC(s), Normalizer.NFC) is false");
                 pass = false;
             }
             // test api that takes a codepoint
-            if (!Normalizer.IsNormalized(UTF16.CharAt(field[1], 0), Normalizer.NFC, options))
+            if (!Normalizer.IsNormalized(UTF16.CharAt(field[1], 0), Normalizer.NFC, normalizerVersion))
             {
                 Errln("Normalizer error: isNormalized(NFC(s), Normalizer.NFC) is false");
                 pass = false;
             }
             // test FCD quick check and "makeFCD"
             fcd = Normalizer.Normalize(field[0], Normalizer.FCD);
-            if (Normalizer.NO == Normalizer.QuickCheck(fcd, Normalizer.FCD, options))
+            if (Normalizer.NO == Normalizer.QuickCheck(fcd, Normalizer.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(FCD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
@@ -258,18 +263,18 @@ namespace ICU4N.Dev.Test.Normalizers
                     Errln("makeFCD did not return the correct length");
                 }
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(fcd, Normalizer.FCD, options))
+            if (Normalizer.NO == Normalizer.QuickCheck(fcd, Normalizer.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(FCD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[2], Normalizer.FCD, options))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[2], Normalizer.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
             }
 
-            if (Normalizer.NO == Normalizer.QuickCheck(field[4], Normalizer.FCD, options))
+            if (Normalizer.NO == Normalizer.QuickCheck(field[4], Normalizer.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFKD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
@@ -301,7 +306,13 @@ namespace ICU4N.Dev.Test.Normalizers
                 // see UAX #21 Case Mappings and Jitterbug 2021 and
                 // Unicode Technical Committee meeting consensus 92-C31
                 int rc;
-                if ((rc = Normalizer.Compare(field[0], field[2], (options << Normalizer.COMPARE_NORM_OPTIONS_SHIFT) | Normalizer.COMPARE_IGNORE_CASE)) != 0)
+                //if ((rc = Normalizer.Compare(field[0], field[2], (options << Normalizer.COMPARE_NORM_OPTIONS_SHIFT) | Normalizer.COMPARE_IGNORE_CASE)) != 0)
+
+                int shiftedOptions = (options << Normalizer.COMPARE_NORM_OPTIONS_SHIFT) | Normalizer.COMPARE_IGNORE_CASE;
+                var foldCaseShifted = shiftedOptions.AsFlagsToEnum<FoldCase>();
+                var normalizerComparisonShifted = shiftedOptions.AsFlagsToEnum<NormalizerComparison>();
+
+                if ((rc = Normalizer.Compare(field[0], field[2], normalizerComparisonShifted, foldCaseShifted)) != 0)
                 {
                     Errln("Normalizer.compare(original, NFD, case-insensitive) returned " + rc + " instead of 0 for equal");
                     pass = false;
@@ -332,7 +343,7 @@ namespace ICU4N.Dev.Test.Normalizers
             String modeString = kModeStrings[getModeNumber(mode)];
             String msg = String.Format(kMessages[getModeNumber(mode)], field);
             StringBuffer buf = new StringBuffer();
-            String @out = Normalizer.Normalize(s, mode, options);
+            String @out = Normalizer.Normalize(s, mode, options.AsFlagsToEnum<NormalizerUnicodeVersion>());
             if (!assertEqual(modeString, "", s, @out, exp, msg))
             {
                 return false;
@@ -373,7 +384,8 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             if (s1.Length == 1 && s2.Length == 1)
             {
-                if (Normalizer.Compare(UTF16.CharAt(s1, 0), UTF16.CharAt(s2, 0), Normalizer.COMPARE_IGNORE_CASE) != 0)
+                //if (Normalizer.Compare(UTF16.CharAt(s1, 0), UTF16.CharAt(s2, 0), Normalizer.COMPARE_IGNORE_CASE) != 0)
+                if (Normalizer.Compare(UTF16.CharAt(s1, 0), UTF16.CharAt(s2, 0), NormalizerComparison.IgnoreCase) != 0)
                 {
                     Errln("Normalizer.compare(int,int) failed for s1: "
                             + Utility.Hex(s1) + " s2: " + Utility.Hex(s2));
@@ -381,7 +393,8 @@ namespace ICU4N.Dev.Test.Normalizers
             }
             if (s1.Length == 1 && s2.Length > 1)
             {
-                if (Normalizer.Compare(UTF16.CharAt(s1, 0), s2, Normalizer.COMPARE_IGNORE_CASE) != 0)
+                //if (Normalizer.Compare(UTF16.CharAt(s1, 0), s2, Normalizer.COMPARE_IGNORE_CASE) != 0)
+                if (Normalizer.Compare(UTF16.CharAt(s1, 0), s2, NormalizerComparison.IgnoreCase) != 0)
                 {
                     Errln("Normalizer.compare(int,String) failed for s1: "
                             + Utility.Hex(s1) + " s2: " + Utility.Hex(s2));
@@ -390,7 +403,8 @@ namespace ICU4N.Dev.Test.Normalizers
             if (s1.Length > 1 && s2.Length > 1)
             {
                 // TODO: Re-enable this tests after UTC fixes UAX 21
-                if (Normalizer.Compare(s1.ToCharArray(), s2.ToCharArray(), Normalizer.COMPARE_IGNORE_CASE) != 0)
+                //if (Normalizer.Compare(s1.ToCharArray(), s2.ToCharArray(), Normalizer.COMPARE_IGNORE_CASE) != 0)
+                if (Normalizer.Compare(s1.ToCharArray(), s2.ToCharArray(), NormalizerComparison.IgnoreCase) != 0)
                 {
                     Errln("Normalizer.compare(char[],char[]) failed for s1: "
                             + Utility.Hex(s1) + " s2: " + Utility.Hex(s2));

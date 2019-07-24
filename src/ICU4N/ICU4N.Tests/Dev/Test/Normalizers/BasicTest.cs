@@ -1910,13 +1910,16 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             string t1, t2, r1, r2;
 
-            int normOptions = options >> Normalizer.COMPARE_NORM_OPTIONS_SHIFT;
+            // ICU4N specific - don't need the shift outside of Normalizer,
+            // as we have fixed this by using separate enums
+            //int normOptions = options >> Normalizer.COMPARE_NORM_OPTIONS_SHIFT;
+            var normalizerVersion = options.AsFlagsToEnum<NormalizerUnicodeVersion>();
 
             if ((options & Normalizer.COMPARE_IGNORE_CASE) != 0)
             {
                 // NFD(toCasefold(NFD(X))) = NFD(toCasefold(NFD(Y)))
-                r1 = Normalizer.Decompose(s1, false, normOptions);
-                r2 = Normalizer.Decompose(s2, false, normOptions);
+                r1 = Normalizer.Decompose(s1, false, normalizerVersion);
+                r2 = Normalizer.Decompose(s2, false, normalizerVersion);
                 r1 = UCharacter.FoldCase(r1, options);
                 r2 = UCharacter.FoldCase(r2, options);
             }
@@ -1926,8 +1929,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 r2 = s2;
             }
 
-            t1 = Normalizer.Decompose(r1, false, normOptions);
-            t2 = Normalizer.Decompose(r2, false, normOptions);
+            t1 = Normalizer.Decompose(r1, false, normalizerVersion);
+            t2 = Normalizer.Decompose(r2, false, normalizerVersion);
 
             if ((options & Normalizer.COMPARE_CODE_POINT_ORDER) != 0)
             {
@@ -1946,18 +1949,27 @@ namespace ICU4N.Dev.Test.Normalizers
         // test wrapper for Normalizer::compare, sets UNORM_INPUT_IS_FCD appropriately
         private int norm_compare(string s1, string s2, int options)
         {
-            int normOptions = options >> Normalizer.COMPARE_NORM_OPTIONS_SHIFT;
+            // ICU4N specific - don't need the shift outside of Normalizer,
+            // as we have fixed this by using separate enums
+            //int normOptions = options >> Normalizer.COMPARE_NORM_OPTIONS_SHIFT;
 
-            if (QuickCheckResult.Yes == Normalizer.QuickCheck(s1, Normalizer.FCD, normOptions) &&
-                QuickCheckResult.Yes == Normalizer.QuickCheck(s2, Normalizer.FCD, normOptions))
+            var unicodeVersion = options.AsFlagsToEnum<NormalizerUnicodeVersion>();
+
+
+            if (QuickCheckResult.Yes == Normalizer.QuickCheck(s1, Normalizer.FCD, unicodeVersion) &&
+                QuickCheckResult.Yes == Normalizer.QuickCheck(s2, Normalizer.FCD, unicodeVersion))
             {
-                options |= Normalizer.INPUT_IS_FCD;
+                options |= (int)NormalizerComparison.InputIsFCD; //Normalizer.INPUT_IS_FCD;
             }
 
-            int cmpStrings = Normalizer.Compare(s1, s2, options);
+            // Look out! The above code may changes the options that go into Compare
+            var normalizerComparison = options.AsFlagsToEnum<NormalizerComparison>();
+            var foldCase = options.AsFlagsToEnum<FoldCase>();
+
+            int cmpStrings = Normalizer.Compare(s1, s2, normalizerComparison, foldCase, unicodeVersion);
             int cmpArrays = Normalizer.Compare(
                     s1.ToCharArray(), 0, s1.Length,
-                    s2.ToCharArray(), 0, s2.Length, options);
+                    s2.ToCharArray(), 0, s2.Length, normalizerComparison, foldCase, unicodeVersion);
             assertEquals("compare strings == compare char arrays", cmpStrings, cmpArrays);
             return cmpStrings;
         }
@@ -2152,7 +2164,10 @@ namespace ICU4N.Dev.Test.Normalizers
                     new Temp(Normalizer.COMPARE_CODE_POINT_ORDER|Normalizer.COMPARE_IGNORE_CASE, "code point order & ignore case" ),
                     new Temp(Normalizer.COMPARE_IGNORE_CASE|Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I, "ignore case & special i"),
                     new Temp(Normalizer.COMPARE_CODE_POINT_ORDER|Normalizer.COMPARE_IGNORE_CASE|Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I, "code point order & ignore case & special i"),
-                    new Temp(Normalizer.UNICODE_3_2 << Normalizer.COMPARE_NORM_OPTIONS_SHIFT, "Unicode 3.2")
+
+                    // ICU4N: Shifting no longer necessary as it just complicates testing
+                    new Temp(Normalizer.UNICODE_3_2, "Unicode 3.2")
+                    //new Temp(Normalizer.UNICODE_3_2 << Normalizer.COMPARE_NORM_OPTIONS_SHIFT, "Unicode 3.2")
             };
 
 
@@ -2212,7 +2227,9 @@ namespace ICU4N.Dev.Test.Normalizers
             string value2 = "\u00fater\u00fd";
             if (Normalizer.Compare(value1, value2, 0) != 0)
             {
-                if (Normalizer.Compare(value1, value2, Normalizer.COMPARE_IGNORE_CASE) == 0)
+                var foldCase = Normalizer.COMPARE_IGNORE_CASE.AsFlagsToEnum<FoldCase>();
+                //if (Normalizer.Compare(value1, value2, Normalizer.COMPARE_IGNORE_CASE) == 0)
+                if (Normalizer.Compare(value1, value2, NormalizerComparison.Default, foldCase) == 0)
                 {
 
                 }
@@ -2872,7 +2889,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             for (i = 0; i < cases.Length; ++i)
             {
-                output = Normalizer.Normalize(cases[i].input, cases[i].mode, cases[i].options);
+                output = Normalizer.Normalize(cases[i].input, cases[i].mode, cases[i].options.AsFlagsToEnum<NormalizerUnicodeVersion>());
                 if (!output.Equals(cases[i].expect))
                 {
                     Errln("unexpected result for case " + i);

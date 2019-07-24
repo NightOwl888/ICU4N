@@ -33,7 +33,7 @@ namespace ICU4N.Text
 {
     public sealed partial class Normalizer
     {
-		private sealed partial class CharsAppendable : IAppendable
+        private sealed partial class CharsAppendable : IAppendable
         {
 <# foreach (var charSequence in charSequences) { #>
 
@@ -60,6 +60,6 @@ namespace ICU4N.Text
             }
 <# } #>
 
-		}
-	}
+        }
+    }
 }
