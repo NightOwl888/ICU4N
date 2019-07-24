@@ -518,43 +518,43 @@ namespace ICU4N.Text
         /// No decomposition/composition.
         /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static readonly Mode NONE = new NONEMode();
+        private static readonly Mode NONE = new NONEMode(); // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Canonical decomposition.
         /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static readonly Mode NFD = new NFDMode();
+        private static readonly Mode NFD = new NFDMode(); // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Compatibility decomposition.
         /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static readonly Mode NFKD = new NFKDMode();
+        private static readonly Mode NFKD = new NFKDMode(); // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Canonical decomposition followed by canonical composition.
         /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static readonly Mode NFC = new NFCMode();
+        private static readonly Mode NFC = new NFCMode(); // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Default normalization.
         /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static readonly Mode DEFAULT = NFC;
+        private static readonly Mode DEFAULT = NFC; // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Compatibility decomposition followed by canonical composition.
         /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static readonly Mode NFKC = new NFKCMode();
+        private static readonly Mode NFKC = new NFKCMode(); // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// "Fast C or D" form.
         /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public static readonly Mode FCD = new FCDMode();
+        private static readonly Mode FCD = new FCDMode(); // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Null operation for use with the <see cref="Normalizer(string, NormalizerMode, NormalizerUnicodeVersion)"/> constructors.
@@ -569,7 +569,7 @@ namespace ICU4N.Text
         /// <seealso cref="SetMode(NormalizerMode)"/>
         /// <seealso cref="NormalizerMode.None"/>
         [Obsolete("ICU 2.8. Use Nomalizer.NONE")]
-        public static readonly Mode NO_OP = NONE;
+        private static readonly Mode NO_OP = NONE; // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Canonical decomposition followed by canonical composition.  Used 
@@ -585,7 +585,7 @@ namespace ICU4N.Text
         /// <seealso cref="SetMode(NormalizerMode)"/>
         /// <seealso cref="NormalizerMode.NFC"/>
         [Obsolete("ICU 2.8. Use Normalier.NFC")]
-        public static readonly Mode COMPOSE = NFC; // ICU4N TODO: API - This conflicts with Compose() method. Best to move it out of this class.
+        private static readonly Mode COMPOSE = NFC; // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Compatibility decomposition followed by canonical composition.
@@ -602,7 +602,7 @@ namespace ICU4N.Text
         /// <seealso cref="SetMode(NormalizerMode)"/>
         /// <seealso cref="NormalizerMode.NFKC"/>
         [Obsolete("ICU 2.8. Use Normalier.NFKC")]
-        public static readonly Mode COMPOSE_COMPAT = NFKC;
+        private static readonly Mode COMPOSE_COMPAT = NFKC; // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Canonical decomposition.  This value is passed to the
@@ -618,7 +618,7 @@ namespace ICU4N.Text
         /// <seealso cref="SetMode(NormalizerMode)"/>
         /// <seealso cref="NFD"/>
         [Obsolete("ICU 2.8. Use Normalier.NFD")]
-        public static readonly Mode DECOMP = NFD;
+        private static readonly Mode DECOMP = NFD; // ICU4N specific - made private because we don't need access out of this class
 
         /// <summary>
         /// Compatibility decomposition.  This value is passed to the
@@ -634,7 +634,7 @@ namespace ICU4N.Text
         /// <seealso cref="SetMode(NormalizerMode)"/>
         /// <seealso cref="NormalizerMode.NFKD"/>
         [Obsolete("ICU 2.8. Use Normalier.NFKD")]
-        public static readonly Mode DECOMP_COMPAT = NFKD;
+        private static readonly Mode DECOMP_COMPAT = NFKD; // ICU4N specific - made private because we don't need access out of this class
 #pragma warning restore 612, 618, 672
 
         /// <summary>
@@ -662,20 +662,20 @@ namespace ICU4N.Text
         /// Indicates that string is not in the normalized format
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        internal const QuickCheckResult NO = QuickCheckResult.No; // ICU4N specific - marked internal for testing (we use the enum in .NET)
+        private const QuickCheckResult NO = QuickCheckResult.No; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
         /// <summary>
         /// Indicates that string is in the normalized format
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        internal const QuickCheckResult YES = QuickCheckResult.Yes; // ICU4N specific - marked internal for testing (we use the enum in .NET)
+        private const QuickCheckResult YES = QuickCheckResult.Yes; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
         /// <summary>
         /// Indicates it cannot be determined if string is in the normalized
         /// format without further thorough checks.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        internal const QuickCheckResult MAYBE = QuickCheckResult.Maybe; // ICU4N specific - marked internal for testing (we use the enum in .NET)
+        private const QuickCheckResult MAYBE = QuickCheckResult.Maybe; // ICU4N specific - marked internal for testing (we use the enum in .NET)
 
         /// <summary>
         /// Option bit for compare:

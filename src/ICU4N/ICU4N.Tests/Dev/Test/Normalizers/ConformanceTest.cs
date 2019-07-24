@@ -198,17 +198,17 @@ namespace ICU4N.Dev.Test.Normalizers
                 Errln("Normalizer error: quickCheck(NFC(s), Normalizer.NFC) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[2], NormalizerMode.NFD, normalizerVersion))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(field[2], NormalizerMode.NFD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFD(s), Normalizer.NFD) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[3], NormalizerMode.NFKC, normalizerVersion))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(field[3], NormalizerMode.NFKC, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFKC(s), Normalizer.NFKC) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[4], NormalizerMode.NFKD, normalizerVersion))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(field[4], NormalizerMode.NFKD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFKD(s), Normalizer.NFKD) is Normalizer.NO");
                 pass = false;
@@ -248,7 +248,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
             // test FCD quick check and "makeFCD"
             fcd = Normalizer.Normalize(field[0], NormalizerMode.FCD);
-            if (Normalizer.NO == Normalizer.QuickCheck(fcd, NormalizerMode.FCD, normalizerVersion))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(fcd, NormalizerMode.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(FCD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
@@ -263,18 +263,18 @@ namespace ICU4N.Dev.Test.Normalizers
                     Errln("makeFCD did not return the correct length");
                 }
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(fcd, NormalizerMode.FCD, normalizerVersion))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(fcd, NormalizerMode.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(FCD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
             }
-            if (Normalizer.NO == Normalizer.QuickCheck(field[2], NormalizerMode.FCD, normalizerVersion))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(field[2], NormalizerMode.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
             }
 
-            if (Normalizer.NO == Normalizer.QuickCheck(field[4], NormalizerMode.FCD, normalizerVersion))
+            if (QuickCheckResult.No == Normalizer.QuickCheck(field[4], NormalizerMode.FCD, normalizerVersion))
             {
                 Errln("Normalizer error: quickCheck(NFKD(s), Normalizer.FCD) is Normalizer.NO");
                 pass = false;
