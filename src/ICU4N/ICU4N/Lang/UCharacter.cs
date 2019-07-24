@@ -3922,15 +3922,10 @@ namespace ICU4N.Lang
             {
                 // this is hard coded for the valid cc
                 // because PropertyValueAliases.txt does not contain all of them
-                try // ICU4N TODO: Use TryGetPropertyValueName instead of relying on exception
-                {
-                    return UPropertyAliases.Instance.GetPropertyValueName(property, value,
-                            nameChoice);
-                }
-                catch (ArgumentException e)
-                {
-                    return null;
-                }
+
+                // ICU4N specific - using TryGet version instead of falling back on exception
+                UPropertyAliases.Instance.TryGetPropertyValueName(property, value, nameChoice, out string result);
+                return result;
             }
             return UPropertyAliases.Instance.GetPropertyValueName(property, value, nameChoice);
         }
