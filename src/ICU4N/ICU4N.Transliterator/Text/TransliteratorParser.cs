@@ -1537,7 +1537,7 @@ namespace ICU4N.Text
          * to a pragma statement.
          */
 #pragma warning disable 612, 618
-        private void PragmaNormalizeRules(Normalizer.Mode mode)
+        private void PragmaNormalizeRules(NormalizerMode mode)
 #pragma warning restore 612, 618
         {
             //TODO Finish
@@ -1597,7 +1597,7 @@ namespace ICU4N.Text
             if (p >= 0)
             {
 #pragma warning disable 612, 618
-                PragmaNormalizeRules(Normalizer.NFD);
+                PragmaNormalizeRules(NormalizerMode.NFD);
 #pragma warning restore 612, 618
                 return p;
             }
@@ -1606,7 +1606,7 @@ namespace ICU4N.Text
             if (p >= 0)
             {
 #pragma warning disable 612, 618
-                PragmaNormalizeRules(Normalizer.NFC);
+                PragmaNormalizeRules(NormalizerMode.NFC);
 #pragma warning restore 612, 618
                 return p;
             }
