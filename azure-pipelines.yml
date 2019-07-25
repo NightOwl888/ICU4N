@@ -129,3 +129,35 @@ stages:
         testTargetFrameworks: 'net451'
         testResultsArtifactName: '$(TestResultsArtifactName)'
     - pwsh: Exit [int]([int]$TotalFailures -gt 8) # Maximum allowed failures for a successful build
+
+
+- stage: Publish_Stage
+  displayName: 'Publish Stage:'
+  jobs:
+  - job: Publish
+    pool:
+      vmImage: 'windows-2019'
+
+    steps:
+    - template: 'build/azure-templates/show-all-environment-variables.yml'
+
+    - task: DownloadBuildArtifacts@0
+      displayName: 'Download Build Artifacts: $(VersionArtifactName)'
+      inputs:
+        artifactName: '$(VersionArtifactName)'
+        downloadPath: '$(Build.ArtifactStagingDirectory)'
+
+      # NOTE: We are setting Build.BuildNumber here to the NuGet package version to work around the limitation that
+      # the version cannot be passed to the Index Sources & Publish Symbols task.
+    - powershell: |
+        $version = Get-Content '$(Build.ArtifactStagingDirectory)/$(VersionArtifactName)/$(PackageVersionFileName)' -Raw
+        Write-Host "##vso[task.setvariable variable=PackageVersion;]$version"
+        Write-Host "##vso[task.setvariable variable=Build.BuildNumber;]$version"
+      displayName: 'Read PackageVersion from File to Build.BuildNumber'
+
+    - template: 'build/azure-templates/show-all-environment-variables.yml'
+
+    - template: 'build/azure-templates/publish-nuget-packages.yml'
+      parameters:
+        artifactFeedID: '$(ArtifactFeedID)'
+        nugetArtifactName: '$(NuGetArtifactName)'
