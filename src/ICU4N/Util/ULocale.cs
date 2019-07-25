@@ -4662,19 +4662,20 @@ namespace ICU4N.Util
                     newName = "nn-NO";
                 }
 
+
                 try
                 {
                     CultureInfo culture = new CultureInfo(newName);
 
-#if NETSTANDARD1_3
-                    // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
-                    // to be created, but will be "unknown" languages. We need to manually
-                    // ignore these.
-                    if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
-                    {
-                        return null;
-                    }
-#endif
+//#if NETSTANDARD1_3
+//                    // ICU4N: In .NET Standard 1.x, some invalid cultures are allowed
+//                    // to be created, but will be "unknown" languages. We need to manually
+//                    // ignore these.
+//                    if (culture.EnglishName.StartsWith("Unknown Language", StringComparison.Ordinal))
+//                    {
+//                        return null;
+//                    }
+//#endif
                     return culture;
                 }
                 catch (CultureNotFoundException)
