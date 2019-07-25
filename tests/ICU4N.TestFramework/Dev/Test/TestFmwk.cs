@@ -34,7 +34,12 @@ namespace ICU4N.Dev.Test
      */
         // ICU4N NOTE: In .NET, there is no way to set the time zone for the entire app, so
         // we need to use another approach than setting it for the test fixture.
-        public readonly static TimeZoneInfo DEFAULT_TIME_ZONE = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time"); //TimeZoneInfo.getTimeZone("America/Los_Angeles");
+
+        // ICU4N TODO: When we do finally start getting into time zones, we should use the
+        // https://github.com/mj1856/TimeZoneConverter for cross-platform usage of TZ info.
+        // However, this particular constant is not even utilized by any of the tests in ICU,
+        // but it is crashing and burning on Linux due to incompatible TZ naming.
+        //public readonly static TimeZoneInfo DEFAULT_TIME_ZONE = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time"); //TimeZoneInfo.getTimeZone("America/Los_Angeles");
 
         /**
          * The default locale used for all of our tests. Used in @Before
