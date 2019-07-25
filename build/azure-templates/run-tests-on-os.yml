@@ -43,7 +43,7 @@ steps:
     $testResultsArtifactDirectory = "${{ format('$(Build.ArtifactStagingDirectory)/{0}',parameters.testResultsArtifactName) }}"
     $testPlatform = '${{ parameters.vsTestPlatform }}'
     $testOSName = '${{ parameters.osName }}'
-    $testBinaryFilesConvention = '${{ parameters.testBinaryFilesConvention }}'
+    $testBinaryFilesPattern = '${{ parameters.testBinaryFilesPattern }}'
     $maximumParalellJobs = '${{ parameters.maximumParallelJobs }}'
     $testTargetFrameworks = $testTargetFrameworksString.Split([char]',',[char]';')
     
