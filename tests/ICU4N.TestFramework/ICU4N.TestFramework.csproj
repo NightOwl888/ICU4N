@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFramework></TargetFramework>
     <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
     <RootNamespace>ICU4N</RootNamespace>
   </PropertyGroup>
@@ -20,8 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.8.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.8.0" />
+    <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
@@ -33,9 +33,5 @@
     <DefineConstants>$(DefineConstants);FEATURE_STACKTRACE;FEATURE_SERIALIZABLE</DefineConstants>
     <DebugType>full</DebugType>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\ICU4N\ICU4N.csproj" />
-  </ItemGroup>
 
 </Project>

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>ICU4N</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Dev\Test\Util\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ICU4N.LanguageData\ICU4N.LanguageData.csproj" />
+    <ProjectReference Include="..\..\src\ICU4N.Transliterator\ICU4N.Transliterator.csproj" />
+    <ProjectReference Include="..\ICU4N.TestFramework\ICU4N.TestFramework.csproj" />
+  </ItemGroup>
+
+</Project>

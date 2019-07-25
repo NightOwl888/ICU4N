@@ -28,9 +28,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
+  <!--
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.3|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard1.3\ICU4N.xml</DocumentationFile>
-  </PropertyGroup>
+  </PropertyGroup>-->
 
   <ItemGroup>
     <None Remove="Impl\Data\brkitr\*" />
@@ -54,6 +55,10 @@
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="$(RepositoryRoot)build/CommonAssemblyKeys.cs" Link="Properties\CommonAssemblyKeys.cs" />
   </ItemGroup>
 
   <ItemGroup>

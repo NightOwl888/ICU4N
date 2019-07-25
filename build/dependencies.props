@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup Label="NuGet Package Reference Versions">
+    <MicrosoftCSharpPackageReferenceVersion>4.4.0</MicrosoftCSharpPackageReferenceVersion>
+    <MicrosoftNETTestSdkPackageVersion>16.1.1</MicrosoftNETTestSdkPackageVersion>
+    <NerdBankGitVersioningPackageVersion>[2.3.183]</NerdBankGitVersioningPackageVersion>
+    <NETStandardLibrary20PackageVersion>2.0.3</NETStandardLibrary20PackageVersion>
+    <NUnitPackageVersion>3.9.0</NUnitPackageVersion>
+    <NUnit3TestAdapterPackageVersion>3.13.0</NUnit3TestAdapterPackageVersion>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup Label="NuGet Package Properties">
+    <IsPackable>true</IsPackable>
+    <PackageTags>icu;international;components;unicode;breakiterator;normalizer;messageformat;unicodeset;uts46;idna</PackageTags>
+    <Authors>NightOwl888</Authors>
+    <RepositoryUrl>https://github.com/NightOwl888/ICU4N/</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/NightOwl888/ICU4N/</PackageProjectUrl>
+    <!--<PackageIconUrl></PackageIconUrl>-->
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(SolutionDir)LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)"/>
+  </ItemGroup>
+</Project>

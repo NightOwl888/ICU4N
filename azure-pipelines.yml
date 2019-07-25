@@ -3,46 +3,129 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger:
-- master
+name: 'vNext$(rev:.r)' # Format for build number (will be overridden)
 
-jobs:
-- job: Test
-  strategy:
-    matrix:
-      Windows:
-        osName: 'Windows'
-        imageName: 'windows-2019'
-        platform: 'netcoreapp2.1'
-      Linux:
-        osName: 'Linux'
-        imageName: 'ubuntu-16.04'
-        platform: 'netcoreapp2.1'
-      macOS:
-        osName: 'macOS'
-        imageName: 'macOS-10.14'
-        platform: 'netcoreapp2.1'
-      macOS2:
-        osName: 'macOS'
-        imageName: 'macOS-10.14'
-        platform: 'netcoreapp1.0'
-  displayName: 'Test $(platform) on'
-  pool:
-    vmImage: $(imageName)
-  steps:
-  - pwsh: Write-Host "Hello there"
+#trigger:
+#- master
 
-- job: Test1
-  pool:
-    vmImage: 'windows-2019'
-  steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
+# DevOps Setup: Define the following pipeline level variables in Azure DevOps build pipeline
+#
+# ArtifactFeedID set to your Azure DevOps Artifact (NuGet) feed
+# BuildConfiguration: 'Release'
+# BuildPlatform: 'Any CPU'
 
-  - script: |
-      echo Add other tasks to build, test, and deploy your project.
-      echo See https://aka.ms/yaml
-    displayName: 'Run a multi-line script'
+variables:
+- name: TestTargetFrameworks
+  value: 'netcoreapp2.0;netcoreapp1.0;net451'
+- name: BinaryArtifactName
+  value: 'testbinaries'
+- name: NuGetArtifactName
+  value: 'nuget'
+- name: TestResultsArtifactName
+  value: 'testresults'
+- name: VersionArtifactName
+  value: 'version'
+- name: BuildNumberFileName
+  value: 'buildNumber.txt'
+- name: PackageVersionFileName
+  value: 'packageVersion.txt'
+- name: FileVersionFileName
+  value: 'fileVersion.txt'
 
-  - powershell: Start-Sleep -s 15
+stages:
+- stage: Build_Stage
+  displayName: 'Build Stage:'
+  jobs:
 
+  - job: Build
+    pool:
+      vmImage: 'windows-2019'
+
+    steps:
+    - template: 'common/gitversioning-increment-and-persist-versions.yml@templates'
+      parameters:
+        versionArtifactName: '$(VersionArtifactName)'
+        packageVersionFileName: '$(PackageVersionFileName)'
+        fileVersionFileName: '$(FileVersionFileName)'
+        buildNumberFileName: '$(BuildNumberFileName)'
+
+    - template: 'class-libraries/build-pack-and-publish-libraries.yml@templates'
+      parameters:
+        artifactFeedID: '$(ArtifactFeedID)'
+        testTargetFrameworks: '$(TestTargetFrameworks)'
+        informationalVersion: '$(InformationalVersion)' # Output from gitversioning-increment-and-persist-versions.yml
+        fileVersion: '$(FileVersion)' # Output from gitversioning-increment-and-persist-versions.yml
+        assemblyVersion: '$(AssemblyVersion)' # Output from gitversioning-increment-and-persist-versions.yml
+        packageVersion: '$(PackageVersion)' # Output from gitversioning-increment-and-persist-versions.yml
+        buildConfiguration: '$(BuildConfiguration)'
+        buildPlatform: '$(BuildPlatform)'
+        nugetArtifactName: '$(NuGetArtifactName)'
+        binaryArtifactName: '$(BinaryArtifactName)'
+
+
+- stage: Test_Stage
+  displayName: 'Test Stage:'
+  jobs:
+  - job: Test_netcoreapp2_0
+    strategy:
+      matrix:
+        Windows:
+          osName: 'Windows'
+          imageName: 'windows-2019'
+          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+        Linux:
+          osName: 'Linux'
+          imageName: 'ubuntu-16.04'
+          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+        macOS:
+          osName: 'macOS'
+          imageName: 'macOS-10.14'
+          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+    displayName: 'Test netcoreapp2.0 on'
+    pool:
+      vmImage: $(imageName)
+    steps:
+    - template: 'build/azure-templates/run-tests-on-os.yml'
+      parameters:
+        osName: $(osName)
+        testTargetFrameworks: 'netcoreapp2.0'
+        testResultsArtifactName: '$(TestResultsArtifactName)'
+    - pwsh: Exit [int]([int]$TotalFailures -gt $(maximumAllowedFailures))
+
+  - job: Test_netcoreapp1_0
+    strategy:
+      matrix:
+        Windows:
+          osName: 'Windows'
+          imageName: 'windows-2019'
+          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+        Linux:
+          osName: 'Linux'
+          imageName: 'ubuntu-16.04'
+          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+        macOS:
+          osName: 'macOS'
+          imageName: 'macOS-10.14'
+          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+    displayName: 'Test netcoreapp1.0 on'
+    pool:
+      vmImage: $(imageName)
+    steps:
+    - template: 'build/azure-templates/run-tests-on-os.yml'
+      parameters:
+        osName: $(osName)
+        testTargetFrameworks: 'netcoreapp1.0'
+        testResultsArtifactName: '$(TestResultsArtifactName)'
+    - pwsh: Exit [int]([int]$TotalFailures -gt $(maximumAllowedFailures))
+
+  - job: Test_net451
+    displayName: 'Test net451 on Windows'
+    pool:
+      vmImage: 'windows-2019'
+    steps:
+    - template: 'build/azure-templates/run-tests-on-os.yml'
+      parameters:
+        osName: $(osName)
+        testTargetFrameworks: 'net451'
+        testResultsArtifactName: '$(TestResultsArtifactName)'
+    - pwsh: Exit [int]([int]$TotalFailures -gt 8) # Maximum allowed failures for a successful build

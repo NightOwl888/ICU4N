@@ -1,0 +1,133 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29025.244
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{57271E32-0E88-4696-A477-D00D99DF06F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{F0008007-6BDA-4F66-A01E-F559AD954127}"
+	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
+		build\dependencies.props = build\dependencies.props
+		build\nuget.props = build\nuget.props
+		build\TestReferences.Common.targets = build\TestReferences.Common.targets
+		build\TestTargetFramework.props = build\TestTargetFramework.props
+		version.json = version.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure-templates", "azure-templates", "{9A05917A-65A5-4E17-9A1E-8F180D557028}"
+	ProjectSection(SolutionItems) = preProject
+		build\azure-templates\build-pack-and-publish-libraries.yml = build\azure-templates\build-pack-and-publish-libraries.yml
+		build\azure-templates\publish-nuget-packages.yml = build\azure-templates\publish-nuget-packages.yml
+		build\azure-templates\publish-test-results-for-target-frameworks.yml = build\azure-templates\publish-test-results-for-target-frameworks.yml
+		build\azure-templates\publish-test-results-for-test-projects.yml = build\azure-templates\publish-test-results-for-test-projects.yml
+		build\azure-templates\publish-test-results.yml = build\azure-templates\publish-test-results.yml
+		build\azure-templates\run-tests-on-os.yml = build\azure-templates\run-tests-on-os.yml
+		build\azure-templates\show-all-environment-variables.yml = build\azure-templates\show-all-environment-variables.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF2F2031-FCC4-401C-9D58-96D0245C1A41}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}"
+	ProjectSection(SolutionItems) = preProject
+		src\Directory.Build.props = src\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8C266EC1-9565-4827-B3AD-AC657F6BDC27}"
+	ProjectSection(SolutionItems) = preProject
+		tests\Directory.Build.props = tests\Directory.Build.props
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N", "src\ICU4N\ICU4N.csproj", "{883E16AF-AB40-4285-89A8-57333CC68AA2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Collation", "src\ICU4N.Collation\ICU4N.Collation.csproj", "{E2A01BE7-8163-41F9-A273-7EE38355E28F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.CurrencyData", "src\ICU4N.CurrencyData\ICU4N.CurrencyData.csproj", "{ACA48741-E35D-4EDD-9DF9-BA156B8D8919}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.LanguageData", "src\ICU4N.LanguageData\ICU4N.LanguageData.csproj", "{37098A9E-685A-4D56-9CCB-FDDE067FC9B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.RegionData", "src\ICU4N.RegionData\ICU4N.RegionData.csproj", "{3E3FB19F-186C-4198-8CDD-E80E53D64264}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Transliterator", "src\ICU4N.Transliterator\ICU4N.Transliterator.csproj", "{88A90041-5B86-4526-B738-CD710FC68115}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.TestFramework", "tests\ICU4N.TestFramework\ICU4N.TestFramework.csproj", "{D1F71722-4424-430B-A39A-5F2E58471202}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Tests", "tests\ICU4N.Tests\ICU4N.Tests.csproj", "{3D72AE06-7BB2-42B8-8772-D03053392AF5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Tests.Collation", "tests\ICU4N.Tests.Collation\ICU4N.Tests.Collation.csproj", "{B384CCC9-55CA-452B-8C7B-12A38DFC9A95}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ICU4N.Tests.Transliterator", "tests\ICU4N.Tests.Transliterator\ICU4N.Tests.Transliterator.csproj", "{F0C32D59-219F-47F4-830C-A724F7213A80}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{883E16AF-AB40-4285-89A8-57333CC68AA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{883E16AF-AB40-4285-89A8-57333CC68AA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{883E16AF-AB40-4285-89A8-57333CC68AA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{883E16AF-AB40-4285-89A8-57333CC68AA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2A01BE7-8163-41F9-A273-7EE38355E28F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2A01BE7-8163-41F9-A273-7EE38355E28F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2A01BE7-8163-41F9-A273-7EE38355E28F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2A01BE7-8163-41F9-A273-7EE38355E28F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACA48741-E35D-4EDD-9DF9-BA156B8D8919}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA48741-E35D-4EDD-9DF9-BA156B8D8919}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA48741-E35D-4EDD-9DF9-BA156B8D8919}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA48741-E35D-4EDD-9DF9-BA156B8D8919}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37098A9E-685A-4D56-9CCB-FDDE067FC9B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37098A9E-685A-4D56-9CCB-FDDE067FC9B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37098A9E-685A-4D56-9CCB-FDDE067FC9B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37098A9E-685A-4D56-9CCB-FDDE067FC9B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E3FB19F-186C-4198-8CDD-E80E53D64264}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E3FB19F-186C-4198-8CDD-E80E53D64264}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E3FB19F-186C-4198-8CDD-E80E53D64264}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E3FB19F-186C-4198-8CDD-E80E53D64264}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88A90041-5B86-4526-B738-CD710FC68115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88A90041-5B86-4526-B738-CD710FC68115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88A90041-5B86-4526-B738-CD710FC68115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88A90041-5B86-4526-B738-CD710FC68115}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1F71722-4424-430B-A39A-5F2E58471202}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1F71722-4424-430B-A39A-5F2E58471202}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1F71722-4424-430B-A39A-5F2E58471202}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1F71722-4424-430B-A39A-5F2E58471202}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D72AE06-7BB2-42B8-8772-D03053392AF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D72AE06-7BB2-42B8-8772-D03053392AF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D72AE06-7BB2-42B8-8772-D03053392AF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D72AE06-7BB2-42B8-8772-D03053392AF5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B384CCC9-55CA-452B-8C7B-12A38DFC9A95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B384CCC9-55CA-452B-8C7B-12A38DFC9A95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B384CCC9-55CA-452B-8C7B-12A38DFC9A95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B384CCC9-55CA-452B-8C7B-12A38DFC9A95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0C32D59-219F-47F4-830C-A724F7213A80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0C32D59-219F-47F4-830C-A724F7213A80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0C32D59-219F-47F4-830C-A724F7213A80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0C32D59-219F-47F4-830C-A724F7213A80}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9A05917A-65A5-4E17-9A1E-8F180D557028} = {F0008007-6BDA-4F66-A01E-F559AD954127}
+		{883E16AF-AB40-4285-89A8-57333CC68AA2} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{E2A01BE7-8163-41F9-A273-7EE38355E28F} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{ACA48741-E35D-4EDD-9DF9-BA156B8D8919} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{37098A9E-685A-4D56-9CCB-FDDE067FC9B8} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{3E3FB19F-186C-4198-8CDD-E80E53D64264} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{88A90041-5B86-4526-B738-CD710FC68115} = {543196C0-5AE0-40D8-8BE0-CDDD1F8C4DBB}
+		{D1F71722-4424-430B-A39A-5F2E58471202} = {8C266EC1-9565-4827-B3AD-AC657F6BDC27}
+		{3D72AE06-7BB2-42B8-8772-D03053392AF5} = {8C266EC1-9565-4827-B3AD-AC657F6BDC27}
+		{B384CCC9-55CA-452B-8C7B-12A38DFC9A95} = {8C266EC1-9565-4827-B3AD-AC657F6BDC27}
+		{F0C32D59-219F-47F4-830C-A724F7213A80} = {8C266EC1-9565-4827-B3AD-AC657F6BDC27}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {083BF0D3-ED92-41EE-AD6E-6715D0BA155B}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
+EndGlobal
