@@ -125,7 +125,7 @@ stages:
     steps:
     - template: 'build/azure-templates/run-tests-on-os.yml'
       parameters:
-        osName: $(osName)
+        osName: 'Windows'
         testTargetFrameworks: 'net451'
         testResultsArtifactName: '$(TestResultsArtifactName)'
     - pwsh: Exit [int]([int]$TotalFailures -gt 8) # Maximum allowed failures for a successful build

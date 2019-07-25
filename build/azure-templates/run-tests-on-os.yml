@@ -8,7 +8,8 @@ parameters:
   binaryArtifactName: 'testbinaries' # The name of the Azure DevOps build artifact where the test assemblies will be downloaded from. Default 'testbinaries'.
   testResultsArtifactName: 'testresults' # The name of the Azure DevOps build artifact where the test results will be published. Default 'testresults'.
   vsTestPlatform: 'x64' # Target platform architecture used for test execution. Valid values are x86, x64, and ARM.
-  testBinaryFilesConvention: '**/*.Tests*.dll' # The glob pattern (within $(System.DefaultWorkingDirectory)/**/<TargetFramework>/) where to look for test .dll files, so they can be distinguished from other .dll file types.
+  #testBinaryFilesPattern: '**/*.Tests*.dll' # The regex pattern (within $(System.DefaultWorkingDirectory)/**/<TargetFramework>/) where to look for test .dll files, so they can be distinguished from other .dll file types.
+  testBinaryFilesPattern: '[\\/]*?[\\/]?\w*\.Tests\.?.*?.dll$' # The regex pattern (within $(System.DefaultWorkingDirectory)/**/<TargetFramework>) where to look for test .dll files, so they can be distinguished from other .dll file types.
   testResultsFileName: 'TestResults.trx' # The name of the file (not path) of the test results. Default 'TestResults.trx'.
   maximumParallelJobs: 8
 
@@ -25,8 +26,7 @@ steps:
     EnsureNotNullOrEmpty('${{ parameters.binaryArtifactName }}', 'binaryArtifactName')
     EnsureNotNullOrEmpty('${{ parameters.testResultsArtifactName }}', 'testResultsArtifactName')
     EnsureNotNullOrEmpty('${{ parameters.vsTestPlatform }}', 'vsTestPlatform')
-    EnsureNotNullOrEmpty('${{ parameters.fastTestBinaryFilesConvention }}', 'fastTestBinaryFilesConvention')
-    EnsureNotNullOrEmpty('${{ parameters.slowTestBinaryFilesConvention }}', 'slowTestBinaryFilesConvention')
+    EnsureNotNullOrEmpty('${{ parameters.testBinaryFilesPattern }}', 'testBinaryFilesPattern')
     EnsureNotNullOrEmpty('${{ parameters.testResultsFileName }}', 'testResultsFileName')
     EnsureNotNullOrEmpty('${{ parameters.maximumParallelJobs }}', 'maximumParallelJobs')
   displayName: 'Validate Template Parameters'
@@ -82,10 +82,10 @@ steps:
         return $true
     }
     
-    function RunTests([string]$framework, [string]$fileConvention) {
+    function RunTests([string]$framework, [string]$fileRegexPattern) {
         if (!(IsSupportedFramework($framework))) { continue }
     
-        $testBinaries = Get-ChildItem -Path "$testBinaryRootDirectory/**/$framework/$fileConvention" -Recurse
+        $testBinaries = Get-ChildItem -Path "$testBinaryRootDirectory" -Recurse | Where-Object {$_.FullName -match "$($framework)$fileRegexPattern"}
         foreach ($testBinary in $testBinaries) {
             $testName = [System.IO.Path]::GetFileNameWithoutExtension($testBinary)
     
@@ -118,7 +118,7 @@ steps:
     }
     
     foreach ($framework in $testTargetFrameworks) {
-        RunTests -Framework "$framework" -FileConvention "$testBinaryFilesConvention"
+        RunTests -Framework "$framework" -FileRegexPattern "$testBinaryFilesPattern"
     }
     
     # Wait for it all to complete
