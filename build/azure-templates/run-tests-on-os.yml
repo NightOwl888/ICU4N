@@ -137,7 +137,7 @@ steps:
   errorActionPreference: 'continue'
   failOnStderr: false
 
-- template: 'show-all-files.yml'
+#- template: 'show-all-files.yml' # Uncomment for debugging
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: ${{ parameters.testResultsArtifactName }}'
