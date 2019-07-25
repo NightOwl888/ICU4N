@@ -42,14 +42,14 @@ stages:
       vmImage: 'windows-2019'
 
     steps:
-    - template: 'common/gitversioning-increment-and-persist-versions.yml@templates'
+    - template: 'build/azure-templates/gitversioning-increment-and-persist-versions.yml'
       parameters:
         versionArtifactName: '$(VersionArtifactName)'
         packageVersionFileName: '$(PackageVersionFileName)'
         fileVersionFileName: '$(FileVersionFileName)'
         buildNumberFileName: '$(BuildNumberFileName)'
 
-    - template: 'class-libraries/build-pack-and-publish-libraries.yml@templates'
+    - template: 'build/azure-templates/build-pack-and-publish-libraries.yml'
       parameters:
         artifactFeedID: '$(ArtifactFeedID)'
         testTargetFrameworks: '$(TestTargetFrameworks)'
