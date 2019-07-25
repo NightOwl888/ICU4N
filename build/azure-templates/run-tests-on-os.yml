@@ -9,7 +9,7 @@ parameters:
   testResultsArtifactName: 'testresults' # The name of the Azure DevOps build artifact where the test results will be published. Default 'testresults'.
   vsTestPlatform: 'x64' # Target platform architecture used for test execution. Valid values are x86, x64, and ARM.
   #testBinaryFilesPattern: '**/*.Tests*.dll' # The regex pattern (within $(System.DefaultWorkingDirectory)/**/<TargetFramework>/) where to look for test .dll files, so they can be distinguished from other .dll file types.
-  testBinaryFilesPattern: '[\\/]*?[\\/]?\w*\.Tests\.?.*?.dll$' # The regex pattern (within $(System.DefaultWorkingDirectory)/**/<TargetFramework>) where to look for test .dll files, so they can be distinguished from other .dll file types.
+  testBinaryFilesPattern: '\.*\.Tests\.?\w*?.dll$' # The regex pattern (within $(System.DefaultWorkingDirectory)/**/<TargetFramework>) where to look for test .dll files, so they can be distinguished from other .dll file types.
   testResultsFileName: 'TestResults.trx' # The name of the file (not path) of the test results. Default 'TestResults.trx'.
   maximumParallelJobs: 8
 
@@ -85,7 +85,7 @@ steps:
     function RunTests([string]$framework, [string]$fileRegexPattern) {
         if (!(IsSupportedFramework($framework))) { continue }
     
-        $testBinaries = Get-ChildItem -Path "$testBinaryRootDirectory" -Recurse | Where-Object {$_.FullName -match "$($framework)$fileRegexPattern"}
+        $testBinaries = Get-ChildItem -Path "$testBinaryRootDirectory" -Recurse | Where-Object {$_.FullName -match "$framework"} | Where-Object {$_.FullName -match "$fileRegexPattern"}
         foreach ($testBinary in $testBinaries) {
             $testName = [System.IO.Path]::GetFileNameWithoutExtension($testBinary)
     
