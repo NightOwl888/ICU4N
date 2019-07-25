@@ -49,25 +49,10 @@ steps:
     EnsureNotNullOrEmpty('${{ parameters.testSymbolFilesConvention }}', 'testSymbolFilesConvention')
   displayName: 'Validate Template Parameters'
 
-#  # HACK: Using nuget.exe v4.8.1 tasks to do a "pre-restore". This functions, but seems
-#  # to only restore the first target in TargetFrameworks. However, it also seems to cache
-#  # the credentials so that using dotnet build without --no-restore will function afterward
-#  # and correctly restore all TargetFrameworks.
-#- task: NuGetToolInstaller@0
-#  displayName: 'Use NuGet 4.8.1'
-#  inputs:
-#    versionSpec: 4.8.1
-
 - task: DotNetCoreInstaller@0
   displayName: 'Use .NET Core sdk 2.2.300'
   inputs:
     version: 2.2.300
-
-#- task: NuGetCommand@2
-#  displayName: 'NuGet restore'
-#  inputs:
-#    restoreSolution: '${{ parameters.solutionFilesConvention }}'
-#    vstsFeed: '/${{ parameters.artifactFeedID }}'
 
   # Runs dotnet build 
 - task: DotNetCoreCLI@2
@@ -90,16 +75,6 @@ steps:
       !${{ parameters.testProjectFilesConvention }}
     custom: pack
     arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}" --no-build --include-symbols --include-source --verbosity Detailed /p:PackageVersion="${{ parameters.packageVersion }}"'
-
-- task: PublishSymbols@2
-  displayName: 'Index symbols path'
-  inputs:
-    SymbolsFolder: '$(System.DefaultWorkingDirectory)'
-    SearchPattern: |
-      **/bin/${{ parameters.buildConfiguration }}/**/*.pdb
-      !${{ parameters.testSymbolFilesConvention }}
-    IndexSources: true
-    PublishSymbols: false
 
   # Copy the .pdb files as build artifacts, which will later be used
   # to push to the Azure Artifacts symbol server.
