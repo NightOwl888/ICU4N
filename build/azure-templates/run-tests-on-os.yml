@@ -85,7 +85,7 @@ steps:
     function RunTests([string]$framework, [string]$fileRegexPattern) {
         if (!(IsSupportedFramework($framework))) { continue }
     
-        $testBinaries = Get-ChildItem -Path "$testBinaryRootDirectory" -Recurse | Where-Object {$_.FullName -match "$framework"} | Where-Object {$_.FullName -match "$fileRegexPattern"} | Select-Object { $_.FullName }
+        $testBinaries = Get-ChildItem -Path "$testBinaryRootDirectory" -File -Recurse | Where-Object {$_.FullName -match "$framework"} | Where-Object {$_.FullName -match "$fileRegexPattern"} | Select-Object { $_.FullName }
         foreach ($testBinary in $testBinaries) {
             $testName = [System.IO.Path]::GetFileNameWithoutExtension($testBinary)
     
@@ -137,8 +137,7 @@ steps:
   errorActionPreference: 'continue'
   failOnStderr: false
 
-- powershell: cd ..;dir -r  | % { if ($_.PsIsContainer) { $_.FullName + "\" } else { $_.FullName } }
-  displayName: 'Show all files'
+- template: 'show-all-files.yml'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifact: ${{ parameters.testResultsArtifactName }}'

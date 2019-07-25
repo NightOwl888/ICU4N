@@ -24,8 +24,7 @@ steps:
     EnsureNotNullOrEmpty('${{ parameters.testResultsFileName }}', 'testResultsFileName')
   displayName: 'Validate Template Parameters'
 
-- powershell: cd ..;dir -r  | % { if ($_.PsIsContainer) { $_.FullName + "\" } else { $_.FullName } }
-  displayName: 'Show all files'
+- template: 'show-all-files.yml'
 
 - powershell: |
     $testResultsFileName = "$(Build.ArtifactStagingDirectory)/${{ parameters.testResultsArtifactName }}/${{ parameters.osName }}/${{ parameters.framework }}/${{ parameters.testProjectName }}/${{ parameters.testResultsFileName }}"

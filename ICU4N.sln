@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure-templates", "azure-te
 		build\azure-templates\publish-test-results.yml = build\azure-templates\publish-test-results.yml
 		build\azure-templates\run-tests-on-os.yml = build\azure-templates\run-tests-on-os.yml
 		build\azure-templates\show-all-environment-variables.yml = build\azure-templates\show-all-environment-variables.yml
+		build\azure-templates\show-all-files.yml = build\azure-templates\show-all-files.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CF2F2031-FCC4-401C-9D58-96D0245C1A41}"
