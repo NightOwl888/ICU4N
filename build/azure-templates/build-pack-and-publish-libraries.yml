@@ -21,7 +21,7 @@ parameters:
   binaryArtifactName: 'testbinaries' # The name of the Azure DevOps build artifact where the test assemblies will be output. Default 'testbinaries'.
   solutionFilesConvention: '**/*.sln' # The glob pattern where to look for solution files. Default '**\*.sln'.
   packableProjectFilesConvention: '**/*.csproj' # The glob pattern (within $(System.DefaultWorkingDirectory)) where to look for project files to pack into .nupkg files for deployment.
-  testProjectFilesConvention: '**/*.Tests.*.csproj' # The glob pattern (within $(System.DefaultWorkingDirectory)) where to look for test project files, so they can be distinguished from other project file types.
+  testProjectFilesConvention: '**/*.Tests*.csproj' # The glob pattern (within $(System.DefaultWorkingDirectory)) where to look for test project files, so they can be distinguished from other project file types.
   testSymbolFilesConvention: '**/*.Tests.*/**/*.pdb' # The glob pattern (within $(System.DefaultWorkingDirectory)) where to look for test project symbols (.pdb) files, so they can be distinguished from other project file types.
 
 
