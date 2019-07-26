@@ -28,11 +28,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <!--
-  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard1.3|AnyCPU'">
-    <DocumentationFile>bin\Debug\netstandard1.3\ICU4N.xml</DocumentationFile>
-  </PropertyGroup>-->
-
   <ItemGroup>
     <None Remove="Impl\Data\brkitr\*" />
     <None Remove="Impl\Data\*.cfu" />
