@@ -2167,8 +2167,8 @@ namespace ICU4N.Dev.Test.Normalizers
                     new Temp(Normalizer.COMPARE_CODE_POINT_ORDER|Normalizer.COMPARE_IGNORE_CASE|Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I, "code point order & ignore case & special i"),
 
                     // ICU4N: Shifting no longer necessary as it just complicates testing
-                    new Temp(Normalizer.UNICODE_3_2, "Unicode 3.2")
-                    //new Temp(Normalizer.UNICODE_3_2 << Normalizer.COMPARE_NORM_OPTIONS_SHIFT, "Unicode 3.2")
+                    new Temp(Normalizer.Unicode3_2, "Unicode 3.2")
+                    //new Temp(Normalizer.Unicode3_2 << Normalizer.COMPARE_NORM_OPTIONS_SHIFT, "Unicode 3.2")
             };
 
 

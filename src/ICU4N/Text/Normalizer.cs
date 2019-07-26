@@ -414,7 +414,7 @@ namespace ICU4N.Text
         /// At most one Unicode version can be selected at a time.
         /// </summary>
         [Obsolete("ICU 56 Use FilteredNormalizer2 instead.")]
-        public static readonly int UNICODE_3_2 = (int)NormalizerUnicodeVersion.Unicode3_2;
+        internal static readonly int Unicode3_2 = (int)NormalizerUnicodeVersion.Unicode3_2; // ICU4N specific - changed from public to internal, as we have an enum to supply the value
 
         /// <summary>
         /// Constant indicating that the end of the iteration has been reached.
@@ -465,7 +465,7 @@ namespace ICU4N.Text
             { }
             protected internal override Normalizer2 GetNormalizer2(int options)
             {
-                return (options & UNICODE_3_2) != 0 ?
+                return (options & Unicode3_2) != 0 ?
                         NFD32ModeImpl.Instance.Normalizer2 : NFDModeImpl.Instance.Normalizer2;
             }
         }
@@ -476,7 +476,7 @@ namespace ICU4N.Text
             { }
             protected internal override Normalizer2 GetNormalizer2(int options)
             {
-                return (options & UNICODE_3_2) != 0 ?
+                return (options & Unicode3_2) != 0 ?
                         NFKD32ModeImpl.Instance.Normalizer2 : NFKDModeImpl.Instance.Normalizer2;
             }
         }
@@ -487,7 +487,7 @@ namespace ICU4N.Text
             { }
             protected internal override Normalizer2 GetNormalizer2(int options)
             {
-                return (options & UNICODE_3_2) != 0 ?
+                return (options & Unicode3_2) != 0 ?
                         NFC32ModeImpl.Instance.Normalizer2 : NFCModeImpl.Instance.Normalizer2;
             }
         }
@@ -498,7 +498,7 @@ namespace ICU4N.Text
             { }
             protected internal override Normalizer2 GetNormalizer2(int options)
             {
-                return (options & UNICODE_3_2) != 0 ?
+                return (options & Unicode3_2) != 0 ?
                         NFKC32ModeImpl.Instance.Normalizer2 : NFKCModeImpl.Instance.Normalizer2;
             }
         }
@@ -509,7 +509,7 @@ namespace ICU4N.Text
             { }
             protected internal override Normalizer2 GetNormalizer2(int options)
             {
-                return (options & UNICODE_3_2) != 0 ?
+                return (options & Unicode3_2) != 0 ?
                         FCD32ModeImpl.Instance.Normalizer2 : FCDModeImpl.Instance.Normalizer2;
             }
         }
