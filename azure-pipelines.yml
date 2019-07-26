@@ -16,7 +16,7 @@ name: 'vNext$(rev:.r)' # Format for build number (will be overridden)
 
 variables:
 - name: RunTests
-  value: 'false'
+  value: 'true'
 - name: TestTargetFrameworks
   value: 'netcoreapp2.0;netcoreapp1.0;net451'
 - name: BinaryArtifactName
