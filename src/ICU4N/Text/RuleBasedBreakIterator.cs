@@ -878,7 +878,7 @@ namespace ICU4N.Text
 
             // Set up the starting char
             int c = text.Current;
-            if (c >= UTF16.LEAD_SURROGATE_MIN_VALUE)
+            if (c >= UTF16.LeadSurrogateMinValue)
             {
                 c = CharacterIteration.NextTrail32(text, c);
                 if (c == CharacterIteration.Done32)
@@ -959,7 +959,7 @@ namespace ICU4N.Text
                     // If this is a beginning-of-input loop iteration, don't advance.
                     //    The next iteration will be processing the first real input character.
                     c = text.Next();
-                    if (c >= UTF16.LEAD_SURROGATE_MIN_VALUE)
+                    if (c >= UTF16.LeadSurrogateMinValue)
                     {
                         c = CharacterIteration.NextTrail32(text, c);
                     }
@@ -977,7 +977,7 @@ namespace ICU4N.Text
                 {
                     // Match found, common case
                     result = text.Index;
-                    if (c >= UTF16.SUPPLEMENTARY_MIN_VALUE && c <= UTF16.CODEPOINT_MAX_VALUE)
+                    if (c >= UTF16.SupplementaryMinValue && c <= UTF16.CodePointMaxValue)
                     {
                         // The iterator has been left in the middle of a surrogate pair.
                         // We want the start of it.
@@ -1006,7 +1006,7 @@ namespace ICU4N.Text
                 {
                     // At the position of a '/' in a look-ahead match. Record it.
                     int pos = text.Index;
-                    if (c >= UTF16.SUPPLEMENTARY_MIN_VALUE && c <= UTF16.CODEPOINT_MAX_VALUE)
+                    if (c >= UTF16.SupplementaryMinValue && c <= UTF16.CodePointMaxValue)
                     {
                         // The iterator has been left in the middle of a surrogate pair.
                         // We want the beginning  of it.

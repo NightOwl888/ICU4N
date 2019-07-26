@@ -321,8 +321,8 @@ namespace ICU4N.Impl
         /// <returns>Offset to data.</returns>
         protected int GetBMPOffset(char ch)
         {
-            return (ch >= UTF16.LEAD_SURROGATE_MIN_VALUE
-                    && ch <= UTF16.LEAD_SURROGATE_MAX_VALUE)
+            return (ch >= UTF16.LeadSurrogateMinValue
+                    && ch <= UTF16.LeadSurrogateMaxValue)
                     ? GetRawOffset(LEAD_INDEX_OFFSET_, ch)
                     : GetRawOffset(0, ch);
             // using a getRawOffset(ch) makes no diff
@@ -357,12 +357,12 @@ namespace ICU4N.Impl
             {
                 return -1;
             }
-            else if (ch < UTF16.LEAD_SURROGATE_MIN_VALUE)
+            else if (ch < UTF16.LeadSurrogateMinValue)
             {
                 // fastpath for the part of the BMP below surrogates (D800) where getRawOffset() works
                 return GetRawOffset(0, (char)ch);
             }
-            else if (ch < UTF16.SUPPLEMENTARY_MIN_VALUE)
+            else if (ch < UTF16.SupplementaryMinValue)
             {
                 // BMP codepoint
                 return GetBMPOffset((char)ch);

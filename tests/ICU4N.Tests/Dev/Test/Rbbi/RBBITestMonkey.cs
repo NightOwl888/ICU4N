@@ -1938,7 +1938,7 @@ namespace ICU4N.Dev.Test.Rbbi
          */
         internal static bool SetContains(UnicodeSet s, int c)
         {
-            if (c < 0 || c > UTF16.CODEPOINT_MAX_VALUE)
+            if (c < 0 || c > UTF16.CodePointMaxValue)
             {
                 return false;
             }
@@ -1963,7 +1963,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 return -1;
             }
             int c = UTF16.CharAt(s, i);
-            if (c >= UTF16.SUPPLEMENTARY_MIN_VALUE && UTF16.IsLeadSurrogate(s[i]))
+            if (c >= UTF16.SupplementaryMinValue && UTF16.IsLeadSurrogate(s[i]))
             {
                 retVal++;
             }

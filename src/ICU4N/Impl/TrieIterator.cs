@@ -315,7 +315,7 @@ namespace ICU4N.Impl
             m_nextBlockIndex_++;
 
             if (UTF16.GetTrailSurrogate(m_nextCodepoint_)
-                                            != UTF16.TRAIL_SURROGATE_MIN_VALUE)
+                                            != UTF16.TrailSurrogateMinValue)
             {
                 // this piece is only called when we are in the middle of a lead
                 // surrogate block
@@ -365,7 +365,7 @@ namespace ICU4N.Impl
                     // this is not a simple addition of
                     // DATA_BLOCK_SUPPLEMENTARY_LENGTH since we need to consider
                     // that we might have moved some of the codepoints
-                    m_nextCodepoint_ = Character.ToCodePoint((char)nextLead, (char)UTF16.TRAIL_SURROGATE_MIN_VALUE);
+                    m_nextCodepoint_ = Character.ToCodePoint((char)nextLead, (char)UTF16.TrailSurrogateMinValue);
                     continue;
                 }
                 if (m_trie_.m_dataManipulate_ == null)

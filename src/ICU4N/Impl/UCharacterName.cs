@@ -1438,7 +1438,7 @@ namespace ICU4N.Impl
             int result = UChar.GetType(ch).ToInt32();
             if (result == UCharacterCategory.Surrogate.ToInt32())
             {
-                if (ch <= UTF16.LEAD_SURROGATE_MAX_VALUE)
+                if (ch <= UTF16.LeadSurrogateMaxValue)
                 {
                     result = LEAD_SURROGATE_;
                 }

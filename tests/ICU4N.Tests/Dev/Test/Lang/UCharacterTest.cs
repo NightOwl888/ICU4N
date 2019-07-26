@@ -3071,11 +3071,11 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestOf()
         {
-            if (UChar.UnicodeBlock.INVALID_CODE != UChar.UnicodeBlock.Of(UTF16.CODEPOINT_MAX_VALUE + 1))
+            if (UChar.UnicodeBlock.INVALID_CODE != UChar.UnicodeBlock.Of(UTF16.CodePointMaxValue + 1))
             {
                 Errln("UCharacter.UnicodeBlock.of(UTF16.CODEPOINT_MAX_VALUE+1) was " +
                         "suppose to return UCharacter.UnicodeBlock.INVALID_CODE. Got " +
-                        UChar.UnicodeBlock.Of(UTF16.CODEPOINT_MAX_VALUE + 1) + ". Expected " +
+                        UChar.UnicodeBlock.Of(UTF16.CodePointMaxValue + 1) + ". Expected " +
                         UChar.UnicodeBlock.INVALID_CODE);
             }
         }
@@ -3969,7 +3969,7 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestGetProperty()
         {
-            int[] cases = { UTF16.CODEPOINT_MAX_VALUE + 1, UTF16.CODEPOINT_MAX_VALUE + 2 };
+            int[] cases = { UTF16.CodePointMaxValue + 1, UTF16.CodePointMaxValue + 2 };
             for (int i = 0; i < cases.Length; i++)
                 if (UChar.GetType(cases[i]).ToInt32() != 0)
                     Errln("UCharacter.getType for testing UCharacter.getProperty "

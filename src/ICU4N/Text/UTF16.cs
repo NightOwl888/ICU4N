@@ -95,92 +95,92 @@ namespace ICU4N.Text
         /// character [offset16 - (value &gt;&gt; 2), offset16 + (value &amp; 3)]
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int SINGLE_CHAR_BOUNDARY = 1, LEAD_SURROGATE_BOUNDARY = 2,
-                TRAIL_SURROGATE_BOUNDARY = 5; // ICU4N TODO: API - make enum ?
+        public const int SingleCharBoundary = 1, LeadSurrogateBoundary = 2,
+                TrailSurrogateBoundary = 5; // ICU4N TODO: API - make enum ?
 
         /// <summary>
         /// The lowest Unicode code point value.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int CODEPOINT_MIN_VALUE = 0; // ICU4N TODO: API - rename according to .NET conventions ?
+        public const int CodePointMinValue = 0;
 
         /// <summary>
         /// The highest Unicode code point value (scalar value) according to the Unicode Standard.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int CODEPOINT_MAX_VALUE = 0x10ffff;
+        public const int CodePointMaxValue = 0x10ffff;
 
         /// <summary>
         /// The minimum value for Supplementary code points
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int SUPPLEMENTARY_MIN_VALUE = 0x10000;
+        public const int SupplementaryMinValue = 0x10000;
 
         /// <summary>
         /// Lead surrogate minimum value
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int LEAD_SURROGATE_MIN_VALUE = 0xD800;
+        public const int LeadSurrogateMinValue = 0xD800;
 
         /// <summary>
         /// Trail surrogate minimum value
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int TRAIL_SURROGATE_MIN_VALUE = 0xDC00;
+        public const int TrailSurrogateMinValue = 0xDC00;
 
         /// <summary>
         /// Lead surrogate maximum value
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int LEAD_SURROGATE_MAX_VALUE = 0xDBFF;
+        public const int LeadSurrogateMaxValue = 0xDBFF;
 
         /// <summary>
         /// Trail surrogate maximum value
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int TRAIL_SURROGATE_MAX_VALUE = 0xDFFF;
+        public const int TrailSurrogateMaxValue = 0xDFFF;
 
         /// <summary>
         /// Surrogate minimum value
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int SURROGATE_MIN_VALUE = LEAD_SURROGATE_MIN_VALUE;
+        public const int SurrogateMinValue = LeadSurrogateMinValue;
 
         /// <summary>
         /// Maximum surrogate value
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int SURROGATE_MAX_VALUE = TRAIL_SURROGATE_MAX_VALUE;
+        public const int SurrogateMaxValue = TrailSurrogateMaxValue;
 
         /// <summary>
         /// Lead surrogate bitmask
         /// </summary>
-        private const int LEAD_SURROGATE_BITMASK = unchecked((int)0xFFFFFC00); // ICU4N TODO: Change to uint
+        private const int LeadSurrogateBitmask = unchecked((int)0xFFFFFC00); // ICU4N TODO: Change to uint
 
         /// <summary>
         /// Trail surrogate bitmask
         /// </summary>
-        private const int TRAIL_SURROGATE_BITMASK = unchecked((int)0xFFFFFC00); // ICU4N TODO: Change to uint
+        private const int TrailSurrogateBitmask = unchecked((int)0xFFFFFC00); // ICU4N TODO: Change to uint
 
         /// <summary>
         /// Surrogate bitmask
         /// </summary>
-        private const int SURROGATE_BITMASK = unchecked((int)0xFFFFF800); // ICU4N TODO: Change to uint
+        private const int SurrogateBitmask = unchecked((int)0xFFFFF800); // ICU4N TODO: Change to uint
 
         /// <summary>
         /// Lead surrogate bits
         /// </summary>
-        private const int LEAD_SURROGATE_BITS = 0xD800;
+        private const int LeadSurrogateBits = 0xD800;
 
         /// <summary>
         /// Trail surrogate bits
         /// </summary>
-        private const int TRAIL_SURROGATE_BITS = 0xDC00;
+        private const int TrailSurrogateBits = 0xDC00;
 
         /// <summary>
         /// Surrogate bits
         /// </summary>
-        private const int SURROGATE_BITS = 0xD800;
+        private const int SurrogateBits = 0xD800;
 
         // constructor --------------------------------------------------------
 
@@ -232,7 +232,7 @@ namespace ICU4N.Text
             // Convert the UTF-16 surrogate pair if necessary.
             // For simplicity in usage, and because the frequency of pairs is
             // low, look both directions.
-            if (single <= LEAD_SURROGATE_MAX_VALUE)
+            if (single <= LeadSurrogateMaxValue)
             {
                 offset16++;
                 if (offset16 >= limit)
@@ -290,7 +290,7 @@ namespace ICU4N.Text
             // For simplicity in usage, and because the frequency of pairs is
             // low, look both directions.
 
-            if (single <= LEAD_SURROGATE_MAX_VALUE)
+            if (single <= LeadSurrogateMaxValue)
             {
                 ++offset16;
                 if (source.Length != offset16)
@@ -325,7 +325,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static int GetCharCount(int char32)
         {
-            if (char32 < SUPPLEMENTARY_MIN_VALUE)
+            if (char32 < SupplementaryMinValue)
             {
                 return 1;
             }
@@ -339,13 +339,13 @@ namespace ICU4N.Text
         /// <param name="offset16">UTF-16 offset.</param>
         /// <returns>
         /// <list type="bullet">
-        ///     <item><description><see cref="SINGLE_CHAR_BOUNDARY"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
+        ///     <item><description><see cref="SingleCharBoundary"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
         ///     <item><description>
-        ///         <see cref="LEAD_SURROGATE_BOUNDARY"/> : a surrogate pair starting at offset16; the bounds
+        ///         <see cref="LeadSurrogateBoundary"/> : a surrogate pair starting at offset16; the bounds
         ///         are [offset16, offset16 + 2]
         ///     </description></item>
         ///     <item><description>
-        ///         <see cref="TRAIL_SURROGATE_BOUNDARY"/> : a surrogate pair starting at offset16 - 1; the
+        ///         <see cref="TrailSurrogateBoundary"/> : a surrogate pair starting at offset16 - 1; the
         ///         bounds are [offset16 - 1, offset16 + 1]
         ///     </description></item>
         /// </list>
@@ -363,7 +363,7 @@ namespace ICU4N.Text
                 {
                     if (++offset16 < source.Length && IsTrailSurrogate(source[offset16]))
                     {
-                        return LEAD_SURROGATE_BOUNDARY;
+                        return LeadSurrogateBoundary;
                     }
                 }
                 else
@@ -372,11 +372,11 @@ namespace ICU4N.Text
                     --offset16;
                     if (offset16 >= 0 && IsLeadSurrogate(source[offset16]))
                     {
-                        return TRAIL_SURROGATE_BOUNDARY;
+                        return TrailSurrogateBoundary;
                     }
                 }
             }
-            return SINGLE_CHAR_BOUNDARY;
+            return SingleCharBoundary;
         }
 
         /// <summary>
@@ -386,13 +386,13 @@ namespace ICU4N.Text
         /// <param name="offset16">UTF16 offset.</param>
         /// <returns>
         /// <list type="bullet">
-        ///     <item><description><see cref="SINGLE_CHAR_BOUNDARY"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
+        ///     <item><description><see cref="SingleCharBoundary"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
         ///     <item><description>
-        ///         <see cref="LEAD_SURROGATE_BOUNDARY"/> : a surrogate pair starting at offset16; the bounds
+        ///         <see cref="LeadSurrogateBoundary"/> : a surrogate pair starting at offset16; the bounds
         ///         are [offset16, offset16 + 2]
         ///     </description></item>
         ///     <item><description>
-        ///         <see cref="TRAIL_SURROGATE_BOUNDARY"/> : a surrogate pair starting at offset16 - 1; the
+        ///         <see cref="TrailSurrogateBoundary"/> : a surrogate pair starting at offset16 - 1; the
         ///         bounds are [offset16 - 1, offset16 + 1]
         ///     </description></item>
         /// </list>
@@ -410,7 +410,7 @@ namespace ICU4N.Text
                 {
                     if (++offset16 < source.Length && IsTrailSurrogate(source[offset16]))
                     {
-                        return LEAD_SURROGATE_BOUNDARY;
+                        return LeadSurrogateBoundary;
                     }
                 }
                 else
@@ -419,17 +419,17 @@ namespace ICU4N.Text
                     --offset16;
                     if (offset16 >= 0 && IsLeadSurrogate(source[offset16]))
                     {
-                        return TRAIL_SURROGATE_BOUNDARY;
+                        return TrailSurrogateBoundary;
                     }
                 }
             }
-            return SINGLE_CHAR_BOUNDARY;
+            return SingleCharBoundary;
         }
 
         /// <summary>
         /// Returns the type of the boundaries around the char at <paramref name="offset16"/>. Used for random access. Note
         /// that the boundaries are determined with respect to the subarray, hence the char array
-        /// {0xD800, 0xDC00} has the result <see cref="SINGLE_CHAR_BOUNDARY"/> for start = offset16 = 0 and limit = 1.
+        /// {0xD800, 0xDC00} has the result <see cref="SingleCharBoundary"/> for start = offset16 = 0 and limit = 1.
         /// </summary>
         /// <param name="source">Char array to analyze.</param>
         /// <param name="start">Offset to substring in the source array for analyzing.</param>
@@ -437,13 +437,13 @@ namespace ICU4N.Text
         /// <param name="offset16">UTF16 offset relative to start.</param>
         /// <returns>
         /// <list type="bullet">
-        ///     <item><description><see cref="SINGLE_CHAR_BOUNDARY"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
+        ///     <item><description><see cref="SingleCharBoundary"/> : a single char; the bounds are [offset16, offset16+1]</description></item>
         ///     <item><description>
-        ///         <see cref="LEAD_SURROGATE_BOUNDARY"/> : a surrogate pair starting at offset16; the bounds
+        ///         <see cref="LeadSurrogateBoundary"/> : a surrogate pair starting at offset16; the bounds
         ///         are [offset16, offset16 + 2]
         ///     </description></item>
         ///     <item><description>
-        ///         <see cref="TRAIL_SURROGATE_BOUNDARY"/> : a surrogate pair starting at offset16 - 1; the
+        ///         <see cref="TrailSurrogateBoundary"/> : a surrogate pair starting at offset16 - 1; the
         ///         bounds are [offset16 - 1, offset16 + 1]
         ///     </description></item>
         /// </list>
@@ -467,7 +467,7 @@ namespace ICU4N.Text
                     ++offset16;
                     if (offset16 < limit && IsTrailSurrogate(source[offset16]))
                     {
-                        return LEAD_SURROGATE_BOUNDARY;
+                        return LeadSurrogateBoundary;
                     }
                 }
                 else
@@ -475,11 +475,11 @@ namespace ICU4N.Text
                     --offset16;
                     if (offset16 >= start && IsLeadSurrogate(source[offset16]))
                     {
-                        return TRAIL_SURROGATE_BOUNDARY;
+                        return TrailSurrogateBoundary;
                     }
                 }
             }
-            return SINGLE_CHAR_BOUNDARY;
+            return SingleCharBoundary;
         }
 
         /// <summary>
@@ -490,7 +490,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static bool IsSurrogate(char char16)
         {
-            return (char16 & SURROGATE_BITMASK) == SURROGATE_BITS;
+            return (char16 & SurrogateBitmask) == SurrogateBits;
         }
 
         /// <summary>
@@ -501,7 +501,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static bool IsTrailSurrogate(char char16)
         {
-            return (char16 & TRAIL_SURROGATE_BITMASK) == TRAIL_SURROGATE_BITS;
+            return (char16 & TrailSurrogateBitmask) == TrailSurrogateBits;
         }
 
         /// <summary>
@@ -512,7 +512,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static bool IsLeadSurrogate(char char16)
         {
-            return (char16 & LEAD_SURROGATE_BITMASK) == LEAD_SURROGATE_BITS;
+            return (char16 & LeadSurrogateBitmask) == LeadSurrogateBits;
         }
 
         /// <summary>
@@ -525,7 +525,7 @@ namespace ICU4N.Text
         /// 
         public static char GetLeadSurrogate(int char32)
         {
-            if (char32 >= SUPPLEMENTARY_MIN_VALUE)
+            if (char32 >= SupplementaryMinValue)
             {
                 return (char)(LEAD_SURROGATE_OFFSET_ + (char32 >> LEAD_SURROGATE_SHIFT_));
             }
@@ -542,9 +542,9 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static char GetTrailSurrogate(int char32)
         {
-            if (char32 >= SUPPLEMENTARY_MIN_VALUE)
+            if (char32 >= SupplementaryMinValue)
             {
-                return (char)(TRAIL_SURROGATE_MIN_VALUE + (char32 & TRAIL_SURROGATE_MASK_));
+                return (char)(TrailSurrogateMinValue + (char32 & TRAIL_SURROGATE_MASK_));
             }
             return (char)char32;
         }
@@ -560,7 +560,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.1</stable>
         public static string ValueOf(int char32)
         {
-            if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
             {
                 throw new ArgumentException("Illegal codepoint");
             }
@@ -583,9 +583,9 @@ namespace ICU4N.Text
         {
             switch (Bounds(source, offset16))
             {
-                case LEAD_SURROGATE_BOUNDARY:
+                case LeadSurrogateBoundary:
                     return source.Substring(offset16, 2); // ICU4N: offset16 + 2 - offset16 = 2
-                case TRAIL_SURROGATE_BOUNDARY:
+                case TrailSurrogateBoundary:
                     return source.Substring(offset16 - 1, 2); // ICU4N: (offset16 + 1) - (offset16 - 1) = 2
                 default:
                     return source.Substring(offset16, 1); // ICU4N: offset16 + 1 - offset16 = 1
@@ -608,9 +608,9 @@ namespace ICU4N.Text
         {
             switch (Bounds(source, offset16))
             {
-                case LEAD_SURROGATE_BOUNDARY:
+                case LeadSurrogateBoundary:
                     return source.ToString(offset16, 2); // offset16 + 2 - offset16 = 2
-                case TRAIL_SURROGATE_BOUNDARY:
+                case TrailSurrogateBoundary:
                     return source.ToString(offset16 - 1, 2); // (offset16 + 1) - (offset16 - 1) = 2
                 default:
                     return source.ToString(offset16, 1); // offset16 + 1 - offset16 = 1
@@ -636,9 +636,9 @@ namespace ICU4N.Text
         {
             switch (Bounds(source, start, limit, offset16))
             {
-                case LEAD_SURROGATE_BOUNDARY:
+                case LeadSurrogateBoundary:
                     return new string(source, start + offset16, 2);
-                case TRAIL_SURROGATE_BOUNDARY:
+                case TrailSurrogateBoundary:
                     return new string(source, start + offset16 - 1, 2);
                 default:
                     return new string(source, start + offset16, 1);
@@ -946,13 +946,13 @@ namespace ICU4N.Text
         public static StringBuilder Append(StringBuilder target, int char32)
         {
             // Check for irregular values
-            if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
             {
                 throw new ArgumentException("Illegal codepoint: " + string.Format("{0:X4}", char32));
             }
 
             // Write the UTF-16 values
-            if (char32 >= SUPPLEMENTARY_MIN_VALUE)
+            if (char32 >= SupplementaryMinValue)
             {
                 target.Append(GetLeadSurrogate(char32));
                 target.Append(GetTrailSurrogate(char32));
@@ -991,12 +991,12 @@ namespace ICU4N.Text
         public static int Append(char[] target, int limit, int char32)
         {
             // Check for irregular values
-            if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
             {
                 throw new ArgumentException("Illegal codepoint");
             }
             // Write the UTF-16 values
-            if (char32 >= SUPPLEMENTARY_MIN_VALUE)
+            if (char32 >= SupplementaryMinValue)
             {
                 target[limit++] = GetLeadSurrogate(char32);
                 target[limit++] = GetTrailSurrogate(char32);
@@ -1405,7 +1405,7 @@ namespace ICU4N.Text
         public static StringBuilder Insert(StringBuilder target, int offset16, int char32)
         {
             string str = ValueOf(char32);
-            if (offset16 != target.Length && Bounds(target, offset16) == TRAIL_SURROGATE_BOUNDARY)
+            if (offset16 != target.Length && Bounds(target, offset16) == TrailSurrogateBoundary)
             {
                 offset16++;
             }
@@ -1435,7 +1435,7 @@ namespace ICU4N.Text
         public static int Insert(char[] target, int limit, int offset16, int char32)
         {
             string str = ValueOf(char32);
-            if (offset16 != limit && Bounds(target, 0, limit, offset16) == TRAIL_SURROGATE_BOUNDARY)
+            if (offset16 != limit && Bounds(target, 0, limit, offset16) == TrailSurrogateBoundary)
             {
                 offset16++;
             }
@@ -1467,10 +1467,10 @@ namespace ICU4N.Text
             int count = 1;
             switch (Bounds(target, offset16))
             {
-                case LEAD_SURROGATE_BOUNDARY:
+                case LeadSurrogateBoundary:
                     count++;
                     break;
-                case TRAIL_SURROGATE_BOUNDARY:
+                case TrailSurrogateBoundary:
                     count++;
                     offset16--;
                     break;
@@ -1494,10 +1494,10 @@ namespace ICU4N.Text
             int count = 1;
             switch (Bounds(target, 0, limit, offset16))
             {
-                case LEAD_SURROGATE_BOUNDARY:
+                case LeadSurrogateBoundary:
                     count++;
                     break;
-                case TRAIL_SURROGATE_BOUNDARY:
+                case TrailSurrogateBoundary:
                     count++;
                     offset16--;
                     break;
@@ -1529,18 +1529,18 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public static int IndexOf(string source, int char32)
         {
-            if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
             {
                 throw new ArgumentException("Argument char32 is not a valid codepoint");
             }
             // non-surrogate bmp
-            if (char32 < LEAD_SURROGATE_MIN_VALUE
-                    || (char32 > TRAIL_SURROGATE_MAX_VALUE && char32 < SUPPLEMENTARY_MIN_VALUE))
+            if (char32 < LeadSurrogateMinValue
+                    || (char32 > TrailSurrogateMaxValue && char32 < SupplementaryMinValue))
             {
                 return source.IndexOf((char)char32);
             }
             // surrogate
-            if (char32 < SUPPLEMENTARY_MIN_VALUE)
+            if (char32 < SupplementaryMinValue)
             {
                 int result = source.IndexOf((char)char32);
                 if (result >= 0)
@@ -1668,7 +1668,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public static int IndexOf(string source, int char32, int startIndex)
         {
-            if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
             {
                 throw new ArgumentException("Argument char32 is not a valid codepoint");
             }
@@ -1677,13 +1677,13 @@ namespace ICU4N.Text
                 throw new ArgumentOutOfRangeException(nameof(source));
             }
             // non-surrogate bmp
-            if (char32 < LEAD_SURROGATE_MIN_VALUE
-                    || (char32 > TRAIL_SURROGATE_MAX_VALUE && char32 < SUPPLEMENTARY_MIN_VALUE))
+            if (char32 < LeadSurrogateMinValue
+                    || (char32 > TrailSurrogateMaxValue && char32 < SupplementaryMinValue))
             {
                 return source.IndexOf((char)char32, startIndex);
             }
             // surrogate
-            if (char32 < SUPPLEMENTARY_MIN_VALUE)
+            if (char32 < SupplementaryMinValue)
             {
                 int result = source.IndexOf((char)char32, startIndex);
                 if (result >= 0)
@@ -1817,18 +1817,18 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public static int LastIndexOf(string source, int char32)
         {
-            if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
             {
                 throw new ArgumentException("Argument char32 is not a valid codepoint");
             }
             // non-surrogate bmp
-            if (char32 < LEAD_SURROGATE_MIN_VALUE
-                    || (char32 > TRAIL_SURROGATE_MAX_VALUE && char32 < SUPPLEMENTARY_MIN_VALUE))
+            if (char32 < LeadSurrogateMinValue
+                    || (char32 > TrailSurrogateMaxValue && char32 < SupplementaryMinValue))
             {
                 return source.LastIndexOf((char)char32);
             }
             // surrogate
-            if (char32 < SUPPLEMENTARY_MIN_VALUE)
+            if (char32 < SupplementaryMinValue)
             {
                 int result = source.LastIndexOf((char)char32);
                 if (result >= 0)
@@ -2001,7 +2001,7 @@ namespace ICU4N.Text
         /// <stable>ICU4N 60.1</stable>
         public static int LastIndexOf(string source, int char32, int startIndex)
         {
-            if (char32 < CODEPOINT_MIN_VALUE || char32 > CODEPOINT_MAX_VALUE)
+            if (char32 < CodePointMinValue || char32 > CodePointMaxValue)
             {
                 throw new ArgumentException("Argument char32 is not a valid codepoint");
             }
@@ -2010,8 +2010,8 @@ namespace ICU4N.Text
                 throw new ArgumentOutOfRangeException(nameof(source));
             }
             // non-surrogate bmp
-            if (char32 < LEAD_SURROGATE_MIN_VALUE
-                    || (char32 > TRAIL_SURROGATE_MAX_VALUE && char32 < SUPPLEMENTARY_MIN_VALUE))
+            if (char32 < LeadSurrogateMinValue
+                    || (char32 > TrailSurrogateMaxValue && char32 < SupplementaryMinValue))
             {
                 // ICU4N: There appears to be a bug in .NET - the overloads that accept char
                 // throw an ArgumentOutOfRangeException for source.Length, but the ones that
@@ -2019,7 +2019,7 @@ namespace ICU4N.Text
                 return source.LastIndexOf((char)char32, Math.Min(startIndex, source.Length - 1));
             }
             // surrogate
-            if (char32 < SUPPLEMENTARY_MIN_VALUE)
+            if (char32 < SupplementaryMinValue)
             {
                 int result = source.LastIndexOf((char)char32, Math.Min(startIndex, source.Length - 1));
                 if (result >= 0)
@@ -2213,11 +2213,11 @@ namespace ICU4N.Text
         /// <stable>ICU 2.6</stable>
         public static string Replace(string source, int oldChar32, int newChar32) // ICU4N TODO: API - since this method is for JDK 1.3, is it needed in .NET ?
         {
-            if (oldChar32 <= 0 || oldChar32 > CODEPOINT_MAX_VALUE)
+            if (oldChar32 <= 0 || oldChar32 > CodePointMaxValue)
             {
                 throw new ArgumentException("Argument oldChar32 is not a valid codepoint");
             }
-            if (newChar32 <= 0 || newChar32 > CODEPOINT_MAX_VALUE)
+            if (newChar32 <= 0 || newChar32 > CodePointMaxValue)
             {
                 throw new ArgumentException("Argument newChar32 is not a valid codepoint");
             }
@@ -2233,7 +2233,7 @@ namespace ICU4N.Text
             StringBuilder result = new StringBuilder(source);
             int resultIndex = index;
 
-            if (oldChar32 >= SUPPLEMENTARY_MIN_VALUE)
+            if (oldChar32 >= SupplementaryMinValue)
             {
                 oldChar32Size = 2;
             }
@@ -2606,7 +2606,7 @@ namespace ICU4N.Text
                 else
                 {
                     chars[w++] = (char)(LEAD_SURROGATE_OFFSET_ + (cp >> LEAD_SURROGATE_SHIFT_));
-                    chars[w++] = (char)(TRAIL_SURROGATE_MIN_VALUE + (cp & TRAIL_SURROGATE_MASK_));
+                    chars[w++] = (char)(TrailSurrogateMinValue + (cp & TRAIL_SURROGATE_MASK_));
                 }
             }
             return new string(chars, 0, w);
@@ -2886,12 +2886,12 @@ namespace ICU4N.Text
 
                 bool codepointcompare = m_codePointCompare_ == Normalizer.COMPARE_CODE_POINT_ORDER;
                 // if both values are in or above the surrogate range, fix them up
-                if (c1 >= LEAD_SURROGATE_MIN_VALUE && c2 >= LEAD_SURROGATE_MIN_VALUE
+                if (c1 >= LeadSurrogateMinValue && c2 >= LeadSurrogateMinValue
                         && codepointcompare)
                 {
                     // subtract 0x2800 from BMP code points to make them smaller
                     // than supplementary ones
-                    if ((c1 <= LEAD_SURROGATE_MAX_VALUE && (index + 1) != length1 && IsTrailSurrogate(s1[index + 1]))
+                    if ((c1 <= LeadSurrogateMaxValue && (index + 1) != length1 && IsTrailSurrogate(s1[index + 1]))
                             || (IsTrailSurrogate(c1) && index != 0 && IsLeadSurrogate(s1[index - 1])))
                     {
                         // part of a surrogate pair, leave >=d800
@@ -2904,7 +2904,7 @@ namespace ICU4N.Text
                         c1 = (char)(c1 - CODE_POINT_COMPARE_SURROGATE_OFFSET_);
                     }
 
-                    if ((c2 <= LEAD_SURROGATE_MAX_VALUE && (index + 1) != length2 && IsTrailSurrogate(s2[index + 1]))
+                    if ((c2 <= LeadSurrogateMaxValue && (index + 1) != length2 && IsTrailSurrogate(s2[index + 1]))
                             || (IsTrailSurrogate(c2) && index != 0 && IsLeadSurrogate(s2[index - 1])))
                     {
                         // part of a surrogate pair, leave >=d800
@@ -2942,8 +2942,8 @@ namespace ICU4N.Text
         /// <summary>
         /// Value that all lead surrogate starts with
         /// </summary>
-        private const int LEAD_SURROGATE_OFFSET_ = LEAD_SURROGATE_MIN_VALUE
-                - (SUPPLEMENTARY_MIN_VALUE >> LEAD_SURROGATE_SHIFT_);
+        private const int LEAD_SURROGATE_OFFSET_ = LeadSurrogateMinValue
+                - (SupplementaryMinValue >> LEAD_SURROGATE_SHIFT_);
 
         // private methods ------------------------------------------------------
 
@@ -2960,7 +2960,7 @@ namespace ICU4N.Text
         /// <returns>String representation of the code point.</returns>
         private static string ToString(int ch)
         {
-            if (ch < SUPPLEMENTARY_MIN_VALUE)
+            if (ch < SupplementaryMinValue)
             {
                 return "" + (char)ch;
             }

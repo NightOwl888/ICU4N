@@ -91,16 +91,16 @@ namespace ICU4N.Dev.Test.Lang
           new StringBuffer("\udc000123\ud800\udc00\ud801\udc01\ud802");
             String str = strbuff.ToString();
             char[] array = str.ToCharArray();
-            int[] boundtype = {UTF16.SINGLE_CHAR_BOUNDARY,
-               UTF16.SINGLE_CHAR_BOUNDARY,
-               UTF16.SINGLE_CHAR_BOUNDARY,
-               UTF16.SINGLE_CHAR_BOUNDARY,
-               UTF16.SINGLE_CHAR_BOUNDARY,
-               UTF16.LEAD_SURROGATE_BOUNDARY,
-               UTF16.TRAIL_SURROGATE_BOUNDARY,
-               UTF16.LEAD_SURROGATE_BOUNDARY,
-               UTF16.TRAIL_SURROGATE_BOUNDARY,
-               UTF16.SINGLE_CHAR_BOUNDARY};
+            int[] boundtype = {UTF16.SingleCharBoundary,
+               UTF16.SingleCharBoundary,
+               UTF16.SingleCharBoundary,
+               UTF16.SingleCharBoundary,
+               UTF16.SingleCharBoundary,
+               UTF16.LeadSurrogateBoundary,
+               UTF16.TrailSurrogateBoundary,
+               UTF16.LeadSurrogateBoundary,
+               UTF16.TrailSurrogateBoundary,
+               UTF16.SingleCharBoundary};
             int length = str.Length;
             for (int i = 0; i < length; i++)
             {
@@ -120,11 +120,11 @@ namespace ICU4N.Dev.Test.Lang
             // does not straddle between supplementary character
             int start = 4;
             int limit = 9;
-            int[] subboundtype1 = {UTF16.SINGLE_CHAR_BOUNDARY,
-                   UTF16.LEAD_SURROGATE_BOUNDARY,
-                   UTF16.TRAIL_SURROGATE_BOUNDARY,
-                   UTF16.LEAD_SURROGATE_BOUNDARY,
-                   UTF16.TRAIL_SURROGATE_BOUNDARY};
+            int[] subboundtype1 = {UTF16.SingleCharBoundary,
+                   UTF16.LeadSurrogateBoundary,
+                   UTF16.TrailSurrogateBoundary,
+                   UTF16.LeadSurrogateBoundary,
+                   UTF16.TrailSurrogateBoundary};
             try
             {
                 UTF16.Bounds(array, start, limit, -1);
@@ -146,9 +146,9 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             // starts from the mid of a supplementary character
-            int[] subboundtype2 = {UTF16.SINGLE_CHAR_BOUNDARY,
-                   UTF16.LEAD_SURROGATE_BOUNDARY,
-                   UTF16.TRAIL_SURROGATE_BOUNDARY};
+            int[] subboundtype2 = {UTF16.SingleCharBoundary,
+                   UTF16.LeadSurrogateBoundary,
+                   UTF16.TrailSurrogateBoundary};
 
             start = 6;
             limit = 9;
@@ -162,9 +162,9 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             // ends in the mid of a supplementary character
-            int[] subboundtype3 = {UTF16.LEAD_SURROGATE_BOUNDARY,
-                   UTF16.TRAIL_SURROGATE_BOUNDARY,
-                   UTF16.SINGLE_CHAR_BOUNDARY};
+            int[] subboundtype3 = {UTF16.LeadSurrogateBoundary,
+                   UTF16.TrailSurrogateBoundary,
+                   UTF16.SingleCharBoundary};
             start = 5;
             limit = 8;
             for (int i = 0; i < limit - start; i++)

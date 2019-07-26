@@ -49,7 +49,7 @@ namespace ICU4N.Text
             // For simplicity in usage, and because the frequency of pairs is
             // low, look both directions.
 
-            if (single <= LEAD_SURROGATE_MAX_VALUE)
+            if (single <= LeadSurrogateMaxValue)
             {
                 ++offset16;
                 if (source.Length != offset16)
@@ -108,7 +108,7 @@ namespace ICU4N.Text
             // For simplicity in usage, and because the frequency of pairs is
             // low, look both directions.
 
-            if (single <= LEAD_SURROGATE_MAX_VALUE)
+            if (single <= LeadSurrogateMaxValue)
             {
                 ++offset16;
                 if (source.Length != offset16)
@@ -167,7 +167,7 @@ namespace ICU4N.Text
             // For simplicity in usage, and because the frequency of pairs is
             // low, look both directions.
 
-            if (single <= LEAD_SURROGATE_MAX_VALUE)
+            if (single <= LeadSurrogateMaxValue)
             {
                 ++offset16;
                 if (source.Length != offset16)
@@ -226,7 +226,7 @@ namespace ICU4N.Text
             // For simplicity in usage, and because the frequency of pairs is
             // low, look both directions.
 
-            if (single <= LEAD_SURROGATE_MAX_VALUE)
+            if (single <= LeadSurrogateMaxValue)
             {
                 ++offset16;
                 if (source.Length != offset16)

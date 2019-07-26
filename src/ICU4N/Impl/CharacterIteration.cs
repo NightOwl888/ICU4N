@@ -24,10 +24,10 @@ namespace ICU4N.Impl
             // If the current position is at a surrogate pair, move to the trail surrogate
             //   which leaves it in position for underlying iterator's next() to work.
             int c = ci.Current;
-            if (c >= UTF16.LEAD_SURROGATE_MIN_VALUE && c <= UTF16.LEAD_SURROGATE_MAX_VALUE)
+            if (c >= UTF16.LeadSurrogateMinValue && c <= UTF16.LeadSurrogateMaxValue)
             {
                 c = ci.Next();
-                if (c < UTF16.TRAIL_SURROGATE_MIN_VALUE || c > UTF16.TRAIL_SURROGATE_MAX_VALUE)
+                if (c < UTF16.TrailSurrogateMinValue || c > UTF16.TrailSurrogateMaxValue)
                 {
                     ci.Previous();
                 }
@@ -38,12 +38,12 @@ namespace ICU4N.Impl
 
             // If we might have a lead surrogate, we need to peak ahead to get the trail 
             //  even though we don't want to really be positioned there.
-            if (c >= UTF16.LEAD_SURROGATE_MIN_VALUE)
+            if (c >= UTF16.LeadSurrogateMinValue)
             {
                 c = NextTrail32(ci, c);
             }
 
-            if (c >= UTF16.SUPPLEMENTARY_MIN_VALUE && c != Done32)
+            if (c >= UTF16.SupplementaryMinValue && c != Done32)
             {
                 // We got a supplementary char.  Back the iterator up to the postion
                 // of the lead surrogate.
@@ -55,7 +55,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Out-of-line portion of the in-line <see cref="Next32(CharacterIterator)"/> code.
         /// The call site does an initial ci.Next() and calls this function
-        /// if the 16 bit value it gets is >= <see cref="UTF16.LEAD_SURROGATE_MIN_VALUE"/>.
+        /// if the 16 bit value it gets is >= <see cref="UTF16.LeadSurrogateMinValue"/>.
         /// </summary>
         // NOTE:  we leave the underlying char iterator positioned in the
         //        middle of a surrogate pair.  ci.next() will work correctly
@@ -68,14 +68,14 @@ namespace ICU4N.Impl
                 return Done32;
             }
             int retVal = lead;
-            if (lead <= UTF16.LEAD_SURROGATE_MAX_VALUE)
+            if (lead <= UTF16.LeadSurrogateMaxValue)
             {
                 char cTrail = ci.Next();
                 if (UTF16.IsTrailSurrogate(cTrail))
                 {
-                    retVal = ((lead - UTF16.LEAD_SURROGATE_MIN_VALUE) << 10) +
-                                (cTrail - UTF16.TRAIL_SURROGATE_MIN_VALUE) +
-                                UTF16.SUPPLEMENTARY_MIN_VALUE;
+                    retVal = ((lead - UTF16.LeadSurrogateMinValue) << 10) +
+                                (cTrail - UTF16.TrailSurrogateMinValue) +
+                                UTF16.SupplementaryMinValue;
                 }
                 else
                 {
@@ -98,9 +98,9 @@ namespace ICU4N.Impl
                 char lead = ci.Previous();
                 if (UTF16.IsLeadSurrogate(lead))
                 {
-                    retVal = (((int)lead - UTF16.LEAD_SURROGATE_MIN_VALUE) << 10) +
-                              ((int)trail - UTF16.TRAIL_SURROGATE_MIN_VALUE) +
-                              UTF16.SUPPLEMENTARY_MIN_VALUE;
+                    retVal = (((int)lead - UTF16.LeadSurrogateMinValue) << 10) +
+                              ((int)trail - UTF16.TrailSurrogateMinValue) +
+                              UTF16.SupplementaryMinValue;
                 }
                 else
                 {
@@ -114,7 +114,7 @@ namespace ICU4N.Impl
         {
             char lead = ci.Current;
             int retVal = lead;
-            if (retVal < UTF16.LEAD_SURROGATE_MIN_VALUE)
+            if (retVal < UTF16.LeadSurrogateMinValue)
             {
                 return retVal;
             }
@@ -124,9 +124,9 @@ namespace ICU4N.Impl
                 ci.Previous();
                 if (UTF16.IsTrailSurrogate((char)trail))
                 {
-                    retVal = ((lead - UTF16.LEAD_SURROGATE_MIN_VALUE) << 10) +
-                             (trail - UTF16.TRAIL_SURROGATE_MIN_VALUE) +
-                             UTF16.SUPPLEMENTARY_MIN_VALUE;
+                    retVal = ((lead - UTF16.LeadSurrogateMinValue) << 10) +
+                             (trail - UTF16.TrailSurrogateMinValue) +
+                             UTF16.SupplementaryMinValue;
                 }
             }
             else

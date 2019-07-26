@@ -113,7 +113,7 @@ namespace ICU4N.Impl
             int offset;
 
             // fastpath for U+0000..U+D7FF
-            if (0 <= ch && ch < UTF16.LEAD_SURROGATE_MIN_VALUE)
+            if (0 <= ch && ch < UTF16.LeadSurrogateMinValue)
             {
                 // copy of getRawOffset()
                 offset = (m_index_[ch >> INDEX_STAGE_1_SHIFT_] << INDEX_STAGE_2_SHIFT_)
