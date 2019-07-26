@@ -2631,8 +2631,8 @@ namespace ICU4N.Text
         /// supplementary code points because they are stored as pairs of surrogates which are at
         /// &#92;ud800..&#92;udfff.
         /// </summary>
-        /// <seealso cref="FOLD_CASE_DEFAULT"/>
-        /// <seealso cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/>
+        /// <seealso cref="FoldCaseDefault"/>
+        /// <seealso cref="FoldCaseExcludeSpecialI"/>
         /// <stable>ICU 2.1</stable>
         // ICU4N TODO: API - This design needs to be reworked to fit into the .NET world:
         // 1. Look into subclassing System.StringComparer
@@ -2648,7 +2648,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <stable>ICU 2.1</stable>
             public StringComparer()
-                : this(false, false, FOLD_CASE_DEFAULT)
+                : this(false, false, FoldCaseDefault)
             {
             }
 
@@ -2657,19 +2657,19 @@ namespace ICU4N.Text
             /// </summary>
             /// <param name="codepointcompare">Flag to indicate true for code point comparison or false for code unit comparison.</param>
             /// <param name="ignorecase">False for case sensitive comparison, true for case-insensitive comparison.</param>
-            /// <param name="foldcaseoption"><see cref="FOLD_CASE_DEFAULT"/> or <see cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/>. This option is used only
+            /// <param name="foldcaseoption"><see cref="FoldCaseDefault"/> or <see cref="FoldCaseExcludeSpecialI"/>. This option is used only
             /// when ignorecase is set to true. If ignorecase is false, this option is
             /// ignored.
             /// </param>
-            /// <seealso cref="FOLD_CASE_DEFAULT"/>
-            /// <seealso cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/>
+            /// <seealso cref="FoldCaseDefault"/>
+            /// <seealso cref="FoldCaseExcludeSpecialI"/>
             /// <exception cref="ArgumentException">If <paramref name="foldcaseoption"/> is out of range.</exception>
             /// <stable>ICU 2.4</stable>
             public StringComparer(bool codepointcompare, bool ignorecase, int foldcaseoption)
             {
                 CodePointCompare = codepointcompare;
                 m_ignoreCase_ = ignorecase;
-                if (foldcaseoption < FOLD_CASE_DEFAULT || foldcaseoption > FOLD_CASE_EXCLUDE_SPECIAL_I)
+                if (foldcaseoption < FoldCaseDefault || foldcaseoption > FoldCaseExcludeSpecialI)
                 {
                     throw new ArgumentException("Invalid fold case option"); // ICU4N TODO: API - change to ArgumentOutOfRangeException
                 }
@@ -2685,7 +2685,7 @@ namespace ICU4N.Text
             /// Unicode data file CaseFolding.txt, before comparison.
             /// </summary>
             /// <stable>ICU 2.4</stable>
-            public static readonly int FOLD_CASE_DEFAULT = 0; // ICU4N TODO: API Make enum and combine with UChar fold case 
+            public const int FoldCaseDefault = (int)Globalization.FoldCase.Default; // ICU4N TODO: API Make enum and combine with UChar fold case 
 
             /// <summary>
             /// Option value for case folding:
@@ -2697,7 +2697,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <seealso cref="UChar.FoldCaseExcludeSpecialI"/>
             /// <stable>ICU 2.4</stable>
-            public static readonly int FOLD_CASE_EXCLUDE_SPECIAL_I = 1; // ICU4N TODO: API Make enum and combine with UChar fold case 
+            public const int FoldCaseExcludeSpecialI = (int)Globalization.FoldCase.ExcludeSpecialI; // ICU4N TODO: API Make enum and combine with UChar fold case 
 
             // public methods ----------------------------------------------------
 
@@ -2747,19 +2747,19 @@ namespace ICU4N.Text
             /// Gets or sets the fold case options set in <see cref="StringComparer"/> to be used with case insensitive comparison.
             /// </summary>
             /// <remarks>
-            /// <see cref="FOLD_CASE_DEFAULT"/> or <see cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/>. This option is used only
+            /// <see cref="FoldCaseDefault"/> or <see cref="FoldCaseExcludeSpecialI"/>. This option is used only
             /// when ignorecase is set to true. If ignorecase is false, this option is
             /// ignored.
             /// </remarks>
-            /// <seealso cref="FOLD_CASE_DEFAULT"/>
-            /// <seealso cref="FOLD_CASE_EXCLUDE_SPECIAL_I"/>
+            /// <seealso cref="FoldCaseDefault"/>
+            /// <seealso cref="FoldCaseExcludeSpecialI"/>
             /// <stable>ICU 2.4</stable>
             public int IgnoreCaseOption
             {
                 get { return m_foldCase_; }
                 set
                 {
-                    if (value < FOLD_CASE_DEFAULT || value > FOLD_CASE_EXCLUDE_SPECIAL_I)
+                    if (value < FoldCaseDefault || value > FoldCaseExcludeSpecialI)
                     {
                         throw new ArgumentException("Invalid fold case option");
                     }

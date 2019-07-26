@@ -1613,7 +1613,7 @@ namespace ICU4N.Dev.Test.Lang
                 Errln("Default string comparator should be case sensitive compare");
             }
             if (compare.IgnoreCaseOption
-                != UTF16.StringComparer.FOLD_CASE_DEFAULT)
+                != UTF16.StringComparer.FoldCaseDefault)
             {
                 Errln("Default string comparator should have fold case default compare");
             }
@@ -1629,35 +1629,35 @@ namespace ICU4N.Dev.Test.Lang
                 Errln("Error setting code point compare");
             }
             compare.IgnoreCase = true;
-            compare.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_DEFAULT;
+            compare.IgnoreCaseOption = UTF16.StringComparer.FoldCaseDefault;
             if (compare.IgnoreCase != true
                 || compare.IgnoreCaseOption
-            != UTF16.StringComparer.FOLD_CASE_DEFAULT)
+            != UTF16.StringComparer.FoldCaseDefault)
             {
                 Errln("Error setting ignore case and options");
             }
 
             compare.IgnoreCase = false;
-            compare.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I;
+            compare.IgnoreCaseOption = UTF16.StringComparer.FoldCaseExcludeSpecialI;
             if (compare.IgnoreCase != false
                 || compare.IgnoreCaseOption
-            != UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I)
+            != UTF16.StringComparer.FoldCaseExcludeSpecialI)
             {
                 Errln("Error setting ignore case and options");
             }
             compare.IgnoreCase = true;
-            compare.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I;
+            compare.IgnoreCaseOption = UTF16.StringComparer.FoldCaseExcludeSpecialI;
             if (compare.IgnoreCase != true
                 || compare.IgnoreCaseOption
-            != UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I)
+            != UTF16.StringComparer.FoldCaseExcludeSpecialI)
             {
                 Errln("Error setting ignore case and options");
             }
             compare.IgnoreCase = false;
-            compare.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_DEFAULT;
+            compare.IgnoreCaseOption = UTF16.StringComparer.FoldCaseDefault;
             if (compare.IgnoreCase != false
                 || compare.IgnoreCaseOption
-            != UTF16.StringComparer.FOLD_CASE_DEFAULT)
+            != UTF16.StringComparer.FoldCaseDefault)
             {
                 Errln("Error setting ignore case and options");
             }
@@ -1673,7 +1673,7 @@ namespace ICU4N.Dev.Test.Lang
                         "\ud84d\udc56"};
             UTF16.StringComparer cpcompare
                 = new UTF16.StringComparer(true, false,
-                         UTF16.StringComparer.FOLD_CASE_DEFAULT);
+                         UTF16.StringComparer.FoldCaseDefault);
             UTF16.StringComparer cucompare
                 = new UTF16.StringComparer();
             for (int i = 0; i < str.Length - 1; ++i)
@@ -1709,7 +1709,7 @@ namespace ICU4N.Dev.Test.Lang
 
             UTF16.StringComparer compare = new UTF16.StringComparer();
             compare.IgnoreCase = true;
-            compare.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_DEFAULT;
+            compare.IgnoreCaseOption = UTF16.StringComparer.FoldCaseDefault;
             // test u_strcasecmp()
             int result = compare.Compare(mixed, otherDefault);
             if (result != 0)
@@ -1720,7 +1720,7 @@ namespace ICU4N.Dev.Test.Lang
 
             // test u_strcasecmp() - exclude special i
             compare.IgnoreCase = true;
-            compare.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_EXCLUDE_SPECIAL_I;
+            compare.IgnoreCaseOption = UTF16.StringComparer.FoldCaseExcludeSpecialI;
             result = compare.Compare(mixed, otherExcludeSpecialI);
             if (result != 0)
             {
@@ -1730,7 +1730,7 @@ namespace ICU4N.Dev.Test.Lang
 
             // test u_strcasecmp()
             compare.IgnoreCase = true;
-            compare.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_DEFAULT;
+            compare.IgnoreCaseOption = UTF16.StringComparer.FoldCaseDefault;
             result = compare.Compare(mixed, different);
             if (result <= 0)
             {
@@ -1740,7 +1740,7 @@ namespace ICU4N.Dev.Test.Lang
 
             // test substrings - stop before the sharp s (U+00df)
             compare.IgnoreCase = true;
-            compare.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_DEFAULT;
+            compare.IgnoreCaseOption = UTF16.StringComparer.FoldCaseDefault;
             result = compare.Compare(mixed.Substring(0, 4), // ICU4N: Checked 2nd parameter
                                      different.Substring(0, 4)); // ICU4N: Checked 2nd parameter
             if (result != 0)
@@ -1750,7 +1750,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             // test substrings - stop in the middle of the sharp s (U+00df)
             compare.IgnoreCase = true;
-            compare.IgnoreCaseOption = UTF16.StringComparer.FOLD_CASE_DEFAULT;
+            compare.IgnoreCaseOption = UTF16.StringComparer.FoldCaseDefault;
             result = compare.Compare(mixed.Substring(0, 5), // ICU4N: Checked 2nd parameter
                                      different.Substring(0, 5)); // ICU4N: Checked 2nd parameter
             if (result <= 0)

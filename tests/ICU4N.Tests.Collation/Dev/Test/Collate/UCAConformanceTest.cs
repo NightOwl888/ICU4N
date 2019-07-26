@@ -25,7 +25,7 @@ namespace ICU4N.Dev.Test.Collate
         public void init()
         {
             UCA = (RuleBasedCollator)Collator.GetInstance(ULocale.ROOT);
-            comparer = new UTF16.StringComparer(true, false, UTF16.StringComparer.FOLD_CASE_DEFAULT);
+            comparer = new UTF16.StringComparer(true, false, UTF16.StringComparer.FoldCaseDefault);
         }
 
         private RuleBasedCollator UCA;
