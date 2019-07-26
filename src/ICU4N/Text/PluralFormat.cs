@@ -85,7 +85,7 @@ namespace ICU4N.Text
     /// keyword = [^[[:Pattern_Syntax:][:Pattern_White_Space:]]]+
     /// message: see <see cref="MessageFormat"/>
     /// </code>
-    /// <see cref="Lang.UProperty.Pattern_White_Space"/> between syntax elements is ignored, except
+    /// <see cref="Globalization.UProperty.Pattern_White_Space"/> between syntax elements is ignored, except
     /// between the {curly braces} and their sub-message,
     /// and between the '=' and the number of an explicitValue.
     /// <para/>

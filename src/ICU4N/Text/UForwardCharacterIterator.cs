@@ -25,19 +25,19 @@
     /// algorithm can be represented with single code units.
     /// Other processes will need to use the code point access functions.
     /// <para/>
-    /// <see cref="IUForwardCharacterIterator"/> provides <see cref="MoveNext()"/> to access
+    /// <see cref="IUForwardCharacterIterator"/> provides <see cref="Next()"/> to access
     /// a code unit and advance an internal position into the text object,
     /// similar to a <c>return text[position++]</c>.
-    /// It provides <see cref="MoveNextCodePoint()"/> to access a code point and advance an internal
+    /// It provides <see cref="NextCodePoint()"/> to access a code point and advance an internal
     /// position.
     /// <para/>
-    /// <see cref="MoveNextCodePoint()"/> assumes that the current position is that of
+    /// <see cref="NextCodePoint()"/> assumes that the current position is that of
     /// the beginning of a code point, i.e., of its first code unit.
-    /// After <see cref="MoveNextCodePoint()"/>, this will be true again.
+    /// After <see cref="NextCodePoint()"/>, this will be true again.
     /// In general, access to code units and code points in the same
     /// iteration loop should not be mixed. In UTF-16, if the current position
     /// is on a second code unit (Low Surrogate), then only that code unit
-    /// is returned even by <see cref="MoveNextCodePoint()"/>.
+    /// is returned even by <see cref="NextCodePoint()"/>.
     /// <para/>
     /// Usage:
     /// <code>

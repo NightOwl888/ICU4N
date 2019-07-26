@@ -123,20 +123,20 @@ namespace ICU4N.Text
         /// <strong>Note</strong> this value is different from the JDK's.
         /// </summary>
         /// <seealso cref="CanonicalDecomposition"/>
-        /// <see cref="Decomposition"/>
+        /// <seealso cref="Collator.Decomposition"/>
         /// <stable>ICU 2.8</stable>
         NoDecomposition = 16,
 
         /// <summary>
-        /// Decomposition mode value. With CANONICAL_DECOMPOSITION set,
+        /// Decomposition mode value. With <see cref="CanonicalDecomposition"/> set,
         /// characters that are canonical variants according to the Unicode standard
         /// will be decomposed for collation.
         /// <para/>
-        /// CANONICAL_DECOMPOSITION corresponds to Normalization Form D as
+        /// <see cref="CanonicalDecomposition"/> corresponds to Normalization Form D as
         /// described in <a href="http://www.unicode.org/unicode/reports/tr15/">Unicode Technical Report #15</a>.
         /// </summary>
-        /// <see cref="NoDecomposition"/>
-        /// <see cref="Decomposition"/>
+        /// <seealso cref="NoDecomposition"/>
+        /// <seealso cref="Collator.Decomposition"/>
         /// <stable>ICU 2.8</stable>
         CanonicalDecomposition = 17
     }
@@ -1652,7 +1652,7 @@ namespace ICU4N.Text
         /// <param name="reorderCode">The reorder code to determine equivalence for.</param>
         /// <returns>The set of all reorder codes in the same group as the given reorder code.</returns>
         /// <seealso cref="SetReorderCodes(int[])"/>
-        /// <seealso cref="GetReorderCodes(int)"/>
+        /// <seealso cref="GetReorderCodes()"/>
         /// <seealso cref="ReorderCodes"/>
         /// <seealso cref="UScript"/>
         /// <stable>ICU 4.8</stable>

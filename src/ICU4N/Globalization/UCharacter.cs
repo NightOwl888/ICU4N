@@ -4467,7 +4467,7 @@ namespace ICU4N
         /// </summary>
         /// <param name="ch">The character to be converted.</param>
         /// <param name="foldCase">Option for special processing. Currently the recognised options
-        /// are <see cref="Lang.FoldCase.ExcludeSpecialI"/> and <see cref="Lang.FoldCase.Default"/>.</param>
+        /// are <see cref="Globalization.FoldCase.ExcludeSpecialI"/> and <see cref="Globalization.FoldCase.Default"/>.</param>
         /// <returns>The case folding equivalent of the character, if any; otherwise the
         /// character itself.</returns>
         /// <seealso cref="FoldCase(string, FoldCase)"/>

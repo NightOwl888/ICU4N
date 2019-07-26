@@ -25,7 +25,7 @@ namespace ICU4N.Impl
     /// Due to the form most commonly used for retrieval, array of char is used
     /// to store the binary data.
     /// <para/>
-    /// <see cref="UCharacterPropertyDB"/> also contains information on accessing indexes to
+    /// UCharacterPropertyDB also contains information on accessing indexes to
     /// significant points in the binary data.
     /// <para/>
     /// Responsibility for molding the binary data into more meaning form lies on

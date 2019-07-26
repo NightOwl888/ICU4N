@@ -6,8 +6,8 @@ using System.Text;
 namespace ICU4N.Text
 {
     /// <summary>
-    /// Options that used in the API <see cref="CollationKey.GetBound(int, int)"/> for getting a
-    /// CollationKey based on the bound mode requested.
+    /// Options that used in the API <see cref="CollationKey.GetBound(CollationKeyBoundMode, CollationStrength)"/> for getting a
+    /// <see cref="CollationKey"/> based on the bound mode requested.
     /// </summary>
     /// <stable>ICU 2.6</stable>
     // do not change the values assigned to the members of this enum.
@@ -354,7 +354,7 @@ namespace ICU4N.Text
         /// on the key itself, not the string from which the key was created. Thus
         /// if x and y are <see cref="CollationKey"/>s, then x.GetHashCode(x) == y.GetHashCode()
         /// if x.Equals(y) is true. This allows language-sensitive comparison in a
-        /// <see cref="IDictionary{TKey, TValue}"/>.
+        /// <see cref="System.Collections.Generic.IDictionary{TKey, TValue}"/>.
         /// </summary>
         /// <returns>The hash value.</returns>
         /// <stable>ICU 2.8</stable>

@@ -38,7 +38,7 @@ namespace ICU4N.Text
     /// </code>
     /// </remarks>
     /// <seealso cref="MessageFormat"/>
-    /// <seealso cref="MessageFormatAppostropheMode"/>
+    /// <seealso cref="ApostropheMode"/>
     /// <stable>ICU 57</stable>
     public sealed partial class SimpleFormatter
     {

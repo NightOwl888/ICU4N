@@ -122,7 +122,8 @@ namespace ICU4N.Text
     ///     </item>
     /// </list>
     /// <para/>
-    /// An "identifier" is a sequence of characters that do not have the Unicode <see cref="Lang.UProperty.Pattern_Syntax"/> or <see cref="Lang.UProperty.Pattern_White_Space"/>
+    /// An "identifier" is a sequence of characters that do not have the Unicode 
+    /// <see cref="Globalization.UProperty.Pattern_Syntax"/> or <see cref="Globalization.UProperty.Pattern_White_Space"/>
     /// properties.
     /// <para/>
     /// The difference between 'in' and 'within' is that 'in' only includes integers in the specified range, while 'within'

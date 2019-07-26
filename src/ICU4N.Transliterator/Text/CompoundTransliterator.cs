@@ -262,7 +262,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Override Transliterator:
-        /// Create a rule string that can be passed to <see cref="Transliterator.CreateFromRules(string, string, int)"/>
+        /// Create a rule string that can be passed to <see cref="Transliterator.CreateFromRules(string, string, TransliterationDirection)"/>
         /// to recreate this transliterator.
         /// </summary>
         /// <param name="escapeUnprintable">If TRUE then convert unprintable

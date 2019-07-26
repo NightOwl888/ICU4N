@@ -381,8 +381,8 @@ namespace ICU4N.Util
         /// <remarks>
         /// This is equivalent to iterator(ICharSequence, int, int) in ICU4J.
         /// </remarks>
-        /// <param name="trieChars"><see cref="Char[]"/> that contains the serialized trie.</param>
-        /// <param name="offset">Root offset of the trie in the <see cref="Char[]"/>.</param>
+        /// <param name="trieChars"><see cref="T:char[]"/> that contains the serialized trie.</param>
+        /// <param name="offset">Root offset of the trie in the <see cref="T:char[]"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
         /// Otherwise, the iterator returns strings with this maximum length.</param>
         /// <returns>A new <see cref="CharsTrie.Enumerator"/>.</returns>

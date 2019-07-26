@@ -52,10 +52,10 @@ namespace ICU4N.Text
         /// text and sets the cursor to the given position.
         /// </summary>
         /// <param name="theOutput">Text that will replace input text when the
-        /// <see cref="Replace(IReplaceable, int, int, out int[])"/> method is called.  May contain stand-in characters
+        /// <see cref="Replace(IReplaceable, int, int, int[])"/> method is called.  May contain stand-in characters
         /// that represent nested replacers.</param>
         /// <param name="theCursorPos">Cursor position that will be returned by 
-        /// the <see cref="Replace(IReplaceable, int, int, out int[])"/> method.</param>
+        /// the <see cref="Replace(IReplaceable, int, int, int[])"/> method.</param>
         /// <param name="theData">Transliterator context object that translates
         /// stand-in characters to <see cref="IUnicodeReplacer"/> objects.</param>
         public StringReplacer(string theOutput,
@@ -76,7 +76,7 @@ namespace ICU4N.Text
         /// text and does not modify the cursor.
         /// </summary>
         /// <param name="theOutput">Text that will replace input text when the
-        /// <see cref="Replace(IReplaceable, int, int, out int[])"/> method is called.  
+        /// <see cref="Replace(IReplaceable, int, int, int[])"/> method is called.  
         /// May contain stand-in characters that represent nested replacers.</param>
         /// <param name="theData">Transliterator context object that translates
         /// stand-in characters to <see cref="IUnicodeReplacer"/> objects.</param>

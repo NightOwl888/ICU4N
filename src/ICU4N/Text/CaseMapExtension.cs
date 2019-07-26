@@ -1925,7 +1925,7 @@ namespace ICU4N.Text
             /// </remarks>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(string src)
@@ -1944,7 +1944,7 @@ namespace ICU4N.Text
             /// </remarks>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(StringBuilder src)
@@ -1963,7 +1963,7 @@ namespace ICU4N.Text
             /// </remarks>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public string Apply(char[] src)
@@ -1982,7 +1982,7 @@ namespace ICU4N.Text
             /// </remarks>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal string Apply(ICharSequence src)
@@ -2007,7 +2007,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public StringBuilder Apply(
@@ -2033,7 +2033,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public StringBuilder Apply(
@@ -2059,7 +2059,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public StringBuilder Apply(
@@ -2085,7 +2085,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal StringBuilder Apply(
@@ -2111,7 +2111,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal T Apply<T>(
@@ -2137,7 +2137,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal T Apply<T>(
@@ -2163,7 +2163,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal T Apply<T>(
@@ -2189,7 +2189,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Globalization.FoldCase)"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             internal T Apply<T>(

@@ -314,7 +314,7 @@ namespace ICU4N.Impl
 
             /// <summary>
             /// Gets ICU resource type like <see cref="UResourceBundle.Type"/>
-            /// for example, <see cref="UResourceType.String"/>.
+            /// for example, <see cref="UResourceBundle.STRING"/>.
             /// </summary>
             public abstract int Type { get; }
 

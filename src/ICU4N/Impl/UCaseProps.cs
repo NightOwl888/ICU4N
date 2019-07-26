@@ -538,7 +538,7 @@ namespace ICU4N.Impl
             return GetTypeAndIgnorableFromProps(trie.Get(c));
         }
 
-        /// <returns><see cref="NO_DOT"/>, <see cref="SOFT_DOTTED"/>, <see cref="ABOVE"/>, <see cref="OTHER_ACCENT"/>.</returns>
+        /// <returns>NO_DOT, <see cref="SOFT_DOTTED"/>, <see cref="ABOVE"/>, <see cref="OTHER_ACCENT"/>.</returns>
         public int GetDotType(int c)
         {
             int props = trie.Get(c);
