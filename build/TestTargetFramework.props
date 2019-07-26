@@ -10,7 +10,7 @@
 
     <!-- Allow the build script to pass in the test frameworks to build for.
       This overrides the above TargetFramework setting. 
-      LUCENENET TODO: Due to a parsing bug, we cannot pass a string with a ; to dotnet msbuild, so passing true as a workaround -->
+      ICU4N TODO: Due to a parsing bug, we cannot pass a string with a ; to dotnet msbuild, so passing true as a workaround -->
     <TargetFrameworks Condition=" '$(TestAllTargetFrameworks)' == 'true' ">netcoreapp2.0;netcoreapp1.0;net451</TargetFrameworks>
     <TargetFramework Condition=" '$(TargetFrameworks)' != '' "></TargetFramework>
   </PropertyGroup>

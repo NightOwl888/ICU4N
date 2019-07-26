@@ -238,7 +238,7 @@ namespace ICU4N.Support.IO
             }
             else
             {
-                // LUCENENET NOTE: This assumes that .NET core will continue
+                // NOTE: This assumes that .NET core will continue
                 // making the format little endian on big endian platforms
                 return accessor.ReadSingle(Ix(NextGetIndex(4)));
             }
@@ -260,7 +260,7 @@ namespace ICU4N.Support.IO
             }
             else
             {
-                // LUCENENET NOTE: This assumes that .NET core will continue
+                // NOTE: This assumes that .NET core will continue
                 // making the format little endian on big endian platforms
                 return accessor.ReadSingle(Ix(CheckIndex(index, 4)));
             }

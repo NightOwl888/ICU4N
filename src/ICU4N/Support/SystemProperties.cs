@@ -17,7 +17,7 @@ namespace ICU4N.Support
     /// configuration file, it is recommended your application load them at startup and
     /// call <see cref="SystemProperties.SetProperty(string, string)"/> to set them.
     /// <para/>
-    /// Set the environment variable <c>lucene.ignoreSecurityExceptions</c> to <c>false</c>
+    /// Set the environment variable <c>icu4n.ignoreSecurityExceptions</c> to <c>false</c>
     /// to change the read behavior of these methods to throw the underlying exception 
     /// instead of returning the default value.
     /// </summary>
@@ -138,7 +138,7 @@ namespace ICU4N.Support
                 : conversionFunction(setting);
         }
 
-        internal static bool ignoreSecurityExceptions = GetPropertyAsBoolean("lucene.ignoreSecurityExceptions", true);
+        internal static bool ignoreSecurityExceptions = GetPropertyAsBoolean("icu4n.ignoreSecurityExceptions", true);
 
         /// <summary>
         /// Creates, modifies, or deletes an environment variable stored in the current process.

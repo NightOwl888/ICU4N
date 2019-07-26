@@ -26,7 +26,7 @@ namespace ICU4N.Support.IO
 #endif
     }
 
-    // LUCENENET: It is no longer good practice to use binary serialization. 
+    // It is no longer good practice to use binary serialization. 
     // See: https://github.com/dotnet/corefx/issues/23584#issuecomment-325724568
 #if FEATURE_SERIALIZABLE_EXCEPTIONS
     [Serializable]
@@ -50,7 +50,7 @@ namespace ICU4N.Support.IO
 #endif
     }
 
-    // LUCENENET: It is no longer good practice to use binary serialization. 
+    // It is no longer good practice to use binary serialization. 
     // See: https://github.com/dotnet/corefx/issues/23584#issuecomment-325724568
 #if FEATURE_SERIALIZABLE_EXCEPTIONS
     [Serializable]
@@ -74,7 +74,7 @@ namespace ICU4N.Support.IO
 #endif
     }
 
-    // LUCENENET: It is no longer good practice to use binary serialization. 
+    // It is no longer good practice to use binary serialization. 
     // See: https://github.com/dotnet/corefx/issues/23584#issuecomment-325724568
 #if FEATURE_SERIALIZABLE_EXCEPTIONS
     [Serializable]

@@ -35,7 +35,7 @@ namespace ICU4N.Support.IO
         }
 
         /// <summary>
-        /// Creates a direct byte buffer based on a newly allocated memory block. (NOT IMPLEMENTED IN LUCENE.NET)
+        /// Creates a direct byte buffer based on a newly allocated memory block. (NOT IMPLEMENTED)
         /// </summary>
         /// <param name="capacity">the capacity of the new buffer</param>
         /// <returns>The new byte buffer</returns>
@@ -249,7 +249,7 @@ namespace ICU4N.Support.IO
                 otherByte = otherBuffer.Get(otherPos);
                 if (thisByte != otherByte)
                 {
-                    // LUCENENET specific - comparison should return
+                    // NOTE: IN .NET comparison should return
                     // the diff, not be hard coded to 1/-1
                     return thisByte - otherByte;
                     //return thisByte < otherByte ? -1 : 1;
