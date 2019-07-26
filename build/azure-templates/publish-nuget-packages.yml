@@ -27,21 +27,30 @@ steps:
     artifactName: ${{ parameters.nugetArtifactName }}
     downloadPath: '$(Build.ArtifactStagingDirectory)'
 
+  # Push to MyGet
 - task: NuGetCommand@2
   displayName: 'NuGet push'
   inputs:
     command: push
     packagesToPush: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.symbols.nupkg'
-    publishVstsFeed: '/${{ parameters.artifactFeedID }}'
-    allowPackageConflicts: true
+    nuGetFeedType: external
+    publishFeedCredentials: 'MyGet-icu4n'
 
-- task: PublishSymbols@2
-  displayName: 'Publish symbols path'
-  inputs:
-    SymbolsFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}'
-    SearchPattern: |
-      **/bin/**/*.pdb
-      !${{ parameters.testSymbolFilesConvention }}
-    IndexSources: true
-    PublishSymbols: true
-    SymbolServerType: TeamServices
+#- task: NuGetCommand@2
+#  displayName: 'NuGet push'
+#  inputs:
+#    command: push
+#    packagesToPush: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.symbols.nupkg'
+#    publishVstsFeed: '/${{ parameters.artifactFeedID }}'
+#    allowPackageConflicts: true
+
+#- task: PublishSymbols@2
+#  displayName: 'Publish symbols path'
+#  inputs:
+#    SymbolsFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}'
+#    SearchPattern: |
+#      **/bin/**/*.pdb
+#      !${{ parameters.testSymbolFilesConvention }}
+#    IndexSources: true
+#    PublishSymbols: true
+#    SymbolServerType: TeamServices
