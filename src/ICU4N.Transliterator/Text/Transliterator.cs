@@ -637,33 +637,33 @@ namespace ICU4N.Text
         protected abstract void HandleTransliterate(IReplaceable text,
                                                     TransliterationPosition pos, bool incremental);
 
-        /**
-         * Top-level transliteration method, handling filtering, incremental and
-         * non-incremental transliteration, and rollback.  All transliteration
-         * public API methods eventually call this method with a rollback argument
-         * of TRUE.  Other entities may call this method but rollback should be
-         * FALSE.
-         *
-         * <p>If this transliterator has a filter, break up the input text into runs
-         * of unfiltered characters.  Pass each run to
-         * <subclass>.handleTransliterate().
-         *
-         * <p>In incremental mode, if rollback is TRUE, perform a special
-         * incremental procedure in which several passes are made over the input
-         * text, adding one character at a time, and committing successful
-         * transliterations as they occur.  Unsuccessful transliterations are rolled
-         * back and retried with additional characters to give correct results.
-         *
-         * @param text the text to be transliterated
-         * @param index the position indices
-         * @param incremental if TRUE, then assume more characters may be inserted
-         * at index.limit, and postpone processing to accomodate future incoming
-         * characters
-         * @param rollback if TRUE and if incremental is TRUE, then perform special
-         * incremental processing, as described above, and undo partial
-         * transliterations where necessary.  If incremental is FALSE then this
-         * parameter is ignored.
-         */
+        /// <summary>
+        /// Top-level transliteration method, handling filtering, incremental and
+        /// non-incremental transliteration, and rollback.  All transliteration
+        /// public API methods eventually call this method with a rollback argument
+        /// of <c>true</c>.  Other entities may call this method but rollback should be
+        /// <c>false</c>.
+        /// </summary>
+        /// <remarks>
+        /// If this transliterator has a filter, break up the input text into runs
+        /// of unfiltered characters.  Pass each run to
+        /// <c>[subclass].HandleTransliterate().</c>.
+        /// <para/>
+        /// In <paramref name="incremental"/> mode, if rollback is <c>true</c>, perform a special
+        /// incremental procedure in which several passes are made over the input
+        /// text, adding one character at a time, and committing successful
+        /// transliterations as they occur.  Unsuccessful transliterations are rolled
+        /// back and retried with additional characters to give correct results.
+        /// </remarks>
+        /// <param name="text">The text to be transliterated.</param>
+        /// <param name="index">The position indices.</param>
+        /// <param name="incremental">If <c>true</c>, then assume more characters may be inserted
+        /// at <c>index.Limit</c>, and postpone processing to accomodate future incoming
+        /// characters.</param>
+        /// <param name="rollback">If <c>true</c> and if <paramref name="incremental"/> is <c>true</c>, then perform special
+        /// incremental processing, as described above, and undo partial
+        /// transliterations where necessary.  If <paramref name="incremental"/> is <c>false</c> then this
+        /// parameter is ignored.</param>
         private void FilteredTransliterate(IReplaceable text,
                                            TransliterationPosition index,
                                            bool incremental,
@@ -992,17 +992,17 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Transliterate a substring of text, as specified by index, taking filters
-         * into account.  This method is for subclasses that need to delegate to
-         * another transliterator, such as CompoundTransliterator.
-         * @param text the text to be transliterated
-         * @param index the position indices
-         * @param incremental if TRUE, then assume more characters may be inserted
-         * at index.limit, and postpone processing to accomodate future incoming
-         * characters
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Transliterate a substring of text, as specified by index, taking filters
+        /// into account.  This method is for subclasses that need to delegate to
+        /// another transliterator, such as <see cref="CompoundTransliterator"/>.
+        /// </summary>
+        /// <param name="text">The text to be transliterated.</param>
+        /// <param name="index">The position indices.</param>
+        /// <param name="incremental">If <c>true</c>, then assume more characters may be inserted
+        /// at index.Limit, and postpone processing to accomodate future incoming
+        /// characters.</param>
+        /// <stable>ICU 2.0</stable>
         public virtual void FilteredTransliterate(IReplaceable text,
                                              TransliterationPosition index,
                                              bool incremental)
@@ -1010,22 +1010,19 @@ namespace ICU4N.Text
             FilteredTransliterate(text, index, incremental, false);
         }
 
-        /**
-         * Returns the length of the longest context required by this transliterator.
-         * This is <em>preceding</em> context.  The default value is zero, but
-         * subclasses can change this by calling <code>setMaximumContextLength()</code>.
-         * For example, if a transliterator translates "ddd" (where
-         * d is any digit) to "555" when preceded by "(ddd)", then the preceding
-         * context length is 5, the length of "(ddd)".
-         *
-         * @return The maximum number of preceding context characters this
-         * transliterator needs to examine
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets the length of the longest context required by this transliterator.
+        /// This is <em>preceding</em> context.  The default value is zero, but
+        /// subclasses can set this property.
+        /// For example, if a transliterator translates "ddd" (where
+        /// d is any digit) to "555" when preceded by "(ddd)", then the preceding
+        /// context length is 5, the length of "(ddd)".
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public int MaximumContextLength
         {
             get { return maximumContextLength; }
-            set
+            protected set
             {
                 if (value < 0)
                 {
@@ -1035,99 +1032,78 @@ namespace ICU4N.Text
             }
         }
 
-        ///**
-        // * Method for subclasses to use to set the maximum context length.
-        // * @see #getMaximumContextLength
-        // * @stable ICU 2.0
-        // */
-        //protected void setMaximumContextLength(int a)
-        //{
-        //    if (a < 0)
-        //    {
-        //        throw new ArgumentException("Invalid context length " + a);
-        //    }
-        //    maximumContextLength = a;
-        //}
-
-        /**
-         * Returns a programmatic identifier for this transliterator.
-         * If this identifier is passed to <code>getInstance()</code>, it
-         * will return this object, if it has been registered.
-         * @see #registerClass
-         * @see #getAvailableIDs
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets a programmatic identifier for this transliterator.
+        /// If this identifier is passed to <see cref="GetInstance(string)"/>, it
+        /// will return this object, if it has been registered.
+        /// The setter is only for use by subclasses.
+        /// </summary>
+        /// <see cref="RegisterType(string, Type, string)"/>
+        /// <see cref="GetAvailableIDs()"/>
+        /// <stable>ICU 2.0</stable>
         public string ID
         {
             get { return id; }
-            set { this.id = value; }
+            protected internal set { this.id = value; }
         }
 
-        ///**
-        // * Set the programmatic identifier for this transliterator.  Only
-        // * for use by subclasses.
-        // * @stable ICU 2.0
-        // */
-        //protected final void setID(String id)
-        //{
-        //    this.id = id;
-        //}
-
-        /**
-         * Returns a name for this transliterator that is appropriate for
-         * display to the user in the default <code>DISPLAY</code> locale.  See {@link
-         * #getDisplayName(String,Locale)} for details.
-         * @see com.ibm.icu.util.ULocale.Category#DISPLAY
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns a name for this transliterator that is appropriate for
+        /// display to the user in the default <see cref="CultureInfo.CurrentUICulture"/>.
+        /// See <see cref="GetDisplayName(string, CultureInfo)"/> for details.
+        /// </summary>
+        /// <seealso cref="ULocale.Category.DISPLAY"/>
+        /// <stable>ICU 2.0</stable>
         public static string GetDisplayName(string ID)
         {
             return GetDisplayName(ID, ULocale.GetDefault(Category.DISPLAY));
         }
 
-        /**
-         * Returns a name for this transliterator that is appropriate for
-         * display to the user in the given locale.  This name is taken
-         * from the locale resource data in the standard manner of the
-         * <code>java.text</code> package.
-         *
-         * <p>If no localized names exist in the system resource bundles,
-         * a name is synthesized using a localized
-         * <code>MessageFormat</code> pattern from the resource data.  The
-         * arguments to this pattern are an integer followed by one or two
-         * strings.  The integer is the number of strings, either 1 or 2.
-         * The strings are formed by splitting the ID for this
-         * transliterator at the first '-'.  If there is no '-', then the
-         * entire ID forms the only string.
-         * @param inLocale the Locale in which the display name should be
-         * localized.
-         * @see java.text.MessageFormat
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns a name for this transliterator that is appropriate for
+        /// display to the user in the given locale.  This name is taken
+        /// from the locale resource data in the standard manner of the
+        /// <c>java.text</c> package.
+        /// <para/>
+        /// If no localized names exist in the system resource bundles,
+        /// a name is synthesized using a localized
+        /// <see cref="MessageFormat"/> pattern from the resource data.  The
+        /// arguments to this pattern are an integer followed by one or two
+        /// strings.  The integer is the number of strings, either 1 or 2.
+        /// The strings are formed by splitting the ID for this
+        /// transliterator at the first '-'.  If there is no '-', then the
+        /// entire ID forms the only string.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="inLocale">The <see cref="ULocale"/> in which the display name should be
+        /// localized.</param>
+        /// <seealso cref="MessageFormat"/>
+        /// <stable>ICU 2.0</stable>
         public static string GetDisplayName(string id, CultureInfo inLocale)
         {
             return GetDisplayName(id, ULocale.ForLocale(inLocale));
         }
 
-        /**
-         * Returns a name for this transliterator that is appropriate for
-         * display to the user in the given locale.  This name is taken
-         * from the locale resource data in the standard manner of the
-         * <code>java.text</code> package.
-         *
-         * <p>If no localized names exist in the system resource bundles,
-         * a name is synthesized using a localized
-         * <code>MessageFormat</code> pattern from the resource data.  The
-         * arguments to this pattern are an integer followed by one or two
-         * strings.  The integer is the number of strings, either 1 or 2.
-         * The strings are formed by splitting the ID for this
-         * transliterator at the first '-'.  If there is no '-', then the
-         * entire ID forms the only string.
-         * @param inLocale the ULocale in which the display name should be
-         * localized.
-         * @see java.text.MessageFormat
-         * @stable ICU 3.2
-         */
+        /// <summary>
+        /// Returns a name for this transliterator that is appropriate for
+        /// display to the user in the given locale.  This name is taken
+        /// from the locale resource data in the standard manner of the
+        /// <c>java.text</c> package.
+        /// <para/>
+        /// If no localized names exist in the system resource bundles,
+        /// a name is synthesized using a localized
+        /// <see cref="MessageFormat"/> pattern from the resource data.  The
+        /// arguments to this pattern are an integer followed by one or two
+        /// strings.  The integer is the number of strings, either 1 or 2.
+        /// The strings are formed by splitting the ID for this
+        /// transliterator at the first '-'.  If there is no '-', then the
+        /// entire ID forms the only string.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="inLocale">The <see cref="ULocale"/> in which the display name should be
+        /// localized.</param>
+        /// <seealso cref="MessageFormat"/>
+        /// <stable>ICU 3.2</stable>
         public static string GetDisplayName(string id, ULocale inLocale)
         {
 
@@ -1203,11 +1179,15 @@ namespace ICU4N.Text
             throw new Exception();
         }
 
-        /**
-         * Returns the filter used by this transliterator, or <tt>null</tt>
-         * if this transliterator uses no filter.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Gets or sets the filter used by this transliterator.  If the filter
+        /// is set to <c>null</c> then no filtering will occur.
+        /// <para/>
+        /// Callers must take care if a transliterator is in use by
+        /// multiple threads.  The filter should not be changed by one
+        /// thread while another thread may be transliterating.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public UnicodeFilter Filter
         {
             get { return filter; }
@@ -1234,67 +1214,34 @@ namespace ICU4N.Text
             }
         }
 
-        ///**
-        // * Changes the filter used by this transliterator.  If the filter
-        // * is set to <tt>null</tt> then no filtering will occur.
-        // *
-        // * <p>Callers must take care if a transliterator is in use by
-        // * multiple threads.  The filter should not be changed by one
-        // * thread while another thread may be transliterating.
-        // * @stable ICU 2.0
-        // */
-        //public void setFilter(UnicodeFilter filter)
-        //{
-        //    if (filter == null)
-        //    {
-        //        this.filter = null;
-        //    }
-        //    else
-        //    {
-        //        try
-        //        {
-        //            // fast high-runner case
-        //            this.filter = new UnicodeSet((UnicodeSet)filter).freeze();
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            this.filter = new UnicodeSet();
-        //            filter.addMatchSetTo(this.filter);
-        //            this.filter.freeze();
-        //        }
-        //    }
-        //}
-
-        /**
-         * Returns a <code>Transliterator</code> object given its ID.
-         * The ID must be either a system transliterator ID or a ID registered
-         * using <code>registerClass()</code>.
-         *
-         * @param ID a valid ID, as enumerated by <code>getAvailableIDs()</code>
-         * @return A <code>Transliterator</code> object with the given ID
-         * @exception IllegalArgumentException if the given ID is invalid.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns a <see cref="Transliterator"/> object given its <paramref name="id"/>.
+        /// The <paramref name="id"/> must be either a system transliterator ID or a ID registered
+        /// using <see cref="RegisterType(string, Type, string)"/>.
+        /// </summary>
+        /// <param name="id">A valid <paramref name="id"/>, as enumerated by <see cref="GetAvailableIDs()"/>.</param>
+        /// <returns>A <see cref="Transliterator"/> object with the given <paramref name="id"/>.</returns>
+        /// <exception cref="ArgumentException">If the given <paramref name="id"/> is invalid.</exception>
+        /// <stable>ICU 2.0</stable>
         public static Transliterator GetInstance(string id)
         {
             return GetInstance(id, Forward);
         }
 
-        /**
-         * Returns a <code>Transliterator</code> object given its ID.
-         * The ID must be either a system transliterator ID or a ID registered
-         * using <code>registerClass()</code>.
-         *
-         * @param ID a valid ID, as enumerated by <code>getAvailableIDs()</code>
-         * @param dir either FORWARD or REVERSE.  If REVERSE then the
-         * inverse of the given ID is instantiated.
-         * @return A <code>Transliterator</code> object with the given ID
-         * @exception IllegalArgumentException if the given ID is invalid.
-         * @see #registerClass
-         * @see #getAvailableIDs
-         * @see #getID
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns a <see cref="Transliterator"/> object given its <paramref name="id"/>.
+        /// The <paramref name="id"/> must be either a system transliterator ID or a ID registered
+        /// using <see cref="RegisterType(string, Type, string)"/>.
+        /// </summary>
+        /// <param name="id">A valid ID, as enumerated by <see cref="GetAvailableIDs()"/>.</param>
+        /// <param name="dir">Either <see cref="TransliterationDirection.Forward"/> or 
+        /// <see cref="TransliterationDirection.Reverse"/>. If <see cref="TransliterationDirection.Reverse"/> then the
+        /// inverse of the given <paramref name="id"/> is instantiated.</param>
+        /// <returns>A <see cref="Transliterator"/> object with the given <paramref name="id"/>.</returns>
+        /// <seealso cref="RegisterType(string, Type, string)"/>
+        /// <seealso cref="GetAvailableIDs()"/>
+        /// <seealso cref="ID"/>
+        /// <stable>ICU 2.0</stable>
         public static Transliterator GetInstance(string id,
                                                  TransliterationDirection dir)
         {
@@ -1332,16 +1279,16 @@ namespace ICU4N.Text
             return t;
         }
 
-        /**
-         * Create a transliterator from a basic ID.  This is an ID
-         * containing only the forward direction source, target, and
-         * variant.
-         * @param id a basic ID of the form S-T or S-T/V.
-         * @param canonID canonical ID to apply to the result, or
-         * null to leave the ID unchanged
-         * @return a newly created Transliterator or null if the ID is
-         * invalid.
-         */
+        /// <summary>
+        /// Create a transliterator from a basic ID.  This is an ID
+        /// containing only the forward direction source, target, and
+        /// variant.
+        /// </summary>
+        /// <param name="id">A basic ID of the form S-T or S-T/V.</param>
+        /// <param name="canonID">Canonical ID to apply to the result, or
+        /// null to leave the ID unchanged.</param>
+        /// <returns>A newly created Transliterator or null if the ID is
+        /// invalid.</returns>
         internal static Transliterator GetBasicInstance(string id, string canonID)
         {
             StringBuffer s = new StringBuffer();
@@ -1359,15 +1306,15 @@ namespace ICU4N.Text
             return t;
         }
 
-        /**
-         * Returns a <code>Transliterator</code> object constructed from
-         * the given rule string.  This will be a RuleBasedTransliterator,
-         * if the rule string contains only rules, or a
-         * CompoundTransliterator, if it contains ID blocks, or a
-         * NullTransliterator, if it contains ID blocks which parse as
-         * empty for the given direction.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns a <see cref="Transliterator"/> object constructed from
+        /// the given rule string.  This will be a <see cref="RuleBasedTransliterator"/>,
+        /// if the rule string contains only rules, or a
+        /// <see cref="CompoundTransliterator"/>, if it contains ID blocks, or a
+        /// <see cref="NullTransliterator"/>, if it contains ID blocks which parse as
+        /// empty for the given direction.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public static Transliterator CreateFromRules(string id, string rules, TransliterationDirection dir)
         {
             Transliterator t = null;
@@ -1445,28 +1392,28 @@ namespace ICU4N.Text
             return t;
         }
 
-        /**
-         * Returns a rule string for this transliterator.
-         * @param escapeUnprintable if true, then unprintable characters
-         * will be converted to escape form backslash-'u' or
-         * backslash-'U'.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns a rule string for this transliterator.
+        /// </summary>
+        /// <param name="escapeUnprintable">If true, then unprintable characters
+        /// will be converted to escape form backslash-'u' or
+        /// backslash-'U'.</param>
+        /// <stable>ICU 2.0</stable>
         public virtual string ToRules(bool escapeUnprintable)
         {
             return BaseToRules(escapeUnprintable);
         }
 
-        /**
-         * Returns a rule string for this transliterator.  This is
-         * a non-overrideable base class implementation that subclasses
-         * may call.  It simply munges the ID into the correct format,
-         * that is, "foo" =&gt; "::foo".
-         * @param escapeUnprintable if true, then unprintable characters
-         * will be converted to escape form backslash-'u' or
-         * backslash-'U'.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns a rule string for this transliterator.  This is
+        /// a non-overrideable base class implementation that subclasses
+        /// may call.  It simply munges the ID into the correct format,
+        /// that is, "foo" =&gt; "::foo".
+        /// </summary>
+        /// <param name="escapeUnprintable">If true, then unprintable characters
+        /// will be converted to escape form backslash-'u' or
+        /// backslash-'U'.</param>
+        /// <stable>ICU 2.0</stable>
         protected internal string BaseToRules(bool escapeUnprintable)
         {
             // The base class implementation of toRules munges the ID into
@@ -1492,20 +1439,20 @@ namespace ICU4N.Text
             return "::" + ID + ID_DELIM;
         }
 
-        /**
-         * Return the elements that make up this transliterator.  For
-         * example, if the transliterator "NFD;Jamo-Latin;Latin-Greek"
-         * were created, the return value of this method would be an array
-         * of the three transliterator objects that make up that
-         * transliterator: [NFD, Jamo-Latin, Latin-Greek].
-         *
-         * <p>If this transliterator is not composed of other
-         * transliterators, then this method will return an array of
-         * length one containing a reference to this transliterator.
-         * @return an array of one or more transliterators that make up
-         * this transliterator
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Return the elements that make up this transliterator.  For
+        /// example, if the transliterator "NFD;Jamo-Latin;Latin-Greek"
+        /// were created, the return value of this method would be an array
+        /// of the three transliterator objects that make up that
+        /// transliterator: [NFD, Jamo-Latin, Latin-Greek].
+        /// <para/>
+        /// If this transliterator is not composed of other
+        /// transliterators, then this method will return an array of
+        /// length one containing a reference to this transliterator.
+        /// </summary>
+        /// <returns>An array of one or more transliterators that make up
+        /// this transliterator.</returns>
+        /// <stable>ICU 3.0</stable>
         public virtual Transliterator[] GetElements()
         {
             Transliterator[] result;
@@ -1525,19 +1472,19 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Returns the set of all characters that may be modified in the
-         * input text by this Transliterator.  This incorporates this
-         * object's current filter; if the filter is changed, the return
-         * value of this function will change.  The default implementation
-         * returns an empty set.  Some subclasses may override {@link
-         * #handleGetSourceSet} to return a more precise result.  The
-         * return result is approximate in any case and is intended for
-         * use by tests, tools, or utilities.
-         * @see #getTargetSet
-         * @see #handleGetSourceSet
-         * @stable ICU 2.2
-         */
+        /// <summary>
+        /// Returns the set of all characters that may be modified in the
+        /// input text by this <see cref="Transliterator"/>.  This incorporates this
+        /// object's current filter; if the filter is changed, the return
+        /// value of this function will change.  The default implementation
+        /// returns an empty set.  Some subclasses may override <see cref="HandleGetSourceSet()"/>
+        /// to return a more precise result.  The
+        /// return result is approximate in any case and is intended for
+        /// use by tests, tools, or utilities.
+        /// </summary>
+        /// <seealso cref="GetTargetSet()"/>
+        /// <seealso cref="HandleGetSourceSet()"/>
+        /// <stable>ICU 2.2</stable>
         public UnicodeSet GetSourceSet()
         {
             UnicodeSet result = new UnicodeSet();
@@ -1547,45 +1494,47 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Framework method that returns the set of all characters that
-         * may be modified in the input text by this Transliterator,
-         * ignoring the effect of this object's filter.  The base class
-         * implementation returns the empty set.  Subclasses that wish to
-         * implement this should override this method.
-         * @return the set of characters that this transliterator may
-         * modify.  The set may be modified, so subclasses should return a
-         * newly-created object.
-         * @see #getSourceSet
-         * @see #getTargetSet
-         * @stable ICU 2.2
-         */
+        /// <summary>
+        /// Framework method that returns the set of all characters that
+        /// may be modified in the input text by this <see cref="Transliterator"/>,
+        /// ignoring the effect of this object's filter.  The base class
+        /// implementation returns the empty set.  Subclasses that wish to
+        /// implement this should override this method.
+        /// </summary>
+        /// <returns>The set of characters that this transliterator may
+        /// modify.  The set may be modified, so subclasses should return a
+        /// newly-created object.</returns>
+        /// <see cref="GetSourceSet()"/>
+        /// <see cref="GetTargetSet()"/>
+        /// <stable>ICU 2.2</stable>
         protected virtual UnicodeSet HandleGetSourceSet()
         {
             return new UnicodeSet();
         }
 
-        /**
-         * Returns the set of all characters that may be generated as
-         * replacement text by this transliterator.  The default
-         * implementation returns the empty set.  Some subclasses may
-         * override this method to return a more precise result.  The
-         * return result is approximate in any case and is intended for
-         * use by tests, tools, or utilities requiring such
-         * meta-information.
-         * <p>Warning. You might expect an empty filter to always produce an empty target.
-         * However, consider the following:
-         * <pre>
-         * [Pp]{}[\u03A3\u03C2\u03C3\u03F7\u03F8\u03FA\u03FB] &gt; \';
-         * </pre>
-         * With a filter of [], you still get some elements in the target set, because this rule will still match. It could
-         * be recast to the following if it were important.
-         * <pre>
-         * [Pp]{([\u03A3\u03C2\u03C3\u03F7\u03F8\u03FA\u03FB])} &gt; \' | $1;
-         * </pre>
-         * @see #getTargetSet
-         * @stable ICU 2.2
-         */
+        /// <summary>
+        /// Returns the set of all characters that may be generated as
+        /// replacement text by this transliterator.  The default
+        /// implementation returns the empty set.  Some subclasses may
+        /// override this method to return a more precise result.  The
+        /// return result is approximate in any case and is intended for
+        /// use by tests, tools, or utilities requiring such
+        /// meta-information.
+        /// </summary>
+        /// <remarks>
+        /// Warning. You might expect an empty filter to always produce an empty target.
+        /// However, consider the following:
+        /// <code>
+        /// [Pp]{}[\u03A3\u03C2\u03C3\u03F7\u03F8\u03FA\u03FB] &gt; \';
+        /// </code>
+        /// With a filter of [], you still get some elements in the target set, because this rule will still match. It could
+        /// be recast to the following if it were important.
+        /// <code>
+        /// [Pp]{([\u03A3\u03C2\u03C3\u03F7\u03F8\u03FA\u03FB])} &gt; \' | $1;
+        /// </code>
+        /// </remarks>
+        /// <see cref="GetSourceSet()"/>
+        /// <stable>ICU 2.2</stable>
         public virtual UnicodeSet GetTargetSet()
         {
             UnicodeSet result = new UnicodeSet();
@@ -1595,39 +1544,46 @@ namespace ICU4N.Text
             return result;
         }
 
-        /**
-         * Returns the set of all characters that may be generated as
-         * replacement text by this transliterator, filtered by BOTH the input filter, and the current getFilter().
-         * <p>SHOULD BE OVERRIDEN BY SUBCLASSES.
-         * It is probably an error for any transliterator to NOT override this, but we can't force them to
-         * for backwards compatibility.
-         * <p>Other methods vector through this.
-         * <p>When gathering the information on source and target, the compound transliterator makes things complicated.
-         * For example, suppose we have:
-         * <pre>
-         * Global FILTER = [ax]
-         * a &gt; b;
-         * :: NULL;
-         * b &gt; c;
-         * x &gt; d;
-         * </pre>
-         * While the filter just allows a and x, b is an intermediate result, which could produce c. So the source and target sets
-         * cannot be gathered independently. What we have to do is filter the sources for the first transliterator according to
-         * the global filter, intersect that transliterator's filter. Based on that we get the target.
-         * The next transliterator gets as a global filter (global + last target). And so on.
-         * <p>There is another complication:
-         * <pre>
-         * Global FILTER = [ax]
-         * a &gt;|b;
-         * b &gt;c;
-         * </pre>
-         * Even though b would be filtered from the input, whenever we have a backup, it could be part of the input. So ideally we will
-         * change the global filter as we go.
-         * @param targetSet TODO
-         * @see #getTargetSet
-         * @internal
-         * @deprecated  This API is ICU internal only.
-         */
+        /// <summary>
+        /// Returns the set of all characters that may be generated as
+        /// replacement text by this transliterator, filtered by BOTH the input filter, and the current <see cref="Filter"/>.
+        /// <para/>
+        /// SHOULD BE OVERRIDEN BY SUBCLASSES.
+        /// </summary>
+        /// <remarks>
+        /// It is probably an error for any transliterator to NOT override this, but we can't force them to
+        /// for backwards compatibility.
+        /// <para/>
+        /// Other methods vector through this.
+        /// <para/>
+        /// When gathering the information on source and target, the compound transliterator makes things complicated.
+        /// For example, suppose we have:
+        /// <code>
+        /// Global FILTER = [ax]
+        /// a &gt; b;
+        /// :: NULL;
+        /// b &gt; c;
+        /// x &gt; d;
+        /// </code>
+        /// While the filter just allows a and x, b is an intermediate result, which could produce c. So the source and target sets
+        /// cannot be gathered independently. What we have to do is filter the sources for the first transliterator according to
+        /// the global filter, intersect that transliterator's filter. Based on that we get the target.
+        /// The next transliterator gets as a global filter (global + last target). And so on.
+        /// <para/>
+        /// There is another complication:
+        /// <code>
+        /// Global FILTER = [ax]
+        /// a &gt;|b;
+        /// b &gt;c;
+        /// </code>
+        /// Even though b would be filtered from the input, whenever we have a backup, it could be part of the input. So ideally we will
+        /// change the global filter as we go.
+        /// </remarks>
+        /// <param name="inputFilter"></param>
+        /// <param name="sourceSet"></param>
+        /// <param name="targetSet">TODO</param>
+        /// <seealso cref="GetTargetSet()"/>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         public virtual void AddSourceTargetSet(UnicodeSet inputFilter, UnicodeSet sourceSet, UnicodeSet targetSet)
         {
@@ -1646,13 +1602,12 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns the intersectionof this instance's filter intersected with an external filter.
-         * The externalFilter must be frozen (it is frozen if not).
-         * The result may be frozen, so don't attempt to modify.
-         * @internal
-         * @deprecated  This API is ICU internal only.
-         */
+        /// <summary>
+        /// Returns the intersection of this instance's filter intersected with an external filter.
+        /// The <paramref name="externalFilter"/> must be frozen (it is frozen if not).
+        /// The result may be frozen, so don't attempt to modify.
+        /// </summary>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         // TODO change to getMergedFilter
         public virtual UnicodeSet GetFilterAsUnicodeSet(UnicodeSet externalFilter)
@@ -1676,42 +1631,40 @@ namespace ICU4N.Text
             return filterSet.RetainAll(temp).Freeze();
         }
 
-        /**
-         * Returns this transliterator's inverse.  See the class
-         * documentation for details.  This implementation simply inverts
-         * the two entities in the ID and attempts to retrieve the
-         * resulting transliterator.  That is, if <code>getID()</code>
-         * returns "A-B", then this method will return the result of
-         * <code>getInstance("B-A")</code>, or <code>null</code> if that
-         * call fails.
-         *
-         * <p>Subclasses with knowledge of their inverse may wish to
-         * override this method.
-         *
-         * @return a transliterator that is an inverse, not necessarily
-         * exact, of this transliterator, or <code>null</code> if no such
-         * transliterator is registered.
-         * @see #registerClass
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns this transliterator's inverse.  See the <see cref="Transliterator"/>
+        /// documentation for details.  This implementation simply inverts
+        /// the two entities in the <see cref="ID"/> and attempts to retrieve the
+        /// resulting transliterator.  That is, if <see cref="ID"/>
+        /// returns "A-B", then this method will return the result of
+        /// <see cref="GetInstance(string)"/> with <c>"B-A"</c> as the parameter,
+        /// or <c>null</c> if that call fails.
+        /// <para/>
+        /// Subclasses with knowledge of their inverse may wish to
+        /// override this method.
+        /// </summary>
+        /// <returns>A transliterator that is an inverse, not necessarily
+        /// exact, of this transliterator, or <c>null</c> if no such
+        /// transliterator is registered.</returns>
+        /// <seealso cref="RegisterType(string, Type, string)"/>
+        /// <stable>ICU 2.0</stable>
         public Transliterator GetInverse()
         {
             return GetInstance(id, Reverse);
         }
 
-        /**
-         * Registers a subclass of <code>Transliterator</code> with the
-         * system.  This subclass must have a public constructor taking no
-         * arguments.  When that constructor is called, the resulting
-         * object must return the <code>ID</code> passed to this method if
-         * its <code>getID()</code> method is called.
-         *
-         * @param ID the result of <code>getID()</code> for this
-         * transliterator
-         * @param transClass a subclass of <code>Transliterator</code>
-         * @see #unregister
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Registers a subclass of <code>Transliterator</code> with the
+        /// system.  This subclass must have a public constructor taking no
+        /// arguments.  When that constructor is called, the resulting
+        /// object must return the <paramref name="id"/> passed to this method if
+        /// its <see cref="ID"/> property is called.
+        /// </summary>
+        /// <param name="id">The result of <see cref="ID"/> for this transliterator.</param>
+        /// <param name="transClass">A subclass of <see cref="Transliterator"/>.</param>
+        /// <param name="displayName"></param>
+        /// <seealso cref="Unregister(string)"/>
+        /// <stable>ICU 2.0</stable>
         public static void RegisterType(string id, Type transClass, string displayName) // ICU4N specific - Renamed from RegisterClass to RegisterType
         {
             registry.Put(id, transClass, true); // ICU4N TODO: Indexer ?
@@ -1721,102 +1674,99 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Register a factory object with the given ID.  The factory
-         * method should return a new instance of the given transliterator.
-         *
-         * <p>Because ICU may choose to cache Transliterator objects internally, this must
-         * be called at application startup, prior to any calls to
-         * Transliterator.getInstance to avoid undefined behavior.
-         *
-         * @param ID the ID of this transliterator
-         * @param factory the factory object
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Register a factory object with the given ID.  The factory
+        /// method should return a new instance of the given transliterator.
+        /// <para/>
+        /// Because ICU may choose to cache <see cref="Transliterator"/> objects internally, this must
+        /// be called at application startup, prior to any calls to
+        /// <see cref="GetInstance(string)"/> to avoid undefined behavior.
+        /// </summary>
+        /// <param name="ID">The ID of this transliterator.</param>
+        /// <param name="factory">The factory object.</param>
+        /// <stable>ICU 2.0</stable>
         public static void RegisterFactory(string ID, ITransliteratorFactory factory)
         {
             registry.Put(ID, factory, true);
         }
 
-        /**
-         * Register a Transliterator object with the given ID.
-         *
-         * <p>Because ICU may choose to cache Transliterator objects internally, this must
-         * be called at application startup, prior to any calls to
-         * Transliterator.getInstance to avoid undefined behavior.
-         *
-         * @param trans the Transliterator object
-         * @stable ICU 2.2
-         */
+        /// <summary>
+        /// Register a <see cref="Transliterator"/> object with the given ID.
+        /// <para/>
+        /// Because ICU may choose to cache Transliterator objects internally, this must
+        /// be called at application startup, prior to any calls to
+        /// <see cref="GetInstance(string)"/> to avoid undefined behavior.
+        /// </summary>
+        /// <param name="trans">Trans the <see cref="Transliterator"/> object.</param>
+        /// <stable>ICU 2.2</stable>
         public static void RegisterInstance(Transliterator trans)
         {
             registry.Put(trans.ID, trans, true);
         }
 
-        /**
-         * Register a Transliterator object.
-         *
-         * <p>Because ICU may choose to cache Transliterator objects internally, this must
-         * be called at application startup, prior to any calls to
-         * Transliterator.getInstance to avoid undefined behavior.
-         *
-         * @param trans the Transliterator object
-         */
+        /// <summary>
+        /// Register a <see cref="Transliterator"/> object.
+        /// <para/>
+        /// Because ICU may choose to cache <see cref="Transliterator"/> objects internally, this must
+        /// be called at application startup, prior to any calls to
+        /// <see cref="GetInstance(string)"/> to avoid undefined behavior.
+        /// </summary>
+        /// <param name="trans">Trans the <see cref="Transliterator"/> object.</param>
+        /// <param name="visible"></param>
         internal static void RegisterInstance(Transliterator trans, bool visible)
         {
             registry.Put(trans.ID, trans, visible);
         }
 
-        /**
-         * Register an ID as an alias of another ID.  Instantiating
-         * alias ID produces the same result as instantiating the original ID.
-         * This is generally used to create short aliases of compound IDs.
-         *
-         * <p>Because ICU may choose to cache Transliterator objects internally, this must
-         * be called at application startup, prior to any calls to
-         * Transliterator.getInstance to avoid undefined behavior.
-         *
-         * @param aliasID The new ID being registered.
-         * @param realID The existing ID that the new ID should be an alias of.
-         * @stable ICU 3.6
-         */
+        /// <summary>
+        /// Register an ID as an alias of another ID.  Instantiating
+        /// alias ID produces the same result as instantiating the original ID.
+        /// This is generally used to create short aliases of compound IDs.
+        /// <para/>
+        /// Because ICU may choose to cache <see cref="Transliterator"/> objects internally, this must
+        /// be called at application startup, prior to any calls to
+        /// <see cref="GetInstance(string)"/> to avoid undefined behavior.
+        /// </summary>
+        /// <param name="aliasID">The new ID being registered.</param>
+        /// <param name="realID">The existing ID that the new ID should be an alias of.</param>
+        /// <stable>ICU 3.6</stable>
         public static void RegisterAlias(string aliasID, string realID)
         {
             registry.Put(aliasID, realID, true);
         }
 
-        /**
-         * Register two targets as being inverses of one another.  For
-         * example, calling registerSpecialInverse("NFC", "NFD", true) causes
-         * Transliterator to form the following inverse relationships:
-         *
-         * <pre>NFC =&gt; NFD
-         * Any-NFC =&gt; Any-NFD
-         * NFD =&gt; NFC
-         * Any-NFD =&gt; Any-NFC</pre>
-         *
-         * (Without the special inverse registration, the inverse of NFC
-         * would be NFC-Any.)  Note that NFD is shorthand for Any-NFD, but
-         * that the presence or absence of "Any-" is preserved.
-         *
-         * <p>The relationship is symmetrical; registering (a, b) is
-         * equivalent to registering (b, a).
-         *
-         * <p>The relevant IDs must still be registered separately as
-         * factories or classes.
-         *
-         * <p>Only the targets are specified.  Special inverses always
-         * have the form Any-Target1 &lt;=&gt; Any-Target2.  The target should
-         * have canonical casing (the casing desired to be produced when
-         * an inverse is formed) and should contain no whitespace or other
-         * extraneous characters.
-         *
-         * @param target the target against which to register the inverse
-         * @param inverseTarget the inverse of target, that is
-         * Any-target.getInverse() =&gt; Any-inverseTarget
-         * @param bidirectional if true, register the reverse relation
-         * as well, that is, Any-inverseTarget.getInverse() =&gt; Any-target
-         */
+        /// <summary>
+        /// Register two targets as being inverses of one another.  For
+        /// example, calling registerSpecialInverse("NFC", "NFD", true) causes
+        /// <see cref="Transliterator"/> to form the following inverse relationships:
+        /// <code>
+        /// NFC =&gt; NFD
+        /// Any-NFC =&gt; Any-NFD
+        /// NFD =&gt; NFC
+        /// Any-NFD =&gt; Any-NFC
+        /// </code>
+        /// <para/>
+        /// (Without the special inverse registration, the inverse of NFC
+        /// would be NFC-Any.)  Note that NFD is shorthand for Any-NFD, but
+        /// that the presence or absence of "Any-" is preserved.
+        /// <para/>
+        /// The relationship is symmetrical; registering (a, b) is
+        /// equivalent to registering (b, a).
+        /// <para/>
+        /// The relevant IDs must still be registered separately as
+        /// factories or classes.
+        /// <para/>
+        /// Only the targets are specified.  Special inverses always
+        /// have the form Any-Target1 &lt;=&gt; Any-Target2.  The target should
+        /// have canonical casing (the casing desired to be produced when
+        /// an inverse is formed) and should contain no whitespace or other
+        /// extraneous characters.
+        /// </summary>
+        /// <param name="target">The target against which to register the inverse.</param>
+        /// <param name="inverseTarget">The inverse of target, that is
+        /// Any-target.GetInverse() =&gt; Any-inverseTarget</param>
+        /// <param name="bidirectional">If true, register the reverse relation
+        /// as well, that is, Any-inverseTarget.GetInverse() =&gt; Any-target</param>
         internal static void RegisterSpecialInverse(string target,
                                            string inverseTarget,
                                            bool bidirectional)
@@ -1824,66 +1774,64 @@ namespace ICU4N.Text
             TransliteratorIDParser.RegisterSpecialInverse(target, inverseTarget, bidirectional);
         }
 
-        /**
-         * Unregisters a transliterator or class.  This may be either
-         * a system transliterator or a user transliterator or class.
-         *
-         * @param ID the ID of the transliterator or class
-         * @see #registerClass
-         * @stable ICU 2.0
-         */
-        public static void Unregister(String ID)
+        /// <summary>
+        /// Unregisters a transliterator or class.  This may be either
+        /// a system transliterator or a user transliterator or class.
+        /// </summary>
+        /// <param name="ID">the ID of the transliterator or class</param>
+        /// <seealso cref="RegisterType(string, Type, string)"/>
+        /// <stable>ICU 2.0</stable>
+        public static void Unregister(string ID)
         {
             displayNameCache.Remove(new CaseInsensitiveString(ID));
             registry.Remove(ID);
         }
 
-        /**
-         * Returns an enumeration over the programmatic names of registered
-         * <code>Transliterator</code> objects.  This includes both system
-         * transliterators and user transliterators registered using
-         * <code>registerClass()</code>.  The enumerated names may be
-         * passed to <code>getInstance()</code>.
-         *
-         * @return An <code>Enumeration</code> over <code>String</code> objects
-         * @see #getInstance
-         * @see #registerClass
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns an enumeration over the programmatic names of registered
+        /// <see cref="Transliterator"/> objects.  This includes both system
+        /// transliterators and user transliterators registered using
+        /// <see cref="RegisterType(string, Type, string)"/>. The enumerated names may be
+        /// passed to <see cref="GetInstance(string)"/>.
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{String}"/>.</returns>
+        /// <seealso cref="GetInstance(string)"/>
+        /// <seealso cref="GetInstance(string, TransliterationDirection)"/>
+        /// <stable>ICU 2.0</stable>
         public static IEnumerable<string> GetAvailableIDs()
         {
             return registry.GetAvailableIDs();
         }
 
-        /**
-         * Returns an enumeration over the source names of registered
-         * transliterators.  Source names may be passed to
-         * getAvailableTargets() to obtain available targets for each
-         * source.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns an enumeration over the source names of registered
+        /// transliterators.  Source names may be passed to
+        /// <see cref="GetAvailableTargets(string)"/> to obtain available targets for each
+        /// source.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public static IEnumerable<string> GetAvailableSources()
         {
             return registry.GetAvailableSources();
         }
 
-        /**
-         * Returns an enumeration over the target names of registered
-         * transliterators having a given source name.  Target names may
-         * be passed to getAvailableVariants() to obtain available
-         * variants for each source and target pair.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns an enumeration over the target names of registered
+        /// transliterators having a given source name.  Target names may
+        /// be passed to <see cref="GetAvailableTargets(string)"/> to obtain available
+        /// variants for each source and target pair.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public static IEnumerable<string> GetAvailableTargets(string source)
         {
             return registry.GetAvailableTargets(source);
         }
 
-        /**
-         * Returns an enumeration over the variant names of registered
-         * transliterators having a given source name and target name.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Returns an enumeration over the variant names of registered
+        /// transliterators having a given source name and target name.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public static IEnumerable<string> GetAvailableVariants(string source,
                                                              string target)
         {
@@ -2003,11 +1951,9 @@ namespace ICU4N.Text
             AnyTransliterator.Register(); // do this last!
         }
 
-        /**
-         * Register the script-based "Any" transliterators: Any-Latin, Any-Greek
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Register the script-based "Any" transliterators: Any-Latin, Any-Greek
+        /// </summary>
         [Obsolete("This API is ICU internal only.")]
         public static void RegisterAny()
         {
@@ -2050,14 +1996,11 @@ namespace ICU4N.Text
             }
         }
 
-        
-
-        /**
-         * Implements StringTransform via this method.
-         * @param source text to be transformed (eg lowercased)
-         * @return result
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Implements StringTransform via this method.
+        /// </summary>
+        /// <param name="source">text to be transformed (eg lowercased)</param>
+        /// <stable>ICU 3.8</stable>
         public virtual string Transform(string source)
         {
             return Transliterate(source);
