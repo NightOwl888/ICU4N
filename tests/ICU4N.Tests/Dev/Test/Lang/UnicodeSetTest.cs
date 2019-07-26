@@ -733,7 +733,7 @@ namespace ICU4N.Dev.Test.Lang
             if (!set.Equals(exp)) { Errln("FAIL: complement(\"ab\")"); return; }
 
             UnicodeSetIterator iset = new UnicodeSetIterator(set);
-            if (!iset.Next() || iset.Codepoint != UnicodeSetIterator.IS_STRING)
+            if (!iset.Next() || iset.Codepoint != UnicodeSetIterator.IsString)
             {
                 Errln("FAIL: UnicodeSetIterator.next/IS_STRING");
             }
@@ -2539,7 +2539,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 while (it.NextRange())
                 {
-                    if (it.Codepoint == UnicodeSetIterator.IS_STRING)
+                    if (it.Codepoint == UnicodeSetIterator.IsString)
                     {
                         t.Add(it.String);
                     }
@@ -2553,7 +2553,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 while (it.Next())
                 {
-                    if (it.Codepoint == UnicodeSetIterator.IS_STRING)
+                    if (it.Codepoint == UnicodeSetIterator.IsString)
                     {
                         t.Add(it.String);
                     }

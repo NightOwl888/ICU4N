@@ -646,7 +646,7 @@ namespace ICU4N.Text
                // the base is 0 mod 8.
                 UnicodeSet ethiopic = new UnicodeSet("[[:Block=Ethiopic:]&[:Script=Ethiopic:]]");
                 UnicodeSetIterator it = new UnicodeSetIterator(ethiopic);
-                while (it.Next() && it.Codepoint != UnicodeSetIterator.IS_STRING)
+                while (it.Next() && it.Codepoint != UnicodeSetIterator.IsString)
                 {
                     if ((it.Codepoint & 0x7) != 0)
                     {

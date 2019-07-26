@@ -1057,7 +1057,7 @@ namespace ICU4N.Impl.Coll
             UnicodeSetIterator iter = new UnicodeSetIterator(composites);
             while (iter.Next())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IS_STRING);
+                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 int composite = iter.Codepoint;
                 string decomp = nfd.GetDecomposition(composite);
                 if (!MergeCompositeIntoString(nfdString, indexAfterLastStarter, composite, decomp,
@@ -1264,7 +1264,7 @@ namespace ICU4N.Impl.Coll
             StringCharSequence wrapper = new StringCharSequence("");
             while (iter.Next())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IS_STRING);
+                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 string nfdString = nfd.GetDecomposition(iter.Codepoint);
                 wrapper.String = nfdString;
                 cesLength = dataBuilder.GetCEs(wrapper, ces, 0);

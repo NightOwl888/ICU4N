@@ -1631,7 +1631,7 @@ namespace ICU4N.Text
                                                   // Do not rely on the rule string, see comments in operator==().
             UnicodeSet set = GetTailoredSet();
             UnicodeSetIterator iter = new UnicodeSetIterator(set);
-            while (iter.Next() && iter.Codepoint != UnicodeSetIterator.IS_STRING)
+            while (iter.Next() && iter.Codepoint != UnicodeSetIterator.IsString)
             {
                 h ^= data.GetCE32(iter.Codepoint);
             }

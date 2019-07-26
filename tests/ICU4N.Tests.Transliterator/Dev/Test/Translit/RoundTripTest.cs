@@ -1650,7 +1650,7 @@ namespace ICU4N.Dev.Test.Translit
                 {
                     String cs;
                     int c;
-                    if (usi.Codepoint == UnicodeSetIterator.IS_STRING)
+                    if (usi.Codepoint == UnicodeSetIterator.IsString)
                     {
                         cs = usi.String;
                         c = UTF16.CharAt(cs, 0);

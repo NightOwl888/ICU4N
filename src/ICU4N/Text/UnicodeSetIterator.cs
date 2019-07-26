@@ -43,11 +43,11 @@ namespace ICU4N.Text
     {
         /// <summary>
         /// Value of <see cref="Codepoint"/> if the iterator points to a string.
-        /// If <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, then examine
+        /// If <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, then examine
         /// <c>string</c> for the current iteration result.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public const int IS_STRING = -1;
+        public const int IsString = -1;
 
         /// <summary>
         /// Current code point, or the special value <tt>IS_STRING</tt>, if
@@ -59,17 +59,17 @@ namespace ICU4N.Text
         /// <summary>
         /// When iterating over ranges using <see cref="NextRange()"/>,
         /// <see cref="CodepointEnd"/> contains the inclusive end of the
-        /// iteration range, if <c><see cref="Codepoint"/> != <see cref="IS_STRING"/></c>. If
+        /// iteration range, if <c><see cref="Codepoint"/> != <see cref="IsString"/></c>. If
         /// iterating over code points using <see cref="Next()"/>, or if
-        /// <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, then the value of
+        /// <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, then the value of
         /// <see cref="CodepointEnd"/> is undefined.
         /// </summary>
         /// <stable>ICU 2.0</stable>
         public int CodepointEnd { get; set; }
 
         /// <summary>
-        /// If <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, then <see cref="String"/> points
-        /// to the current string. If <c><see cref="Codepoint"/> != <see cref="IS_STRING"/></c>, the
+        /// If <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, then <see cref="String"/> points
+        /// to the current string. If <c><see cref="Codepoint"/> != <see cref="IsString"/></c>, the
         /// value of <see cref="String"/> is undefined.
         /// </summary>
         /// <stable>ICU 2.0</stable>
@@ -99,14 +99,14 @@ namespace ICU4N.Text
         /// <summary>
         /// Returns the next element in the set, either a single code point
         /// or a string.  If there are no more elements in the set, return
-        /// false.  If <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, the value is a
+        /// false.  If <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, the value is a
         /// string in the <see cref="String"/> field.  Otherwise the value is a
         /// single code point in the <see cref="Codepoint"/> field.
         /// </summary>
         /// <remarks>
         /// The order of iteration is all code points in sorted order,
         /// followed by all strings sorted order.  <see cref="String"/> is
-        /// undefined unless <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>.  Do not mix
+        /// undefined unless <c><see cref="Codepoint"/> == <see cref="IsString"/></c>.  Do not mix
         /// calls to <see cref="Next()"/> and <see cref="NextRange()"/> without
         /// calling <see cref="Reset()"/> between them.  The results of doing so
         /// are undefined.
@@ -139,7 +139,7 @@ namespace ICU4N.Text
             {
                 return false;
             }
-            Codepoint = IS_STRING; // signal that value is actually a string
+            Codepoint = IsString; // signal that value is actually a string
             if (!stringIterator.MoveNext())
             {
                 stringIterator = null;
@@ -152,7 +152,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Returns the next element in the set, either a code point range
         /// or a string.  If there are no more elements in the set, return
-        /// false.  If <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>, the value is a
+        /// false.  If <c><see cref="Codepoint"/> == <see cref="IsString"/></c>, the value is a
         /// string in the <see cref="String"/> property.  Otherwise the value is a
         /// range of one or more code points from <see cref="Codepoint"/> to
         /// <see cref="CodepointEnd"/> inclusive.
@@ -160,7 +160,7 @@ namespace ICU4N.Text
         /// <remarks>
         /// The order of iteration is all code points in sorted order,
         /// followed by all strings sorted order.  <see cref="String"/> is
-        /// undefined unless <c><see cref="Codepoint"/> == <see cref="IS_STRING"/></c>.  Do not mix
+        /// undefined unless <c><see cref="Codepoint"/> == <see cref="IsString"/></c>.  Do not mix
         /// calls to <see cref="Next()"/> and <see cref="NextRange()"/> without
         /// calling <see cref="Reset()"/> between them.  The results of doing so
         /// are undefined.
@@ -194,7 +194,7 @@ namespace ICU4N.Text
             {
                 return false;
             }
-            Codepoint = IS_STRING; // signal that value is actually a string
+            Codepoint = IsString; // signal that value is actually a string
             if (!stringIterator.MoveNext())
             {
                 stringIterator = null;
@@ -254,7 +254,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.0</stable>
         public virtual string GetString() // ICU4N TODO: API String vs GetString() - confusing. This should be made into String property and the current string property made into a private field.
         {
-            if (Codepoint != IS_STRING)
+            if (Codepoint != IsString)
             {
                 return UTF16.ValueOf(Codepoint);
             }

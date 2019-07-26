@@ -2316,7 +2316,7 @@ namespace ICU4N.Dev.Test.Normalizers
             Normalizer2 nfcNorm2 = Normalizer2.GetNFCInstance();
             UnicodeSetIterator it = new UnicodeSetIterator(set);
             int c;
-            while (it.Next() && (c = it.Codepoint) != UnicodeSetIterator.IS_STRING)
+            while (it.Next() && (c = it.Codepoint) != UnicodeSetIterator.IsString)
             {
                 s1 = UTF16.ValueOf(c);
                 s2 = nfcNorm2.GetDecomposition(c);
@@ -2825,7 +2825,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             // test all of these characters
             UnicodeSetIterator it = new UnicodeSetIterator(set);
-            while (it.NextRange() && it.Codepoint != UnicodeSetIterator.IS_STRING)
+            while (it.NextRange() && it.Codepoint != UnicodeSetIterator.IsString)
             {
                 start = it.Codepoint;
                 end = it.CodepointEnd;

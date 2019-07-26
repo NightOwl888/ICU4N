@@ -300,7 +300,7 @@ namespace ICU4N.Impl.Coll
         {
             if (set.IsEmpty) { return; }
             UnicodeSetIterator iter = new UnicodeSetIterator(set);
-            while (iter.Next() && iter.Codepoint != UnicodeSetIterator.IS_STRING)
+            while (iter.Next() && iter.Codepoint != UnicodeSetIterator.IsString)
             {
                 int c = iter.Codepoint;
                 int ce32 = trie.Get(c);
@@ -318,7 +318,7 @@ namespace ICU4N.Impl.Coll
         {
             if (set.IsEmpty) { return; }
             UnicodeSetIterator iter = new UnicodeSetIterator(set);
-            while (iter.Next() && iter.Codepoint != UnicodeSetIterator.IS_STRING)
+            while (iter.Next() && iter.Codepoint != UnicodeSetIterator.IsString)
             {
                 int c = iter.Codepoint;
                 int ce32 = trie.Get(c);
@@ -1017,7 +1017,7 @@ namespace ICU4N.Impl.Coll
             UnicodeSetIterator iter = new UnicodeSetIterator(digits);
             while (iter.Next())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IS_STRING);
+                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 int c = iter.Codepoint;
                 int ce32 = trie.Get(c);
                 if (ce32 != Collation.FALLBACK_CE32 && ce32 != Collation.UNASSIGNED_CE32)
@@ -1183,7 +1183,7 @@ namespace ICU4N.Impl.Coll
             UnicodeSetIterator iter = new UnicodeSetIterator(contextChars);
             while (iter.Next())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IS_STRING);
+                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 int ce32 = trie.Get(iter.Codepoint);
                 Debug.Assert(IsBuilderContextCE32(ce32));
                 GetConditionalCE32ForCE32(ce32).BuiltCE32 = Collation.NO_CE32;
@@ -1198,7 +1198,7 @@ namespace ICU4N.Impl.Coll
             UnicodeSetIterator iter = new UnicodeSetIterator(contextChars);
             while (iter.Next())
             {
-                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IS_STRING);
+                Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 int c = iter.Codepoint;
                 int ce32 = trie.Get(c);
                 if (!IsBuilderContextCE32(ce32))

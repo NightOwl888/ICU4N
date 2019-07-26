@@ -574,7 +574,7 @@ namespace ICU4N.Dev.Util
             // TODO optimize
             for (UnicodeSetIterator it = new UnicodeSetIterator(filter); it.Next();)
             {
-                if (it.Codepoint != UnicodeSetIterator.IS_STRING)
+                if (it.Codepoint != UnicodeSetIterator.IsString)
                 {
                     T value = prop.GetValue(it.Codepoint);
                     if (value != null)
@@ -848,7 +848,7 @@ namespace ICU4N.Dev.Util
             for (UnicodeSetIterator it = new UnicodeSetIterator(set); it.Next();)
             {
                 int i = it.Codepoint;
-                if (i == UnicodeSetIterator.IS_STRING)
+                if (i == UnicodeSetIterator.IsString)
                 {
                     string s = it.String;
                     T v1 = GetValue(s);

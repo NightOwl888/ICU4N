@@ -4747,7 +4747,7 @@ namespace ICU4N.Text
             UnicodeSet notInInput = new UnicodeSet(this).Complement();
             for (UnicodeSetIterator it = new UnicodeSetIterator(notInInput); it.NextRange();)
             {
-                if (it.Codepoint != 0 && it.Codepoint != UnicodeSetIterator.IS_STRING && it.CodepointEnd != 0x10FFFF && dontCare.Contains(it.Codepoint, it.CodepointEnd))
+                if (it.Codepoint != 0 && it.Codepoint != UnicodeSetIterator.IsString && it.CodepointEnd != 0x10FFFF && dontCare.Contains(it.Codepoint, it.CodepointEnd))
                 {
                     Add(it.Codepoint, it.CodepointEnd);
                 }
