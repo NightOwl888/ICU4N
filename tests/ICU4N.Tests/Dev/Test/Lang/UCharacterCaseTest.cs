@@ -338,11 +338,11 @@ namespace ICU4N.Dev.Test.Lang
                     int options = 0;
                     if (optionsString.IndexOf('L') >= 0)
                     {
-                        options |= UCharacter.TITLECASE_NO_LOWERCASE;
+                        options |= UCharacter.TitleCaseNoLowerCase;
                     }
                     if (optionsString.IndexOf('A') >= 0)
                     {
-                        options |= UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT;
+                        options |= UCharacter.TitleCaseNoBreakAdjustment;
                     }
                     String result = UCharacter.ToTitleCase(locale, test, iter, options);
                     if (!expected.Equals(result))
@@ -442,7 +442,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             ULocale LOC_DUTCH = new ULocale("nl");
             int options = 0;
-            options |= UCharacter.TITLECASE_NO_LOWERCASE;
+            options |= UCharacter.TitleCaseNoLowerCase;
             BreakIterator iter = BreakIterator.GetWordInstance(LOC_DUTCH);
 
             assertEquals("Dutch titlecase check in English",

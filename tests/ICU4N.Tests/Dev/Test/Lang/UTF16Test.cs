@@ -35,7 +35,7 @@ namespace ICU4N.Dev.Test.Lang
         public void TestAppend()
         {
             StringBuffer strbuff = new StringBuffer("this is a string ");
-            char[] array = new char[UCharacter.MAX_VALUE >> 2];
+            char[] array = new char[UCharacter.MaxValue >> 2];
             int strsize = strbuff.Length;
             int arraysize = strsize;
 
@@ -44,7 +44,7 @@ namespace ICU4N.Dev.Test.Lang
                 //strbuff.GetChars(0, strsize, array, 0);
                 strbuff.CopyTo(0, array, 0, strsize);
             }
-            for (int i = 1; i < UCharacter.MAX_VALUE; i += 100)
+            for (int i = 1; i < UCharacter.MaxValue; i += 100)
             {
                 UTF16.Append(strbuff, i);
                 arraysize = UTF16.Append(array, arraysize, i);
@@ -1958,20 +1958,20 @@ namespace ICU4N.Dev.Test.Lang
         public void TestNewString()
         {
             int[] codePoints = {
-                    UCharacter.ToCodePoint(UCharacter.MIN_HIGH_SURROGATE, UCharacter.MAX_LOW_SURROGATE),
-                    UCharacter.ToCodePoint(UCharacter.MAX_HIGH_SURROGATE, UCharacter.MIN_LOW_SURROGATE),
-                    UCharacter.MAX_HIGH_SURROGATE,
+                    UCharacter.ToCodePoint(UCharacter.MinHighSurrogate, UCharacter.MaxLowSurrogate),
+                    UCharacter.ToCodePoint(UCharacter.MaxHighSurrogate, UCharacter.MinLowSurrogate),
+                    UCharacter.MaxHighSurrogate,
                     'A',
                     -1,
                 };
 
 
             String cpString = "" +
-                UCharacter.MIN_HIGH_SURROGATE +
-                UCharacter.MAX_LOW_SURROGATE +
-                UCharacter.MAX_HIGH_SURROGATE +
-                UCharacter.MIN_LOW_SURROGATE +
-                UCharacter.MAX_HIGH_SURROGATE +
+                UCharacter.MinHighSurrogate +
+                UCharacter.MaxLowSurrogate +
+                UCharacter.MaxHighSurrogate +
+                UCharacter.MinLowSurrogate +
+                UCharacter.MaxHighSurrogate +
                 'A';
 
             int[][] tests = {

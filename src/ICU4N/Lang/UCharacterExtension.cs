@@ -887,10 +887,10 @@ namespace ICU4N.Lang
             while (limit > start)
             {
                 char ch = text[--limit];
-                while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && limit > start)
+                while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && limit > start)
                 {
                     ch = text[--limit];
-                    if (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE)
+                    if (ch >= MinHighSurrogate && ch <= MaxHighSurrogate)
                     {
                         --len;
                         break;
@@ -927,10 +927,10 @@ namespace ICU4N.Lang
             while (limit > start)
             {
                 char ch = text[--limit];
-                while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && limit > start)
+                while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && limit > start)
                 {
                     ch = text[--limit];
-                    if (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE)
+                    if (ch >= MinHighSurrogate && ch <= MaxHighSurrogate)
                     {
                         --len;
                         break;
@@ -967,10 +967,10 @@ namespace ICU4N.Lang
             while (limit > start)
             {
                 char ch = text[--limit];
-                while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && limit > start)
+                while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && limit > start)
                 {
                     ch = text[--limit];
-                    if (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE)
+                    if (ch >= MinHighSurrogate && ch <= MaxHighSurrogate)
                     {
                         --len;
                         break;
@@ -1007,10 +1007,10 @@ namespace ICU4N.Lang
             while (limit > start)
             {
                 char ch = text[--limit];
-                while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && limit > start)
+                while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && limit > start)
                 {
                     ch = text[--limit];
-                    if (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE)
+                    if (ch >= MinHighSurrogate && ch <= MaxHighSurrogate)
                     {
                         --len;
                         break;
@@ -1046,10 +1046,10 @@ namespace ICU4N.Lang
                 while (++codePointOffset <= 0)
                 {
                     char ch = text[--index];
-                    while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && index > 0)
+                    while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && index > 0)
                     {
                         ch = text[--index];
-                        if (ch < MIN_HIGH_SURROGATE || ch > MAX_HIGH_SURROGATE)
+                        if (ch < MinHighSurrogate || ch > MaxHighSurrogate)
                         {
                             if (++codePointOffset > 0)
                             {
@@ -1065,10 +1065,10 @@ namespace ICU4N.Lang
                 while (--codePointOffset >= 0)
                 {
                     char ch = text[index++];
-                    while (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE && index < limit)
+                    while (ch >= MinHighSurrogate && ch <= MaxHighSurrogate && index < limit)
                     {
                         ch = text[index++];
-                        if (ch < MIN_LOW_SURROGATE || ch > MAX_LOW_SURROGATE)
+                        if (ch < MinLowSurrogate || ch > MaxLowSurrogate)
                         {
                             if (--codePointOffset < 0)
                             {
@@ -1108,10 +1108,10 @@ namespace ICU4N.Lang
                 while (++codePointOffset <= 0)
                 {
                     char ch = text[--index];
-                    while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && index > 0)
+                    while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && index > 0)
                     {
                         ch = text[--index];
-                        if (ch < MIN_HIGH_SURROGATE || ch > MAX_HIGH_SURROGATE)
+                        if (ch < MinHighSurrogate || ch > MaxHighSurrogate)
                         {
                             if (++codePointOffset > 0)
                             {
@@ -1127,10 +1127,10 @@ namespace ICU4N.Lang
                 while (--codePointOffset >= 0)
                 {
                     char ch = text[index++];
-                    while (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE && index < limit)
+                    while (ch >= MinHighSurrogate && ch <= MaxHighSurrogate && index < limit)
                     {
                         ch = text[index++];
-                        if (ch < MIN_LOW_SURROGATE || ch > MAX_LOW_SURROGATE)
+                        if (ch < MinLowSurrogate || ch > MaxLowSurrogate)
                         {
                             if (--codePointOffset < 0)
                             {
@@ -1170,10 +1170,10 @@ namespace ICU4N.Lang
                 while (++codePointOffset <= 0)
                 {
                     char ch = text[--index];
-                    while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && index > 0)
+                    while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && index > 0)
                     {
                         ch = text[--index];
-                        if (ch < MIN_HIGH_SURROGATE || ch > MAX_HIGH_SURROGATE)
+                        if (ch < MinHighSurrogate || ch > MaxHighSurrogate)
                         {
                             if (++codePointOffset > 0)
                             {
@@ -1189,10 +1189,10 @@ namespace ICU4N.Lang
                 while (--codePointOffset >= 0)
                 {
                     char ch = text[index++];
-                    while (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE && index < limit)
+                    while (ch >= MinHighSurrogate && ch <= MaxHighSurrogate && index < limit)
                     {
                         ch = text[index++];
-                        if (ch < MIN_LOW_SURROGATE || ch > MAX_LOW_SURROGATE)
+                        if (ch < MinLowSurrogate || ch > MaxLowSurrogate)
                         {
                             if (--codePointOffset < 0)
                             {
@@ -1232,10 +1232,10 @@ namespace ICU4N.Lang
                 while (++codePointOffset <= 0)
                 {
                     char ch = text[--index];
-                    while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && index > 0)
+                    while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && index > 0)
                     {
                         ch = text[--index];
-                        if (ch < MIN_HIGH_SURROGATE || ch > MAX_HIGH_SURROGATE)
+                        if (ch < MinHighSurrogate || ch > MaxHighSurrogate)
                         {
                             if (++codePointOffset > 0)
                             {
@@ -1251,10 +1251,10 @@ namespace ICU4N.Lang
                 while (--codePointOffset >= 0)
                 {
                     char ch = text[index++];
-                    while (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE && index < limit)
+                    while (ch >= MinHighSurrogate && ch <= MaxHighSurrogate && index < limit)
                     {
                         ch = text[index++];
-                        if (ch < MIN_LOW_SURROGATE || ch > MAX_LOW_SURROGATE)
+                        if (ch < MinLowSurrogate || ch > MaxLowSurrogate)
                         {
                             if (--codePointOffset < 0)
                             {

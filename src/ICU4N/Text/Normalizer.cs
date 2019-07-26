@@ -710,7 +710,7 @@ namespace ICU4N.Text
         /// Use the modified set of mappings provided in CaseFolding.txt to handle dotted I
         /// and dotless i appropriately for Turkic languages (tr, az).
         /// </summary>
-        /// <seealso cref="UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I"/>
+        /// <seealso cref="UCharacter.FoldCaseExcludeSpecialI"/>
         /// <stable>ICU 2.8</stable>
         internal const int FOLD_CASE_EXCLUDE_SPECIAL_I = (int)FoldCase.ExcludeSpecialI; // ICU4N specific - marked internal (we use the enum in .NET)
 

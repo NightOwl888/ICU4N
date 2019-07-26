@@ -299,7 +299,7 @@ namespace ICU4N.Impl
                         capitalizationBrkIter = BreakIterator.GetSentenceInstance(locale);
                     }
                     return UCharacter.ToTitleCase(locale, name, capitalizationBrkIter,
-                            UCharacter.TITLECASE_NO_LOWERCASE | UCharacter.TITLECASE_NO_BREAK_ADJUSTMENT);
+                            UCharacter.TitleCaseNoLowerCase | UCharacter.TitleCaseNoBreakAdjustment);
                 }
             }
             return name;

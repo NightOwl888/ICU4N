@@ -130,11 +130,11 @@ namespace ICU4N.Impl
         /// <seealso cref="Element"/>
         private bool Next(Element element)
         {
-            if (m_nextCodepoint_ > UCharacter.MAX_VALUE)
+            if (m_nextCodepoint_ > UCharacter.MaxValue)
             {
                 return false;
             }
-            if (m_nextCodepoint_ < UCharacter.SUPPLEMENTARY_MIN_VALUE &&
+            if (m_nextCodepoint_ < UCharacter.SupplementaryMinValue &&
                 CalculateNextBMPElement(element))
             {
                 return true;
@@ -257,7 +257,7 @@ namespace ICU4N.Impl
             }
             // synwee check that next block index == 0 here
             // enumerate BMP - the main loop enumerates data blocks
-            while (m_nextCodepoint_ < UCharacter.SUPPLEMENTARY_MIN_VALUE)
+            while (m_nextCodepoint_ < UCharacter.SupplementaryMinValue)
             {
                 // because of the way the character is split to form the index
                 // the lead surrogate and trail surrogate can not be in the
@@ -407,7 +407,7 @@ namespace ICU4N.Impl
             }
 
             // deliver last range
-            SetResult(element, m_currentCodepoint_, UCharacter.MAX_VALUE + 1,
+            SetResult(element, m_currentCodepoint_, UCharacter.MaxValue + 1,
                       currentValue);
         }
 

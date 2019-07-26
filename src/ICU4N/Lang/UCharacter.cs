@@ -157,11 +157,12 @@ namespace ICU4N.Lang
     public static partial class UCharacter // ICU4N specific - made class static because there are no instance members
     {
         // ICU4N specific - copy UNASSIGNED from UCharacterEnums.ECharacterCategory (since we cannot inherit via interface)
-        /**
-         * Unassigned character type
-         * @stable ICU 2.1
-         */
-        public const byte UNASSIGNED = 0; // ICU4N TODO: API Remove this and use enum ?
+
+        /// <summary>
+        /// Unassigned character type
+        /// </summary>
+        /// <stable>ICU 2.1</stable>
+        public const byte Unassigned = (byte)UCharacterCategory.Unassigned;
 
         // public inner classes ----------------------------------------------
 
@@ -1837,7 +1838,7 @@ namespace ICU4N.Lang
             /// <stable>ICU 2.4</stable>
             public static UnicodeBlock Of(int ch)
             {
-                if (ch > MAX_VALUE)
+                if (ch > MaxValue)
                 {
                     return INVALID_CODE;
                 }
@@ -2643,34 +2644,34 @@ namespace ICU4N.Lang
 
         /// <summary>
         /// The lowest Unicode code point value, constant 0.
-        /// Same integer value as <see cref="Char.MinValue"/>.
+        /// Same as <see cref="Character.MIN_CODE_POINT"/>, same integer value as <see cref="Char.MinValue"/>.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int MIN_VALUE = Character.MIN_CODE_POINT; // ICU4N TODO: Change to Char.MinValue
+        public const int MinValue = Character.MIN_CODE_POINT; // ICU4N TODO: Change to Char.MinValue
 
         /// <summary>
         /// The highest Unicode code point value (scalar value), constant U+10FFFF (uses 21 bits).
-        /// Same integer value as <see cref="Char.MaxValue"/>.
+        /// Same integer value as <see cref="Character.MAX_CODE_POINT"/>.
         /// <para/>
         /// Up-to-date Unicode implementation of <see cref="Char.MaxValue"/>
         /// which is still a char with the value U+FFFF.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int MAX_VALUE = Character.MAX_CODE_POINT; // ICU4N TODO: Change to Char.MaxValue (and check documentation to ensure it is right)
+        public const int MaxValue = Character.MAX_CODE_POINT; // ICU4N TODO: Change to Char.MaxValue (and check documentation to ensure it is right)
 
         /// <summary>
         /// The minimum value for Supplementary code points, constant U+10000.
         /// Same as <see cref="Character.MIN_SUPPLEMENTARY_CODE_POINT"/>.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int SUPPLEMENTARY_MIN_VALUE = Character.MIN_SUPPLEMENTARY_CODE_POINT;
+        public const int SupplementaryMinValue = Character.MIN_SUPPLEMENTARY_CODE_POINT;
 
         /// <summary>
         /// Unicode value used when translating into Unicode encoding form and there
         /// is no existing character.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int REPLACEMENT_CHAR = '\uFFFD';
+        public const int ReplacementChar = '\uFFFD';
 
         /// <summary>
         /// Special value that is returned by <see cref="GetUnicodeNumericValue(int)"/> when no
@@ -2678,19 +2679,19 @@ namespace ICU4N.Lang
         /// </summary>
         /// <stable>ICU 2.4</stable>
         /// <seealso cref="GetUnicodeNumericValue(int)"/>
-        public static readonly double NO_NUMERIC_VALUE = -123456789;
+        public const double NoNumericValue = -123456789;
 
         /// <summary>
         /// Compatibility constant for <see cref="Character.MIN_RADIX"/>.
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public const int MIN_RADIX = Character.MIN_RADIX;
+        public const int MinRadix = Character.MIN_RADIX;
 
         /// <summary>
         /// Compatibility constant for <see cref="Character.MAX_RADIX"/>.
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public const int MAX_RADIX = Character.MAX_RADIX;
+        public const int MaxRadix = Character.MAX_RADIX;
 
         /// <summary>
         /// Do not lowercase non-initial parts of words when titlecasing.
@@ -2703,7 +2704,7 @@ namespace ICU4N.Lang
         /// </remarks>
         /// <see cref="ToTitleCase(int)"/>
         /// <stable>ICU 3.8</stable>
-        public const int TITLECASE_NO_LOWERCASE = 0x100; // ICU4N TODO: API make into [Flags] enum
+        public const int TitleCaseNoLowerCase = 0x100; // ICU4N TODO: API make into [Flags] enum
 
         /// <summary>
         /// Do not adjust the titlecasing indexes from <see cref="BreakIterator.Next()"/> indexes;
@@ -2723,9 +2724,9 @@ namespace ICU4N.Lang
         /// subsequent character C to default_lower(C).
         /// </remarks>
         /// <seealso cref="ToTitleCase(int)"/>
-        /// <seealso cref="TITLECASE_NO_LOWERCASE"/>
+        /// <seealso cref="TitleCaseNoLowerCase"/>
         /// <stable>ICU 3.8</stable>
-        public const int TITLECASE_NO_BREAK_ADJUSTMENT = 0x200; // ICU4N TODO: API make into [Flags] enum
+        public const int TitleCaseNoBreakAdjustment = 0x200; // ICU4N TODO: API make into [Flags] enum
 
         // public methods ----------------------------------------------------
 
@@ -2814,13 +2815,13 @@ namespace ICU4N.Lang
         /// fractions, negative, or too large for <see cref="int"/>.
         /// <para/>
         /// For characters without any numeric values in the Unicode Character
-        /// Database, this function will return <see cref="NO_NUMERIC_VALUE"/>.
+        /// Database, this function will return <see cref="NoNumericValue"/>.
         /// Note: This is different from the Unicode Standard which specifies NaN as the default value.
         /// <para/>
         /// This corresponds to the ICU4C function u_getNumericValue.
         /// </summary>
         /// <param name="ch">Code point to get the numeric value for.</param>
-        /// <returns>Numeric value of <paramref name="ch"/>, or <see cref="NO_NUMERIC_VALUE"/> if none is defined.</returns>
+        /// <returns>Numeric value of <paramref name="ch"/>, or <see cref="NoNumericValue"/> if none is defined.</returns>
         /// <stable>ICU 2.4</stable>
         public static double GetUnicodeNumericValue(int ch)
         {
@@ -3264,12 +3265,12 @@ namespace ICU4N.Lang
         // ICU4N TODO: API - to cover Char, add overload for (string, int)
         public static string ToString(int ch) // ICU4N TODO: API - Rename ConvertFromUtf32 to cover Char
         {
-            if (ch < MIN_VALUE || ch > MAX_VALUE)
+            if (ch < MinValue || ch > MaxValue)
             {
                 return null;
             }
 
-            if (ch < SUPPLEMENTARY_MIN_VALUE)
+            if (ch < SupplementaryMinValue)
             {
                 return new string(new char[] { (char)ch });
             }
@@ -3337,15 +3338,15 @@ namespace ICU4N.Lang
         /// <summary>
         /// Determines if the code point is a supplementary character.
         /// A code point is a supplementary character if and only if it is greater
-        /// than <see cref="SUPPLEMENTARY_MIN_VALUE"/>.
+        /// than <see cref="SupplementaryMinValue"/>.
         /// </summary>
         /// <param name="ch">Code point to be determined if it is in the supplementary plane.</param>
         /// <returns>true if code point is a supplementary character.</returns>
         /// <stable>ICU 2.1</stable>
         public static bool IsSupplementary(int ch)
         {
-            return ch >= UCharacter.SUPPLEMENTARY_MIN_VALUE &&
-                    ch <= UCharacter.MAX_VALUE;
+            return ch >= UCharacter.SupplementaryMinValue &&
+                    ch <= UCharacter.MaxValue;
         }
 
         /// <icu/>
@@ -3495,7 +3496,7 @@ namespace ICU4N.Lang
         /// <summary>
         /// A code point is illegal if and only if
         /// <list type="bullet">
-        ///     <item><description> Out of bounds, less than 0 or greater than <see cref="UCharacter.MAX_VALUE"/> </description></item>
+        ///     <item><description> Out of bounds, less than 0 or greater than <see cref="UCharacter.MaxValue"/> </description></item>
         ///     <item><description> A surrogate value, 0xD800 to 0xDFFF </description></item>
         ///     <item><description> Not-a-character, having the form 0x xxFFFF or 0x xxFFFE </description></item>
         /// </list>
@@ -3506,7 +3507,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.1</stable>
         public static bool IsLegal(int ch)
         {
-            if (ch < MIN_VALUE)
+            if (ch < MinValue)
             {
                 return false;
             }
@@ -3522,7 +3523,7 @@ namespace ICU4N.Lang
             {
                 return false;
             }
-            return (ch <= MAX_VALUE);
+            return (ch <= MaxValue);
         }
 
         /// <icu/>
@@ -3530,7 +3531,7 @@ namespace ICU4N.Lang
         /// A string is legal iff all its code points are legal.
         /// A code point is illegal if and only if
         /// <list type="bullet">
-        ///     <item><description> Out of bounds, less than 0 or greater than <see cref="UCharacter.MAX_VALUE"/> </description></item>
+        ///     <item><description> Out of bounds, less than 0 or greater than <see cref="UCharacter.MaxValue"/> </description></item>
         ///     <item><description> A surrogate value, 0xD800 to 0xDFFF </description></item>
         ///     <item><description> Not-a-character, having the form 0x xxFFFF or 0x xxFFFE </description></item>
         /// </list>
@@ -3568,7 +3569,7 @@ namespace ICU4N.Lang
         /// <summary>
         /// Returns the most current Unicode name of the argument code point, or
         /// null if the character is unassigned or outside the range
-        /// <see cref="UCharacter.MIN_VALUE"/> and <see cref="UCharacter.MAX_VALUE"/>
+        /// <see cref="UCharacter.MinValue"/> and <see cref="UCharacter.MaxValue"/>
         /// or does not have a name.
         /// <para/>
         /// Note calling any methods related to code point names, e.g. Get*Name*()
@@ -3652,7 +3653,7 @@ namespace ICU4N.Lang
         /// <summary>
         /// Returns the corrected name from NameAliases.txt if there is one.
         /// Returns null if the character is unassigned or outside the range
-        /// <see cref="UCharacter.MIN_VALUE"/> and <see cref="UCharacter.MAX_VALUE"/>
+        /// <see cref="UCharacter.MinValue"/> and <see cref="UCharacter.MaxValue"/>
         /// or does not have a name.
         /// <para/>
         /// Note calling any methods related to code point names, e.g. Get*Name*()
@@ -4279,8 +4280,8 @@ namespace ICU4N.Lang
         /// <param name="options">Bit set to modify the titlecasing operation.</param>
         /// <returns>Lowercase version of the argument <paramref name="str"/>.</returns>
         /// <stable>ICU 3.8</stable>
-        /// <seealso cref="TITLECASE_NO_LOWERCASE"/>
-        /// <seealso cref="TITLECASE_NO_BREAK_ADJUSTMENT"/>
+        /// <seealso cref="TitleCaseNoLowerCase"/>
+        /// <seealso cref="TitleCaseNoBreakAdjustment"/>
         public static string ToTitleCase(ULocale locale, string str,
             BreakIterator titleIter, int options) // ICU4N TODO: API - make options into [Flags] enum
         {
@@ -4298,7 +4299,7 @@ namespace ICU4N.Lang
         /// and sometimes has no effect at all; the original string is returned whenever casing
         /// would not be appropriate for the first word (such as for CJK characters or initial numbers).
         /// Initial non-letters are skipped in order to find the character to change.
-        /// Characters past the first affected are left untouched: see also <see cref="TITLECASE_NO_LOWERCASE"/>.
+        /// Characters past the first affected are left untouched: see also <see cref="TitleCaseNoLowerCase"/>.
         /// <para/>
         /// Examples:
         /// <list type="table">
@@ -4381,8 +4382,8 @@ namespace ICU4N.Lang
         /// the character should be title cased.</param>
         /// <param name="options">Bit set to modify the titlecasing operation.</param>
         /// <returns>Lowercase version of the argument <paramref name="str"/>.</returns>
-        /// <seealso cref="TITLECASE_NO_LOWERCASE"/>
-        /// <seealso cref="TITLECASE_NO_BREAK_ADJUSTMENT"/>
+        /// <seealso cref="TitleCaseNoLowerCase"/>
+        /// <seealso cref="TitleCaseNoBreakAdjustment"/>
         /// <stable>ICU 54</stable>
         public static string ToTitleCase(CultureInfo locale, string str,
             BreakIterator titleIter,
@@ -4460,7 +4461,7 @@ namespace ICU4N.Lang
         /// CaseFolding.txt.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        internal const int FOLD_CASE_DEFAULT = (int)Lang.FoldCase.Default; // ICU4N specific - changed from public to internal because we use enum in .NET
+        internal const int FoldCaseDefault = (int)Lang.FoldCase.Default; // ICU4N specific - changed from public to internal because we use enum in .NET
 
         /// <icu/>
         /// <summary>
@@ -4478,7 +4479,7 @@ namespace ICU4N.Lang
         /// included for the Turkic-specific mappings.
         /// </remarks>
         /// <stable>ICU 2.6</stable>
-        internal const int FOLD_CASE_EXCLUDE_SPECIAL_I = (int)Lang.FoldCase.ExcludeSpecialI; // ICU4N specific - changed from public to internal because we use enum in .NET
+        internal const int FoldCaseExcludeSpecialI = (int)Lang.FoldCase.ExcludeSpecialI; // ICU4N specific - changed from public to internal because we use enum in .NET
 
         /// <icu/>
         /// <summary>
@@ -4710,7 +4711,7 @@ namespace ICU4N.Lang
         /// </code>
         /// <para/>
         /// The maximal range which the name iterator iterates is from
-        /// <see cref="UCharacter.MIN_VALUE"/> to <see cref="UCharacter.MAX_VALUE"/>
+        /// <see cref="UCharacter.MinValue"/> to <see cref="UCharacter.MaxValue"/>
         /// <para/>
         /// NOTE: This is equivalent to getNameIterator() in ICU4J
         /// </remarks>
@@ -4776,7 +4777,7 @@ namespace ICU4N.Lang
         /// </code>
         /// <para/>
         /// The maximal range which the name iterator iterates is from
-        /// <see cref="UCharacter.MIN_VALUE"/> to <see cref="UCharacter.MAX_VALUE"/>.
+        /// <see cref="UCharacter.MinValue"/> to <see cref="UCharacter.MaxValue"/>.
         /// <para/>
         /// NOTE: This is equivalent to getExtendedNameIterator() in ICU4J
         /// </remarks>
@@ -4806,7 +4807,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.6</stable>
         public static VersionInfo GetAge(int ch)
         {
-            if (ch < MIN_VALUE || ch > MAX_VALUE)
+            if (ch < MinValue || ch > MaxValue)
             {
                 throw new ArgumentException("Codepoint out of bounds");
             }
@@ -5087,55 +5088,55 @@ namespace ICU4N.Lang
         /// Constant U+D800, same as <see cref="Character.MIN_HIGH_SURROGATE"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public static readonly char MIN_HIGH_SURROGATE = Character.MIN_HIGH_SURROGATE;
+        public const char MinHighSurrogate = Character.MIN_HIGH_SURROGATE;
 
         /// <summary>
         /// Constant U+DBFF, same as <see cref="Character.MAX_HIGH_SURROGATE"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public static readonly char MAX_HIGH_SURROGATE = Character.MAX_HIGH_SURROGATE;
+        public const char MaxHighSurrogate = Character.MAX_HIGH_SURROGATE;
 
         /// <summary>
         /// Constant U+DC00, same as <see cref="Character.MIN_LOW_SURROGATE"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public static readonly char MIN_LOW_SURROGATE = Character.MIN_LOW_SURROGATE;
+        public const char MinLowSurrogate = Character.MIN_LOW_SURROGATE;
 
         /// <summary>
         /// Constant U+DFFF, same as <see cref="Character.MAX_LOW_SURROGATE"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public static readonly char MAX_LOW_SURROGATE = Character.MAX_LOW_SURROGATE;
+        public const char MaxLowSurrogate = Character.MAX_LOW_SURROGATE;
 
         /// <summary>
         /// Constant U+D800, same as <see cref="Character.MIN_SURROGATE"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public static readonly char MIN_SURROGATE = Character.MIN_SURROGATE;
+        public const char MinSurrogate = Character.MIN_SURROGATE;
 
         /// <summary>
         /// Constant U+DFFF, same as <see cref="Character.MAX_SURROGATE"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public static readonly char MAX_SURROGATE = Character.MAX_SURROGATE;
+        public const char MaxSurrogate = Character.MAX_SURROGATE;
 
         /// <summary>
         /// Constant U+10000, same as <see cref="Character.MIN_SUPPLEMENTARY_CODE_POINT"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const int MIN_SUPPLEMENTARY_CODE_POINT = Character.MIN_SUPPLEMENTARY_CODE_POINT;
+        public const int MinSupplementaryCodePoint = Character.MIN_SUPPLEMENTARY_CODE_POINT;
 
         /// <summary>
         /// Constant U+10FFFF, same as <see cref="Character.MAX_CODE_POINT"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const int MAX_CODE_POINT = Character.MAX_CODE_POINT;
+        public const int MaxCodePoint = Character.MAX_CODE_POINT;
 
         /// <summary>
         /// Constant U+0000, same as <see cref="Character.MIN_CODE_POINT"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const int MIN_CODE_POINT = Character.MIN_CODE_POINT;
+        public const int MinCodePoint = Character.MIN_CODE_POINT;
 
         /// <summary>
         /// Equivalent to <see cref="Character.IsValidCodePoint(int)"/>.
@@ -5145,7 +5146,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 3.0</stable>
         public static bool IsValidCodePoint(int cp)
         {
-            return cp >= 0 && cp <= MAX_CODE_POINT;
+            return cp >= 0 && cp <= MaxCodePoint;
         }
 
         /// <summary>
@@ -5372,10 +5373,10 @@ namespace ICU4N.Lang
                                 ") < start (" + start +
                                 ")");
                     }
-                    while (ch >= MIN_LOW_SURROGATE && ch <= MAX_LOW_SURROGATE && index > start)
+                    while (ch >= MinLowSurrogate && ch <= MaxLowSurrogate && index > start)
                     {
                         ch = text[--index];
-                        if (ch < MIN_HIGH_SURROGATE || ch > MAX_HIGH_SURROGATE)
+                        if (ch < MinHighSurrogate || ch > MaxHighSurrogate)
                         {
                             if (++codePointOffset > 0)
                             {
@@ -5396,10 +5397,10 @@ namespace ICU4N.Lang
                                 ") > limit (" + limit +
                                 ")");
                     }
-                    while (ch >= MIN_HIGH_SURROGATE && ch <= MAX_HIGH_SURROGATE && index < limit)
+                    while (ch >= MinHighSurrogate && ch <= MaxHighSurrogate && index < limit)
                     {
                         ch = text[index++];
-                        if (ch < MIN_LOW_SURROGATE || ch > MAX_LOW_SURROGATE)
+                        if (ch < MinLowSurrogate || ch > MaxLowSurrogate)
                         {
                             if (--codePointOffset < 0)
                             {

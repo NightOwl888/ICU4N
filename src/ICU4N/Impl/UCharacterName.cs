@@ -77,7 +77,7 @@ namespace ICU4N.Impl
         /// <returns>If code point is above 0x1fff, null is returned.</returns>
         public string GetName(int ch, UCharacterNameChoice choice)
         {
-            if (ch < UCharacter.MIN_VALUE || ch > UCharacter.MAX_VALUE ||
+            if (ch < UCharacter.MinValue || ch > UCharacter.MaxValue ||
                 choice > UCharacterNameChoice.CharNameChoiceCount)
             {
                 return null;
@@ -680,8 +680,8 @@ namespace ICU4N.Impl
             /// <returns>true if values are valid.</returns>
             internal bool SetInfo(int rangestart, int rangeend, byte type, byte variant)
             {
-                if (rangestart >= UCharacter.MIN_VALUE && rangestart <= rangeend
-                    && rangeend <= UCharacter.MAX_VALUE &&
+                if (rangestart >= UCharacter.MinValue && rangestart <= rangeend
+                    && rangeend <= UCharacter.MaxValue &&
                     (type == TYPE_0_ || type == TYPE_1_))
                 {
                     m_rangestart_ = rangestart;

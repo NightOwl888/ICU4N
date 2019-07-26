@@ -405,7 +405,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 int n1 = UCharacter.GetNumericValue(i);
                 double n2 = UCharacter.GetUnicodeNumericValue(i);
-                if (n2 != UCharacter.NO_NUMERIC_VALUE || n1 != (i - 'A' + 10))
+                if (n2 != UCharacter.NoNumericValue || n1 != (i - 'A' + 10))
                 {
                     Errln("Numeric value of " + (char)i + " expected to be " +
                           (i - 'A' + 10));
@@ -416,7 +416,7 @@ namespace ICU4N.Dev.Test.Lang
                 // testing full wideth latin characters A-F
                 int n1 = UCharacter.GetNumericValue(i);
                 double n2 = UCharacter.GetUnicodeNumericValue(i);
-                if (n2 != UCharacter.NO_NUMERIC_VALUE || n1 != (i - 0xFF21 + 10))
+                if (n2 != UCharacter.NoNumericValue || n1 != (i - 0xFF21 + 10))
                 {
                     Errln("Numeric value of " + (char)i + " expected to be " +
                           (i - 0xFF21 + 10));
@@ -1218,7 +1218,7 @@ namespace ICU4N.Dev.Test.Lang
                 if (TestFmwk.GetExhaustiveness() >= 5)
                 {
                     // extra testing different from icu
-                    for (int i = UCharacter.MIN_VALUE; i < UCharacter.MAX_VALUE; i++)
+                    for (int i = UCharacter.MinValue; i < UCharacter.MaxValue; i++)
                     {
                         str = UCharacter.GetName(i);
                         if (str != null && UCharacter.GetCharFromName(str) != i)
@@ -1885,11 +1885,11 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             int[] valid_tests = {
-                UCharacter.MIN_VALUE, UCharacter.MIN_VALUE+1,
-                UCharacter.MAX_VALUE-1, UCharacter.MAX_VALUE};
+                UCharacter.MinValue, UCharacter.MinValue+1,
+                UCharacter.MaxValue-1, UCharacter.MaxValue};
             int[] invalid_tests = {
-                UCharacter.MIN_VALUE-1, UCharacter.MIN_VALUE-2,
-                UCharacter.MAX_VALUE+1, UCharacter.MAX_VALUE+2};
+                UCharacter.MinValue-1, UCharacter.MinValue-2,
+                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
 
             for (int i = 0; i < valid_tests.Length; i++)
             {
@@ -2599,14 +2599,14 @@ namespace ICU4N.Dev.Test.Lang
                 new double[] { 0x12433, UCharacter.NumericType.Numeric, 432000.0 },
                 new double[] { 0x4ebf, UCharacter.NumericType.Numeric, 100000000.0 },
                 new double[] { 0x5146, UCharacter.NumericType.Numeric, 1000000000000.0 },
-                new double[] { -1, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0x61, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE, 10.0 },
-                new double[] { 0x3000, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0xfffe, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0x10301, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0xe0033, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0x10ffff, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE },
-                new double[] { 0x110000, UCharacter.NumericType.None, UCharacter.NO_NUMERIC_VALUE }
+                new double[] { -1, UCharacter.NumericType.None, UCharacter.NoNumericValue },
+                new double[] { 0x61, UCharacter.NumericType.None, UCharacter.NoNumericValue, 10.0 },
+                new double[] { 0x3000, UCharacter.NumericType.None, UCharacter.NoNumericValue },
+                new double[] { 0xfffe, UCharacter.NumericType.None, UCharacter.NoNumericValue },
+                new double[] { 0x10301, UCharacter.NumericType.None, UCharacter.NoNumericValue },
+                new double[] { 0xe0033, UCharacter.NumericType.None, UCharacter.NoNumericValue },
+                new double[] { 0x10ffff, UCharacter.NumericType.None, UCharacter.NoNumericValue },
+                new double[] { 0x110000, UCharacter.NumericType.None, UCharacter.NoNumericValue }
             };
 
             for (int i = 0; i < values.Length; ++i)
@@ -2633,7 +2633,7 @@ namespace ICU4N.Dev.Test.Lang
                 int expectedInt;
                 if (values[i].Length == 3)
                 {
-                    if (values[i][2] == UCharacter.NO_NUMERIC_VALUE)
+                    if (values[i][2] == UCharacter.NoNumericValue)
                     {
                         expectedInt = -1;
                     }
@@ -3171,11 +3171,11 @@ namespace ICU4N.Dev.Test.Lang
         public void TestToString()
         {
             int[] valid_tests = {
-                UCharacter.MIN_VALUE, UCharacter.MIN_VALUE+1,
-                UCharacter.MAX_VALUE-1, UCharacter.MAX_VALUE};
+                UCharacter.MinValue, UCharacter.MinValue+1,
+                UCharacter.MaxValue-1, UCharacter.MaxValue};
             int[] invalid_tests = {
-                UCharacter.MIN_VALUE-1, UCharacter.MIN_VALUE-2,
-                UCharacter.MAX_VALUE+1, UCharacter.MAX_VALUE+2};
+                UCharacter.MinValue-1, UCharacter.MinValue-2,
+                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
 
             for (int i = 0; i < valid_tests.Length; i++)
             {
@@ -3206,11 +3206,11 @@ namespace ICU4N.Dev.Test.Lang
         public void TestGetCombiningClass()
         {
             int[] valid_tests = {
-                UCharacter.MIN_VALUE, UCharacter.MIN_VALUE+1,
-                UCharacter.MAX_VALUE-1, UCharacter.MAX_VALUE};
+                UCharacter.MinValue, UCharacter.MinValue+1,
+                UCharacter.MaxValue-1, UCharacter.MaxValue};
             int[] invalid_tests = {
-                UCharacter.MIN_VALUE-1, UCharacter.MIN_VALUE-2,
-                UCharacter.MAX_VALUE+1, UCharacter.MAX_VALUE+2};
+                UCharacter.MinValue-1, UCharacter.MinValue-2,
+                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
 
             for (int i = 0; i < valid_tests.Length; i++)
             {
@@ -3279,8 +3279,8 @@ namespace ICU4N.Dev.Test.Lang
         public void TestGetISOComment()
         {
             int[] invalid_tests = {
-                UCharacter.MIN_VALUE-1, UCharacter.MIN_VALUE-2,
-                UCharacter.MAX_VALUE+1, UCharacter.MAX_VALUE+2};
+                UCharacter.MinValue-1, UCharacter.MinValue-2,
+                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
 
             for (int i = 0; i < invalid_tests.Length; i++)
             {
@@ -3358,7 +3358,7 @@ namespace ICU4N.Dev.Test.Lang
         public void TestToTitleCase_Locale_String_BreakIterator_I()
         {
             String titleCase = UCharacter.ToTitleCase(new CultureInfo("nl"), "ijsland", null,
-                    UCharacter.FOLD_CASE_DEFAULT);
+                    UCharacter.FoldCaseDefault);
             assertEquals("Wrong title casing", "IJsland", titleCase);
         }
 
@@ -3486,11 +3486,11 @@ namespace ICU4N.Dev.Test.Lang
         {
             // Testing when "if (ch < MIN_VALUE || ch > MAX_VALUE)" is true
             int[] invalid = {
-                UCharacter.MIN_VALUE-1, UCharacter.MIN_VALUE-2,
-                UCharacter.MAX_VALUE+1, UCharacter.MAX_VALUE+2};
+                UCharacter.MinValue-1, UCharacter.MinValue-2,
+                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
             int[] valid = {
-                UCharacter.MIN_VALUE, UCharacter.MIN_VALUE+1,
-                UCharacter.MAX_VALUE, UCharacter.MAX_VALUE-1};
+                UCharacter.MinValue, UCharacter.MinValue+1,
+                UCharacter.MaxValue, UCharacter.MaxValue-1};
 
             for (int i = 0; i < invalid.Length; i++)
             {
@@ -3781,19 +3781,19 @@ namespace ICU4N.Dev.Test.Lang
                 }
 
                 // Testing when "if (cp < MIN_SUPPLEMENTARY_CODE_POINT)" is true
-                if (UCharacter.ToChars(UCharacter.MIN_SUPPLEMENTARY_CODE_POINT - positive_cases[i], dst, 0) != 1)
+                if (UCharacter.ToChars(UCharacter.MinSupplementaryCodePoint - positive_cases[i], dst, 0) != 1)
                 {
                     Errln("UCharacter.toChars(int,char[],int) was suppose to return a value of 1. Got: " +
-                            UCharacter.ToChars(UCharacter.MIN_SUPPLEMENTARY_CODE_POINT - positive_cases[i], dst, 0));
+                            UCharacter.ToChars(UCharacter.MinSupplementaryCodePoint - positive_cases[i], dst, 0));
                 }
 
                 // Testing when "if (cp < MIN_SUPPLEMENTARY_CODE_POINT)" is false and
                 //     when "if (cp <= MAX_CODE_POINT)" is false
                 try
                 {
-                    UCharacter.ToChars(UCharacter.MAX_CODE_POINT + positive_cases[i], dst, 0);
+                    UCharacter.ToChars(UCharacter.MaxCodePoint + positive_cases[i], dst, 0);
                     Errln("UCharacter.toChars(int,char[],int) was suppose to return an exception " +
-                            "when the parameter " + (UCharacter.MAX_CODE_POINT + positive_cases[i]) +
+                            "when the parameter " + (UCharacter.MaxCodePoint + positive_cases[i]) +
                             " is a large number.");
                 }
                 catch (Exception e)
@@ -3817,17 +3817,17 @@ namespace ICU4N.Dev.Test.Lang
                 }
 
                 // Testing when "if (cp < MIN_SUPPLEMENTARY_CODE_POINT)" is true
-                if (UCharacter.ToChars(UCharacter.MIN_SUPPLEMENTARY_CODE_POINT - positive_cases[i]).Length <= 0)
+                if (UCharacter.ToChars(UCharacter.MinSupplementaryCodePoint - positive_cases[i]).Length <= 0)
                 {
                     Errln("UCharacter.toChars(int) was suppose to return some result result when the parameter " +
-                            (UCharacter.MIN_SUPPLEMENTARY_CODE_POINT - positive_cases[i]) + "is passed.");
+                            (UCharacter.MinSupplementaryCodePoint - positive_cases[i]) + "is passed.");
                 }
 
                 // Testing when "if (cp < MIN_SUPPLEMENTARY_CODE_POINT)" is false and
                 //     when "if (cp <= MAX_CODE_POINT)" is false
                 try
                 {
-                    UCharacter.ToChars(UCharacter.MAX_CODE_POINT + positive_cases[i]);
+                    UCharacter.ToChars(UCharacter.MaxCodePoint + positive_cases[i]);
                     Errln("UCharacter.toChars(int) was suppose to return an exception " +
                             "when the parameter " + positive_cases[i] + " is a large number.");
                 }

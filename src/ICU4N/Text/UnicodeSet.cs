@@ -3696,7 +3696,7 @@ namespace ICU4N.Text
                             {
                                 // [:Assigned:]=[:^Cn:]
                                 p = UProperty.General_Category_Mask;
-                                v = (UProperty)(1 << UCharacter.UNASSIGNED);
+                                v = (UProperty)(1 << UCharacter.Unassigned);
                                 invert = true;
                             }
                             else

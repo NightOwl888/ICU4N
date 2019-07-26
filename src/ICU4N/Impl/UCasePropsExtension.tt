@@ -431,7 +431,7 @@ namespace ICU4N.Impl
                 if ((excWord & EXC_CONDITIONAL_FOLD) != 0)
                 {
                     /* use hardcoded conditions and mappings */
-                    if ((options & FOLD_CASE_OPTIONS_MASK) == UCharacter.FOLD_CASE_DEFAULT)
+                    if ((options & FOLD_CASE_OPTIONS_MASK) == UCharacter.FoldCaseDefault)
                     {
                         /* default mappings */
                         if (c == 0x49)

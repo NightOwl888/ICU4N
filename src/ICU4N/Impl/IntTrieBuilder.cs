@@ -170,7 +170,7 @@ namespace ICU4N.Impl
         public virtual int GetValue(int ch)
         {
             // valid, uncompacted trie and valid c?
-            if (m_isCompacted_ || ch > UCharacter.MAX_VALUE || ch < 0)
+            if (m_isCompacted_ || ch > UCharacter.MaxValue || ch < 0)
             {
                 return 0;
             }
@@ -189,7 +189,7 @@ namespace ICU4N.Impl
         public virtual int GetValue(int ch, bool[] inBlockZero)
         {
             // valid, uncompacted trie and valid c?
-            if (m_isCompacted_ || ch > UCharacter.MAX_VALUE || ch < 0)
+            if (m_isCompacted_ || ch > UCharacter.MaxValue || ch < 0)
             {
                 if (inBlockZero != null)
                 {
@@ -216,7 +216,7 @@ namespace ICU4N.Impl
         public virtual bool SetValue(int ch, int value)
         {
             // valid, uncompacted trie and valid c? 
-            if (m_isCompacted_ || ch > UCharacter.MAX_VALUE || ch < 0)
+            if (m_isCompacted_ || ch > UCharacter.MaxValue || ch < 0)
             {
                 return false;
             }
@@ -429,9 +429,9 @@ namespace ICU4N.Impl
             // index values fill around existing values if any, if(overwrite)
 
             // valid, uncompacted trie and valid indexes?
-            if (m_isCompacted_ || start < UCharacter.MIN_VALUE
-                || start > UCharacter.MAX_VALUE || limit < UCharacter.MIN_VALUE
-                || limit > (UCharacter.MAX_VALUE + 1) || start > limit)
+            if (m_isCompacted_ || start < UCharacter.MinValue
+                || start > UCharacter.MaxValue || limit < UCharacter.MinValue
+                || limit > (UCharacter.MaxValue + 1) || start > limit)
             {
                 return false;
             }

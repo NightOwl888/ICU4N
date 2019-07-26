@@ -409,7 +409,7 @@ namespace ICU4N.Impl
                             UCaseProps csp = UCaseProps.Instance;
                             UCaseProps.DummyStringBuilder.Length = 0;
                             return csp.ToFullFolding(c, UCaseProps.DummyStringBuilder,
-                                                        UCharacter.FOLD_CASE_DEFAULT) >= 0;
+                                                        UCharacter.FoldCaseDefault) >= 0;
                         }
                         else
                         {
@@ -1071,7 +1071,7 @@ namespace ICU4N.Impl
 
             if (ntv == NTV_NONE_)
             {
-                return UCharacter.NO_NUMERIC_VALUE;
+                return UCharacter.NoNumericValue;
             }
             else if (ntv < NTV_DIGIT_START_)
             {
@@ -1165,7 +1165,7 @@ namespace ICU4N.Impl
             else
             {
                 /* reserved */
-                return UCharacter.NO_NUMERIC_VALUE;
+                return UCharacter.NoNumericValue;
             }
         }
 

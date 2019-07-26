@@ -2695,7 +2695,7 @@ namespace ICU4N.Text
             /// Comparison is case insensitive, strings are folded using modified mappings defined in
             /// Unicode data file CaseFolding.txt, before comparison.
             /// </summary>
-            /// <seealso cref="Lang.UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I"/>
+            /// <seealso cref="Lang.UCharacter.FoldCaseExcludeSpecialI"/>
             /// <stable>ICU 2.4</stable>
             public static readonly int FOLD_CASE_EXCLUDE_SPECIAL_I = 1; // ICU4N TODO: API Make enum and combine with UCharacter fold case 
 

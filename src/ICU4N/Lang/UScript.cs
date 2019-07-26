@@ -1429,7 +1429,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.4</stable>
         public static int GetScript(int codepoint)
         {
-            if (codepoint >= UCharacter.MIN_VALUE & codepoint <= UCharacter.MAX_VALUE)
+            if (codepoint >= UCharacter.MinValue & codepoint <= UCharacter.MaxValue)
             {
                 int scriptX = UCharacterProperty.Instance.GetAdditional(codepoint, 0) & UCharacterProperty.SCRIPT_X_MASK;
                 if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)

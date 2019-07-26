@@ -154,7 +154,7 @@ namespace ICU4N.Lang
 
         /// <summary>
         /// Resets the iterator to start iterating from the integer index
-        /// <see cref="UCharacter.MIN_VALUE"/> or X if a <c>SetRange(X, Y)</c> has been called previously.
+        /// <see cref="UCharacter.MinValue"/> or X if a <c>SetRange(X, Y)</c> has been called previously.
         /// </summary>
         public virtual void Reset()
         {
@@ -170,10 +170,10 @@ namespace ICU4N.Lang
         /// <remarks>
         /// If <see cref="SetRange(int, int)"/> is not performed before <see cref="MoveNext()"/> is
         /// called, the iteration will start from the integer index
-        /// <see cref="UCharacter.MIN_VALUE"/> and end at <see cref="UCharacter.MAX_VALUE"/>.
+        /// <see cref="UCharacter.MinValue"/> and end at <see cref="UCharacter.MaxValue"/>.
         /// <para/>
-        /// If this range is set outside the range of <see cref="UCharacter.MIN_VALUE"/> and 
-        /// <see cref="UCharacter.MAX_VALUE"/>, <see cref="MoveNext()"/> will always return false.
+        /// If this range is set outside the range of <see cref="UCharacter.MinValue"/> and 
+        /// <see cref="UCharacter.MaxValue"/>, <see cref="MoveNext()"/> will always return false.
         /// </remarks>
         /// <param name="start">First integer in range to iterate.</param>
         /// <param name="limit">1 integer after the last integer in range.</param>
@@ -186,18 +186,18 @@ namespace ICU4N.Lang
                 throw new ArgumentException(
                     "start or limit has to be valid Unicode codepoints and start < limit");
             }
-            if (start < UCharacter.MIN_VALUE)
+            if (start < UCharacter.MinValue)
             {
-                m_start_ = UCharacter.MIN_VALUE;
+                m_start_ = UCharacter.MinValue;
             }
             else
             {
                 m_start_ = start;
             }
 
-            if (limit > UCharacter.MAX_VALUE + 1)
+            if (limit > UCharacter.MaxValue + 1)
             {
-                m_limit_ = UCharacter.MAX_VALUE + 1;
+                m_limit_ = UCharacter.MaxValue + 1;
             }
             else
             {
@@ -222,8 +222,8 @@ namespace ICU4N.Lang
             m_name_ = name;
             // no explicit choice in UCharacter so no checks on choice
             m_choice_ = (int)choice;
-            m_start_ = UCharacter.MIN_VALUE;
-            m_limit_ = UCharacter.MAX_VALUE + 1;
+            m_start_ = UCharacter.MinValue;
+            m_limit_ = UCharacter.MaxValue + 1;
             m_current_ = m_start_;
         }
 

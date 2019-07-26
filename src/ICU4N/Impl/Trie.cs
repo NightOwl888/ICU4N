@@ -367,7 +367,7 @@ namespace ICU4N.Impl
                 // BMP codepoint
                 return GetBMPOffset((char)ch);
             }
-            else if (ch <= UCharacter.MAX_VALUE)
+            else if (ch <= UCharacter.MaxValue)
             {
                 // look at the construction of supplementary characters
                 // trail forms the ends of it.
