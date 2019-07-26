@@ -463,7 +463,67 @@ namespace ICU4N.Text
         /// <stable>ICU 2.0</stable>
         public abstract int Current { get; }
 
-        // ICU4N specific - made WORD_ constants into enum named RuleStatus (to match the property)
+        /// <summary>
+        /// Tag value for "words" that do not fit into any of other categories.
+        /// Includes spaces and most punctuation.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordNone = RuleStatus.WordNone;
+
+        /// <summary>
+        /// Upper bound for tags for uncategorized words.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordNoneLimit = RuleStatus.WordNoneLimit;
+
+        /// <summary>
+        /// Tag value for words that appear to be numbers, lower limit.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordNumber = RuleStatus.WordNumber;
+
+        /// <summary>
+        /// Tag value for words that appear to be numbers, upper limit.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordNumberLimit = RuleStatus.WordNumberLimit;
+
+        /// <summary>
+        /// Tag value for words that contain letters, excluding
+        /// hiragana, katakana or ideographic characters, lower limit.
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordLetter = RuleStatus.WordLetter;
+
+        /// <summary>
+        /// Tag value for words containing letters, upper limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordLetterLimit = RuleStatus.WordLetterLimit;
+
+        /// <summary>
+        /// Tag value for words containing kana characters, lower limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordKana = RuleStatus.WordKana;
+
+        /// <summary>
+        /// Tag value for words containing kana characters, upper limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordKanaLimit = RuleStatus.WordKanaLimit;
+
+        /// <summary>
+        /// Tag value for words containing ideographic characters, lower limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordIdeo = RuleStatus.WordIdeo;
+
+        /// <summary>
+        /// Tag value for words containing ideographic characters, upper limit
+        /// </summary>
+        /// <stable>ICU 53</stable>
+        public const RuleStatus WordIdeoLimit = RuleStatus.WordIdeoLimit;
 
         /// <summary>
         /// For <see cref="RuleBasedBreakIterator"/>s, return the status tag from the
