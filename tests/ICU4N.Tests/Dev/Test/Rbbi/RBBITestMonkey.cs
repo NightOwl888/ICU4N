@@ -1386,7 +1386,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 for (idx = startIdx; idx < s.Length; idx = MoveIndex32(s, idx, 1))
                 {
                     int c = UTF16.CharAt(s, idx);
-                    int cLBType = UChar.GetInt32PropertyValue(c, UProperty.Line_Break);
+                    int cLBType = UChar.GetIntPropertyValue(c, UProperty.Line_Break);
                     switch (matchState)
                     {
                         case 0:
@@ -2351,9 +2351,9 @@ namespace ICU4N.Dev.Test.Rbbi
                             {
                                 c = UTF16.CharAt(testText, ci);
                                 appendCharToBuf(errorText, c, 11);
-                                String gc = UChar.GetPropertyValueName(UProperty.General_Category, UChar.GetType(c).ToInt32(), NameChoice.Short);
+                                String gc = UChar.GetPropertyValueName(UProperty.General_Category, UChar.GetUnicodeCategory(c).ToInt32(), NameChoice.Short);
                                 appendToBuf(errorText, gc, 8);
-                                int extraProp = UChar.GetInt32PropertyValue(c, mk.fCharProperty);
+                                int extraProp = UChar.GetIntPropertyValue(c, mk.fCharProperty);
                                 String extraPropValue =
                                         UChar.GetPropertyValueName(mk.fCharProperty, extraProp, NameChoice.Long);
                                 appendToBuf(errorText, extraPropValue, 20);

@@ -1254,7 +1254,7 @@ namespace ICU4N.Dev.Test.Translit
                 for (int i = 0; i < a.Length; i += UTF16.GetCharCount(cp))
                 {
                     cp = UTF16.CharAt(a, i);
-                    UUnicodeCategory t = UChar.GetType(cp);
+                    UUnicodeCategory t = UChar.GetUnicodeCategory(cp);
                     //Console.Out.WriteLine("\t" + t + " " + Integer.toString(cp,16) + " " + UCharacter.getName(cp));
                     switch (t)
                     {

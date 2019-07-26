@@ -3253,7 +3253,7 @@ namespace ICU4N.Text
 
             public virtual bool Contains(int ch)
             {
-                return ((1 << UChar.GetType(ch).ToInt32()) & Mask) != 0;
+                return ((1 << UChar.GetUnicodeCategory(ch).ToInt32()) & Mask) != 0;
             }
         }
 
@@ -3268,7 +3268,7 @@ namespace ICU4N.Text
             }
             public virtual bool Contains(int ch)
             {
-                return UChar.GetInt32PropertyValue(ch, Prop) == Value;
+                return UChar.GetIntPropertyValue(ch, Prop) == Value;
             }
         }
 
@@ -3447,7 +3447,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Modifies this set to contain those code points which have the
         /// given value for the given binary or enumerated property, as
-        /// returned by <see cref="UChar.GetInt32PropertyValue(int, UProperty)"/>.  
+        /// returned by <see cref="UChar.GetIntPropertyValue(int, UProperty)"/>.  
         /// Prior contents of this set are lost.
         /// </summary>
         /// <param name="prop">

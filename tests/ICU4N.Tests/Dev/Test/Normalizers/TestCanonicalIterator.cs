@@ -41,7 +41,7 @@ namespace ICU4N.Dev.Test.Normalizers
             {
 
                 // skip characters we know don't have decomps
-                UUnicodeCategory type = UChar.GetType(i);
+                UUnicodeCategory type = UChar.GetUnicodeCategory(i);
                 if (type == UUnicodeCategory.OtherNotAssigned || type == UUnicodeCategory.PrivateUse
                     || type == UUnicodeCategory.Surrogate) continue;
 

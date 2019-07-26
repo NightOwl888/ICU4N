@@ -44,14 +44,14 @@ namespace ICU4N.Dev.Test.Lang
             for (int i = 0; i < CHARACTER_LOWER_.Length; i++)
             {
                 if (UChar.IsLetter(CHARACTER_LOWER_[i]) &&
-                    !UChar.IsLowerCase(CHARACTER_LOWER_[i]))
+                    !UChar.IsLower(CHARACTER_LOWER_[i]))
                 {
                     Errln("FAIL isLowerCase test for \\u" +
                           Hex(CHARACTER_LOWER_[i]));
                     break;
                 }
                 if (UChar.IsLetter(CHARACTER_UPPER_[i]) &&
-                    !(UChar.IsUpperCase(CHARACTER_UPPER_[i]) ||
+                    !(UChar.IsUpper(CHARACTER_UPPER_[i]) ||
                       UChar.IsTitleCase(CHARACTER_UPPER_[i])))
                 {
                     Errln("FAIL isUpperCase test for \\u" +
@@ -776,13 +776,13 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Logln("testing to upper to lower");
                 if (UChar.IsLetter(upperTest[i]) &&
-                    !UChar.IsLowerCase(upperTest[i]))
+                    !UChar.IsLower(upperTest[i]))
                 {
                     Errln("Failed isLowerCase test at \\u"
                             + Utility.Hex(upperTest[i], 4));
                 }
                 else if (UChar.IsLetter(lowerTest[i])
-                         && !UChar.IsUpperCase(lowerTest[i]))
+                         && !UChar.IsUpper(lowerTest[i]))
                 {
                     Errln("Failed isUpperCase test at \\u"
                           + Utility.Hex(lowerTest[i], 4));

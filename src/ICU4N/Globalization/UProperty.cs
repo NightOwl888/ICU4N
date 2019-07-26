@@ -238,8 +238,8 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property Lowercase.
         /// <para/>
-        /// Same as <see cref="UChar.IsULowercase(int)"/>, different from
-        /// <see cref="UChar.IsLowerCase(int)"/>.
+        /// Same as <see cref="UChar.IsULower(int)"/>, different from
+        /// <see cref="UChar.IsLower(int)"/>.
         /// <para/>
         /// Ll+Other_Lowercase
         /// </summary>
@@ -309,8 +309,8 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property Uppercase.
         /// <para/>
-        /// Same as <see cref="UChar.IsUUppercase(int)"/>, different from
-        /// <see cref="UChar.IsUpperCase(int)"/>.
+        /// Same as <see cref="UChar.IsUUpper(int)"/>, different from
+        /// <see cref="UChar.IsUpper(int)"/>.
         /// <para/>
         /// Lu+Other_Uppercase
         /// </summary>
@@ -321,7 +321,7 @@ namespace ICU4N.Globalization
         /// Binary property White_Space.
         /// <para/>
         /// Same as <see cref="UChar.IsUWhiteSpace(int)"/>, different from
-        /// <see cref="UChar.IsSpace(int)"/> and <see cref="UChar.IsWhitespace(int)"/>.
+        /// <see cref="UChar.IsSpace(int)"/> and <see cref="UChar.IsWhiteSpace(int)"/>.
         /// Space characters+TAB+CR+LF-ZWSP-ZWNBSP
         /// </summary>
         /// <stable>ICU 2.6</stable>
@@ -796,7 +796,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Bitmask property General_Category_Mask.
         /// This is the <see cref="General_Category"/> property returned as a bit mask.
-        /// When used in <see cref="UChar.GetInt32PropertyValue(int, UProperty)"/>,
+        /// When used in <see cref="UChar.GetIntPropertyValue(int, UProperty)"/>,
         /// returns bit masks for <see cref="UUnicodeCategory"/> values where exactly one bit is set.
         /// When used with <see cref="UChar.GetPropertyValueName(UProperty, int, NameChoice)"/> 
         /// and <see cref="UChar.GetPropertyValueEnum(UProperty, string)"/>,

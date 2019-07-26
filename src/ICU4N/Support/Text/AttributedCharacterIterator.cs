@@ -171,7 +171,7 @@ namespace ICU4N.Support.Text
         {
             return null;
             // ICU4N TODO: Serialization
-            //            if (this.GetType() != typeof(Attribute) {
+            //            if (this.GetUnicodeCategory() != typeof(Attribute) {
             //                // text.0C=cannot resolve subclasses
             //                throw new InvalidCastException(/*Messages.getString("text.0C")*/); //$NON-NLS-1$
             //            }

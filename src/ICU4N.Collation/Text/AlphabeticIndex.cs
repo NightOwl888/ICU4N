@@ -1447,7 +1447,7 @@ namespace ICU4N.Text
             }
             foreach (string boundary in set)
             {
-                int gcMask = 1 << UChar.GetType(boundary.CodePointAt(1)).ToInt32();
+                int gcMask = 1 << UChar.GetUnicodeCategory(boundary.CodePointAt(1)).ToInt32();
                 if ((gcMask & (GC_L_MASK | GC_CN_MASK)) == 0)
                 {
                     // Ignore boundaries for the special reordering groups.

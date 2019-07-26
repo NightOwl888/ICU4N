@@ -189,7 +189,7 @@ namespace ICU4N.Impl
         {
             /* \p{space}\p{gc=Control} == \p{gc=Z}\p{Control} */
             /* comparing ==0 returns FALSE for the categories mentioned */
-            return (GetMask(UChar.GetType(c).ToInt32()) &
+            return (GetMask(UChar.GetUnicodeCategory(c).ToInt32()) &
                     (GC_CC_MASK | GC_CS_MASK | GC_CN_MASK | GC_Z_MASK))
                    == 0;
         }
@@ -352,7 +352,7 @@ namespace ICU4N.Impl
                         else
                         {
                             /* Zs */
-                            return UChar.GetType(c) == UUnicodeCategory.SpaceSeparator;
+                            return UChar.GetUnicodeCategory(c) == UUnicodeCategory.SpaceSeparator;
                         }
                     }),
                 new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
@@ -367,7 +367,7 @@ namespace ICU4N.Impl
                         * The only cntrl character in graph+blank is TAB (in blank).
                         * Here we implement (blank-TAB)=Zs instead of calling u_isblank().
                         */
-                        return (UChar.GetType(c) == UUnicodeCategory.SpaceSeparator) || IsgraphPOSIX(c);
+                        return (UChar.GetUnicodeCategory(c) == UUnicodeCategory.SpaceSeparator) || IsgraphPOSIX(c);
                     }),
                 new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
                     {  // UCHAR_POSIX_XDIGIT
@@ -379,7 +379,7 @@ namespace ICU4N.Impl
                         {
                             return true;
                         }
-                        return UChar.GetType(c) == UUnicodeCategory.DecimalDigitNumber;
+                        return UChar.GetUnicodeCategory(c) == UUnicodeCategory.DecimalDigitNumber;
                     }),
                 new CaseBinaryProperty(this, (int)UProperty.Cased),
                 new CaseBinaryProperty(this, (int)UProperty.Case_Ignorable),
@@ -705,7 +705,7 @@ namespace ICU4N.Impl
         private IntProperty[] intProps;
 
         // ICU4N TODO: API - change which to UProperty
-        public int GetInt32PropertyValue(int c, int which) // ICU4N TODO: API - rename back to GetIntPropertyValue (we don't have to discern between different data types)
+        public int GetIntPropertyValue(int c, int which) // ICU4N TODO: API - rename back to GetIntPropertyValue (we don't have to discern between different data types)
         {
             if (which < (int)UProperty.Int_Start)
             {

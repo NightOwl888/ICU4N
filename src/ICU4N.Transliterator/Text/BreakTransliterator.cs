@@ -98,12 +98,12 @@ namespace ICU4N.Text
                     // HACK: Check to see that preceeding item was a letter
 
                     int cp = UTF16.CharAt(text, boundary - 1);
-                    int type = UChar.GetType(cp).ToInt32();
+                    int type = UChar.GetUnicodeCategory(cp).ToInt32();
                     //System.out.println(Integer.toString(cp,16) + " (before): " + type);
                     if (((1 << type) & LETTER_OR_MARK_MASK) == 0) continue;
 
                     cp = UTF16.CharAt(text, boundary);
-                    type = UChar.GetType(cp).ToInt32();
+                    type = UChar.GetUnicodeCategory(cp).ToInt32();
                     //System.out.println(Integer.toString(cp,16) + " (after): " + type);
                     if (((1 << type) & LETTER_OR_MARK_MASK) == 0) continue;
 

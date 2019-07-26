@@ -285,7 +285,7 @@ namespace ICU4N.Impl
 
         private string AdjustForUsageAndContext(CapitalizationContextUsage usage, String name)
         {
-            if (name != null && name.Length > 0 && UChar.IsLowerCase(name.CodePointAt(0)) &&
+            if (name != null && name.Length > 0 && UChar.IsLower(name.CodePointAt(0)) &&
                     (capitalization == DisplayContext.CapitalizationForBeginningOfSentence ||
                     (capitalizationUsage != null && capitalizationUsage[(int)usage])))
             {

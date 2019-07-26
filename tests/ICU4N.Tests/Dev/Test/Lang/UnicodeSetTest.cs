@@ -141,7 +141,7 @@ namespace ICU4N.Dev.Test.Lang
                         UnicodeSet collectedErrors = new UnicodeSet();
                         for (UnicodeSetIterator it = new UnicodeSetIterator(testSet); it.Next();)
                         {
-                            int value = UChar.GetInt32PropertyValue(it.Codepoint, propNum);
+                            int value = UChar.GetIntPropertyValue(it.Codepoint, propNum);
                             if (value != valueNum)
                             {
                                 collectedErrors.Add(it.Codepoint);
@@ -174,7 +174,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             for (int i = 0; i <= 0x10FFFF; ++i)
             {
-                if ((i <= 0xFF && !UChar.IsLetter(i)) || UChar.IsWhitespace(i))
+                if ((i <= 0xFF && !UChar.IsLetter(i)) || UChar.IsWhiteSpace(i))
                 {
                     // check various combinations to make sure they all work.
                     if (i != 0 && !toPatternAux(i, i)) continue;
@@ -494,7 +494,7 @@ namespace ICU4N.Dev.Test.Lang
             set = new UnicodeSet("[:Lu:]");
             for (int i = 0; i < 0x200; ++i)
             {
-                bool lu = (UChar.GetType(i) == UUnicodeCategory.UppercaseLetter);
+                bool lu = (UChar.GetUnicodeCategory(i) == UUnicodeCategory.UppercaseLetter);
                 if (lu != set.Contains((char)i))
                 {
                     Errln("FAIL: Lu contains " + (char)i + " = " +

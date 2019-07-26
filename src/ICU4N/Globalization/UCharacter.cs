@@ -80,15 +80,15 @@ namespace ICU4N
     /// - alpha:     IsUAlphabetic(c) or HasBinaryProperty(c, UProperty.Alphabetic)
     /// - lower:     IsULower(c) or HasBinaryProperty(c, UProperty.Lowercase)
     /// - upper:     IsUUpper(c) or HasBinaryProperty(c, UProperty.Uppercase)
-    /// - punct:     ((1&lt;&lt;GetType(c)) &amp; ((1&lt;&lt;ECharacterCategory.DashPunctuation)|(1&lt;&lt;CharacterCategory.StartPunctuation)|
+    /// - punct:     ((1&lt;&lt;GetUnicodeCategory(c)) &amp; ((1&lt;&lt;ECharacterCategory.DashPunctuation)|(1&lt;&lt;CharacterCategory.StartPunctuation)|
     ///               (1&lt;&lt;CharacterCategory.EndPunctuation)|(1&lt;&lt;CharacterCategory.ConnectorPunctuation)|(1&lt;&lt;CharacterCategory.OtherPunctuation)|
     ///               (1&lt;&lt;CharacterCategory.InitialPunctuation)|(1&lt;&lt;CharacterCategory.FinalPunctuation)))!=0
-    /// - digit:     IsDigit(c) or GetType(c)==CharacterCategory.DecimalDigitNumber
+    /// - digit:     IsDigit(c) or GetUnicodeCategory(c)==CharacterCategory.DecimalDigitNumber
     /// - xdigit:    HasBinaryProperty(c, UProperty.POSIX_XDigit)
     /// - alnum:     HasBinaryProperty(c, UProperty.POSIX_Alnum)
     /// - space:     IsUWhiteSpace(c) or HasBinaryProperty(c, UProperty.White_Space)
     /// - blank:     HasBinaryProperty(c, UProperty.POSIX_Blank)
-    /// - cntrl:     GetType(c)==CharacterCategory.Control
+    /// - cntrl:     GetUnicodeCategory(c)==CharacterCategory.Control
     /// - graph:     HasBinaryProperty(c, UProperty.POSIX_Graph)
     /// - print:     HasBinaryProperty(c, UProperty.POSIX_Print)
     /// </code>
@@ -104,7 +104,7 @@ namespace ICU4N
     ///         most of general categories "Z" (separators) + most whitespace ISO controls
     ///         (including no-break spaces, but excluding IS1..IS4 and ZWSP)
     ///     </description></item>
-    ///     <item><term><see cref="IsWhitespace(int)"/></term><description>
+    ///     <item><term><see cref="IsWhiteSpace(int)"/></term><description>
     ///         .NET <see cref="Char.IsWhiteSpace(char)"/> or <see cref="Char.IsWhiteSpace(string, int)"/>; 
     ///         Z + whitespace ISO controls but excluding no-break spaces
     ///     </description></item>
@@ -811,7 +811,7 @@ namespace ICU4N
 
             /// <summary>
             /// One more than the highest normal UnicodeBlock value.
-            /// The highest value is available via <see cref="UChar.GetInt32PropertyValue(int, UProperty)"/> 
+            /// The highest value is available via <see cref="UChar.GetIntPropertyValue(int, UProperty)"/> 
             /// with parameter <see cref="UProperty.Block"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -1813,7 +1813,7 @@ namespace ICU4N
                 }
 
                 return UnicodeBlock.GetInstance(
-                        UCharacterProperty.Instance.GetInt32PropertyValue(ch, (int)UProperty.Block));
+                        UCharacterProperty.Instance.GetIntPropertyValue(ch, (int)UProperty.Block));
             }
 
             /// <summary>
@@ -1926,7 +1926,7 @@ namespace ICU4N
         /// East Asian Width constants.
         /// </summary>
         /// <seealso cref="UProperty.East_Asian_Width"/>
-        /// <seealso cref="UChar.GetInt32PropertyValue(int, UProperty)"/>
+        /// <seealso cref="UChar.GetIntPropertyValue(int, UProperty)"/>
         /// <stable>ICU 2.4</stable>
         public static class EastAsianWidth
         {
@@ -2806,7 +2806,7 @@ namespace ICU4N
         /// <returns>true if the code point is a space character as
         /// defined by <see cref="Character.IsSpace(char)"/>.</returns>
         [Obsolete("ICU 3.4 (Java)")]
-        public static bool IsSpace(int ch)
+        internal static bool IsSpace(int ch) // ICU4N specific - marked this java-ism internal instead of public
         {
             return ch <= 0x20 &&
                     (ch == 0x20 || ch == 0x09 || ch == 0x0a || ch == 0x0c || ch == 0x0d);
@@ -2826,13 +2826,67 @@ namespace ICU4N
         /// values, though similar, skip the value 17. The <see cref="UnicodeCategory"/>
         /// numeric values are often different than with <see cref="UUnicodeCategory"/>'s values.
         /// </summary>
-        /// <param name="ch">Code point whose type is to be determined.</param>
+        /// <param name="ch">Code point whose category is to be determined.</param>
         /// <returns>Category which is a value of <see cref="UUnicodeCategory"/>.</returns>
         /// <stable>ICU 2.1</stable>
-        public static UUnicodeCategory GetType(int ch) // ICU4N TODO: API - Rename GetUnicodeCategory() to cover Char, add overload for (string, int)
+        public static UUnicodeCategory GetUnicodeCategory(int ch) // ICU4N specific - renamed from GetType() to cover System.Char.GetUnicodeCategory()
         {
             return (UUnicodeCategory)UCharacterProperty.Instance.GetType(ch);
         }
+
+        /// <summary>
+        /// Returns a value indicating a code point's Unicode category.
+        /// Up-to-date Unicode implementation of <c>char.GetUnicodeCategory(char)</c>
+        /// except for the code points that had their category changed.
+        /// <para/>
+        /// Return results are constants from the enum <see cref="UUnicodeCategory"/>.
+        /// <para/>
+        /// <em>NOTE:</em> the <see cref="UUnicodeCategory"/> values are <em>not</em> compatible with
+        /// those returned by <c>char.GetUnicodeCategory(char)</c> or <see cref="Character.GetType(int)"/>.
+        /// <see cref="UUnicodeCategory"/> values
+        /// match the ones used in ICU4C, while <see cref="Character"/> type
+        /// values, though similar, skip the value 17. The <see cref="UnicodeCategory"/>
+        /// numeric values are often different than with <see cref="UUnicodeCategory"/>'s values.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> whose category is to be determined.</param>
+        /// <returns>Category which is a value of <see cref="UUnicodeCategory"/>.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static UUnicodeCategory GetUnicodeCategory(char c) // ICU4N specific overload to cover System.Char
+        {
+            return GetUnicodeCategory((int)c);
+        }
+
+        /// <summary>
+        /// Returns a value indicating a code point's Unicode category.
+        /// Up-to-date Unicode implementation of <c>char.GetUnicodeCategory(char)</c>
+        /// except for the code points that had their category changed.
+        /// <para/>
+        /// Return results are constants from the enum <see cref="UUnicodeCategory"/>.
+        /// <para/>
+        /// <em>NOTE:</em> the <see cref="UUnicodeCategory"/> values are <em>not</em> compatible with
+        /// those returned by <c>char.GetUnicodeCategory(char)</c> or <see cref="Character.GetType(int)"/>.
+        /// <see cref="UUnicodeCategory"/> values
+        /// match the ones used in ICU4C, while <see cref="Character"/> type
+        /// values, though similar, skip the value 17. The <see cref="UnicodeCategory"/>
+        /// numeric values are often different than with <see cref="UUnicodeCategory"/>'s values.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The character position in <paramref name="s"/>.</param>
+        /// <returns>Category which is a value of <see cref="UUnicodeCategory"/>.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static UUnicodeCategory GetUnicodeCategory(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return GetUnicodeCategory((int)s[index]);
+        }
+
 
         /// <summary>
         /// Determines if a code point has a defined meaning in the up-to-date
@@ -2847,7 +2901,45 @@ namespace ICU4N
         public static bool IsDefined(int ch)
         {
             // ICU4N specific - need to check for the value, not 0
-            return GetType(ch) != UUnicodeCategory.OtherNotAssigned;
+            return GetUnicodeCategory(ch) != UUnicodeCategory.OtherNotAssigned;
+        }
+
+        /// <summary>
+        /// Determines if a code point has a defined meaning in the up-to-date
+        /// Unicode standard.
+        /// E.g. supplementary code points though allocated space are not defined in
+        /// Unicode yet.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to be determined if it is defined in the most
+        /// current version of Unicode.</param>
+        /// <returns>true if this code point is defined in unicode.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsDefined(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsDefined((int)c);
+        }
+
+        /// <summary>
+        /// Determines if a code point has a defined meaning in the up-to-date
+        /// Unicode standard.
+        /// E.g. supplementary code points though allocated space are not defined in
+        /// Unicode yet.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if this code point is defined in unicode.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsDefined(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsDefined((int)s[index]);
         }
 
         /// <summary>
@@ -2858,9 +2950,44 @@ namespace ICU4N
         /// <param name="ch">Code point to query.</param>
         /// <returns>true if this code point is a digit.</returns>
         /// <stable>ICU 2.1</stable>
-        public static bool IsDigit(int ch) // ICU4N TODO: API - to cover Char, add overload for (string, int)
+        public static bool IsDigit(int ch)
         {
-            return GetType(ch) == UUnicodeCategory.DecimalDigitNumber;
+            return GetUnicodeCategory(ch) == UUnicodeCategory.DecimalDigitNumber;
+        }
+
+        /// <summary>
+        /// Determines if a code point is a .NET digit.
+        /// <para/>
+        /// It returns true for decimal digits only.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to query.</param>
+        /// <returns>true if this code point is a digit.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsDigit(char c) // ICU4N specific overload to cover System.Char
+        {
+            return IsDigit((int)c);
+        }
+
+        /// <summary>
+        /// Determines if a code point is a .NET digit.
+        /// <para/>
+        /// It returns true for decimal digits only.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if this code point is a digit.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsDigit(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsDigit((int)s[index]);
         }
 
         /// <summary>
@@ -2872,10 +2999,47 @@ namespace ICU4N
         /// <param name="ch">Code point to determine if it is an ISO control character.</param>
         /// <returns>true if code point is a ISO control character.</returns>
         /// <stable>ICU 2.1</stable>
-        public static bool IsISOControl(int ch) // ICU4N TODO: API - to cover Char, add overload for (string, int)
+        public static bool IsISOControl(int ch)
         {
             return ch >= 0 && ch <= APPLICATION_PROGRAM_COMMAND_ &&
                     ((ch <= UNIT_SEPARATOR_) || (ch >= DELETE_));
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is an ISO control character.
+        /// A code point is considered to be an ISO control character if it is in
+        /// the range &#92;u0000 through &#92;u001F or in the range &#92;u007F through
+        /// &#92;u009F.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to determine if it is an ISO control character.</param>
+        /// <returns>true if code point is a ISO control character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsISOControl(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsISOControl((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is an ISO control character.
+        /// A code point is considered to be an ISO control character if it is in
+        /// the range &#92;u0000 through &#92;u001F or in the range &#92;u007F through
+        /// &#92;u009F.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index"></param>
+        /// <returns>true if code point is a ISO control character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsISOControl(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsISOControl((int)s[index]);
         }
 
         /// <summary>
@@ -2885,10 +3049,10 @@ namespace ICU4N
         /// <param name="ch">Code point to determine if it is a letter.</param>
         /// <returns>true if code point is a letter.</returns>
         /// <stable>ICU 2.1</stable>
-        public static bool IsLetter(int ch) // ICU4N TODO: API - to cover Char, add overload for (string, int)
+        public static bool IsLetter(int ch)
         {
             // if props == 0, it will just fall through and return false
-            return ((1 << GetType(ch).ToInt32())
+            return ((1 << GetUnicodeCategory(ch).ToInt32())
                     & ((1 << UUnicodeCategory.UppercaseLetter.ToInt32())
                             | (1 << UUnicodeCategory.LowercaseLetter.ToInt32())
                             | (1 << UUnicodeCategory.TitlecaseLetter.ToInt32())
@@ -2897,14 +3061,47 @@ namespace ICU4N
         }
 
         /// <summary>
+        /// Determines if the specified code point is a letter.
+        /// Up-to-date Unicode implementation of <see cref="char.IsLetter(char)"/>.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to determine if it is a letter.</param>
+        /// <returns>true if code point is a letter.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsLetter(char c) // ICU4N specific overload to cover System.Char
+        {
+            return IsLetter((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is a letter.
+        /// Up-to-date Unicode implementation of <see cref="char.IsLetter(string, int)"/>.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if code point is a letter.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsLetter(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsLetter((int)s[index]);
+        }
+
+        /// <summary>
         /// Determines if the specified code point is a letter or digit.
         /// </summary>
         /// <param name="ch">Code point to determine if it is a letter or a digit.</param>
         /// <returns>true if code point is a letter or a digit.</returns>
         /// <stable>ICU 2.1</stable>
-        public static bool IsLetterOrDigit(int ch) // ICU4N TODO: API - to cover Char, add overload for (string, int)
+        public static bool IsLetterOrDigit(int ch)
         {
-            return ((1 << GetType(ch).ToInt32())
+            return ((1 << GetUnicodeCategory(ch).ToInt32())
                     & ((1 << UUnicodeCategory.UppercaseLetter.ToInt32())
                             | (1 << UUnicodeCategory.LowercaseLetter.ToInt32())
                             | (1 << UUnicodeCategory.TitlecaseLetter.ToInt32())
@@ -2913,12 +3110,45 @@ namespace ICU4N
                             | (1 << UUnicodeCategory.DecimalDigitNumber.ToInt32()))) != 0;
         }
 
+        /// <summary>
+        /// Determines if the specified code point is a letter or digit.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to determine if it is a letter or a digit.</param>
+        /// <returns>true if code point is a letter or a digit.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsLetterOrDigit(char c) // ICU4N specific overload to cover System.Char
+        {
+            return IsLetterOrDigit((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is a letter or digit.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if code point is a letter or a digit.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsLetterOrDigit(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsLetterOrDigit((int)s[index]);
+        }
+
         // ICU4N: We definitely don't need any of the Java.. functions. 
         // In .NET, it is not so straightforward to determine if a character
         // is an identifier (and it is not built in).
 
         // ICU4N TODO: Perhaps it would make sense to duplicate these from Java,
         // since in .NET determining if a string is an identifier is difficult.
+        // Note we will need to do this for C# and VB at least (possibly others).
+        // Here are the exact rules for C#: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/lexical-structure#identifiers
 
         /// <summary>
         /// Determines if the specified code point is a lowercase character.
@@ -2936,12 +3166,61 @@ namespace ICU4N
         /// <param name="ch">Code point to determine if it is in lowercase.</param>
         /// <returns>true if code point is a lowercase character.</returns>
         /// <stable>ICU 2.1</stable>
-        // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
-        // ICU4N TODO: API - to cover Char, add overload for (string, int)
-        public static bool IsLowerCase(int ch) 
+        public static bool IsLower(int ch) // ICU4N specific - renamed from IsLowerCase
         {
             // if props == 0, it will just fall through and return false
-            return GetType(ch) == UUnicodeCategory.LowercaseLetter;
+            return GetUnicodeCategory(ch) == UUnicodeCategory.LowercaseLetter;
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is a lowercase character.
+        /// UnicodeData only contains case mappings for code points where they are
+        /// one-to-one mappings; it also omits information about context-sensitive
+        /// case mappings.
+        /// </summary>
+        /// <remarks>
+        /// For more information about Unicode case mapping
+        /// please refer to the
+        /// <a href="http://www.unicode.org/unicode/reports/tr21/">Technical report #21</a>.
+        /// <para/>
+        /// Up-to-date Unicode implementation of <see cref="char.IsLower(char)"/>.
+        /// </remarks>
+        /// <param name="c"><see cref="char"/> to determine if it is in lowercase.</param>
+        /// <returns>true if code point is a lowercase character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsLower(char c) // ICU4N specific overload to cover System.Char
+        {
+            return IsLower((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is a lowercase character.
+        /// UnicodeData only contains case mappings for code points where they are
+        /// one-to-one mappings; it also omits information about context-sensitive
+        /// case mappings.
+        /// </summary>
+        /// <remarks>
+        /// For more information about Unicode case mapping
+        /// please refer to the
+        /// <a href="http://www.unicode.org/unicode/reports/tr21/">Technical report #21</a>.
+        /// <para/>
+        /// Up-to-date Unicode implementation of <see cref="char.IsLower(string, int)"/>.
+        /// </remarks>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if code point is a lowercase character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsLower(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsLower((int)s[index]);
         }
 
         /// <summary>
@@ -2995,13 +3274,11 @@ namespace ICU4N
         /// <param name="ch">Code point to determine if it is a white space.</param>
         /// <returns>true if the specified code point is a white space character.</returns>
         /// <stable>ICU 2.1</stable>
-        // ICU4N TODO: API Rename IsWhiteSpace (for consistency with .NET)
-        // ICU4N TODO: API - to cover Char, add overload for (string, int)
-        public static bool IsWhitespace(int ch) 
+        public static bool IsWhiteSpace(int ch) // ICU4N specific - renamed from IsWhitespace (lowercase s)
         {
             // exclude no-break spaces
             // if props == 0, it will just fall through and return false
-            return ((1 << (int)GetType(ch)) &
+            return ((1 << (int)GetUnicodeCategory(ch)) &
                     ((1 << (int)UUnicodeCategory.SpaceSeparator)
                             | (1 << (int)UUnicodeCategory.LineSeparator)
                             | (1 << (int)UUnicodeCategory.ParagraphSeparator))) != 0
@@ -3012,20 +3289,173 @@ namespace ICU4N
         }
 
         /// <summary>
+        /// Determines if the specified code point is a white space character.
+        /// </summary>
+        /// <remarks>
+        /// A code point is considered to be an whitespace character if and only
+        /// if it satisfies one of the following criteria:
+        /// <list type="bullet">
+        ///     <item><description>
+        ///         It is a Unicode Separator character (categories "Z" = "Zs" or "Zl" or "Zp"), but is not
+        ///         also a non-breaking space (&#92;u00A0 or &#92;u2007 or &#92;u202F).
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u0009, HORIZONTAL TABULATION.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u000A, LINE FEED.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u000B, VERTICAL TABULATION.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u000C, FORM FEED.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u000D, CARRIAGE RETURN.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u001C, FILE SEPARATOR.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u001D, GROUP SEPARATOR.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u001E, RECORD SEPARATOR.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u001F, UNIT SEPARATOR.
+        ///     </description></item>
+        /// </list>
+        /// <para/>
+        /// This API tries to sync with the semantics of .NET's <see cref="char.IsWhiteSpace(char)"/>, 
+        /// but it may not return the exact same results because of the Unicode version
+        /// difference.
+        /// <para/>
+        /// Note: Unicode 4.0.1 changed U+200B ZERO WIDTH SPACE from a Space Separator (Zs)
+        /// to a Format Control (Cf). Since then, <c>IsWhitespace(0x200b)</c> returns false.
+        /// See <a href="http://www.unicode.org/versions/Unicode4.0.1/">http://www.unicode.org/versions/Unicode4.0.1/</a>.
+        /// </remarks>
+        /// <param name="c"><see cref="char"/> to determine if it is a white space.</param>
+        /// <returns>true if the specified code point is a white space character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsWhiteSpace(char c) // ICU4N specific overload to cover System.Char
+        {
+            return IsWhiteSpace(c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is a white space character.
+        /// </summary>
+        /// <remarks>
+        /// A code point is considered to be an whitespace character if and only
+        /// if it satisfies one of the following criteria:
+        /// <list type="bullet">
+        ///     <item><description>
+        ///         It is a Unicode Separator character (categories "Z" = "Zs" or "Zl" or "Zp"), but is not
+        ///         also a non-breaking space (&#92;u00A0 or &#92;u2007 or &#92;u202F).
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u0009, HORIZONTAL TABULATION.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u000A, LINE FEED.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u000B, VERTICAL TABULATION.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u000C, FORM FEED.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u000D, CARRIAGE RETURN.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u001C, FILE SEPARATOR.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u001D, GROUP SEPARATOR.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u001E, RECORD SEPARATOR.
+        ///     </description></item>
+        ///     <item><description>
+        ///         It is &#92;u001F, UNIT SEPARATOR.
+        ///     </description></item>
+        /// </list>
+        /// <para/>
+        /// This API tries to sync with the semantics of .NET's <see cref="char.IsWhiteSpace(string, int)"/>, 
+        /// but it may not return the exact same results because of the Unicode version
+        /// difference.
+        /// <para/>
+        /// Note: Unicode 4.0.1 changed U+200B ZERO WIDTH SPACE from a Space Separator (Zs)
+        /// to a Format Control (Cf). Since then, <c>IsWhitespace(0x200b)</c> returns false.
+        /// See <a href="http://www.unicode.org/versions/Unicode4.0.1/">http://www.unicode.org/versions/Unicode4.0.1/</a>.
+        /// </remarks>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the specified code point is a white space character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsWhiteSpace(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsWhiteSpace((int)s[index]);
+        }
+
+        /// <summary>
         /// Determines if the specified code point is a Unicode specified space
         /// character, i.e. if code point is in the category Zs, Zl and Zp.
         /// </summary>
         /// <param name="ch">Code point to determine if it is a space.</param>
         /// <returns>true if the specified code point is a space character.</returns>
         /// <stable>ICU 2.1</stable>
-        // ICU4N TODO: API - to cover Char, add overload for (string, int)
         public static bool IsSpaceChar(int ch)
         {
             // if props == 0, it will just fall through and return false
-            return ((1 << GetType(ch).ToInt32()) & ((1 << UUnicodeCategory.SpaceSeparator.ToInt32())
+            return ((1 << GetUnicodeCategory(ch).ToInt32()) & ((1 << UUnicodeCategory.SpaceSeparator.ToInt32())
                     | (1 << UUnicodeCategory.LineSeparator.ToInt32())
                     | (1 << UUnicodeCategory.ParagraphSeparator.ToInt32())))
                     != 0;
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is a Unicode specified space
+        /// character, i.e. if code point is in the category Zs, Zl and Zp.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to determine if it is a space.</param>
+        /// <returns>true if the specified code point is a space character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsSpaceChar(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsSpaceChar((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is a Unicode specified space
+        /// character, i.e. if code point is in the category Zs, Zl and Zp.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the specified code point is a space character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsSpaceChar(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsSpaceChar((int)s[index]);
         }
 
         /// <summary>
@@ -3042,11 +3472,57 @@ namespace ICU4N
         /// <param name="ch">Code point to determine if it is in title case.</param>
         /// <returns>true if the specified code point is a titlecase character.</returns>
         /// <stable>ICU 2.1</stable>
-        // ICU4N TODO: API - to cover Char, add overload for (string, int)
         public static bool IsTitleCase(int ch)
         {
             // if props == 0, it will just fall through and return false
-            return GetType(ch) == UUnicodeCategory.TitlecaseLetter;
+            return GetUnicodeCategory(ch) == UUnicodeCategory.TitlecaseLetter;
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is a titlecase character.
+        /// UnicodeData only contains case mappings for code points where they are
+        /// one-to-one mappings; it also omits information about context-sensitive
+        /// case mappings.
+        /// </summary>
+        /// <remarks>
+        /// For more information about Unicode case mapping
+        /// please refer to the
+        /// <a href="http://www.unicode.org/unicode/reports/tr21/">Technical report #21</a>.
+        /// </remarks>
+        /// <param name="c"><see cref="char"/> to determine if it is in title case.</param>
+        /// <returns>true if the specified code point is a titlecase character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsTitleCase(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsTitleCase((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is a titlecase character.
+        /// UnicodeData only contains case mappings for code points where they are
+        /// one-to-one mappings; it also omits information about context-sensitive
+        /// case mappings.
+        /// </summary>
+        /// <remarks>
+        /// For more information about Unicode case mapping
+        /// please refer to the
+        /// <a href="http://www.unicode.org/unicode/reports/tr21/">Technical report #21</a>.
+        /// </remarks>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the specified code point is a titlecase character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsTitleCase(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsTitleCase((int)s[index]);
         }
 
         /// <summary>
@@ -3078,12 +3554,11 @@ namespace ICU4N
         /// identifier suffix after the first character.
         /// </returns>
         /// <stable>ICU 2.1</stable>
-        // ICU4N TODO: API - to cover Char, add overload for (string, int)
         public static bool IsUnicodeIdentifierPart(int ch)
         {
             // if props == 0, it will just fall through and return false
             // cat == format
-            return ((1 << GetType(ch).ToInt32())
+            return ((1 << GetUnicodeCategory(ch).ToInt32())
                     & ((1 << UUnicodeCategory.UppercaseLetter.ToInt32())
                             | (1 << UUnicodeCategory.LowercaseLetter.ToInt32())
                             | (1 << UUnicodeCategory.TitlecaseLetter.ToInt32())
@@ -3095,6 +3570,82 @@ namespace ICU4N
                             | (1 << UUnicodeCategory.SpacingCombiningMark.ToInt32())
                             | (1 << UUnicodeCategory.NonSpacingMark.ToInt32()))) != 0
                             || IsIdentifierIgnorable(ch);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point may be any part of a Unicode
+        /// identifier other than the starting character.
+        /// </summary>
+        /// <remarks>
+        /// A code point may be part of a Unicode identifier if and only if it is
+        /// one of the following:
+        /// <list type="bullet">
+        ///     <item><description> Lu Uppercase letter </description></item>
+        ///     <item><description> Ll Lowercase letter </description></item>
+        ///     <item><description> Lt Titlecase letter </description></item>
+        ///     <item><description> Lm Modifier letter </description></item>
+        ///     <item><description> Lo Other letter </description></item>
+        ///     <item><description> Nl Letter number </description></item>
+        ///     <item><description> Pc Connecting punctuation character </description></item>
+        ///     <item><description> Nd decimal number </description></item>
+        ///     <item><description> Mc Spacing combining mark </description></item>
+        ///     <item><description> Mn Non-spacing mark </description></item>
+        ///     <item><description> Cf formatting code </description></item>
+        /// </list>
+        /// <para/>
+        /// See <a href="http://www.unicode.org/unicode/reports/tr8/">UTR #8</a>.
+        /// </remarks>
+        /// <param name="c"><see cref="char"/> to determine if is can be part of a Unicode
+        /// identifier.</param>
+        /// <returns>true if code point is any character belonging a unicode
+        /// identifier suffix after the first character.
+        /// </returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUnicodeIdentifierPart(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsUnicodeIdentifierPart((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point may be any part of a Unicode
+        /// identifier other than the starting character.
+        /// </summary>
+        /// <remarks>
+        /// A code point may be part of a Unicode identifier if and only if it is
+        /// one of the following:
+        /// <list type="bullet">
+        ///     <item><description> Lu Uppercase letter </description></item>
+        ///     <item><description> Ll Lowercase letter </description></item>
+        ///     <item><description> Lt Titlecase letter </description></item>
+        ///     <item><description> Lm Modifier letter </description></item>
+        ///     <item><description> Lo Other letter </description></item>
+        ///     <item><description> Nl Letter number </description></item>
+        ///     <item><description> Pc Connecting punctuation character </description></item>
+        ///     <item><description> Nd decimal number </description></item>
+        ///     <item><description> Mc Spacing combining mark </description></item>
+        ///     <item><description> Mn Non-spacing mark </description></item>
+        ///     <item><description> Cf formatting code </description></item>
+        /// </list>
+        /// <para/>
+        /// See <a href="http://www.unicode.org/unicode/reports/tr8/">UTR #8</a>.
+        /// </remarks>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if code point is any character belonging a unicode
+        /// identifier suffix after the first character.
+        /// </returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUnicodeIdentifierPart(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsUnicodeIdentifierPart((int)s[index]);
         }
 
         /// <summary>
@@ -3119,18 +3670,80 @@ namespace ICU4N
         /// identifier.
         /// </returns>
         /// <stable>ICU 2.1</stable>
-        // ICU4N TODO: API - to cover Char, add overload for (string, int)
         public static bool IsUnicodeIdentifierStart(int ch)
         {
             /*int cat = getType(ch);*/
             // if props == 0, it will just fall through and return false
-            return ((1 << GetType(ch).ToInt32())
+            return ((1 << GetUnicodeCategory(ch).ToInt32())
                     & ((1 << UUnicodeCategory.UppercaseLetter.ToInt32())
                             | (1 << UUnicodeCategory.LowercaseLetter.ToInt32())
                             | (1 << UUnicodeCategory.TitlecaseLetter.ToInt32())
                             | (1 << UUnicodeCategory.ModifierLetter.ToInt32())
                             | (1 << UUnicodeCategory.OtherLetter.ToInt32())
                             | (1 << UUnicodeCategory.LetterNumber.ToInt32()))) != 0;
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is permissible as the first
+        /// character in a Unicode identifier.
+        /// </summary>
+        /// <remarks>
+        /// A code point may start a Unicode identifier if it is of type either
+        /// <list type="bullet">
+        ///     <item><description> Lu Uppercase letter </description></item>
+        ///     <item><description> Ll Lowercase letter </description></item>
+        ///     <item><description> Lt Titlecase letter </description></item>
+        ///     <item><description> Lm Modifier letter </description></item>
+        ///     <item><description> Lo Other letter </description></item>
+        ///     <item><description> Nl Letter number </description></item>
+        /// </list>
+        /// <para/>
+        /// See <a href="http://www.unicode.org/unicode/reports/tr8/">UTR #8</a>.
+        /// </remarks>
+        /// <param name="c"><see cref="char"/> to determine if it can start a Unicode identifier.</param>
+        /// <returns>true if code point is the first character belonging a unicode
+        /// identifier.
+        /// </returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUnicodeIdentifierStart(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsUnicodeIdentifierStart((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is permissible as the first
+        /// character in a Unicode identifier.
+        /// </summary>
+        /// <remarks>
+        /// A code point may start a Unicode identifier if it is of type either
+        /// <list type="bullet">
+        ///     <item><description> Lu Uppercase letter </description></item>
+        ///     <item><description> Ll Lowercase letter </description></item>
+        ///     <item><description> Lt Titlecase letter </description></item>
+        ///     <item><description> Lm Modifier letter </description></item>
+        ///     <item><description> Lo Other letter </description></item>
+        ///     <item><description> Nl Letter number </description></item>
+        /// </list>
+        /// <para/>
+        /// See <a href="http://www.unicode.org/unicode/reports/tr8/">UTR #8</a>.
+        /// </remarks>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if code point is the first character belonging a unicode
+        /// identifier.
+        /// </returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUnicodeIdentifierStart(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsUnicodeIdentifierStart((int)s[index]);
         }
 
         /// <summary>
@@ -3150,7 +3763,6 @@ namespace ICU4N
         /// identifier.</param>
         /// <returns>true if the code point is ignorable.</returns>
         /// <stable>ICU 2.1</stable>
-        // ICU4N TODO: API - to cover Char, add overload for (string, int)
         public static bool IsIdentifierIgnorable(int ch)
         {
             // see java.lang.Character.isIdentifierIgnorable() on range of
@@ -3161,7 +3773,59 @@ namespace ICU4N
                         && !((ch >= 0x9 && ch <= 0xd)
                                 || (ch >= 0x1c && ch <= 0x1f));
             }
-            return GetType(ch) == UUnicodeCategory.Format;
+            return GetUnicodeCategory(ch) == UUnicodeCategory.Format;
+        }
+
+        /// <summary>
+        /// Determines if the specified code point should be regarded as an
+        /// ignorable character in a .NET identifier.
+        /// </summary>
+        /// <remarks>
+        /// A character is .NET-identifier-ignorable if it has the general category
+        /// Cf Formatting Control, or it is a non-.NET-whitespace ISO control:
+        /// U+0000..U+0008, U+000E..U+001B, U+007F..U+009F.
+        /// <para/>
+        /// See <a href="http://www.unicode.org/unicode/reports/tr8/">UTR #8</a>.
+        /// <para/>
+        /// Note that Unicode just recommends to ignore Cf (format controls).
+        /// </remarks>
+        /// <param name="c"><see cref="char"/> to be determined if it can be ignored in a Unicode
+        /// identifier.</param>
+        /// <returns>true if the code point is ignorable.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsIdentifierIgnorable(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsIdentifierIgnorable((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point should be regarded as an
+        /// ignorable character in a .NET identifier.
+        /// </summary>
+        /// <remarks>
+        /// A character is .NET-identifier-ignorable if it has the general category
+        /// Cf Formatting Control, or it is a non-.NET-whitespace ISO control:
+        /// U+0000..U+0008, U+000E..U+001B, U+007F..U+009F.
+        /// <para/>
+        /// See <a href="http://www.unicode.org/unicode/reports/tr8/">UTR #8</a>.
+        /// <para/>
+        /// Note that Unicode just recommends to ignore Cf (format controls).
+        /// </remarks>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the code point is ignorable.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsIdentifierIgnorable(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsIdentifierIgnorable((int)s[index]);
         }
 
         /// <summary>
@@ -3184,11 +3848,69 @@ namespace ICU4N
         /// <param name="ch">Code point to determine if it is in uppercase.</param>
         /// <returns>true if the code point is an uppercase character.</returns>
         /// <stable>ICU 2.1</stable>
-        // ICU4N TODO: API - to cover Char, add overload for (string, int)
-        public static bool IsUpperCase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
+        public static bool IsUpper(int ch) // ICU4N specific - renamed from IsUpperCase
         {
             // if props == 0, it will just fall through and return false
-            return GetType(ch) == UUnicodeCategory.UppercaseLetter;
+            return GetUnicodeCategory(ch) == UUnicodeCategory.UppercaseLetter;
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is an uppercase character.
+        /// UnicodeData only contains case mappings for code point where they are
+        /// one-to-one mappings; it also omits information about context-sensitive
+        /// case mappings.
+        /// </summary>
+        /// <remarks>
+        /// For language specific case conversion behavior, use <c>CultureInfo.TextInfo.ToUpper(char)</c>.
+        /// <para/>
+        /// For example, the case conversion for dot-less i and dotted I in Turkish,
+        /// or for final sigma in Greek.
+        /// For more information about Unicode case mapping please refer to the
+        /// <a href="http://www.unicode.org/unicode/reports/tr21/">
+        /// Technical report #21</a>.
+        /// <para/>
+        /// Up-to-date Unicode implementation of <see cref="Char.IsUpper(char)"/>.
+        /// </remarks>
+        /// <param name="c"><see cref="char"/> to determine if it is in uppercase.</param>
+        /// <returns>true if the <see cref="char"/> is an uppercase character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUpper(char c) // ICU4N specific overload to cover System.Char
+        {
+            return IsUpper((int)c);
+        }
+
+        /// <summary>
+        /// Determines if the specified code point is an uppercase character.
+        /// UnicodeData only contains case mappings for code point where they are
+        /// one-to-one mappings; it also omits information about context-sensitive
+        /// case mappings.
+        /// </summary>
+        /// <remarks>
+        /// For language specific case conversion behavior, use <c>CultureInfo.TextInfo.ToUpper(char)</c>.
+        /// <para/>
+        /// For example, the case conversion for dot-less i and dotted I in Turkish,
+        /// or for final sigma in Greek.
+        /// For more information about Unicode case mapping please refer to the
+        /// <a href="http://www.unicode.org/unicode/reports/tr21/">
+        /// Technical report #21</a>.
+        /// <para/>
+        /// Up-to-date Unicode implementation of <see cref="Char.IsUpper(string, int)"/>.
+        /// </remarks>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the <see cref="char"/> is an uppercase character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUpper(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsUpper((int)s[index]);
         }
 
         /// <summary>
@@ -3320,6 +4042,43 @@ namespace ICU4N
 
         /// <icu/>
         /// <summary>
+        /// Determines if the code point is a supplementary character.
+        /// A code point is a supplementary character if and only if it is greater
+        /// than <see cref="SupplementaryMinValue"/>.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to be determined if it is in the supplementary plane.</param>
+        /// <returns>true if code point is a supplementary character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsSupplementary(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsSupplementary((int)c);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Determines if the code point is a supplementary character.
+        /// A code point is a supplementary character if and only if it is greater
+        /// than <see cref="SupplementaryMinValue"/>.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if code point is a supplementary character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsSupplementary(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsSupplementary((int)s[index]);
+        }
+
+        /// <icu/>
+        /// <summary>
         /// Determines if the code point is in the BMP plane.
         /// </summary>
         /// <param name="ch">Code point to be determined if it is not a supplementary character.</param>
@@ -3332,6 +4091,39 @@ namespace ICU4N
 
         /// <icu/>
         /// <summary>
+        /// Determines if the code point is in the BMP plane.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to be determined if it is not a supplementary character.</param>
+        /// <returns>true if code point is not a supplementary character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsBMP(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsBMP((int)c);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Determines if the code point is in the BMP plane.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if code point is not a supplementary character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsBMP(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsBMP((int)s[index]);
+        }
+
+        /// <icu/>
+        /// <summary>
         /// Determines whether the specified code point is a printable character
         /// according to the Unicode standard.
         /// </summary>
@@ -3340,13 +4132,48 @@ namespace ICU4N
         /// <stable>ICU 2.1</stable>
         public static bool IsPrintable(int ch)
         {
-            UUnicodeCategory cat = GetType(ch);
+            UUnicodeCategory cat = GetUnicodeCategory(ch);
             // if props == 0, it will just fall through and return false
             return (cat != UUnicodeCategory.OtherNotAssigned &&
                     cat != UUnicodeCategory.Control &&
                     cat != UUnicodeCategory.Format &&
                     cat != UUnicodeCategory.PrivateUse &&
                     cat != UUnicodeCategory.Surrogate);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Determines whether the specified code point is a printable character
+        /// according to the Unicode standard.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to be determined if it is printable.</param>
+        /// <returns>true if the code point is a printable character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsPrintable(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsPrintable((int)c);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Determines whether the specified code point is a printable character
+        /// according to the Unicode standard.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the code point is a printable character.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsPrintable(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsPrintable((int)s[index]);
         }
 
         /// <icu/>
@@ -3360,7 +4187,7 @@ namespace ICU4N
         /// <stable>ICU 2.1</stable>
         public static bool IsBaseForm(int ch)
         {
-            UUnicodeCategory cat = GetType(ch);
+            UUnicodeCategory cat = GetUnicodeCategory(ch);
             // if props == 0, it will just fall through and return false
             return cat == UUnicodeCategory.DecimalDigitNumber ||
                     cat == UUnicodeCategory.OtherNumber ||
@@ -3373,6 +4200,43 @@ namespace ICU4N
                     cat == UUnicodeCategory.NonSpacingMark ||
                     cat == UUnicodeCategory.EnclosingMark ||
                     cat == UUnicodeCategory.SpacingCombiningMark;
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Determines whether the specified code point is of base form.
+        /// A code point of base form does not graphically combine with preceding
+        /// characters, and is neither a control nor a format character.
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to be determined if it is of base form.</param>
+        /// <returns>true if the code point is of base form.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsBaseForm(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsBaseForm((int)c);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Determines whether the specified code point is of base form.
+        /// A code point of base form does not graphically combine with preceding
+        /// characters, and is neither a control nor a format character.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the code point is of base form.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsBaseForm(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsBaseForm((int)s[index]);
         }
 
         /// <icu/>
@@ -3497,7 +4361,7 @@ namespace ICU4N
 
         /// <icu/>
         /// <summary>
-        /// A string is legal iff all its code points are legal.
+        /// A string is legal if and only if all its code points are legal.
         /// A code point is illegal if and only if
         /// <list type="bullet">
         ///     <item><description> Out of bounds, less than 0 or greater than <see cref="UChar.MaxValue"/> </description></item>
@@ -4839,17 +5703,95 @@ namespace ICU4N
 
         /// <icu/>
         /// <summary>
+        /// Check if a code point has the <see cref="UProperty.Alphabetic"/> Unicode property.
+        /// <para/>
+        /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.Alphabetic"/>.
+        /// <para/>
+        /// Different from <see cref="IsLetter(char)"/>!
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to be tested.</param>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUAlphabetic(char c)
+        {
+            return IsUAlphabetic((int)c);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Check if a code point has the <see cref="UProperty.Alphabetic"/> Unicode property.
+        /// <para/>
+        /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.Alphabetic"/>.
+        /// <para/>
+        /// Different from <see cref="IsLetter(string, int)"/>!
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUAlphabetic(string s, int index)
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsUAlphabetic((int)s[index]);
+        }
+
+        /// <icu/>
+        /// <summary>
         /// Check if a code point has the <see cref="UProperty.Lowercase"/> Unicode property.
         /// <para/>
         /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.Lowercase"/>.
         /// <para/>
-        /// This is different from <see cref="IsLowerCase(int)"/>!
+        /// This is different from <see cref="IsLower(int)"/>!
         /// </summary>
         /// <param name="ch">Codepoint to be tested.</param>
         /// <stable>ICU 2.6</stable>
-        public static bool IsULowercase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
+        public static bool IsULower(int ch) // ICU4N specific - renamed from IsULowercase
         {
             return HasBinaryProperty(ch, UProperty.Lowercase);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Check if a code point has the <see cref="UProperty.Lowercase"/> Unicode property.
+        /// <para/>
+        /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.Lowercase"/>.
+        /// <para/>
+        /// This is different from <see cref="IsLower(char)"/>!
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to be tested.</param>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsULower(char c) // ICU4N specific - renamed from IsULowercase
+        {
+            return IsULower((int)c);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Check if a code point has the <see cref="UProperty.Lowercase"/> Unicode property.
+        /// <para/>
+        /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.Lowercase"/>.
+        /// <para/>
+        /// This is different from <see cref="IsLower(string, int)"/>!
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsULower(string s, int index) // ICU4N specific - renamed from IsULowercase
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsULower((int)s[index]);
         }
 
         /// <icu/>
@@ -4858,13 +5800,52 @@ namespace ICU4N
         /// <para/>
         /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.Uppercase"/>.
         /// <para/>
-        /// This is different from <see cref="IsUpperCase(int)"/>!
+        /// This is different from <see cref="IsUpper(int)"/>!
         /// </summary>
         /// <param name="ch">Codepoint to be tested.</param>
         /// <stable>ICU 2.6</stable>
-        public static bool IsUUppercase(int ch) // ICU4N TODO: API - IsUpperCase vs IsUUppercase vs ToUpper - drop "case" from name
+        public static bool IsUUpper(int ch) // ICU4N specific - renamed from IsUUppercase
         {
             return HasBinaryProperty(ch, UProperty.Uppercase);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Check if a code point has the <see cref="UProperty.Uppercase"/> Unicode property.
+        /// <para/>
+        /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.Uppercase"/>.
+        /// <para/>
+        /// This is different from <see cref="IsUpper(char)"/>!
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to be tested.</param>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUUpper(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsUUpper((int)c);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Check if a code point has the <see cref="UProperty.Uppercase"/> Unicode property.
+        /// <para/>
+        /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.Uppercase"/>.
+        /// <para/>
+        /// This is different from <see cref="IsUpper(string, int)"/>!
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static bool IsUUpper(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsUUpper((int)s[index]);
         }
 
         /// <icu/>
@@ -4873,13 +5854,50 @@ namespace ICU4N
         /// <para/>
         /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.White_Space"/>.
         /// <para/>
-        /// This is different from both <see cref="IsSpace(int)"/> and <see cref="IsWhitespace(int)"/>!
+        /// This is different from <see cref="IsWhiteSpace(int)"/>!
         /// </summary>
         /// <param name="ch">Codepoint to be tested.</param>
         /// <stable>ICU 2.6</stable>
         public static bool IsUWhiteSpace(int ch)
         {
             return HasBinaryProperty(ch, UProperty.White_Space);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Check if a code point has the <see cref="UProperty.White_Space"/> Unicode property.
+        /// <para/>
+        /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.White_Space"/>.
+        /// <para/>
+        /// This is different from <see cref="IsWhiteSpace(int)"/>!
+        /// </summary>
+        /// <param name="c"><see cref="char"/> to be tested.</param>
+        /// <draft>ICU4N 60.1</draft>
+        public static bool IsUWhiteSpace(char c) // ICU4N specific overload to mimic System.Char
+        {
+            return IsUWhiteSpace((int)c);
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Check if a code point has the <see cref="UProperty.White_Space"/> Unicode property.
+        /// <para/>
+        /// Same as <see cref="HasBinaryProperty(int, UProperty)"/> with <see cref="UProperty.White_Space"/>.
+        /// <para/>
+        /// This is different from <see cref="IsWhiteSpace(int)"/>!
+        /// </summary>
+        /// <param name="s">A string.</param>
+        /// <param name="index"></param>
+        /// <draft>ICU4N 60.1</draft>
+        public static bool IsUWhiteSpace(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsUWhiteSpace((int)s[index]);
         }
 
         /// <icu/>
@@ -4929,9 +5947,9 @@ namespace ICU4N
         /// <seealso cref="GetIntPropertyMaxValue(UProperty)"/>
         /// <seealso cref="UnicodeVersion"/>
         /// <stable>ICU 2.4</stable>
-        public static int GetInt32PropertyValue(int ch, UProperty type) // ICU4N TODO: API - rename back to GetIntPropertyValue (we don't have to discern between different data types)
+        public static int GetIntPropertyValue(int ch, UProperty type)
         {
-            return UCharacterProperty.Instance.GetInt32PropertyValue(ch, (int)type);
+            return UCharacterProperty.Instance.GetIntPropertyValue(ch, (int)type);
         }
 
         /// <icu/>
@@ -4950,7 +5968,7 @@ namespace ICU4N
             if ((propertyEnum >= UProperty.Binary_Start && propertyEnum < UProperty.Binary_Limit) ||
                     (propertyEnum >= UProperty.Int_Start && propertyEnum < UProperty.Int_Limit))
             {
-                return GetPropertyValueName(propertyEnum, GetInt32PropertyValue(codepoint, propertyEnum),
+                return GetPropertyValueName(propertyEnum, GetIntPropertyValue(codepoint, propertyEnum),
                         nameChoice);
             }
             if (propertyEnum == UProperty.Numeric_Value)
@@ -4990,7 +6008,7 @@ namespace ICU4N
         /// <see cref="UProperty.Int_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UProperty.Int_Limit"/>.
         /// </param>
         /// <returns>
-        /// Minimum value returned by <see cref="GetInt32PropertyValue(int, UProperty)"/>
+        /// Minimum value returned by <see cref="GetIntPropertyValue(int, UProperty)"/>
         /// for a Unicode property. 0 if the property
         /// selector 'type' is out of range.
         /// </returns>
@@ -4998,7 +6016,7 @@ namespace ICU4N
         /// <seealso cref="HasBinaryProperty(int, UProperty)"/>
         /// <seealso cref="UnicodeVersion"/>
         /// <seealso cref="GetIntPropertyMaxValue(UProperty)"/>
-        /// <seealso cref="GetInt32PropertyValue(int, UProperty)"/>
+        /// <seealso cref="GetIntPropertyValue(int, UProperty)"/>
         /// <stable>ICU 2.4</stable>
         public static int GetIntPropertyMinValue(UProperty type)
         {
@@ -5034,7 +6052,7 @@ namespace ICU4N
         /// <see cref="UProperty.Int_Start"/> &lt;= <paramref name="type"/> &lt; <see cref="UProperty.Int_Limit"/>.
         /// </param>
         /// <returns>
-        /// Maximum value returned by <see cref="GetInt32PropertyValue(int, UProperty)"/> for a Unicode
+        /// Maximum value returned by <see cref="GetIntPropertyValue(int, UProperty)"/> for a Unicode
         /// property. &lt;= 0 if the property selector '<paramref name="type"/>' is out of range.
         /// </returns>
         public static int GetIntPropertyMaxValue(UProperty type)
@@ -5130,14 +6148,55 @@ namespace ICU4N
         }
 
         /// <summary>
+        /// Same as <see cref="Character.IsSupplementaryCodePoint(int)"/>.
+        /// </summary>
+        /// <param name="c">The <see cref="char"/> to check.</param>
+        /// <returns>true if <paramref name="c"/> is a supplementary code point.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static bool IsSupplementaryCodePoint(char c)
+        {
+            return IsSupplementaryCodePoint((int)c);
+        }
+
+        /// <summary>
+        /// Same as <see cref="Character.IsSupplementaryCodePoint(int)"/>.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the <see cref="char"/> in <paramref name="s"/> at <paramref name="index"/> is a supplementary code point.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static bool IsSupplementaryCodePoint(string s, int index) // ICU4N specific overload to mimic System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return IsSupplementaryCodePoint((int)s[index]);
+        }
+
+        /// <summary>
         /// Same as <see cref="Char.IsHighSurrogate(char)"/>.
         /// </summary>
         /// <param name="ch">The <see cref="char"/> to check.</param>
         /// <returns>true if <paramref name="ch"/> is a high (lead) surrogate.</returns>
         /// <stable>ICU 3.0</stable>
-        public static bool IsHighSurrogate(char ch) // ICU4N TODO: API Add overload for string, int
+        public static bool IsHighSurrogate(char ch)
         {
             return char.IsHighSurrogate(ch);
+        }
+
+        /// <summary>
+        /// Same as <see cref="Char.IsHighSurrogate(string, int)"/>.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the character in <paramref name="s"/> at <paramref name="index"/> is a high (lead) surrogate.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static bool IsHighSurrogate(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            return char.IsHighSurrogate(s, index);
         }
 
         /// <summary>
@@ -5146,9 +6205,21 @@ namespace ICU4N
         /// <param name="ch">The <see cref="char"/> to check.</param>
         /// <returns>true if <paramref name="ch"/> is a low (trail) surrogate.</returns>
         /// <stable>ICU 3.0</stable>
-        public static bool IsLowSurrogate(char ch) // ICU4N TODO: API Add overload for string, int
+        public static bool IsLowSurrogate(char ch)
         {
             return char.IsLowSurrogate(ch);
+        }
+
+        /// <summary>
+        /// Same as <see cref="Char.IsLowSurrogate(string, int)"/>.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>true if the character in <paramref name="s"/> at <paramref name="index"/> is a low (trail) surrogate.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static bool IsLowSurrogate(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            return char.IsLowSurrogate(s, index);
         }
 
         /// <summary>
@@ -5158,9 +6229,23 @@ namespace ICU4N
         /// <param name="low">The low (trail) <see cref="char"/>.</param>
         /// <returns>true if <paramref name="high"/>, <paramref name="low"/> form a surrogate pair.</returns>
         /// <stable>ICU 3.0</stable>
-        public static bool IsSurrogatePair(char high, char low) // ICU4N TODO: API Add overload for string, int
+        public static bool IsSurrogatePair(char high, char low)
         {
             return char.IsSurrogatePair(high, low);
+        }
+
+        /// <summary>
+        /// Same as <see cref="Char.IsSurrogatePair(string, int)"/>.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The starting position of the pair of characters to evaluate within <paramref name="s"/>.</param>
+        /// <returns><c>true</c> if the <paramref name="s"/> parameter includes adjacent characters at positions index and <paramref name="index"/> + 1, and the 
+        /// numeric value of the character at position <paramref name="index"/> ranges from U+D800 through U+DBFF, and the numeric 
+        /// value of the character at position <paramref name="index"/> + 1 ranges from U+DC00 through U+DFFF; otherwise, <c>false</c>.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static bool IsSurrogatePair(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            return char.IsSurrogatePair(s, index);
         }
 
         /// <summary>

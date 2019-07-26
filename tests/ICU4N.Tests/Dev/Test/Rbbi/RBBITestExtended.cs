@@ -157,7 +157,7 @@ namespace ICU4N.Dev.Test.Rbbi
                                 savedState = PARSE_TAG;
                                 break;
                             }
-                            if (UChar.IsWhitespace(c))
+                            if (UChar.IsWhiteSpace(c))
                             {
                                 break;
                             }
@@ -424,7 +424,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     case PARSE_NUM:
                         // We are parsing an expected numeric tag value, like <1234>,
                         //   within a chunk of data.
-                        if (UChar.IsWhitespace(c))
+                        if (UChar.IsWhiteSpace(c))
                         {
                             break;
                         }

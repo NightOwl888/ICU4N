@@ -434,7 +434,7 @@ namespace ICU4N.Dev.Test.Translit
 
             for (int cp = 0; cp <= SET_LIMIT; ++cp)
             {
-                int enumValue = UChar.GetInt32PropertyValue(cp, propEnum);
+                int enumValue = UChar.GetIntPropertyValue(cp, propEnum);
                 //if (enumValue <= 0) continue; // for smaller set
                 String value = UChar.GetPropertyValueName(propEnum, enumValue, NameChoice.Long);
                 map1.Put(cp, value);

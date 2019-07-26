@@ -921,7 +921,7 @@ namespace ICU4N.Dev.Test
             }
             // ICU4N: Handle deep collection strings for nested collection types
             return obj.GetType().Name + "<" + CollectionUtil.ToString(obj) + ">";
-            //return obj.GetType().Name + "<" + obj + ">";
+            //return obj.GetUnicodeCategory().Name + "<" + obj + ">";
         }
 
         private static readonly Regex METHOD_NAME_REGEX = new Regex(@"at\s+(?<fullyQualifiedMethod>.*\.(?<method>[\w`]+))\(", RegexOptions.Compiled);

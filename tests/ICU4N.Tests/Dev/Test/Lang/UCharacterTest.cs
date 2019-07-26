@@ -138,13 +138,13 @@ namespace ICU4N.Dev.Test.Lang
                     break;
                 }
 
-                if (!UChar.IsWhitespace(whitespaces[i]))
+                if (!UChar.IsWhiteSpace(whitespaces[i]))
                 {
                     Errln("FAIL \\u" + Hex(whitespaces[i]) +
                             " expected to be a white space character");
                     break;
                 }
-                if (UChar.IsWhitespace(nonwhitespaces[i]))
+                if (UChar.IsWhiteSpace(nonwhitespaces[i]))
                 {
                     Errln("FAIL \\u" + Hex(nonwhitespaces[i]) +
                                 " expected not to be a space character");
@@ -196,9 +196,9 @@ namespace ICU4N.Dev.Test.Lang
             for (int c = 0; c <= 0xffff; ++c)
             {
                 bool j = char.IsWhiteSpace((char)c);
-                bool i = UChar.IsWhitespace(c);
+                bool i = UChar.IsWhiteSpace(c);
                 bool u = UChar.IsUWhiteSpace(c);
-                bool z = (UChar.GetInt32PropertyValue(c, UProperty.General_Category_Mask) &
+                bool z = (UChar.GetIntPropertyValue(c, UProperty.General_Category_Mask) &
                              GC_Z_MASK) != 0;
                 if (j != i)
                 {
@@ -217,7 +217,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 bool j = ICU4N.Support.Text.Character.IsSpace(c);
                 bool i = UChar.IsSpace(c);
-                bool z = (UChar.GetInt32PropertyValue(c, UProperty.General_Category_Mask) &
+                bool z = (UChar.GetIntPropertyValue(c, UProperty.General_Category_Mask) &
                              GC_Z_MASK) != 0;
                 if (j != i)
                 {
@@ -556,7 +556,7 @@ namespace ICU4N.Dev.Test.Lang
                         Errln("getMirror() does not roundtrip: U+" + Hex(start) + "->U+" + Hex(c2) + "->U+" + Hex(c3));
                     }
                     c3 = UChar.GetBidiPairedBracket(start);
-                    if (UChar.GetInt32PropertyValue(start, UProperty.Bidi_Paired_Bracket_Type) == UChar.BidiPairedBracketType.None)
+                    if (UChar.GetIntPropertyValue(start, UProperty.Bidi_Paired_Bracket_Type) == UChar.BidiPairedBracketType.None)
                     {
                         if (c3 != start)
                         {
@@ -755,13 +755,13 @@ namespace ICU4N.Dev.Test.Lang
                         type = 0;
                     else
                         type = (type >> 1) + 1;
-                    if (UChar.GetType(ch).ToInt32() != type)
+                    if (UChar.GetUnicodeCategory(ch).ToInt32() != type)
                     {
                         Errln("FAIL \\u" + Hex(ch) + " expected type " + type);
                         break;
                     }
 
-                    if (UChar.GetInt32PropertyValue(ch,
+                    if (UChar.GetIntPropertyValue(ch,
                                UProperty.General_Category_Mask) != (1 << type))
                     {
                         Errln("error: getIntPropertyValue(\\u" +
@@ -871,7 +871,7 @@ namespace ICU4N.Dev.Test.Lang
                         Errln(String.Format("error in UnicodeData.txt: syntax error in U+{0:X4} decomposition field", ch));
                         return;
                     }
-                    int i = UChar.GetInt32PropertyValue(ch, UProperty.Decomposition_Type);
+                    int i = UChar.GetIntPropertyValue(ch, UProperty.Decomposition_Type);
                     assertEquals(
                             String.Format("error: UCharacter.getIntPropertyValue(U+{0:X4}, UProperty.DECOMPOSITION_TYPE) is wrong", ch),
                             dt, i);
@@ -1008,7 +1008,7 @@ namespace ICU4N.Dev.Test.Lang
 
             if (UChar.UnicodeBlock.Of(0x0041)
                                             != UChar.UnicodeBlock.Basic_Latin
-                || UChar.GetInt32PropertyValue(0x41, UProperty.Block)
+                || UChar.GetIntPropertyValue(0x41, UProperty.Block)
                                   != UChar.UnicodeBlock.Basic_Latin.ID)
             {
                 Errln("UCharacter.UnicodeBlock.of(\\u0041) property failed! "
@@ -1020,8 +1020,8 @@ namespace ICU4N.Dev.Test.Lang
             // sanity check on repeated properties
             for (int ch = 0xfffe; ch <= 0x10ffff;)
             {
-                UUnicodeCategory type = UChar.GetType(ch);
-                if (UChar.GetInt32PropertyValue(ch,
+                UUnicodeCategory type = UChar.GetUnicodeCategory(ch);
+                if (UChar.GetIntPropertyValue(ch,
                                                    UProperty.General_Category_Mask)
                     != (1 << type.ToInt32()))
                 {
@@ -1034,7 +1034,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     Errln("error: UCharacter.getType(\\u" + Utility.Hex(ch, 4)
                             + " != UCharacterCategory.UNASSIGNED (returns "
-                            + UChar.GetType(ch).AsString()
+                            + UChar.GetUnicodeCategory(ch).AsString()
                             + ")");
                 }
                 if ((ch & 0xffff) == 0xfffe)
@@ -1050,8 +1050,8 @@ namespace ICU4N.Dev.Test.Lang
             // test that PUA is not "unassigned"
             for (int ch = 0xe000; ch <= 0x10fffd;)
             {
-                int type = UChar.GetType(ch).ToInt32();
-                if (UChar.GetInt32PropertyValue(ch,
+                int type = UChar.GetUnicodeCategory(ch).ToInt32();
+                if (UChar.GetIntPropertyValue(ch,
                                                    UProperty.General_Category_Mask)
                     != (1 << type))
                 {
@@ -1755,7 +1755,7 @@ namespace ICU4N.Dev.Test.Lang
 
                 for (int i = result.Start; i < limit; i++)
                 {
-                    int temptype = UChar.GetType(i).ToInt32();
+                    int temptype = UChar.GetUnicodeCategory(i).ToInt32();
                     if (temptype != result.Value)
                     {
                         Errln("UCharacterIteration failed: Codepoint \\u" +
@@ -1794,7 +1794,7 @@ namespace ICU4N.Dev.Test.Lang
                     int c = result.Start;
                     while (c < result.Limit)
                     {
-                        if (0 == UChar.GetInt32PropertyValue(c,
+                        if (0 == UChar.GetIntPropertyValue(c,
                                                     UProperty.Line_Break))
                         {
                             Logln("error UProperty.LINE_BREAK(assigned \\u"
@@ -1831,7 +1831,7 @@ namespace ICU4N.Dev.Test.Lang
 
 
                                 if (UChar.GetDirection(c).ToInt32() != shouldBeDir
-                                    || UChar.GetInt32PropertyValue(c,
+                                    || UChar.GetIntPropertyValue(c,
                                                               UProperty.BiDi_Class)
                                        != shouldBeDir)
                                 {
@@ -2490,7 +2490,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
                 }
 
-                int retVal = UChar.GetInt32PropertyValue(props[i][0], (UProperty)which);
+                int retVal = UChar.GetIntPropertyValue(props[i][0], (UProperty)which);
                 if (retVal != props[i][2])
                 {
                     Errln("error: UCharacter.getIntPropertyValue(U+" +
@@ -2511,7 +2511,7 @@ namespace ICU4N.Dev.Test.Lang
                         }
                         break;
                     case UProperty.Lowercase:
-                        if (UChar.IsULowercase(props[i][0]) != expect)
+                        if (UChar.IsULower(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isULowercase(\\u" +
                                   (props[i][0]).ToHexString() +
@@ -2519,7 +2519,7 @@ namespace ICU4N.Dev.Test.Lang
                         }
                         break;
                     case UProperty.Uppercase:
-                        if (UChar.IsUUppercase(props[i][0]) != expect)
+                        if (UChar.IsUUpper(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isUUppercase(\\u" +
                                   (props[i][0]).ToHexString() +
@@ -2612,7 +2612,7 @@ namespace ICU4N.Dev.Test.Lang
             for (int i = 0; i < values.Length; ++i)
             {
                 int c = (int)values[i][0];
-                int type = UChar.GetInt32PropertyValue(c,
+                int type = UChar.GetIntPropertyValue(c,
                                                           UProperty.Numeric_Type);
                 double nv = UChar.GetUnicodeNumericValue(c);
 
@@ -2724,7 +2724,7 @@ namespace ICU4N.Dev.Test.Lang
                             desc = "UScript.getScript(-1)";
                             break;
                         case 1:
-                            script = UChar.GetInt32PropertyValue(-1, UProperty.Script);
+                            script = UChar.GetIntPropertyValue(-1, UProperty.Script);
                             desc = "UCharacter.getIntPropertyValue(-1, UProperty.SCRIPT)";
                             break;
                     }
@@ -3538,7 +3538,7 @@ namespace ICU4N.Dev.Test.Lang
             int[] negative_cases = { -100, -50, -10, -5, -2, -1 };
             for (int i = 0; i < negative_cases.Length; i++)
             {
-                if (UChar.GetInt32PropertyValue(0, (UProperty)negative_cases[i]) != 0)
+                if (UChar.GetIntPropertyValue(0, (UProperty)negative_cases[i]) != 0)
                 {
                     Errln("UCharacter.getIntPropertyValue(ch, type) was suppose to return 0 " +
                             "when passing a negative value of " + negative_cases[i]);
@@ -3549,7 +3549,7 @@ namespace ICU4N.Dev.Test.Lang
             // Testing when "if(ch<NormalizerImpl.JAMO_L_BASE)" is true
             for (int i = Normalizer2Impl.Hangul.JAMO_L_BASE - 5; i < Normalizer2Impl.Hangul.JAMO_L_BASE; i++)
             {
-                if (UChar.GetInt32PropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
+                if (UChar.GetIntPropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
                 {
                     Errln("UCharacter.getIntPropertyValue(ch, type) was suppose to return 0 " +
                             "when passing ch: " + i + "and type of Property.HANGUL_SYLLABLE_TYPE");
@@ -3560,7 +3560,7 @@ namespace ICU4N.Dev.Test.Lang
             // Testing when "else if((ch-=NormalizerImpl.HANGUL_BASE)<0)" is true
             for (int i = Normalizer2Impl.Hangul.HANGUL_BASE - 5; i < Normalizer2Impl.Hangul.HANGUL_BASE; i++)
             {
-                if (UChar.GetInt32PropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
+                if (UChar.GetIntPropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
                 {
                     Errln("UCharacter.getIntPropertyValue(ch, type) was suppose to return 0 " +
                             "when passing ch: " + i + "and type of Property.HANGUL_SYLLABLE_TYPE");
@@ -3971,10 +3971,10 @@ namespace ICU4N.Dev.Test.Lang
         {
             int[] cases = { UTF16.CodePointMaxValue + 1, UTF16.CodePointMaxValue + 2 };
             for (int i = 0; i < cases.Length; i++)
-                if (UChar.GetType(cases[i]).ToInt32() != 0)
+                if (UChar.GetUnicodeCategory(cases[i]).ToInt32() != 0)
                     Errln("UCharacter.getType for testing UCharacter.getProperty "
                             + "did not return 0 for passed value of " + cases[i] +
-                            " but got " + UChar.GetType(cases[i]).ToInt32());
+                            " but got " + UChar.GetUnicodeCategory(cases[i]).ToInt32());
         }
 
         private class MyXSymbolTable : UnicodeSet.XSymbolTable { }

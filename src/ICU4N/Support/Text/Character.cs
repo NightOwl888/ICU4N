@@ -693,7 +693,7 @@ namespace ICU4N.Support.Text
         /// 0x00d800 and 0x00dfff, that method throws an exception. So this is a wrapper that converts the
         /// codepoint to a char in those cases.
         /// 
-        /// This mimics the behavior of the Java Character.GetType class, but returns the .NET UnicodeCategory
+        /// This mimics the behavior of the Java Character.GetUnicodeCategory class, but returns the .NET UnicodeCategory
         /// enumeration for easy consumption.
         /// </summary>
         /// <param name="codePoint"></param>

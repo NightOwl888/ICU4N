@@ -1841,7 +1841,7 @@ namespace ICU4N.Dev.Test.Util
                 {
                     /* semicolon (;) is closer than end (,) */
                     int t = paramEnd + 1;
-                    while (UChar.IsWhitespace(acceptLanguageList[t]))
+                    while (UChar.IsWhiteSpace(acceptLanguageList[t]))
                     {
                         t++;
                     }
@@ -1849,7 +1849,7 @@ namespace ICU4N.Dev.Test.Util
                     {
                         t++;
                     }
-                    while (UChar.IsWhitespace(acceptLanguageList[t]))
+                    while (UChar.IsWhiteSpace(acceptLanguageList[t]))
                     {
                         t++;
                     }
@@ -1857,7 +1857,7 @@ namespace ICU4N.Dev.Test.Util
                     {
                         t++;
                     }
-                    while (UChar.IsWhitespace(acceptLanguageList[t]))
+                    while (UChar.IsWhiteSpace(acceptLanguageList[t]))
                     {
                         t++;
                     }
