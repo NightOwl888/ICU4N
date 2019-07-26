@@ -8,6 +8,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace ICU4N.Dev.Test.Util
 {
@@ -255,6 +256,8 @@ namespace ICU4N.Dev.Test.Util
 
 
         [Test]
+        [Ignore("ICU4N: This test only checks to see if the stack trace can be read in the test framework, however no tests depend on this functionality, and it fails to work when compiler optimizations are enabled.")]
+        [MethodImpl(MethodImplOptions.NoInlining)] // ICU4N NOTE: This attribute is required for whatever method calls TestFmwk.SourceLocation() to work in Release mode in .NET Standard 1.x
         public void TestSourceLocation()
         {
             string here = TestFmwk.SourceLocation();

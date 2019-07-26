@@ -928,6 +928,9 @@ namespace ICU4N.Dev.Test
         private static readonly Regex FILE_NAME_REGEX = new Regex(@"(?<=in)\s+(?<filename>.*)", RegexOptions.Compiled);
 
         // Return the source code location of the caller located callDepth frames up the stack.
+        // ICU4N NOTE: In order for this to work in .NET Standard 1.x in Release mode, the
+        // [MethodImpl(MethodImplOptions.NoInlining)] attribute must be added to each method/property this
+        // searches for.
         protected static string SourceLocation()
         {
 #if !FEATURE_STACKTRACE
