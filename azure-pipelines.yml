@@ -15,6 +15,8 @@ name: 'vNext$(rev:.r)' # Format for build number (will be overridden)
 # BuildPlatform: 'Any CPU'
 
 variables:
+- name: RunTests
+  value: 'false'
 - name: TestTargetFrameworks
   value: 'netcoreapp2.0;netcoreapp1.0;net451'
 - name: BinaryArtifactName
@@ -67,6 +69,7 @@ stages:
   displayName: 'Test Stage:'
   jobs:
   - job: Test_netcoreapp2_0
+    condition: and(succeeded(), eq(variables['RunTests'], 'true'))
     strategy:
       matrix:
         Windows:
@@ -93,6 +96,7 @@ stages:
     - pwsh: Exit [int]([int]$TotalFailures -gt $(maximumAllowedFailures))
 
   - job: Test_netcoreapp1_0
+    condition: and(succeeded(), eq(variables['RunTests'], 'true'))
     strategy:
       matrix:
         Windows:
@@ -119,6 +123,7 @@ stages:
     - pwsh: Exit [int]([int]$TotalFailures -gt $(maximumAllowedFailures))
 
   - job: Test_net451
+    condition: and(succeeded(), eq(variables['RunTests'], 'true'))
     displayName: 'Test net451 on Windows'
     pool:
       vmImage: 'windows-2019'
