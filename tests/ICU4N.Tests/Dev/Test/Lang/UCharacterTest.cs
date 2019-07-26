@@ -1007,13 +1007,13 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             if (UChar.UnicodeBlock.Of(0x0041)
-                                            != UChar.UnicodeBlock.BASIC_LATIN
+                                            != UChar.UnicodeBlock.Basic_Latin
                 || UChar.GetInt32PropertyValue(0x41, UProperty.Block)
-                                  != UChar.UnicodeBlock.BASIC_LATIN.ID)
+                                  != UChar.UnicodeBlock.Basic_Latin.ID)
             {
                 Errln("UCharacter.UnicodeBlock.of(\\u0041) property failed! "
                         + "Expected : "
-                        + UChar.UnicodeBlock.BASIC_LATIN.ID + " got "
+                        + UChar.UnicodeBlock.Basic_Latin.ID + " got "
                         + UChar.UnicodeBlock.Of(0x0041));
             }
 
@@ -2119,17 +2119,17 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { 0xfd90, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
                 new int[] { 0xfefe, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
 
-                new int[] { 0x02AF, (int)UProperty.Block, UChar.UnicodeBlock.IPA_EXTENSIONS.ID },
-                new int[] { 0x0C4E, (int)UProperty.Block, UChar.UnicodeBlock.TELUGU.ID },
-                new int[] { 0x155A, (int)UProperty.Block, UChar.UnicodeBlock.UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS.ID },
-                new int[] { 0x1717, (int)UProperty.Block, UChar.UnicodeBlock.TAGALOG.ID },
-                new int[] { 0x1900, (int)UProperty.Block, UChar.UnicodeBlock.LIMBU.ID },
-                new int[] { 0x1CBF, (int)UProperty.Block, UChar.UnicodeBlock.NO_BLOCK.ID},
-                new int[] { 0x3040, (int)UProperty.Block, UChar.UnicodeBlock.HIRAGANA.ID},
-                new int[] { 0x1D0FF, (int)UProperty.Block, UChar.UnicodeBlock.BYZANTINE_MUSICAL_SYMBOLS.ID},
-                new int[] { 0x50000, (int)UProperty.Block, UChar.UnicodeBlock.NO_BLOCK.ID },
-                new int[] { 0xEFFFF, (int)UProperty.Block, UChar.UnicodeBlock.NO_BLOCK.ID },
-                new int[] { 0x10D0FF, (int)UProperty.Block, UChar.UnicodeBlock.SUPPLEMENTARY_PRIVATE_USE_AREA_B.ID },
+                new int[] { 0x02AF, (int)UProperty.Block, UChar.UnicodeBlock.IPA_Extensions.ID },
+                new int[] { 0x0C4E, (int)UProperty.Block, UChar.UnicodeBlock.Telugu.ID },
+                new int[] { 0x155A, (int)UProperty.Block, UChar.UnicodeBlock.Unified_Canadian_Aboriginal_Syllabics.ID },
+                new int[] { 0x1717, (int)UProperty.Block, UChar.UnicodeBlock.Tagalog.ID },
+                new int[] { 0x1900, (int)UProperty.Block, UChar.UnicodeBlock.Limbu.ID },
+                new int[] { 0x1CBF, (int)UProperty.Block, UChar.UnicodeBlock.NoBlock.ID},
+                new int[] { 0x3040, (int)UProperty.Block, UChar.UnicodeBlock.Hiragana.ID},
+                new int[] { 0x1D0FF, (int)UProperty.Block, UChar.UnicodeBlock.Byzantine_Musical_Symbols.ID},
+                new int[] { 0x50000, (int)UProperty.Block, UChar.UnicodeBlock.NoBlock.ID },
+                new int[] { 0xEFFFF, (int)UProperty.Block, UChar.UnicodeBlock.NoBlock.ID },
+                new int[] { 0x10D0FF, (int)UProperty.Block, UChar.UnicodeBlock.Supplementary_Private_Use_Area_B.ID },
 
                 /* (int)UProperty.CANONICAL_COMBINING_CLASS tested for assigned characters in TestUnicodeData() */
                 new int[] { 0xd7d7, (int)UProperty.Canonical_Combining_Class, 0 },
@@ -2265,9 +2265,9 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { 0x00a0, (int)UProperty.Pattern_White_Space, 0 },
                 new int[] { 0x3000, (int)UProperty.Pattern_White_Space, 0 },
 
-                new int[] { 0x1d200, (int)UProperty.Block, UChar.UnicodeBlock.ANCIENT_GREEK_MUSICAL_NOTATION_ID },
-                new int[] { 0x2c8e,  (int)UProperty.Block, UChar.UnicodeBlock.COPTIC_ID },
-                new int[] { 0xfe17,  (int)UProperty.Block, UChar.UnicodeBlock.VERTICAL_FORMS_ID },
+                new int[] { 0x1d200, (int)UProperty.Block, UChar.UnicodeBlock.Ancient_Greek_Musical_Notation_ID },
+                new int[] { 0x2c8e,  (int)UProperty.Block, UChar.UnicodeBlock.Coptic_ID },
+                new int[] { 0xfe17,  (int)UProperty.Block, UChar.UnicodeBlock.Vertical_Forms_ID },
 
                 new int[] { 0x1a00,  (int)UProperty.Script, UScript.Buginese },
                 new int[] { 0x2cea,  (int)UProperty.Script, UScript.Coptic },
@@ -2384,7 +2384,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Block) != UChar.UnicodeBlock.COUNT - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Block) != UChar.UnicodeBlock.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BLOCK) wrong\n");
             }
@@ -3017,7 +3017,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             Type ubc = typeof(UChar.UnicodeBlock);
 
-            for (int b = 1; b < UChar.UnicodeBlock.COUNT; b += 1)
+            for (int b = 1; b < UChar.UnicodeBlock.Count; b += 1)
             {
                 UChar.UnicodeBlock blk = UChar.UnicodeBlock.GetInstance(b);
                 int id = blk.ID;
@@ -3054,12 +3054,12 @@ namespace ICU4N.Dev.Test.Lang
             int[] invalid_test = { -1, -10, -100 };
             for (int i = 0; i < invalid_test.Length; i++)
             {
-                if (UChar.UnicodeBlock.INVALID_CODE != UChar.UnicodeBlock.GetInstance(invalid_test[i]))
+                if (UChar.UnicodeBlock.Invalid_Code != UChar.UnicodeBlock.GetInstance(invalid_test[i]))
                 {
                     Errln("UCharacter.UnicodeBlock.GetInstance(invalid_test[i]) was " +
                             "suppose to return UCharacter.UnicodeBlock.INVALID_CODE. Got " +
                             UChar.UnicodeBlock.GetInstance(invalid_test[i]) + ". Expected " +
-                            UChar.UnicodeBlock.INVALID_CODE);
+                            UChar.UnicodeBlock.Invalid_Code);
                 }
             }
         }
@@ -3071,12 +3071,12 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestOf()
         {
-            if (UChar.UnicodeBlock.INVALID_CODE != UChar.UnicodeBlock.Of(UTF16.CodePointMaxValue + 1))
+            if (UChar.UnicodeBlock.Invalid_Code != UChar.UnicodeBlock.Of(UTF16.CodePointMaxValue + 1))
             {
                 Errln("UCharacter.UnicodeBlock.of(UTF16.CODEPOINT_MAX_VALUE+1) was " +
                         "suppose to return UCharacter.UnicodeBlock.INVALID_CODE. Got " +
                         UChar.UnicodeBlock.Of(UTF16.CodePointMaxValue + 1) + ". Expected " +
-                        UChar.UnicodeBlock.INVALID_CODE);
+                        UChar.UnicodeBlock.Invalid_Code);
             }
         }
 
