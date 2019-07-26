@@ -130,7 +130,7 @@ namespace ICU4N.Text
                 {
                     sourceTargetUtility = new SourceTargetUtility(new StringTransform(transform: (source) =>
                     {
-                        return UCharacter.ToUpper(locale, source);
+                        return UChar.ToUpper(locale, source);
                     }));
                 }
             }

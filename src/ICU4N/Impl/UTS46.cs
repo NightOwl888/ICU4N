@@ -538,7 +538,7 @@ namespace ICU4N.Impl
         }
         private static int U_GET_GC_MASK(int c)
         {
-            return (1 << UCharacter.GetType(c).ToInt32());
+            return (1 << UChar.GetType(c).ToInt32());
         }
         private static int U_GC_M_MASK =
             U_MASK(UCharacterCategory.NonSpacingMark.ToInt32()) |

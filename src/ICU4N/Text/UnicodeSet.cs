@@ -190,7 +190,7 @@ namespace ICU4N.Text
     /// <a href="http://www.icu-project.org/userguide/unicodeSet.html">
     /// http://www.icu-project.org/userguide/unicodeSet.html</a>.
     /// Actual determination of property data is defined by the underlying
-    /// Unicode database as implemented by <see cref="UCharacter"/>.
+    /// Unicode database as implemented by <see cref="UChar"/>.
     /// 
     /// <para/>
     /// Patterns specify individual characters, ranges of characters, and
@@ -3242,7 +3242,7 @@ namespace ICU4N.Text
 
             public virtual bool Contains(int ch)
             {
-                return UCharacter.GetUnicodeNumericValue(ch) == Value;
+                return UChar.GetUnicodeNumericValue(ch) == Value;
             }
         }
 
@@ -3253,7 +3253,7 @@ namespace ICU4N.Text
 
             public virtual bool Contains(int ch)
             {
-                return ((1 << UCharacter.GetType(ch).ToInt32()) & Mask) != 0;
+                return ((1 << UChar.GetType(ch).ToInt32()) & Mask) != 0;
             }
         }
 
@@ -3268,7 +3268,7 @@ namespace ICU4N.Text
             }
             public virtual bool Contains(int ch)
             {
-                return UCharacter.GetInt32PropertyValue(ch, Prop) == Value;
+                return UChar.GetInt32PropertyValue(ch, Prop) == Value;
             }
         }
 
@@ -3293,7 +3293,7 @@ namespace ICU4N.Text
 
             public virtual bool Contains(int ch)
             {
-                VersionInfo v = UCharacter.GetAge(ch);
+                VersionInfo v = UChar.GetAge(ch);
                 // Reference comparison ok; VersionInfo caches and reuses
                 // unique objects.
                 return !Utility.SameObjects(v, NO_VERSION) &&
@@ -3447,7 +3447,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Modifies this set to contain those code points which have the
         /// given value for the given binary or enumerated property, as
-        /// returned by <see cref="UCharacter.GetInt32PropertyValue(int, UProperty)"/>.  
+        /// returned by <see cref="UChar.GetInt32PropertyValue(int, UProperty)"/>.  
         /// Prior contents of this set are lost.
         /// </summary>
         /// <param name="prop">
@@ -3459,11 +3459,11 @@ namespace ICU4N.Text
         /// </list>
         /// </param>
         /// <param name="value">
-        /// A value in the range <see cref="UCharacter.GetIntPropertyMinValue(UProperty)"/>..
-        /// <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>, with one exception.
+        /// A value in the range <see cref="UChar.GetIntPropertyMinValue(UProperty)"/>..
+        /// <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>, with one exception.
         /// If prop is <see cref="UProperty.General_Category_Mask"/>, then value should not be
-        /// a <see cref="UCharacter.GetType(int)"/> result, but rather a mask value produced
-        /// by logically ORing (1 &lt;&lt; <see cref="UCharacter.GetType(int)"/>) values together.
+        /// a <see cref="UChar.GetType(int)"/> result, but rather a mask value produced
+        /// by logically ORing (1 &lt;&lt; <see cref="UChar.GetType(int)"/>) values together.
         /// <para/>
         /// This allows grouped categories such as [:L:] to be represented.
         /// </param>
@@ -3556,7 +3556,7 @@ namespace ICU4N.Text
 
             if (valueAlias.Length > 0)
             {
-                p = (UProperty)UCharacter.GetPropertyEnum(propertyAlias);
+                p = (UProperty)UChar.GetPropertyEnum(propertyAlias);
 
                 // Treat gc as gcm
                 if (p == UProperty.General_Category)
@@ -3573,7 +3573,7 @@ namespace ICU4N.Text
                     // ICU4N specific - use safe methods that don't throw exceptions -
                     // we only throw if absolutely necessary.
                     int v2;
-                    if (UCharacter.TryGetPropertyValueEnum(p, valueAlias, out v2))
+                    if (UChar.TryGetPropertyValueEnum(p, valueAlias, out v2))
                     {
                         v = (UProperty)v2;
                     }
@@ -3617,10 +3617,10 @@ namespace ICU4N.Text
                         case UProperty.Name:
                             {
                                 // Must munge name, since
-                                // UCharacter.charFromName() does not do
+                                // UChar.charFromName() does not do
                                 // 'loose' matching.
                                 string buf = MungeCharName(valueAlias);
-                                int ch = UCharacter.GetCharFromExtendedName(buf);
+                                int ch = UChar.GetCharFromExtendedName(buf);
                                 if (ch == -1)
                                 {
                                     throw new ArgumentException("Invalid character name");
@@ -3644,7 +3644,7 @@ namespace ICU4N.Text
                                 return this;
                             }
                         case UProperty.Script_Extensions:
-                            v = (UProperty)UCharacter.GetPropertyValueEnum(UProperty.Script, valueAlias);
+                            v = (UProperty)UChar.GetPropertyValueEnum(UProperty.Script, valueAlias);
                             // fall through to calling applyIntPropertyValue()
                             break;
                         default:
@@ -3696,7 +3696,7 @@ namespace ICU4N.Text
                             {
                                 // [:Assigned:]=[:^Cn:]
                                 p = UProperty.General_Category_Mask;
-                                v = (UProperty)(1 << UCharacter.Unassigned);
+                                v = (UProperty)(1 << UChar.Unassigned);
                                 invert = true;
                             }
                             else
@@ -4010,7 +4010,7 @@ namespace ICU4N.Text
         /// Example: [aq\u00DF{Bc}{bC}{Fi}] =&gt; [aAqQ\u00DF\uFB01{ss}{bc}{fi}]
         /// <para/>
         /// (Here FoldCase(x) refers to the operation
-        /// UCharacter.FoldCase(x, true), and a == b actually denotes
+        /// UChar.FoldCase(x, true), and a == b actually denotes
         /// a.Equals(b), not pointer comparison.)
         /// </remarks>
         /// <param name="attribute">Bitmask for attributes to close over.
@@ -4079,7 +4079,7 @@ namespace ICU4N.Text
                     {
                         foreach (String s in strings)
                         {
-                            string str = UCharacter.FoldCase(s, 0);
+                            string str = UChar.FoldCase(s, 0);
                             if (!csp.AddStringCaseClosure(str, foldSet))
                             {
                                 foldSet.Add(str); // does not map to code points: add the folded string itself
@@ -4092,10 +4092,10 @@ namespace ICU4N.Text
                         foreach (string str in strings)
                         {
                             // TODO: call lower-level functions
-                            foldSet.Add(UCharacter.ToLower(root, str));
-                            foldSet.Add(UCharacter.ToTitleCase(root, str, bi));
-                            foldSet.Add(UCharacter.ToUpper(root, str));
-                            foldSet.Add(UCharacter.FoldCase(str, 0));
+                            foldSet.Add(UChar.ToLower(root, str));
+                            foldSet.Add(UChar.ToTitleCase(root, str, bi));
+                            foldSet.Add(UChar.ToUpper(root, str));
+                            foldSet.Add(UChar.FoldCase(str, 0));
                         }
                     }
                 }

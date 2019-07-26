@@ -205,13 +205,13 @@ namespace ICU4N.Text
             /// With this option, the other characters will not be modified.
             /// </summary>
             /// <returns>An options object with this option.</returns>
-            /// <seealso cref="UCharacter.TitleCaseNoLowerCase"/>
+            /// <seealso cref="UChar.TitleCaseNoLowerCase"/>
             /// <seealso cref="AdjustToCased()"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public Title NoLowercase()
             {
-                return new Title(internalOptions | UCharacter.TitleCaseNoLowerCase);
+                return new Title(internalOptions | UChar.TitleCaseNoLowerCase);
             }
 
             /// <summary>
@@ -226,13 +226,13 @@ namespace ICU4N.Text
             /// Other characters are lowercased.
             /// </summary>
             /// <returns>An options object with this option.</returns>
-            /// <seealso cref="UCharacter.TitleCaseNoBreakAdjustment"/>
+            /// <seealso cref="UChar.TitleCaseNoBreakAdjustment"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public Title NoBreakAdjustment()
             {
                 return new Title(CaseMapImpl.AddTitleAdjustmentOption(
-                        internalOptions, UCharacter.TitleCaseNoBreakAdjustment));
+                        internalOptions, UChar.TitleCaseNoBreakAdjustment));
             }
 
             /// <summary>
@@ -276,10 +276,10 @@ namespace ICU4N.Text
         public sealed partial class Fold : CaseMap
         {
             internal static readonly Fold DEFAULT = new Fold(0);
-            private static readonly Fold TURKIC = new Fold(UCharacter.FoldCaseExcludeSpecialI);
+            private static readonly Fold TURKIC = new Fold(UChar.FoldCaseExcludeSpecialI);
             private static readonly Fold OMIT_UNCHANGED = new Fold(CaseMapImpl.OMIT_UNCHANGED_TEXT);
             private static readonly Fold TURKIC_OMIT_UNCHANGED = new Fold(
-                    UCharacter.FoldCaseExcludeSpecialI | CaseMapImpl.OMIT_UNCHANGED_TEXT);
+                    UChar.FoldCaseExcludeSpecialI | CaseMapImpl.OMIT_UNCHANGED_TEXT);
             internal Fold(int opt)
                         : base(opt)
             {
@@ -294,7 +294,7 @@ namespace ICU4N.Text
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public Fold OmitUnchangedText()
             {
-                return (internalOptions & UCharacter.FoldCaseExcludeSpecialI) == 0 ?
+                return (internalOptions & UChar.FoldCaseExcludeSpecialI) == 0 ?
                         OMIT_UNCHANGED : TURKIC_OMIT_UNCHANGED;
             }
 
@@ -307,7 +307,7 @@ namespace ICU4N.Text
             /// included for the Turkic-specific mappings.
             /// </summary>
             /// <returns>An options object with this option.</returns>
-            /// <seealso cref="UCharacter.FoldCaseExcludeSpecialI"/>
+            /// <seealso cref="UChar.FoldCaseExcludeSpecialI"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             public Fold Turkic()

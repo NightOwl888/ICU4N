@@ -7,9 +7,9 @@ namespace ICU4N.Text
 {
     /// <summary>
     /// A transliterator that converts all letters (as defined by
-    /// <see cref="UCharacter.IsLetter(int)"/>) to lower case, except for those
+    /// <see cref="UChar.IsLetter(int)"/>) to lower case, except for those
     /// letters preceded by non-letters.  The latter are converted to title
-    /// case using <see cref="UCharacter.ToTitleCase(int)"/>.
+    /// case using <see cref="UChar.ToTitleCase(int)"/>.
     /// </summary>
     /// <author>Alan Liu</author>
     internal class TitlecaseTransliterator : Transliterator
@@ -181,7 +181,7 @@ namespace ICU4N.Text
                 {
                     sourceTargetUtility = new SourceTargetUtility(new StringTransform(transform: (source) =>
                     {
-                        return UCharacter.ToTitleCase(locale, source, null);
+                        return UChar.ToTitleCase(locale, source, null);
                     }));
                 }
             }

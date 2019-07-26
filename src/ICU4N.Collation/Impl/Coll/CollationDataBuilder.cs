@@ -1030,7 +1030,7 @@ namespace ICU4N.Impl.Coll
                         // but cannot be constructed with a message string.
                     }
                     ce32 = Collation.MakeCE32FromTagIndexAndLength(
-                            Collation.DIGIT_TAG, index, UCharacter.Digit(c));  // u_charDigitValue(c)
+                            Collation.DIGIT_TAG, index, UChar.Digit(c));  // u_charDigitValue(c)
                     trie.Set(c, ce32);
                 }
             }

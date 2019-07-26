@@ -122,8 +122,8 @@ namespace ICU4N.Text
             while (i < limit)
             {
                 int c = UTF16.CharAt(text, i);
-                if ((i == start && !UCharacter.IsUnicodeIdentifierStart(c))
-                        || !UCharacter.IsUnicodeIdentifierPart(c))
+                if ((i == start && !UChar.IsUnicodeIdentifierStart(c))
+                        || !UChar.IsUnicodeIdentifierPart(c))
                 {
                     break;
                 }

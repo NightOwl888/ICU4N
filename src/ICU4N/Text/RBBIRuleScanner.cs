@@ -419,7 +419,7 @@ namespace ICU4N.Text
                     // Just scanned a decimal digit that's part of a tag value
                     {
                         n = fNodeStack[fNodeStackPtr];
-                        int v = UCharacter.Digit((char)fC.fChar, 10);
+                        int v = UChar.Digit((char)fC.fChar, 10);
                         n.fVal = n.fVal * 10 + v;
                         break;
                     }
@@ -753,7 +753,7 @@ namespace ICU4N.Text
                         ch = rules[idx++];
                     }
                 }
-                if (!UCharacter.IsISOControl(ch))
+                if (!UChar.IsISOControl(ch))
                 {
                     strippedRules.Append(ch);
                 }

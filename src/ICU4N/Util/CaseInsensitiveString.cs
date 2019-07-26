@@ -16,7 +16,7 @@ namespace ICU4N.Util
 
         private static string FoldCase(string foldee)
         {
-            return UCharacter.FoldCase(foldee, true);
+            return UChar.FoldCase(foldee, true);
         }
 
         private void GetFolded()

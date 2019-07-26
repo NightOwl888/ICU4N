@@ -6,7 +6,7 @@ namespace ICU4N.Globalization
     /// Selection values for Unicode properties.
     /// <para/>
     /// These values are used in functions like
-    /// <see cref="UCharacter.HasBinaryProperty(int, UProperty)"/> to select one of the Unicode properties.
+    /// <see cref="UChar.HasBinaryProperty(int, UProperty)"/> to select one of the Unicode properties.
     /// </summary>
     /// <remarks>
     /// The properties APIs are intended to reflect Unicode properties as
@@ -18,9 +18,9 @@ namespace ICU4N.Globalization
     /// <para/>
     /// Important: If ICU is built with UCD files from Unicode versions below
     /// 3.2, then properties marked with "new" are not or not fully
-    /// available. Check <see cref="UCharacter.UnicodeVersion"/> to be sure.
+    /// available. Check <see cref="UChar.UnicodeVersion"/> to be sure.
     /// </remarks>
-    /// <seealso cref="UCharacter"/>
+    /// <seealso cref="UChar"/>
     /// <author>Syn Wee Quek</author>
     /// <stable>ICU 2.6</stable>
     public enum UProperty
@@ -35,8 +35,8 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property Alphabetic.
         /// <para/>
-        /// Property for <see cref="UCharacter.IsUAlphabetic(int)"/>, different from the property
-        /// in <see cref="UCharacter.IsUAlphabetic(int)"/>.
+        /// Property for <see cref="UChar.IsUAlphabetic(int)"/>, different from the property
+        /// in <see cref="UChar.IsUAlphabetic(int)"/>.
         /// <para/>
         /// Lu + Ll + Lt + Lm + Lo + Nl + Other_Alphabetic.
         /// </summary>
@@ -68,7 +68,7 @@ namespace ICU4N.Globalization
         /// <para/>
         /// Characters that may change display in RTL text.
         /// <para/>
-        /// Property for <see cref="UCharacter.IsMirrored(int)"/>.
+        /// Property for <see cref="UChar.IsMirrored(int)"/>.
         /// <para/>
         /// See Bidi Algorithm, UTR 9.
         /// </summary>
@@ -238,8 +238,8 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property Lowercase.
         /// <para/>
-        /// Same as <see cref="UCharacter.IsULowercase(int)"/>, different from
-        /// <see cref="UCharacter.IsLowerCase(int)"/>.
+        /// Same as <see cref="UChar.IsULowercase(int)"/>, different from
+        /// <see cref="UChar.IsLowerCase(int)"/>.
         /// <para/>
         /// Ll+Other_Lowercase
         /// </summary>
@@ -309,8 +309,8 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property Uppercase.
         /// <para/>
-        /// Same as <see cref="UCharacter.IsUUppercase(int)"/>, different from
-        /// <see cref="UCharacter.IsUpperCase(int)"/>.
+        /// Same as <see cref="UChar.IsUUppercase(int)"/>, different from
+        /// <see cref="UChar.IsUpperCase(int)"/>.
         /// <para/>
         /// Lu+Other_Uppercase
         /// </summary>
@@ -320,8 +320,8 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property White_Space.
         /// <para/>
-        /// Same as <see cref="UCharacter.IsUWhiteSpace(int)"/>, different from
-        /// <see cref="UCharacter.IsSpace(int)"/> and <see cref="UCharacter.IsWhitespace(int)"/>.
+        /// Same as <see cref="UChar.IsUWhiteSpace(int)"/>, different from
+        /// <see cref="UChar.IsSpace(int)"/> and <see cref="UChar.IsWhitespace(int)"/>.
         /// Space characters+TAB+CR+LF-ZWSP-ZWNBSP
         /// </summary>
         /// <stable>ICU 2.6</stable>
@@ -467,7 +467,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property alnum (a C/POSIX character class).
         /// Implemented according to the UTS #18 Annex C Standard Recommendation.
-        /// See the <see cref="UCharacter"/> class documentation.
+        /// See the <see cref="UChar"/> class documentation.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         POSIX_Alnum = 44,
@@ -475,7 +475,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property blank (a C/POSIX character class).
         /// Implemented according to the UTS #18 Annex C Standard Recommendation.
-        /// See the <see cref="UCharacter"/> class documentation.
+        /// See the <see cref="UChar"/> class documentation.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         POSIX_Blank = 45,
@@ -483,7 +483,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property graph (a C/POSIX character class).
         /// Implemented according to the UTS #18 Annex C Standard Recommendation.
-        /// See the <see cref="UCharacter"/> class documentation.
+        /// See the <see cref="UChar"/> class documentation.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         POSIX_Graph = 46,
@@ -491,7 +491,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property print (a C/POSIX character class).
         /// Implemented according to the UTS #18 Annex C Standard Recommendation.
-        /// See the <see cref="UCharacter"/> class documentation.
+        /// See the <see cref="UChar"/> class documentation.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         POSIX_Print = 47,
@@ -499,7 +499,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Binary property xdigit (a C/POSIX character class).
         /// Implemented according to the UTS #18 Annex C Standard Recommendation.
-        /// See the <see cref="UCharacter"/> class documentation.
+        /// See the <see cref="UChar"/> class documentation.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         POSIX_XDigit = 48,
@@ -609,7 +609,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Enumerated property Bidi_Class.
-        /// Same as <see cref="UCharacter.GetDirection(int)"/>, returns <see cref="UCharacterDirection"/> values.
+        /// Same as <see cref="UChar.GetDirection(int)"/>, returns <see cref="UCharacterDirection"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         BiDi_Class = 0x1000,
@@ -622,7 +622,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Enumerated property Block.
-        /// Same as <see cref="UCharacter.UnicodeBlock.Of(int)"/>, returns <see cref="UCharacter.UnicodeBlock"/>
+        /// Same as <see cref="UChar.UnicodeBlock.Of(int)"/>, returns <see cref="UChar.UnicodeBlock"/>
         /// values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
@@ -630,14 +630,14 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Enumerated property Canonical_Combining_Class.
-        /// Same as <see cref="UCharacter.GetCombiningClass(int)"/>, returns 8-bit numeric values.
+        /// Same as <see cref="UChar.GetCombiningClass(int)"/>, returns 8-bit numeric values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Canonical_Combining_Class = 0x1002,
 
         /// <summary>
         /// Enumerated property Decomposition_Type.
-        /// Returns <see cref="UCharacter.DecompositionType"/> values.
+        /// Returns <see cref="UChar.DecompositionType"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Decomposition_Type = 0x1003,
@@ -645,42 +645,42 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Enumerated property East_Asian_Width.
         /// See <a href="http://www.unicode.org/reports/tr11/">http://www.unicode.org/reports/tr11/</a>.
-        /// Returns <see cref="UCharacter.EastAsianWidth"/> values.
+        /// Returns <see cref="UChar.EastAsianWidth"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         East_Asian_Width = 0x1004,
 
         /// <summary>
         /// Enumerated property General_Category.
-        /// Same as <see cref="UCharacter.GetType(int)"/>, returns <see cref="UCharacterCategory"/> values.
+        /// Same as <see cref="UChar.GetType(int)"/>, returns <see cref="UCharacterCategory"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         General_Category = 0x1005,
 
         /// <summary>
         /// Enumerated property Joining_Group.
-        /// Returns <see cref="UCharacter.JoiningGroup"/> values.
+        /// Returns <see cref="UChar.JoiningGroup"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Joining_Group = 0x1006,
 
         /// <summary>
         /// Enumerated property Joining_Type.
-        /// Returns <see cref="UCharacter.JoiningType"/> values.
+        /// Returns <see cref="UChar.JoiningType"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Joining_Type = 0x1007,
 
         /// <summary>
         /// Enumerated property Line_Break.
-        /// Returns <see cref="UCharacter.LineBreak"/> values.
+        /// Returns <see cref="UChar.LineBreak"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Line_Break = 0x1008,
 
         /// <summary>
         /// Enumerated property Numeric_Type.
-        /// Returns <see cref="UCharacter.NumericType"/> values.
+        /// Returns <see cref="UChar.NumericType"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Numeric_Type = 0x1009,
@@ -694,7 +694,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Enumerated property Hangul_Syllable_Type, new in Unicode 4.
-        /// Returns <see cref="UCharacter.HangulSyllableType"/> values.
+        /// Returns <see cref="UChar.HangulSyllableType"/> values.
         /// </summary>
         /// <stable>ICU 2.6</stable>
         Hangul_Syllable_Type = 0x100B,
@@ -755,7 +755,7 @@ namespace ICU4N.Globalization
         /// Enumerated property Grapheme_Cluster_Break (new in Unicode 4.1).
         /// Used in UAX #29: Text Boundaries
         /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>).
-        /// Returns <see cref="UCharacter.GraphemeClusterBreak"/> values.
+        /// Returns <see cref="UChar.GraphemeClusterBreak"/> values.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         Grapheme_Cluster_Break = 0x1012,
@@ -764,7 +764,7 @@ namespace ICU4N.Globalization
         /// Enumerated property Sentence_Break (new in Unicode 4.1).
         /// Used in UAX #29: Text Boundaries
         /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>).
-        /// Returns <see cref="UCharacter.SentenceBreak"/> values.
+        /// Returns <see cref="UChar.SentenceBreak"/> values.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         Sentence_Break = 0x1013,
@@ -773,7 +773,7 @@ namespace ICU4N.Globalization
         /// Enumerated property Word_Break (new in Unicode 4.1).
         /// Used in UAX #29: Text Boundaries
         /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>).
-        /// Returns <see cref="UCharacter.WordBreak"/> values.
+        /// Returns <see cref="UChar.WordBreak"/> values.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         Word_Break = 0x1014,
@@ -782,7 +782,7 @@ namespace ICU4N.Globalization
         /// Enumerated property Bidi_Paired_Bracket_Type (new in Unicode 6.3).
         /// Used in UAX #9: Unicode Bidirectional Algorithm
         /// (<a href="http://www.unicode.org/reports/tr9/">http://www.unicode.org/reports/tr9/</a>).
-        /// Returns <see cref="UCharacter.BidiPairedBracketType"/> values.
+        /// Returns <see cref="UChar.BidiPairedBracketType"/> values.
         /// </summary>
         /// <stable>ICU 52</stable>
         Bidi_Paired_Bracket_Type = 0x1015, // ICU4N TODO: API Rename BiDi
@@ -796,10 +796,10 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Bitmask property General_Category_Mask.
         /// This is the <see cref="General_Category"/> property returned as a bit mask.
-        /// When used in <see cref="UCharacter.GetInt32PropertyValue(int, UProperty)"/>,
+        /// When used in <see cref="UChar.GetInt32PropertyValue(int, UProperty)"/>,
         /// returns bit masks for <see cref="UCharacterCategory"/> values where exactly one bit is set.
-        /// When used with <see cref="UCharacter.GetPropertyValueName(UProperty, int, NameChoice)"/> 
-        /// and <see cref="UCharacter.GetPropertyValueEnum(UProperty, string)"/>,
+        /// When used with <see cref="UChar.GetPropertyValueName(UProperty, int, NameChoice)"/> 
+        /// and <see cref="UChar.GetPropertyValueEnum(UProperty, string)"/>,
         /// a multi-bit mask is used for sets of categories like "Letters".
         /// </summary>
         /// <stable>ICU 2.4</stable>
@@ -819,7 +819,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Double property Numeric_Value.
-        /// Corresponds to <see cref="UCharacter.GetUnicodeNumericValue(int)"/>.
+        /// Corresponds to <see cref="UChar.GetUnicodeNumericValue(int)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Numeric_Value = 0x3000,
@@ -838,7 +838,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// String property Age.
-        /// Corresponds to <see cref="UCharacter.GetAge(int)"/>.
+        /// Corresponds to <see cref="UChar.GetAge(int)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Age = 0x4000,
@@ -851,70 +851,70 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// String property Bidi_Mirroring_Glyph.
-        /// Corresponds to <see cref="UCharacter.GetMirror(int)"/>.
+        /// Corresponds to <see cref="UChar.GetMirror(int)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Bidi_Mirroring_Glyph = 0x4001, // ICU4N TODO: API Rename BiDi
 
         /// <summary>
         /// String property Case_Folding.
-        /// Corresponds to <see cref="UCharacter.FoldCase(string, bool)"/>.
+        /// Corresponds to <see cref="UChar.FoldCase(string, bool)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Case_Folding = 0x4002,
 
         /// <summary>
         /// Deprecated string property ISO_Comment.
-        /// Corresponds to <see cref="UCharacter.GetISOComment(int)"/>.
+        /// Corresponds to <see cref="UChar.GetISOComment(int)"/>.
         /// </summary>
         [Obsolete("ICU 49")]
         ISO_Comment = 0x4003,
 
         /// <summary>
         /// String property Lowercase_Mapping.
-        /// Corresponds to <see cref="UCharacter.ToLower(string)"/>.
+        /// Corresponds to <see cref="UChar.ToLower(string)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Lowercase_Mapping = 0x4004,
 
         /// <summary>
         /// String property Name.
-        /// Corresponds to <see cref="UCharacter.GetName(int)"/>.
+        /// Corresponds to <see cref="UChar.GetName(int)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Name = 0x4005,
 
         /// <summary>
         /// String property Simple_Case_Folding.
-        /// Corresponds to <see cref="UCharacter.FoldCase(int, bool)"/>.
+        /// Corresponds to <see cref="UChar.FoldCase(int, bool)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Simple_Case_Folding = 0x4006,
 
         /// <summary>
         /// String property Simple_Lowercase_Mapping.
-        /// Corresponds to <see cref="UCharacter.ToLower(int)"/>.
+        /// Corresponds to <see cref="UChar.ToLower(int)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Simple_Lowercase_Mapping = 0x4007,
 
         /// <summary>
         /// String property Simple_Titlecase_Mapping.
-        /// Corresponds to <see cref="UCharacter.ToTitleCase(int)"/>.
+        /// Corresponds to <see cref="UChar.ToTitleCase(int)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Simple_Titlecase_Mapping = 0x4008,
 
         /// <summary>
         /// String property Simple_Uppercase_Mapping.
-        /// Corresponds to <see cref="UCharacter.ToUpper(int)"/>.
+        /// Corresponds to <see cref="UChar.ToUpper(int)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Simple_Uppercase_Mapping = 0x4009,
 
         /// <summary>
         /// String property Titlecase_Mapping.
-        /// Corresponds to <see cref="UCharacter.ToTitleCase(string, Text.BreakIterator)"/>.
+        /// Corresponds to <see cref="UChar.ToTitleCase(string, Text.BreakIterator)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Titlecase_Mapping = 0x400A,
@@ -923,21 +923,21 @@ namespace ICU4N.Globalization
         /// String property Unicode_1_Name.
         /// This property is of little practical value.
         /// Beginning with ICU 49, ICU APIs return null or an empty string for this property.
-        /// Corresponds to <see cref="UCharacter.GetName1_0(int)"/>.
+        /// Corresponds to <see cref="UChar.GetName1_0(int)"/>.
         /// </summary>
         [Obsolete("ICU 49")]
         Unicode_1_Name = 0x400B,
 
         /// <summary>
         /// String property Uppercase_Mapping.
-        /// Corresponds to <see cref="UCharacter.ToUpper(string)"/>.
+        /// Corresponds to <see cref="UChar.ToUpper(string)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Uppercase_Mapping = 0x400C,
 
         /// <summary>
         /// String property Bidi_Paired_Bracket (new in Unicode 6.3).
-        /// Corresponds to <see cref="UCharacter.GetBidiPairedBracket(int)"/>.
+        /// Corresponds to <see cref="UChar.GetBidiPairedBracket(int)"/>.
         /// </summary>
         /// <stable>ICU 52</stable>
         Bidi_Paired_Bracket = 0x400D, // ICU4N TODO: API Rename BiDi
@@ -971,16 +971,16 @@ namespace ICU4N.Globalization
     }
 
     /// <summary>
-    /// Selector constants for <see cref="UCharacter.GetPropertyName(UProperty, NameChoice)"/> and
-    /// <see cref="UCharacter.GetPropertyValueName(UProperty, int, NameChoice)"/>.  These selectors are used to
+    /// Selector constants for <see cref="UChar.GetPropertyName(UProperty, NameChoice)"/> and
+    /// <see cref="UChar.GetPropertyValueName(UProperty, int, NameChoice)"/>.  These selectors are used to
     /// choose which name is returned for a given property or value.
     /// All properties and values have a long name.  Most have a short
     /// name, but some do not.  Unicode allows for additional names,
     /// beyond the long and short name, which would be indicated by
     /// LONG + i, where i=1, 2,...
     /// </summary>
-    /// <seealso cref="UCharacter.GetPropertyName(UProperty, NameChoice)"/>
-    /// <seealso cref="UCharacter.GetPropertyValueName(UProperty, int, NameChoice)"/>
+    /// <seealso cref="UChar.GetPropertyName(UProperty, NameChoice)"/>
+    /// <seealso cref="UChar.GetPropertyValueName(UProperty, int, NameChoice)"/>
     /// <stable>ICU 2.4</stable>
     public enum NameChoice 
     {

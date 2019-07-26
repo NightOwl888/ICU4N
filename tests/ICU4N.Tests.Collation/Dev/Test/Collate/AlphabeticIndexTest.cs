@@ -260,7 +260,7 @@ namespace ICU4N.Dev.Test.Collate
                     }
                     int script = UScript.GetScript(c);
                     missingScriptNames += " " +
-                            UCharacter.GetPropertyValueName(
+                            UChar.GetPropertyValueName(
                                     UProperty.Script, script, NameChoice.Short);
                     missingChars.RemoveAll(new UnicodeSet().ApplyInt32PropertyValue(UProperty.Script, script));
                 }

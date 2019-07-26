@@ -31,7 +31,7 @@ namespace ICU4N.Dev.Test.Lang
             for (int t = 0; t < 20; t++)
             {
                 int codePoint = 47 + t;
-                String correctName = UCharacter.GetName(codePoint);
+                String correctName = UChar.GetName(codePoint);
                 GetNameThread thread = new GetNameThread(codePoint, correctName);
                 thread.Start();
                 threads.Add(thread);
@@ -62,7 +62,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 for (int i = 0; i < 10000; i++)
                 {
-                    actualName = UCharacter.GetName(codePoint);
+                    actualName = UChar.GetName(codePoint);
                     if (!correctName.Equals(actualName))
                     {
                         break;

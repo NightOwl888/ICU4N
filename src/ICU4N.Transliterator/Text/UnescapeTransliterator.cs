@@ -192,7 +192,7 @@ namespace ICU4N.Text
                                 break;
                             }
                             int ch = text.Char32At(s);
-                            int digit = UCharacter.Digit(ch, radix);
+                            int digit = UChar.Digit(ch, radix);
                             if (digit < 0)
                             {
                                 break;

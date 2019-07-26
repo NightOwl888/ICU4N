@@ -2950,8 +2950,8 @@ namespace ICU4N.Dev.Test.Translit
                 else if (id.Equals("NFC", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, NormalizerMode.NFC);
                 else if (id.Equals("NFKD", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, NormalizerMode.NFKD);
                 else if (id.Equals("NFKC", StringComparison.OrdinalIgnoreCase)) target = Normalizer.Normalize(source, NormalizerMode.NFKC);
-                else if (id.Equals("Lower", StringComparison.OrdinalIgnoreCase)) target = UCharacter.ToLower(new CultureInfo("en-US"), source);
-                else if (id.Equals("Upper", StringComparison.OrdinalIgnoreCase)) target = UCharacter.ToUpper(new CultureInfo("en-US"), source);
+                else if (id.Equals("Lower", StringComparison.OrdinalIgnoreCase)) target = UChar.ToLower(new CultureInfo("en-US"), source);
+                else if (id.Equals("Upper", StringComparison.OrdinalIgnoreCase)) target = UChar.ToUpper(new CultureInfo("en-US"), source);
 
                 Expect(t, source, target);
             }
@@ -2993,10 +2993,10 @@ namespace ICU4N.Dev.Test.Translit
             {
                 String s = UTF16.ValueOf(i);
 
-                String lower = UCharacter.ToLower(ULocale.ROOT, s);
+                String lower = UChar.ToLower(ULocale.ROOT, s);
                 assertEquals("Lowercase", lower, toLower.Transform(s));
 
-                String casefold = UCharacter.FoldCase(s, true);
+                String casefold = UChar.FoldCase(s, true);
                 assertEquals("Casefold", casefold, toCasefold.Transform(s));
 
                 if (i != 0x0345)
@@ -3008,11 +3008,11 @@ namespace ICU4N.Dev.Test.Translit
                     // at the start of a word.
                     // The title Transliterator is far below feature parity with the
                     // UCharacter and CaseMap titlecasing functions.
-                    String title = UCharacter.ToTitleCase(ULocale.ROOT, s, null);
+                    String title = UChar.ToTitleCase(ULocale.ROOT, s, null);
                     assertEquals("Title", title, toTitle.Transform(s));
                 }
 
-                String upper = UCharacter.ToUpper(ULocale.ROOT, s);
+                String upper = UChar.ToUpper(ULocale.ROOT, s);
                 assertEquals("Upper", upper, toUpper.Transform(s));
             }
         }
@@ -3023,18 +3023,18 @@ namespace ICU4N.Dev.Test.Translit
             // check that casing handles surrogates
             // titlecase is currently defective
             int dee = UTF16.CharAt(DESERET_dee, 0);
-            int DEE = UCharacter.ToTitleCase(dee);
+            int DEE = UChar.ToTitleCase(dee);
             if (!UTF16.ValueOf(DEE).Equals(DESERET_DEE))
             {
                 Errln("Fails titlecase of surrogates" + Convert.ToString(dee, 16) + ", " + Convert.ToString(DEE, 16));
             }
 
-            if (!UCharacter.ToUpper(DESERET_dee + DESERET_DEE).Equals(DESERET_DEE + DESERET_DEE))
+            if (!UChar.ToUpper(DESERET_dee + DESERET_DEE).Equals(DESERET_DEE + DESERET_DEE))
             {
                 Errln("Fails uppercase of surrogates");
             }
 
-            if (!UCharacter.ToLower(DESERET_dee + DESERET_DEE).Equals(DESERET_dee + DESERET_dee))
+            if (!UChar.ToLower(DESERET_dee + DESERET_DEE).Equals(DESERET_dee + DESERET_dee))
             {
                 Errln("Fails lowercase of surrogates");
             }

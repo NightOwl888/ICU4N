@@ -6,13 +6,10 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Impl;
-using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -1073,7 +1070,7 @@ namespace ICU4N.Impl
                         int titleStart = prev;
                         iter.SetLimit(index);
                         int c = iter.NextCaseMapCP();
-                        if ((options & UCharacter.TitleCaseNoBreakAdjustment) == 0)
+                        if ((options & UChar.TitleCaseNoBreakAdjustment) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
                             // or to the next letter/number/symbol/private use.
@@ -1135,7 +1132,7 @@ namespace ICU4N.Impl
                             // lowercase [titleLimit..index[
                             if (titleLimit < index)
                             {
-                                if ((options & UCharacter.TitleCaseNoLowerCase) == 0)
+                                if ((options & UChar.TitleCaseNoLowerCase) == 0)
                                 {
                                     // Normal operation: Lowercase the rest of the word.
                                     InternalToLower(caseLocale, options, iter, dest, edits);
@@ -1208,7 +1205,7 @@ namespace ICU4N.Impl
                         int titleStart = prev;
                         iter.SetLimit(index);
                         int c = iter.NextCaseMapCP();
-                        if ((options & UCharacter.TitleCaseNoBreakAdjustment) == 0)
+                        if ((options & UChar.TitleCaseNoBreakAdjustment) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
                             // or to the next letter/number/symbol/private use.
@@ -1270,7 +1267,7 @@ namespace ICU4N.Impl
                             // lowercase [titleLimit..index[
                             if (titleLimit < index)
                             {
-                                if ((options & UCharacter.TitleCaseNoLowerCase) == 0)
+                                if ((options & UChar.TitleCaseNoLowerCase) == 0)
                                 {
                                     // Normal operation: Lowercase the rest of the word.
                                     InternalToLower(caseLocale, options, iter, dest, edits);
@@ -1343,7 +1340,7 @@ namespace ICU4N.Impl
                         int titleStart = prev;
                         iter.SetLimit(index);
                         int c = iter.NextCaseMapCP();
-                        if ((options & UCharacter.TitleCaseNoBreakAdjustment) == 0)
+                        if ((options & UChar.TitleCaseNoBreakAdjustment) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
                             // or to the next letter/number/symbol/private use.
@@ -1405,7 +1402,7 @@ namespace ICU4N.Impl
                             // lowercase [titleLimit..index[
                             if (titleLimit < index)
                             {
-                                if ((options & UCharacter.TitleCaseNoLowerCase) == 0)
+                                if ((options & UChar.TitleCaseNoLowerCase) == 0)
                                 {
                                     // Normal operation: Lowercase the rest of the word.
                                     InternalToLower(caseLocale, options, iter, dest, edits);
@@ -1478,7 +1475,7 @@ namespace ICU4N.Impl
                         int titleStart = prev;
                         iter.SetLimit(index);
                         int c = iter.NextCaseMapCP();
-                        if ((options & UCharacter.TitleCaseNoBreakAdjustment) == 0)
+                        if ((options & UChar.TitleCaseNoBreakAdjustment) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
                             // or to the next letter/number/symbol/private use.
@@ -1540,7 +1537,7 @@ namespace ICU4N.Impl
                             // lowercase [titleLimit..index[
                             if (titleLimit < index)
                             {
-                                if ((options & UCharacter.TitleCaseNoLowerCase) == 0)
+                                if ((options & UChar.TitleCaseNoLowerCase) == 0)
                                 {
                                     // Normal operation: Lowercase the rest of the word.
                                     InternalToLower(caseLocale, options, iter, dest, edits);
@@ -1613,7 +1610,7 @@ namespace ICU4N.Impl
                         int titleStart = prev;
                         iter.SetLimit(index);
                         int c = iter.NextCaseMapCP();
-                        if ((options & UCharacter.TitleCaseNoBreakAdjustment) == 0)
+                        if ((options & UChar.TitleCaseNoBreakAdjustment) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
                             // or to the next letter/number/symbol/private use.
@@ -1675,7 +1672,7 @@ namespace ICU4N.Impl
                             // lowercase [titleLimit..index[
                             if (titleLimit < index)
                             {
-                                if ((options & UCharacter.TitleCaseNoLowerCase) == 0)
+                                if ((options & UChar.TitleCaseNoLowerCase) == 0)
                                 {
                                     // Normal operation: Lowercase the rest of the word.
                                     InternalToLower(caseLocale, options, iter, dest, edits);
@@ -1748,7 +1745,7 @@ namespace ICU4N.Impl
                         int titleStart = prev;
                         iter.SetLimit(index);
                         int c = iter.NextCaseMapCP();
-                        if ((options & UCharacter.TitleCaseNoBreakAdjustment) == 0)
+                        if ((options & UChar.TitleCaseNoBreakAdjustment) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
                             // or to the next letter/number/symbol/private use.
@@ -1810,7 +1807,7 @@ namespace ICU4N.Impl
                             // lowercase [titleLimit..index[
                             if (titleLimit < index)
                             {
-                                if ((options & UCharacter.TitleCaseNoLowerCase) == 0)
+                                if ((options & UChar.TitleCaseNoLowerCase) == 0)
                                 {
                                     // Normal operation: Lowercase the rest of the word.
                                     InternalToLower(caseLocale, options, iter, dest, edits);
@@ -1883,7 +1880,7 @@ namespace ICU4N.Impl
                         int titleStart = prev;
                         iter.SetLimit(index);
                         int c = iter.NextCaseMapCP();
-                        if ((options & UCharacter.TitleCaseNoBreakAdjustment) == 0)
+                        if ((options & UChar.TitleCaseNoBreakAdjustment) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
                             // or to the next letter/number/symbol/private use.
@@ -1945,7 +1942,7 @@ namespace ICU4N.Impl
                             // lowercase [titleLimit..index[
                             if (titleLimit < index)
                             {
-                                if ((options & UCharacter.TitleCaseNoLowerCase) == 0)
+                                if ((options & UChar.TitleCaseNoLowerCase) == 0)
                                 {
                                     // Normal operation: Lowercase the rest of the word.
                                     InternalToLower(caseLocale, options, iter, dest, edits);
@@ -2018,7 +2015,7 @@ namespace ICU4N.Impl
                         int titleStart = prev;
                         iter.SetLimit(index);
                         int c = iter.NextCaseMapCP();
-                        if ((options & UCharacter.TitleCaseNoBreakAdjustment) == 0)
+                        if ((options & UChar.TitleCaseNoBreakAdjustment) == 0)
                         {
                             // Adjust the titlecasing index to the next cased character,
                             // or to the next letter/number/symbol/private use.
@@ -2080,7 +2077,7 @@ namespace ICU4N.Impl
                             // lowercase [titleLimit..index[
                             if (titleLimit < index)
                             {
-                                if ((options & UCharacter.TitleCaseNoLowerCase) == 0)
+                                if ((options & UChar.TitleCaseNoLowerCase) == 0)
                                 {
                                     // Normal operation: Lowercase the rest of the word.
                                     InternalToLower(caseLocale, options, iter, dest, edits);

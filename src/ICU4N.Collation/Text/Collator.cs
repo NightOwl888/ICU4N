@@ -1005,7 +1005,7 @@ namespace ICU4N.Text
                     if (scriptName.Length == 4)
                     {
                         // Strict parsing, accept only 4-letter script codes, not long names.
-                        code = UCharacter.GetPropertyValueEnum(UProperty.Script, scriptName);
+                        code = UChar.GetPropertyValueEnum(UProperty.Script, scriptName);
                     }
                     else
                     {

@@ -46,7 +46,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
+            /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> string Apply(<#=charSequence#> src)
@@ -64,7 +64,7 @@ namespace ICU4N.Text
             /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
+            /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> string Apply(CultureInfo locale, <#=charSequence#> src)
@@ -88,7 +88,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
+            /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 <# if (appendable == "IAppendable") { #>
@@ -119,7 +119,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToLower(CultureInfo, string)"/>
+            /// <seealso cref="UChar.ToLower(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 <# if (appendable == "IAppendable") { #>
@@ -148,7 +148,7 @@ namespace ICU4N.Text
             /// </summary>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
+            /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> string Apply(<#=charSequence#> src)
@@ -166,7 +166,7 @@ namespace ICU4N.Text
             /// <param name="locale">The locale ID. Can be null for <see cref="CultureInfo.CurrentCulture"/>.</param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
+            /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> string Apply(CultureInfo locale, <#=charSequence#> src)
@@ -190,7 +190,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
+            /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 <# if (appendable == "IAppendable") { #>
@@ -221,7 +221,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="dest"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToUpper(CultureInfo, string)"/>
+            /// <seealso cref="UChar.ToUpper(CultureInfo, string)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 <# if (appendable == "IAppendable") { #>
@@ -262,7 +262,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
+            /// <seealso cref="UChar.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> string Apply(BreakIterator iter, <#=charSequence#> src)
@@ -295,7 +295,7 @@ namespace ICU4N.Text
             /// </param>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
+            /// <seealso cref="UChar.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> string Apply(CultureInfo locale, BreakIterator iter, <#=charSequence#> src)
@@ -338,7 +338,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
+            /// <seealso cref="UChar.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU4N 60.1.0</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 <# if (appendable == "IAppendable") { #>
@@ -387,7 +387,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
+            /// <seealso cref="UChar.ToTitleCase(CultureInfo, string, BreakIterator, int)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 <# if (appendable == "IAppendable") { #>
@@ -427,7 +427,7 @@ namespace ICU4N.Text
             /// </remarks>
             /// <param name="src">The original string.</param>
             /// <returns>The result string.</returns>
-            /// <seealso cref="Lang.UCharacter.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
             /// <draft>ICU 60</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
             <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> string Apply(<#=charSequence#> src)
@@ -455,7 +455,7 @@ namespace ICU4N.Text
             /// This function calls <see cref="Edits.Reset()"/> first. <paramref name="edits"/> can be null.
             /// </param>
             /// <returns><paramref name="dest"/> with the result string (or only changes) appended.</returns>
-            /// <seealso cref="Lang.UCharacter.FoldCase(string, Lang.FoldCase)"/>
+            /// <seealso cref="UChar.FoldCase(string, Lang.FoldCase)"/>
             /// <draft>ICU 59</draft>
             /// <provisional>This API might change or be removed in a future release.</provisional>
 <# if (appendable == "IAppendable") { #>

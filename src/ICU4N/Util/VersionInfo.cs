@@ -483,9 +483,9 @@ namespace ICU4N.Util
         /// <summary>
         /// Unicode data version used by the current release.
         /// Defined here privately for printing by the <see cref="PrintVersionInfo(string[])"/> method in this class.
-        /// Should be the same as <see cref="Lang.UCharacter.UnicodeVersion"/>
+        /// Should be the same as <see cref="UChar.UnicodeVersion"/>
         /// which gets the version number from a data file.
-        /// We do not want <see cref="VersionInfo"/> to have an import dependency on <see cref="Lang.UCharacter"/>.
+        /// We do not want <see cref="VersionInfo"/> to have an import dependency on <see cref="UChar"/>.
         /// </summary>
         private static readonly VersionInfo UNICODE_VERSION;
  

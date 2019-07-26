@@ -749,8 +749,8 @@ namespace ICU4N.Text
         /// <summary>
         /// Validates and parses an argument name or argument number string.
         /// An argument name must be a "pattern identifier", that is, it must contain
-        /// no Unicode <see cref="ICU4N.Lang.UProperty.Pattern_Syntax"/> or 
-        /// <see cref="ICU4N.Lang.UProperty.Pattern_White_Space"/> characters.
+        /// no Unicode <see cref="ICU4N.Globalization.UProperty.Pattern_Syntax"/> or 
+        /// <see cref="ICU4N.Globalization.UProperty.Pattern_White_Space"/> characters.
         /// If it only contains ASCII digits, then it must be a small integer with no leading zero.
         /// </summary>
         /// <param name="name">Input string.</param>

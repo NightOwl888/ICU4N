@@ -285,7 +285,7 @@ namespace ICU4N.Impl
 
         private string AdjustForUsageAndContext(CapitalizationContextUsage usage, String name)
         {
-            if (name != null && name.Length > 0 && UCharacter.IsLowerCase(name.CodePointAt(0)) &&
+            if (name != null && name.Length > 0 && UChar.IsLowerCase(name.CodePointAt(0)) &&
                     (capitalization == DisplayContext.CapitalizationForBeginningOfSentence ||
                     (capitalizationUsage != null && capitalizationUsage[(int)usage])))
             {
@@ -298,8 +298,8 @@ namespace ICU4N.Impl
                         // should only happen when deserializing, etc.
                         capitalizationBrkIter = BreakIterator.GetSentenceInstance(locale);
                     }
-                    return UCharacter.ToTitleCase(locale, name, capitalizationBrkIter,
-                            UCharacter.TitleCaseNoLowerCase | UCharacter.TitleCaseNoBreakAdjustment);
+                    return UChar.ToTitleCase(locale, name, capitalizationBrkIter,
+                            UChar.TitleCaseNoLowerCase | UChar.TitleCaseNoBreakAdjustment);
                 }
             }
             return name;

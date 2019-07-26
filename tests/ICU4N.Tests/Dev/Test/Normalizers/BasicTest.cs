@@ -700,12 +700,12 @@ namespace ICU4N.Dev.Test.Normalizers
             int qc1, qc2;
 
             if (
-                UCharacter.GetIntPropertyMaxValue(UProperty.NFD_Quick_Check) != 1 || // YES
-                UCharacter.GetIntPropertyMaxValue(UProperty.NFKD_Quick_Check) != 1 ||
-                UCharacter.GetIntPropertyMaxValue(UProperty.NFC_Quick_Check) != 2 || // MAYBE
-                UCharacter.GetIntPropertyMaxValue(UProperty.NFKC_Quick_Check) != 2 ||
-                UCharacter.GetIntPropertyMaxValue(UProperty.Lead_Canonical_Combining_Class) != UCharacter.GetIntPropertyMaxValue(UProperty.Canonical_Combining_Class) ||
-                UCharacter.GetIntPropertyMaxValue(UProperty.Trail_Canonical_Combining_Class) != UCharacter.GetIntPropertyMaxValue(UProperty.Canonical_Combining_Class)
+                UChar.GetIntPropertyMaxValue(UProperty.NFD_Quick_Check) != 1 || // YES
+                UChar.GetIntPropertyMaxValue(UProperty.NFKD_Quick_Check) != 1 ||
+                UChar.GetIntPropertyMaxValue(UProperty.NFC_Quick_Check) != 2 || // MAYBE
+                UChar.GetIntPropertyMaxValue(UProperty.NFKC_Quick_Check) != 2 ||
+                UChar.GetIntPropertyMaxValue(UProperty.Lead_Canonical_Combining_Class) != UChar.GetIntPropertyMaxValue(UProperty.Canonical_Combining_Class) ||
+                UChar.GetIntPropertyMaxValue(UProperty.Trail_Canonical_Combining_Class) != UChar.GetIntPropertyMaxValue(UProperty.Canonical_Combining_Class)
             )
             {
                 Errln("wrong result from one of the u_getIntPropertyMaxValue(UCHAR_NF*_QUICK_CHECK) or UCHAR_*_CANONICAL_COMBINING_CLASS");
@@ -720,28 +720,28 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 s = UTF16.ValueOf(c);
 
-                qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFC_Quick_Check);
+                qc1 = UChar.GetInt32PropertyValue(c, UProperty.NFC_Quick_Check);
                 qc2 = qcToInt(Normalizer.QuickCheck(s, NormalizerMode.NFC));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFC)=" + qc1 + " != " + qc2 + "=quickCheck(NFC) for U+" + (c).ToHexString());
                 }
 
-                qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFD_Quick_Check);
+                qc1 = UChar.GetInt32PropertyValue(c, UProperty.NFD_Quick_Check);
                 qc2 = qcToInt(Normalizer.QuickCheck(s, NormalizerMode.NFD));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFD)=" + qc1 + " != " + qc2 + "=quickCheck(NFD) for U+" + (c).ToHexString());
                 }
 
-                qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFKC_Quick_Check);
+                qc1 = UChar.GetInt32PropertyValue(c, UProperty.NFKC_Quick_Check);
                 qc2 = qcToInt(Normalizer.QuickCheck(s, NormalizerMode.NFKC));
                 if (qc1 != qc2)
                 {
                     Errln("getIntPropertyValue(NFKC)=" + qc1 + " != " + qc2 + "=quickCheck(NFKC) for U+" + (c).ToHexString());
                 }
 
-                qc1 = UCharacter.GetInt32PropertyValue(c, UProperty.NFKD_Quick_Check);
+                qc1 = UChar.GetInt32PropertyValue(c, UProperty.NFKD_Quick_Check);
                 qc2 = qcToInt(Normalizer.QuickCheck(s, NormalizerMode.NFKD));
                 if (qc1 != qc2)
                 {
@@ -752,10 +752,10 @@ namespace ICU4N.Dev.Test.Normalizers
                 lead = UTF16.CharAt(nfd, 0);
                 trail = UTF16.CharAt(nfd, nfd.Length - 1);
 
-                lccc1 = UCharacter.GetInt32PropertyValue(c, UProperty.Lead_Canonical_Combining_Class);
-                lccc2 = UCharacter.GetCombiningClass(lead);
-                tccc1 = UCharacter.GetInt32PropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
-                tccc2 = UCharacter.GetCombiningClass(trail);
+                lccc1 = UChar.GetInt32PropertyValue(c, UProperty.Lead_Canonical_Combining_Class);
+                lccc2 = UChar.GetCombiningClass(lead);
+                tccc1 = UChar.GetInt32PropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
+                tccc2 = UChar.GetCombiningClass(trail);
 
                 if (lccc1 != lccc2)
                 {
@@ -1268,7 +1268,7 @@ namespace ICU4N.Dev.Test.Normalizers
                            "' (" + Hex(ch) + ")" + " at index " + index);
                     break;
                 }
-                got.Append(UCharacter.ToString(ch));
+                got.Append(UChar.ToString(ch));
                 index++;
             }
             if (!expected.Equals(got.ToString()))
@@ -1294,7 +1294,7 @@ namespace ICU4N.Dev.Test.Normalizers
                                    + "' (" + Hex(ch) + ")" + " at index " + index);
                     break;
                 }
-                got.Append(UCharacter.ToString(ch));
+                got.Append(UChar.ToString(ch));
             }
             if (!expectedReverse.Equals(got.ToString()))
             {
@@ -1921,8 +1921,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 // NFD(toCasefold(NFD(X))) = NFD(toCasefold(NFD(Y)))
                 r1 = Normalizer.Decompose(s1, false, normalizerVersion);
                 r2 = Normalizer.Decompose(s2, false, normalizerVersion);
-                r1 = UCharacter.FoldCase(r1, foldCase);
-                r2 = UCharacter.FoldCase(r2, foldCase);
+                r1 = UChar.FoldCase(r1, foldCase);
+                r2 = UChar.FoldCase(r2, foldCase);
             }
             else
             {
@@ -1983,8 +1983,8 @@ namespace ICU4N.Dev.Test.Normalizers
             t1 = s1;
             t2 = s2;
 
-            t1 = UCharacter.FoldCase(t1, ((options & Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I) == 0));
-            t2 = UCharacter.FoldCase(t2, ((options & Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I) == 0));
+            t1 = UChar.FoldCase(t1, ((options & Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I) == 0));
+            t2 = UChar.FoldCase(t2, ((options & Normalizer.FOLD_CASE_EXCLUDE_SPECIAL_I) == 0));
 
             if ((options & Normalizer.COMPARE_CODE_POINT_ORDER) != 0)
             {
@@ -2427,7 +2427,7 @@ namespace ICU4N.Dev.Test.Normalizers
             count = 0;
             for (c = 0; c <= 0x10ffff; ++c)
             {
-                category = UCharacter.GetType(c);
+                category = UChar.GetType(c);
                 if (category == UCharacterCategory.OtherNotAssigned)
                 {
                     continue; // skip unassigned code points
@@ -2459,14 +2459,14 @@ namespace ICU4N.Dev.Test.Normalizers
                 // get leading and trailing cc for c
                 d = Normalizer.Decompose(s, false);
                 isNFD = s == d;
-                cc = UCharacter.GetCombiningClass(UTF16.CharAt(d, 0));
-                trailCC = UCharacter.GetCombiningClass(UTF16.CharAt(d, d.Length - 1));
+                cc = UChar.GetCombiningClass(UTF16.CharAt(d, 0));
+                trailCC = UChar.GetCombiningClass(UTF16.CharAt(d, d.Length - 1));
 
                 // get leading and trailing cc for the case-folding of c
-                UCharacter.FoldCase(s, (foldingOptions == 0));
+                UChar.FoldCase(s, (foldingOptions == 0));
                 d = Normalizer.Decompose(s, false);
-                foldCC = UCharacter.GetCombiningClass(UTF16.CharAt(d, 0));
-                foldTrailCC = UCharacter.GetCombiningClass(UTF16.CharAt(d, d.Length - 1));
+                foldCC = UChar.GetCombiningClass(UTF16.CharAt(d, 0));
+                foldTrailCC = UChar.GetCombiningClass(UTF16.CharAt(d, d.Length - 1));
 
                 qcResult = Normalizer.QuickCheck(s, NormalizerMode.FCD, 0);
 
@@ -2656,7 +2656,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 iter.Next();
                 int c = iter.Codepoint;
                 combineBackCharsAndCc[2 * i] = c;
-                combineBackCharsAndCc[2 * i + 1] = UCharacter.GetCombiningClass(c);
+                combineBackCharsAndCc[2 * i + 1] = UChar.GetCombiningClass(c);
             }
 
             // We need not look at control codes, Han characters nor Hangul LVT syllables because they
@@ -2675,7 +2675,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 int c = iter.Codepoint;
                 s.Delete(0, 0x7fffffff).AppendCodePoint(c);
                 int cLength = s.Length;
-                int tccc = UCharacter.GetInt32PropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
+                int tccc = UChar.GetInt32PropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
                 for (int i = 0; i < numCombineBack; ++i)
                 {
                     // If c's decomposition ends with a character with non-zero combining class, then
@@ -2790,10 +2790,10 @@ namespace ICU4N.Dev.Test.Normalizers
         {
             for (int i = 0; i < 0x10FFFF; i++)
             {
-                int cc = UCharacter.GetCombiningClass(i);
+                int cc = UChar.GetCombiningClass(i);
                 if (0xD800 <= i && i <= 0xDFFF && cc > 0)
                 {
-                    cc = UCharacter.GetCombiningClass(i);
+                    cc = UChar.GetCombiningClass(i);
                     Errln("CC: " + cc + " for codepoint: " + Utility.Hex(i, 8));
                 }
             }

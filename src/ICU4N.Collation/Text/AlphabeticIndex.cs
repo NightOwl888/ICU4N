@@ -659,7 +659,7 @@ namespace ICU4N.Text
             //   (We only do this for synthesized index characters.)
             foreach (string item in exemplars)
             {
-                initialLabels.Add(UCharacter.ToUpper(locale, item));
+                initialLabels.Add(UChar.ToUpper(locale, item));
             }
         }
 
@@ -707,7 +707,7 @@ namespace ICU4N.Text
             for (int i = 1; i < item.Length; ++i)
             {
                 char ch = item[i];
-                if (!UCharacter.IsHighSurrogate(last) || !UCharacter.IsLowSurrogate(ch))
+                if (!UChar.IsHighSurrogate(last) || !UChar.IsLowSurrogate(ch))
                 {
                     result.Append(CGJ);
                 }
@@ -1447,7 +1447,7 @@ namespace ICU4N.Text
             }
             foreach (string boundary in set)
             {
-                int gcMask = 1 << UCharacter.GetType(boundary.CodePointAt(1)).ToInt32();
+                int gcMask = 1 << UChar.GetType(boundary.CodePointAt(1)).ToInt32();
                 if ((gcMask & (GC_L_MASK | GC_CN_MASK)) == 0)
                 {
                     // Ignore boundaries for the special reordering groups.

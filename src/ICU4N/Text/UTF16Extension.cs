@@ -19,7 +19,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
         /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
-        /// required, use <see cref="Lang.UCharacter.IsLegal(int)"/>
+        /// required, use <see cref="UChar.IsLegal(int)"/>
         /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
         /// character will be returned. If a complete supplementary character is not found the incomplete
         /// character will be returned.
@@ -78,7 +78,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
         /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
-        /// required, use <see cref="Lang.UCharacter.IsLegal(int)"/>
+        /// required, use <see cref="UChar.IsLegal(int)"/>
         /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
         /// character will be returned. If a complete supplementary character is not found the incomplete
         /// character will be returned.
@@ -137,7 +137,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
         /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
-        /// required, use <see cref="Lang.UCharacter.IsLegal(int)"/>
+        /// required, use <see cref="UChar.IsLegal(int)"/>
         /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
         /// character will be returned. If a complete supplementary character is not found the incomplete
         /// character will be returned.
@@ -196,7 +196,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
         /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
-        /// required, use <see cref="Lang.UCharacter.IsLegal(int)"/>
+        /// required, use <see cref="UChar.IsLegal(int)"/>
         /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
         /// character will be returned. If a complete supplementary character is not found the incomplete
         /// character will be returned.

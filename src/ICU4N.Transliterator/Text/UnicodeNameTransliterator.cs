@@ -53,7 +53,7 @@ namespace ICU4N.Text
             while (cursor < limit)
             {
                 int c = text.Char32At(cursor);
-                if ((name = UCharacter.GetExtendedName(c)) != null)
+                if ((name = UChar.GetExtendedName(c)) != null)
                 {
 
                     str.Length = OPEN_DELIM_LEN;

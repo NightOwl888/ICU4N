@@ -75,7 +75,7 @@ namespace ICU4N.Dev.Test.Lang
                     String propName;
                     try
                     {
-                        propName = UCharacter.GetPropertyName(propNum, nameChoice);
+                        propName = UChar.GetPropertyName(propNum, nameChoice);
                         if (propName == null)
                         {
                             if (nameChoice == NameChoice.Short) continue; // allow non-existent short names
@@ -91,12 +91,12 @@ namespace ICU4N.Dev.Test.Lang
                         continue;
                     }
                     Logln("Property (" + propNum + "): " + propName);
-                    for (int valueNum = UCharacter.GetIntPropertyMinValue(propNum); valueNum <= UCharacter.GetIntPropertyMaxValue(propNum); ++valueNum)
+                    for (int valueNum = UChar.GetIntPropertyMinValue(propNum); valueNum <= UChar.GetIntPropertyMaxValue(propNum); ++valueNum)
                     {
                         String valueName;
                         try
                         {
-                            valueName = UCharacter.GetPropertyValueName(propNum, valueNum, nameChoice);
+                            valueName = UChar.GetPropertyValueName(propNum, valueNum, nameChoice);
                             if (valueName == null)
                             {
                                 if (nameChoice == NameChoice.Short) continue; // allow non-existent short names
@@ -141,7 +141,7 @@ namespace ICU4N.Dev.Test.Lang
                         UnicodeSet collectedErrors = new UnicodeSet();
                         for (UnicodeSetIterator it = new UnicodeSetIterator(testSet); it.Next();)
                         {
-                            int value = UCharacter.GetInt32PropertyValue(it.Codepoint, propNum);
+                            int value = UChar.GetInt32PropertyValue(it.Codepoint, propNum);
                             if (value != valueNum)
                             {
                                 collectedErrors.Add(it.Codepoint);
@@ -174,7 +174,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             for (int i = 0; i <= 0x10FFFF; ++i)
             {
-                if ((i <= 0xFF && !UCharacter.IsLetter(i)) || UCharacter.IsWhitespace(i))
+                if ((i <= 0xFF && !UChar.IsLetter(i)) || UChar.IsWhitespace(i))
                 {
                     // check various combinations to make sure they all work.
                     if (i != 0 && !toPatternAux(i, i)) continue;
@@ -344,7 +344,7 @@ namespace ICU4N.Dev.Test.Lang
              break;
                  */
                 default:
-                    dig = UCharacter.Digit(c, 8);
+                    dig = UChar.Digit(c, 8);
                     if (dig >= 0)
                     {
                         minDig = 1;
@@ -482,7 +482,7 @@ namespace ICU4N.Dev.Test.Lang
             set = new UnicodeSet("[:L:]");
             for (int i = 0; i < 0x200; ++i)
             {
-                bool l = UCharacter.IsLetter(i);
+                bool l = UChar.IsLetter(i);
                 if (l != set.Contains((char)i))
                 {
                     Errln("FAIL: L contains " + (char)i + " = " +
@@ -494,7 +494,7 @@ namespace ICU4N.Dev.Test.Lang
             set = new UnicodeSet("[:Lu:]");
             for (int i = 0; i < 0x200; ++i)
             {
-                bool lu = (UCharacter.GetType(i) == UCharacterCategory.UppercaseLetter);
+                bool lu = (UChar.GetType(i) == UCharacterCategory.UppercaseLetter);
                 if (lu != set.Contains((char)i))
                 {
                     Errln("FAIL: Lu contains " + (char)i + " = " +
@@ -2200,7 +2200,7 @@ namespace ICU4N.Dev.Test.Lang
                 for (i = start; i < limit; i += UTF16.GetCharCount(cp))
                 {
                     cp = UTF16.CharAt(text, i);
-                    if (!UCharacter.IsUnicodeIdentifierPart(cp))
+                    if (!UChar.IsUnicodeIdentifierPart(cp))
                     {
                         break;
                     }

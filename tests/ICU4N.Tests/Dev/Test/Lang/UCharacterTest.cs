@@ -51,23 +51,23 @@ namespace ICU4N.Dev.Test.Lang
         public void TestLetterNumber()
         {
             for (int i = 0x0041; i < 0x005B; i++)
-                if (!UCharacter.IsLetter(i))
+                if (!UChar.IsLetter(i))
                     Errln("FAIL \\u" + Hex(i) + " expected to be a letter");
 
             for (int i = 0x0660; i < 0x066A; i++)
-                if (UCharacter.IsLetter(i))
+                if (UChar.IsLetter(i))
                     Errln("FAIL \\u" + Hex(i) + " expected not to be a letter");
 
             for (int i = 0x0660; i < 0x066A; i++)
-                if (!UCharacter.IsDigit(i))
+                if (!UChar.IsDigit(i))
                     Errln("FAIL \\u" + Hex(i) + " expected to be a digit");
 
             for (int i = 0x0041; i < 0x005B; i++)
-                if (!UCharacter.IsLetterOrDigit(i))
+                if (!UChar.IsLetterOrDigit(i))
                     Errln("FAIL \\u" + Hex(i) + " expected not to be a digit");
 
             for (int i = 0x0660; i < 0x066A; i++)
-                if (!UCharacter.IsLetterOrDigit(i))
+                if (!UChar.IsLetterOrDigit(i))
                     Errln("FAIL \\u" + Hex(i) +
                         "expected to be either a letter or a digit");
 
@@ -75,7 +75,7 @@ namespace ICU4N.Dev.Test.Lang
              * The following checks work only starting from Unicode 4.0.
              * Check the version number here.
              */
-            VersionInfo version = UCharacter.UnicodeVersion;
+            VersionInfo version = UChar.UnicodeVersion;
             if (version.Major < 4 || version.Equals(VersionInfo.GetInstance(4, 0, 1)))
             {
                 return;
@@ -124,27 +124,27 @@ namespace ICU4N.Dev.Test.Lang
             int size = spaces.Length;
             for (int i = 0; i < size; i++)
             {
-                if (!UCharacter.IsSpaceChar(spaces[i]))
+                if (!UChar.IsSpaceChar(spaces[i]))
                 {
                     Errln("FAIL \\u" + Hex(spaces[i]) +
                         " expected to be a space character");
                     break;
                 }
 
-                if (UCharacter.IsSpaceChar(nonspaces[i]))
+                if (UChar.IsSpaceChar(nonspaces[i]))
                 {
                     Errln("FAIL \\u" + Hex(nonspaces[i]) +
                     " expected not to be space character");
                     break;
                 }
 
-                if (!UCharacter.IsWhitespace(whitespaces[i]))
+                if (!UChar.IsWhitespace(whitespaces[i]))
                 {
                     Errln("FAIL \\u" + Hex(whitespaces[i]) +
                             " expected to be a white space character");
                     break;
                 }
-                if (UCharacter.IsWhitespace(nonwhitespaces[i]))
+                if (UChar.IsWhitespace(nonwhitespaces[i]))
                 {
                     Errln("FAIL \\u" + Hex(nonwhitespaces[i]) +
                                 " expected not to be a space character");
@@ -196,9 +196,9 @@ namespace ICU4N.Dev.Test.Lang
             for (int c = 0; c <= 0xffff; ++c)
             {
                 bool j = char.IsWhiteSpace((char)c);
-                bool i = UCharacter.IsWhitespace(c);
-                bool u = UCharacter.IsUWhiteSpace(c);
-                bool z = (UCharacter.GetInt32PropertyValue(c, UProperty.General_Category_Mask) &
+                bool i = UChar.IsWhitespace(c);
+                bool u = UChar.IsUWhiteSpace(c);
+                bool z = (UChar.GetInt32PropertyValue(c, UProperty.General_Category_Mask) &
                              GC_Z_MASK) != 0;
                 if (j != i)
                 {
@@ -216,8 +216,8 @@ namespace ICU4N.Dev.Test.Lang
             for (char c = (char)0; c <= 0xff; ++c)
             {
                 bool j = ICU4N.Support.Text.Character.IsSpace(c);
-                bool i = UCharacter.IsSpace(c);
-                bool z = (UCharacter.GetInt32PropertyValue(c, UProperty.General_Category_Mask) &
+                bool i = UChar.IsSpace(c);
+                bool z = (UChar.GetInt32PropertyValue(c, UProperty.General_Category_Mask) &
                              GC_Z_MASK) != 0;
                 if (j != i)
                 {
@@ -292,13 +292,13 @@ namespace ICU4N.Dev.Test.Lang
             int size = undefined.Length;
             for (int i = 0; i < size; i++)
             {
-                if (UCharacter.IsDefined(undefined[i]))
+                if (UChar.IsDefined(undefined[i]))
                 {
                     Errln("FAIL \\u" + Hex(undefined[i]) +
                                 " expected not to be defined");
                     break;
                 }
-                if (!UCharacter.IsDefined(defined[i]))
+                if (!UChar.IsDefined(defined[i]))
                 {
                     Errln("FAIL \\u" + Hex(defined[i]) + " expected defined");
                     break;
@@ -317,13 +317,13 @@ namespace ICU4N.Dev.Test.Lang
             int size = @base.Length;
             for (int i = 0; i < size; i++)
             {
-                if (UCharacter.IsBaseForm(nonbase[i]))
+                if (UChar.IsBaseForm(nonbase[i]))
                 {
                     Errln("FAIL \\u" + Hex(nonbase[i]) +
                                 " expected not to be a base character");
                     break;
                 }
-                if (!UCharacter.IsBaseForm(@base[i]))
+                if (!UChar.IsBaseForm(@base[i]))
                 {
                     Errln("FAIL \\u" + Hex(@base[i]) +
                           " expected to be a base character");
@@ -351,8 +351,8 @@ namespace ICU4N.Dev.Test.Lang
             int size = digits.Length;
             for (int i = 0; i < size; i++)
             {
-                if (UCharacter.IsDigit(digits[i]) &&
-                    UCharacter.Digit(digits[i]) != digitvalues[i])
+                if (UChar.IsDigit(digits[i]) &&
+                    UChar.Digit(digits[i]) != digitvalues[i])
                 {
                     Errln("FAIL \\u" + Hex(digits[i]) +
                             " expected digit with value " + digitvalues[i]);
@@ -361,7 +361,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             size = nondigits.Length;
             for (int i = 0; i < size; i++)
-                if (UCharacter.IsDigit(nondigits[i]))
+                if (UChar.IsDigit(nondigits[i]))
                 {
                     Errln("FAIL \\u" + Hex(nondigits[i]) + " expected nondigit");
                     break;
@@ -370,8 +370,8 @@ namespace ICU4N.Dev.Test.Lang
             size = digits2.Length;
             for (int i = 0; i < 10; i++)
             {
-                if (UCharacter.IsDigit(digits2[i]) &&
-                    UCharacter.Digit(digits2[i]) != digitvalues2[i])
+                if (UChar.IsDigit(digits2[i]) &&
+                    UChar.Digit(digits2[i]) != digitvalues2[i])
                 {
                     Errln("FAIL \\u" + Hex(digits2[i]) +
                         " expected digit with value " + digitvalues2[i]);
@@ -386,15 +386,15 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestNumeric()
         {
-            if (UCharacter.GetNumericValue(0x00BC) != -2)
+            if (UChar.GetNumericValue(0x00BC) != -2)
             {
                 Errln("Numeric value of 0x00BC expected to be -2");
             }
 
             for (int i = '0'; i < '9'; i++)
             {
-                int n1 = UCharacter.GetNumericValue(i);
-                double n2 = UCharacter.GetUnicodeNumericValue(i);
+                int n1 = UChar.GetNumericValue(i);
+                double n2 = UChar.GetUnicodeNumericValue(i);
                 if (n1 != n2 || n1 != (i - '0'))
                 {
                     Errln("Numeric value of " + (char)i + " expected to be " +
@@ -403,9 +403,9 @@ namespace ICU4N.Dev.Test.Lang
             }
             for (int i = 'A'; i < 'F'; i++)
             {
-                int n1 = UCharacter.GetNumericValue(i);
-                double n2 = UCharacter.GetUnicodeNumericValue(i);
-                if (n2 != UCharacter.NoNumericValue || n1 != (i - 'A' + 10))
+                int n1 = UChar.GetNumericValue(i);
+                double n2 = UChar.GetUnicodeNumericValue(i);
+                if (n2 != UChar.NoNumericValue || n1 != (i - 'A' + 10))
                 {
                     Errln("Numeric value of " + (char)i + " expected to be " +
                           (i - 'A' + 10));
@@ -414,9 +414,9 @@ namespace ICU4N.Dev.Test.Lang
             for (int i = 0xFF21; i < 0xFF26; i++)
             {
                 // testing full wideth latin characters A-F
-                int n1 = UCharacter.GetNumericValue(i);
-                double n2 = UCharacter.GetUnicodeNumericValue(i);
-                if (n2 != UCharacter.NoNumericValue || n1 != (i - 0xFF21 + 10))
+                int n1 = UChar.GetNumericValue(i);
+                double n2 = UChar.GetUnicodeNumericValue(i);
+                if (n2 != UChar.NoNumericValue || n1 != (i - 0xFF21 + 10))
                 {
                     Errln("Numeric value of " + (char)i + " expected to be " +
                           (i - 0xFF21 + 10));
@@ -430,7 +430,7 @@ namespace ICU4N.Dev.Test.Lang
                      0x824c, 10000, 0x5104, 100000000};
             for (int i = 0; i < han.Length; i += 2)
             {
-                if (UCharacter.GetHanNumericValue(han[i]) != han[i + 1])
+                if (UChar.GetHanNumericValue(han[i]) != han[i + 1])
                 {
                     Errln("Numeric value of \\u" +
                           (han[i]).ToHexString() + " expected to be " +
@@ -445,8 +445,8 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestVersion()
         {
-            if (!UCharacter.UnicodeVersion.Equals(VERSION_))
-                Errln("FAIL expected: " + VERSION_ + " got: " + UCharacter.UnicodeVersion);
+            if (!UChar.UnicodeVersion.Equals(VERSION_))
+                Errln("FAIL expected: " + VERSION_ + " got: " + UChar.UnicodeVersion);
         }
 
         /**
@@ -461,13 +461,13 @@ namespace ICU4N.Dev.Test.Lang
             int size = control.Length;
             for (int i = 0; i < size; i++)
             {
-                if (!UCharacter.IsISOControl(control[i]))
+                if (!UChar.IsISOControl(control[i]))
                 {
                     Errln("FAIL 0x" + (control[i]).ToHexString() +
                             " expected to be a control character");
                     break;
                 }
-                if (UCharacter.IsISOControl(noncontrol[i]))
+                if (UChar.IsISOControl(noncontrol[i]))
                 {
                     Errln("FAIL 0x" + (noncontrol[i]).ToHexString() +
                             " expected to be not a control character");
@@ -487,7 +487,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             for (int i = 0; i < 0x10000; i++)
             {
-                if (UCharacter.IsSupplementary(i))
+                if (UChar.IsSupplementary(i))
                 {
                     Errln("Codepoint \\u" + (i).ToHexString() +
                           " is not supplementary");
@@ -495,7 +495,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             for (int i = 0x10000; i < 0x10FFFF; i++)
             {
-                if (!UCharacter.IsSupplementary(i))
+                if (!UChar.IsSupplementary(i))
                 {
                     Errln("Codepoint \\u" + (i).ToHexString() +
                           " is supplementary");
@@ -509,33 +509,33 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestMirror()
         {
-            if (!(UCharacter.IsMirrored(0x28) && UCharacter.IsMirrored(0xbb) &&
-                  UCharacter.IsMirrored(0x2045) && UCharacter.IsMirrored(0x232a)
-                  && !UCharacter.IsMirrored(0x27) &&
-                  !UCharacter.IsMirrored(0x61) && !UCharacter.IsMirrored(0x284)
-                  && !UCharacter.IsMirrored(0x3400)))
+            if (!(UChar.IsMirrored(0x28) && UChar.IsMirrored(0xbb) &&
+                  UChar.IsMirrored(0x2045) && UChar.IsMirrored(0x232a)
+                  && !UChar.IsMirrored(0x27) &&
+                  !UChar.IsMirrored(0x61) && !UChar.IsMirrored(0x284)
+                  && !UChar.IsMirrored(0x3400)))
             {
                 Errln("isMirrored() does not work correctly");
             }
 
-            if (!(UCharacter.GetMirror(0x3c) == 0x3e &&
-                  UCharacter.GetMirror(0x5d) == 0x5b &&
-                  UCharacter.GetMirror(0x208d) == 0x208e &&
-                  UCharacter.GetMirror(0x3017) == 0x3016 &&
+            if (!(UChar.GetMirror(0x3c) == 0x3e &&
+                  UChar.GetMirror(0x5d) == 0x5b &&
+                  UChar.GetMirror(0x208d) == 0x208e &&
+                  UChar.GetMirror(0x3017) == 0x3016 &&
 
-                  UCharacter.GetMirror(0xbb) == 0xab &&
-                  UCharacter.GetMirror(0x2215) == 0x29F5 &&
-                  UCharacter.GetMirror(0x29F5) == 0x2215 && /* large delta between the code points */
+                  UChar.GetMirror(0xbb) == 0xab &&
+                  UChar.GetMirror(0x2215) == 0x29F5 &&
+                  UChar.GetMirror(0x29F5) == 0x2215 && /* large delta between the code points */
 
-                  UCharacter.GetMirror(0x2e) == 0x2e &&
-                  UCharacter.GetMirror(0x6f3) == 0x6f3 &&
-                  UCharacter.GetMirror(0x301c) == 0x301c &&
-                  UCharacter.GetMirror(0xa4ab) == 0xa4ab &&
+                  UChar.GetMirror(0x2e) == 0x2e &&
+                  UChar.GetMirror(0x6f3) == 0x6f3 &&
+                  UChar.GetMirror(0x301c) == 0x301c &&
+                  UChar.GetMirror(0xa4ab) == 0xa4ab &&
 
                   /* see Unicode Corrigendum #6 at http://www.unicode.org/versions/corrigendum6.html */
-                  UCharacter.GetMirror(0x2018) == 0x2018 &&
-                  UCharacter.GetMirror(0x201b) == 0x201b &&
-                  UCharacter.GetMirror(0x301d) == 0x301d))
+                  UChar.GetMirror(0x2018) == 0x2018 &&
+                  UChar.GetMirror(0x201b) == 0x201b &&
+                  UChar.GetMirror(0x301d) == 0x301d))
             {
                 Errln("getMirror() does not work correctly");
             }
@@ -549,14 +549,14 @@ namespace ICU4N.Dev.Test.Lang
                 end = iter.CodepointEnd;
                 do
                 {
-                    c2 = UCharacter.GetMirror(start);
-                    c3 = UCharacter.GetMirror(c2);
+                    c2 = UChar.GetMirror(start);
+                    c3 = UChar.GetMirror(c2);
                     if (c3 != start)
                     {
                         Errln("getMirror() does not roundtrip: U+" + Hex(start) + "->U+" + Hex(c2) + "->U+" + Hex(c3));
                     }
-                    c3 = UCharacter.GetBidiPairedBracket(start);
-                    if (UCharacter.GetInt32PropertyValue(start, UProperty.Bidi_Paired_Bracket_Type) == UCharacter.BidiPairedBracketType.None)
+                    c3 = UChar.GetBidiPairedBracket(start);
+                    if (UChar.GetInt32PropertyValue(start, UProperty.Bidi_Paired_Bracket_Type) == UChar.BidiPairedBracketType.None)
                     {
                         if (c3 != start)
                         {
@@ -574,10 +574,10 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             // verify that Unicode Corrigendum #6 reverts mirrored status of the following
-            if (UCharacter.IsMirrored(0x2018) ||
-                UCharacter.IsMirrored(0x201d) ||
-                UCharacter.IsMirrored(0x201f) ||
-                UCharacter.IsMirrored(0x301e))
+            if (UChar.IsMirrored(0x2018) ||
+                UChar.IsMirrored(0x201d) ||
+                UChar.IsMirrored(0x201f) ||
+                UChar.IsMirrored(0x301e))
             {
                 Errln("Unicode Corrigendum #6 conflict, one or more of 2018/201d/201f/301e has mirrored property");
             }
@@ -595,13 +595,13 @@ namespace ICU4N.Dev.Test.Lang
             int size = printable.Length;
             for (int i = 0; i < size; i++)
             {
-                if (!UCharacter.IsPrintable(printable[i]))
+                if (!UChar.IsPrintable(printable[i]))
                 {
                     Errln("FAIL \\u" + Hex(printable[i]) +
                         " expected to be a printable character");
                     break;
                 }
-                if (UCharacter.IsPrintable(nonprintable[i]))
+                if (UChar.IsPrintable(nonprintable[i]))
                 {
                     Errln("FAIL \\u" + Hex(nonprintable[i]) +
                             " expected not to be a printable character");
@@ -619,7 +619,7 @@ namespace ICU4N.Dev.Test.Lang
                     // skip ASCII graphic characters and continue with DEL
                     ch = 0x7f;
                 }
-                if (UCharacter.IsPrintable(ch))
+                if (UChar.IsPrintable(ch))
                 {
                     Errln("Fail \\u" + Hex(ch) +
                         " is a ISO 8 control character hence not printable\n");
@@ -633,7 +633,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     ch = 0xa0;
                 }
-                if (!UCharacter.IsPrintable(ch)
+                if (!UChar.IsPrintable(ch)
                     && ch != 0x00AD/* Unicode 4.0 changed the defintion of soft hyphen to be a Cf*/)
                 {
                     Errln("Fail \\u" + Hex(ch) +
@@ -658,39 +658,39 @@ namespace ICU4N.Dev.Test.Lang
             int size = unicodeidstart.Length;
             for (int i = 0; i < size; i++)
             {
-                if (!UCharacter.IsUnicodeIdentifierStart(unicodeidstart[i]))
+                if (!UChar.IsUnicodeIdentifierStart(unicodeidstart[i]))
                 {
                     Errln("FAIL \\u" + Hex(unicodeidstart[i]) +
                         " expected to be a unicode identifier start character");
                     break;
                 }
-                if (UCharacter.IsUnicodeIdentifierStart(nonunicodeidstart[i]))
+                if (UChar.IsUnicodeIdentifierStart(nonunicodeidstart[i]))
                 {
                     Errln("FAIL \\u" + Hex(nonunicodeidstart[i]) +
                             " expected not to be a unicode identifier start " +
                             "character");
                     break;
                 }
-                if (!UCharacter.IsUnicodeIdentifierPart(unicodeidpart[i]))
+                if (!UChar.IsUnicodeIdentifierPart(unicodeidpart[i]))
                 {
                     Errln("FAIL \\u" + Hex(unicodeidpart[i]) +
                         " expected to be a unicode identifier part character");
                     break;
                 }
-                if (UCharacter.IsUnicodeIdentifierPart(nonunicodeidpart[i]))
+                if (UChar.IsUnicodeIdentifierPart(nonunicodeidpart[i]))
                 {
                     Errln("FAIL \\u" + Hex(nonunicodeidpart[i]) +
                             " expected not to be a unicode identifier part " +
                             "character");
                     break;
                 }
-                if (!UCharacter.IsIdentifierIgnorable(idignore[i]))
+                if (!UChar.IsIdentifierIgnorable(idignore[i]))
                 {
                     Errln("FAIL \\u" + Hex(idignore[i]) +
                             " expected to be a ignorable unicode character");
                     break;
                 }
-                if (UCharacter.IsIdentifierIgnorable(nonidignore[i]))
+                if (UChar.IsIdentifierIgnorable(nonidignore[i]))
                 {
                     Errln("FAIL \\u" + Hex(nonidignore[i]) +
                         " expected not to be a ignorable unicode character");
@@ -755,13 +755,13 @@ namespace ICU4N.Dev.Test.Lang
                         type = 0;
                     else
                         type = (type >> 1) + 1;
-                    if (UCharacter.GetType(ch).ToInt32() != type)
+                    if (UChar.GetType(ch).ToInt32() != type)
                     {
                         Errln("FAIL \\u" + Hex(ch) + " expected type " + type);
                         break;
                     }
 
-                    if (UCharacter.GetInt32PropertyValue(ch,
+                    if (UChar.GetInt32PropertyValue(ch,
                                UProperty.General_Category_Mask) != (1 << type))
                     {
                         Errln("error: getIntPropertyValue(\\u" +
@@ -772,7 +772,7 @@ namespace ICU4N.Dev.Test.Lang
 
                     // testing combining class
                     int cc = int.Parse(fields[3], CultureInfo.InvariantCulture);
-                    if (UCharacter.GetCombiningClass(ch) != cc)
+                    if (UChar.GetCombiningClass(ch) != cc)
                     {
                         Errln("FAIL \\u" + Hex(ch) + " expected combining " +
                                 "class " + cc);
@@ -791,19 +791,19 @@ namespace ICU4N.Dev.Test.Lang
                         d = d + "   ";
 
                     int dir = DIR.IndexOf(d) >> 2;
-                    if (UCharacter.GetDirection(ch).ToInt32() != dir)
+                    if (UChar.GetDirection(ch).ToInt32() != dir)
                     {
                         Errln("FAIL \\u" + Hex(ch) +
-                            " expected direction " + dir + " but got " + UCharacter.GetDirection(ch).ToInt32());
+                            " expected direction " + dir + " but got " + UChar.GetDirection(ch).ToInt32());
                         break;
                     }
 
                     byte bdir = (byte)dir;
-                    if (UCharacter.GetDirectionality(ch) != bdir)
+                    if (UChar.GetDirectionality(ch) != bdir)
                     {
                         Errln("FAIL \\u" + Hex(ch) +
                             " expected directionality " + bdir + " but got " +
-                            UCharacter.GetDirectionality(ch));
+                            UChar.GetDirectionality(ch));
                         break;
                     }
 
@@ -814,11 +814,11 @@ namespace ICU4N.Dev.Test.Lang
                         /* no decomposition, except UnicodeData.txt omits Hangul syllable decompositions */
                         if (ch == 0xac00 || ch == 0xd7a3)
                         {
-                            dt = UCharacter.DecompositionType.Canonical;
+                            dt = UChar.DecompositionType.Canonical;
                         }
                         else
                         {
-                            dt = UCharacter.DecompositionType.None;
+                            dt = UChar.DecompositionType.None;
                         }
                     }
                     else
@@ -830,18 +830,18 @@ namespace ICU4N.Dev.Test.Lang
                             int end = d.IndexOf('>', 1);
                             if (end >= 0)
                             {
-                                dt = UCharacter.GetPropertyValueEnum(UProperty.Decomposition_Type, d.Substring(1, end - 1));// ICU4N: Corrected 2nd parameter
+                                dt = UChar.GetPropertyValueEnum(UProperty.Decomposition_Type, d.Substring(1, end - 1));// ICU4N: Corrected 2nd parameter
                                 while (d[++end] == ' ') { }  // skip spaces
                                 d = d.Substring(end);
                             }
                         }
                         else
                         {
-                            dt = UCharacter.DecompositionType.Canonical;
+                            dt = UChar.DecompositionType.Canonical;
                         }
                     }
                     String dm;
-                    if (dt > UCharacter.DecompositionType.None)
+                    if (dt > UChar.DecompositionType.None)
                     {
                         if (ch == 0xac00)
                         {
@@ -871,7 +871,7 @@ namespace ICU4N.Dev.Test.Lang
                         Errln(String.Format("error in UnicodeData.txt: syntax error in U+{0:X4} decomposition field", ch));
                         return;
                     }
-                    int i = UCharacter.GetInt32PropertyValue(ch, UProperty.Decomposition_Type);
+                    int i = UChar.GetInt32PropertyValue(ch, UProperty.Decomposition_Type);
                     assertEquals(
                             String.Format("error: UCharacter.getIntPropertyValue(U+{0:X4}, UProperty.DECOMPOSITION_TYPE) is wrong", ch),
                             dt, i);
@@ -881,7 +881,7 @@ namespace ICU4N.Dev.Test.Lang
                             String.Format("error: nfkc.getRawDecomposition(U+{0:X4}) is wrong", ch),
                             dm, mapping);
                     /* For canonical decompositions only, expect Decomposition_Mapping=nfc.getRawDecomposition(c). */
-                    if (dt != UCharacter.DecompositionType.Canonical)
+                    if (dt != UChar.DecompositionType.Canonical)
                     {
                         dm = null;
                     }
@@ -890,8 +890,8 @@ namespace ICU4N.Dev.Test.Lang
                             String.Format("error: nfc.getRawDecomposition(U+{0:X4}) is wrong", ch),
                             dm, mapping);
                     /* recompose */
-                    if (dt == UCharacter.DecompositionType.Canonical
-                            && !UCharacter.HasBinaryProperty(ch, UProperty.Full_Composition_Exclusion))
+                    if (dt == UChar.DecompositionType.Canonical
+                            && !UChar.HasBinaryProperty(ch, UProperty.Full_Composition_Exclusion))
                     {
                         int a = dm.CodePointAt(0);
                         int b = dm.CodePointBefore(dm.Length);
@@ -912,7 +912,7 @@ namespace ICU4N.Dev.Test.Lang
                     try
                     {
                         String isocomment = fields[11];
-                        String comment = UCharacter.GetISOComment(ch);
+                        String comment = UChar.GetISOComment(ch);
                         if (comment == null)
                         {
                             comment = "";
@@ -942,7 +942,7 @@ namespace ICU4N.Dev.Test.Lang
                     {
                         tempchar = Convert.ToInt32(upper, 16);
                     }
-                    int resultCp = UCharacter.ToUpper(ch);
+                    int resultCp = UChar.ToUpper(ch);
                     if (resultCp != tempchar)
                     {
                         Errln("FAIL \\u" + Utility.Hex(ch, 4)
@@ -959,7 +959,7 @@ namespace ICU4N.Dev.Test.Lang
                     {
                         tempchar = Convert.ToInt32(lower, 16);
                     }
-                    if (UCharacter.ToLower(ch) != tempchar)
+                    if (UChar.ToLower(ch) != tempchar)
                     {
                         Errln("FAIL \\u" + Utility.Hex(ch, 4)
                                 + " expected lowercase \\u"
@@ -975,7 +975,7 @@ namespace ICU4N.Dev.Test.Lang
                     {
                         tempchar = Convert.ToInt32(title, 16);
                     }
-                    if (UCharacter.ToTitleCase(ch) != tempchar)
+                    if (UChar.ToTitleCase(ch) != tempchar)
                     {
                         Errln("FAIL \\u" + Utility.Hex(ch, 4)
                                 + " expected titlecase \\u"
@@ -1006,22 +1006,22 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
 
-            if (UCharacter.UnicodeBlock.Of(0x0041)
-                                            != UCharacter.UnicodeBlock.BASIC_LATIN
-                || UCharacter.GetInt32PropertyValue(0x41, UProperty.Block)
-                                  != UCharacter.UnicodeBlock.BASIC_LATIN.ID)
+            if (UChar.UnicodeBlock.Of(0x0041)
+                                            != UChar.UnicodeBlock.BASIC_LATIN
+                || UChar.GetInt32PropertyValue(0x41, UProperty.Block)
+                                  != UChar.UnicodeBlock.BASIC_LATIN.ID)
             {
                 Errln("UCharacter.UnicodeBlock.of(\\u0041) property failed! "
                         + "Expected : "
-                        + UCharacter.UnicodeBlock.BASIC_LATIN.ID + " got "
-                        + UCharacter.UnicodeBlock.Of(0x0041));
+                        + UChar.UnicodeBlock.BASIC_LATIN.ID + " got "
+                        + UChar.UnicodeBlock.Of(0x0041));
             }
 
             // sanity check on repeated properties
             for (int ch = 0xfffe; ch <= 0x10ffff;)
             {
-                UCharacterCategory type = UCharacter.GetType(ch);
-                if (UCharacter.GetInt32PropertyValue(ch,
+                UCharacterCategory type = UChar.GetType(ch);
+                if (UChar.GetInt32PropertyValue(ch,
                                                    UProperty.General_Category_Mask)
                     != (1 << type.ToInt32()))
                 {
@@ -1034,7 +1034,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     Errln("error: UCharacter.getType(\\u" + Utility.Hex(ch, 4)
                             + " != UCharacterCategory.UNASSIGNED (returns "
-                            + UCharacter.GetType(ch).AsString()
+                            + UChar.GetType(ch).AsString()
                             + ")");
                 }
                 if ((ch & 0xffff) == 0xfffe)
@@ -1050,8 +1050,8 @@ namespace ICU4N.Dev.Test.Lang
             // test that PUA is not "unassigned"
             for (int ch = 0xe000; ch <= 0x10fffd;)
             {
-                int type = UCharacter.GetType(ch).ToInt32();
-                if (UCharacter.GetInt32PropertyValue(ch,
+                int type = UChar.GetType(ch).ToInt32();
+                if (UChar.GetInt32PropertyValue(ch,
                                                    UProperty.General_Category_Mask)
                     != (1 << type))
                 {
@@ -1152,7 +1152,7 @@ namespace ICU4N.Dev.Test.Lang
                 for (int i = 0; i < size; i++)
                 {
                     // modern Unicode character name
-                    str = UCharacter.GetName(c[i]);
+                    str = UChar.GetName(c[i]);
                     if ((str == null && name[i].Length > 0) ||
                         (str != null && !str.Equals(name[i])))
                     {
@@ -1162,7 +1162,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
 
                     // 1.0 Unicode character name
-                    str = UCharacter.GetName1_0(c[i]);
+                    str = UChar.GetName1_0(c[i]);
                     if ((str == null && oldname[i].Length > 0) ||
                         (str != null && !str.Equals(oldname[i])))
                     {
@@ -1172,7 +1172,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
 
                     // extended character name
-                    str = UCharacter.GetExtendedName(c[i]);
+                    str = UChar.GetExtendedName(c[i]);
                     if (str == null || !str.Equals(extendedname[i]))
                     {
                         Errln("FAIL \\u" + Hex(c[i]) + " expected extended name " +
@@ -1181,7 +1181,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
 
                     // retrieving unicode character from modern name
-                    uc = UCharacter.GetCharFromName(name[i]);
+                    uc = UChar.GetCharFromName(name[i]);
                     if (uc != c[i] && name[i].Length != 0)
                     {
                         Errln("FAIL " + name[i] + " expected character \\u" +
@@ -1190,7 +1190,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
 
                     //retrieving unicode character from 1.0 name
-                    uc = UCharacter.GetCharFromName1_0(oldname[i]);
+                    uc = UChar.GetCharFromName1_0(oldname[i]);
                     if (uc != c[i] && oldname[i].Length != 0)
                     {
                         Errln("FAIL " + oldname[i] + " expected 1.0 character \\u" +
@@ -1199,7 +1199,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
 
                     //retrieving unicode character from 1.0 name
-                    uc = UCharacter.GetCharFromExtendedName(extendedname[i]);
+                    uc = UChar.GetCharFromExtendedName(extendedname[i]);
                     if (uc != c[i] && i != 0 && (i == 1 || i == 6))
                     {
                         Errln("FAIL " + extendedname[i] +
@@ -1209,7 +1209,7 @@ namespace ICU4N.Dev.Test.Lang
                 }
 
                 // test getName works with mixed-case names (new in 2.0)
-                if (0x61 != UCharacter.GetCharFromName("LATin smALl letTER A"))
+                if (0x61 != UChar.GetCharFromName("LATin smALl letTER A"))
                 {
                     Errln("FAIL: 'LATin smALl letTER A' should result in character "
                           + "U+0061");
@@ -1218,10 +1218,10 @@ namespace ICU4N.Dev.Test.Lang
                 if (TestFmwk.GetExhaustiveness() >= 5)
                 {
                     // extra testing different from icu
-                    for (int i = UCharacter.MinValue; i < UCharacter.MaxValue; i++)
+                    for (int i = UChar.MinValue; i < UChar.MaxValue; i++)
                     {
-                        str = UCharacter.GetName(i);
-                        if (str != null && UCharacter.GetCharFromName(str) != i)
+                        str = UChar.GetName(i);
+                        if (str != null && UChar.GetCharFromName(str) != i)
                         {
                             Errln("FAIL \\u" + Hex(i) + " " + str +
                                                 " retrieval of name and vice versa");
@@ -1250,7 +1250,7 @@ namespace ICU4N.Dev.Test.Lang
                     int maxLength = 0;
                     for (int cp = 0; cp < 0x110000; ++cp)
                     {
-                        String n = UCharacter.GetExtendedName(cp);
+                        String n = UChar.GetExtendedName(cp);
                         int len = n.Length;
                         if (len > maxLength)
                         {
@@ -1319,7 +1319,7 @@ namespace ICU4N.Dev.Test.Lang
                                   "CJK UNIFIED IDEOGRAPH-23456";
                 String separator = "|";
                 String source = Utility.ValueOf(c);
-                String result = UCharacter.GetName(source, separator);
+                String result = UChar.GetName(source, separator);
                 if (!result.Equals(expected))
                 {
                     Errln("UCharacter.getName did not return the expected result.\n\t Expected: " + expected + "\n\t Got: " + result);
@@ -1344,7 +1344,7 @@ namespace ICU4N.Dev.Test.Lang
         public void TestUCharFromNameUnderflow()
         {
             // Ticket #10889: Underflow crash when there is no dash.
-            int c = UCharacter.GetCharFromExtendedName("<NO BREAK SPACE>");
+            int c = UChar.GetCharFromExtendedName("<NO BREAK SPACE>");
             if (c >= 0)
             {
                 Errln("UCharacter.getCharFromExtendedName(<NO BREAK SPACE>) = U+" + Hex(c) +
@@ -1352,21 +1352,21 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             // Test related edge cases.
-            c = UCharacter.GetCharFromExtendedName("<-00a0>");
+            c = UChar.GetCharFromExtendedName("<-00a0>");
             if (c >= 0)
             {
                 Errln("UCharacter.getCharFromExtendedName(<-00a0>) = U+" + Hex(c) +
                         " but should fail (-1)");
             }
 
-            c = UCharacter.GetCharFromExtendedName("<control->");
+            c = UChar.GetCharFromExtendedName("<control->");
             if (c >= 0)
             {
                 Errln("UCharacter.getCharFromExtendedName(<control->) = U+" + Hex(c) +
                         " but should fail (-1)");
             }
 
-            c = UCharacter.GetCharFromExtendedName("<control-111111>");
+            c = UChar.GetCharFromExtendedName("<control-111111>");
             if (c >= 0)
             {
                 Errln("UCharacter.getCharFromExtendedName(<control-111111>) = U+" + Hex(c) +
@@ -1382,7 +1382,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             try
             {
-                IValueEnumerator iterator = UCharacter.GetExtendedNameEnumerator();
+                IValueEnumerator iterator = UChar.GetExtendedNameEnumerator();
                 ValueEnumeratorElement old = new ValueEnumeratorElement();
                 // testing subrange
                 iterator.SetRange(-10, -5);
@@ -1421,7 +1421,7 @@ namespace ICU4N.Dev.Test.Lang
                     Errln("Fail, expected iterator to return 0x10FFFF when range end limit is set outside the meaningful range");
                 }
 
-                iterator = UCharacter.GetNameEnumerator();
+                iterator = UChar.GetNameEnumerator();
                 iterator.SetRange(0xF, 0x45);
                 while (iterator.MoveNext())
                 {
@@ -1432,12 +1432,12 @@ namespace ICU4N.Dev.Test.Lang
                             (old.Integer).ToHexString());
                         break;
                     }
-                    if (!UCharacter.GetName(iterator.Current.Integer).Equals(iterator.Current.Value))
+                    if (!UChar.GetName(iterator.Current.Integer).Equals(iterator.Current.Value))
                     {
                         Errln("FAIL next codepoint \\u" +
                             (iterator.Current.Integer).ToHexString() +
                             " does not have the expected name " +
-                            UCharacter.GetName(iterator.Current.Integer) +
+                            UChar.GetName(iterator.Current.Integer) +
                             " instead have the name " + (String)iterator.Current.Value);
                         break;
                     }
@@ -1462,31 +1462,31 @@ namespace ICU4N.Dev.Test.Lang
                             (old.Integer).ToHexString());
                         break;
                     }
-                    if (!UCharacter.GetName(iterator.Current.Integer).Equals(iterator.Current.Value))
+                    if (!UChar.GetName(iterator.Current.Integer).Equals(iterator.Current.Value))
                     {
                         Errln("FAIL next codepoint \\u" +
                                 (iterator.Current.Integer).ToHexString() +
                                 " does not have the expected name " +
-                                UCharacter.GetName(iterator.Current.Integer) +
+                                UChar.GetName(iterator.Current.Integer) +
                                 " instead have the name " + (String)iterator.Current.Value);
                         break;
                     }
                     for (int i = old.Integer + 1; i < iterator.Current.Integer; i++)
                     {
-                        if (UCharacter.GetName(i) != null)
+                        if (UChar.GetName(i) != null)
                         {
                             Errln("FAIL between codepoints are not null \\u" +
                                     (old.Integer).ToHexString() + " and " +
                                     (iterator.Current.Integer).ToHexString() + " has " +
                                     (i).ToHexString() + " with a name " +
-                                    UCharacter.GetName(i));
+                                    UChar.GetName(i));
                             break;
                         }
                     }
                     old.Integer = iterator.Current.Integer;
                 }
 
-                iterator = UCharacter.GetExtendedNameEnumerator();
+                iterator = UChar.GetExtendedNameEnumerator();
                 old.Integer = 0;
                 while (iterator.MoveNext())
                 {
@@ -1498,19 +1498,19 @@ namespace ICU4N.Dev.Test.Lang
                                 (old.Integer).ToHexString());
                         break;
                     }
-                    if (!UCharacter.GetExtendedName(iterator.Current.Integer).Equals(
+                    if (!UChar.GetExtendedName(iterator.Current.Integer).Equals(
                                                                   iterator.Current.Value))
                     {
                         Errln("FAIL next codepoint \\u" +
                             (iterator.Current.Integer).ToHexString() +
                             " name should be "
-                            + UCharacter.GetExtendedName(iterator.Current.Integer) +
+                            + UChar.GetExtendedName(iterator.Current.Integer) +
                             " instead of " + (String)iterator.Current.Value);
                         break;
                     }
                     old.Integer++;
                 }
-                iterator = UCharacter.GetName1_0Enumerator();
+                iterator = UChar.GetName1_0Enumerator();
                 old.Integer = 0;
                 while (iterator.MoveNext())
                 {
@@ -1523,7 +1523,7 @@ namespace ICU4N.Dev.Test.Lang
                             (old.Integer).ToHexString());
                         break;
                     }
-                    if (!iterator.Current.Value.Equals(UCharacter.GetName1_0(
+                    if (!iterator.Current.Value.Equals(UChar.GetName1_0(
                                                                 iterator.Current.Integer)))
                     {
                         Errln("FAIL next codepoint \\u" +
@@ -1533,13 +1533,13 @@ namespace ICU4N.Dev.Test.Lang
                     }
                     for (int i = old.Integer + 1; i < iterator.Current.Integer; i++)
                     {
-                        if (UCharacter.GetName1_0(i) != null)
+                        if (UChar.GetName1_0(i) != null)
                         {
                             Errln("FAIL between codepoints are not null \\u" +
                                 (old.Integer).ToHexString() + " and " +
                                 (iterator.Current.Integer).ToHexString() + " has " +
                                 (i).ToHexString() + " with a name " +
-                                UCharacter.GetName1_0(i));
+                                UChar.GetName1_0(i));
                             break;
                         }
                     }
@@ -1577,7 +1577,7 @@ namespace ICU4N.Dev.Test.Lang
                        0x0010FFFD, 0xFDCF, 0x00FDF0};
             for (int count = 0; count < illegal.Length; count++)
             {
-                if (UCharacter.IsLegal(illegal[count]))
+                if (UChar.IsLegal(illegal[count]))
                 {
                     Errln("FAIL \\u" + Hex(illegal[count]) +
                             " is not a legal character");
@@ -1586,7 +1586,7 @@ namespace ICU4N.Dev.Test.Lang
 
             for (int count = 0; count < legal.Length; count++)
             {
-                if (!UCharacter.IsLegal(legal[count]))
+                if (!UChar.IsLegal(legal[count]))
                 {
                     Errln("FAIL \\u" + Hex(legal[count]) +
                                                        " is a legal character");
@@ -1610,7 +1610,7 @@ namespace ICU4N.Dev.Test.Lang
                     str.Append(lead);
                     str.Append(trail);
                 }
-                if (UCharacter.IsLegal(str.ToString()))
+                if (UChar.IsLegal(str.ToString()))
                 {
                     Errln("FAIL " + Hex(str.ToString()) +
                           " is not a legal string");
@@ -1631,7 +1631,7 @@ namespace ICU4N.Dev.Test.Lang
                     str.Append(lead);
                     str.Append(trail);
                 }
-                if (!UCharacter.IsLegal(str.ToString()))
+                if (!UChar.IsLegal(str.ToString()))
                 {
                     Errln("FAIL " + Hex(str.ToString()) + " is a legal string");
                 }
@@ -1649,7 +1649,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 for (char j = (char)0xDC00; j <= 0xDFFF; j++)
                 {
-                    if (UCharacter.GetCodePoint(i, j) != ch)
+                    if (UChar.GetCodePoint(i, j) != ch)
                     {
                         Errln("Error getting codepoint for surrogate " +
                               "characters \\u"
@@ -1661,7 +1661,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UCharacter.GetCodePoint((char)0xD7ff, (char)0xDC00);
+                UChar.GetCodePoint((char)0xD7ff, (char)0xDC00);
                 Errln("Invalid surrogate characters should not form a " +
                       "supplementary");
             }
@@ -1677,7 +1677,7 @@ namespace ICU4N.Dev.Test.Lang
                     // not a character
                     try
                     {
-                        UCharacter.GetCodePoint(i);
+                        UChar.GetCodePoint(i);
                         Errln("Not a character is not a valid codepoint");
                     }
                     catch (Exception e)
@@ -1686,7 +1686,7 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 else
                 {
-                    if (UCharacter.GetCodePoint(i) != i)
+                    if (UChar.GetCodePoint(i) != i)
                     {
                         Errln("A valid codepoint should return itself");
                     }
@@ -1735,7 +1735,7 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { 0x110000, UCharacterDirection.LeftToRight.ToInt32() }
             };
 
-            IRangeValueEnumerator iterator = UCharacter.GetTypeEnumerator();
+            IRangeValueEnumerator iterator = UChar.GetTypeEnumerator();
             RangeValueEnumeratorElement result;
             while (iterator.MoveNext())
             {
@@ -1755,7 +1755,7 @@ namespace ICU4N.Dev.Test.Lang
 
                 for (int i = result.Start; i < limit; i++)
                 {
-                    int temptype = UCharacter.GetType(i).ToInt32();
+                    int temptype = UChar.GetType(i).ToInt32();
                     if (temptype != result.Value)
                     {
                         Errln("UCharacterIteration failed: Codepoint \\u" +
@@ -1794,7 +1794,7 @@ namespace ICU4N.Dev.Test.Lang
                     int c = result.Start;
                     while (c < result.Limit)
                     {
-                        if (0 == UCharacter.GetInt32PropertyValue(c,
+                        if (0 == UChar.GetInt32PropertyValue(c,
                                                     UProperty.Line_Break))
                         {
                             Logln("error UProperty.LINE_BREAK(assigned \\u"
@@ -1820,7 +1820,7 @@ namespace ICU4N.Dev.Test.Lang
                             while (c < result.Limit && c < defaultBidi[i][0])
                             {
                                 // TODO change to public UCharacter.isNonCharacter(c) once it's available
-                                if (UCharacterUtility.IsNonCharacter(c) || UCharacter.HasBinaryProperty(c, UProperty.Default_Ignorable_Code_Point))
+                                if (UCharacterUtility.IsNonCharacter(c) || UChar.HasBinaryProperty(c, UProperty.Default_Ignorable_Code_Point))
                                 {
                                     shouldBeDir = UCharacterDirection.BoundaryNeutral.ToInt32();
                                 }
@@ -1830,8 +1830,8 @@ namespace ICU4N.Dev.Test.Lang
                                 }
 
 
-                                if (UCharacter.GetDirection(c).ToInt32() != shouldBeDir
-                                    || UCharacter.GetInt32PropertyValue(c,
+                                if (UChar.GetDirection(c).ToInt32() != shouldBeDir
+                                    || UChar.GetInt32PropertyValue(c,
                                                               UProperty.BiDi_Class)
                                        != shouldBeDir)
                                 {
@@ -1873,7 +1873,7 @@ namespace ICU4N.Dev.Test.Lang
                       0xff60,  3, 2, 0, 0};
             for (int i = 0; i < ages.Length; i += 5)
             {
-                VersionInfo age = UCharacter.GetAge(ages[i]);
+                VersionInfo age = UChar.GetAge(ages[i]);
                 if (age != VersionInfo.GetInstance(ages[i + 1], ages[i + 2],
                                                    ages[i + 3], ages[i + 4]))
                 {
@@ -1885,17 +1885,17 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             int[] valid_tests = {
-                UCharacter.MinValue, UCharacter.MinValue+1,
-                UCharacter.MaxValue-1, UCharacter.MaxValue};
+                UChar.MinValue, UChar.MinValue+1,
+                UChar.MaxValue-1, UChar.MaxValue};
             int[] invalid_tests = {
-                UCharacter.MinValue-1, UCharacter.MinValue-2,
-                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
+                UChar.MinValue-1, UChar.MinValue-2,
+                UChar.MaxValue+1, UChar.MaxValue+2};
 
             for (int i = 0; i < valid_tests.Length; i++)
             {
                 try
                 {
-                    UCharacter.GetAge(valid_tests[i]);
+                    UChar.GetAge(valid_tests[i]);
                 }
                 catch (Exception e)
                 {
@@ -1908,7 +1908,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.GetAge(invalid_tests[i]);
+                    UChar.GetAge(invalid_tests[i]);
                     Errln("UCharacter.getAge(int) was suppose to have " +
                             "an exception. Value passed: " + invalid_tests[i]);
                 }
@@ -2119,137 +2119,137 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { 0xfd90, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
                 new int[] { 0xfefe, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
 
-                new int[] { 0x02AF, (int)UProperty.Block, UCharacter.UnicodeBlock.IPA_EXTENSIONS.ID },
-                new int[] { 0x0C4E, (int)UProperty.Block, UCharacter.UnicodeBlock.TELUGU.ID },
-                new int[] { 0x155A, (int)UProperty.Block, UCharacter.UnicodeBlock.UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS.ID },
-                new int[] { 0x1717, (int)UProperty.Block, UCharacter.UnicodeBlock.TAGALOG.ID },
-                new int[] { 0x1900, (int)UProperty.Block, UCharacter.UnicodeBlock.LIMBU.ID },
-                new int[] { 0x1CBF, (int)UProperty.Block, UCharacter.UnicodeBlock.NO_BLOCK.ID},
-                new int[] { 0x3040, (int)UProperty.Block, UCharacter.UnicodeBlock.HIRAGANA.ID},
-                new int[] { 0x1D0FF, (int)UProperty.Block, UCharacter.UnicodeBlock.BYZANTINE_MUSICAL_SYMBOLS.ID},
-                new int[] { 0x50000, (int)UProperty.Block, UCharacter.UnicodeBlock.NO_BLOCK.ID },
-                new int[] { 0xEFFFF, (int)UProperty.Block, UCharacter.UnicodeBlock.NO_BLOCK.ID },
-                new int[] { 0x10D0FF, (int)UProperty.Block, UCharacter.UnicodeBlock.SUPPLEMENTARY_PRIVATE_USE_AREA_B.ID },
+                new int[] { 0x02AF, (int)UProperty.Block, UChar.UnicodeBlock.IPA_EXTENSIONS.ID },
+                new int[] { 0x0C4E, (int)UProperty.Block, UChar.UnicodeBlock.TELUGU.ID },
+                new int[] { 0x155A, (int)UProperty.Block, UChar.UnicodeBlock.UNIFIED_CANADIAN_ABORIGINAL_SYLLABICS.ID },
+                new int[] { 0x1717, (int)UProperty.Block, UChar.UnicodeBlock.TAGALOG.ID },
+                new int[] { 0x1900, (int)UProperty.Block, UChar.UnicodeBlock.LIMBU.ID },
+                new int[] { 0x1CBF, (int)UProperty.Block, UChar.UnicodeBlock.NO_BLOCK.ID},
+                new int[] { 0x3040, (int)UProperty.Block, UChar.UnicodeBlock.HIRAGANA.ID},
+                new int[] { 0x1D0FF, (int)UProperty.Block, UChar.UnicodeBlock.BYZANTINE_MUSICAL_SYMBOLS.ID},
+                new int[] { 0x50000, (int)UProperty.Block, UChar.UnicodeBlock.NO_BLOCK.ID },
+                new int[] { 0xEFFFF, (int)UProperty.Block, UChar.UnicodeBlock.NO_BLOCK.ID },
+                new int[] { 0x10D0FF, (int)UProperty.Block, UChar.UnicodeBlock.SUPPLEMENTARY_PRIVATE_USE_AREA_B.ID },
 
                 /* (int)UProperty.CANONICAL_COMBINING_CLASS tested for assigned characters in TestUnicodeData() */
                 new int[] { 0xd7d7, (int)UProperty.Canonical_Combining_Class, 0 },
 
-                new int[] { 0x00A0, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.NoBreak },
-                new int[] { 0x00A8, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Compat },
-                new int[] { 0x00bf, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.None },
-                new int[] { 0x00c0, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Canonical },
-                new int[] { 0x1E9B, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Canonical },
-                new int[] { 0xBCDE, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Canonical },
-                new int[] { 0xFB5D, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Medial },
-                new int[] { 0x1D736, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.Font },
-                new int[] { 0xe0033, (int)UProperty.Decomposition_Type, UCharacter.DecompositionType.None },
+                new int[] { 0x00A0, (int)UProperty.Decomposition_Type, UChar.DecompositionType.NoBreak },
+                new int[] { 0x00A8, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Compat },
+                new int[] { 0x00bf, (int)UProperty.Decomposition_Type, UChar.DecompositionType.None },
+                new int[] { 0x00c0, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Canonical },
+                new int[] { 0x1E9B, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Canonical },
+                new int[] { 0xBCDE, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Canonical },
+                new int[] { 0xFB5D, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Medial },
+                new int[] { 0x1D736, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Font },
+                new int[] { 0xe0033, (int)UProperty.Decomposition_Type, UChar.DecompositionType.None },
 
-                new int[] { 0x0009, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Neutral },
-                new int[] { 0x0020, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Narrow },
-                new int[] { 0x00B1, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Ambiguous },
-                new int[] { 0x20A9, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.HalfWidth },
-                new int[] { 0x2FFB, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
-                new int[] { 0x3000, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.FullWidth },
-                new int[] { 0x35bb, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
-                new int[] { 0x58bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
-                new int[] { 0xD7A3, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
-                new int[] { 0xEEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Ambiguous },
-                new int[] { 0x1D198, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Neutral },
-                new int[] { 0x20000, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
-                new int[] { 0x2F8C7, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
-                new int[] { 0x3a5bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Wide },
-                new int[] { 0x5a5bd, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Neutral },
-                new int[] { 0xFEEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Ambiguous },
-                new int[] { 0x10EEEE, (int)UProperty.East_Asian_Width, UCharacter.EastAsianWidth.Ambiguous },
+                new int[] { 0x0009, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Neutral },
+                new int[] { 0x0020, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Narrow },
+                new int[] { 0x00B1, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Ambiguous },
+                new int[] { 0x20A9, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.HalfWidth },
+                new int[] { 0x2FFB, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
+                new int[] { 0x3000, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.FullWidth },
+                new int[] { 0x35bb, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
+                new int[] { 0x58bd, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
+                new int[] { 0xD7A3, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
+                new int[] { 0xEEEE, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Ambiguous },
+                new int[] { 0x1D198, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Neutral },
+                new int[] { 0x20000, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
+                new int[] { 0x2F8C7, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
+                new int[] { 0x3a5bd, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
+                new int[] { 0x5a5bd, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Neutral },
+                new int[] { 0xFEEEE, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Ambiguous },
+                new int[] { 0x10EEEE, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Ambiguous },
 
                 /* (int)UProperty.GENERAL_CATEGORY tested for assigned characters in TestUnicodeData() */
                 new int[] { 0xd7c7, (int)UProperty.General_Category, 0 },
                 new int[] { 0xd7d7, (int)UProperty.General_Category, UCharacterCategory.OtherLetter.ToInt32() },     /* changed in Unicode 5.2 */
 
-                new int[] { 0x0444, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NoJoiningGroup },
-                new int[] { 0x0639, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.Ain },
-                new int[] { 0x072A, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.DalathRish },
-                new int[] { 0x0647, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.Heh },
-                new int[] { 0x06C1, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.HehGoal },
+                new int[] { 0x0444, (int)UProperty.Joining_Group, UChar.JoiningGroup.NoJoiningGroup },
+                new int[] { 0x0639, (int)UProperty.Joining_Group, UChar.JoiningGroup.Ain },
+                new int[] { 0x072A, (int)UProperty.Joining_Group, UChar.JoiningGroup.DalathRish },
+                new int[] { 0x0647, (int)UProperty.Joining_Group, UChar.JoiningGroup.Heh },
+                new int[] { 0x06C1, (int)UProperty.Joining_Group, UChar.JoiningGroup.HehGoal },
 
-                new int[] { 0x200C, (int)UProperty.Joining_Type, UCharacter.JoiningType.NonJoining },
-                new int[] { 0x200D, (int)UProperty.Joining_Type, UCharacter.JoiningType.JoinCausing },
-                new int[] { 0x0639, (int)UProperty.Joining_Type, UCharacter.JoiningType.DualJoining },
-                new int[] { 0x0640, (int)UProperty.Joining_Type, UCharacter.JoiningType.JoinCausing },
-                new int[] { 0x06C3, (int)UProperty.Joining_Type, UCharacter.JoiningType.RightJoining },
-                new int[] { 0x0300, (int)UProperty.Joining_Type, UCharacter.JoiningType.Transparent },
-                new int[] { 0x070F, (int)UProperty.Joining_Type, UCharacter.JoiningType.Transparent },
-                new int[] { 0xe0033, (int)UProperty.Joining_Type, UCharacter.JoiningType.Transparent },
+                new int[] { 0x200C, (int)UProperty.Joining_Type, UChar.JoiningType.NonJoining },
+                new int[] { 0x200D, (int)UProperty.Joining_Type, UChar.JoiningType.JoinCausing },
+                new int[] { 0x0639, (int)UProperty.Joining_Type, UChar.JoiningType.DualJoining },
+                new int[] { 0x0640, (int)UProperty.Joining_Type, UChar.JoiningType.JoinCausing },
+                new int[] { 0x06C3, (int)UProperty.Joining_Type, UChar.JoiningType.RightJoining },
+                new int[] { 0x0300, (int)UProperty.Joining_Type, UChar.JoiningType.Transparent },
+                new int[] { 0x070F, (int)UProperty.Joining_Type, UChar.JoiningType.Transparent },
+                new int[] { 0xe0033, (int)UProperty.Joining_Type, UChar.JoiningType.Transparent },
 
                 /* TestUnicodeData() verifies that no assigned character has "XX" (unknown) */
-                new int[] { 0xe7e7, (int)UProperty.Line_Break, UCharacter.LineBreak.Unknown },
-                new int[] { 0x10fffd, (int)UProperty.Line_Break, UCharacter.LineBreak.Unknown },
-                new int[] { 0x0028, (int)UProperty.Line_Break, UCharacter.LineBreak.OpenPunctuation },
-                new int[] { 0x232A, (int)UProperty.Line_Break, UCharacter.LineBreak.ClosePunctuation },
-                new int[] { 0x3401, (int)UProperty.Line_Break, UCharacter.LineBreak.Ideographic },
-                new int[] { 0x4e02, (int)UProperty.Line_Break, UCharacter.LineBreak.Ideographic },
-                new int[] { 0x20004, (int)UProperty.Line_Break, UCharacter.LineBreak.Ideographic },
-                new int[] { 0xf905, (int)UProperty.Line_Break, UCharacter.LineBreak.Ideographic },
-                new int[] { 0xdb7e, (int)UProperty.Line_Break, UCharacter.LineBreak.Surrogate },
-                new int[] { 0xdbfd, (int)UProperty.Line_Break, UCharacter.LineBreak.Surrogate },
-                new int[] { 0xdffc, (int)UProperty.Line_Break, UCharacter.LineBreak.Surrogate },
-                new int[] { 0x2762, (int)UProperty.Line_Break, UCharacter.LineBreak.Exclamation },
-                new int[] { 0x002F, (int)UProperty.Line_Break, UCharacter.LineBreak.BreakSymbols },
-                new int[] { 0x1D49C, (int)UProperty.Line_Break, UCharacter.LineBreak.Alphabetic },
-                new int[] { 0x1731, (int)UProperty.Line_Break, UCharacter.LineBreak.Alphabetic },
+                new int[] { 0xe7e7, (int)UProperty.Line_Break, UChar.LineBreak.Unknown },
+                new int[] { 0x10fffd, (int)UProperty.Line_Break, UChar.LineBreak.Unknown },
+                new int[] { 0x0028, (int)UProperty.Line_Break, UChar.LineBreak.OpenPunctuation },
+                new int[] { 0x232A, (int)UProperty.Line_Break, UChar.LineBreak.ClosePunctuation },
+                new int[] { 0x3401, (int)UProperty.Line_Break, UChar.LineBreak.Ideographic },
+                new int[] { 0x4e02, (int)UProperty.Line_Break, UChar.LineBreak.Ideographic },
+                new int[] { 0x20004, (int)UProperty.Line_Break, UChar.LineBreak.Ideographic },
+                new int[] { 0xf905, (int)UProperty.Line_Break, UChar.LineBreak.Ideographic },
+                new int[] { 0xdb7e, (int)UProperty.Line_Break, UChar.LineBreak.Surrogate },
+                new int[] { 0xdbfd, (int)UProperty.Line_Break, UChar.LineBreak.Surrogate },
+                new int[] { 0xdffc, (int)UProperty.Line_Break, UChar.LineBreak.Surrogate },
+                new int[] { 0x2762, (int)UProperty.Line_Break, UChar.LineBreak.Exclamation },
+                new int[] { 0x002F, (int)UProperty.Line_Break, UChar.LineBreak.BreakSymbols },
+                new int[] { 0x1D49C, (int)UProperty.Line_Break, UChar.LineBreak.Alphabetic },
+                new int[] { 0x1731, (int)UProperty.Line_Break, UChar.LineBreak.Alphabetic },
 
                 /* (int)UProperty.NUMERIC_TYPE tested in TestNumericProperties() */
 
                 /* (int)UProperty.SCRIPT tested in TestUScriptCodeAPI() */
 
                 new int[] { 0x10ff, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0x1100, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },
-                new int[] { 0x1111, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },
-                new int[] { 0x1159, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },
-                new int[] { 0x115a, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
-                new int[] { 0x115e, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
-                new int[] { 0x115f, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },
+                new int[] { 0x1100, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },
+                new int[] { 0x1111, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },
+                new int[] { 0x1159, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },
+                new int[] { 0x115a, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0x115e, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0x115f, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },
 
                 new int[] { 0xa95f, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0xa960, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
-                new int[] { 0xa97c, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0xa960, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0xa97c, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
                 new int[] { 0xa97d, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0x1160, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },
-                new int[] { 0x1161, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },
-                new int[] { 0x1172, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },
-                new int[] { 0x11a2, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },
-                new int[] { 0x11a3, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
-                new int[] { 0x11a7, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0x1160, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },
+                new int[] { 0x1161, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },
+                new int[] { 0x1172, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },
+                new int[] { 0x11a2, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },
+                new int[] { 0x11a3, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0x11a7, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
 
                 new int[] { 0xd7af, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0xd7b0, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
-                new int[] { 0xd7c6, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0xd7b0, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0xd7c6, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
                 new int[] { 0xd7c7, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0x11a8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },
-                new int[] { 0x11b8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },
-                new int[] { 0x11c8, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },
-                new int[] { 0x11f9, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },
-                new int[] { 0x11fa, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
-                new int[] { 0x11ff, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0x11a8, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },
+                new int[] { 0x11b8, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },
+                new int[] { 0x11c8, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },
+                new int[] { 0x11f9, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },
+                new int[] { 0x11fa, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0x11ff, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
                 new int[] { 0x1200, (int)UProperty.Hangul_Syllable_Type, 0 },
 
                 new int[] { 0xd7ca, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0xd7cb, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
-                new int[] { 0xd7fb, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0xd7cb, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0xd7fb, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
                 new int[] { 0xd7fc, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0xac00, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvSyllable },
-                new int[] { 0xac1c, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvSyllable },
-                new int[] { 0xc5ec, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvSyllable },
-                new int[] { 0xd788, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvSyllable },
+                new int[] { 0xac00, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvSyllable },
+                new int[] { 0xac1c, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvSyllable },
+                new int[] { 0xc5ec, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvSyllable },
+                new int[] { 0xd788, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvSyllable },
 
-                new int[] { 0xac01, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
-                new int[] { 0xac1b, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
-                new int[] { 0xac1d, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
-                new int[] { 0xc5ee, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
-                new int[] { 0xd7a3, (int)UProperty.Hangul_Syllable_Type, UCharacter.HangulSyllableType.LvtSyllable },
+                new int[] { 0xac01, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
+                new int[] { 0xac1b, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
+                new int[] { 0xac1d, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
+                new int[] { 0xc5ee, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
+                new int[] { 0xd7a3, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
 
                 new int[] { 0xd7a4, (int)UProperty.Hangul_Syllable_Type, 0 },
 
@@ -2265,36 +2265,36 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { 0x00a0, (int)UProperty.Pattern_White_Space, 0 },
                 new int[] { 0x3000, (int)UProperty.Pattern_White_Space, 0 },
 
-                new int[] { 0x1d200, (int)UProperty.Block, UCharacter.UnicodeBlock.ANCIENT_GREEK_MUSICAL_NOTATION_ID },
-                new int[] { 0x2c8e,  (int)UProperty.Block, UCharacter.UnicodeBlock.COPTIC_ID },
-                new int[] { 0xfe17,  (int)UProperty.Block, UCharacter.UnicodeBlock.VERTICAL_FORMS_ID },
+                new int[] { 0x1d200, (int)UProperty.Block, UChar.UnicodeBlock.ANCIENT_GREEK_MUSICAL_NOTATION_ID },
+                new int[] { 0x2c8e,  (int)UProperty.Block, UChar.UnicodeBlock.COPTIC_ID },
+                new int[] { 0xfe17,  (int)UProperty.Block, UChar.UnicodeBlock.VERTICAL_FORMS_ID },
 
                 new int[] { 0x1a00,  (int)UProperty.Script, UScript.Buginese },
                 new int[] { 0x2cea,  (int)UProperty.Script, UScript.Coptic },
                 new int[] { 0xa82b,  (int)UProperty.Script, UScript.SylotiNagri },
                 new int[] { 0x103d0, (int)UProperty.Script, UScript.OldPersian },
 
-                new int[] { 0xcc28, (int)UProperty.Line_Break, UCharacter.LineBreak.H2 },
-                new int[] { 0xcc29, (int)UProperty.Line_Break, UCharacter.LineBreak.H3 },
-                new int[] { 0xac03, (int)UProperty.Line_Break, UCharacter.LineBreak.H3 },
-                new int[] { 0x115f, (int)UProperty.Line_Break, UCharacter.LineBreak.Jl },
-                new int[] { 0x11aa, (int)UProperty.Line_Break, UCharacter.LineBreak.Jt },
-                new int[] { 0x11a1, (int)UProperty.Line_Break, UCharacter.LineBreak.Jv },
+                new int[] { 0xcc28, (int)UProperty.Line_Break, UChar.LineBreak.H2 },
+                new int[] { 0xcc29, (int)UProperty.Line_Break, UChar.LineBreak.H3 },
+                new int[] { 0xac03, (int)UProperty.Line_Break, UChar.LineBreak.H3 },
+                new int[] { 0x115f, (int)UProperty.Line_Break, UChar.LineBreak.Jl },
+                new int[] { 0x11aa, (int)UProperty.Line_Break, UChar.LineBreak.Jt },
+                new int[] { 0x11a1, (int)UProperty.Line_Break, UChar.LineBreak.Jv },
 
-                new int[] { 0xb2c9, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.Lvt },
-                new int[] { 0x036f, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.Extend },
-                new int[] { 0x0000, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.Control },
-                new int[] { 0x1160, (int)UProperty.Grapheme_Cluster_Break, UCharacter.GraphemeClusterBreak.V },
+                new int[] { 0xb2c9, (int)UProperty.Grapheme_Cluster_Break, UChar.GraphemeClusterBreak.Lvt },
+                new int[] { 0x036f, (int)UProperty.Grapheme_Cluster_Break, UChar.GraphemeClusterBreak.Extend },
+                new int[] { 0x0000, (int)UProperty.Grapheme_Cluster_Break, UChar.GraphemeClusterBreak.Control },
+                new int[] { 0x1160, (int)UProperty.Grapheme_Cluster_Break, UChar.GraphemeClusterBreak.V },
 
-                new int[] { 0x05f4, (int)UProperty.Word_Break, UCharacter.WordBreak.MidLetter },
-                new int[] { 0x4ef0, (int)UProperty.Word_Break, UCharacter.WordBreak.Other },
-                new int[] { 0x19d9, (int)UProperty.Word_Break, UCharacter.WordBreak.Numeric },
-                new int[] { 0x2044, (int)UProperty.Word_Break, UCharacter.WordBreak.MidNum },
+                new int[] { 0x05f4, (int)UProperty.Word_Break, UChar.WordBreak.MidLetter },
+                new int[] { 0x4ef0, (int)UProperty.Word_Break, UChar.WordBreak.Other },
+                new int[] { 0x19d9, (int)UProperty.Word_Break, UChar.WordBreak.Numeric },
+                new int[] { 0x2044, (int)UProperty.Word_Break, UChar.WordBreak.MidNum },
 
-                new int[] { 0xfffd, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.Other },
-                new int[] { 0x1ffc, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.Upper },
-                new int[] { 0xff63, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.Close },
-                new int[] { 0x2028, (int)UProperty.Sentence_Break, UCharacter.SentenceBreak.Sep },
+                new int[] { 0xfffd, (int)UProperty.Sentence_Break, UChar.SentenceBreak.Other },
+                new int[] { 0x1ffc, (int)UProperty.Sentence_Break, UChar.SentenceBreak.Upper },
+                new int[] { 0xff63, (int)UProperty.Sentence_Break, UChar.SentenceBreak.Close },
+                new int[] { 0x2028, (int)UProperty.Sentence_Break, UChar.SentenceBreak.Sep },
 
                 new int[] { -1, 0x520, 0 }, /* version break for Unicode 5.2 */
 
@@ -2310,7 +2310,7 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { -1, 0x600, 0 }, /* version break for Unicode 6.0 */
 
                 /* value changed in Unicode 6.0 */
-                new int[] { 0x06C3, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.TehMarbutaGoal },
+                new int[] { 0x06C3, (int)UProperty.Joining_Group, UChar.JoiningGroup.TehMarbutaGoal },
 
                 new int[] { -1, 0x610, 0 }, /* version break for Unicode 6.1 */
 
@@ -2325,21 +2325,21 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { 0x20CF, (int)UProperty.BiDi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
 
                 /* new property in Unicode 6.3 */
-                new int[] { 0x0027, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.None },
-                new int[] { 0x0028, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.Open },
-                new int[] { 0x0029, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.Close },
-                new int[] { 0xFF5C, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.None },
-                new int[] { 0xFF5B, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.Open },
-                new int[] { 0xFF5D, (int)UProperty.Bidi_Paired_Bracket_Type, UCharacter.BidiPairedBracketType.Close },
+                new int[] { 0x0027, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.None },
+                new int[] { 0x0028, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.Open },
+                new int[] { 0x0029, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.Close },
+                new int[] { 0xFF5C, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.None },
+                new int[] { 0xFF5B, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.Open },
+                new int[] { 0xFF5D, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.Close },
 
                 new int[] { -1, 0x700, 0 }, /* version break for Unicode 7.0 */
 
                 /* new character range with Joining_Group values */
-                new int[] { 0x10ABF, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NoJoiningGroup },
-                new int[] { 0x10AC0, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.ManichaeanAleph },
-                new int[] { 0x10AC1, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.ManichaeanBeth },
-                new int[] { 0x10AEF, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.ManichaeanHundred },
-                new int[] { 0x10AF0, (int)UProperty.Joining_Group, UCharacter.JoiningGroup.NoJoiningGroup },
+                new int[] { 0x10ABF, (int)UProperty.Joining_Group, UChar.JoiningGroup.NoJoiningGroup },
+                new int[] { 0x10AC0, (int)UProperty.Joining_Group, UChar.JoiningGroup.ManichaeanAleph },
+                new int[] { 0x10AC1, (int)UProperty.Joining_Group, UChar.JoiningGroup.ManichaeanBeth },
+                new int[] { 0x10AEF, (int)UProperty.Joining_Group, UChar.JoiningGroup.ManichaeanHundred },
+                new int[] { 0x10AF0, (int)UProperty.Joining_Group, UChar.JoiningGroup.NoJoiningGroup },
 
                 new int[] { -1, 0xa00, 0 },  // version break for Unicode 10
 
@@ -2358,95 +2358,95 @@ namespace ICU4N.Dev.Test.Lang
             };
 
 
-            if (UCharacter.GetIntPropertyMinValue(UProperty.Dash) != 0
-                || UCharacter.GetIntPropertyMinValue(UProperty.BiDi_Class) != 0
-                || UCharacter.GetIntPropertyMinValue(UProperty.Block) != 0  /* j2478 */
-                || UCharacter.GetIntPropertyMinValue(UProperty.Script) != 0 /* JB#2410 */
-                || UCharacter.GetIntPropertyMinValue((UProperty)0x2345) != 0)
+            if (UChar.GetIntPropertyMinValue(UProperty.Dash) != 0
+                || UChar.GetIntPropertyMinValue(UProperty.BiDi_Class) != 0
+                || UChar.GetIntPropertyMinValue(UProperty.Block) != 0  /* j2478 */
+                || UChar.GetIntPropertyMinValue(UProperty.Script) != 0 /* JB#2410 */
+                || UChar.GetIntPropertyMinValue((UProperty)0x2345) != 0)
             {
                 Errln("error: UCharacter.getIntPropertyMinValue() wrong");
             }
 
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Dash) != 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Dash) != 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.DASH) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.ID_Continue) != 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.ID_Continue) != 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.ID_CONTINUE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Binary_Limit - 1) != 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Binary_Limit - 1) != 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BINARY_LIMIT-1) wrong\n");
             }
 
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.BiDi_Class) != UCharacterDirection.CharDirectionCount.ToInt32() - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.BiDi_Class) != UCharacterDirection.CharDirectionCount.ToInt32() - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Block) != UCharacter.UnicodeBlock.COUNT - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Block) != UChar.UnicodeBlock.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BLOCK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Line_Break) != UCharacter.LineBreak.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Line_Break) != UChar.LineBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.LINE_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Script) != UScript.CodeLimit - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Script) != UScript.CodeLimit - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.SCRIPT) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Numeric_Type) != UCharacter.NumericType.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Numeric_Type) != UChar.NumericType.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.NUMERIC_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.General_Category) != UCharacterCategoryExtensions.CharCategoryCount - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.General_Category) != UCharacterCategoryExtensions.CharCategoryCount - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.GENERAL_CATEGORY) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Hangul_Syllable_Type) != UCharacter.HangulSyllableType.COUNT - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Hangul_Syllable_Type) != UChar.HangulSyllableType.COUNT - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.HANGUL_SYLLABLE_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Grapheme_Cluster_Break) != UCharacter.GraphemeClusterBreak.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Grapheme_Cluster_Break) != UChar.GraphemeClusterBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.GRAPHEME_CLUSTER_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Sentence_Break) != UCharacter.SentenceBreak.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Sentence_Break) != UChar.SentenceBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.SENTENCE_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Word_Break) != UCharacter.WordBreak.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Word_Break) != UChar.WordBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.WORD_BREAK) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Bidi_Paired_Bracket_Type) != UCharacter.BidiPairedBracketType.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Bidi_Paired_Bracket_Type) != UChar.BidiPairedBracketType.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_PAIRED_BRACKET_TYPE) wrong\n");
             }
             /*JB#2410*/
-            if (UCharacter.GetIntPropertyMaxValue((UProperty)0x2345) != -1)
+            if (UChar.GetIntPropertyMaxValue((UProperty)0x2345) != -1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(0x2345) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Decomposition_Type) != (UCharacter.DecompositionType.COUNT - 1))
+            if (UChar.GetIntPropertyMaxValue(UProperty.Decomposition_Type) != (UChar.DecompositionType.COUNT - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.DECOMPOSITION_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Joining_Group) != (UCharacter.JoiningGroup.Count - 1))
+            if (UChar.GetIntPropertyMaxValue(UProperty.Joining_Group) != (UChar.JoiningGroup.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.JOINING_GROUP) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.Joining_Type) != (UCharacter.JoiningType.Count - 1))
+            if (UChar.GetIntPropertyMaxValue(UProperty.Joining_Type) != (UChar.JoiningType.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.JOINING_TYPE) wrong\n");
             }
-            if (UCharacter.GetIntPropertyMaxValue(UProperty.East_Asian_Width) != (UCharacter.EastAsianWidth.Count - 1))
+            if (UChar.GetIntPropertyMaxValue(UProperty.East_Asian_Width) != (UChar.EastAsianWidth.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.EAST_ASIAN_WIDTH) wrong\n");
             }
 
-            VersionInfo version = UCharacter.UnicodeVersion;
+            VersionInfo version = UChar.UnicodeVersion;
 
             // test hasBinaryProperty()
             for (int i = 0; i < props.Length; ++i)
@@ -2466,7 +2466,7 @@ namespace ICU4N.Dev.Test.Lang
                 String whichName;
                 try
                 {
-                    whichName = UCharacter.GetPropertyName((UProperty)which, NameChoice.Long);
+                    whichName = UChar.GetPropertyName((UProperty)which, NameChoice.Long);
                 }
                 catch (ArgumentException e)
                 {
@@ -2481,7 +2481,7 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 if ((UProperty)which < UProperty.Int_Start)
                 {
-                    if (UCharacter.HasBinaryProperty(props[i][0], (UProperty)which)
+                    if (UChar.HasBinaryProperty(props[i][0], (UProperty)which)
                         != expect)
                     {
                         Errln("error: UCharacter.hasBinaryProperty(U+" +
@@ -2490,7 +2490,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
                 }
 
-                int retVal = UCharacter.GetInt32PropertyValue(props[i][0], (UProperty)which);
+                int retVal = UChar.GetInt32PropertyValue(props[i][0], (UProperty)which);
                 if (retVal != props[i][2])
                 {
                     Errln("error: UCharacter.getIntPropertyValue(U+" +
@@ -2503,7 +2503,7 @@ namespace ICU4N.Dev.Test.Lang
                 switch ((UProperty)which)
                 {
                     case UProperty.Alphabetic:
-                        if (UCharacter.IsUAlphabetic(props[i][0]) != expect)
+                        if (UChar.IsUAlphabetic(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isUAlphabetic(\\u" +
                                   (props[i][0]).ToHexString() +
@@ -2511,7 +2511,7 @@ namespace ICU4N.Dev.Test.Lang
                         }
                         break;
                     case UProperty.Lowercase:
-                        if (UCharacter.IsULowercase(props[i][0]) != expect)
+                        if (UChar.IsULowercase(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isULowercase(\\u" +
                                   (props[i][0]).ToHexString() +
@@ -2519,7 +2519,7 @@ namespace ICU4N.Dev.Test.Lang
                         }
                         break;
                     case UProperty.Uppercase:
-                        if (UCharacter.IsUUppercase(props[i][0]) != expect)
+                        if (UChar.IsUUppercase(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isUUppercase(\\u" +
                                   (props[i][0]).ToHexString() +
@@ -2527,7 +2527,7 @@ namespace ICU4N.Dev.Test.Lang
                         }
                         break;
                     case UProperty.White_Space:
-                        if (UCharacter.IsUWhiteSpace(props[i][0]) != expect)
+                        if (UChar.IsUWhiteSpace(props[i][0]) != expect)
                         {
                             Errln("error: UCharacter.isUWhiteSpace(\\u" +
                                   (props[i][0]).ToHexString() +
@@ -2551,70 +2551,70 @@ namespace ICU4N.Dev.Test.Lang
                 // where UCharacter.NO_NUMERIC_VALUE is turned into -1.
                 // getNumericValue() returns -2 if the code point has a value
                 // which is not a non-negative integer. (This is mostly auto-converted to -2.)
-                new double[] { 0x0F33, UCharacter.NumericType.Numeric, -1.0 / 2.0 },
-                new double[] { 0x0C66, UCharacter.NumericType.Decimal, 0 },
-                new double[] { 0x96f6, UCharacter.NumericType.Numeric, 0 },
-                new double[] { 0xa833, UCharacter.NumericType.Numeric, 1.0 / 16.0 },
-                new double[] { 0x2152, UCharacter.NumericType.Numeric, 1.0 / 10.0 },
-                new double[] { 0x2151, UCharacter.NumericType.Numeric, 1.0 / 9.0 },
-                new double[] { 0x1245f, UCharacter.NumericType.Numeric, 1.0 / 8.0 },
-                new double[] { 0x2150, UCharacter.NumericType.Numeric, 1.0 / 7.0 },
-                new double[] { 0x2159, UCharacter.NumericType.Numeric, 1.0 / 6.0 },
-                new double[] { 0x09f6, UCharacter.NumericType.Numeric, 3.0 / 16.0 },
-                new double[] { 0x2155, UCharacter.NumericType.Numeric, 1.0 / 5.0 },
-                new double[] { 0x00BD, UCharacter.NumericType.Numeric, 1.0 / 2.0 },
-                new double[] { 0x0031, UCharacter.NumericType.Decimal, 1.0 },
-                new double[] { 0x4e00, UCharacter.NumericType.Numeric, 1.0 },
-                new double[] { 0x58f1, UCharacter.NumericType.Numeric, 1.0 },
-                new double[] { 0x10320, UCharacter.NumericType.Numeric, 1.0 },
-                new double[] { 0x0F2B, UCharacter.NumericType.Numeric, 3.0 / 2.0 },
-                new double[] { 0x00B2, UCharacter.NumericType.Digit, 2.0 }, /* Unicode 4.0 change */
-                new double[] { 0x5f10, UCharacter.NumericType.Numeric, 2.0 },
-                new double[] { 0x1813, UCharacter.NumericType.Decimal, 3.0 },
-                new double[] { 0x5f0e, UCharacter.NumericType.Numeric, 3.0 },
-                new double[] { 0x2173, UCharacter.NumericType.Numeric, 4.0 },
-                new double[] { 0x8086, UCharacter.NumericType.Numeric, 4.0 },
-                new double[] { 0x278E, UCharacter.NumericType.Digit, 5.0 },
-                new double[] { 0x1D7F2, UCharacter.NumericType.Decimal, 6.0 },
-                new double[] { 0x247A, UCharacter.NumericType.Digit, 7.0 },
-                new double[] { 0x7396, UCharacter.NumericType.Numeric, 9.0 },
-                new double[] { 0x1372, UCharacter.NumericType.Numeric, 10.0 },
-                new double[] { 0x216B, UCharacter.NumericType.Numeric, 12.0 },
-                new double[] { 0x16EE, UCharacter.NumericType.Numeric, 17.0 },
-                new double[] { 0x249A, UCharacter.NumericType.Numeric, 19.0 },
-                new double[] { 0x303A, UCharacter.NumericType.Numeric, 30.0 },
-                new double[] { 0x5345, UCharacter.NumericType.Numeric, 30.0 },
-                new double[] { 0x32B2, UCharacter.NumericType.Numeric, 37.0 },
-                new double[] { 0x1375, UCharacter.NumericType.Numeric, 40.0 },
-                new double[] { 0x10323, UCharacter.NumericType.Numeric, 50.0 },
-                new double[] { 0x0BF1, UCharacter.NumericType.Numeric, 100.0 },
-                new double[] { 0x964c, UCharacter.NumericType.Numeric, 100.0 },
-                new double[] { 0x217E, UCharacter.NumericType.Numeric, 500.0 },
-                new double[] { 0x2180, UCharacter.NumericType.Numeric, 1000.0 },
-                new double[] { 0x4edf, UCharacter.NumericType.Numeric, 1000.0 },
-                new double[] { 0x2181, UCharacter.NumericType.Numeric, 5000.0 },
-                new double[] { 0x137C, UCharacter.NumericType.Numeric, 10000.0 },
-                new double[] { 0x4e07, UCharacter.NumericType.Numeric, 10000.0 },
-                new double[] { 0x12432, UCharacter.NumericType.Numeric, 216000.0 },
-                new double[] { 0x12433, UCharacter.NumericType.Numeric, 432000.0 },
-                new double[] { 0x4ebf, UCharacter.NumericType.Numeric, 100000000.0 },
-                new double[] { 0x5146, UCharacter.NumericType.Numeric, 1000000000000.0 },
-                new double[] { -1, UCharacter.NumericType.None, UCharacter.NoNumericValue },
-                new double[] { 0x61, UCharacter.NumericType.None, UCharacter.NoNumericValue, 10.0 },
-                new double[] { 0x3000, UCharacter.NumericType.None, UCharacter.NoNumericValue },
-                new double[] { 0xfffe, UCharacter.NumericType.None, UCharacter.NoNumericValue },
-                new double[] { 0x10301, UCharacter.NumericType.None, UCharacter.NoNumericValue },
-                new double[] { 0xe0033, UCharacter.NumericType.None, UCharacter.NoNumericValue },
-                new double[] { 0x10ffff, UCharacter.NumericType.None, UCharacter.NoNumericValue },
-                new double[] { 0x110000, UCharacter.NumericType.None, UCharacter.NoNumericValue }
+                new double[] { 0x0F33, UChar.NumericType.Numeric, -1.0 / 2.0 },
+                new double[] { 0x0C66, UChar.NumericType.Decimal, 0 },
+                new double[] { 0x96f6, UChar.NumericType.Numeric, 0 },
+                new double[] { 0xa833, UChar.NumericType.Numeric, 1.0 / 16.0 },
+                new double[] { 0x2152, UChar.NumericType.Numeric, 1.0 / 10.0 },
+                new double[] { 0x2151, UChar.NumericType.Numeric, 1.0 / 9.0 },
+                new double[] { 0x1245f, UChar.NumericType.Numeric, 1.0 / 8.0 },
+                new double[] { 0x2150, UChar.NumericType.Numeric, 1.0 / 7.0 },
+                new double[] { 0x2159, UChar.NumericType.Numeric, 1.0 / 6.0 },
+                new double[] { 0x09f6, UChar.NumericType.Numeric, 3.0 / 16.0 },
+                new double[] { 0x2155, UChar.NumericType.Numeric, 1.0 / 5.0 },
+                new double[] { 0x00BD, UChar.NumericType.Numeric, 1.0 / 2.0 },
+                new double[] { 0x0031, UChar.NumericType.Decimal, 1.0 },
+                new double[] { 0x4e00, UChar.NumericType.Numeric, 1.0 },
+                new double[] { 0x58f1, UChar.NumericType.Numeric, 1.0 },
+                new double[] { 0x10320, UChar.NumericType.Numeric, 1.0 },
+                new double[] { 0x0F2B, UChar.NumericType.Numeric, 3.0 / 2.0 },
+                new double[] { 0x00B2, UChar.NumericType.Digit, 2.0 }, /* Unicode 4.0 change */
+                new double[] { 0x5f10, UChar.NumericType.Numeric, 2.0 },
+                new double[] { 0x1813, UChar.NumericType.Decimal, 3.0 },
+                new double[] { 0x5f0e, UChar.NumericType.Numeric, 3.0 },
+                new double[] { 0x2173, UChar.NumericType.Numeric, 4.0 },
+                new double[] { 0x8086, UChar.NumericType.Numeric, 4.0 },
+                new double[] { 0x278E, UChar.NumericType.Digit, 5.0 },
+                new double[] { 0x1D7F2, UChar.NumericType.Decimal, 6.0 },
+                new double[] { 0x247A, UChar.NumericType.Digit, 7.0 },
+                new double[] { 0x7396, UChar.NumericType.Numeric, 9.0 },
+                new double[] { 0x1372, UChar.NumericType.Numeric, 10.0 },
+                new double[] { 0x216B, UChar.NumericType.Numeric, 12.0 },
+                new double[] { 0x16EE, UChar.NumericType.Numeric, 17.0 },
+                new double[] { 0x249A, UChar.NumericType.Numeric, 19.0 },
+                new double[] { 0x303A, UChar.NumericType.Numeric, 30.0 },
+                new double[] { 0x5345, UChar.NumericType.Numeric, 30.0 },
+                new double[] { 0x32B2, UChar.NumericType.Numeric, 37.0 },
+                new double[] { 0x1375, UChar.NumericType.Numeric, 40.0 },
+                new double[] { 0x10323, UChar.NumericType.Numeric, 50.0 },
+                new double[] { 0x0BF1, UChar.NumericType.Numeric, 100.0 },
+                new double[] { 0x964c, UChar.NumericType.Numeric, 100.0 },
+                new double[] { 0x217E, UChar.NumericType.Numeric, 500.0 },
+                new double[] { 0x2180, UChar.NumericType.Numeric, 1000.0 },
+                new double[] { 0x4edf, UChar.NumericType.Numeric, 1000.0 },
+                new double[] { 0x2181, UChar.NumericType.Numeric, 5000.0 },
+                new double[] { 0x137C, UChar.NumericType.Numeric, 10000.0 },
+                new double[] { 0x4e07, UChar.NumericType.Numeric, 10000.0 },
+                new double[] { 0x12432, UChar.NumericType.Numeric, 216000.0 },
+                new double[] { 0x12433, UChar.NumericType.Numeric, 432000.0 },
+                new double[] { 0x4ebf, UChar.NumericType.Numeric, 100000000.0 },
+                new double[] { 0x5146, UChar.NumericType.Numeric, 1000000000000.0 },
+                new double[] { -1, UChar.NumericType.None, UChar.NoNumericValue },
+                new double[] { 0x61, UChar.NumericType.None, UChar.NoNumericValue, 10.0 },
+                new double[] { 0x3000, UChar.NumericType.None, UChar.NoNumericValue },
+                new double[] { 0xfffe, UChar.NumericType.None, UChar.NoNumericValue },
+                new double[] { 0x10301, UChar.NumericType.None, UChar.NoNumericValue },
+                new double[] { 0xe0033, UChar.NumericType.None, UChar.NoNumericValue },
+                new double[] { 0x10ffff, UChar.NumericType.None, UChar.NoNumericValue },
+                new double[] { 0x110000, UChar.NumericType.None, UChar.NoNumericValue }
             };
 
             for (int i = 0; i < values.Length; ++i)
             {
                 int c = (int)values[i][0];
-                int type = UCharacter.GetInt32PropertyValue(c,
+                int type = UChar.GetInt32PropertyValue(c,
                                                           UProperty.Numeric_Type);
-                double nv = UCharacter.GetUnicodeNumericValue(c);
+                double nv = UChar.GetUnicodeNumericValue(c);
 
                 if (type != values[i][1])
                 {
@@ -2633,7 +2633,7 @@ namespace ICU4N.Dev.Test.Lang
                 int expectedInt;
                 if (values[i].Length == 3)
                 {
-                    if (values[i][2] == UCharacter.NoNumericValue)
+                    if (values[i][2] == UChar.NoNumericValue)
                     {
                         expectedInt = -1;
                     }
@@ -2651,7 +2651,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     expectedInt = (int)values[i][3];
                 }
-                int nvInt = UCharacter.GetNumericValue(c);
+                int nvInt = UChar.GetNumericValue(c);
                 if (nvInt != expectedInt)
                 {
                     Errln("UCharacter.getNumericValue(\\u" + Utility.Hex(c, 4)
@@ -2673,7 +2673,7 @@ namespace ICU4N.Dev.Test.Lang
             /* Until JB#2478 is fixed, the one exception is UProperty.BLOCK. */
             for (p = UProperty.Int_Start; p < UProperty.Int_Limit; ++p)
             {
-                min = UCharacter.GetIntPropertyMinValue(p);
+                min = UChar.GetIntPropertyMinValue(p);
                 if (min != 0)
                 {
                     if (p == UProperty.Block)
@@ -2684,16 +2684,16 @@ namespace ICU4N.Dev.Test.Lang
                     else
                     {
                         String name;
-                        name = UCharacter.GetPropertyName(p, NameChoice.Long);
+                        name = UChar.GetPropertyName(p, NameChoice.Long);
                         Errln("FAIL: UCharacter.getIntPropertyMinValue(" + name + ") = " +
                               min + ", exp. 0");
                     }
                 }
             }
 
-            if (UCharacter.GetIntPropertyMinValue(UProperty.General_Category_Mask)
+            if (UChar.GetIntPropertyMinValue(UProperty.General_Category_Mask)
                 != 0
-                || UCharacter.GetIntPropertyMaxValue(
+                || UChar.GetIntPropertyMaxValue(
                                                    UProperty.General_Category_Mask)
                    != -1)
             {
@@ -2702,7 +2702,7 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             /* Max should be -1 for invalid properties. */
-            max = UCharacter.GetIntPropertyMaxValue((UProperty)(-1));
+            max = UChar.GetIntPropertyMaxValue((UProperty)(-1));
             if (max != -1)
             {
                 Errln("FAIL: UCharacter.getIntPropertyMaxValue(-1) = " +
@@ -2724,7 +2724,7 @@ namespace ICU4N.Dev.Test.Lang
                             desc = "UScript.getScript(-1)";
                             break;
                         case 1:
-                            script = UCharacter.GetInt32PropertyValue(-1, UProperty.Script);
+                            script = UChar.GetInt32PropertyValue(-1, UProperty.Script);
                             desc = "UCharacter.getIntPropertyValue(-1, UProperty.SCRIPT)";
                             break;
                     }
@@ -2768,19 +2768,19 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestEmojiProperties()
         {
-            assertFalse("space is not Emoji", UCharacter.HasBinaryProperty(0x20, UProperty.Emoji));
-            assertTrue("shooting star is Emoji", UCharacter.HasBinaryProperty(0x1F320, UProperty.Emoji));
+            assertFalse("space is not Emoji", UChar.HasBinaryProperty(0x20, UProperty.Emoji));
+            assertTrue("shooting star is Emoji", UChar.HasBinaryProperty(0x1F320, UProperty.Emoji));
             UnicodeSet emoji = new UnicodeSet("[:Emoji:]");
             assertTrue("lots of Emoji", emoji.Count > 700);
 
             assertTrue("shooting star is Emoji_Presentation",
-                    UCharacter.HasBinaryProperty(0x1F320, UProperty.Emoji_Presentation));
+                    UChar.HasBinaryProperty(0x1F320, UProperty.Emoji_Presentation));
             assertTrue("Fitzpatrick 6 is Emoji_Modifier",
-                    UCharacter.HasBinaryProperty(0x1F3FF, UProperty.Emoji_Modifier));
+                    UChar.HasBinaryProperty(0x1F3FF, UProperty.Emoji_Modifier));
             assertTrue("happy person is Emoji_Modifier_Base",
-                    UCharacter.HasBinaryProperty(0x1F64B, UProperty.Emoji_Modifier_Base));
+                    UChar.HasBinaryProperty(0x1F64B, UProperty.Emoji_Modifier_Base));
             assertTrue("asterisk is Emoji_Component",
-                    UCharacter.HasBinaryProperty(0x2A, UProperty.Emoji_Component));
+                    UChar.HasBinaryProperty(0x2A, UProperty.Emoji_Component));
         }
 
         [Test]
@@ -2790,7 +2790,7 @@ namespace ICU4N.Dev.Test.Lang
             bool[] flag = { true, false, true, false, true, false };
             for (int i = 0; i < ch.Length; i++)
             {
-                if (UCharacter.IsBMP(ch[i]) != flag[i])
+                if (UChar.IsBMP(ch[i]) != flag[i])
                 {
                     Errln("Fail: \\u" + Utility.Hex(ch[i], 8)
                           + " failed at UCharacter.isBMP");
@@ -2938,7 +2938,7 @@ namespace ICU4N.Dev.Test.Lang
 
                 while (start <= end)
                 {
-                    String name = UCharacter.GetName(start);
+                    String name = UChar.GetName(start);
 
                     if ((name.IndexOf("SMALL") < 0 || name.IndexOf("CAPITAL") < -1) &&
                         name.IndexOf("SMALL CAPITAL") == -1
@@ -2986,9 +2986,9 @@ namespace ICU4N.Dev.Test.Lang
         public void TestCoverage()
         {
             //cover forDigit
-            char ch1 = UCharacter.ForDigit(7, 11);
+            char ch1 = UChar.ForDigit(7, 11);
             assertEquals("UCharacter.forDigit ", "7", ch1 + "");
-            char ch2 = UCharacter.ForDigit(17, 20);
+            char ch2 = UChar.ForDigit(17, 20);
             assertEquals("UCharacter.forDigit ", "h", ch2 + "");
 
             // ICU4N: Doesn't apply in .NET
@@ -3007,7 +3007,7 @@ namespace ICU4N.Dev.Test.Lang
             char[] spaces = { '\t', '\n', '\f', '\r', ' ' };
             for (int i = 0; i < spaces.Length; i++)
             {
-                if (!UCharacter.IsSpace(spaces[i]))
+                if (!UChar.IsSpace(spaces[i]))
                     Errln("FAIL \\u" + Hex(spaces[i]) + " expected to be a Java space");
             }
         }
@@ -3015,11 +3015,11 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestBlockData()
         {
-            Type ubc = typeof(UCharacter.UnicodeBlock);
+            Type ubc = typeof(UChar.UnicodeBlock);
 
-            for (int b = 1; b < UCharacter.UnicodeBlock.COUNT; b += 1)
+            for (int b = 1; b < UChar.UnicodeBlock.COUNT; b += 1)
             {
-                UCharacter.UnicodeBlock blk = UCharacter.UnicodeBlock.GetInstance(b);
+                UChar.UnicodeBlock blk = UChar.UnicodeBlock.GetInstance(b);
                 int id = blk.ID;
                 String name = blk.ToString();
 
@@ -3054,12 +3054,12 @@ namespace ICU4N.Dev.Test.Lang
             int[] invalid_test = { -1, -10, -100 };
             for (int i = 0; i < invalid_test.Length; i++)
             {
-                if (UCharacter.UnicodeBlock.INVALID_CODE != UCharacter.UnicodeBlock.GetInstance(invalid_test[i]))
+                if (UChar.UnicodeBlock.INVALID_CODE != UChar.UnicodeBlock.GetInstance(invalid_test[i]))
                 {
                     Errln("UCharacter.UnicodeBlock.GetInstance(invalid_test[i]) was " +
                             "suppose to return UCharacter.UnicodeBlock.INVALID_CODE. Got " +
-                            UCharacter.UnicodeBlock.GetInstance(invalid_test[i]) + ". Expected " +
-                            UCharacter.UnicodeBlock.INVALID_CODE);
+                            UChar.UnicodeBlock.GetInstance(invalid_test[i]) + ". Expected " +
+                            UChar.UnicodeBlock.INVALID_CODE);
                 }
             }
         }
@@ -3071,12 +3071,12 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestOf()
         {
-            if (UCharacter.UnicodeBlock.INVALID_CODE != UCharacter.UnicodeBlock.Of(UTF16.CODEPOINT_MAX_VALUE + 1))
+            if (UChar.UnicodeBlock.INVALID_CODE != UChar.UnicodeBlock.Of(UTF16.CODEPOINT_MAX_VALUE + 1))
             {
                 Errln("UCharacter.UnicodeBlock.of(UTF16.CODEPOINT_MAX_VALUE+1) was " +
                         "suppose to return UCharacter.UnicodeBlock.INVALID_CODE. Got " +
-                        UCharacter.UnicodeBlock.Of(UTF16.CODEPOINT_MAX_VALUE + 1) + ". Expected " +
-                        UCharacter.UnicodeBlock.INVALID_CODE);
+                        UChar.UnicodeBlock.Of(UTF16.CODEPOINT_MAX_VALUE + 1) + ". Expected " +
+                        UChar.UnicodeBlock.INVALID_CODE);
             }
         }
 
@@ -3130,11 +3130,11 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     try
                     {
-                        if (UCharacter.GetNumericValue(valid_values[i]) != results[i])
+                        if (UChar.GetNumericValue(valid_values[i]) != results[i])
                         {
                             Errln("UCharacter.getNumericValue(i) returned a " +
                                     "different value from the expected result. " +
-                                    "Got " + UCharacter.GetNumericValue(valid_values[i]) +
+                                    "Got " + UChar.GetNumericValue(valid_values[i]) +
                                     "Expected" + results[i]);
                         }
                     }
@@ -3171,15 +3171,15 @@ namespace ICU4N.Dev.Test.Lang
         public void TestToString()
         {
             int[] valid_tests = {
-                UCharacter.MinValue, UCharacter.MinValue+1,
-                UCharacter.MaxValue-1, UCharacter.MaxValue};
+                UChar.MinValue, UChar.MinValue+1,
+                UChar.MaxValue-1, UChar.MaxValue};
             int[] invalid_tests = {
-                UCharacter.MinValue-1, UCharacter.MinValue-2,
-                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
+                UChar.MinValue-1, UChar.MinValue-2,
+                UChar.MaxValue+1, UChar.MaxValue+2};
 
             for (int i = 0; i < valid_tests.Length; i++)
             {
-                if (UCharacter.ToString(valid_tests[i]) == null)
+                if (UChar.ToString(valid_tests[i]) == null)
                 {
                     Errln("UCharacter.toString(int) was not suppose to return " +
                     "null because it was given a valid parameter. Value passed: " +
@@ -3189,11 +3189,11 @@ namespace ICU4N.Dev.Test.Lang
 
             for (int i = 0; i < invalid_tests.Length; i++)
             {
-                if (UCharacter.ToString(invalid_tests[i]) != null)
+                if (UChar.ToString(invalid_tests[i]) != null)
                 {
                     Errln("UCharacter.toString(int) was suppose to return " +
                     "null because it was given an invalid parameter. Value passed: " +
-                    invalid_tests[i] + ". Got: " + UCharacter.ToString(invalid_tests[i]));
+                    invalid_tests[i] + ". Got: " + UChar.ToString(invalid_tests[i]));
                 }
             }
         }
@@ -3206,17 +3206,17 @@ namespace ICU4N.Dev.Test.Lang
         public void TestGetCombiningClass()
         {
             int[] valid_tests = {
-                UCharacter.MinValue, UCharacter.MinValue+1,
-                UCharacter.MaxValue-1, UCharacter.MaxValue};
+                UChar.MinValue, UChar.MinValue+1,
+                UChar.MaxValue-1, UChar.MaxValue};
             int[] invalid_tests = {
-                UCharacter.MinValue-1, UCharacter.MinValue-2,
-                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
+                UChar.MinValue-1, UChar.MinValue-2,
+                UChar.MaxValue+1, UChar.MaxValue+2};
 
             for (int i = 0; i < valid_tests.Length; i++)
             {
                 try
                 {
-                    UCharacter.GetCombiningClass(valid_tests[i]);
+                    UChar.GetCombiningClass(valid_tests[i]);
                 }
                 catch (Exception e)
                 {
@@ -3230,7 +3230,7 @@ namespace ICU4N.Dev.Test.Lang
                 try
                 {
                     assertEquals("getCombiningClass(out of range)",
-                                 0, UCharacter.GetCombiningClass(invalid_tests[i]));
+                                 0, UChar.GetCombiningClass(invalid_tests[i]));
                 }
                 catch (Exception e)
                 {
@@ -3259,12 +3259,12 @@ namespace ICU4N.Dev.Test.Lang
             {
                 for (int i = 0; i < data.Length; i++)
                 {
-                    if (UCharacter.GetName(data[i], "").CompareToOrdinal(results[i]) != 0)
+                    if (UChar.GetName(data[i], "").CompareToOrdinal(results[i]) != 0)
                     {
                         Errln("UCharacter.getName(String, String) was suppose " +
                                 "to have the same result for the data in the parameter. " +
                                 "Value passed: " + data[i] + ". Got: " +
-                                UCharacter.GetName(data[i], "") + ". Expected: " +
+                                UChar.GetName(data[i], "") + ". Expected: " +
                                 results[i]);
                     }
                 }
@@ -3279,16 +3279,16 @@ namespace ICU4N.Dev.Test.Lang
         public void TestGetISOComment()
         {
             int[] invalid_tests = {
-                UCharacter.MinValue-1, UCharacter.MinValue-2,
-                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
+                UChar.MinValue-1, UChar.MinValue-2,
+                UChar.MaxValue+1, UChar.MaxValue+2};
 
             for (int i = 0; i < invalid_tests.Length; i++)
             {
-                if (UCharacter.GetISOComment(invalid_tests[i]) != null)
+                if (UChar.GetISOComment(invalid_tests[i]) != null)
                 {
                     Errln("UCharacter.getISOComment(int) was suppose to return " +
                     "null because it was given an invalid parameter. Value passed: " +
-                    invalid_tests[i] + ". Got: " + UCharacter.GetISOComment(invalid_tests[i]));
+                    invalid_tests[i] + ". Got: " + UChar.GetISOComment(invalid_tests[i]));
                 }
             }
         }
@@ -3338,12 +3338,12 @@ namespace ICU4N.Dev.Test.Lang
             String[] locale = { "en", "fr", "zh", "ko", "ja", "it", "de", "" };
             for (int i = 0; i < locale.Length; i++)
             {
-                UCharacter.ToTitleCase(new CultureInfo(locale[i]), "", null);
+                UChar.ToTitleCase(new CultureInfo(locale[i]), "", null);
             }
 
             // Calls the function "String toTitleCase(ULocale locale, String str, BreakIterator titleIter, int options)"
             // Tests when "if (locale == null)" is true
-            UCharacter.ToTitleCase((ULocale)null, "", null, 0);
+            UChar.ToTitleCase((ULocale)null, "", null, 0);
 
             // TODO: Tests when "if(index==BreakIterator.Done || index>srcLength)" is true
             // TODO: Tests when "while((c=iter.nextCaseMapCP())>=0 && UCaseProps.NONE==gCsp.getType(c))" is false
@@ -3357,15 +3357,15 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestToTitleCase_Locale_String_BreakIterator_I()
         {
-            String titleCase = UCharacter.ToTitleCase(new CultureInfo("nl"), "ijsland", null,
-                    UCharacter.FoldCaseDefault);
+            String titleCase = UChar.ToTitleCase(new CultureInfo("nl"), "ijsland", null,
+                    UChar.FoldCaseDefault);
             assertEquals("Wrong title casing", "IJsland", titleCase);
         }
 
         [Test]
         public void TestToTitleCase_String_BreakIterator_en()
         {
-            String titleCase = UCharacter.ToTitleCase(new CultureInfo("en"), "ijsland", null);
+            String titleCase = UChar.ToTitleCase(new CultureInfo("en"), "ijsland", null);
             assertEquals("Wrong title casing", "Ijsland", titleCase);
         }
         /*
@@ -3392,7 +3392,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.ToLower((ULocale)null, cases[i]);
+                    UChar.ToLower((ULocale)null, cases[i]);
                 }
                 catch (Exception e)
                 {
@@ -3455,11 +3455,11 @@ namespace ICU4N.Dev.Test.Lang
             {
                 for (int i = 0; i < valid.Length; i++)
                 {
-                    if (UCharacter.GetHanNumericValue(valid[i]) != results[i])
+                    if (UChar.GetHanNumericValue(valid[i]) != results[i])
                     {
                         Errln("UCharacter.getHanNumericValue does not return the " +
                                 "same result as expected. Passed value: " + valid[i] +
-                                ". Got: " + UCharacter.GetHanNumericValue(valid[i]) +
+                                ". Got: " + UChar.GetHanNumericValue(valid[i]) +
                                 ". Expected: " + results[i]);
                     }
                 }
@@ -3467,11 +3467,11 @@ namespace ICU4N.Dev.Test.Lang
 
             for (int i = 0; i < invalid.Length; i++)
             {
-                if (UCharacter.GetHanNumericValue(invalid[i]) != -1)
+                if (UChar.GetHanNumericValue(invalid[i]) != -1)
                 {
                     Errln("UCharacter.getHanNumericValue does not return the " +
                             "same result as expected. Passed value: " + invalid[i] +
-                            ". Got: " + UCharacter.GetHanNumericValue(invalid[i]) +
+                            ". Got: " + UChar.GetHanNumericValue(invalid[i]) +
                             ". Expected: -1");
                 }
             }
@@ -3486,17 +3486,17 @@ namespace ICU4N.Dev.Test.Lang
         {
             // Testing when "if (ch < MIN_VALUE || ch > MAX_VALUE)" is true
             int[] invalid = {
-                UCharacter.MinValue-1, UCharacter.MinValue-2,
-                UCharacter.MaxValue+1, UCharacter.MaxValue+2};
+                UChar.MinValue-1, UChar.MinValue-2,
+                UChar.MaxValue+1, UChar.MaxValue+2};
             int[] valid = {
-                UCharacter.MinValue, UCharacter.MinValue+1,
-                UCharacter.MaxValue, UCharacter.MaxValue-1};
+                UChar.MinValue, UChar.MinValue+1,
+                UChar.MaxValue, UChar.MaxValue-1};
 
             for (int i = 0; i < invalid.Length; i++)
             {
                 try
                 {
-                    if (UCharacter.HasBinaryProperty(invalid[i], (UProperty)1))
+                    if (UChar.HasBinaryProperty(invalid[i], (UProperty)1))
                     {
                         Errln("UCharacter.hasBinaryProperty(ch, property) should return " +
                                 "false for out-of-range code points but " +
@@ -3515,7 +3515,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.HasBinaryProperty(valid[i], (UProperty)1);
+                    UChar.HasBinaryProperty(valid[i], (UProperty)1);
                 }
                 catch (Exception e)
                 {
@@ -3538,7 +3538,7 @@ namespace ICU4N.Dev.Test.Lang
             int[] negative_cases = { -100, -50, -10, -5, -2, -1 };
             for (int i = 0; i < negative_cases.Length; i++)
             {
-                if (UCharacter.GetInt32PropertyValue(0, (UProperty)negative_cases[i]) != 0)
+                if (UChar.GetInt32PropertyValue(0, (UProperty)negative_cases[i]) != 0)
                 {
                     Errln("UCharacter.getIntPropertyValue(ch, type) was suppose to return 0 " +
                             "when passing a negative value of " + negative_cases[i]);
@@ -3549,7 +3549,7 @@ namespace ICU4N.Dev.Test.Lang
             // Testing when "if(ch<NormalizerImpl.JAMO_L_BASE)" is true
             for (int i = Normalizer2Impl.Hangul.JAMO_L_BASE - 5; i < Normalizer2Impl.Hangul.JAMO_L_BASE; i++)
             {
-                if (UCharacter.GetInt32PropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
+                if (UChar.GetInt32PropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
                 {
                     Errln("UCharacter.getIntPropertyValue(ch, type) was suppose to return 0 " +
                             "when passing ch: " + i + "and type of Property.HANGUL_SYLLABLE_TYPE");
@@ -3560,7 +3560,7 @@ namespace ICU4N.Dev.Test.Lang
             // Testing when "else if((ch-=NormalizerImpl.HANGUL_BASE)<0)" is true
             for (int i = Normalizer2Impl.Hangul.HANGUL_BASE - 5; i < Normalizer2Impl.Hangul.HANGUL_BASE; i++)
             {
-                if (UCharacter.GetInt32PropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
+                if (UChar.GetInt32PropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
                 {
                     Errln("UCharacter.getIntPropertyValue(ch, type) was suppose to return 0 " +
                             "when passing ch: " + i + "and type of Property.HANGUL_SYLLABLE_TYPE");
@@ -3582,10 +3582,10 @@ namespace ICU4N.Dev.Test.Lang
                 UProperty.Int_Start-2, UProperty.Int_Start-1};
             for (int i = 0; i < cases.Length; i++)
             {
-                if (UCharacter.GetIntPropertyMaxValue(cases[i]) != -1)
+                if (UChar.GetIntPropertyMaxValue(cases[i]) != -1)
                 {
                     Errln("UCharacter.getIntPropertyMaxValue was suppose to return -1 " +
-                            "but got " + UCharacter.GetIntPropertyMaxValue(cases[i]));
+                            "but got " + UChar.GetIntPropertyMaxValue(cases[i]));
                 }
             }
 
@@ -3611,27 +3611,27 @@ namespace ICU4N.Dev.Test.Lang
             {
                 /* Testing UCharacter.CodePointAt(seq, index) */
                 // Testing when "if (index < seq.Length)" is false
-                if (UCharacter.CodePointAt(cases[i], 0) != result[i])
+                if (UChar.CodePointAt(cases[i], 0) != result[i])
                     Errln("UCharacter.CodePointAt(CharSequence ...) did not return as expected. " +
                             "Passed value: " + cases[i] + ". Expected: " +
                             result[i] + ". Got: " +
-                            UCharacter.CodePointAt(cases[i], 0));
+                            UChar.CodePointAt(cases[i], 0));
 
                 /* Testing UCharacter.CodePointAt(text, index) */
                 // Testing when "if (index < text.Length)" is false
-                if (UCharacter.CodePointAt(cases[i].ToCharArray(), 0) != result[i])
+                if (UChar.CodePointAt(cases[i].ToCharArray(), 0) != result[i])
                     Errln("UCharacter.CodePointAt(char[] ...) did not return as expected. " +
                             "Passed value: " + cases[i] + ". Expected: " +
                             result[i] + ". Got: " +
-                            UCharacter.CodePointAt(cases[i].ToCharArray(), 0));
+                            UChar.CodePointAt(cases[i].ToCharArray(), 0));
 
                 /* Testing UCharacter.CodePointAt(text, index, limit) */
                 // Testing when "if (index < limit)" is false
-                if (UCharacter.CodePointAt(cases[i].ToCharArray(), 0, 1) != result[i])
+                if (UChar.CodePointAt(cases[i].ToCharArray(), 0, 1) != result[i])
                     Errln("UCharacter.CodePointAt(char[], int, int) did not return as expected. " +
                             "Passed value: " + cases[i] + ". Expected: " +
                             result[i] + ". Got: " +
-                            UCharacter.CodePointAt(cases[i].ToCharArray(), 0, 1));
+                            UChar.CodePointAt(cases[i].ToCharArray(), 0, 1));
             }
 
             /* Testing UCharacter.CodePointAt(text, index, limit) */
@@ -3646,9 +3646,9 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.CodePointAt(reg_text, 100, limitCases[i]);
+                    UChar.CodePointAt(reg_text, 100, limitCases[i]);
                     Errln("UCharacter.codePointAt was suppose to return an exception " +
-                            "but got " + UCharacter.CodePointAt(reg_text, 100, limitCases[i]) +
+                            "but got " + UChar.CodePointAt(reg_text, 100, limitCases[i]) +
                             ". The following passed parameters were Text: " + new string(reg_text) + ", Start: " +
                             100 + ", Limit: " + limitCases[i] + ".");
                 }
@@ -3662,9 +3662,9 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.CodePointAt(empty_text, 0, limitCases[i]);
+                    UChar.CodePointAt(empty_text, 0, limitCases[i]);
                     Errln("UCharacter.codePointAt was suppose to return an exception " +
-                            "but got " + UCharacter.CodePointAt(empty_text, 0, limitCases[i]) +
+                            "but got " + UChar.CodePointAt(empty_text, 0, limitCases[i]) +
                             ". The following passed parameters were Text: " + new string(empty_text) + ", Start: " +
                             0 + ", Limit: " + limitCases[i] + ".");
                 }
@@ -3674,9 +3674,9 @@ namespace ICU4N.Dev.Test.Lang
 
                 try
                 {
-                    UCharacter.CodePointCount(one_char_text, 0, limitCases[i]);
+                    UChar.CodePointCount(one_char_text, 0, limitCases[i]);
                     Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UCharacter.CodePointCount(one_char_text, 0, limitCases[i]) +
+                            "but got " + UChar.CodePointCount(one_char_text, 0, limitCases[i]) +
                             ". The following passed parameters were Text: " + new string(one_char_text) + ", Start: " +
                             0 + ", Limit: " + limitCases[i] + ".");
                 }
@@ -3703,27 +3703,27 @@ namespace ICU4N.Dev.Test.Lang
             {
                 /* Testing UCharacter.CodePointBefore(seq, index) */
                 // Testing when "if (index > 0)" is false
-                if (UCharacter.CodePointBefore(cases[i], 1) != result[i])
+                if (UChar.CodePointBefore(cases[i], 1) != result[i])
                     Errln("UCharacter.CodePointBefore(CharSequence ...) did not return as expected. " +
                             "Passed value: " + cases[i] + ". Expected: " +
                             result[i] + ". Got: " +
-                            UCharacter.CodePointBefore(cases[i], 1));
+                            UChar.CodePointBefore(cases[i], 1));
 
                 /* Testing UCharacter.CodePointBefore(text, index) */
                 // Testing when "if (index > 0)" is false
-                if (UCharacter.CodePointBefore(cases[i].ToCharArray(), 1) != result[i])
+                if (UChar.CodePointBefore(cases[i].ToCharArray(), 1) != result[i])
                     Errln("UCharacter.CodePointBefore(char[] ...) did not return as expected. " +
                             "Passed value: " + cases[i] + ". Expected: " +
                             result[i] + ". Got: " +
-                            UCharacter.CodePointBefore(cases[i].ToCharArray(), 1));
+                            UChar.CodePointBefore(cases[i].ToCharArray(), 1));
 
                 /* Testing UCharacter.CodePointBefore(text, index, limit) */
                 // Testing when "if (index > limit)" is false
-                if (UCharacter.CodePointBefore(cases[i].ToCharArray(), 1, 0) != result[i])
+                if (UChar.CodePointBefore(cases[i].ToCharArray(), 1, 0) != result[i])
                     Errln("UCharacter.CodePointBefore(char[], int, int) did not return as expected. " +
                             "Passed value: " + cases[i] + ". Expected: " +
                             result[i] + ". Got: " +
-                            UCharacter.CodePointBefore(cases[i].ToCharArray(), 1, 0));
+                            UChar.CodePointBefore(cases[i].ToCharArray(), 1, 0));
             }
 
             /* Testing UCharacter.CodePointBefore(text, index, limit) */
@@ -3736,7 +3736,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.CodePointBefore(dummy, 10000, negative_cases[i]);
+                    UChar.CodePointBefore(dummy, 10000, negative_cases[i]);
                     Errln("UCharacter.CodePointBefore(text, index, limit) was suppose to return an exception " +
                             "when the parameter limit of " + negative_cases[i] + " is a negative number.");
                 }
@@ -3747,7 +3747,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.CodePointBefore(dummy, index_cases[i], 101);
+                    UChar.CodePointBefore(dummy, index_cases[i], 101);
                     Errln("UCharacter.CodePointBefore(text, index, limit) was suppose to return an exception " +
                             "when the parameter index of " + index_cases[i] + " is a negative number.");
                 }
@@ -3772,7 +3772,7 @@ namespace ICU4N.Dev.Test.Lang
                 // Testing negative values when cp < 0 for if (cp >= 0)
                 try
                 {
-                    UCharacter.ToChars(-1 * positive_cases[i], dst, 0);
+                    UChar.ToChars(-1 * positive_cases[i], dst, 0);
                     Errln("UCharacter.toChars(int,char[],int) was suppose to return an exception " +
                             "when the parameter " + (-1 * positive_cases[i]) + " is a negative number.");
                 }
@@ -3781,19 +3781,19 @@ namespace ICU4N.Dev.Test.Lang
                 }
 
                 // Testing when "if (cp < MIN_SUPPLEMENTARY_CODE_POINT)" is true
-                if (UCharacter.ToChars(UCharacter.MinSupplementaryCodePoint - positive_cases[i], dst, 0) != 1)
+                if (UChar.ToChars(UChar.MinSupplementaryCodePoint - positive_cases[i], dst, 0) != 1)
                 {
                     Errln("UCharacter.toChars(int,char[],int) was suppose to return a value of 1. Got: " +
-                            UCharacter.ToChars(UCharacter.MinSupplementaryCodePoint - positive_cases[i], dst, 0));
+                            UChar.ToChars(UChar.MinSupplementaryCodePoint - positive_cases[i], dst, 0));
                 }
 
                 // Testing when "if (cp < MIN_SUPPLEMENTARY_CODE_POINT)" is false and
                 //     when "if (cp <= MAX_CODE_POINT)" is false
                 try
                 {
-                    UCharacter.ToChars(UCharacter.MaxCodePoint + positive_cases[i], dst, 0);
+                    UChar.ToChars(UChar.MaxCodePoint + positive_cases[i], dst, 0);
                     Errln("UCharacter.toChars(int,char[],int) was suppose to return an exception " +
-                            "when the parameter " + (UCharacter.MaxCodePoint + positive_cases[i]) +
+                            "when the parameter " + (UChar.MaxCodePoint + positive_cases[i]) +
                             " is a large number.");
                 }
                 catch (Exception e)
@@ -3808,7 +3808,7 @@ namespace ICU4N.Dev.Test.Lang
                 // Testing negative values when cp < 0 for if (cp >= 0)
                 try
                 {
-                    UCharacter.ToChars(-1 * positive_cases[i]);
+                    UChar.ToChars(-1 * positive_cases[i]);
                     Errln("UCharacter.toChars(cint) was suppose to return an exception " +
                             "when the parameter " + positive_cases[i] + " is a negative number.");
                 }
@@ -3817,17 +3817,17 @@ namespace ICU4N.Dev.Test.Lang
                 }
 
                 // Testing when "if (cp < MIN_SUPPLEMENTARY_CODE_POINT)" is true
-                if (UCharacter.ToChars(UCharacter.MinSupplementaryCodePoint - positive_cases[i]).Length <= 0)
+                if (UChar.ToChars(UChar.MinSupplementaryCodePoint - positive_cases[i]).Length <= 0)
                 {
                     Errln("UCharacter.toChars(int) was suppose to return some result result when the parameter " +
-                            (UCharacter.MinSupplementaryCodePoint - positive_cases[i]) + "is passed.");
+                            (UChar.MinSupplementaryCodePoint - positive_cases[i]) + "is passed.");
                 }
 
                 // Testing when "if (cp < MIN_SUPPLEMENTARY_CODE_POINT)" is false and
                 //     when "if (cp <= MAX_CODE_POINT)" is false
                 try
                 {
-                    UCharacter.ToChars(UCharacter.MaxCodePoint + positive_cases[i]);
+                    UChar.ToChars(UChar.MaxCodePoint + positive_cases[i]);
                     Errln("UCharacter.toChars(int) was suppose to return an exception " +
                             "when the parameter " + positive_cases[i] + " is a large number.");
                 }
@@ -3859,9 +3859,9 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.CodePointCount(reg_text, invalid_startCases[i], 1);
+                    UChar.CodePointCount(reg_text, invalid_startCases[i], 1);
                     Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UCharacter.CodePointCount(reg_text, invalid_startCases[i], 1) +
+                            "but got " + UChar.CodePointCount(reg_text, invalid_startCases[i], 1) +
                             ". The following passed parameters were Text: " + new string(reg_text) + ", Start: " +
                             invalid_startCases[i] + ", Limit: " + 1 + ".");
                 }
@@ -3875,9 +3875,9 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.CodePointCount(reg_text, 100, limitCases[i]);
+                    UChar.CodePointCount(reg_text, 100, limitCases[i]);
                     Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UCharacter.CodePointCount(reg_text, 100, limitCases[i]) +
+                            "but got " + UChar.CodePointCount(reg_text, 100, limitCases[i]) +
                             ". The following passed parameters were Text: " + new string(reg_text) + ", Start: " +
                             100 + ", Limit: " + limitCases[i] + ".");
                 }
@@ -3891,9 +3891,9 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.CodePointCount(empty_text, 0, limitCases[i]);
+                    UChar.CodePointCount(empty_text, 0, limitCases[i]);
                     Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UCharacter.CodePointCount(empty_text, 0, limitCases[i]) +
+                            "but got " + UChar.CodePointCount(empty_text, 0, limitCases[i]) +
                             ". The following passed parameters were Text: " + new string(empty_text) + ", Start: " +
                             0 + ", Limit: " + limitCases[i] + ".");
                 }
@@ -3903,9 +3903,9 @@ namespace ICU4N.Dev.Test.Lang
 
                 try
                 {
-                    UCharacter.CodePointCount(one_char_text, 0, limitCases[i]);
+                    UChar.CodePointCount(one_char_text, 0, limitCases[i]);
                     Errln("UCharacter.codePointCount was suppose to return an exception " +
-                            "but got " + UCharacter.CodePointCount(one_char_text, 0, limitCases[i]) +
+                            "but got " + UChar.CodePointCount(one_char_text, 0, limitCases[i]) +
                             ". The following passed parameters were Text: " + new string(one_char_text) + ", Start: " +
                             0 + ", Limit: " + limitCases[i] + ".");
                 }
@@ -3940,17 +3940,17 @@ namespace ICU4N.Dev.Test.Lang
             {
                 for (int j = 0; j < radixCase1.Length; j++)
                 {
-                    if (UCharacter.Digit(i, radixCase1[j]) != -1)
+                    if (UChar.Digit(i, radixCase1[j]) != -1)
                     {
                         Errln("UCharacter.digit(int,int) was supposed to return -1 for radix " + radixCase1[j]
-                                + ". Value passed: U+" + (i).ToHexString() + ". Got: " + UCharacter.Digit(i, radixCase1[j]));
+                                + ". Value passed: U+" + (i).ToHexString() + ". Got: " + UChar.Digit(i, radixCase1[j]));
                     }
                 }
                 for (int j = 0; j < radixCase2.Length; j++)
                 {
                     int radix = radixCase2[j];
                     int expected = (radixResult[i - 0xFF41] < radix) ? radixResult[i - 0xFF41] : -1;
-                    int actual = UCharacter.Digit(i, radix);
+                    int actual = UChar.Digit(i, radix);
                     if (actual != expected)
                     {
                         Errln("UCharacter.digit(int,int) was supposed to return " +
@@ -3971,10 +3971,10 @@ namespace ICU4N.Dev.Test.Lang
         {
             int[] cases = { UTF16.CODEPOINT_MAX_VALUE + 1, UTF16.CODEPOINT_MAX_VALUE + 2 };
             for (int i = 0; i < cases.Length; i++)
-                if (UCharacter.GetType(cases[i]).ToInt32() != 0)
+                if (UChar.GetType(cases[i]).ToInt32() != 0)
                     Errln("UCharacter.getType for testing UCharacter.getProperty "
                             + "did not return 0 for passed value of " + cases[i] +
-                            " but got " + UCharacter.GetType(cases[i]).ToInt32());
+                            " but got " + UChar.GetType(cases[i]).ToInt32());
         }
 
         private class MyXSymbolTable : UnicodeSet.XSymbolTable { }
@@ -4028,9 +4028,9 @@ namespace ICU4N.Dev.Test.Lang
         public void TestNameAliasing()
         {
             int input = '\u01a2';
-            String alias = UCharacter.GetNameAlias(input);
+            String alias = UChar.GetNameAlias(input);
             assertEquals("Wrong name alias", "LATIN CAPITAL LETTER GHA", alias);
-            int output = UCharacter.GetCharFromNameAlias(alias);
+            int output = UChar.GetCharFromNameAlias(alias);
             assertEquals("alias for '" + input + "'", input, output);
         }
     }

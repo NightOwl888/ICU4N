@@ -77,7 +77,7 @@ namespace ICU4N.Impl
         /// <returns>If code point is above 0x1fff, null is returned.</returns>
         public string GetName(int ch, UCharacterNameChoice choice)
         {
-            if (ch < UCharacter.MinValue || ch > UCharacter.MaxValue ||
+            if (ch < UChar.MinValue || ch > UChar.MaxValue ||
                 choice > UCharacterNameChoice.CharNameChoiceCount)
             {
                 return null;
@@ -680,8 +680,8 @@ namespace ICU4N.Impl
             /// <returns>true if values are valid.</returns>
             internal bool SetInfo(int rangestart, int rangeend, byte type, byte variant)
             {
-                if (rangestart >= UCharacter.MinValue && rangestart <= rangeend
-                    && rangeend <= UCharacter.MaxValue &&
+                if (rangestart >= UChar.MinValue && rangestart <= rangeend
+                    && rangeend <= UChar.MaxValue &&
                     (type == TYPE_0_ || type == TYPE_1_))
                 {
                     m_rangestart_ = rangestart;
@@ -1255,7 +1255,7 @@ namespace ICU4N.Impl
         // private constructor ------------------------------------------------
 
         /// <summary>
-        /// Protected constructor for use in <see cref="UCharacter"/>.
+        /// Protected constructor for use in <see cref="UChar"/>.
         /// </summary>
         /// <exception cref="IOException">Thrown when data reading fails.</exception>
         private UCharacterName()
@@ -1435,7 +1435,7 @@ namespace ICU4N.Impl
                 // not a character we return a invalid category count
                 return NON_CHARACTER_;
             }
-            int result = UCharacter.GetType(ch).ToInt32();
+            int result = UChar.GetType(ch).ToInt32();
             if (result == UCharacterCategory.Surrogate.ToInt32())
             {
                 if (ch <= UTF16.LEAD_SURROGATE_MAX_VALUE)

@@ -49,12 +49,12 @@ namespace ICU4N.Util
     /// range that is meaningful to its applications.
     /// <para/>
     /// Most implementations will be created by factory methods, such as the
-    /// character name iterator in <see cref="Lang.UCharacter.GetNameEnumerator()"/>. See example below.
+    /// character name iterator in <see cref="UChar.GetNameEnumerator()"/>. See example below.
     /// <para/>
     /// Example of use:
     /// <code>
-    /// IValueEnumerator iterator = UCharacter.GetNameIterator();
-    /// iterator.SetRange(UCharacter.MIN_VALUE, UCharacter.MAX_VALUE);
+    /// IValueEnumerator iterator = UChar.GetNameIterator();
+    /// iterator.SetRange(UChar.MinValue, UChar.MaxValue);
     /// while (iterator.MoveNext())
     /// {
     ///     Console.WriteLine("Codepoint \\u" +

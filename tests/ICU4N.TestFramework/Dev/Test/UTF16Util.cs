@@ -249,7 +249,7 @@ namespace ICU4N.Dev.Test
         /**
          * Determines how many chars this char32 requires.
          * If a validity check is required, use <code>
-         * <a href="../UCharacter.html#isLegal(char)">isLegal()</a></code> on 
+         * <a href="../UChar.html#isLegal(char)">isLegal()</a></code> on 
          * char32 before calling.
          * @param char32 the input codepoint.
          * @return 2 if is in supplementary space, otherwise 1. 
@@ -323,7 +323,7 @@ namespace ICU4N.Dev.Test
          * Used when iterating forwards or backwards (with
          * <code>UTF16.getCharCount()</code>, as well as random access. If a
          * validity check is required, use 
-         * <code><a href="../UCharacter.html#isLegal(char)">UCharacter.isLegal()
+         * <code><a href="../UChar.html#isLegal(char)">UChar.isLegal()
          * </a></code> on the return value.
          * If the char retrieved is part of a surrogate pair, its supplementary
          * character will be returned. If a complete supplementary character is 

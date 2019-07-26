@@ -26,7 +26,7 @@ namespace ICU4N.Dev.Test.Lang
                     string name = null;
                     try
                     {
-                        name = UCharacter.GetPropertyName(p, choice);
+                        name = UChar.GetPropertyName(p, choice);
                         if (!sawProp) Log("prop " + p + ":");
                         string n = (name != null) ? ("\"" + name + '"') : "null";
                         Log(" " + choice + "=" + n);
@@ -39,7 +39,7 @@ namespace ICU4N.Dev.Test.Lang
                     if (name != null)
                     {
                         /* test reverse mapping */
-                        rev = UCharacter.GetPropertyEnum(name);
+                        rev = UChar.GetPropertyEnum(name);
                         if (rev != (int)p)
                         {
                             Errln("Property round-trip failure: " + p + " -> " +
@@ -50,7 +50,7 @@ namespace ICU4N.Dev.Test.Lang
                 if (sawProp)
                 {
                     /* looks like a valid property; check the values */
-                    string pname = UCharacter.GetPropertyName(p, NameChoice.Long);
+                    string pname = UChar.GetPropertyName(p, NameChoice.Long);
                     int max = 0;
                     if (p == UProperty.Canonical_Combining_Class)
                     {
@@ -76,7 +76,7 @@ namespace ICU4N.Dev.Test.Lang
                             string vname = null;
                             try
                             {
-                                vname = UCharacter.GetPropertyValueName(p, v, choice);
+                                vname = UChar.GetPropertyValueName(p, v, choice);
                                 string n = (vname != null) ? ("\"" + vname + '"') : "null";
                                 if (!sawValue) Log(" " + pname + ", value " + v + ":");
                                 Log(" " + choice + "=" + n);
@@ -89,7 +89,7 @@ namespace ICU4N.Dev.Test.Lang
                             if (vname != null)
                             {
                                 /* test reverse mapping */
-                                rev = UCharacter.GetPropertyValueEnum(p, vname);
+                                rev = UChar.GetPropertyValueEnum(p, vname);
                                 if (rev != v)
                                 {
                                     Errln("Value round-trip failure (" + pname +
@@ -130,15 +130,15 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
 
-            int i = UCharacter.GetIntPropertyMinValue(
+            int i = UChar.GetIntPropertyMinValue(
                                             UProperty.Canonical_Combining_Class);
             try
             {
-                for (; i <= UCharacter.GetIntPropertyMaxValue(
+                for (; i <= UChar.GetIntPropertyMaxValue(
                                               UProperty.Canonical_Combining_Class);
                      i++)
                 {
-                    UCharacter.GetPropertyValueName(
+                    UChar.GetPropertyValueName(
                                               UProperty.Canonical_Combining_Class,
                                               i, NameChoice.Long);
                 }
@@ -165,7 +165,7 @@ namespace ICU4N.Dev.Test.Lang
                 for (choice = 0; ; ++choice)
                 {
                     string name = null;
-                    if (UCharacter.TryGetPropertyName(p, choice, out name))
+                    if (UChar.TryGetPropertyName(p, choice, out name))
                     {
                         if (!sawProp) Log("prop " + p + ":");
                         string n = (name != null) ? ("\"" + name + '"') : "null";
@@ -179,7 +179,7 @@ namespace ICU4N.Dev.Test.Lang
                     if (name != null)
                     {
                         /* test reverse mapping */
-                        rev = UCharacter.GetPropertyEnum(name);
+                        rev = UChar.GetPropertyEnum(name);
                         if (rev != (int)p)
                         {
                             Errln("Property round-trip failure: " + p + " -> " +
@@ -191,7 +191,7 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     /* looks like a valid property; check the values */
                     string pname;
-                    UCharacter.TryGetPropertyName(p, NameChoice.Long, out pname);
+                    UChar.TryGetPropertyName(p, NameChoice.Long, out pname);
                     int max = 0;
                     if (p == UProperty.Canonical_Combining_Class)
                     {
@@ -215,7 +215,7 @@ namespace ICU4N.Dev.Test.Lang
                         for (choice = 0; ; ++choice)
                         {
                             string vname = null;
-                            if (UCharacter.TryGetPropertyValueName(p, v, choice, out vname))
+                            if (UChar.TryGetPropertyValueName(p, v, choice, out vname))
                             {
                                 string n = (vname != null) ? ("\"" + vname + '"') : "null";
                                 if (!sawValue) Log(" " + pname + ", value " + v + ":");
@@ -229,7 +229,7 @@ namespace ICU4N.Dev.Test.Lang
                             if (vname != null)
                             {
                                 /* test reverse mapping */
-                                UCharacter.TryGetPropertyValueEnum(p, vname, out rev);
+                                UChar.TryGetPropertyValueEnum(p, vname, out rev);
                                 if (rev != v)
                                 {
                                     Errln("Value round-trip failure (" + pname +
@@ -270,15 +270,15 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
 
-            int i = UCharacter.GetIntPropertyMinValue(
+            int i = UChar.GetIntPropertyMinValue(
                                             UProperty.Canonical_Combining_Class);
 
-            for (; i <= UCharacter.GetIntPropertyMaxValue(
+            for (; i <= UChar.GetIntPropertyMaxValue(
                                             UProperty.Canonical_Combining_Class);
                     i++)
             {
                 string valueName;
-                if (!UCharacter.TryGetPropertyValueName(
+                if (!UChar.TryGetPropertyValueName(
                                             UProperty.Canonical_Combining_Class,
                                             i, NameChoice.Long, out valueName))
                 {
@@ -294,7 +294,7 @@ namespace ICU4N.Dev.Test.Lang
         {
             try
             {
-                int p = UCharacter.GetPropertyEnum("??");
+                int p = UChar.GetPropertyEnum("??");
                 Errln("UCharacter.getPropertyEnum(??) returned " + p +
                       " rather than throwing an exception");
             }
@@ -304,7 +304,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                int p = UCharacter.GetPropertyValueEnum(UProperty.Line_Break, "?!");
+                int p = UChar.GetPropertyValueEnum(UProperty.Line_Break, "?!");
                 Errln("UCharacter.getPropertyValueEnum(UProperty.LINE_BREAK, ?!) returned " + p +
                       " rather than throwing an exception");
             }

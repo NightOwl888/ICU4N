@@ -1037,7 +1037,7 @@ namespace ICU4N.Dev.Test.Translit
             {
                 if (sourceString.Length == 0) return true;
                 char ch = sourceString[sourceString.Length - 1]; // don't worry about surrogates.
-                if (UCharacter.HasBinaryProperty(ch, UProperty.Logical_Order_Exception)) return false;
+                if (UChar.HasBinaryProperty(ch, UProperty.Logical_Order_Exception)) return false;
 
 
                 // disallow anything with a wordbreak between
@@ -1146,7 +1146,7 @@ namespace ICU4N.Dev.Test.Translit
                     for (int i = 0; i < decomp.Length; ++i)
                     {
                         char c = decomp[i];
-                        if (UCharacter.IsLetter(c))
+                        if (UChar.IsLetter(c))
                         {
                             ++letterCount;
                             if (firstIsVowel && !validSecondVowel.Contains(c) && breathingCount == 0) return false;
@@ -1254,7 +1254,7 @@ namespace ICU4N.Dev.Test.Translit
                 for (int i = 0; i < a.Length; i += UTF16.GetCharCount(cp))
                 {
                     cp = UTF16.CharAt(a, i);
-                    UCharacterCategory t = UCharacter.GetType(cp);
+                    UCharacterCategory t = UChar.GetType(cp);
                     //Console.Out.WriteLine("\t" + t + " " + Integer.toString(cp,16) + " " + UCharacter.getName(cp));
                     switch (t)
                     {
@@ -1803,7 +1803,7 @@ namespace ICU4N.Dev.Test.Translit
                     {
                         cp = UTF16.CharAt(s, i);
                         if (i > 0) result.Append(", ");
-                        result.Append(UCharacter.GetAge(cp));
+                        result.Append(UChar.GetAge(cp));
                     }
                 }
                 result.Append(")");

@@ -33,7 +33,7 @@ using System.Text;
 
 namespace ICU4N
 {
-    public static partial class UCharacter
+    public static partial class UChar
     {
 <# foreach (var charSequence in charSequences) { #>
 
@@ -130,7 +130,7 @@ namespace ICU4N
         /// <returns>
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </returns>
         /// <exception cref="ArgumentException">if <paramref name="property"/> is not a valid <see cref="UProperty"/>
@@ -178,7 +178,7 @@ namespace ICU4N
         /// <param name="result">
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </param>
         /// <returns>

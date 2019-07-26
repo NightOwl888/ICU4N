@@ -236,8 +236,8 @@ namespace ICU4N.Text
                 while (i < limit)
                 {
                     char c = text[i];
-                    if ((i == start && !UCharacter.IsUnicodeIdentifierStart(c)) ||
-                        !UCharacter.IsUnicodeIdentifierPart(c))
+                    if ((i == start && !UChar.IsUnicodeIdentifierStart(c)) ||
+                        !UChar.IsUnicodeIdentifierPart(c))
                     {
                         break;
                     }
@@ -684,7 +684,7 @@ namespace ICU4N.Text
                                 }
                                 // Parse "$1" "$2" .. "$9" .. (no upper limit)
                                 c = rule[pos];
-                                int r = UCharacter.Digit(c, 10);
+                                int r = UChar.Digit(c, 10);
                                 if (r >= 1 && r <= 9)
                                 {
                                     iref[0] = pos;

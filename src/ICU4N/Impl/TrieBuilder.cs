@@ -77,8 +77,8 @@ namespace ICU4N.Impl
         public virtual bool IsInZeroBlock(int ch)
         {
             // valid, uncompacted trie and valid c?
-            if (m_isCompacted_ || ch > UCharacter.MaxValue
-                || ch < UCharacter.MinValue)
+            if (m_isCompacted_ || ch > UChar.MaxValue
+                || ch < UChar.MinValue)
             {
                 return true;
             }

@@ -13,7 +13,7 @@ namespace ICU4N
 {
     /// <icuenhanced cref="System.Char"/>.<icu>_usage_</icu>
     /// <summary>
-    /// The <see cref="UCharacter"/> class provides extensions to the <see cref="System.Char"/> class.
+    /// The <see cref="UChar"/> class provides extensions to the <see cref="System.Char"/> class.
     /// These extensions provide support for more Unicode properties.
     /// Each ICU release supports the latest version of Unicode available at that time.
     /// </summary>
@@ -23,10 +23,10 @@ namespace ICU4N
     /// <see cref="int"/>s suffice in the meantime.
     /// <para/>
     /// Aside from the additions for UTF-16 support, and the updated Unicode
-    /// properties, the main differences between <see cref="UCharacter"/> and <see cref="Char"/> are:
+    /// properties, the main differences between <see cref="UChar"/> and <see cref="Char"/> are:
     /// <list type="bullet">
     ///     <item><description>
-    ///         <see cref="UCharacter"/> is not designed to be a struct and does not have
+    ///         <see cref="UChar"/> is not designed to be a struct and does not have
     ///         APIs to which involves management of that single <see cref="char"/>.
     ///         These include:
     ///         <list type="bullet">
@@ -120,10 +120,9 @@ namespace ICU4N
     /// <stable>ICU 2.1</stable>
     /// <see cref="UCharacterCategory"/>
     /// <see cref="UCharacterDirection"/>
-    // ICU4N TODO: API Move to root namespace and rename UChar (in .NET the type we are emulating is System.Char).
     // ICU4N TODO: API Add all members of System.Char to this class
     // ICU4N TODO: API Merge Support.Character with this class
-    public static partial class UCharacter // ICU4N specific - made class static because there are no instance members
+    public static partial class UChar // ICU4N specific - renamed from UCharacter to match .NET and made class static because there are no instance members
     {
         // ICU4N specific - copy UNASSIGNED from UCharacterEnums.ECharacterCategory (since we cannot inherit via interface)
 
@@ -812,7 +811,7 @@ namespace ICU4N
 
             /// <summary>
             /// One more than the highest normal UnicodeBlock value.
-            /// The highest value is available via <see cref="UCharacter.GetInt32PropertyValue(int, UProperty)"/> 
+            /// The highest value is available via <see cref="UChar.GetInt32PropertyValue(int, UProperty)"/> 
             /// with parameter <see cref="UProperty.Block"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -1926,7 +1925,7 @@ namespace ICU4N
         /// East Asian Width constants.
         /// </summary>
         /// <seealso cref="UProperty.East_Asian_Width"/>
-        /// <seealso cref="UCharacter.GetInt32PropertyValue(int, UProperty)"/>
+        /// <seealso cref="UChar.GetInt32PropertyValue(int, UProperty)"/>
         /// <stable>ICU 2.4</stable>
         public static class EastAsianWidth
         {
@@ -1944,7 +1943,7 @@ namespace ICU4N
             public const int Wide = 5;
             /// <summary>
             /// One more than the highest normal <see cref="EastAsianWidth"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.East_Asian_Width"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -1996,7 +1995,7 @@ namespace ICU4N
             public const int Wide = 17;
             /// <summary>
             /// One more than the highest normal <see cref="DecompositionType"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Decomposition_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -2024,7 +2023,7 @@ namespace ICU4N
             public const int Transparent = 5;
             /// <summary>
             /// One more than the highest normal <see cref="JoiningType"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Joining_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -2299,7 +2298,7 @@ namespace ICU4N
 
             /// <summary>
             /// One more than the highest normal <see cref="GraphemeClusterBreak"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Grapheme_Cluster_Break"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -2360,7 +2359,7 @@ namespace ICU4N
 
             /// <summary>
             /// One more than the highest normal <see cref="WordBreak"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Word_Break"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -2407,7 +2406,7 @@ namespace ICU4N
 
             /// <summary>
             /// One more than the highest normal <see cref="SentenceBreak"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Sentence_Break"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -2516,7 +2515,7 @@ namespace ICU4N
 
             /// <summary>
             /// One more than the highest normal <see cref="LineBreak"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Line_Break"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -2541,7 +2540,7 @@ namespace ICU4N
 
             /// <summary>
             /// One more than the highest normal <see cref="NumericType"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Numeric_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -2570,7 +2569,7 @@ namespace ICU4N
 
             /// <summary>
             /// One more than the highest normal <see cref="HangulSyllableType"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Hangul_Syllable_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -2602,7 +2601,7 @@ namespace ICU4N
 
             /// <summary>
             /// One more than the highest normal <see cref="BidiPairedBracketType"/> value.
-            /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
             /// with parameter <see cref="UProperty.Bidi_Paired_Bracket_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
@@ -3314,8 +3313,8 @@ namespace ICU4N
         /// <stable>ICU 2.1</stable>
         public static bool IsSupplementary(int ch)
         {
-            return ch >= UCharacter.SupplementaryMinValue &&
-                    ch <= UCharacter.MaxValue;
+            return ch >= UChar.SupplementaryMinValue &&
+                    ch <= UChar.MaxValue;
         }
 
         /// <icu/>
@@ -3465,7 +3464,7 @@ namespace ICU4N
         /// <summary>
         /// A code point is illegal if and only if
         /// <list type="bullet">
-        ///     <item><description> Out of bounds, less than 0 or greater than <see cref="UCharacter.MaxValue"/> </description></item>
+        ///     <item><description> Out of bounds, less than 0 or greater than <see cref="UChar.MaxValue"/> </description></item>
         ///     <item><description> A surrogate value, 0xD800 to 0xDFFF </description></item>
         ///     <item><description> Not-a-character, having the form 0x xxFFFF or 0x xxFFFE </description></item>
         /// </list>
@@ -3500,7 +3499,7 @@ namespace ICU4N
         /// A string is legal iff all its code points are legal.
         /// A code point is illegal if and only if
         /// <list type="bullet">
-        ///     <item><description> Out of bounds, less than 0 or greater than <see cref="UCharacter.MaxValue"/> </description></item>
+        ///     <item><description> Out of bounds, less than 0 or greater than <see cref="UChar.MaxValue"/> </description></item>
         ///     <item><description> A surrogate value, 0xD800 to 0xDFFF </description></item>
         ///     <item><description> Not-a-character, having the form 0x xxFFFF or 0x xxFFFE </description></item>
         /// </list>
@@ -3538,7 +3537,7 @@ namespace ICU4N
         /// <summary>
         /// Returns the most current Unicode name of the argument code point, or
         /// null if the character is unassigned or outside the range
-        /// <see cref="UCharacter.MinValue"/> and <see cref="UCharacter.MaxValue"/>
+        /// <see cref="UChar.MinValue"/> and <see cref="UChar.MaxValue"/>
         /// or does not have a name.
         /// <para/>
         /// Note calling any methods related to code point names, e.g. Get*Name*()
@@ -3574,7 +3573,7 @@ namespace ICU4N
                 if (i != 0) sb.Append(separator);
                 // ICU4N: Need to manually put the string "null"
                 // here when name is null
-                var name = UCharacter.GetName(cp);
+                var name = UChar.GetName(cp);
                 sb.Append(name ?? "null");
             }
             return sb.ToString();
@@ -3622,7 +3621,7 @@ namespace ICU4N
         /// <summary>
         /// Returns the corrected name from NameAliases.txt if there is one.
         /// Returns null if the character is unassigned or outside the range
-        /// <see cref="UCharacter.MinValue"/> and <see cref="UCharacter.MaxValue"/>
+        /// <see cref="UChar.MinValue"/> and <see cref="UChar.MaxValue"/>
         /// or does not have a name.
         /// <para/>
         /// Note calling any methods related to code point names, e.g. Get*Name*()
@@ -3840,7 +3839,7 @@ namespace ICU4N
         /// <list type="number">
         ///     <item><desription>
         ///         <see cref="UProperty.Block"/> values begin at the
-        ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN_ID"/>.
+        ///         non-zero value <see cref="UChar.UnicodeBlock.BASIC_LATIN_ID"/>.
         ///     </desription></item>
         ///     <item><desription>
         ///         <see cref="UProperty.Canonical_Combining_Class"/> values are not contiguous
@@ -3849,7 +3848,7 @@ namespace ICU4N
         ///     <item><desription>
         ///         <see cref="UProperty.General_Category_Mask"/> values
         ///         are mask values produced by left-shifting 1 by
-        ///         <see cref="UCharacter.GetType(int)"/>.GetIcuValue().  This allows grouped categories such as
+        ///         <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
         ///         [:L:] to be represented.  Mask values are non-contiguous.
         ///     </desription></item>
         /// </list>
@@ -3882,9 +3881,9 @@ namespace ICU4N
             if ((property == UProperty.Canonical_Combining_Class
                     || property == UProperty.Lead_Canonical_Combining_Class
                     || property == UProperty.Trail_Canonical_Combining_Class)
-                    && value >= UCharacter.GetIntPropertyMinValue(
+                    && value >= UChar.GetIntPropertyMinValue(
                             UProperty.Canonical_Combining_Class)
-                            && value <= UCharacter.GetIntPropertyMaxValue(
+                            && value <= UChar.GetIntPropertyMaxValue(
                                     UProperty.Canonical_Combining_Class)
 #pragma warning disable 612, 618
                                     && nameChoice >= 0 && nameChoice < NameChoice.Count)
@@ -3931,7 +3930,7 @@ namespace ICU4N
         /// <list type="number">
         ///     <item><desription>
         ///         <see cref="UProperty.Block"/> values begin at the
-        ///         non-zero value <see cref="UCharacter.UnicodeBlock.BASIC_LATIN_ID"/>.
+        ///         non-zero value <see cref="UChar.UnicodeBlock.BASIC_LATIN_ID"/>.
         ///     </desription></item>
         ///     <item><desription>
         ///         <see cref="UProperty.Canonical_Combining_Class"/> values are not contiguous
@@ -3940,7 +3939,7 @@ namespace ICU4N
         ///     <item><desription>
         ///         UProperty.GENERAL_CATEGORY_MASK values
         ///         are mask values produced by left-shifting 1 by
-        ///         <see cref="UCharacter.GetType(int)"/>.  This allows grouped categories such as
+        ///         <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
         ///         [:L:] to be represented.  Mask values are non-contiguous.
         ///     </desription></item>
         /// </list>
@@ -3976,9 +3975,9 @@ namespace ICU4N
             if ((property == UProperty.Canonical_Combining_Class
                     || property == UProperty.Lead_Canonical_Combining_Class
                     || property == UProperty.Trail_Canonical_Combining_Class)
-                    && value >= UCharacter.GetIntPropertyMinValue(
+                    && value >= UChar.GetIntPropertyMinValue(
                             UProperty.Canonical_Combining_Class)
-                            && value <= UCharacter.GetIntPropertyMaxValue(
+                            && value <= UChar.GetIntPropertyMaxValue(
                                     UProperty.Canonical_Combining_Class)
 #pragma warning disable 612, 618
                                     && nameChoice >= 0 && nameChoice < NameChoice.Count)
@@ -4038,7 +4037,7 @@ namespace ICU4N
         /// <stable>ICU 2.1</stable>
         public static int GetCodePoint(char char16) // ICU4N TODO: API - rename ConvertToUtf32 to match Char
         {
-            if (UCharacter.IsLegal(char16))
+            if (UChar.IsLegal(char16))
             {
                 return char16;
             }
@@ -4578,7 +4577,7 @@ namespace ICU4N
         /// <para/>
         /// Example of use:
         /// <code>
-        /// IRangeValueEnumerator iterator = UCharacter.GetTypeEnumerator();
+        /// IRangeValueEnumerator iterator = UChar.GetTypeEnumerator();
         /// while (iterator.MoveNext())
         /// {
         ///     Console.WriteLine("Codepoint \\u" +
@@ -4670,7 +4669,7 @@ namespace ICU4N
         /// <para/>
         /// Example of use:
         /// <code>
-        /// IValueEnumerator iterator = UCharacter.GetNameEnumerator();
+        /// IValueEnumerator iterator = UChar.GetNameEnumerator();
         /// while (iterator.MoveNext())
         /// {
         ///     Console.WriteLine("Codepoint \\u" +
@@ -4680,7 +4679,7 @@ namespace ICU4N
         /// </code>
         /// <para/>
         /// The maximal range which the name iterator iterates is from
-        /// <see cref="UCharacter.MinValue"/> to <see cref="UCharacter.MaxValue"/>
+        /// <see cref="UChar.MinValue"/> to <see cref="UChar.MaxValue"/>
         /// <para/>
         /// NOTE: This is equivalent to getNameIterator() in ICU4J
         /// </remarks>
@@ -4736,7 +4735,7 @@ namespace ICU4N
         /// <para/>
         /// Example of use:
         /// <code>
-        /// IValueEnumerator iterator = UCharacter.GetExtendedNameIterator();
+        /// IValueEnumerator iterator = UChar.GetExtendedNameIterator();
         /// while (iterator.MoveNext())
         /// {
         ///     Console.WriteLine("Codepoint \\u" +
@@ -4746,7 +4745,7 @@ namespace ICU4N
         /// </code>
         /// <para/>
         /// The maximal range which the name iterator iterates is from
-        /// <see cref="UCharacter.MinValue"/> to <see cref="UCharacter.MaxValue"/>.
+        /// <see cref="UChar.MinValue"/> to <see cref="UChar.MaxValue"/>.
         /// <para/>
         /// NOTE: This is equivalent to getExtendedNameIterator() in ICU4J
         /// </remarks>
@@ -4900,8 +4899,8 @@ namespace ICU4N
         /// <para/>
         /// Sample usage:
         /// <code>
-        /// int ea = UCharacter.GetInt32PropertyValue(c, UProperty.East_Asian_Width);
-        /// int ideo = UCharacter.GetInt32PropertyValue(c, UProperty.Ideographic);
+        /// int ea = UChar.GetInt32PropertyValue(c, UProperty.East_Asian_Width);
+        /// int ideo = UChar.GetInt32PropertyValue(c, UProperty.Ideographic);
         /// bool b = (ideo == 1) ? true : false;
         /// </code>
         /// </remarks>

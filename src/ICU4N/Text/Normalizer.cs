@@ -710,7 +710,7 @@ namespace ICU4N.Text
         /// Use the modified set of mappings provided in CaseFolding.txt to handle dotted I
         /// and dotless i appropriately for Turkic languages (tr, az).
         /// </summary>
-        /// <seealso cref="UCharacter.FoldCaseExcludeSpecialI"/>
+        /// <seealso cref="UChar.FoldCaseExcludeSpecialI"/>
         /// <stable>ICU 2.8</stable>
         internal const int FOLD_CASE_EXCLUDE_SPECIAL_I = (int)FoldCase.ExcludeSpecialI; // ICU4N specific - marked internal (we use the enum in .NET)
 
@@ -2267,7 +2267,7 @@ namespace ICU4N.Text
             }
             string kc1 = nfkc.Normalize(folded);
             // second: c = NFKC(Fold(b))
-            string kc2 = nfkc.Normalize(UCharacter.FoldCase(kc1, 0));
+            string kc2 = nfkc.Normalize(UChar.FoldCase(kc1, 0));
             // if (c != b) add the mapping from a to c
             if (kc1.Equals(kc2))
             {

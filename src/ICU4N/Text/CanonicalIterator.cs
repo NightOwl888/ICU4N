@@ -195,7 +195,7 @@ namespace ICU4N.Text
                 // optimization:
                 // if the character is canonical combining class zero,
                 // don't permute it
-                if (skipZeros && i != 0 && UCharacter.GetCombiningClass(cp) == 0)
+                if (skipZeros && i != 0 && UChar.GetCombiningClass(cp) == 0)
                 {
                     //System.out.println("Skipping " + Utility.hex(UTF16.valueOf(source, i)));
                     continue;

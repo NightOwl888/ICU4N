@@ -897,7 +897,7 @@ namespace ICU4N.Impl
                     }
                     break;
                 default:
-                    dig = UCharacter.Digit(c, 8);
+                    dig = UChar.Digit(c, 8);
                     if (dig >= 0)
                     {
                         minDig = 1;
@@ -913,7 +913,7 @@ namespace ICU4N.Impl
                 while (offset < length && n < maxDig)
                 {
                     c = UTF16.CharAt(s, offset);
-                    dig = UCharacter.Digit(c, (bitsPerDigit == 3) ? 8 : 16);
+                    dig = UChar.Digit(c, (bitsPerDigit == 3) ? 8 : 16);
                     if (dig < 0)
                     {
                         break;
@@ -1262,7 +1262,7 @@ namespace ICU4N.Impl
                         {
                             return -1;
                         }
-                        c = (char)UCharacter.ToLower(rule[pos++]);
+                        c = (char)UChar.ToLower(rule[pos++]);
                         if (c != cpat)
                         {
                             return -1;
@@ -1382,7 +1382,7 @@ namespace ICU4N.Impl
 
             while (p < limit)
             {
-                int d = UCharacter.Digit(rule[p++], radix);
+                int d = UChar.Digit(rule[p++], radix);
                 if (d < 0)
                 {
                     --p;
@@ -1430,7 +1430,7 @@ namespace ICU4N.Impl
                 int ch = Character.CodePointAt(str, p);
                 if (buf.Length == 0)
                 {
-                    if (UCharacter.IsUnicodeIdentifierStart(ch))
+                    if (UChar.IsUnicodeIdentifierStart(ch))
                     {
                         buf.AppendCodePoint(ch);
                     }
@@ -1441,7 +1441,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    if (UCharacter.IsUnicodeIdentifierPart(ch))
+                    if (UChar.IsUnicodeIdentifierPart(ch))
                     {
                         buf.AppendCodePoint(ch);
                     }
@@ -1471,7 +1471,7 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Parse an unsigned 31-bit integer at the given offset.  Use
-        /// <see cref="UCharacter.Digit(int, int)"/> to parse individual characters into digits.
+        /// <see cref="UChar.Digit(int, int)"/> to parse individual characters into digits.
         /// </summary>
         /// <param name="text">The text to be parsed.</param>
         /// <param name="pos">INPUT-OUTPUT parameter.  On entry, pos[0] is the
@@ -1494,7 +1494,7 @@ namespace ICU4N.Impl
             while (p < text.Length)
             {
                 int ch = Character.CodePointAt(text, p);
-                int d = UCharacter.Digit(ch, radix);
+                int d = UChar.Digit(ch, radix);
                 if (d < 0)
                 {
                     break;

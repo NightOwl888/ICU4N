@@ -29,7 +29,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.UnicodeBlock b = UCharacter.UnicodeBlock
+                    UChar.UnicodeBlock b = UChar.UnicodeBlock
                             .ForName(names[i]);
                     Logln("found: " + b + " for name: " + names[i]);
                 }
@@ -44,116 +44,116 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestIsValidCodePoint()
         {
-            if (UCharacter.IsValidCodePoint(-1))
+            if (UChar.IsValidCodePoint(-1))
                 Errln("-1");
-            if (!UCharacter.IsValidCodePoint(0))
+            if (!UChar.IsValidCodePoint(0))
                 Errln("0");
-            if (!UCharacter.IsValidCodePoint(UCharacter.MaxCodePoint))
+            if (!UChar.IsValidCodePoint(UChar.MaxCodePoint))
                 Errln("0x10ffff");
-            if (UCharacter.IsValidCodePoint(UCharacter.MaxCodePoint + 1))
+            if (UChar.IsValidCodePoint(UChar.MaxCodePoint + 1))
                 Errln("0x110000");
         }
 
         [Test]
         public void TestIsSupplementaryCodePoint()
         {
-            if (UCharacter.IsSupplementaryCodePoint(-1))
+            if (UChar.IsSupplementaryCodePoint(-1))
                 Errln("-1");
-            if (UCharacter.IsSupplementaryCodePoint(0))
+            if (UChar.IsSupplementaryCodePoint(0))
                 Errln("0");
-            if (UCharacter
-                    .IsSupplementaryCodePoint(UCharacter.MinSupplementaryCodePoint - 1))
+            if (UChar
+                    .IsSupplementaryCodePoint(UChar.MinSupplementaryCodePoint - 1))
                 Errln("0xffff");
-            if (!UCharacter
-                    .IsSupplementaryCodePoint(UCharacter.MinSupplementaryCodePoint))
+            if (!UChar
+                    .IsSupplementaryCodePoint(UChar.MinSupplementaryCodePoint))
                 Errln("0x10000");
-            if (!UCharacter.IsSupplementaryCodePoint(UCharacter.MaxCodePoint))
+            if (!UChar.IsSupplementaryCodePoint(UChar.MaxCodePoint))
                 Errln("0x10ffff");
-            if (UCharacter.IsSupplementaryCodePoint(UCharacter.MaxCodePoint + 1))
+            if (UChar.IsSupplementaryCodePoint(UChar.MaxCodePoint + 1))
                 Errln("0x110000");
         }
 
         [Test]
         public void TestIsHighSurrogate()
         {
-            if (UCharacter
-                    .IsHighSurrogate((char)(UCharacter.MinHighSurrogate - 1)))
+            if (UChar
+                    .IsHighSurrogate((char)(UChar.MinHighSurrogate - 1)))
                 Errln("0xd7ff");
-            if (!UCharacter.IsHighSurrogate(UCharacter.MinHighSurrogate))
+            if (!UChar.IsHighSurrogate(UChar.MinHighSurrogate))
                 Errln("0xd800");
-            if (!UCharacter.IsHighSurrogate(UCharacter.MaxHighSurrogate))
+            if (!UChar.IsHighSurrogate(UChar.MaxHighSurrogate))
                 Errln("0xdbff");
-            if (UCharacter
-                    .IsHighSurrogate((char)(UCharacter.MaxHighSurrogate + 1)))
+            if (UChar
+                    .IsHighSurrogate((char)(UChar.MaxHighSurrogate + 1)))
                 Errln("0xdc00");
         }
 
         [Test]
         public void TestIsLowSurrogate()
         {
-            if (UCharacter
-                    .IsLowSurrogate((char)(UCharacter.MinLowSurrogate - 1)))
+            if (UChar
+                    .IsLowSurrogate((char)(UChar.MinLowSurrogate - 1)))
                 Errln("0xdbff");
-            if (!UCharacter.IsLowSurrogate(UCharacter.MinLowSurrogate))
+            if (!UChar.IsLowSurrogate(UChar.MinLowSurrogate))
                 Errln("0xdc00");
-            if (!UCharacter.IsLowSurrogate(UCharacter.MaxLowSurrogate))
+            if (!UChar.IsLowSurrogate(UChar.MaxLowSurrogate))
                 Errln("0xdfff");
-            if (UCharacter
-                    .IsLowSurrogate((char)(UCharacter.MaxLowSurrogate + 1)))
+            if (UChar
+                    .IsLowSurrogate((char)(UChar.MaxLowSurrogate + 1)))
                 Errln("0xe000");
         }
 
         [Test]
         public void TestIsSurrogatePair()
         {
-            if (UCharacter.IsSurrogatePair(
-                    (char)(UCharacter.MinHighSurrogate - 1),
-                    UCharacter.MinLowSurrogate))
+            if (UChar.IsSurrogatePair(
+                    (char)(UChar.MinHighSurrogate - 1),
+                    UChar.MinLowSurrogate))
                 Errln("0xd7ff,0xdc00");
-            if (UCharacter.IsSurrogatePair(
-                    (char)(UCharacter.MaxHighSurrogate + 1),
-                    UCharacter.MinLowSurrogate))
+            if (UChar.IsSurrogatePair(
+                    (char)(UChar.MaxHighSurrogate + 1),
+                    UChar.MinLowSurrogate))
                 Errln("0xd800,0xdc00");
-            if (UCharacter.IsSurrogatePair(UCharacter.MinHighSurrogate,
-                    (char)(UCharacter.MinLowSurrogate - 1)))
+            if (UChar.IsSurrogatePair(UChar.MinHighSurrogate,
+                    (char)(UChar.MinLowSurrogate - 1)))
                 Errln("0xd800,0xdbff");
-            if (UCharacter.IsSurrogatePair(UCharacter.MinHighSurrogate,
-                    (char)(UCharacter.MaxLowSurrogate + 1)))
+            if (UChar.IsSurrogatePair(UChar.MinHighSurrogate,
+                    (char)(UChar.MaxLowSurrogate + 1)))
                 Errln("0xd800,0xe000");
-            if (!UCharacter.IsSurrogatePair(UCharacter.MinHighSurrogate,
-                    UCharacter.MinLowSurrogate))
+            if (!UChar.IsSurrogatePair(UChar.MinHighSurrogate,
+                    UChar.MinLowSurrogate))
                 Errln("0xd800,0xdc00");
         }
 
         [Test]
         public void TestCharCount()
         {
-            UCharacter.CharCount(-1);
-            UCharacter.CharCount(UCharacter.MaxCodePoint + 1);
-            if (UCharacter.CharCount(UCharacter.MinSupplementaryCodePoint - 1) != 1)
+            UChar.CharCount(-1);
+            UChar.CharCount(UChar.MaxCodePoint + 1);
+            if (UChar.CharCount(UChar.MinSupplementaryCodePoint - 1) != 1)
                 Errln("0xffff");
-            if (UCharacter.CharCount(UCharacter.MinSupplementaryCodePoint) != 2)
+            if (UChar.CharCount(UChar.MinSupplementaryCodePoint) != 2)
                 Errln("0x010000");
         }
 
         [Test]
         public void TestToCodePoint()
         {
-            char[] pairs = {(char) (UCharacter.MinHighSurrogate + 0),
-                (char) (UCharacter.MinLowSurrogate + 0),
-                (char) (UCharacter.MinHighSurrogate + 1),
-                (char) (UCharacter.MinLowSurrogate + 1),
-                (char) (UCharacter.MinHighSurrogate + 2),
-                (char) (UCharacter.MinLowSurrogate + 2),
-                (char) (UCharacter.MaxHighSurrogate - 2),
-                (char) (UCharacter.MaxLowSurrogate - 2),
-                (char) (UCharacter.MaxHighSurrogate - 1),
-                (char) (UCharacter.MaxLowSurrogate - 1),
-                (char) (UCharacter.MaxHighSurrogate - 0),
-                (char) (UCharacter.MaxLowSurrogate - 0),};
+            char[] pairs = {(char) (UChar.MinHighSurrogate + 0),
+                (char) (UChar.MinLowSurrogate + 0),
+                (char) (UChar.MinHighSurrogate + 1),
+                (char) (UChar.MinLowSurrogate + 1),
+                (char) (UChar.MinHighSurrogate + 2),
+                (char) (UChar.MinLowSurrogate + 2),
+                (char) (UChar.MaxHighSurrogate - 2),
+                (char) (UChar.MaxLowSurrogate - 2),
+                (char) (UChar.MaxHighSurrogate - 1),
+                (char) (UChar.MaxLowSurrogate - 1),
+                (char) (UChar.MaxHighSurrogate - 0),
+                (char) (UChar.MaxLowSurrogate - 0),};
             for (int i = 0; i < pairs.Length; i += 2)
             {
-                int cp = UCharacter.ToCodePoint(pairs[i], pairs[i + 1]);
+                int cp = UChar.ToCodePoint(pairs[i], pairs[i + 1]);
                 if (pairs[i] != UTF16.GetLeadSurrogate(cp)
                         || pairs[i + 1] != UTF16.GetTrailSurrogate(cp))
                 {
@@ -167,37 +167,37 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestCodePointAtBefore()
         {
-            String s = "" + UCharacter.MinHighSurrogate + // isolated high
-                    UCharacter.MinHighSurrogate + // pair
-                    UCharacter.MinLowSurrogate + UCharacter.MinLowSurrogate; // isolated
+            String s = "" + UChar.MinHighSurrogate + // isolated high
+                    UChar.MinHighSurrogate + // pair
+                    UChar.MinLowSurrogate + UChar.MinLowSurrogate; // isolated
                                                                                  // low
             char[] c = s.ToCharArray();
             int[] avalues = {
-                UCharacter.MinHighSurrogate,
-                UCharacter.ToCodePoint(UCharacter.MinHighSurrogate,
-                        UCharacter.MinLowSurrogate),
-                UCharacter.MinLowSurrogate, UCharacter.MinLowSurrogate};
+                UChar.MinHighSurrogate,
+                UChar.ToCodePoint(UChar.MinHighSurrogate,
+                        UChar.MinLowSurrogate),
+                UChar.MinLowSurrogate, UChar.MinLowSurrogate};
             int[] bvalues = {
-                UCharacter.MinHighSurrogate,
-                UCharacter.MinHighSurrogate,
-                UCharacter.ToCodePoint(UCharacter.MinHighSurrogate,
-                        UCharacter.MinLowSurrogate),
-                UCharacter.MinLowSurrogate,};
+                UChar.MinHighSurrogate,
+                UChar.MinHighSurrogate,
+                UChar.ToCodePoint(UChar.MinHighSurrogate,
+                        UChar.MinLowSurrogate),
+                UChar.MinLowSurrogate,};
             StringBuffer b = new StringBuffer(s);
             for (int i = 0; i < avalues.Length; ++i)
             {
-                if (UCharacter.CodePointAt(s, i) != avalues[i])
+                if (UChar.CodePointAt(s, i) != avalues[i])
                     Errln("string at: " + i);
-                if (UCharacter.CodePointAt(c, i) != avalues[i])
+                if (UChar.CodePointAt(c, i) != avalues[i])
                     Errln("chars at: " + i);
-                if (UCharacter.CodePointAt(b, i) != avalues[i])
+                if (UChar.CodePointAt(b, i) != avalues[i])
                     Errln("stringbuffer at: " + i);
 
-                if (UCharacter.CodePointBefore(s, i + 1) != bvalues[i])
+                if (UChar.CodePointBefore(s, i + 1) != bvalues[i])
                     Errln("string before: " + i);
-                if (UCharacter.CodePointBefore(c, i + 1) != bvalues[i])
+                if (UChar.CodePointBefore(c, i + 1) != bvalues[i])
                     Errln("chars before: " + i);
-                if (UCharacter.CodePointBefore(b, i + 1) != bvalues[i])
+                if (UChar.CodePointBefore(b, i + 1) != bvalues[i])
                     Errln("stringbuffer before: " + i);
             }
 
@@ -205,9 +205,9 @@ namespace ICU4N.Dev.Test.Lang
             Logln("Testing codePointAtBefore with limit ...");
             for (int i = 0; i < avalues.Length; ++i)
             {
-                if (UCharacter.CodePointAt(c, i, 4) != avalues[i])
+                if (UChar.CodePointAt(c, i, 4) != avalues[i])
                     Errln("chars at: " + i);
-                if (UCharacter.CodePointBefore(c, i + 1, 0) != bvalues[i])
+                if (UChar.CodePointBefore(c, i + 1, 0) != bvalues[i])
                     Errln("chars before: " + i);
             }
 
@@ -217,19 +217,19 @@ namespace ICU4N.Dev.Test.Lang
         public void TestToChars()
         {
             char[] chars = new char[3];
-            int cp = UCharacter.ToCodePoint(UCharacter.MinHighSurrogate,
-                    UCharacter.MinLowSurrogate);
-            UCharacter.ToChars(cp, chars, 1);
-            if (chars[1] != UCharacter.MinHighSurrogate
-                    || chars[2] != UCharacter.MinLowSurrogate)
+            int cp = UChar.ToCodePoint(UChar.MinHighSurrogate,
+                    UChar.MinLowSurrogate);
+            UChar.ToChars(cp, chars, 1);
+            if (chars[1] != UChar.MinHighSurrogate
+                    || chars[2] != UChar.MinLowSurrogate)
             {
 
                 Errln("fail");
             }
 
-            chars = UCharacter.ToChars(cp);
-            if (chars[0] != UCharacter.MinHighSurrogate
-                    || chars[1] != UCharacter.MinLowSurrogate)
+            chars = UChar.ToChars(cp);
+            if (chars[0] != UChar.MinHighSurrogate
+                    || chars[1] != UChar.MinLowSurrogate)
             {
 
                 Errln("fail");
@@ -250,9 +250,9 @@ namespace ICU4N.Dev.Test.Lang
 
             internal void Test(String s, int start, int limit, int expected)
             {
-                int val1 = UCharacter.CodePointCount(s.ToCharArray(), start,
+                int val1 = UChar.CodePointCount(s.ToCharArray(), start,
                         limit);
-                int val2 = UCharacter.CodePointCount(s, start, limit);
+                int val2 = UChar.CodePointCount(s, start, limit);
                 if (val1 != expected)
                 {
                     Errln("char[] " + Str(s, start, limit) + "(" + val1
@@ -273,7 +273,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.CodePointCount(s, start, limit);
+                    UChar.CodePointCount(s, start, limit);
                     Errln("unexpected success " + Str(s, start, limit));
                 }
                 catch (Exception e)
@@ -329,9 +329,9 @@ namespace ICU4N.Dev.Test.Lang
             {
                 char[] chars = s.ToCharArray();
                 String strng = s.Substring(start, count); // ICU4N: (start + count) - start == count
-                int val1 = UCharacter.OffsetByCodePoints(chars, start, count,
+                int val1 = UChar.OffsetByCodePoints(chars, start, count,
                         index, offset);
-                int val2 = UCharacter.OffsetByCodePoints(strng, index - start,
+                int val2 = UChar.OffsetByCodePoints(strng, index - start,
                         offset)
                         + start;
 
@@ -353,9 +353,9 @@ namespace ICU4N.Dev.Test.Lang
 
                 if (flip)
                 {
-                    val1 = UCharacter.OffsetByCodePoints(chars, start, count,
+                    val1 = UChar.OffsetByCodePoints(chars, start, count,
                             expected, -offset);
-                    val2 = UCharacter.OffsetByCodePoints(strng, expected
+                    val2 = UChar.OffsetByCodePoints(strng, expected
                             - start, -offset)
                             + start;
                     if (val1 != index)
@@ -383,7 +383,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.OffsetByCodePoints(text, start, count, index,
+                    UChar.OffsetByCodePoints(text, start, count, index,
                             offset);
                     Errln("unexpected success "
                             + Str(new String(text), start, count, index, offset));
@@ -404,7 +404,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UCharacter.OffsetByCodePoints(text, index, offset);
+                    UChar.OffsetByCodePoints(text, index, offset);
                     Errln("unexpected success "
                             + Str(text, index, offset, 0, text.Length));
                 }

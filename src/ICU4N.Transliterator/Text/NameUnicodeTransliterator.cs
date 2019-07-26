@@ -124,7 +124,7 @@ namespace ICU4N.Text
                                 name.Length = --len;
                             }
 
-                            c = UCharacter.GetCharFromExtendedName(name.ToString());
+                            c = UChar.GetCharFromExtendedName(name.ToString());
                             if (c != -1)
                             {
                                 // Lookup succeeded

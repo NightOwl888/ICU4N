@@ -256,7 +256,7 @@ namespace ICU4N.Impl
             {
                 return jgArray2[c - start] & 0xff;
             }
-            return UCharacter.JoiningGroup.NoJoiningGroup;
+            return UChar.JoiningGroup.NoJoiningGroup;
         }
 
         public int GetPairedBracketType(int c)

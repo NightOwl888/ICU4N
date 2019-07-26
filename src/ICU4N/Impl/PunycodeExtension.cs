@@ -6,7 +6,6 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
@@ -57,7 +56,7 @@ namespace ICU4N.Impl
                     {
                         ++j;
 
-                        n |= UCharacter.GetCodePoint(c, c2);
+                        n |= UChar.GetCodePoint(c, c2);
                     }
                     else
                     {
@@ -210,7 +209,7 @@ namespace ICU4N.Impl
                     {
                         ++j;
 
-                        n |= UCharacter.GetCodePoint(c, c2);
+                        n |= UChar.GetCodePoint(c, c2);
                     }
                     else
                     {
@@ -363,7 +362,7 @@ namespace ICU4N.Impl
                     {
                         ++j;
 
-                        n |= UCharacter.GetCodePoint(c, c2);
+                        n |= UChar.GetCodePoint(c, c2);
                     }
                     else
                     {
@@ -516,7 +515,7 @@ namespace ICU4N.Impl
                     {
                         ++j;
 
-                        n |= UCharacter.GetCodePoint(c, c2);
+                        n |= UChar.GetCodePoint(c, c2);
                     }
                     else
                     {

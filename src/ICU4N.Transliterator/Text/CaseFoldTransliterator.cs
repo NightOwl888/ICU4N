@@ -127,7 +127,7 @@ namespace ICU4N.Text
                 {
                     sourceTargetUtility = new SourceTargetUtility(new StringTransform(transform: (source) =>
                     {
-                        return UCharacter.FoldCase(source, true);
+                        return UChar.FoldCase(source, true);
                     }));
                 }
             }

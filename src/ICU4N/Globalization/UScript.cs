@@ -1281,7 +1281,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// One more than the highest normal Script code.
-        /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/> (passing <see cref="UProperty.Script"/>).
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/> (passing <see cref="UProperty.Script"/>).
         /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         public const int CodeLimit = 178;
@@ -1379,7 +1379,7 @@ namespace ICU4N.Globalization
             if (nameOrAbbrOrLocale.IndexOf('_') < 0 && nameOrAbbrOrLocale.IndexOf('-') < 0)
             {
                 // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
-                if (UCharacter.TryGetPropertyValueEnum(UProperty.Script, nameOrAbbrOrLocale, out int propNum))
+                if (UChar.TryGetPropertyValueEnum(UProperty.Script, nameOrAbbrOrLocale, out int propNum))
                 {
                     return new int[] { propNum };
                 }
@@ -1393,7 +1393,7 @@ namespace ICU4N.Globalization
             if (!triedCode)
             {
                 // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
-                if (UCharacter.TryGetPropertyValueEnum(UProperty.Script, nameOrAbbrOrLocale, out int propNum))
+                if (UChar.TryGetPropertyValueEnum(UProperty.Script, nameOrAbbrOrLocale, out int propNum))
                 {
                     return new int[] { propNum };
                 }
@@ -1413,7 +1413,7 @@ namespace ICU4N.Globalization
         public static int GetCodeFromName(string nameOrAbbr)
         {
             // ICU4N specific - using TryGetPropertyValueEnum rather than GetPropertyValueEnumNoThrow
-            if (UCharacter.TryGetPropertyValueEnum(UProperty.Script, nameOrAbbr, out int propNum))
+            if (UChar.TryGetPropertyValueEnum(UProperty.Script, nameOrAbbr, out int propNum))
             {
                 return propNum;
             }
@@ -1429,7 +1429,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         public static int GetScript(int codepoint)
         {
-            if (codepoint >= UCharacter.MinValue & codepoint <= UCharacter.MaxValue)
+            if (codepoint >= UChar.MinValue & codepoint <= UChar.MaxValue)
             {
                 int scriptX = UCharacterProperty.Instance.GetAdditional(codepoint, 0) & UCharacterProperty.SCRIPT_X_MASK;
                 if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)
@@ -1567,7 +1567,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         public static string GetName(int scriptCode)
         {
-            return UCharacter.GetPropertyValueName(UProperty.Script,
+            return UChar.GetPropertyValueName(UProperty.Script,
                     scriptCode,
                     NameChoice.Long);
         }
@@ -1584,7 +1584,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60.1.0</stable>
         public static bool TryGetName(int scriptCode, out string result) // ICU4N TODO: Tests
         {
-            return UCharacter.TryGetPropertyValueName(UProperty.Script,
+            return UChar.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,
                     NameChoice.Long, out result);
         }
@@ -1601,7 +1601,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU 2.4</stable>
         public static string GetShortName(int scriptCode)
         {
-            return UCharacter.GetPropertyValueName(UProperty.Script,
+            return UChar.GetPropertyValueName(UProperty.Script,
                     scriptCode,
                     NameChoice.Short);
         }
@@ -1619,7 +1619,7 @@ namespace ICU4N.Globalization
         /// <stable>ICU4N 60.1.0</stable>
         public static bool TryGetShortName(int scriptCode, out string result) // ICU4N TODO: Tests
         {
-            return UCharacter.TryGetPropertyValueName(UProperty.Script,
+            return UChar.TryGetPropertyValueName(UProperty.Script,
                     scriptCode,
                     NameChoice.Short, out result);
         }

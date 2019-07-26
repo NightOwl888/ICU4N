@@ -6,7 +6,7 @@ namespace ICU4N.Text
     /// <summary>
     /// This class has been deprecated since ICU 2.2.
     /// One problem is that this class is not designed to return supplementary characters.
-    /// Use the <see cref="Normalizer2"/> and <see cref="Lang.UCharacter"/> classes instead.
+    /// Use the <see cref="Normalizer2"/> and <see cref="UChar"/> classes instead.
     /// </summary>
     /// <remarks>
     /// <see cref="ComposedCharIter"/> is an iterator class that returns all

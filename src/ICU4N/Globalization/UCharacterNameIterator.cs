@@ -11,7 +11,7 @@ namespace ICU4N.Globalization
     /// Result of each iteration contains a valid codepoint that has valid
     /// name.
     /// <para/>
-    /// See <see cref="UCharacter.GetNameEnumerator()"/> for an example of use.
+    /// See <see cref="UChar.GetNameEnumerator()"/> for an example of use.
     /// </summary>
     /// <remarks>
     /// NOTE: This is equivalent to UCharacterNameIterator in ICU4J.
@@ -154,7 +154,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Resets the iterator to start iterating from the integer index
-        /// <see cref="UCharacter.MinValue"/> or X if a <c>SetRange(X, Y)</c> has been called previously.
+        /// <see cref="UChar.MinValue"/> or X if a <c>SetRange(X, Y)</c> has been called previously.
         /// </summary>
         public virtual void Reset()
         {
@@ -170,10 +170,10 @@ namespace ICU4N.Globalization
         /// <remarks>
         /// If <see cref="SetRange(int, int)"/> is not performed before <see cref="MoveNext()"/> is
         /// called, the iteration will start from the integer index
-        /// <see cref="UCharacter.MinValue"/> and end at <see cref="UCharacter.MaxValue"/>.
+        /// <see cref="UChar.MinValue"/> and end at <see cref="UChar.MaxValue"/>.
         /// <para/>
-        /// If this range is set outside the range of <see cref="UCharacter.MinValue"/> and 
-        /// <see cref="UCharacter.MaxValue"/>, <see cref="MoveNext()"/> will always return false.
+        /// If this range is set outside the range of <see cref="UChar.MinValue"/> and 
+        /// <see cref="UChar.MaxValue"/>, <see cref="MoveNext()"/> will always return false.
         /// </remarks>
         /// <param name="start">First integer in range to iterate.</param>
         /// <param name="limit">1 integer after the last integer in range.</param>
@@ -186,18 +186,18 @@ namespace ICU4N.Globalization
                 throw new ArgumentException(
                     "start or limit has to be valid Unicode codepoints and start < limit");
             }
-            if (start < UCharacter.MinValue)
+            if (start < UChar.MinValue)
             {
-                m_start_ = UCharacter.MinValue;
+                m_start_ = UChar.MinValue;
             }
             else
             {
                 m_start_ = start;
             }
 
-            if (limit > UCharacter.MaxValue + 1)
+            if (limit > UChar.MaxValue + 1)
             {
-                m_limit_ = UCharacter.MaxValue + 1;
+                m_limit_ = UChar.MaxValue + 1;
             }
             else
             {
@@ -220,10 +220,10 @@ namespace ICU4N.Globalization
                 throw new ArgumentException("UCharacterName name argument cannot be null. Missing unames.icu?");
             }
             m_name_ = name;
-            // no explicit choice in UCharacter so no checks on choice
+            // no explicit choice in UChar so no checks on choice
             m_choice_ = (int)choice;
-            m_start_ = UCharacter.MinValue;
-            m_limit_ = UCharacter.MaxValue + 1;
+            m_start_ = UChar.MinValue;
+            m_limit_ = UChar.MaxValue + 1;
             m_current_ = m_start_;
         }
 

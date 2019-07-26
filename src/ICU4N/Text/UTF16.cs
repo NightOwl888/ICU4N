@@ -67,7 +67,7 @@ namespace ICU4N.Text
     ///     <item><description>
     ///         <strong>Exceptions:</strong> The error checking will throw an exception if indices are out
     ///         of bounds. Other than than that, all methods will behave reasonably, even if unmatched surrogates
-    ///         or out-of-bounds UTF-32 values are present. <see cref="Lang.UCharacter.IsLegal(int)"/> can be used to
+    ///         or out-of-bounds UTF-32 values are present. <see cref="UChar.IsLegal(int)"/> can be used to
     ///         check for validity if desired.
     ///     </description></item>
     ///     <item><description>
@@ -202,7 +202,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Extract a single UTF-32 value from a substring. Used when iterating forwards or backwards
         /// (with <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
-        /// required, use <see cref="Lang.UCharacter.IsLegal(int)"/>
+        /// required, use <see cref="UChar.IsLegal(int)"/>
         /// on the return value. If the char retrieved is part of a surrogate pair, its supplementary
         /// character will be returned. If a complete supplementary character is not found the incomplete
         /// character will be returned.
@@ -262,7 +262,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Extract a single UTF-32 value from a string. Used when iterating forwards or backwards (with
         /// <see cref="UTF16.GetCharCount(int)"/>, as well as random access. If a validity check is
-        /// required, use <see cref="Lang.UCharacter.IsLegal(int)"/> on the return value. If the char 
+        /// required, use <see cref="UChar.IsLegal(int)"/> on the return value. If the char 
         /// retrieved is part of a surrogate pair, its supplementary
         /// character will be returned. If a complete supplementary character is not found the incomplete
         /// character will be returned.
@@ -318,7 +318,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Determines how many chars this <paramref name="char32"/> requires. If a validity check is required, use 
-        /// <see cref="Lang.UCharacter.IsLegal(int)"/> on <paramref name="char32"/> before calling.
+        /// <see cref="UChar.IsLegal(int)"/> on <paramref name="char32"/> before calling.
         /// </summary>
         /// <param name="char32">The input codepoint.</param>
         /// <returns>2 if is in supplementary space, otherwise 1.</returns>
@@ -517,7 +517,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns the lead surrogate. If a validity check is required, use
-        /// <see cref="Lang.UCharacter.IsLegal(int)"/> on <paramref name="char32"/> before calling.
+        /// <see cref="UChar.IsLegal(int)"/> on <paramref name="char32"/> before calling.
         /// </summary>
         /// <param name="char32">The input character.</param>
         /// <returns>Lead surrogate if the <c>GetCharCount(ch)</c> is 2;
@@ -534,7 +534,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns the trail surrogate. If a validity check is required, use
-        /// <see cref="Lang.UCharacter.IsLegal(int)"/> on <paramref name="char32"/> before calling.
+        /// <see cref="UChar.IsLegal(int)"/> on <paramref name="char32"/> before calling.
         /// </summary>
         /// <param name="char32">The input character.</param>
         /// <returns>The trail surrogate if the <c>GetCharCount(ch)</c> is 2;
@@ -552,7 +552,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Convenience method corresponding to <c>char + ""</c>. Returns a one or two char string
         /// containing the UTF-32 value in UTF16 format. If a validity check is required, use
-        /// <see cref="Lang.UCharacter.IsLegal(int)"/> on <paramref name="char32"/> before calling.
+        /// <see cref="UChar.IsLegal(int)"/> on <paramref name="char32"/> before calling.
         /// </summary>
         /// <param name="char32">The input character.</param>
         /// <returns>String value of <paramref name="char32"/> in UTF16 format.</returns>
@@ -571,7 +571,7 @@ namespace ICU4N.Text
         /// Convenience method corresponding to <c>(codepoint at <paramref name="offset16"/>) + ""</c>. Returns a one or
         /// two char string containing the UTF-32 value in UTF16 format. If <paramref name="offset16"/> indexes a surrogate
         /// character, the whole supplementary codepoint will be returned. If a validity check is
-        /// required, use <see cref="Lang.UCharacter.IsLegal(int)"/> on the codepoint at 
+        /// required, use <see cref="UChar.IsLegal(int)"/> on the codepoint at 
         /// <paramref name="offset16"/> before calling. The result returned will be a newly created string
         /// obtained by calling <c><paramref name="source"/>.Substring(..)</c> with the appropriate index and length.
         /// </summary>
@@ -596,7 +596,7 @@ namespace ICU4N.Text
         /// Convenience method corresponding to <c>(codepoint at <paramref name="offset16"/>) + ""</c>. Returns a
         /// one or two char string containing the UTF-32 value in UTF16 format. If <paramref name="offset16"/> indexes a
         /// surrogate character, the whole supplementary codepoint will be returned. If a validity check
-        /// is required, use <see cref="Lang.UCharacter.IsLegal(int)"/> on the codepoint at 
+        /// is required, use <see cref="UChar.IsLegal(int)"/> on the codepoint at 
         /// <paramref name="offset16"/> before calling. The result returned will be a newly created string
         /// obtained by calling <c><paramref name="source"/>.Substring(..)</c> with the appropriate index and length.
         /// </summary>
@@ -622,7 +622,7 @@ namespace ICU4N.Text
         /// format. If <paramref name="offset16"/> indexes a surrogate character, the whole supplementary codepoint will be
         /// returned, except when either the leading or trailing surrogate character lies out of the
         /// specified subarray. In the latter case, only the surrogate character within bounds will be
-        /// returned. If a validity check is required, use <see cref="Lang.UCharacter.IsLegal(int)"/>
+        /// returned. If a validity check is required, use <see cref="UChar.IsLegal(int)"/>
         /// on the codepoint at <paramref name="offset16"/> before calling. The result returned will 
         /// be a newly created string containing the relevant characters.
         /// </summary>
@@ -935,7 +935,7 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Append a single UTF-32 value to the end of a <see cref="StringBuilder"/>. If a validity check is required,
-        /// use <see cref="Lang.UCharacter.IsLegal(int)"/> on <paramref name="char32"/> before calling.
+        /// use <see cref="UChar.IsLegal(int)"/> on <paramref name="char32"/> before calling.
         /// </summary>
         /// <param name="target">The buffer to append to.</param>
         /// <param name="char32">Value to append.</param>
@@ -2685,7 +2685,7 @@ namespace ICU4N.Text
             /// Unicode data file CaseFolding.txt, before comparison.
             /// </summary>
             /// <stable>ICU 2.4</stable>
-            public static readonly int FOLD_CASE_DEFAULT = 0; // ICU4N TODO: API Make enum and combine with UCharacter fold case 
+            public static readonly int FOLD_CASE_DEFAULT = 0; // ICU4N TODO: API Make enum and combine with UChar fold case 
 
             /// <summary>
             /// Option value for case folding:
@@ -2695,9 +2695,9 @@ namespace ICU4N.Text
             /// Comparison is case insensitive, strings are folded using modified mappings defined in
             /// Unicode data file CaseFolding.txt, before comparison.
             /// </summary>
-            /// <seealso cref="Lang.UCharacter.FoldCaseExcludeSpecialI"/>
+            /// <seealso cref="UChar.FoldCaseExcludeSpecialI"/>
             /// <stable>ICU 2.4</stable>
-            public static readonly int FOLD_CASE_EXCLUDE_SPECIAL_I = 1; // ICU4N TODO: API Make enum and combine with UCharacter fold case 
+            public static readonly int FOLD_CASE_EXCLUDE_SPECIAL_I = 1; // ICU4N TODO: API Make enum and combine with UChar fold case 
 
             // public methods ----------------------------------------------------
 

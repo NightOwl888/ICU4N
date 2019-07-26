@@ -25,7 +25,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Lang;
+using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using System.IO;
@@ -431,7 +431,7 @@ namespace ICU4N.Impl
                 if ((excWord & EXC_CONDITIONAL_FOLD) != 0)
                 {
                     /* use hardcoded conditions and mappings */
-                    if ((options & FOLD_CASE_OPTIONS_MASK) == UCharacter.FoldCaseDefault)
+                    if ((options & FOLD_CASE_OPTIONS_MASK) == UChar.FoldCaseDefault)
                     {
                         /* default mappings */
                         if (c == 0x49)

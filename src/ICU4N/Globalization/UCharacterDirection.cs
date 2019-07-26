@@ -264,7 +264,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// One more than the highest normal <see cref="UCharacterDirection"/> value.
-        /// The highest value is available via <see cref="UCharacter.GetIntPropertyMaxValue(UProperty)"/>
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
         /// with parameter <see cref="UProperty.BiDi_Class"/>.
         /// </summary>
         /// <stable>ICU 52</stable>
@@ -281,7 +281,7 @@ namespace ICU4N.Globalization
 
     /// <summary>
     /// Enumerated Unicode character linguistic direction values.
-    /// Used as return results from <see cref="UCharacter"/>.
+    /// Used as return results from <see cref="UChar"/>.
     /// <para/>
     /// This class is not subclassable.
     /// </summary>

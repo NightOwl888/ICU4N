@@ -1386,27 +1386,27 @@ namespace ICU4N.Dev.Test.Rbbi
                 for (idx = startIdx; idx < s.Length; idx = MoveIndex32(s, idx, 1))
                 {
                     int c = UTF16.CharAt(s, idx);
-                    int cLBType = UCharacter.GetInt32PropertyValue(c, UProperty.Line_Break);
+                    int cLBType = UChar.GetInt32PropertyValue(c, UProperty.Line_Break);
                     switch (matchState)
                     {
                         case 0:
-                            if (cLBType == UCharacter.LineBreak.PrefixNumeric ||
-                            cLBType == UCharacter.LineBreak.PostfixNumeric)
+                            if (cLBType == UChar.LineBreak.PrefixNumeric ||
+                            cLBType == UChar.LineBreak.PostfixNumeric)
                             {
                                 matchState = 1;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.OpenPunctuation)
+                            if (cLBType == UChar.LineBreak.OpenPunctuation)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.Hyphen)
+                            if (cLBType == UChar.LineBreak.Hyphen)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.Numeric)
+                            if (cLBType == UChar.LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
@@ -1414,22 +1414,22 @@ namespace ICU4N.Dev.Test.Rbbi
                             goto matchLoop_break;   /* No Match  */
 
                         case 1:
-                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
+                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
                             {
                                 matchState = 1;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.OpenPunctuation)
+                            if (cLBType == UChar.LineBreak.OpenPunctuation)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.Hyphen)
+                            if (cLBType == UChar.LineBreak.Hyphen)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.Numeric)
+                            if (cLBType == UChar.LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
@@ -1438,12 +1438,12 @@ namespace ICU4N.Dev.Test.Rbbi
 
 
                         case 4:
-                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
+                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.Numeric)
+                            if (cLBType == UChar.LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
@@ -1453,42 +1453,42 @@ namespace ICU4N.Dev.Test.Rbbi
                                                     //      0    0   1       3    3    4              7    7    7    7      9   9     11   11    (match states)
 
                         case 7:
-                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
+                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.Numeric)
+                            if (cLBType == UChar.LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.InfixNumeric)
+                            if (cLBType == UChar.LineBreak.InfixNumeric)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.BreakSymbols)
+                            if (cLBType == UChar.LineBreak.BreakSymbols)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.ClosePunctuation)
+                            if (cLBType == UChar.LineBreak.ClosePunctuation)
                             {
                                 matchState = 9;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.CloseParenthesis)
+                            if (cLBType == UChar.LineBreak.CloseParenthesis)
                             {
                                 matchState = 9;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.PostfixNumeric)
+                            if (cLBType == UChar.LineBreak.PostfixNumeric)
                             {
                                 matchState = 11;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.PrefixNumeric)
+                            if (cLBType == UChar.LineBreak.PrefixNumeric)
                             {
                                 matchState = 11;
                                 break;
@@ -1496,24 +1496,24 @@ namespace ICU4N.Dev.Test.Rbbi
 
                             goto matchLoop_break;    // Match Complete.
                         case 9:
-                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
+                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
                             {
                                 matchState = 9;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.PostfixNumeric)
+                            if (cLBType == UChar.LineBreak.PostfixNumeric)
                             {
                                 matchState = 11;
                                 break;
                             }
-                            if (cLBType == UCharacter.LineBreak.PrefixNumeric)
+                            if (cLBType == UChar.LineBreak.PrefixNumeric)
                             {
                                 matchState = 11;
                                 break;
                             }
                             goto matchLoop_break;    // Match Complete.
                         case 11:
-                            if (cLBType == UCharacter.LineBreak.CombiningMark || cLBType == UCharacter.LineBreak.Zwj)
+                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
                             {
                                 matchState = 11;
                                 break;
@@ -2351,14 +2351,14 @@ namespace ICU4N.Dev.Test.Rbbi
                             {
                                 c = UTF16.CharAt(testText, ci);
                                 appendCharToBuf(errorText, c, 11);
-                                String gc = UCharacter.GetPropertyValueName(UProperty.General_Category, UCharacter.GetType(c).ToInt32(), NameChoice.Short);
+                                String gc = UChar.GetPropertyValueName(UProperty.General_Category, UChar.GetType(c).ToInt32(), NameChoice.Short);
                                 appendToBuf(errorText, gc, 8);
-                                int extraProp = UCharacter.GetInt32PropertyValue(c, mk.fCharProperty);
+                                int extraProp = UChar.GetInt32PropertyValue(c, mk.fCharProperty);
                                 String extraPropValue =
-                                        UCharacter.GetPropertyValueName(mk.fCharProperty, extraProp, NameChoice.Long);
+                                        UChar.GetPropertyValueName(mk.fCharProperty, extraProp, NameChoice.Long);
                                 appendToBuf(errorText, extraPropValue, 20);
 
-                                String charName = UCharacter.GetExtendedName(c);
+                                String charName = UChar.GetExtendedName(c);
                                 appendToBuf(errorText, charName, 40);
                                 errorText.Append('\n');
                             }

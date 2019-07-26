@@ -71,7 +71,7 @@ namespace ICU4N.Util
     /// value(limit) != value(start).
     /// <para/>
     /// Most implementations will be created by factory methods, such as the
-    /// character type iterator in <see cref="Lang.UCharacter.GetTypeEnumerator()"/>. See example below.
+    /// character type iterator in <see cref="UChar.GetTypeEnumerator()"/>. See example below.
     /// <para/>
     /// This is equivalent to RangeValueIterator in ICU4J.
     /// </remarks>

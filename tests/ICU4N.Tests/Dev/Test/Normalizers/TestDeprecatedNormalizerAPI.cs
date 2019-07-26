@@ -149,9 +149,9 @@ namespace ICU4N.Dev.Test.Normalizers
                 string decomp = iter.Decomposition();
                 string comp = Normalizer.Compose(decomp, compat);
 
-                if (UCharacter.HasBinaryProperty(ch, UProperty.Full_Composition_Exclusion))
+                if (UChar.HasBinaryProperty(ch, UProperty.Full_Composition_Exclusion))
                 {
-                    Logln("Skipped excluded char " + Hex(ch) + " (" + UCharacter.GetName(ch) + ")");
+                    Logln("Skipped excluded char " + Hex(ch) + " (" + UChar.GetName(ch) + ")");
                     continue;
                 }
 

@@ -184,7 +184,7 @@ namespace ICU4N.Dev.Test.Collate
                                       + " maximum expansion count == 1");
             }
 
-            str = UCharacter.ToString(unassigned);
+            str = UChar.ToString(unassigned);
             iter.SetText(str);
             temporder = iter.Previous();
 
@@ -548,14 +548,14 @@ namespace ICU4N.Dev.Test.Collate
                 source.Delete(0, source.Length);
                 while (codepoint % 0xFF != 0)
                 {
-                    if (UCharacter.IsDefined(codepoint))
+                    if (UChar.IsDefined(codepoint))
                     {
                         source.Append(codepoint);
                     }
                     codepoint++;
                 }
 
-                if (UCharacter.IsDefined(codepoint))
+                if (UChar.IsDefined(codepoint))
                 {
                     source.Append(codepoint);
                 }
@@ -609,14 +609,14 @@ namespace ICU4N.Dev.Test.Collate
                 source.Delete(0, source.Length);
                 while (codepoint % 0xFF != 0)
                 {
-                    if (UCharacter.IsDefined(codepoint))
+                    if (UChar.IsDefined(codepoint))
                     {
                         source.Append(codepoint);
                     }
                     codepoint++;
                 }
 
-                if (UCharacter.IsDefined(codepoint))
+                if (UChar.IsDefined(codepoint))
                 {
                     source.Append(codepoint);
                 }

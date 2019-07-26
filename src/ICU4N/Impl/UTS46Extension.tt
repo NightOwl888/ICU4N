@@ -25,7 +25,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Lang;
+using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using System;
@@ -516,7 +516,7 @@ namespace ICU4N.Impl
                     {
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.Transparent)
+                        if (type == UChar.JoiningType.Transparent)
                         {
                             if (j == 0)
                             {
@@ -525,7 +525,7 @@ namespace ICU4N.Impl
                             c = Character.CodePointBefore(label, j);
                             j -= Character.CharCount(c);
                         }
-                        else if (type == UCharacter.JoiningType.LeftJoining || type == UCharacter.JoiningType.DualJoining)
+                        else if (type == UChar.JoiningType.LeftJoining || type == UChar.JoiningType.DualJoining)
                         {
                             break;  // precontext fulfilled
                         }
@@ -545,11 +545,11 @@ namespace ICU4N.Impl
                         j += Character.CharCount(c);
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UCharacter.JoiningType.Transparent)
+                        if (type == UChar.JoiningType.Transparent)
                         {
                             // just skip this character
                         }
-                        else if (type == UCharacter.JoiningType.RightJoining || type == UCharacter.JoiningType.DualJoining)
+                        else if (type == UChar.JoiningType.RightJoining || type == UChar.JoiningType.DualJoining)
                         {
                             break;  // postcontext fulfilled
                         }

@@ -157,7 +157,7 @@ namespace ICU4N.Dev.Test.Rbbi
                                 savedState = PARSE_TAG;
                                 break;
                             }
-                            if (UCharacter.IsWhitespace(c))
+                            if (UChar.IsWhitespace(c))
                             {
                                 break;
                             }
@@ -310,7 +310,7 @@ namespace ICU4N.Dev.Test.Rbbi
                             // Named character, e.g. \N{COMBINING GRAVE ACCENT}
                             // Get the code point from the name and insert it into the test data.
                             String charName = testString.Substring(charIdx + 2, nameEndIdx - (charIdx + 2)); // ICU4N: Corrected 2nd parameter
-                            c = UCharacter.GetCharFromName(charName);
+                            c = UChar.GetCharFromName(charName);
                             if (c == -1)
                             {
                                 Errln("Error in named character in test file at line " + lineNum +
@@ -424,7 +424,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     case PARSE_NUM:
                         // We are parsing an expected numeric tag value, like <1234>,
                         //   within a chunk of data.
-                        if (UCharacter.IsWhitespace(c))
+                        if (UChar.IsWhitespace(c))
                         {
                             break;
                         }
@@ -445,9 +445,9 @@ namespace ICU4N.Dev.Test.Rbbi
                             break;
                         }
 
-                        if (UCharacter.IsDigit(c))
+                        if (UChar.IsDigit(c))
                         {
-                            tagValue = tagValue * 10 + UCharacter.Digit(c);
+                            tagValue = tagValue * 10 + UChar.Digit(c);
                             break;
                         }
 

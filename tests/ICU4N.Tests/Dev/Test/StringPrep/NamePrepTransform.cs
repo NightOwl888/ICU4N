@@ -134,7 +134,7 @@ namespace ICU4N.Dev.Test.StringPrep
                                              iter.GetText(), iter.Index);
                 }
 
-                direction = UCharacter.GetDirection(ch);
+                direction = UChar.GetDirection(ch);
                 if (firstCharDir == UCharacterDirection.CharDirectionCount)
                 {
                     firstCharDir = direction;

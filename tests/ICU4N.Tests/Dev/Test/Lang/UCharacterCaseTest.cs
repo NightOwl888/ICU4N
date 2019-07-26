@@ -43,27 +43,27 @@ namespace ICU4N.Dev.Test.Lang
         {
             for (int i = 0; i < CHARACTER_LOWER_.Length; i++)
             {
-                if (UCharacter.IsLetter(CHARACTER_LOWER_[i]) &&
-                    !UCharacter.IsLowerCase(CHARACTER_LOWER_[i]))
+                if (UChar.IsLetter(CHARACTER_LOWER_[i]) &&
+                    !UChar.IsLowerCase(CHARACTER_LOWER_[i]))
                 {
                     Errln("FAIL isLowerCase test for \\u" +
                           Hex(CHARACTER_LOWER_[i]));
                     break;
                 }
-                if (UCharacter.IsLetter(CHARACTER_UPPER_[i]) &&
-                    !(UCharacter.IsUpperCase(CHARACTER_UPPER_[i]) ||
-                      UCharacter.IsTitleCase(CHARACTER_UPPER_[i])))
+                if (UChar.IsLetter(CHARACTER_UPPER_[i]) &&
+                    !(UChar.IsUpperCase(CHARACTER_UPPER_[i]) ||
+                      UChar.IsTitleCase(CHARACTER_UPPER_[i])))
                 {
                     Errln("FAIL isUpperCase test for \\u" +
                           Hex(CHARACTER_UPPER_[i]));
                     break;
                 }
                 if (CHARACTER_LOWER_[i] !=
-                    UCharacter.ToLower(CHARACTER_UPPER_[i]) ||
+                    UChar.ToLower(CHARACTER_UPPER_[i]) ||
                     (CHARACTER_UPPER_[i] !=
-                    UCharacter.ToUpper(CHARACTER_LOWER_[i]) &&
+                    UChar.ToUpper(CHARACTER_LOWER_[i]) &&
                     CHARACTER_UPPER_[i] !=
-                    UCharacter.ToTitleCase(CHARACTER_LOWER_[i])))
+                    UChar.ToTitleCase(CHARACTER_LOWER_[i])))
                 {
                     Errln("FAIL case conversion test for \\u" +
                           Hex(CHARACTER_UPPER_[i]) +
@@ -71,16 +71,16 @@ namespace ICU4N.Dev.Test.Lang
                     break;
                 }
                 if (CHARACTER_LOWER_[i] !=
-                    UCharacter.ToLower(CHARACTER_LOWER_[i]))
+                    UChar.ToLower(CHARACTER_LOWER_[i]))
                 {
                     Errln("FAIL lower case conversion test for \\u" +
                           Hex(CHARACTER_LOWER_[i]));
                     break;
                 }
                 if (CHARACTER_UPPER_[i] !=
-                    UCharacter.ToUpper(CHARACTER_UPPER_[i]) &&
+                    UChar.ToUpper(CHARACTER_UPPER_[i]) &&
                     CHARACTER_UPPER_[i] !=
-                    UCharacter.ToTitleCase(CHARACTER_UPPER_[i]))
+                    UChar.ToTitleCase(CHARACTER_UPPER_[i]))
                 {
                     Errln("FAIL upper case conversion test for \\u" +
                           Hex(CHARACTER_UPPER_[i]));
@@ -97,13 +97,13 @@ namespace ICU4N.Dev.Test.Lang
             // test simple case folding
             for (int i = 0; i < FOLDING_SIMPLE_.Length; i += 3)
             {
-                if (UCharacter.FoldCase(FOLDING_SIMPLE_[i], true) !=
+                if (UChar.FoldCase(FOLDING_SIMPLE_[i], true) !=
                     FOLDING_SIMPLE_[i + 1])
                 {
                     Errln("FAIL: foldCase(\\u" + Hex(FOLDING_SIMPLE_[i]) +
                           ", true) should be \\u" + Hex(FOLDING_SIMPLE_[i + 1]));
                 }
-                if (UCharacter.FoldCase(FOLDING_SIMPLE_[i],
+                if (UChar.FoldCase(FOLDING_SIMPLE_[i],
                                         FoldCase.Default) !=
                                         FOLDING_SIMPLE_[i + 1])
                 {
@@ -111,13 +111,13 @@ namespace ICU4N.Dev.Test.Lang
                           ", UCharacter.FOLD_CASE_DEFAULT) should be \\u"
                           + Hex(FOLDING_SIMPLE_[i + 1]));
                 }
-                if (UCharacter.FoldCase(FOLDING_SIMPLE_[i], false) !=
+                if (UChar.FoldCase(FOLDING_SIMPLE_[i], false) !=
                     FOLDING_SIMPLE_[i + 2])
                 {
                     Errln("FAIL: foldCase(\\u" + Hex(FOLDING_SIMPLE_[i]) +
                           ", false) should be \\u" + Hex(FOLDING_SIMPLE_[i + 2]));
                 }
-                if (UCharacter.FoldCase(FOLDING_SIMPLE_[i],
+                if (UChar.FoldCase(FOLDING_SIMPLE_[i],
                                         FoldCase.ExcludeSpecialI) !=
                                         FOLDING_SIMPLE_[i + 2])
                 {
@@ -129,64 +129,64 @@ namespace ICU4N.Dev.Test.Lang
 
             // Test full string case folding with default option and separate
             // buffers
-            if (!FOLDING_DEFAULT_[0].Equals(UCharacter.FoldCase(FOLDING_MIXED_[0], true)))
+            if (!FOLDING_DEFAULT_[0].Equals(UChar.FoldCase(FOLDING_MIXED_[0], true)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[0]) +
-                      ", true)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[0], true)) +
+                      ", true)=" + Prettify(UChar.FoldCase(FOLDING_MIXED_[0], true)) +
                       " should be " + Prettify(FOLDING_DEFAULT_[0]));
             }
 
-            if (!FOLDING_DEFAULT_[0].Equals(UCharacter.FoldCase(FOLDING_MIXED_[0], FoldCase.Default)))
+            if (!FOLDING_DEFAULT_[0].Equals(UChar.FoldCase(FOLDING_MIXED_[0], FoldCase.Default)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[0]) +
-                      ", UCharacter.FOLD_CASE_DEFAULT)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[0], FoldCase.Default))
+                      ", UCharacter.FOLD_CASE_DEFAULT)=" + Prettify(UChar.FoldCase(FOLDING_MIXED_[0], FoldCase.Default))
                       + " should be " + Prettify(FOLDING_DEFAULT_[0]));
             }
 
             if (!FOLDING_EXCLUDE_SPECIAL_I_[0].Equals(
-                                UCharacter.FoldCase(FOLDING_MIXED_[0], false)))
+                                UChar.FoldCase(FOLDING_MIXED_[0], false)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[0]) +
-                      ", false)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[0], false))
+                      ", false)=" + Prettify(UChar.FoldCase(FOLDING_MIXED_[0], false))
                       + " should be " + Prettify(FOLDING_EXCLUDE_SPECIAL_I_[0]));
             }
 
             if (!FOLDING_EXCLUDE_SPECIAL_I_[0].Equals(
-                                        UCharacter.FoldCase(FOLDING_MIXED_[0], FoldCase.ExcludeSpecialI)))
+                                        UChar.FoldCase(FOLDING_MIXED_[0], FoldCase.ExcludeSpecialI)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[0]) +
-                      ", UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[0], FoldCase.ExcludeSpecialI))
+                      ", UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)=" + Prettify(UChar.FoldCase(FOLDING_MIXED_[0], FoldCase.ExcludeSpecialI))
                       + " should be " + Prettify(FOLDING_EXCLUDE_SPECIAL_I_[0]));
             }
 
-            if (!FOLDING_DEFAULT_[1].Equals(UCharacter.FoldCase(FOLDING_MIXED_[1], true)))
+            if (!FOLDING_DEFAULT_[1].Equals(UChar.FoldCase(FOLDING_MIXED_[1], true)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[1]) +
-                      ", true)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[1], true))
+                      ", true)=" + Prettify(UChar.FoldCase(FOLDING_MIXED_[1], true))
                       + " should be " + Prettify(FOLDING_DEFAULT_[1]));
             }
 
-            if (!FOLDING_DEFAULT_[1].Equals(UCharacter.FoldCase(FOLDING_MIXED_[1], FoldCase.Default)))
+            if (!FOLDING_DEFAULT_[1].Equals(UChar.FoldCase(FOLDING_MIXED_[1], FoldCase.Default)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[1]) +
-                             ", UCharacter.FOLD_CASE_DEFAULT)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[1], FoldCase.Default))
+                             ", UCharacter.FOLD_CASE_DEFAULT)=" + Prettify(UChar.FoldCase(FOLDING_MIXED_[1], FoldCase.Default))
                              + " should be " + Prettify(FOLDING_DEFAULT_[1]));
             }
 
             // alternate handling for dotted I/dotless i (U+0130, U+0131)
             if (!FOLDING_EXCLUDE_SPECIAL_I_[1].Equals(
-                            UCharacter.FoldCase(FOLDING_MIXED_[1], false)))
+                            UChar.FoldCase(FOLDING_MIXED_[1], false)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[1]) +
-                      ", false)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[1], false))
+                      ", false)=" + Prettify(UChar.FoldCase(FOLDING_MIXED_[1], false))
                       + " should be " + Prettify(FOLDING_EXCLUDE_SPECIAL_I_[1]));
             }
 
             if (!FOLDING_EXCLUDE_SPECIAL_I_[1].Equals(
-                                    UCharacter.FoldCase(FOLDING_MIXED_[1], FoldCase.ExcludeSpecialI)))
+                                    UChar.FoldCase(FOLDING_MIXED_[1], FoldCase.ExcludeSpecialI)))
             {
                 Errln("FAIL: foldCase(" + Prettify(FOLDING_MIXED_[1]) +
-                      ", UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)=" + Prettify(UCharacter.FoldCase(FOLDING_MIXED_[1], FoldCase.ExcludeSpecialI))
+                      ", UCharacter.FOLD_CASE_EXCLUDE_SPECIAL_I)=" + Prettify(UChar.FoldCase(FOLDING_MIXED_[1], FoldCase.ExcludeSpecialI))
                       + " should be "
                       + Prettify(FOLDING_EXCLUDE_SPECIAL_I_[1]));
             }
@@ -199,62 +199,62 @@ namespace ICU4N.Dev.Test.Lang
         public void TestUpper()
         {
             // uppercase with root locale and in the same buffer
-            if (!UPPER_ROOT_.Equals(UCharacter.ToUpper(UPPER_BEFORE_)))
+            if (!UPPER_ROOT_.Equals(UChar.ToUpper(UPPER_BEFORE_)))
             {
                 Errln("Fail " + UPPER_BEFORE_ + " after uppercase should be " +
                       UPPER_ROOT_ + " instead got " +
-                      UCharacter.ToUpper(UPPER_BEFORE_));
+                      UChar.ToUpper(UPPER_BEFORE_));
             }
 
             // uppercase with turkish locale and separate buffers
-            if (!UPPER_TURKISH_.Equals(UCharacter.ToUpper(TURKISH_LOCALE_,
+            if (!UPPER_TURKISH_.Equals(UChar.ToUpper(TURKISH_LOCALE_,
                                                              UPPER_BEFORE_)))
             {
                 Errln("Fail " + UPPER_BEFORE_ +
                       " after turkish-sensitive uppercase should be " +
                       UPPER_TURKISH_ + " instead of " +
-                      UCharacter.ToUpper(TURKISH_LOCALE_, UPPER_BEFORE_));
+                      UChar.ToUpper(TURKISH_LOCALE_, UPPER_BEFORE_));
             }
 
             // uppercase a short string with root locale
-            if (!UPPER_MINI_UPPER_.Equals(UCharacter.ToUpper(UPPER_MINI_)))
+            if (!UPPER_MINI_UPPER_.Equals(UChar.ToUpper(UPPER_MINI_)))
             {
                 Errln("error in toUpper(root locale)=\"" + UPPER_MINI_ +
                       "\" expected \"" + UPPER_MINI_UPPER_ + "\"");
             }
 
             if (!SHARED_UPPERCASE_TOPKAP_.Equals(
-                           UCharacter.ToUpper(SHARED_LOWERCASE_TOPKAP_)))
+                           UChar.ToUpper(SHARED_LOWERCASE_TOPKAP_)))
             {
                 Errln("toUpper failed: expected \"" +
                       SHARED_UPPERCASE_TOPKAP_ + "\", got \"" +
-                      UCharacter.ToUpper(SHARED_LOWERCASE_TOPKAP_) + "\".");
+                      UChar.ToUpper(SHARED_LOWERCASE_TOPKAP_) + "\".");
             }
 
             if (!SHARED_UPPERCASE_TURKISH_.Equals(
-                      UCharacter.ToUpper(TURKISH_LOCALE_,
+                      UChar.ToUpper(TURKISH_LOCALE_,
                                              SHARED_LOWERCASE_TOPKAP_)))
             {
                 Errln("toUpper failed: expected \"" +
                       SHARED_UPPERCASE_TURKISH_ + "\", got \"" +
-                      UCharacter.ToUpper(TURKISH_LOCALE_,
+                      UChar.ToUpper(TURKISH_LOCALE_,
                                          SHARED_LOWERCASE_TOPKAP_) + "\".");
             }
 
             if (!SHARED_UPPERCASE_GERMAN_.Equals(
-                    UCharacter.ToUpper(GERMAN_LOCALE_,
+                    UChar.ToUpper(GERMAN_LOCALE_,
                                            SHARED_LOWERCASE_GERMAN_)))
             {
                 Errln("toUpper failed: expected \"" + SHARED_UPPERCASE_GERMAN_
-                      + "\", got \"" + UCharacter.ToUpper(GERMAN_LOCALE_,
+                      + "\", got \"" + UChar.ToUpper(GERMAN_LOCALE_,
                                             SHARED_LOWERCASE_GERMAN_) + "\".");
             }
 
             if (!SHARED_UPPERCASE_GREEK_.Equals(
-                    UCharacter.ToUpper(SHARED_LOWERCASE_GREEK_)))
+                    UChar.ToUpper(SHARED_LOWERCASE_GREEK_)))
             {
                 Errln("toLower failed: expected \"" + SHARED_UPPERCASE_GREEK_ +
-                      "\", got \"" + UCharacter.ToUpper(
+                      "\", got \"" + UChar.ToUpper(
                                             SHARED_LOWERCASE_GREEK_) + "\".");
             }
         }
@@ -262,45 +262,45 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestLower()
         {
-            if (!LOWER_ROOT_.Equals(UCharacter.ToLower(LOWER_BEFORE_)))
+            if (!LOWER_ROOT_.Equals(UChar.ToLower(LOWER_BEFORE_)))
             {
                 Errln("Fail " + LOWER_BEFORE_ + " after lowercase should be " +
                       LOWER_ROOT_ + " instead of " +
-                      UCharacter.ToLower(LOWER_BEFORE_));
+                      UChar.ToLower(LOWER_BEFORE_));
             }
 
             // lowercase with turkish locale
-            if (!LOWER_TURKISH_.Equals(UCharacter.ToLower(TURKISH_LOCALE_,
+            if (!LOWER_TURKISH_.Equals(UChar.ToLower(TURKISH_LOCALE_,
                                                               LOWER_BEFORE_)))
             {
                 Errln("Fail " + LOWER_BEFORE_ +
                       " after turkish-sensitive lowercase should be " +
                       LOWER_TURKISH_ + " instead of " +
-                      UCharacter.ToLower(TURKISH_LOCALE_, LOWER_BEFORE_));
+                      UChar.ToLower(TURKISH_LOCALE_, LOWER_BEFORE_));
             }
             if (!SHARED_LOWERCASE_ISTANBUL_.Equals(
-                         UCharacter.ToLower(SHARED_UPPERCASE_ISTANBUL_)))
+                         UChar.ToLower(SHARED_UPPERCASE_ISTANBUL_)))
             {
                 Errln("1. toLower failed: expected \"" +
                       SHARED_LOWERCASE_ISTANBUL_ + "\", got \"" +
-                  UCharacter.ToLower(SHARED_UPPERCASE_ISTANBUL_) + "\".");
+                  UChar.ToLower(SHARED_UPPERCASE_ISTANBUL_) + "\".");
             }
 
             if (!SHARED_LOWERCASE_TURKISH_.Equals(
-                    UCharacter.ToLower(TURKISH_LOCALE_,
+                    UChar.ToLower(TURKISH_LOCALE_,
                                            SHARED_UPPERCASE_ISTANBUL_)))
             {
                 Errln("2. toLower failed: expected \"" +
                       SHARED_LOWERCASE_TURKISH_ + "\", got \"" +
-                      UCharacter.ToLower(TURKISH_LOCALE_,
+                      UChar.ToLower(TURKISH_LOCALE_,
                                     SHARED_UPPERCASE_ISTANBUL_) + "\".");
             }
             if (!SHARED_LOWERCASE_GREEK_.Equals(
-                    UCharacter.ToLower(GREEK_LOCALE_,
+                    UChar.ToLower(GREEK_LOCALE_,
                                            SHARED_UPPERCASE_GREEK_)))
             {
                 Errln("toLower failed: expected \"" + SHARED_LOWERCASE_GREEK_ +
-                      "\", got \"" + UCharacter.ToLower(GREEK_LOCALE_,
+                      "\", got \"" + UChar.ToLower(GREEK_LOCALE_,
                                             SHARED_UPPERCASE_GREEK_) + "\".");
             }
         }
@@ -308,11 +308,11 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestTitleRegression()
         {
-            bool isIgnorable = UCharacter.HasBinaryProperty('\'', UProperty.Case_Ignorable);
+            bool isIgnorable = UChar.HasBinaryProperty('\'', UProperty.Case_Ignorable);
             assertTrue("Case Ignorable check of ASCII apostrophe", isIgnorable);
             assertEquals("Titlecase check",
                     "The Quick Brown Fox Can't Jump Over The Lazy Dogs.",
-                    UCharacter.ToTitleCase(ULocale.ENGLISH, "THE QUICK BROWN FOX CAN'T JUMP OVER THE LAZY DOGS.", null));
+                    UChar.ToTitleCase(ULocale.ENGLISH, "THE QUICK BROWN FOX CAN'T JUMP OVER THE LAZY DOGS.", null));
         }
 
         [Test]
@@ -338,13 +338,13 @@ namespace ICU4N.Dev.Test.Lang
                     int options = 0;
                     if (optionsString.IndexOf('L') >= 0)
                     {
-                        options |= UCharacter.TitleCaseNoLowerCase;
+                        options |= UChar.TitleCaseNoLowerCase;
                     }
                     if (optionsString.IndexOf('A') >= 0)
                     {
-                        options |= UCharacter.TitleCaseNoBreakAdjustment;
+                        options |= UChar.TitleCaseNoBreakAdjustment;
                     }
-                    String result = UCharacter.ToTitleCase(locale, test, iter, options);
+                    String result = UChar.ToTitleCase(locale, test, iter, options);
                     if (!expected.Equals(result))
                     {
                         Errln("titlecasing for " + Prettify(test) + " (options " + options + ") should be " +
@@ -353,7 +353,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
                     if (options == 0)
                     {
-                        result = UCharacter.ToTitleCase(locale, test, iter);
+                        result = UChar.ToTitleCase(locale, test, iter);
                         if (!expected.Equals(result))
                         {
                             Errln("titlecasing for " + Prettify(test) + " should be " +
@@ -442,30 +442,30 @@ namespace ICU4N.Dev.Test.Lang
         {
             ULocale LOC_DUTCH = new ULocale("nl");
             int options = 0;
-            options |= UCharacter.TitleCaseNoLowerCase;
+            options |= UChar.TitleCaseNoLowerCase;
             BreakIterator iter = BreakIterator.GetWordInstance(LOC_DUTCH);
 
             assertEquals("Dutch titlecase check in English",
                     "Ijssel Igloo Ijmuiden",
-                    UCharacter.ToTitleCase(ULocale.ENGLISH, "ijssel igloo IJMUIDEN", null));
+                    UChar.ToTitleCase(ULocale.ENGLISH, "ijssel igloo IJMUIDEN", null));
 
             assertEquals("Dutch titlecase check in Dutch",
                     "IJssel Igloo IJmuiden",
-                    UCharacter.ToTitleCase(LOC_DUTCH, "ijssel igloo IJMUIDEN", null));
+                    UChar.ToTitleCase(LOC_DUTCH, "ijssel igloo IJMUIDEN", null));
 
             // Also check the behavior using Java Locale
             assertEquals("Dutch titlecase check in English (Java Locale)",
                     "Ijssel Igloo Ijmuiden",
-                    UCharacter.ToTitleCase(new CultureInfo("en") /* Locale.ENGLISH */, "ijssel igloo IJMUIDEN", null));
+                    UChar.ToTitleCase(new CultureInfo("en") /* Locale.ENGLISH */, "ijssel igloo IJMUIDEN", null));
 
             assertEquals("Dutch titlecase check in Dutch (Java Locale)",
                     "IJssel Igloo IJmuiden",
-                    UCharacter.ToTitleCase(DUTCH_LOCALE_, "ijssel igloo IJMUIDEN", null));
+                    UChar.ToTitleCase(DUTCH_LOCALE_, "ijssel igloo IJMUIDEN", null));
 
             iter.SetText("ijssel igloo IjMUIdEN iPoD ijenough");
             assertEquals("Dutch titlecase check in Dutch with nolowercase option",
                     "IJssel Igloo IJMUIdEN IPoD IJenough",
-                    UCharacter.ToTitleCase(LOC_DUTCH, "ijssel igloo IjMUIdEN iPoD ijenough", iter, options));
+                    UChar.ToTitleCase(LOC_DUTCH, "ijssel igloo IjMUIdEN iPoD ijenough", iter, options));
         }
 
         [Test]
@@ -479,39 +479,39 @@ namespace ICU4N.Dev.Test.Lang
                 if (locale != null)
                 {
                     if (!SPECIAL_DATA_[j + 1].Equals(
-                         UCharacter.ToLower(locale, str)))
+                         UChar.ToLower(locale, str)))
                     {
                         Errln("error lowercasing special characters " +
                             Hex(str) + " expected " + Hex(SPECIAL_DATA_[j + 1])
                             + " for locale " + locale.ToString() + " but got " +
-                            Hex(UCharacter.ToLower(locale, str)));
+                            Hex(UChar.ToLower(locale, str)));
                     }
                     if (!SPECIAL_DATA_[j + 2].Equals(
-                         UCharacter.ToUpper(locale, str)))
+                         UChar.ToUpper(locale, str)))
                     {
                         Errln("error uppercasing special characters " +
                             Hex(str) + " expected " + SPECIAL_DATA_[j + 2]
                             + " for locale " + locale.ToString() + " but got " +
-                            Hex(UCharacter.ToUpper(locale, str)));
+                            Hex(UChar.ToUpper(locale, str)));
                     }
                 }
                 else
                 {
                     if (!SPECIAL_DATA_[j + 1].Equals(
-                         UCharacter.ToLower(str)))
+                         UChar.ToLower(str)))
                     {
                         Errln("error lowercasing special characters " +
                             Hex(str) + " expected " + SPECIAL_DATA_[j + 1] +
                             " but got " +
-                            Hex(UCharacter.ToLower(locale, str)));
+                            Hex(UChar.ToLower(locale, str)));
                     }
                     if (!SPECIAL_DATA_[j + 2].Equals(
-                         UCharacter.ToUpper(locale, str)))
+                         UChar.ToUpper(locale, str)))
                     {
                         Errln("error uppercasing special characters " +
                             Hex(str) + " expected " + SPECIAL_DATA_[j + 2] +
                             " but got " +
-                            Hex(UCharacter.ToUpper(locale, str)));
+                            Hex(UChar.ToUpper(locale, str)));
                     }
                 }
             }
@@ -519,59 +519,59 @@ namespace ICU4N.Dev.Test.Lang
             // turkish & azerbaijani dotless i & dotted I
             // remove dot above if there was a capital I before and there are no
             // more accents above
-            if (!SPECIAL_DOTTED_LOWER_TURKISH_.Equals(UCharacter.ToLower(
+            if (!SPECIAL_DOTTED_LOWER_TURKISH_.Equals(UChar.ToLower(
                                             TURKISH_LOCALE_, SPECIAL_DOTTED_)))
             {
                 Errln("error in dots.toLower(tr)=\"" + SPECIAL_DOTTED_ +
                       "\" expected \"" + SPECIAL_DOTTED_LOWER_TURKISH_ +
-                      "\" but got " + UCharacter.ToLower(TURKISH_LOCALE_,
+                      "\" but got " + UChar.ToLower(TURKISH_LOCALE_,
                                                              SPECIAL_DOTTED_));
             }
-            if (!SPECIAL_DOTTED_LOWER_GERMAN_.Equals(UCharacter.ToLower(
+            if (!SPECIAL_DOTTED_LOWER_GERMAN_.Equals(UChar.ToLower(
                                                  GERMAN_LOCALE_, SPECIAL_DOTTED_)))
             {
                 Errln("error in dots.toLower(de)=\"" + SPECIAL_DOTTED_ +
                       "\" expected \"" + SPECIAL_DOTTED_LOWER_GERMAN_ +
-                      "\" but got " + UCharacter.ToLower(GERMAN_LOCALE_,
+                      "\" but got " + UChar.ToLower(GERMAN_LOCALE_,
                                                              SPECIAL_DOTTED_));
             }
 
             // lithuanian dot above in uppercasing
             if (!SPECIAL_DOT_ABOVE_UPPER_LITHUANIAN_.Equals(
-                 UCharacter.ToUpper(LITHUANIAN_LOCALE_, SPECIAL_DOT_ABOVE_)))
+                 UChar.ToUpper(LITHUANIAN_LOCALE_, SPECIAL_DOT_ABOVE_)))
             {
                 Errln("error in dots.toUpper(lt)=\"" + SPECIAL_DOT_ABOVE_ +
                       "\" expected \"" + SPECIAL_DOT_ABOVE_UPPER_LITHUANIAN_ +
-                      "\" but got " + UCharacter.ToLower(LITHUANIAN_LOCALE_,
+                      "\" but got " + UChar.ToLower(LITHUANIAN_LOCALE_,
                                                              SPECIAL_DOT_ABOVE_));
             }
-            if (!SPECIAL_DOT_ABOVE_UPPER_GERMAN_.Equals(UCharacter.ToUpper(
+            if (!SPECIAL_DOT_ABOVE_UPPER_GERMAN_.Equals(UChar.ToUpper(
                                             GERMAN_LOCALE_, SPECIAL_DOT_ABOVE_)))
             {
                 Errln("error in dots.toUpper(de)=\"" + SPECIAL_DOT_ABOVE_ +
                       "\" expected \"" + SPECIAL_DOT_ABOVE_UPPER_GERMAN_ +
-                      "\" but got " + UCharacter.ToLower(GERMAN_LOCALE_,
+                      "\" but got " + UChar.ToLower(GERMAN_LOCALE_,
                                                              SPECIAL_DOT_ABOVE_));
             }
 
             // lithuanian adds dot above to i in lowercasing if there are more
             // above accents
             if (!SPECIAL_DOT_ABOVE_LOWER_LITHUANIAN_.Equals(
-                UCharacter.ToLower(LITHUANIAN_LOCALE_,
+                UChar.ToLower(LITHUANIAN_LOCALE_,
                                        SPECIAL_DOT_ABOVE_UPPER_)))
             {
                 Errln("error in dots.toLower(lt)=\"" + SPECIAL_DOT_ABOVE_UPPER_ +
                       "\" expected \"" + SPECIAL_DOT_ABOVE_LOWER_LITHUANIAN_ +
-                      "\" but got " + UCharacter.ToLower(LITHUANIAN_LOCALE_,
+                      "\" but got " + UChar.ToLower(LITHUANIAN_LOCALE_,
                                                        SPECIAL_DOT_ABOVE_UPPER_));
             }
             if (!SPECIAL_DOT_ABOVE_LOWER_GERMAN_.Equals(
-                UCharacter.ToLower(GERMAN_LOCALE_,
+                UChar.ToLower(GERMAN_LOCALE_,
                                        SPECIAL_DOT_ABOVE_UPPER_)))
             {
                 Errln("error in dots.toLower(de)=\"" + SPECIAL_DOT_ABOVE_UPPER_ +
                       "\" expected \"" + SPECIAL_DOT_ABOVE_LOWER_GERMAN_ +
-                      "\" but got " + UCharacter.ToLower(GERMAN_LOCALE_,
+                      "\" but got " + UChar.ToLower(GERMAN_LOCALE_,
                                                        SPECIAL_DOT_ABOVE_UPPER_));
             }
         }
@@ -682,43 +682,43 @@ namespace ICU4N.Dev.Test.Lang
                     chstr[3] = upperbuffer.ToString();
                     if (locale == null)
                     {
-                        if (!UCharacter.ToLower(chstr[0]).Equals(chstr[1]))
+                        if (!UChar.ToLower(chstr[0]).Equals(chstr[1]))
                         {
                             Errln(s);
                             Errln("Fail: toLowerCase for character " +
                                   Utility.Escape(chstr[0]) + ", expected "
                                   + Utility.Escape(chstr[1]) + " but resulted in " +
-                                  Utility.Escape(UCharacter.ToLower(chstr[0])));
+                                  Utility.Escape(UChar.ToLower(chstr[0])));
                         }
-                        if (!UCharacter.ToUpper(chstr[0]).Equals(chstr[3]))
+                        if (!UChar.ToUpper(chstr[0]).Equals(chstr[3]))
                         {
                             Errln(s);
                             Errln("Fail: toUpperCase for character " +
                                   Utility.Escape(chstr[0]) + ", expected "
                                   + Utility.Escape(chstr[3]) + " but resulted in " +
-                                  Utility.Escape(UCharacter.ToUpper(chstr[0])));
+                                  Utility.Escape(UChar.ToUpper(chstr[0])));
                         }
                     }
                     else
                     {
-                        if (!UCharacter.ToLower(locale, chstr[0]).Equals(
+                        if (!UChar.ToLower(locale, chstr[0]).Equals(
                                                                        chstr[1]))
                         {
                             Errln(s);
                             Errln("Fail: toLowerCase for character " +
                                   Utility.Escape(chstr[0]) + ", expected "
                                   + Utility.Escape(chstr[1]) + " but resulted in " +
-                                  Utility.Escape(UCharacter.ToLower(locale,
+                                  Utility.Escape(UChar.ToLower(locale,
                                                                         chstr[0])));
                         }
-                        if (!UCharacter.ToUpper(locale, chstr[0]).Equals(
+                        if (!UChar.ToUpper(locale, chstr[0]).Equals(
                                                                        chstr[3]))
                         {
                             Errln(s);
                             Errln("Fail: toUpperCase for character " +
                                   Utility.Escape(chstr[0]) + ", expected "
                                   + Utility.Escape(chstr[3]) + " but resulted in " +
-                                  Utility.Escape(UCharacter.ToUpper(locale,
+                                  Utility.Escape(UChar.ToUpper(locale,
                                                                         chstr[0])));
                         }
                     }
@@ -748,12 +748,12 @@ namespace ICU4N.Dev.Test.Lang
                 /* Unicode 5.0 adds lowercase U+214E (TURNED SMALL F) to U+2132 (TURNED CAPITAL F) */
                 if (i != 0x2126 && i != 0x212a && i != 0x212b && i != 0x2132)
                 {
-                    if (i != UCharacter.ToLower(i))
+                    if (i != UChar.ToLower(i))
                     { // itself
                         Errln("Failed case conversion with itself: \\u"
                                 + Utility.Hex(i, 4));
                     }
-                    if (i != UCharacter.ToLower(i))
+                    if (i != UChar.ToLower(i))
                     {
                         Errln("Failed case conversion with itself: \\u"
                                 + Utility.Hex(i, 4));
@@ -762,53 +762,53 @@ namespace ICU4N.Dev.Test.Lang
             }
             for (int i = 0; i < upper.Length; i++)
             {
-                if (UCharacter.ToLower(upper[i]) != lower[i])
+                if (UChar.ToLower(upper[i]) != lower[i])
                 {
                     Errln("FAILED UCharacter.tolower() for \\u"
                             + Utility.Hex(upper[i], 4)
                             + " Expected \\u" + Utility.Hex(lower[i], 4)
                             + " Got \\u"
-                            + Utility.Hex(UCharacter.ToLower(upper[i]), 4));
+                            + Utility.Hex(UChar.ToLower(upper[i]), 4));
                 }
             }
             Logln("testing upper lower");
             for (int i = 0; i < upperTest.Length; i++)
             {
                 Logln("testing to upper to lower");
-                if (UCharacter.IsLetter(upperTest[i]) &&
-                    !UCharacter.IsLowerCase(upperTest[i]))
+                if (UChar.IsLetter(upperTest[i]) &&
+                    !UChar.IsLowerCase(upperTest[i]))
                 {
                     Errln("Failed isLowerCase test at \\u"
                             + Utility.Hex(upperTest[i], 4));
                 }
-                else if (UCharacter.IsLetter(lowerTest[i])
-                         && !UCharacter.IsUpperCase(lowerTest[i]))
+                else if (UChar.IsLetter(lowerTest[i])
+                         && !UChar.IsUpperCase(lowerTest[i]))
                 {
                     Errln("Failed isUpperCase test at \\u"
                           + Utility.Hex(lowerTest[i], 4));
                 }
                 else if (upperTest[i]
-                                != UCharacter.ToLower(lowerTest[i]))
+                                != UChar.ToLower(lowerTest[i]))
                 {
                     Errln("Failed case conversion from \\u"
                             + Utility.Hex(lowerTest[i], 4) + " To \\u"
                             + Utility.Hex(upperTest[i], 4));
                 }
                 else if (lowerTest[i]
-                        != UCharacter.ToUpper(upperTest[i]))
+                        != UChar.ToUpper(upperTest[i]))
                 {
                     Errln("Failed case conversion : \\u"
                             + Utility.Hex(upperTest[i], 4) + " To \\u"
                             + Utility.Hex(lowerTest[i], 4));
                 }
                 else if (upperTest[i]
-                        != UCharacter.ToLower(upperTest[i]))
+                        != UChar.ToLower(upperTest[i]))
                 {
                     Errln("Failed case conversion with itself: \\u"
                             + Utility.Hex(upperTest[i]));
                 }
                 else if (lowerTest[i]
-                        != UCharacter.ToUpper(lowerTest[i]))
+                        != UChar.ToUpper(lowerTest[i]))
                 {
                     Errln("Failed case conversion with itself: \\u"
                             + Utility.Hex(lowerTest[i]));
@@ -819,7 +819,7 @@ namespace ICU4N.Dev.Test.Lang
 
         private void AssertGreekUpper(String s, String expected)
         {
-            assertEquals("toUpper/Greek(" + s + ')', expected, UCharacter.ToUpper(GREEK_LOCALE_, s));
+            assertEquals("toUpper/Greek(" + s + ')', expected, UChar.ToUpper(GREEK_LOCALE_, s));
         }
 
         [Test]

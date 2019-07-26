@@ -10,7 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Resources;
 using System.Text;
-using static ICU4N.UCharacter;
+using static ICU4N.UChar;
 
 namespace ICU4N.Impl
 {
@@ -29,7 +29,7 @@ namespace ICU4N.Impl
     /// significant points in the binary data.
     /// <para/>
     /// Responsibility for molding the binary data into more meaning form lies on
-    /// <see cref="UCharacter"/>.
+    /// <see cref="UChar"/>.
     /// </remarks>
     /// <author>Syn Wee Quek</author>
     /// <since>release 2.1, february 1st 2002</since>
@@ -189,7 +189,7 @@ namespace ICU4N.Impl
         {
             /* \p{space}\p{gc=Control} == \p{gc=Z}\p{Control} */
             /* comparing ==0 returns FALSE for the categories mentioned */
-            return (GetMask(UCharacter.GetType(c).ToInt32()) &
+            return (GetMask(UChar.GetType(c).ToInt32()) &
                     (GC_CC_MASK | GC_CS_MASK | GC_CN_MASK | GC_Z_MASK))
                    == 0;
         }
@@ -340,7 +340,7 @@ namespace ICU4N.Impl
                 new BinaryProperty(this, 1, (1<<PATTERN_WHITE_SPACE)),
                 new AnonymousBinaryProperty(this, SRC_CHAR_AND_PROPSVEC, contains: (c) =>
                     {  // UCHAR_POSIX_ALNUM
-                        return UCharacter.IsUAlphabetic(c) || UCharacter.IsDigit(c);
+                        return UChar.IsUAlphabetic(c) || UChar.IsDigit(c);
                     }),
                 new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
                     {  // UCHAR_POSIX_BLANK
@@ -352,7 +352,7 @@ namespace ICU4N.Impl
                         else
                         {
                             /* Zs */
-                            return UCharacter.GetType(c) == UCharacterCategory.SpaceSeparator;
+                            return UChar.GetType(c) == UCharacterCategory.SpaceSeparator;
                         }
                     }),
                 new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
@@ -367,7 +367,7 @@ namespace ICU4N.Impl
                         * The only cntrl character in graph+blank is TAB (in blank).
                         * Here we implement (blank-TAB)=Zs instead of calling u_isblank().
                         */
-                        return (UCharacter.GetType(c) == UCharacterCategory.SpaceSeparator) || IsgraphPOSIX(c);
+                        return (UChar.GetType(c) == UCharacterCategory.SpaceSeparator) || IsgraphPOSIX(c);
                     }),
                 new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
                     {  // UCHAR_POSIX_XDIGIT
@@ -379,7 +379,7 @@ namespace ICU4N.Impl
                         {
                             return true;
                         }
-                        return UCharacter.GetType(c) == UCharacterCategory.DecimalDigitNumber;
+                        return UChar.GetType(c) == UCharacterCategory.DecimalDigitNumber;
                     }),
                 new CaseBinaryProperty(this, (int)UProperty.Cased),
                 new CaseBinaryProperty(this, (int)UProperty.Case_Ignorable),
@@ -409,11 +409,11 @@ namespace ICU4N.Impl
                             UCaseProps csp = UCaseProps.Instance;
                             UCaseProps.DummyStringBuilder.Length = 0;
                             return csp.ToFullFolding(c, UCaseProps.DummyStringBuilder,
-                                                        UCharacter.FoldCaseDefault) >= 0;
+                                                        UChar.FoldCaseDefault) >= 0;
                         }
                         else
                         {
-                            string folded = UCharacter.FoldCase(nfd, true);
+                            string folded = UChar.FoldCase(nfd, true);
                             return !folded.Equals(nfd);
                         }
                     }),
@@ -1071,7 +1071,7 @@ namespace ICU4N.Impl
 
             if (ntv == NTV_NONE_)
             {
-                return UCharacter.NoNumericValue;
+                return UChar.NoNumericValue;
             }
             else if (ntv < NTV_DIGIT_START_)
             {
@@ -1165,7 +1165,7 @@ namespace ICU4N.Impl
             else
             {
                 /* reserved */
-                return UCharacter.NoNumericValue;
+                return UChar.NoNumericValue;
             }
         }
 
@@ -1595,7 +1595,7 @@ namespace ICU4N.Impl
             set.Add(NNBSP + 1);
 
             /* add for u_charDigitValue() */
-            // TODO remove when UCharacter.getHanNumericValue() is changed to just return
+            // TODO remove when UChar.getHanNumericValue() is changed to just return
             // Unicode numeric values
             set.Add(0x3007);
             set.Add(0x3008);
