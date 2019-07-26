@@ -6,7 +6,7 @@
     /// <see cref="System.Globalization.UnicodeCategory"/>.
     /// </summary>
     /// <stable>ICU 3.0</stable>
-    public enum UCharacterCategory : byte
+    public enum UUnicodeCategory : byte
     {
         /// <summary>
         /// Unassigned character type.
@@ -237,7 +237,7 @@
     }
 
     /// <summary>
-    /// Extension methods for <see cref="UCharacterCategory"/>.
+    /// Extension methods for <see cref="UUnicodeCategory"/>.
     /// </summary>
     public static class UCharacterCategoryExtensions
     {
@@ -249,67 +249,67 @@
         /// <stable>ICU 2.1</stable>
         // ICU4N NOTE: Since ToString() cannot be changed from the default on an Enum,
         // we have renamed this method AsString().
-        public static string AsString(this UCharacterCategory category)
+        public static string AsString(this UUnicodeCategory category)
         {
             switch (category)
             {
-                case UCharacterCategory.UppercaseLetter:
+                case UUnicodeCategory.UppercaseLetter:
                     return "Letter, Uppercase";
-                case UCharacterCategory.LowercaseLetter:
+                case UUnicodeCategory.LowercaseLetter:
                     return "Letter, Lowercase";
-                case UCharacterCategory.TitlecaseLetter:
+                case UUnicodeCategory.TitlecaseLetter:
                     return "Letter, Titlecase";
-                case UCharacterCategory.ModifierLetter:
+                case UUnicodeCategory.ModifierLetter:
                     return "Letter, Modifier";
-                case UCharacterCategory.OtherLetter:
+                case UUnicodeCategory.OtherLetter:
                     return "Letter, Other";
-                case UCharacterCategory.NonSpacingMark:
+                case UUnicodeCategory.NonSpacingMark:
                     return "Mark, Non-Spacing";
-                case UCharacterCategory.EnclosingMark:
+                case UUnicodeCategory.EnclosingMark:
                     return "Mark, Enclosing";
-                case UCharacterCategory.SpacingCombiningMark:
+                case UUnicodeCategory.SpacingCombiningMark:
                     return "Mark, Spacing Combining";
-                case UCharacterCategory.DecimalDigitNumber:
+                case UUnicodeCategory.DecimalDigitNumber:
                     return "Number, Decimal Digit";
-                case UCharacterCategory.LetterNumber:
+                case UUnicodeCategory.LetterNumber:
                     return "Number, Letter";
-                case UCharacterCategory.OtherNumber:
+                case UUnicodeCategory.OtherNumber:
                     return "Number, Other";
-                case UCharacterCategory.SpaceSeparator:
+                case UUnicodeCategory.SpaceSeparator:
                     return "Separator, Space";
-                case UCharacterCategory.LineSeparator:
+                case UUnicodeCategory.LineSeparator:
                     return "Separator, Line";
-                case UCharacterCategory.ParagraphSeparator:
+                case UUnicodeCategory.ParagraphSeparator:
                     return "Separator, Paragraph";
-                case UCharacterCategory.Control:
+                case UUnicodeCategory.Control:
                     return "Other, Control";
-                case UCharacterCategory.Format:
+                case UUnicodeCategory.Format:
                     return "Other, Format";
-                case UCharacterCategory.PrivateUse:
+                case UUnicodeCategory.PrivateUse:
                     return "Other, Private Use";
-                case UCharacterCategory.Surrogate:
+                case UUnicodeCategory.Surrogate:
                     return "Other, Surrogate";
-                case UCharacterCategory.DashPunctuation:
+                case UUnicodeCategory.DashPunctuation:
                     return "Punctuation, Dash";
-                case UCharacterCategory.OpenPunctuation:
+                case UUnicodeCategory.OpenPunctuation:
                     return "Punctuation, Open";
-                case UCharacterCategory.ClosePunctuation:
+                case UUnicodeCategory.ClosePunctuation:
                     return "Punctuation, Close";
-                case UCharacterCategory.ConnectorPunctuation:
+                case UUnicodeCategory.ConnectorPunctuation:
                     return "Punctuation, Connector";
-                case UCharacterCategory.OtherPunctuation:
+                case UUnicodeCategory.OtherPunctuation:
                     return "Punctuation, Other";
-                case UCharacterCategory.MathSymbol:
+                case UUnicodeCategory.MathSymbol:
                     return "Symbol, Math";
-                case UCharacterCategory.CurrencySymbol:
+                case UUnicodeCategory.CurrencySymbol:
                     return "Symbol, Currency";
-                case UCharacterCategory.ModifierSymbol:
+                case UUnicodeCategory.ModifierSymbol:
                     return "Symbol, Modifier";
-                case UCharacterCategory.OtherSymbol:
+                case UUnicodeCategory.OtherSymbol:
                     return "Symbol, Other";
-                case UCharacterCategory.InitialQuotePunctuation:
+                case UUnicodeCategory.InitialQuotePunctuation:
                     return "Punctuation, Initial quote";
-                case UCharacterCategory.FinalQuotePunctuation:
+                case UUnicodeCategory.FinalQuotePunctuation:
                     return "Punctuation, Final quote";
                 default:
                     return "Unassigned";
@@ -317,18 +317,18 @@
         }
 
         /// <summary>
-        /// Converts a <see cref="UCharacterCategory"/> to an <see cref="int"/>.
+        /// Converts a <see cref="UUnicodeCategory"/> to an <see cref="int"/>.
         /// Same as <c>(int)<paramref name="characterCategory"/></c>.
         /// </summary>
-        /// <param name="characterCategory">This <see cref="UCharacterCategory"/>.</param>
+        /// <param name="characterCategory">This <see cref="UUnicodeCategory"/>.</param>
         /// <returns>This category as <see cref="int"/>.</returns>
-        public static int ToInt32(this UCharacterCategory characterCategory) // ICU4N TODO: Add this extension to all main enums
+        public static int ToInt32(this UUnicodeCategory characterCategory) // ICU4N TODO: Add this extension to all main enums
         {
             return (int)characterCategory;
         }
 
         /// <summary>
-        /// One more than the highest normal <see cref="UCharacterCategory"/> value.
+        /// One more than the highest normal <see cref="UUnicodeCategory"/> value.
         /// This numeric value is stable (will not change), see
         /// <a href="http://www.unicode.org/policies/stability_policy.html#Property_Value">
         /// http://www.unicode.org/policies/stability_policy.html#Property_Value</a>

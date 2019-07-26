@@ -63,14 +63,14 @@ namespace ICU4N.Text
         ///CLOVER:ON
 
         internal static readonly int LETTER_OR_MARK_MASK =
-              (1 << UCharacterCategory.UppercaseLetter.ToInt32())
-            | (1 << UCharacterCategory.LowercaseLetter.ToInt32())
-            | (1 << UCharacterCategory.TitlecaseLetter.ToInt32())
-            | (1 << UCharacterCategory.ModifierLetter.ToInt32())
-            | (1 << UCharacterCategory.OtherLetter.ToInt32())
-            | (1 << UCharacterCategory.SpacingCombiningMark.ToInt32())
-            | (1 << UCharacterCategory.NonSpacingMark.ToInt32())
-            | (1 << UCharacterCategory.EnclosingMark.ToInt32())
+              (1 << UUnicodeCategory.UppercaseLetter.ToInt32())
+            | (1 << UUnicodeCategory.LowercaseLetter.ToInt32())
+            | (1 << UUnicodeCategory.TitlecaseLetter.ToInt32())
+            | (1 << UUnicodeCategory.ModifierLetter.ToInt32())
+            | (1 << UUnicodeCategory.OtherLetter.ToInt32())
+            | (1 << UUnicodeCategory.SpacingCombiningMark.ToInt32())
+            | (1 << UUnicodeCategory.NonSpacingMark.ToInt32())
+            | (1 << UUnicodeCategory.EnclosingMark.ToInt32())
             ;
 
         protected override void HandleTransliterate(IReplaceable text, TransliterationPosition pos, bool incremental)

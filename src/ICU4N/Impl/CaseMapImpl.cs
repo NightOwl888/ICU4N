@@ -220,22 +220,22 @@ namespace ICU4N.Impl
         }
 
         private static readonly int LNS =
-                (1 << UCharacterCategory.UppercaseLetter.ToInt32()) |
-                (1 << UCharacterCategory.LowercaseLetter.ToInt32()) |
-                (1 << UCharacterCategory.TitlecaseLetter.ToInt32()) |
+                (1 << UUnicodeCategory.UppercaseLetter.ToInt32()) |
+                (1 << UUnicodeCategory.LowercaseLetter.ToInt32()) |
+                (1 << UUnicodeCategory.TitlecaseLetter.ToInt32()) |
                 // Not MODIFIER_LETTER: We count only cased modifier letters.
-                (1 << UCharacterCategory.OtherLetter.ToInt32()) |
+                (1 << UUnicodeCategory.OtherLetter.ToInt32()) |
 
-                (1 << UCharacterCategory.DecimalDigitNumber.ToInt32()) |
-                (1 << UCharacterCategory.LetterNumber.ToInt32()) |
-                (1 << UCharacterCategory.OtherNumber.ToInt32()) |
+                (1 << UUnicodeCategory.DecimalDigitNumber.ToInt32()) |
+                (1 << UUnicodeCategory.LetterNumber.ToInt32()) |
+                (1 << UUnicodeCategory.OtherNumber.ToInt32()) |
 
-                (1 << UCharacterCategory.MathSymbol.ToInt32()) |
-                (1 << UCharacterCategory.CurrencySymbol.ToInt32()) |
-                (1 << UCharacterCategory.ModifierSymbol.ToInt32()) |
-                (1 << UCharacterCategory.OtherSymbol.ToInt32()) |
+                (1 << UUnicodeCategory.MathSymbol.ToInt32()) |
+                (1 << UUnicodeCategory.CurrencySymbol.ToInt32()) |
+                (1 << UUnicodeCategory.ModifierSymbol.ToInt32()) |
+                (1 << UUnicodeCategory.OtherSymbol.ToInt32()) |
 
-                (1 << UCharacterCategory.PrivateUse.ToInt32());
+                (1 << UUnicodeCategory.PrivateUse.ToInt32());
 
         private static bool IsLNS(int c)
         {
@@ -244,7 +244,7 @@ namespace ICU4N.Impl
             // Consider modifier letters only if they are cased.
             int gc = UCharacterProperty.Instance.GetType(c);
             return ((1 << gc) & LNS) != 0 ||
-                    (gc == UCharacterCategory.ModifierLetter.ToInt32() &&
+                    (gc == UUnicodeCategory.ModifierLetter.ToInt32() &&
                         UCaseProps.Instance.GetType(c) != UCaseProps.NONE);
         }
 

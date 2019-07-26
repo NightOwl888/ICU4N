@@ -494,7 +494,7 @@ namespace ICU4N.Dev.Test.Lang
             set = new UnicodeSet("[:Lu:]");
             for (int i = 0; i < 0x200; ++i)
             {
-                bool lu = (UChar.GetType(i) == UCharacterCategory.UppercaseLetter);
+                bool lu = (UChar.GetType(i) == UUnicodeCategory.UppercaseLetter);
                 if (lu != set.Contains((char)i))
                 {
                     Errln("FAIL: Lu contains " + (char)i + " = " +

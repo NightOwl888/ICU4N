@@ -1436,7 +1436,7 @@ namespace ICU4N.Impl
                 return NON_CHARACTER_;
             }
             int result = UChar.GetType(ch).ToInt32();
-            if (result == UCharacterCategory.Surrogate.ToInt32())
+            if (result == UUnicodeCategory.Surrogate.ToInt32())
             {
                 if (ch <= UTF16.LeadSurrogateMaxValue)
                 {

@@ -138,11 +138,11 @@ namespace ICU4N.Impl
         }
 
         internal static readonly int MY_MASK = UCharacterProperty.TYPE_MASK
-            & ((1 << UCharacterCategory.UppercaseLetter.ToInt32()) |
-                (1 << UCharacterCategory.LowercaseLetter.ToInt32()) |
-                (1 << UCharacterCategory.TitlecaseLetter.ToInt32()) |
-                (1 << UCharacterCategory.ModifierLetter.ToInt32()) |
-                (1 << UCharacterCategory.OtherLetter.ToInt32()));
+            & ((1 << UUnicodeCategory.UppercaseLetter.ToInt32()) |
+                (1 << UUnicodeCategory.LowercaseLetter.ToInt32()) |
+                (1 << UUnicodeCategory.TitlecaseLetter.ToInt32()) |
+                (1 << UUnicodeCategory.ModifierLetter.ToInt32()) |
+                (1 << UUnicodeCategory.OtherLetter.ToInt32()));
 
         /// <summary>
         /// Get the "age" of the code point.
@@ -169,12 +169,12 @@ namespace ICU4N.Impl
                                version & LAST_NIBBLE_MASK_, 0, 0);
         }
 
-        private static readonly int GC_CN_MASK = GetMask(UCharacterCategory.OtherNotAssigned.ToInt32());
-        private static readonly int GC_CC_MASK = GetMask(UCharacterCategory.Control.ToInt32());
-        private static readonly int GC_CS_MASK = GetMask(UCharacterCategory.Surrogate.ToInt32());
-        private static readonly int GC_ZS_MASK = GetMask(UCharacterCategory.SpaceSeparator.ToInt32());
-        private static readonly int GC_ZL_MASK = GetMask(UCharacterCategory.LineSeparator.ToInt32());
-        private static readonly int GC_ZP_MASK = GetMask(UCharacterCategory.ParagraphSeparator.ToInt32());
+        private static readonly int GC_CN_MASK = GetMask(UUnicodeCategory.OtherNotAssigned.ToInt32());
+        private static readonly int GC_CC_MASK = GetMask(UUnicodeCategory.Control.ToInt32());
+        private static readonly int GC_CS_MASK = GetMask(UUnicodeCategory.Surrogate.ToInt32());
+        private static readonly int GC_ZS_MASK = GetMask(UUnicodeCategory.SpaceSeparator.ToInt32());
+        private static readonly int GC_ZL_MASK = GetMask(UUnicodeCategory.LineSeparator.ToInt32());
+        private static readonly int GC_ZP_MASK = GetMask(UUnicodeCategory.ParagraphSeparator.ToInt32());
         /// <summary>Mask constant for multiple UCharCategory bits (Z Separators).</summary>
         private static readonly int GC_Z_MASK = GC_ZS_MASK | GC_ZL_MASK | GC_ZP_MASK;
 
@@ -352,7 +352,7 @@ namespace ICU4N.Impl
                         else
                         {
                             /* Zs */
-                            return UChar.GetType(c) == UCharacterCategory.SpaceSeparator;
+                            return UChar.GetType(c) == UUnicodeCategory.SpaceSeparator;
                         }
                     }),
                 new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
@@ -367,7 +367,7 @@ namespace ICU4N.Impl
                         * The only cntrl character in graph+blank is TAB (in blank).
                         * Here we implement (blank-TAB)=Zs instead of calling u_isblank().
                         */
-                        return (UChar.GetType(c) == UCharacterCategory.SpaceSeparator) || IsgraphPOSIX(c);
+                        return (UChar.GetType(c) == UUnicodeCategory.SpaceSeparator) || IsgraphPOSIX(c);
                     }),
                 new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
                     {  // UCHAR_POSIX_XDIGIT
@@ -379,7 +379,7 @@ namespace ICU4N.Impl
                         {
                             return true;
                         }
-                        return UChar.GetType(c) == UCharacterCategory.DecimalDigitNumber;
+                        return UChar.GetType(c) == UUnicodeCategory.DecimalDigitNumber;
                     }),
                 new CaseBinaryProperty(this, (int)UProperty.Cased),
                 new CaseBinaryProperty(this, (int)UProperty.Case_Ignorable),

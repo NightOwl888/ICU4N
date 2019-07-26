@@ -1254,19 +1254,19 @@ namespace ICU4N.Dev.Test.Translit
                 for (int i = 0; i < a.Length; i += UTF16.GetCharCount(cp))
                 {
                     cp = UTF16.CharAt(a, i);
-                    UCharacterCategory t = UChar.GetType(cp);
+                    UUnicodeCategory t = UChar.GetType(cp);
                     //Console.Out.WriteLine("\t" + t + " " + Integer.toString(cp,16) + " " + UCharacter.getName(cp));
                     switch (t)
                     {
-                        case UCharacterCategory.UppercaseLetter:
+                        case UUnicodeCategory.UppercaseLetter:
                             if (haveLower) return true;
                             break;
-                        case UCharacterCategory.TitlecaseLetter:
+                        case UUnicodeCategory.TitlecaseLetter:
                             if (haveLower) return true;
                             haveLower = true;
                             break;
                         // drop through, since second letter is lower.
-                        case UCharacterCategory.LowercaseLetter:
+                        case UUnicodeCategory.LowercaseLetter:
                             haveLower = true;
                             break;
                     }

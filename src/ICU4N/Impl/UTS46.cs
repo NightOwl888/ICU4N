@@ -541,8 +541,8 @@ namespace ICU4N.Impl
             return (1 << UChar.GetType(c).ToInt32());
         }
         private static int U_GC_M_MASK =
-            U_MASK(UCharacterCategory.NonSpacingMark.ToInt32()) |
-            U_MASK(UCharacterCategory.EnclosingMark.ToInt32()) |
-            U_MASK(UCharacterCategory.SpacingCombiningMark.ToInt32());
+            U_MASK(UUnicodeCategory.NonSpacingMark.ToInt32()) |
+            U_MASK(UUnicodeCategory.EnclosingMark.ToInt32()) |
+            U_MASK(UUnicodeCategory.SpacingCombiningMark.ToInt32());
     }
 }

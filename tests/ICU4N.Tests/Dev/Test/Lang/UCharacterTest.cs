@@ -182,9 +182,9 @@ namespace ICU4N.Dev.Test.Lang
             // TODO: propose public API for constants like uchar.h's U_GC_*_MASK
             // (http://bugs.icu-project.org/trac/ticket/7461)
             int GC_Z_MASK =
-                (1 << UCharacterCategory.SpaceSeparator.ToInt32()) |
-                (1 << UCharacterCategory.LineSeparator.ToInt32()) |
-                (1 << UCharacterCategory.ParagraphSeparator.ToInt32());
+                (1 << UUnicodeCategory.SpaceSeparator.ToInt32()) |
+                (1 << UUnicodeCategory.LineSeparator.ToInt32()) |
+                (1 << UUnicodeCategory.ParagraphSeparator.ToInt32());
 
             // UCharacter.isWhitespace(c) should be the same as Character.isWhitespace().
             // This uses Logln() because Character.isWhitespace() differs between Java versions, thus
@@ -1020,7 +1020,7 @@ namespace ICU4N.Dev.Test.Lang
             // sanity check on repeated properties
             for (int ch = 0xfffe; ch <= 0x10ffff;)
             {
-                UCharacterCategory type = UChar.GetType(ch);
+                UUnicodeCategory type = UChar.GetType(ch);
                 if (UChar.GetInt32PropertyValue(ch,
                                                    UProperty.General_Category_Mask)
                     != (1 << type.ToInt32()))
@@ -1030,7 +1030,7 @@ namespace ICU4N.Dev.Test.Lang
                           + ", UProperty.GENERAL_CATEGORY_MASK) != "
                           + "getMask(getType())");
                 }
-                if (type != UCharacterCategory.OtherNotAssigned)
+                if (type != UUnicodeCategory.OtherNotAssigned)
                 {
                     Errln("error: UCharacter.getType(\\u" + Utility.Hex(ch, 4)
                             + " != UCharacterCategory.UNASSIGNED (returns "
@@ -1061,13 +1061,13 @@ namespace ICU4N.Dev.Test.Lang
                           + "getMask(getType())");
                 }
 
-                if (type == UCharacterCategory.OtherNotAssigned.ToInt32())
+                if (type == UUnicodeCategory.OtherNotAssigned.ToInt32())
                 {
                     Errln("error: UCharacter.getType(\\u"
                             + Utility.Hex(ch, 4)
                             + ") == UCharacterCategory.UNASSIGNED");
                 }
-                else if (type != UCharacterCategory.PrivateUse.ToInt32())
+                else if (type != UUnicodeCategory.PrivateUse.ToInt32())
                 {
                     Logln("PUA override: UCharacter.getType(\\u"
                           + Utility.Hex(ch, 4) + ")=" + type);
@@ -1704,11 +1704,11 @@ namespace ICU4N.Dev.Test.Lang
             int limit = 0;
             int prevtype = -1;
             int shouldBeDir;
-            int[][] test ={new int[] {0x41, UCharacterCategory.UppercaseLetter.ToInt32()},
-                        new int[] {0x308, UCharacterCategory.NonSpacingMark.ToInt32()},
-                        new int[] {0xfffe, UCharacterCategory.OtherNotAssigned.ToInt32()},
-                        new int[] {0xe0041, UCharacterCategory.Format.ToInt32()},
-                        new int[] {0xeffff, UCharacterCategory.OtherNotAssigned.ToInt32()}};
+            int[][] test ={new int[] {0x41, UUnicodeCategory.UppercaseLetter.ToInt32()},
+                        new int[] {0x308, UUnicodeCategory.NonSpacingMark.ToInt32()},
+                        new int[] {0xfffe, UUnicodeCategory.OtherNotAssigned.ToInt32()},
+                        new int[] {0xe0041, UUnicodeCategory.Format.ToInt32()},
+                        new int[] {0xeffff, UUnicodeCategory.OtherNotAssigned.ToInt32()}};
 
             // default Bidi classes for unassigned code points, from the DerivedBidiClass.txt header
             int[][] defaultBidi ={
@@ -1788,8 +1788,8 @@ namespace ICU4N.Dev.Test.Lang
                 //
                 // PUA characters are listed explicitly with "XX".
                 // Verify that no assigned character has "XX".
-                if (result.Value != UCharacterCategory.OtherNotAssigned.ToInt32()
-                    && result.Value != UCharacterCategory.PrivateUse.ToInt32())
+                if (result.Value != UUnicodeCategory.OtherNotAssigned.ToInt32()
+                    && result.Value != UUnicodeCategory.PrivateUse.ToInt32())
                 {
                     int c = result.Start;
                     while (c < result.Limit)
@@ -1808,8 +1808,8 @@ namespace ICU4N.Dev.Test.Lang
                  * Verify default Bidi classes.
                  * See DerivedBidiClass.txt, especially for unassigned code points.
                  */
-                if (result.Value == UCharacterCategory.OtherNotAssigned.ToInt32()
-                    || result.Value == UCharacterCategory.PrivateUse.ToInt32())
+                if (result.Value == UUnicodeCategory.OtherNotAssigned.ToInt32()
+                    || result.Value == UUnicodeCategory.PrivateUse.ToInt32())
                 {
                     int c = result.Start;
                     for (int i = 0; i < defaultBidi.Length && c < result.Limit;
@@ -2164,7 +2164,7 @@ namespace ICU4N.Dev.Test.Lang
 
                 /* (int)UProperty.GENERAL_CATEGORY tested for assigned characters in TestUnicodeData() */
                 new int[] { 0xd7c7, (int)UProperty.General_Category, 0 },
-                new int[] { 0xd7d7, (int)UProperty.General_Category, UCharacterCategory.OtherLetter.ToInt32() },     /* changed in Unicode 5.2 */
+                new int[] { 0xd7d7, (int)UProperty.General_Category, UUnicodeCategory.OtherLetter.ToInt32() },     /* changed in Unicode 5.2 */
 
                 new int[] { 0x0444, (int)UProperty.Joining_Group, UChar.JoiningGroup.NoJoiningGroup },
                 new int[] { 0x0639, (int)UProperty.Joining_Group, UChar.JoiningGroup.Ain },

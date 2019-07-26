@@ -1418,14 +1418,14 @@ namespace ICU4N.Text
         }
 
         // TODO: Surely we have at least a ticket for porting these mask values to UCharacter.java?!
-        private static readonly int GC_LU_MASK = 1 << UCharacterCategory.UppercaseLetter.ToInt32();
-        private static readonly int GC_LL_MASK = 1 << UCharacterCategory.LowercaseLetter.ToInt32();
-        private static readonly int GC_LT_MASK = 1 << UCharacterCategory.TitlecaseLetter.ToInt32();
-        private static readonly int GC_LM_MASK = 1 << UCharacterCategory.ModifierLetter.ToInt32();
-        private static readonly int GC_LO_MASK = 1 << UCharacterCategory.OtherLetter.ToInt32();
+        private static readonly int GC_LU_MASK = 1 << UUnicodeCategory.UppercaseLetter.ToInt32();
+        private static readonly int GC_LL_MASK = 1 << UUnicodeCategory.LowercaseLetter.ToInt32();
+        private static readonly int GC_LT_MASK = 1 << UUnicodeCategory.TitlecaseLetter.ToInt32();
+        private static readonly int GC_LM_MASK = 1 << UUnicodeCategory.ModifierLetter.ToInt32();
+        private static readonly int GC_LO_MASK = 1 << UUnicodeCategory.OtherLetter.ToInt32();
         private static readonly int GC_L_MASK =
                 GC_LU_MASK | GC_LL_MASK | GC_LT_MASK | GC_LM_MASK | GC_LO_MASK;
-        private static readonly int GC_CN_MASK = 1 << UCharacterCategory.OtherNotAssigned.ToInt32();
+        private static readonly int GC_CN_MASK = 1 << UUnicodeCategory.OtherNotAssigned.ToInt32();
 
         /// <summary>
         /// Return a list of the first character in each script. Only exposed for testing.

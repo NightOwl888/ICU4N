@@ -61,17 +61,17 @@ namespace ICU4N.Dev.Test.Lang
                            "Punctuation, Initial quote",
                            "Punctuation, Final quote"};
 
-            for (int i = UCharacterCategory.OtherNotAssigned.ToInt32();
+            for (int i = UUnicodeCategory.OtherNotAssigned.ToInt32();
                      i < UCharacterCategoryExtensions.CharCategoryCount; i++)
             {
-                if (!((UCharacterCategory)i).AsString().Equals(name[i]))
+                if (!((UUnicodeCategory)i).AsString().Equals(name[i]))
                 {
                     Errln("Error toString for category " + i + " expected " +
                           name[i]);
                 }
             }
 
-            foreach (UCharacterCategory category in Enum.GetValues(typeof(UCharacterCategory)))
+            foreach (UUnicodeCategory category in Enum.GetValues(typeof(UUnicodeCategory)))
             {
                 if (!category.AsString().Equals(name[category.ToInt32()]))
                 {
