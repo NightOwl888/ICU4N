@@ -10,7 +10,7 @@ using ICU4N.Support.Text;
 using System;
 using System.Text;
 
-namespace ICU4N.Lang
+namespace ICU4N.Globalization
 {
     public partial class CharSequences
     {

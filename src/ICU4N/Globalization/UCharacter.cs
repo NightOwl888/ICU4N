@@ -1,4 +1,5 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
@@ -8,40 +9,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace ICU4N.Lang
+namespace ICU4N
 {
-    /// <summary>
-    /// Option values for case folding
-    /// </summary>
-    public enum FoldCase
-    {
-        /// <icu/>
-        /// <summary>
-        /// Option value for case folding: use default mappings defined in
-        /// CaseFolding.txt.
-        /// </summary>
-        /// <stable>ICU 2.6</stable>
-        Default = 0x0000, // ICU4N specific - removed FOLD_CASE_ because it is redundant
-
-        /// <icu/>
-        /// <summary>
-        /// Option value for case folding:
-        /// Use the modified set of mappings provided in CaseFolding.txt to handle dotted I
-        /// and dotless i appropriately for Turkic languages (tr, az).
-        /// </summary>
-        /// <remarks>
-        /// Before Unicode 3.2, CaseFolding.txt contains mappings marked with 'I' that
-        /// are to be included for default mappings and
-        /// excluded for the Turkic-specific mappings.
-        /// <para/>
-        /// Unicode 3.2 CaseFolding.txt instead contains mappings marked with 'T' that
-        /// are to be excluded for default mappings and
-        /// included for the Turkic-specific mappings.
-        /// </remarks>
-        /// <stable>ICU 2.6</stable>
-        ExcludeSpecialI = 0x0001 // ICU4N specific - removed FOLD_CASE_ because it is redundant
-    }
-
     /// <icuenhanced cref="System.Char"/>.<icu>_usage_</icu>
     /// <summary>
     /// The <see cref="UCharacter"/> class provides extensions to the <see cref="System.Char"/> class.
@@ -4427,7 +4396,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.1</stable>
         public static int FoldCase(int ch, bool defaultmapping)
         {
-            return FoldCase(ch, defaultmapping ? Lang.FoldCase.Default : Lang.FoldCase.ExcludeSpecialI);
+            return FoldCase(ch, defaultmapping ? Globalization.FoldCase.Default : Globalization.FoldCase.ExcludeSpecialI);
         }
 
         /// <icu/>
@@ -4452,7 +4421,7 @@ namespace ICU4N.Lang
         /// <stable>ICU 2.1</stable>
         public static string FoldCase(string str, bool defaultmapping) // ICU4N TODO: API - Make context-sensitive overload based on current culture
         {
-            return FoldCase(str, defaultmapping ? Lang.FoldCase.Default : Lang.FoldCase.ExcludeSpecialI);
+            return FoldCase(str, defaultmapping ? Globalization.FoldCase.Default : Globalization.FoldCase.ExcludeSpecialI);
         }
 
         /// <icu/>
@@ -4461,7 +4430,7 @@ namespace ICU4N.Lang
         /// CaseFolding.txt.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        internal const int FoldCaseDefault = (int)Lang.FoldCase.Default; // ICU4N specific - changed from public to internal because we use enum in .NET
+        internal const int FoldCaseDefault = (int)Globalization.FoldCase.Default; // ICU4N specific - changed from public to internal because we use enum in .NET
 
         /// <icu/>
         /// <summary>
@@ -4479,7 +4448,7 @@ namespace ICU4N.Lang
         /// included for the Turkic-specific mappings.
         /// </remarks>
         /// <stable>ICU 2.6</stable>
-        internal const int FoldCaseExcludeSpecialI = (int)Lang.FoldCase.ExcludeSpecialI; // ICU4N specific - changed from public to internal because we use enum in .NET
+        internal const int FoldCaseExcludeSpecialI = (int)Globalization.FoldCase.ExcludeSpecialI; // ICU4N specific - changed from public to internal because we use enum in .NET
 
         /// <icu/>
         /// <summary>
@@ -4520,7 +4489,7 @@ namespace ICU4N.Lang
         /// </summary>
         /// <param name="str">The string to be converted.</param>
         /// <param name="foldCase">Option for special processing. Currently the recognised options
-        /// are <see cref="Lang.FoldCase.ExcludeSpecialI"/> and <see cref="Lang.FoldCase.Default"/>.</param>
+        /// are <see cref="Globalization.FoldCase.ExcludeSpecialI"/> and <see cref="Globalization.FoldCase.Default"/>.</param>
         /// <returns>The case folding equivalent of the character, if any; otherwise the
         /// character itself.</returns>
         /// <seealso cref="FoldCase(int, FoldCase)"/>

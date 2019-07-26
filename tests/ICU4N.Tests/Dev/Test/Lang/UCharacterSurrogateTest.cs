@@ -1,5 +1,4 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Lang;
 using ICU4N.Support;
 using ICU4N.Text;
 using NUnit.Framework;

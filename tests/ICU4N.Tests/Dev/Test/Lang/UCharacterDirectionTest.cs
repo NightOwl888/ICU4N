@@ -1,4 +1,4 @@
-﻿using ICU4N.Lang;
+﻿using ICU4N.Globalization;
 using NUnit.Framework;
 using System;
 

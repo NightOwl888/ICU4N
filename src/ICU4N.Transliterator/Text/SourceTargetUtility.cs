@@ -1,4 +1,4 @@
-﻿using ICU4N.Lang;
+﻿using ICU4N.Globalization;
 using System.Collections.Generic;
 
 namespace ICU4N.Text

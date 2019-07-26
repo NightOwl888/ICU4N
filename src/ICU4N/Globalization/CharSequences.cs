@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ICU4N.Lang
+namespace ICU4N.Globalization
 {
     [Obsolete("This API is ICU internal only.")]
     public partial class CharSequences

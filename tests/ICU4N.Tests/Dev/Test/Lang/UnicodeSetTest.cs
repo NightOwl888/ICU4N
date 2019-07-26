@@ -1,5 +1,5 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Lang;
+using ICU4N.Globalization;
 using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
@@ -12,7 +12,6 @@ using System.Linq;
 using System.Text;
 using static ICU4N.Text.UnicodeSet; // ICU4N TODO: API De-nest?
 using StringBuffer = System.Text.StringBuilder;
-using UProperty = ICU4N.Lang.UProperty;
 using static ICU4N.Text.UnicodeSetSpanner; // ICU4N TODO: API De-nest?
 using System.Diagnostics;
 

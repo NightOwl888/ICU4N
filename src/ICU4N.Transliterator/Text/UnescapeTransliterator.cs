@@ -1,5 +1,5 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Lang;
+using ICU4N.Globalization;
 using System.Text;
 
 namespace ICU4N.Text

@@ -6,7 +6,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Lang;
+using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;

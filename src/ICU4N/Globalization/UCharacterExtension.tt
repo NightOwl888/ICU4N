@@ -25,12 +25,13 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using ICU4N.Globalization;
 using ICU4N.Impl;
 using ICU4N.Support.Text;
 using System;
 using System.Text;
 
-namespace ICU4N.Lang
+namespace ICU4N
 {
     public static partial class UCharacter
     {

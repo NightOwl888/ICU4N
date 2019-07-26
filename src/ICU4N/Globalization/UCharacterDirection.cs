@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ICU4N.Lang // ICU4N TODO: API Move to Globalization namespace
+namespace ICU4N.Globalization
 {
     /// <summary>
     /// <see cref="Enum"/> for the CharacterDirection constants. Some constants are

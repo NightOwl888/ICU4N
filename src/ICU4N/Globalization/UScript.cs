@@ -6,7 +6,7 @@ using System;
 using System.Globalization;
 using System.Text;
 
-namespace ICU4N.Lang
+namespace ICU4N.Globalization
 {
     /// <summary>
     /// Constants for ISO 15924 script codes.

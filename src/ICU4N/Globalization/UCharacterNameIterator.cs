@@ -3,7 +3,7 @@ using ICU4N.Util;
 using System;
 using System.Collections;
 
-namespace ICU4N.Lang
+namespace ICU4N.Globalization
 {
     /// <summary>
     /// Class enabling iteration of the codepoints and their names.

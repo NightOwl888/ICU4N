@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ICU4N.Lang
+namespace ICU4N.Globalization
 {
     /// <summary>
     /// Selection values for Unicode properties.

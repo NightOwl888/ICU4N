@@ -1,4 +1,4 @@
-﻿using ICU4N.Lang;
+﻿using ICU4N.Globalization;
 using ICU4N.Support.IO;
 using ICU4N.Support.Text;
 using System;

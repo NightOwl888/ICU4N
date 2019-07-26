@@ -62,6 +62,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Globalization\CharSequencesExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CharSequencesExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Globalization\UCharacterExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UCharacterExtension.tt</DependentUpon>
+    </Compile>
     <Compile Update="ICUConfig.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -131,16 +141,6 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>UTS46Extension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Lang\CharSequencesExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>CharSequencesExtension.tt</DependentUpon>
-    </Compile>
-    <Compile Update="Lang\UCharacterExtension.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UCharacterExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Support\Text\UnicodeSetExtensionsExtension.cs">
       <DesignTime>True</DesignTime>
@@ -259,11 +259,11 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UTS46Extension.cs</LastGenOutput>
     </None>
-    <None Update="Lang\CharSequencesExtension.tt">
+    <None Update="Globalization\CharSequencesExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CharSequencesExtension.cs</LastGenOutput>
     </None>
-    <None Update="Lang\UCharacterExtension.tt">
+    <None Update="Globalization\UCharacterExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UCharacterExtension.cs</LastGenOutput>
     </None>
