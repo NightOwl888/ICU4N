@@ -5,6 +5,12 @@
     <RootNamespace>ICU4N</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Label="NuGet Package Settings">
+    <AssemblyTitle>ICU4N.Transliterator</AssemblyTitle>
+    <Description>Transliteration support (phonetic conversion from one script to another) for ICU4N. ICU (International Components for Unicode) is a set of libraries providing Unicode and Globalization support for software applications. ICU4N is a .NET port of ICU4J.</Description>
+    <PackageTags>$(PackageTags);transliteration;transliterate</PackageTags>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
     <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
     <DebugType>portable</DebugType>

@@ -5,6 +5,12 @@
     <DefineConstants Condition=" '$(TargetFramework)' == 'netstandard1.3' ">$(DefineConstants);LIBLOG_PORTABLE</DefineConstants>
   </PropertyGroup>
 
+  <PropertyGroup Label="NuGet Package Settings">
+    <AssemblyTitle>ICU4N</AssemblyTitle>
+    <Description>ICU (International Components for Unicode) is a set of libraries providing Unicode and Globalization support for software applications. It provides Text-boundary analysis (RuleBasedBreakIterator) as well as easy access to all of the many Unicode character properties, Unicode Normalization, Case Folding and other fundamental operations as specified by the Unicode Standard. ICU4N is a .NET port of ICU4J.</Description>
+    <PackageTags>$(PackageTags);icu;international;unicode</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
     <PackageReference Include="Microsoft.CSharp" Version="4.4.0" />
     <PackageReference Include="System.IO.MemoryMappedFiles" Version="4.3.0" />

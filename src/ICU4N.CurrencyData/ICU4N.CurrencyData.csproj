@@ -1,8 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
     <RootNamespace>ICU4N</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet Package Settings">
+    <AssemblyTitle>ICU4N.CurrencyData</AssemblyTitle>
+    <Description>International currency compiled resources for ICU4N. ICU (International Components for Unicode) is a set of libraries providing Unicode and Globalization support for software applications. ICU4N is a .NET port of ICU4J.</Description>
+    <PackageTags>$(PackageTags);currency;resources</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

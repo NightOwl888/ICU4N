@@ -1,12 +1,13 @@
 <Project>
   <PropertyGroup Label="NuGet Package Properties">
     <IsPackable>true</IsPackable>
-    <PackageTags>icu;international;components;unicode;breakiterator;normalizer;messageformat;unicodeset;uts46;idna</PackageTags>
+    <PackageTags>icu;international;components;unicode;globalization;breakiterator;normalizer;messageformat;unicodeset;uts46;idna</PackageTags>
     <Authors>NightOwl888</Authors>
     <RepositoryUrl>https://github.com/NightOwl888/ICU4N/</RepositoryUrl>
     <PackageProjectUrl>https://github.com/NightOwl888/ICU4N/</PackageProjectUrl>
     <!--<PackageIconUrl></PackageIconUrl>-->
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <PackageReleaseNotes>This is an early prerelease. Not all features are fully functional yet, and there may still be some gaps in functionality that haven't been accounted for. See https://github.com/NightOwl888/ICU4N for more info about what is functioning and what is not.</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="$(SolutionDir)LICENSE.txt" Pack="true" PackagePath="$(PackageLicenseFile)"/>
