@@ -6,7 +6,7 @@
 parameters:
   nugetArtifactName: 'nuget' # The name of the artifact where the NuGet assets (.nupkg and .pdb files) can be downloaded
   artifactFeedID: '' # The GUID of the Azure Artifacts NuGet feed
-  testSymbolFilesConvention: '**/*.Tests.pdb' # The glob pattern (within the nugetArtifact) where to look for test project symbols (.pdb) files, so they can be distinguished from other project file types.
+  testSymbolFilesConvention: '**/*.Tests*.pdb' # The glob pattern (within the nugetArtifact) where to look for test project symbols (.pdb) files, so they can be distinguished from other project file types.
 
 steps:
 - powershell: |
@@ -27,30 +27,30 @@ steps:
     artifactName: ${{ parameters.nugetArtifactName }}
     downloadPath: '$(Build.ArtifactStagingDirectory)'
 
-  # Push to MyGet
-- task: NuGetCommand@2
-  displayName: 'NuGet push'
-  inputs:
-    command: push
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.symbols.nupkg'
-    nuGetFeedType: external
-    publishFeedCredentials: 'MyGet-icu4n'
-
+#  # Push to MyGet
 #- task: NuGetCommand@2
 #  displayName: 'NuGet push'
 #  inputs:
 #    command: push
 #    packagesToPush: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.symbols.nupkg'
-#    publishVstsFeed: '/${{ parameters.artifactFeedID }}'
-#    allowPackageConflicts: true
+#    nuGetFeedType: external
+#    publishFeedCredentials: 'MyGet-icu4n'
 
-#- task: PublishSymbols@2
-#  displayName: 'Publish symbols path'
-#  inputs:
-#    SymbolsFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}'
-#    SearchPattern: |
-#      **/bin/**/*.pdb
-#      !${{ parameters.testSymbolFilesConvention }}
-#    IndexSources: true
-#    PublishSymbols: true
-#    SymbolServerType: TeamServices
+- task: NuGetCommand@2
+  displayName: 'NuGet push'
+  inputs:
+    command: push
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}/**/*.symbols.nupkg'
+    publishVstsFeed: '/${{ parameters.artifactFeedID }}'
+    allowPackageConflicts: true
+
+- task: PublishSymbols@2
+  displayName: 'Publish symbols path'
+  inputs:
+    SymbolsFolder: '$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}'
+    SearchPattern: |
+      **/bin/**/*.pdb
+      !${{ parameters.testSymbolFilesConvention }}
+    IndexSources: true
+    PublishSymbols: true
+    SymbolServerType: TeamServices
