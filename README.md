@@ -23,7 +23,7 @@ There are several other features too numerous to mention that are also functioni
 
 ## Partially Functioning
 
-1. ULocale (we recommend using CultureInfo only to set cultures)
+1. ULocale (we recommend using `System.Globalization.CultureInfo` only to set cultures/locales for the time being)
 2. MessageFormat (only supports ChoiceFormat currently)
 
 
@@ -41,3 +41,7 @@ We have setup the project structure similar to ICU4J. Currently, here is a list 
 4. ICU4N.LanguageData
 5. ICU4N.RegionData
 6. ICU4N.Transliterator
+
+## Documentation
+
+We have converted most of the documentation comments so intellisense works. However, for full API docs the best source at the moment is the [ICU4J API Reference](http://icu-project.org/apiref/icu4j/). There is also a lot of other great info on the ICU project's web site, such as the [Feature Comparison Page](http://site.icu-project.org/charts/comparison).
