@@ -165,7 +165,7 @@ namespace ICU4N.Dev.Test
 
             internal void Go()
             {
-#if !NETSTANDARD1_3
+#if !NETSTANDARD1_4
                 try
                 {
 #endif
@@ -177,7 +177,7 @@ namespace ICU4N.Dev.Test
                     }
                     Thread.Sleep(50);
                 }
-#if !NETSTANDARD1_3
+#if !NETSTANDARD1_4
                 }
                 catch (ThreadInterruptedException e)
                 {
@@ -201,7 +201,7 @@ namespace ICU4N.Dev.Test
 
             public override void Run()
             {
-#if !NETSTANDARD1_3
+#if !NETSTANDARD1_4
                 try
                 {
 #endif
@@ -210,7 +210,7 @@ namespace ICU4N.Dev.Test
                     Monitor.Wait(@lock);
                 }
                 target();
-#if !NETSTANDARD1_3
+#if !NETSTANDARD1_4
                 }
                 catch (ThreadInterruptedException e)
                 {

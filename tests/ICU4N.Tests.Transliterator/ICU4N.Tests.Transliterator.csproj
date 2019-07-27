@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="..\TestAssemblyInfo.cs" Link="Properties\TestAssemblyInfo.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Dev\Test\Util\" />
   </ItemGroup>
 
