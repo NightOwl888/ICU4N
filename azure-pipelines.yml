@@ -13,10 +13,9 @@ name: 'vNext$(rev:.r)' # Format for build number (will be overridden)
 # ArtifactFeedID set to your Azure DevOps Artifact (NuGet) feed
 # BuildConfiguration: 'Release'
 # BuildPlatform: 'Any CPU'
+# RunTests: 'true' (Optional - set to 'false' to disable test jobs - useful for debugging. If not provided, tests will be run.)
 
 variables:
-- name: RunTests
-  value: 'true'
 - name: TestTargetFrameworks
   value: 'netcoreapp2.0;netcoreapp1.0;net451'
 - name: BinaryArtifactName
@@ -69,7 +68,7 @@ stages:
   displayName: 'Test Stage:'
   jobs:
   - job: Test_netcoreapp2_0
-    condition: and(succeeded(), eq(variables['RunTests'], 'true'))
+    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
     strategy:
       matrix:
         Windows:
@@ -96,7 +95,7 @@ stages:
     - pwsh: Exit [int]([int]$TotalFailures -gt $(maximumAllowedFailures))
 
   - job: Test_netcoreapp1_0
-    condition: and(succeeded(), eq(variables['RunTests'], 'true'))
+    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
     strategy:
       matrix:
         Windows:
@@ -123,7 +122,7 @@ stages:
     - pwsh: Exit [int]([int]$TotalFailures -gt $(maximumAllowedFailures))
 
   - job: Test_net451
-    condition: and(succeeded(), eq(variables['RunTests'], 'true'))
+    condition: and(succeeded(), ne(variables['RunTests'], 'false'))
     displayName: 'Test net451 on Windows'
     pool:
       vmImage: 'windows-2019'
