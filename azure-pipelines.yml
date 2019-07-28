@@ -10,7 +10,7 @@ name: 'vNext$(rev:.r)' # Format for build number (will be overridden)
 
 # DevOps Setup: Define the following pipeline level variables in Azure DevOps build pipeline
 #
-# ArtifactFeedID set to your Azure DevOps Artifact (NuGet) feed
+# ArtifactFeedID: (Optional - set to your Azure DevOps Artifact (NuGet) feed. If not provided, publish job will be skipped.)
 # BuildConfiguration: 'Release'
 # BuildPlatform: 'Any CPU'
 # RunTests: 'true' (Optional - set to 'false' to disable test jobs - useful for debugging. If not provided, tests will be run.)
@@ -139,6 +139,7 @@ stages:
   displayName: 'Publish Stage:'
   jobs:
   - job: Publish
+    condition: and(succeeded(), ne(variables['ArtifactFeedID'], ''))
     pool:
       vmImage: 'windows-2019'
 
