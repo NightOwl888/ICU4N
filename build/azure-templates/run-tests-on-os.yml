@@ -12,6 +12,7 @@ parameters:
   testBinaryFilesPattern: '\.*\.Tests\.?\w*?.dll$' # The regex pattern (within $(System.DefaultWorkingDirectory)/**/<TargetFramework>) where to look for test .dll files, so they can be distinguished from other .dll file types.
   testResultsFileName: 'TestResults.trx' # The name of the file (not path) of the test results. Default 'TestResults.trx'.
   maximumParallelJobs: 8
+  maximumAllowedFailures: 0
 
 steps:
 - powershell: |
@@ -156,3 +157,10 @@ steps:
 - template: 'publish-test-results-for-test-projects.yml'
   parameters:
     osName: '${{ parameters.osName }}'
+
+- pwsh: |
+    $maximumAllowedFailures = '${{ parameters.maximumAllowedFailures }}'
+    if ([int]$Env:TOTALFAILURES -gt [int]$maximumAllowedFailures) {
+        Write-Host "##vso[task.logissue type=error;]Test run failed due to too many failed tests. Maximum failures allowed: $maximumAllowedFailures, total failures: $($Env:TOTALFAILURES)."
+        Write-Host "##vso[task.complete result=Failed;]"
+    }

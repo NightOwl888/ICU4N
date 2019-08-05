@@ -74,15 +74,15 @@ stages:
         Windows:
           osName: 'Windows'
           imageName: 'windows-2019'
-          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+          maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
           imageName: 'ubuntu-16.04'
-          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+          maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
           imageName: 'macOS-10.14'
-          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+          maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
     displayName: 'Test netcoreapp2.0 on'
     pool:
       vmImage: $(imageName)
@@ -92,7 +92,7 @@ stages:
         osName: $(osName)
         testTargetFrameworks: 'netcoreapp2.0'
         testResultsArtifactName: '$(TestResultsArtifactName)'
-    - pwsh: Exit [int]([int]$TotalFailures -gt $(maximumAllowedFailures))
+        maximumAllowedFailures: $(maximumAllowedFailures)
 
   - job: Test_netcoreapp1_0
     condition: and(succeeded(), ne(variables['RunTests'], 'false'))
@@ -101,15 +101,15 @@ stages:
         Windows:
           osName: 'Windows'
           imageName: 'windows-2019'
-          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+          maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         Linux:
           osName: 'Linux'
           imageName: 'ubuntu-16.04'
-          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+          maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
         macOS:
           osName: 'macOS'
           imageName: 'macOS-10.14'
-          maximumAllowedFailures: 8 # Maximum allowed failures for a successful build
+          maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
     displayName: 'Test netcoreapp1.0 on'
     pool:
       vmImage: $(imageName)
@@ -119,7 +119,7 @@ stages:
         osName: $(osName)
         testTargetFrameworks: 'netcoreapp1.0'
         testResultsArtifactName: '$(TestResultsArtifactName)'
-    - pwsh: Exit [int]([int]$TotalFailures -gt $(maximumAllowedFailures))
+        maximumAllowedFailures: $(maximumAllowedFailures)
 
   - job: Test_net451
     condition: and(succeeded(), ne(variables['RunTests'], 'false'))
@@ -132,7 +132,7 @@ stages:
         osName: 'Windows'
         testTargetFrameworks: 'net451'
         testResultsArtifactName: '$(TestResultsArtifactName)'
-    - pwsh: Exit [int]([int]$TotalFailures -gt 8) # Maximum allowed failures for a successful build
+        maximumAllowedFailures: 0 # Maximum allowed failures for a successful build
 
 
 - stage: Publish_Stage
