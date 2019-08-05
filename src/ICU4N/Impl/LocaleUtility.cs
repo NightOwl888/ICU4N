@@ -24,7 +24,7 @@ namespace ICU4N.Impl
             }
 
             // Strip off the config options
-            int optionsIndex = name.IndexOf("@");
+            int optionsIndex = name.IndexOf('@');
             if (optionsIndex > -1)
             {
                 // ICU4N TODO: Need to convert calendar, currency, number, and collation options by
@@ -138,7 +138,7 @@ namespace ICU4N.Impl
         //    */
         //   /*public static string canonicalLocaleString(string id) {
         //       if (id != null) {
-        //           int x = id.indexOf("_");
+        //           int x = id.indexOf('_');
         //           if (x == -1) {
         //               id = id.toLowerCase(Locale.ENGLISH);
         //           } else {
@@ -259,7 +259,7 @@ namespace ICU4N.Impl
             //}
 
             //// Strip off the config options
-            //int optionsIndex = name.IndexOf("@");
+            //int optionsIndex = name.IndexOf('@');
             //if (optionsIndex > -1)
             //{
             //    // ICU4N TODO: Need to convert calendar, currency, number, and collation options by

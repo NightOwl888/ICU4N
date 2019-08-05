@@ -266,11 +266,11 @@ namespace ICU4N.Dev.Test
         //{
         //    JavaVendor vendor = JavaVendor.Unknown;
         //    String javaVendorProp = System.getProperty("java.vendor", "").toLowerCase(Locale.US).trim();
-        //    if (javaVendorProp.startsWith("ibm"))
+        //    if (javaVendorProp.StartsWith("ibm", StringComparison.Ordinal))
         //    {
         //        vendor = JavaVendor.IBM;
         //    }
-        //    else if (javaVendorProp.startsWith("sun") || javaVendorProp.startsWith("oracle"))
+        //    else if (javaVendorProp.startsWith("sun", StringComparison.Ordinal) || javaVendorProp.startsWith("oracle", StringComparison.Ordinal))
         //    {
         //        vendor = JavaVendor.Oracle;
         //    }

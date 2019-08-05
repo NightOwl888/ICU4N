@@ -1890,7 +1890,7 @@ namespace ICU4N.Text
             {
                 colBund = transIDs.Get(row);
                 string ID = colBund.Key;
-                if (ID.IndexOf("-t-") >= 0)
+                if (ID.IndexOf("-t-", StringComparison.Ordinal) >= 0)
                 {
                     continue;
                 }

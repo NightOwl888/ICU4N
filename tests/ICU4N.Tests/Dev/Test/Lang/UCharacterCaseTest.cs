@@ -1724,7 +1724,7 @@ namespace ICU4N.Dev.Test.Lang
             int start = 0;
             for (int casecount = 4; casecount > 0; casecount--)
             {
-                int end = str.IndexOf("; ", start);
+                int end = str.IndexOf("; ", start, StringComparison.Ordinal);
                 String casestr = str.Substring(start, end - start); // ICU4N: Corrected 2nd parameter
                 StringBuffer buffer = new StringBuffer();
                 int spaceoffset = 0;
@@ -1743,7 +1743,7 @@ namespace ICU4N.Dev.Test.Lang
                 start = end + 2;
                 v.Add(buffer.ToString());
             }
-            int comments = str.IndexOf(" #", start);
+            int comments = str.IndexOf(" #", start, StringComparison.Ordinal);
             if (comments != -1 && comments != start)
             {
                 if (str[comments - 1] == ';')

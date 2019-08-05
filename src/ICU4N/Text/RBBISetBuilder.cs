@@ -159,7 +159,7 @@ namespace ICU4N.Text
         {
             RangeDescriptor rlRange;
 
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("usets") >= 0) { PrintSets(); }
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("usets", StringComparison.Ordinal) >= 0) { PrintSets(); }
 
             //  Initialize the process by creating a single range encompassing all characters
             //  that is in no sets.
@@ -232,7 +232,7 @@ namespace ICU4N.Text
                 }
             }
 
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("range") >= 0) { PrintRanges(); }
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("range", StringComparison.Ordinal) >= 0) { PrintRanges(); }
 
             //
             //  Group the above ranges, with each group consisting of one or more
@@ -293,8 +293,8 @@ namespace ICU4N.Text
             }
 
 
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("rgroup") >= 0) { PrintRangeGroups(); }
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("esets") >= 0) { PrintSets(); }
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("rgroup", StringComparison.Ordinal) >= 0) { PrintRangeGroups(); }
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("esets", StringComparison.Ordinal) >= 0) { PrintSets(); }
 
             fTrie = new Trie2Writable(0,       //   Initial value for all code points.
                                       0);      //   Error value for out-of-range input.

@@ -479,8 +479,8 @@ namespace ICU4N.Util
             string sub1 = "{1}";
             ICUResourceBundle locDispBundle = (ICUResourceBundle)langBundle.Get(LOCALE_DISPLAY_PATTERN);
             string localeSeparator = locDispBundle.GetStringWithFallback(SEPARATOR);
-            int index0 = localeSeparator.IndexOf(sub0);
-            int index1 = localeSeparator.IndexOf(sub1);
+            int index0 = localeSeparator.IndexOf(sub0, StringComparison.Ordinal);
+            int index1 = localeSeparator.IndexOf(sub1, StringComparison.Ordinal);
             if (index0 >= 0 && index1 >= 0 && index0 <= index1)
             {
                 return localeSeparator.Substring(index0 + sub0.Length, index1 - (index0 + sub0.Length)); // ICU4N: Corrected 2nd parameter

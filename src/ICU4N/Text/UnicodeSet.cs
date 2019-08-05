@@ -3821,7 +3821,7 @@ namespace ICU4N.Text
             }
 
             // Look for the matching close delimiter, either :] or }
-            int close = pattern.IndexOf(posix ? ":]" : "}", pos);
+            int close = pattern.IndexOf(posix ? ":]" : "}", pos, StringComparison.Ordinal);
             if (close < 0)
             {
                 // Syntax error; close delimiter missing

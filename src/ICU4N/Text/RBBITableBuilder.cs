@@ -96,7 +96,7 @@ namespace ICU4N.Text
             //   parse tree for the substition expression.
             //
             fRB.fTreeRoots[fRootIx] = fRB.fTreeRoots[fRootIx].FlattenVariables();
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("ftree") >= 0)
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("ftree", StringComparison.Ordinal) >= 0)
             {
                 Console.Out.WriteLine("Parse tree after flattening variable references.");
                 fRB.fTreeRoots[fRootIx].PrintTree(true);
@@ -136,7 +136,7 @@ namespace ICU4N.Text
             //      expression.
             //
             fRB.fTreeRoots[fRootIx].FlattenSets();
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("stree") >= 0)
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("stree", StringComparison.Ordinal) >= 0)
             {
                 Console.Out.WriteLine("Parse tree after flattening Unicode Set references.");
                 fRB.fTreeRoots[fRootIx].PrintTree(true);
@@ -154,7 +154,7 @@ namespace ICU4N.Text
             CalcFirstPos(fRB.fTreeRoots[fRootIx]);
             CalcLastPos(fRB.fTreeRoots[fRootIx]);
             CalcFollowPos(fRB.fTreeRoots[fRootIx]);
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("pos") >= 0)
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("pos", StringComparison.Ordinal) >= 0)
             {
                 Console.Out.Write("\n");
                 PrintPosSets(fRB.fTreeRoots[fRootIx]);
@@ -191,7 +191,7 @@ namespace ICU4N.Text
             //
             MergeRuleStatusVals();
 
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("states") >= 0) { PrintStates(); }
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("states", StringComparison.Ordinal) >= 0) { PrintStates(); }
         }
 
 

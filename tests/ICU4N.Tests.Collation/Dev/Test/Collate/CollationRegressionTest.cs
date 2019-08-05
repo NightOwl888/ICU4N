@@ -385,7 +385,7 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
 
-            if (c.GetRules().IndexOf("c/a") == -1)
+            if (c.GetRules().IndexOf("c/a", StringComparison.Ordinal) == -1)
             {
                 Errln("returned rules do not contain 'c/a'");
             }

@@ -80,7 +80,7 @@ namespace ICU4N.Impl
             object result = GetKey(key, temp);
             if (result != null)
             {
-                int n = temp[0].IndexOf("/");
+                int n = temp[0].IndexOf('/');
                 if (n >= 0)
                 {
                     temp[0] = temp[0].Substring(n + 1);

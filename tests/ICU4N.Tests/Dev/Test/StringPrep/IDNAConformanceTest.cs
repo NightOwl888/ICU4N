@@ -66,7 +66,7 @@ namespace ICU4N.Dev.Test.StringPrep
                         //by default STD3 rules are not used, but if the description
                         //includes UseSTD3ASCIIRules, we will set it.
                         if (desc.ToLowerInvariant().IndexOf(
-                                "UseSTD3ASCIIRules".ToLowerInvariant()) == -1)
+                                "UseSTD3ASCIIRules".ToLowerInvariant(), StringComparison.Ordinal) == -1)
                         {
                             result = IDNA.ConvertIDNToASCII(namebase,
                                     IDNA2003Options.AllowUnassigned).ToString();
@@ -123,7 +123,7 @@ namespace ICU4N.Dev.Test.StringPrep
                         //by default STD3 rules are not used, but if the description
                         //includes UseSTD3ASCIIRules, we will set it.
                         if (desc.ToLowerInvariant().IndexOf(
-                                "UseSTD3ASCIIRules".ToLowerInvariant()) == -1)
+                                "UseSTD3ASCIIRules".ToLowerInvariant(), StringComparison.Ordinal) == -1)
                         {
                             result = IDNA.ConvertIDNToUnicode(namebase,
                                     IDNA2003Options.AllowUnassigned).ToString();
@@ -308,7 +308,7 @@ namespace ICU4N.Dev.Test.StringPrep
                         String body = "";//value
 
                         //get attr and body from line input, and then set them into each hash item.
-                        int postion = tempStr.IndexOf(":");
+                        int postion = tempStr.IndexOf(':');
                         if (postion > -1)
                         {
                             attr = tempStr.Substring(0, postion).Trim(); // ICU4N: Checked 2nd parameter

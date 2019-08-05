@@ -118,7 +118,7 @@ namespace ICU4N.Impl.Locale
             bool sawSubtag = false;
             while (true)
             {
-                int idx = s.IndexOf(LanguageTag.SEP, startIdx);
+                int idx = s.IndexOf(LanguageTag.SEP, startIdx, StringComparison.Ordinal);
                 string subtag = idx < 0 ? s.Substring(startIdx) : s.Substring(startIdx, idx - startIdx); // ICU4N: Corrected 2nd parameter
                 if (!IsTypeSubtag(subtag))
                 {

@@ -2479,7 +2479,7 @@ namespace ICU4N.Dev.Test.Translit
             catch (ArgumentException e)
             {
                 String err = e.Message;
-                if (err.IndexOf("d << b") >= 0)
+                if (err.IndexOf("d << b", StringComparison.Ordinal) >= 0)
                 {
                     Logln("Ok: " + err);
                 }
@@ -2559,7 +2559,7 @@ namespace ICU4N.Dev.Test.Translit
             catch (ArgumentException e)
             {
                 String msg = e.ToString();
-                if (msg.IndexOf("a}b{c") >= 0)
+                if (msg.IndexOf("a}b{c", StringComparison.Ordinal) >= 0)
                 {
                     Logln("Ok: " + msg);
                 }

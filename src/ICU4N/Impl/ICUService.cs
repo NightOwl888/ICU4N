@@ -538,7 +538,7 @@ namespace ICU4N.Impl
                         if (actualReturn != null)
                         {
                             // strip null prefix
-                            if (result.actualDescriptor.IndexOf("/") == 0)
+                            if (result.actualDescriptor.IndexOf('/') == 0)
                             {
                                 actualReturn[0] = result.actualDescriptor.Substring(1);
                             }

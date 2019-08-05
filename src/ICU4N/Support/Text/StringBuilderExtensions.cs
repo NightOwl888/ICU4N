@@ -191,7 +191,7 @@ namespace ICU4N.Support.Text
         /// <param name="text">This <see cref="StringBuilder"/>.</param>
         /// <param name="value">The string to find.</param>
         /// <returns>The index of the specified character, or -1 if the character isn't found.</returns>
-        public static int IndexOf(this StringBuilder text, string value)
+        public static int IndexOf(this StringBuilder text, string value) // ICU4N TODO: API - make this culture sensitive and add overload that accepts StringComparison
         {
             return IndexOf(text, value, 0);
         }

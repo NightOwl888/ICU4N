@@ -750,7 +750,7 @@ namespace ICU4N.Dev.Test.Lang
                     int ch = int.Parse(fields[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
                     // testing the general category
-                    int type = TYPE.IndexOf(fields[2]);
+                    int type = TYPE.IndexOf(fields[2], StringComparison.Ordinal);
                     if (type < 0)
                         type = 0;
                     else
@@ -790,7 +790,7 @@ namespace ICU4N.Dev.Test.Lang
                     if (d.Length == 1)
                         d = d + "   ";
 
-                    int dir = DIR.IndexOf(d) >> 2;
+                    int dir = DIR.IndexOf(d, StringComparison.Ordinal) >> 2;
                     if (UChar.GetDirection(ch).ToInt32() != dir)
                     {
                         Errln("FAIL \\u" + Hex(ch) +
@@ -926,7 +926,7 @@ namespace ICU4N.Dev.Test.Lang
                     }
                     catch (Exception e)
                     {
-                        if (e.Message.IndexOf("unames.icu") >= 0)
+                        if (e.Message.IndexOf("unames.icu", StringComparison.Ordinal) >= 0)
                         {
                             numErrors++;
                         }
@@ -1328,7 +1328,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             catch (ArgumentException e)
             {
-                if (e.Message.IndexOf("unames.icu") >= 0)
+                if (e.Message.IndexOf("unames.icu", StringComparison.Ordinal) >= 0)
                 {
                     Warnln("Could not find unames.icu");
                 }
@@ -1553,7 +1553,7 @@ namespace ICU4N.Dev.Test.Lang
                 // true error the code will call errln, which will throw the error, which
                 // this will catch, which this will then rethrow the error.  Just seems
                 // cumbersome.
-                if (e.Message.IndexOf("unames.icu") >= 0)
+                if (e.Message.IndexOf("unames.icu", StringComparison.Ordinal) >= 0)
                 {
                     Warnln("Could not find unames.icu");
                 }
@@ -2940,8 +2940,8 @@ namespace ICU4N.Dev.Test.Lang
                 {
                     String name = UChar.GetName(start);
 
-                    if ((name.IndexOf("SMALL") < 0 || name.IndexOf("CAPITAL") < -1) &&
-                        name.IndexOf("SMALL CAPITAL") == -1
+                    if ((name.IndexOf("SMALL", StringComparison.Ordinal) < 0 || name.IndexOf("CAPITAL", StringComparison.Ordinal) < -1) &&
+                        name.IndexOf("SMALL CAPITAL", StringComparison.Ordinal) == -1
                     )
                     {
                         Logln("info: [:Lowercase:] contains U+" + Hex(start) + " whose name does not suggest lowercase: " + name);

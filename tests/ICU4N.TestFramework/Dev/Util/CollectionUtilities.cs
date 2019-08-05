@@ -609,7 +609,7 @@
 //}
 //public boolean isIncluded(Object item)
 //{
-//    return ((String)item).startsWith(prefix);
+//    return ((String)item).StartsWith(prefix, StringComparison.Ordinal);
 //}
 //    }
 

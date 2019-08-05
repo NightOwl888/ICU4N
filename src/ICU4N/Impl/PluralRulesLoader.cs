@@ -188,7 +188,7 @@ namespace ICU4N.Impl
             string rulesId = null;
             while (!idMap.TryGetValue(localeId, out rulesId) || null == rulesId)
             {
-                int ix = localeId.LastIndexOf("_");
+                int ix = localeId.LastIndexOf('_');
                 if (ix == -1)
                 {
                     break;
@@ -325,7 +325,7 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
             while (!localeIdToPluralRanges.TryGetValue(localeId, out result) || null == result)
             {
-                int ix = localeId.LastIndexOf("_");
+                int ix = localeId.LastIndexOf('_');
                 if (ix == -1)
                 {
                     result = UnknownRange;

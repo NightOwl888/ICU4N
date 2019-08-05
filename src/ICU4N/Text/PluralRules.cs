@@ -1,5 +1,6 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Collections;
+using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;
 using System.Collections.Generic;
@@ -947,11 +948,11 @@ namespace ICU4N.Text
                 bool haveBound = false;
                 ICollection<FixedDecimalRange> samples2 = new List<FixedDecimalRange>(); // new LinkedHashSet<FixedDecimalRange>();
 
-                if (source.StartsWith("integer"))
+                if (source.StartsWith("integer", StringComparison.Ordinal))
                 {
                     sampleType2 = PluralRulesSampleType.Integer;
                 }
-                else if (source.StartsWith("decimal"))
+                else if (source.StartsWith("decimal", StringComparison.Ordinal))
                 {
                     sampleType2 = PluralRulesSampleType.Decimal;
                 }
@@ -1485,7 +1486,7 @@ namespace ICU4N.Text
         {
             RuleList result = new RuleList();
             // remove trailing ;
-            if (description.EndsWith(";"))
+            if (description.EndsWith(";", StringComparison.Ordinal))
             {
                 description = description.Substring(0, description.Length - 1); // ICU4N: Checked 2nd arg
             }
@@ -2577,7 +2578,7 @@ namespace ICU4N.Text
         [Obsolete("This API is ICU internal only.")]
         public virtual int CompareTo(PluralRules other)
         {
-            return ToString().CompareTo(other.ToString());
+            return ToString().CompareToOrdinal(other.ToString());
         }
 
         /// <internal/>

@@ -427,7 +427,7 @@ namespace ICU4N.Dev.Test.Format
         {
             ChoiceFormat fmt = new ChoiceFormat(
               "-\u221E<are negative|0<are no or fraction|1#is one|1.0<is 1+|\u221E<are many.");
-            if (!fmt.ToPattern().StartsWith("-\u221E<are negative|0.0<are no or fraction|1.0#is one|1.0<is 1+|\u221E<are many."))
+            if (!fmt.ToPattern().StartsWith("-\u221E<are negative|0.0<are no or fraction|1.0#is one|1.0<is 1+|\u221E<are many.", StringComparison.Ordinal))
                 Errln("Formatter Pattern : " + fmt.ToPattern());
             Logln("Format with -INF : " + fmt.Format(double.NegativeInfinity));
             Logln("Format with -1.0 : " + fmt.Format(-1.0));
@@ -570,8 +570,8 @@ namespace ICU4N.Dev.Test.Format
                 }
                 else
                 {
-                    if (!@out.StartsWith(PREFIX[i]) ||
-                        !@out.EndsWith(SUFFIX[i]))
+                    if (!@out.StartsWith(PREFIX[i], StringComparison.Ordinal) ||
+                        !@out.EndsWith(SUFFIX[i], StringComparison.Ordinal))
                         Errln("" + i + ": Got \"" + @out + "\"; Want \"" + PREFIX[i] + "\"...\"" +
                               SUFFIX[i] + "\"");
                 }

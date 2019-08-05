@@ -324,7 +324,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
                 // thisRule.fExpandedRule = thisRule.fExpandedRule.replace("÷", "(?<BreakPosition>)");
                 thisRule.fExpandedRule = thisRule.fExpandedRule.Replace("÷", "()");
-                if (thisRule.fExpandedRule.IndexOf("÷") != -1)
+                if (thisRule.fExpandedRule.IndexOf('÷') != -1)
                 {
                     String msg = String.Format("{0} Rule {1} contains multiple ÷ signs", fMonkeyImpl.fRuleFileName, name);
                     Console.Error.WriteLine(msg);

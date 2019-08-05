@@ -1783,12 +1783,12 @@ namespace ICU4N.Impl
                     keyPath = rpath.Substring(j + 1, rpath.Length - (j + 1)); // ICU4N: Corrected 2nd parameter
                 }
                 //there is a path included
-                if (bundleName.Equals(ICUDATA))
+                if (bundleName.Equals(ICUDATA, StringComparison.Ordinal))
                 {
                     bundleName = ICUData.ICU_BASE_NAME;
                     loaderToUse = ICU_DATA_CLASS_LOADER;
                 }
-                else if (bundleName.IndexOf(ICUDATA) > -1)
+                else if (bundleName.IndexOf(ICUDATA, StringComparison.Ordinal) > -1)
                 {
                     int idx = bundleName.IndexOf(HYPHEN);
                     if (idx > -1)

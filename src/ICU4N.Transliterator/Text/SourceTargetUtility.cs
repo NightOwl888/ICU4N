@@ -93,7 +93,7 @@ namespace ICU4N.Text
                 // see if any of the non-starters change s; if so, add i
                 //            for (String ns : TRAILING_COMBINING) {
                 //                String s2 = transform.transform(s + ns);
-                //                if (!s2.startsWith(s)) {
+                //                if (!s2.StartsWith(s, StringComparison.Ordinal)) {
                 //                    sourceCache.add(i);
                 //                    break;
                 //                }

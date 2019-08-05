@@ -1229,8 +1229,8 @@ namespace ICU4N.Text
             //    int desiredRulesType = RuleBasedNumberFormat.NUMBERING_SYSTEM;
 
             //    nsDesc = ns.Description;
-            //    int firstSlash = nsDesc.IndexOf("/");
-            //    int lastSlash = nsDesc.LastIndexOf("/");
+            //    int firstSlash = nsDesc.IndexOf('/');
+            //    int lastSlash = nsDesc.LastIndexOf('/');
 
             //    if (lastSlash > firstSlash)
             //    {

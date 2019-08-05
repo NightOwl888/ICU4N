@@ -1388,10 +1388,10 @@ namespace ICU4N.Dev.Test.Util
 
         private bool checkInclusion(ULocale dl, String name, String substring, String substringName)
         {
-            if (substring.Length > 0 && name.IndexOf(substring) == -1)
+            if (substring.Length > 0 && name.IndexOf(substring, StringComparison.Ordinal) == -1)
             {
                 String country2 = substring.Replace('(', '[').Replace(')', ']').Replace('（', '［').Replace('）', '］');
-                if (name.IndexOf(country2) == -1)
+                if (name.IndexOf(country2, StringComparison.Ordinal) == -1)
                 {
                     Errln("loc: " + dl + " name '" + name + "' does not contain " +
                             substringName +

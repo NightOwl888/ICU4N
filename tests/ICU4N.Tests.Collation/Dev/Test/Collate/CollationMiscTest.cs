@@ -2529,7 +2529,7 @@ namespace ICU4N.Dev.Test.Collate
                         Logln(tryLocale + " : " + canon + ", ");
                     }
                     String can = canon.ToString();
-                    int idx = can.IndexOf("@collation=");
+                    int idx = can.IndexOf("@collation=", StringComparison.Ordinal);
                     String val = idx >= 0 ? can.Substring(idx + 11, can.Length - (idx + 11)) : ""; // ICU4N: Corrected 2nd substring parameter
                     if (val.Length > 0 && !foundValues.Contains(val))
                     {

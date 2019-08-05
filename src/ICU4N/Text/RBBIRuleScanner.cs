@@ -246,7 +246,7 @@ namespace ICU4N.Text
                         FixOpStack(RBBINode.precStart); // Terminate expression, leaves
                                                         // expression
 
-                        if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("rtree") >= 0)
+                        if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("rtree", StringComparison.Ordinal) >= 0)
                         {
                             PrintNodeStack("end of rule");
                         }
@@ -948,7 +948,7 @@ namespace ICU4N.Text
                 //    the search will stop there, if not before.
                 //
                 tableEl = RBBIRuleParseTable.gRuleParseStateTable[state];
-                if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("scan") >= 0)
+                if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("scan", StringComparison.Ordinal) >= 0)
                 {
                     Console.Out.WriteLine("char, line, col = (\'" + (char)fC.fChar
                             + "\', " + fLineNum + ", " + fCharNum + "    state = "
@@ -958,7 +958,7 @@ namespace ICU4N.Text
                 for (int tableRow = state; ; tableRow++)
                 { // loop over the state table rows associated with this state.
                     tableEl = RBBIRuleParseTable.gRuleParseStateTable[tableRow];
-                    if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("scan") >= 0)
+                    if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("scan", StringComparison.Ordinal) >= 0)
                     {
                         Console.Out.Write(".");
                     }
@@ -1006,7 +1006,7 @@ namespace ICU4N.Text
                     }
                 }
 
-                if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("scan") >= 0)
+                if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("scan", StringComparison.Ordinal) >= 0)
                 {
                     Console.Out.WriteLine("");
                 }
@@ -1082,11 +1082,11 @@ namespace ICU4N.Text
             // We now have a parse tree for the rule expressions
             // and a list of all UnicodeSets that are referenced.
             //
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("symbols") >= 0)
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("symbols", StringComparison.Ordinal) >= 0)
             {
                 fSymbolTable.RbbiSymtablePrint();
             }
-            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("ptree") >= 0)
+            if (fRB.fDebugEnv != null && fRB.fDebugEnv.IndexOf("ptree", StringComparison.Ordinal) >= 0)
             {
                 Console.Out.WriteLine("Completed Forward Rules Parse Tree...");
                 fRB.fTreeRoots[RBBIRuleBuilder.fForwardTree].PrintTree(true);

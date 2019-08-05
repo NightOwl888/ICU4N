@@ -18,7 +18,7 @@ namespace ICU4N.Impl
             // ICU4N TODO: Fix debugging so it makes sense in .NET
             parameters = SystemProperties.GetProperty("ICUDebug");
             debug = parameters != null;
-            help = debug && (parameters.Equals("") || parameters.IndexOf("help") != -1);
+            help = debug && (parameters.Equals("") || parameters.IndexOf("help", StringComparison.Ordinal) != -1);
             if (debug)
             {
                 Console.Out.WriteLine("\nICUDebug=" + parameters);
@@ -91,7 +91,7 @@ namespace ICU4N.Impl
         {
             if (debug)
             {
-                bool result = parameters.IndexOf(arg) != -1;
+                bool result = parameters.IndexOf(arg, StringComparison.Ordinal) != -1;
                 if (help) Console.Out.WriteLine("\nICUDebug.enabled(" + arg + ") = " + result);
                 return result;
             }
@@ -110,7 +110,7 @@ namespace ICU4N.Impl
                     if (parameters.Length > index && parameters[index] == '=')
                     {
                         index += 1;
-                        int limit = parameters.IndexOf(",", index);
+                        int limit = parameters.IndexOf(",", index, StringComparison.Ordinal);
                         result = parameters.Substring(index, (limit == -1 ? parameters.Length : limit) - index); // ICU4N: Corrected 2nd parameter
                     }
                     else

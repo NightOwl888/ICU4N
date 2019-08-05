@@ -1293,7 +1293,7 @@ namespace ICU4N.Util
             for (int i = 0; i < variantsToKeywords.Length; i++)
             {
                 string[] vals = variantsToKeywords[i];
-                int idx = baseName.LastIndexOf("_" + vals[0]);
+                int idx = baseName.LastIndexOf("_" + vals[0], StringComparison.Ordinal);
                 if (idx > -1)
                 {
                     foundVariant = true;
@@ -1483,7 +1483,7 @@ namespace ICU4N.Util
                 {
                     return false;
                 }
-                int langIndex = LANG_DIR_STRING.IndexOf(lang);
+                int langIndex = LANG_DIR_STRING.IndexOf(lang, StringComparison.Ordinal);
                 if (langIndex >= 0)
                 {
                     switch (LANG_DIR_STRING[langIndex + lang.Length])
@@ -3269,7 +3269,7 @@ namespace ICU4N.Util
 
             if (!string.IsNullOrEmpty(variant))
             {
-                int index = localeID.IndexOf(variant);
+                int index = localeID.IndexOf(variant, StringComparison.Ordinal);
 
 
                 return index > 0 ? index - 1 : index;
@@ -4616,7 +4616,7 @@ namespace ICU4N.Util
 
                 //for (int i = 0; i < NET_MAPDATA.Length; i++)
                 //{
-                //    if (newName.StartsWith(NET_MAPDATA[i][1]) & NET_MAPDATA[i][2] != null)
+                //    if (newName.StartsWith(NET_MAPDATA[i][1], StringComparison.Ordinal) & NET_MAPDATA[i][2] != null)
                 //    {
                 //        string sep = newName.Contains("@") ? ";" : "@";
                 //        newName += string.Concat(sep, NET_MAPDATA[i][2], "=", NET_MAPDATA[i][3]);
@@ -4637,7 +4637,7 @@ namespace ICU4N.Util
                 }
 
                 // Strip off the config options
-                int optionsIndex = name.IndexOf("@");
+                int optionsIndex = name.IndexOf('@');
                 if (optionsIndex > -1)
                 {
                     // ICU4N TODO: Need to convert calendar, currency, number, and collation options by

@@ -358,7 +358,7 @@ namespace ICU4N.Text
             builder.fSafeFwdTables.Build();
             builder.fSafeRevTables.Build();
             if (builder.fDebugEnv != null
-                    && builder.fDebugEnv.IndexOf("states") >= 0)
+                    && builder.fDebugEnv.IndexOf("states", StringComparison.Ordinal) >= 0)
             {
                 builder.fForwardTables.PrintRuleStatusTable();
             }

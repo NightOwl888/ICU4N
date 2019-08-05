@@ -203,7 +203,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
                             if (testString.StartsWith("<locale ", charIdx - 1))
                             {
-                                int closeIndex = testString.IndexOf(">", charIdx);
+                                int closeIndex = testString.IndexOf('>', charIdx);
                                 if (closeIndex < 0)
                                 {
                                     Errln("line" + lineNum + ": missing close on <locale  tag.");

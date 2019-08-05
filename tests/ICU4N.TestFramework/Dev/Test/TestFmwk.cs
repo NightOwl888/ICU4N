@@ -218,7 +218,7 @@ namespace ICU4N.Dev.Test
             {
                 bool isCldr = false;
                 ticket = ticket.ToLowerInvariant();
-                if (ticket.StartsWith(CLDR_TICKET_PREFIX))
+                if (ticket.StartsWith(CLDR_TICKET_PREFIX, StringComparison.Ordinal))
                 {
                     isCldr = true;
                     ticket = ticket.Substring(CLDR_TICKET_PREFIX.Length);
@@ -947,7 +947,7 @@ namespace ICU4N.Dev.Test
                     if (line.Contains("System.Environment.GetStackTrace") || line.Contains("get_StackTrace"))
                         continue;
 
-                    if (line.TrimStart().StartsWith("at NUnit.") || line.TrimStart().StartsWith("at Microsoft.VisualStudio") || line.Contains("Invoke"))
+                    if (line.TrimStart().StartsWith("at NUnit.", StringComparison.Ordinal) || line.TrimStart().StartsWith("at Microsoft.VisualStudio", StringComparison.Ordinal) || line.Contains("Invoke"))
                         continue;
 
                     if (line.Contains("TestFmwk.cs") || line.Contains("AbstractTestLog.cs"))

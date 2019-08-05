@@ -1040,7 +1040,7 @@ namespace ICU4N.Text
                     // Skip lines starting with the comment character
                     if (c == RULE_COMMENT_CHAR)
                     {
-                        pos = rule.IndexOf("\n", pos) + 1;
+                        pos = rule.IndexOf('\n', pos) + 1;
                         if (pos == 0)
                         {
                             break; // No "\n" found; rest of rule is a commnet

@@ -283,12 +283,12 @@ namespace ICU4N.Dev.Test.Lang
                     Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
                 }
                 String id = UScript.GetName(code);
-                if (id.IndexOf("INVALID") >= 0)
+                if (id.IndexOf("INVALID", StringComparison.Ordinal) >= 0)
                 {
                     Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
                 }
                 String abbr = UScript.GetShortName(code);
-                if (abbr.IndexOf("INV") >= 0)
+                if (abbr.IndexOf("INV", StringComparison.Ordinal) >= 0)
                 {
                     Errln("UScript.getScript for codepoint 0x" + Hex(i) + " failed");
                 }

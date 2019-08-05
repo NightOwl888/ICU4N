@@ -269,7 +269,7 @@ namespace ICU4N.Text
         /// Debugging flag.  Trace operation of state machine when true.
         /// </summary>
         private static readonly bool TRACE = ICUDebug.Enabled(RBBI_DEBUG_ARG)
-                && ICUDebug.Value(RBBI_DEBUG_ARG).IndexOf("trace") >= 0;
+                && ICUDebug.Value(RBBI_DEBUG_ARG).IndexOf("trace", StringComparison.Ordinal) >= 0;
 
         /// <summary>
         /// What kind of break iterator this is.

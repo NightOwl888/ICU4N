@@ -310,7 +310,7 @@ namespace ICU4N.Text
             This.fRuleSource = ICUBinary.GetString(
                     bytes, This.fHeader.fRuleSourceLen / 2, This.fHeader.fRuleSourceLen & 1);
 
-            if (RuleBasedBreakIterator.fDebugEnv != null && RuleBasedBreakIterator.fDebugEnv.IndexOf("data") >= 0)
+            if (RuleBasedBreakIterator.fDebugEnv != null && RuleBasedBreakIterator.fDebugEnv.IndexOf("data", StringComparison.Ordinal) >= 0)
             {
                 This.Dump(Console.Out);
             }

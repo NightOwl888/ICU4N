@@ -115,7 +115,7 @@ namespace ICU4N.Impl
         private static void CheckStreamForBinaryData(Stream input, string resourceName)
         {
             // ICU4N specific - only check the data if the stream is seekable
-            if (logBinaryDataFromInputStream && input != null && input.CanSeek && resourceName.IndexOf(PACKAGE_NAME) >= 0)
+            if (logBinaryDataFromInputStream && input != null && input.CanSeek && resourceName.IndexOf(PACKAGE_NAME, StringComparison.Ordinal) >= 0)
             {
                 try
                 {
