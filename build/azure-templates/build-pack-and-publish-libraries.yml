@@ -61,7 +61,7 @@ steps:
     command: custom
     projects: '${{ parameters.solutionFilesConvention }}'
     custom: build
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity Detailed /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:TestAllTargetFrameworks=true'
+    arguments: '--configuration ${{ parameters.buildConfiguration }} --verbosity Detailed /p:Platform="${{ parameters.buildPlatform }}" /p:InformationalVersion="${{ parameters.informationalVersion }}" /p:FileVersion="${{ parameters.fileVersion }}" /p:AssemblyVersion="${{ parameters.assemblyVersion }}" /p:TestAllTargetFrameworks=true /p:PortableDebugTypeOnly=true'
 
   # Packs the project binaries into .nupkg files (NuGet).
   # Note that we are outputting .symbols.nupkg files as well 
@@ -74,7 +74,7 @@ steps:
       ${{ parameters.packableProjectFilesConvention }}
       !${{ parameters.testProjectFilesConvention }}
     custom: pack
-    arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}" --no-build --include-symbols --include-source --verbosity Detailed /p:PackageVersion="${{ parameters.packageVersion }}"'
+    arguments: '--configuration ${{ parameters.buildConfiguration }} --output "$(Build.ArtifactStagingDirectory)/${{ parameters.nugetArtifactName }}" --no-build --verbosity Detailed /p:PackageVersion="${{ parameters.packageVersion }}"'
 
   # Copy the .pdb files as build artifacts, which will later be used
   # to push to the Azure Artifacts symbol server.
