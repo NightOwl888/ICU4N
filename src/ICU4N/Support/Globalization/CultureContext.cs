@@ -10,7 +10,7 @@ namespace ICU4N.Support.Globalization
     /// Allows switching the current thread to a new culture in a using block that will automatically 
     /// return the culture to its previous state upon completion.
     /// </summary>
-    public class CultureContext : IDisposable
+    public sealed class CultureContext : IDisposable
     {
 #if !NETSTANDARD
         public CultureContext(int culture)
@@ -42,9 +42,9 @@ namespace ICU4N.Support.Globalization
         public CultureContext(CultureInfo culture, CultureInfo uiCulture)
         {
             if (culture == null)
-                throw new ArgumentNullException("culture");
+                throw new ArgumentNullException(nameof(culture));
             if (uiCulture == null)
-                throw new ArgumentNullException("uiCulture");
+                throw new ArgumentNullException(nameof(uiCulture));
 #if !NETSTANDARD
             this.currentThread = Thread.CurrentThread;
 #endif

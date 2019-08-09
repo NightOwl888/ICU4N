@@ -1,10 +1,15 @@
 <Project>
   <PropertyGroup Label="NuGet Package Reference Versions">
     <MicrosoftCSharpPackageReferenceVersion>4.4.0</MicrosoftCSharpPackageReferenceVersion>
-    <MicrosoftNETTestSdkPackageVersion>16.1.1</MicrosoftNETTestSdkPackageVersion>
-    <NerdBankGitVersioningPackageVersion>[2.3.183]</NerdBankGitVersioningPackageVersion>
-    <NETStandardLibrary20PackageVersion>2.0.3</NETStandardLibrary20PackageVersion>
-    <NUnitPackageVersion>3.12.0</NUnitPackageVersion>
-    <NUnit3TestAdapterPackageVersion>3.13.0</NUnit3TestAdapterPackageVersion>
+    <MicrosoftNETTestSdkPackageReferenceVersion>16.1.1</MicrosoftNETTestSdkPackageReferenceVersion>
+    <NerdBankGitVersioningPackageReferenceVersion>[2.3.183]</NerdBankGitVersioningPackageReferenceVersion>
+    <NETStandardLibrary20PackageReferenceVersion>2.0.3</NETStandardLibrary20PackageReferenceVersion>
+    <NUnitPackageReferenceVersion>3.12.0</NUnitPackageReferenceVersion>
+    <NUnit3TestAdapterPackageReferenceVersion>3.13.0</NUnit3TestAdapterPackageReferenceVersion>
+    <SystemIOMemoryMappedFilesPackageReferenceVersion>4.3.0</SystemIOMemoryMappedFilesPackageReferenceVersion>
+    <SystemReflectionTypeExtensionsPackageReferenceVersion>4.4.0</SystemReflectionTypeExtensionsPackageReferenceVersion>
+    <SystemResourcesResourceManagerPackageReferenceVersion>4.3.0</SystemResourcesResourceManagerPackageReferenceVersion>
+    <SystemRuntimePackageReferenceVersion>4.3.0</SystemRuntimePackageReferenceVersion>
+    <SystemThreadingThreadPackageReferenceVersion>4.3.0</SystemThreadingThreadPackageReferenceVersion>
   </PropertyGroup>
 </Project>

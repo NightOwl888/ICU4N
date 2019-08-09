@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard1.3;net45</TargetFrameworks>
     <RootNamespace>ICU4N</RootNamespace>
   </PropertyGroup>
 
@@ -9,6 +9,11 @@
     <AssemblyTitle>ICU4N.Collation</AssemblyTitle>
     <Description>Rule-based collation support for ICU4N. ICU (International Components for Unicode) is a set of libraries providing Unicode and Globalization support for software applications. ICU4N is a .NET port of ICU4J.</Description>
     <PackageTags>$(PackageTags);collation;collator;rule-based</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <DefineConstants>$(DefineConstants);NETSTANDARD;FEATURE_SERIALIZABLE</DefineConstants>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard1.3' ">
