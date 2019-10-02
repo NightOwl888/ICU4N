@@ -30,7 +30,7 @@ namespace ICU4N.Impl.Locale
     {
         public enum ValueType // ICU4N TODO: API de-nest and rename KeyTypeDataValueType
         {
-            single, multiple, incremental, any // ICU4N TODO: API rename elements for .NET conventions
+            Single, Multiple, Incremental, Any // ICU4N TODO: API rename elements for .NET conventions
         }
 
         internal abstract class SpecialTypeHandler
