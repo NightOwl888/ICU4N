@@ -68,6 +68,43 @@ namespace ICU4N.Util
     }
 
     /// <summary>
+    /// Delimiter types for <see cref="LocaleData.GetDelimiter(DelimiterType)"/>.
+    /// </summary>
+    /// <stable>ICU 3.4</stable>
+    public enum DelimiterType
+    {
+        /// <summary>
+        /// Delimiter type for <see cref="LocaleData.GetDelimiter(DelimiterType)"/>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        QuotationStart = 0,
+
+        /// <summary>
+        /// Delimiter type for <see cref="LocaleData.GetDelimiter(DelimiterType)"/>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        QuotationEnd = 1,
+
+        /// <summary>
+        /// Delimiter type for <see cref="LocaleData.GetDelimiter(DelimiterType)"/>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        AlternateQuotationStart = 2,
+
+        /// <summary>
+        /// Delimiter type for <see cref="LocaleData.GetDelimiter(DelimiterType)"/>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        AlternateQuotationEnd = 3,
+
+        ///// <summary>
+        ///// Count of delimiter types for <see cref="LocaleData.GetDelimiter(DelimiterType)"/>.
+        ///// </summary>
+        //[Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        //Count = 4
+    }
+
+    /// <summary>
     /// A class for accessing miscellaneous data in the locale bundles
     /// </summary>
     /// <author>ram</author>
@@ -86,35 +123,7 @@ namespace ICU4N.Util
 
         // ICU4N specific - moved ES_ (exemplar set type) constants to ExemplarSetType enum and de-nested
 
-        /// <summary>
-        /// Delimiter type for <see cref="GetDelimiter(int)"/>.
-        /// </summary>
-        /// <stable>ICU 3.4</stable>
-        public static readonly int QUOTATION_START = 0; // ICU4N TODO: API - Make enum
-
-        /// <summary>
-        /// Delimiter type for <see cref="GetDelimiter(int)"/>.
-        /// </summary>
-        /// <stable>ICU 3.4</stable>
-        public static readonly int QUOTATION_END = 1; // ICU4N TODO: API - Make enum
-
-        /// <summary>
-        /// Delimiter type for <see cref="GetDelimiter(int)"/>.
-        /// </summary>
-        /// <stable>ICU 3.4</stable>
-        public static readonly int ALT_QUOTATION_START = 2; // ICU4N TODO: API - Make enum
-
-        /// <summary>
-        /// Delimiter type for <see cref="GetDelimiter(int)"/>.
-        /// </summary>
-        /// <stable>ICU 3.4</stable>
-        public static readonly int ALT_QUOTATION_END = 3; // ICU4N TODO: API - Make enum
-
-        /// <summary>
-        /// Count of delimiter types for <see cref="GetDelimiter(int)"/>.
-        /// </summary>
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public static readonly int DELIMITER_COUNT = 4; // ICU4N TODO: API - Make enum
+        // ICU4N specific - moved delimiter constants to DelimiterType enum and de-nested
 
         // private constructor to prevent default construction
         ////CLOVER:OFF
@@ -283,16 +292,16 @@ namespace ICU4N.Util
         /// </summary>
         /// <param name="type">
         /// The type of delimiter string desired.  Currently,
-        /// the valid choices are <see cref="QUOTATION_START"/>, <see cref="QUOTATION_END"/>,
-        /// <see cref="ALT_QUOTATION_START"/>, or <see cref="ALT_QUOTATION_END"/>.
+        /// the valid choices are <see cref="DelimiterType.QuotationStart"/>, <see cref="DelimiterType.QuotationEnd"/>,
+        /// <see cref="DelimiterType.AlternateQuotationStart"/>, or <see cref="DelimiterType.AlternateQuotationEnd"/>.
         /// </param>
         /// <returns>The desired delimiter string.</returns>
         /// <stable>ICU 3.4</stable>
-        public string GetDelimiter(int type)
+        public string GetDelimiter(DelimiterType type)
         {
             ICUResourceBundle delimitersBundle = (ICUResourceBundle)bundle.Get("delimiters");
             // Only some of the quotation marks may be here. So we make sure that we do a multilevel fallback.
-            ICUResourceBundle stringBundle = delimitersBundle.GetWithFallback(DELIMITER_TYPES[type]);
+            ICUResourceBundle stringBundle = delimitersBundle.GetWithFallback(DELIMITER_TYPES[(int)type]);
 
             if (noSubstitute && !bundle.IsRoot && stringBundle.IsRoot)
             {
