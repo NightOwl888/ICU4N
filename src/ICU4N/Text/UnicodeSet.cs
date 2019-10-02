@@ -23,6 +23,12 @@ namespace ICU4N.Text
     public enum PatternOptions
     {
         /// <summary>
+        /// Bitmask for <see cref="LocaleData.GetExemplarSet(PatternOptions, int)"/> to retrieve the exemplar set as it is defined in the locale data.
+        /// This has no effect if ORed together with other options.
+        /// </summary>
+        Default = 0,
+
+        /// <summary>
         /// Bitmask for <see cref="UnicodeSet.UnicodeSet(string, PatternOptions)"/> constructor, 
         /// <see cref="UnicodeSet.ApplyPattern(string, PatternOptions)"/>, and <see cref="UnicodeSet.CloseOver(PatternOptions)"/>.
         /// indicating letter case.  This may be ORed together with other
