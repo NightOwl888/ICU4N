@@ -126,12 +126,12 @@ namespace ICU4N.Support.Text
         /// of <paramref name="ch"/> in the range from 0 to 0xFFFF (inclusive),
         /// this is the smallest value <i>k</i> such that:
         /// <code>
-        ///     (this[<i>k</i>] == ch) && (<i>k</i> &gt;= fromIndex)
+        ///     (this[<i>k</i>] == ch) &amp;&amp; (<i>k</i> &gt;= fromIndex)
         /// </code>
         /// is true. For other values of <code>ch</code>, it is the
         /// smallest value <i>k</i> such that:
         /// <code>
-        ///     (this.CodePointAt(<i>k</i>) == ch) && (<i>k</i> &gt;= fromIndex)
+        ///     (this.CodePointAt(<i>k</i>) == ch) &amp;&amp; (<i>k</i> &gt;= fromIndex)
         /// </code>
         /// is true. In either case, if no such character occurs in this
         /// string at or after position <paramref name="fromIndex"/>, then

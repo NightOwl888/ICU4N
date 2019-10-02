@@ -831,78 +831,75 @@ namespace ICU4N.Impl
             }
         }
 
-        /**
-         * <p>
-         * Unicode property names and property value names are compared
-         * "loosely". Property[Value]Aliases.txt say:
-         * <quote>
-         *   "With loose matching of property names, the case distinctions,
-         *    whitespace, and '_' are ignored."
-         * </quote>
-         * </p>
-         * <p>
-         * This function does just that, for ASCII (char *) name strings.
-         * It is almost identical to ucnv_compareNames() but also ignores
-         * ASCII White_Space characters (U+0009..U+000d).
-         * </p>
-         * @param name1 name to compare
-         * @param name2 name to compare
-         * @return 0 if names are equal, < 0 if name1 is less than name2 and > 0
-         *         if name1 is greater than name2.
-         */
-        /* to be implemented in 2.4
-         * public static int comparePropertyNames(string name1, string name2)
-        {
-            int result = 0;
-            int i1 = 0;
-            int i2 = 0;
-            while (true) {
-                char ch1 = 0;
-                char ch2 = 0;
-                // Ignore delimiters '-', '_', and ASCII White_Space
-                if (i1 < name1.length()) {
-                    ch1 = name1.charAt(i1 ++);
-                }
-                while (ch1 == '-' || ch1 == '_' || ch1 == ' ' || ch1 == '\t'
-                       || ch1 == '\n' // synwee what is || ch1 == '\v'
-                       || ch1 == '\f' || ch1=='\r') {
-                    if (i1 < name1.length()) {
-                        ch1 = name1.charAt(i1 ++);
-                    }
-                    else {
-                        ch1 = 0;
-                    }
-                }
-                if (i2 < name2.length()) {
-                    ch2 = name2.charAt(i2 ++);
-                }
-                while (ch2 == '-' || ch2 == '_' || ch2 == ' ' || ch2 == '\t'
-                       || ch2 == '\n' // synwee what is || ch1 == '\v'
-                       || ch2 == '\f' || ch2=='\r') {
-                    if (i2 < name2.length()) {
-                        ch2 = name2.charAt(i2 ++);
-                    }
-                    else {
-                        ch2 = 0;
-                    }
-                }
+        ///// <summary>
+        ///// Unicode property names and property value names are compared
+        ///// "loosely". Property[Value]Aliases.txt say:
+        ///// <quote>
+        /////   "With loose matching of property names, the case distinctions,
+        /////   whitespace, and '_' are ignored."
+        ///// </quote>
+        ///// <para/>
+        ///// This function does just that, for ASCII (char *) name strings.
+        ///// It is almost identical to ucnv_compareNames() but also ignores
+        ///// ASCII White_Space characters (U+0009..U+000d).
+        ///// </summary>
+        ///// <param name="name1">Name to compare.</param>
+        ///// <param name="name2">Name to compare.</param>
+        ///// <returns>0 if names are equal, &lt; 0 if name1 is less than name2 and &gt; 0
+        ///// if name1 is greater than name2.</returns>
+        //// to be implemented in 2.4
+        //public static int ComparePropertyNames(string name1, string name2)
+        //{
+        //    int result = 0;
+        //    int i1 = 0;
+        //    int i2 = 0;
+        //    while (true) {
+        //        char ch1 = (char)0;
+        //        char ch2 = (char)0;
+        //        // Ignore delimiters '-', '_', and ASCII White_Space
+        //        if (i1 < name1.Length) {
+        //            ch1 = name1[i1++];
+        //        }
+        //        while (ch1 == '-' || ch1 == '_' || ch1 == ' ' || ch1 == '\t'
+        //               || ch1 == '\n' // synwee what is || ch1 == '\v'
+        //               || ch1 == '\f' || ch1=='\r') {
+        //            if (i1 < name1.Length) {
+        //                ch1 = name1[i1++];
+        //            }
+        //            else {
+        //                ch1 = (char)0;
+        //            }
+        //        }
+        //        if (i2 < name2.Length) {
+        //            ch2 = name2[i2++];
+        //        }
+        //        while (ch2 == '-' || ch2 == '_' || ch2 == ' ' || ch2 == '\t'
+        //               || ch2 == '\n' // synwee what is || ch1 == '\v'
+        //               || ch2 == '\f' || ch2=='\r') {
+        //            if (i2 < name2.Length) {
+        //                ch2 = name2[i2++];
+        //            }
+        //            else {
+        //                ch2 = (char)0;
+        //            }
+        //        }
 
-                // If we reach the ends of both strings then they match
-                if (ch1 == 0 && ch2 == 0) {
-                    return 0;
-                }
+        //        // If we reach the ends of both strings then they match
+        //        if (ch1 == 0 && ch2 == 0) {
+        //            return 0;
+        //        }
 
-                // Case-insensitive comparison
-                if (ch1 != ch2) {
-                    result = Character.toLowerCase(ch1)
-                                                    - Character.toLowerCase(ch2);
-                    if (result != 0) {
-                        return result;
-                    }
-                }
-            }
-        }
-        */
+        //        // Case-insensitive comparison
+        //        if (ch1 != ch2) {
+        //            result = Character.ToLower(ch1)
+        //                                            - Character.ToLower(ch2);
+        //            if (result != 0) {
+        //                return result;
+        //            }
+        //        }
+        //    }
+        //}
+
 
         /// <summary>
         /// Get the the maximum values for some enum/int properties.
@@ -1232,7 +1229,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Large integers:
         /// <code>
-        /// ((ntv>>5)-14) * 10^((ntv&0x1f)+2) = (1..9)*(10^2..10^33)
+        /// ((ntv>>5)-14) * 10^((ntv&amp;0x1f)+2) = (1..9)*(10^2..10^33)
         /// (only one significant decimal digit)
         /// </code>
         /// </summary>
@@ -1240,7 +1237,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Sexagesimal numbers:
         /// <code>
-        /// ((ntv>>2)-0xbf) * 60^((ntv&3)+1) = (1..9)*(60^1..60^4)
+        /// ((ntv>>2)-0xbf) * 60^((ntv&amp;3)+1) = (1..9)*(60^1..60^4)
         /// </code>
         /// </summary>
         private static readonly int NTV_BASE60_START_ = 0x300;

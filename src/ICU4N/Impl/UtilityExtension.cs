@@ -23,7 +23,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="value"></param>
-        /// <param name="length">The length of the run; must be > 0 && &lt;= 0xFFFF.</param>
+        /// <param name="length">The length of the run; must be &gt; 0 &amp;&amp; &lt;= 0xFFFF.</param>
         private static void EncodeRun(StringBuilder buffer, int value, int length)
         {
             if (length < 4)
@@ -59,7 +59,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="value"></param>
-        /// <param name="length">The length of the run; must be > 0 && &lt;= 0xFFFF.</param>
+        /// <param name="length">The length of the run; must be > 0 &amp;&amp; &lt;= 0xFFFF.</param>
         private static void EncodeRun(IAppendable buffer, int value, int length)
         {
             if (length < 4)
@@ -121,7 +121,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="value"></param>
-        /// <param name="length">The length of the run; must be > 0 && &lt;= 0xFFFF.</param>
+        /// <param name="length">The length of the run; must be > 0 &amp;&amp; &lt;= 0xFFFF.</param>
         private static void EncodeRun(StringBuilder buffer, short value, int length)
         {
             try
@@ -165,7 +165,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="value"></param>
-        /// <param name="length">The length of the run; must be > 0 && &lt;= 0xFFFF.</param>
+        /// <param name="length">The length of the run; must be > 0 &amp;&amp; &lt;= 0xFFFF.</param>
         private static void EncodeRun(IAppendable buffer, short value, int length)
         {
             try
@@ -204,12 +204,12 @@ namespace ICU4N.Impl
             }
         }
 
-	    /// <summary>
+        /// <summary>
         /// Encode a run, possibly a degenerate run (of &lt; 4 values).
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="value"></param>
-        /// <param name="length">The length of the run; must be > 0 && &lt;= 0xFF.</param>
+        /// <param name="length">The length of the run; must be > 0 &amp;&amp; &lt;= 0xFF.</param>
         /// <param name="state"></param>
         private static void EncodeRun(StringBuilder buffer, byte value, int length,
             byte[] state)
@@ -236,12 +236,12 @@ namespace ICU4N.Impl
             }
         }
 
-	    /// <summary>
+        /// <summary>
         /// Encode a run, possibly a degenerate run (of &lt; 4 values).
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="value"></param>
-        /// <param name="length">The length of the run; must be > 0 && &lt;= 0xFF.</param>
+        /// <param name="length">The length of the run; must be > 0 &amp;&amp; &lt;= 0xFF.</param>
         /// <param name="state"></param>
         private static void EncodeRun(IAppendable buffer, byte value, int length,
             byte[] state)

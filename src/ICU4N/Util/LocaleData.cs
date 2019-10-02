@@ -1,9 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Text;
 using System;
-using System.Collections.Generic;
 using System.Resources;
-using System.Text;
 using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: API de-nest?
 
 namespace ICU4N.Util
@@ -25,162 +23,160 @@ namespace ICU4N.Util
         private ICUResourceBundle bundle;
         private ICUResourceBundle langBundle;
 
-        /**
-         * EXType for {@link #getExemplarSet(int, int)}.
-         * Corresponds to the 'main' (aka 'standard') CLDR exemplars in
-         * <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-         *   http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-         * @stable ICU 3.4
-         */
-        public static readonly int ES_STANDARD = 0; // ICU4N TODO: API - Make enum
+        /// <summary>
+        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
+        /// Corresponds to the 'main' (aka 'standard') CLDR exemplars in
+        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        public static readonly int ES_STANDARD = 0; // ICU4N TODO: API - Make enum ExemplarSetType
 
-        /**
-         * EXType for {@link #getExemplarSet(int, int)}.
-         * Corresponds to the 'auxiliary' CLDR exemplars in
-         * <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-         *   http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-         * @stable ICU 3.4
-         */
-        public static readonly int ES_AUXILIARY = 1; // ICU4N TODO: API - Make enum
+        /// <summary>
+        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
+        /// Corresponds to the 'auxiliary' CLDR exemplars in
+        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        public static readonly int ES_AUXILIARY = 1; // ICU4N TODO: API - Make enum ExemplarSetType
 
-        /**
-         * EXType for {@link #getExemplarSet(int, int)}.
-         * Corresponds to the 'index' CLDR exemplars in
-         * <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-         *   http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-         * @stable ICU 4.4
-         */
-        public static readonly int ES_INDEX = 2; // ICU4N TODO: API - Make enum
+        /// <summary>
+        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
+        /// Corresponds to the 'index' CLDR exemplars in
+        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        public static readonly int ES_INDEX = 2; // ICU4N TODO: API - Make enum ExemplarSetType
 
-        /**
-         * EXType for {@link #getExemplarSet(int, int)}.
-         * Corresponds to the 'currencySymbol' CLDR exemplars in
-         * <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-         *   http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-         * Note: This type is no longer supported.
-         * @deprecated ICU 51
-         */
+        /// <summary>
+        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
+        /// Corresponds to the 'currencySymbol' CLDR exemplars in
+        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        /// Note: This type is no longer supported.
+        /// </summary>
         [Obsolete("ICU 51 This type is no longer supported.")]
-        public static readonly int ES_CURRENCY = 3; // ICU4N TODO: API - Make enum
+        public static readonly int ES_CURRENCY = 3; // ICU4N TODO: API - Make enum ExemplarSetType
 
-        /**
-         * Corresponds to the 'punctuation' CLDR exemplars in
-         * <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-         *   http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-         * EXType for {@link #getExemplarSet(int, int)}.
-         * @stable ICU 49
-         */
-        public static readonly int ES_PUNCTUATION = 4; // ICU4N TODO: API - Make enum
+        /// <summary>
+        /// Corresponds to the 'punctuation' CLDR exemplars in
+        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
+        /// </summary>
+        /// <stable>ICU 49</stable>
+        public static readonly int ES_PUNCTUATION = 4; // ICU4N TODO: API - Make enum ExemplarSetType
 
-        /**
-         * Count of EXTypes for {@link #getExemplarSet(int, int)}.
-         * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-         */
+        /// <summary>
+        /// Count of EXTypes for <see cref="GetExemplarSet(PatternOptions, int)"/>.
+        /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public static readonly int ES_COUNT = 5; // ICU4N TODO: API - Make enum
+        public static readonly int ES_COUNT = 5; // ICU4N TODO: API - Make enum ExemplarSetType
 
-        /**
-         * Delimiter type for {@link #getDelimiter(int)}.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Delimiter type for <see cref="GetDelimiter(int)"/>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         public static readonly int QUOTATION_START = 0; // ICU4N TODO: API - Make enum
 
-        /**
-         * Delimiter type for {@link #getDelimiter(int)}.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Delimiter type for <see cref="GetDelimiter(int)"/>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         public static readonly int QUOTATION_END = 1; // ICU4N TODO: API - Make enum
 
-        /**
-         * Delimiter type for {@link #getDelimiter(int)}.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Delimiter type for <see cref="GetDelimiter(int)"/>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         public static readonly int ALT_QUOTATION_START = 2; // ICU4N TODO: API - Make enum
 
-        /**
-         * Delimiter type for {@link #getDelimiter(int)}.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Delimiter type for <see cref="GetDelimiter(int)"/>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         public static readonly int ALT_QUOTATION_END = 3; // ICU4N TODO: API - Make enum
 
-        /**
-         * Count of delimiter types for {@link #getDelimiter(int)}.
-         * @deprecated ICU 58 The numeric value may change over time, see ICU ticket #12420.
-         */
+        /// <summary>
+        /// Count of delimiter types for <see cref="GetDelimiter(int)"/>.
+        /// </summary>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         public static readonly int DELIMITER_COUNT = 4; // ICU4N TODO: API - Make enum
 
         // private constructor to prevent default construction
-        ///CLOVER:OFF
+        ////CLOVER:OFF
         private LocaleData() { }
-        ///CLOVER:ON
+        ////CLOVER:ON
 
-        /**
-         * Returns the set of exemplar characters for a locale. Equivalent to calling {@link #getExemplarSet(ULocale, int, int)} with
-         * the extype == {@link #ES_STANDARD}.
-         *
-         * @param locale    Locale for which the exemplar character set
-         *                  is to be retrieved.
-         * @param options   Bitmask for options to apply to the exemplar pattern.
-         *                  Specify zero to retrieve the exemplar set as it is
-         *                  defined in the locale data.  Specify
-         *                  UnicodeSet.CASE to retrieve a case-folded exemplar
-         *                  set.  See {@link UnicodeSet#applyPattern(String,
-         *                  int)} for a complete list of valid options.  The
-         *                  IGNORE_SPACE bit is always set, regardless of the
-         *                  value of 'options'.
-         * @return          The set of exemplar characters for the given locale.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Returns the set of exemplar characters for a locale. Equivalent to calling 
+        /// <see cref="GetExemplarSet(ULocale, PatternOptions, int)"/> with the
+        /// extype == <see cref="ES_STANDARD"/>.
+        /// </summary>
+        /// <param name="locale">Locale for which the exemplar character set
+        /// is to be retrieved.</param>
+        /// <param name="options">
+        /// <see cref="PatternOptions"/> flags to apply to the exemplar pattern.
+        /// Specify <see cref="PatternOptions.Default"/> to retrieve the exemplar set as it is
+        /// defined in the locale data.  Specify <see cref="PatternOptions.Case"/> to retrieve a case-folded exemplar
+        /// set.  See <see cref="PatternOptions"/> for a complete list of valid options.  The
+        /// <see cref="PatternOptions.IgnoreSpace"/> bit is always set, regardless of the
+        /// value of <paramref name="options"/>.
+        /// </param>
+        /// <returns>The set of exemplar characters for the given locale.</returns>
+        /// <stable>ICU 3.0</stable>
         public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options)
         {
             return LocaleData.GetInstance(locale).GetExemplarSet(options, ES_STANDARD);
         }
 
-        /**
-         * Returns the set of exemplar characters for a locale.
-         * Equivalent to calling new LocaleData(locale).{@link #getExemplarSet(int, int)}.
-         *
-         * @param locale    Locale for which the exemplar character set
-         *                  is to be retrieved.
-         * @param options   Bitmask for options to apply to the exemplar pattern.
-         *                  Specify zero to retrieve the exemplar set as it is
-         *                  defined in the locale data.  Specify
-         *                  UnicodeSet.CASE to retrieve a case-folded exemplar
-         *                  set.  See {@link UnicodeSet#applyPattern(String,
-         *                  int)} for a complete list of valid options.  The
-         *                  IGNORE_SPACE bit is always set, regardless of the
-         *                  value of 'options'.
-         * @param extype    The type of exemplar character set to retrieve.
-         * @return          The set of exemplar characters for the given locale.
-         * @stable ICU 3.0
-         */
-        public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options, int extype)
+        /// <summary>
+        /// Returns the set of exemplar characters for a <paramref name="locale"/>.
+        /// Equivalent to calling <c>new LocaleData(locale)</c>. <see cref="GetExemplarSet(PatternOptions, int)"/>.
+        /// </summary>
+        /// <param name="locale">Locale for which the exemplar character set
+        /// is to be retrieved.</param>
+        /// <param name="options">
+        /// <see cref="PatternOptions"/> flags to apply to the exemplar pattern.
+        /// Specify <see cref="PatternOptions.Default"/> to retrieve the exemplar set as it is
+        /// defined in the locale data.  Specify <see cref="PatternOptions.Case"/> to retrieve a case-folded exemplar
+        /// set.  See <see cref="PatternOptions"/> for a complete list of valid options.  The
+        /// <see cref="PatternOptions.IgnoreSpace"/> bit is always set, regardless of the
+        /// value of <paramref name="options"/>.
+        /// </param>
+        /// <param name="extype">The type of exemplar character set to retrieve.</param>
+        /// <returns>The set of exemplar characters for the given <paramref name="locale"/>.</returns>
+        /// <stable>ICU 3.0</stable>
+        public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options, int extype) // ICU4N TODO: API - make extype into enum ExemplarSetType
         {
             return LocaleData.GetInstance(locale).GetExemplarSet(options, extype);
         }
 
-        /**
-         * Returns the set of exemplar characters for a locale.
-         *
-         * @param options   Bitmask for options to apply to the exemplar pattern.
-         *                  Specify zero to retrieve the exemplar set as it is
-         *                  defined in the locale data.  Specify
-         *                  UnicodeSet.CASE to retrieve a case-folded exemplar
-         *                  set.  See {@link UnicodeSet#applyPattern(String,
-         *                  int)} for a complete list of valid options.  The
-         *                  IGNORE_SPACE bit is always set, regardless of the
-         *                  value of 'options'.
-         * @param extype    The type of exemplar set to be retrieved,
-         *                  ES_STANDARD, ES_INDEX, ES_AUXILIARY, or ES_PUNCTUATION
-         * @return          The set of exemplar characters for the given locale.
-         *                  If there is nothing available for the locale,
-         *                  then null is returned if {@link #getNoSubstitute()} is true, otherwise the
-         *                  root value is returned (which may be UnicodeSet.EMPTY).
-         * @exception       RuntimeException if the extype is invalid.
-         * @stable ICU 3.4
-         */
-        public UnicodeSet GetExemplarSet(PatternOptions options, int extype)
+        /// <summary>
+        /// Returns the set of exemplar characters for a locale.
+        /// </summary>
+        /// <param name="options">
+        /// Bitmask for options to apply to the exemplar pattern.
+        /// Specify zero to retrieve the exemplar set as it is
+        /// defined in the locale data.  Specify <see cref="PatternOptions.Case"/>
+        /// to retrieve a case-folded exemplar
+        /// set.  See <see cref="PatternOptions"/> for a complete list of valid options.  The
+        /// <see cref="PatternOptions.IgnoreSpace"/> bit is always set, regardless of the
+        /// value of <paramref name="options"/>.
+        /// </param>
+        /// <param name="extype">The type of exemplar set to be retrieved,
+        /// <see cref="ES_STANDARD"/>, <see cref="ES_INDEX"/>, <see cref="ES_AUXILIARY"/>, or <see cref="ES_PUNCTUATION"/></param>
+        /// <returns>
+        /// The set of exemplar characters for the given locale.
+        /// If there is nothing available for the locale,
+        /// then null is returned if <see cref="NoSubstitute"/> is <c>true</c>, otherwise the
+        /// root value is returned (which may be <see cref="UnicodeSet.Empty"/>.
+        /// </returns>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="extype"/> is invalid.</exception>
+        /// <stable>ICU 3.4</stable>
+        public UnicodeSet GetExemplarSet(PatternOptions options, int extype) // ICU4N TODO: API - make extype into enum ExemplarSetType
         {
             string[] exemplarSetTypes = {
                     "ExemplarCharacters",
@@ -207,7 +203,7 @@ namespace ICU4N.Util
                 {
                     return null;
                 }
-                String unicodeSetPattern = stringBundle.GetString();
+                string unicodeSetPattern = stringBundle.GetString();
                 return new UnicodeSet(unicodeSetPattern, UnicodeSet.IgnoreSpace | options);
             }
             catch (IndexOutOfRangeException aiooe)
@@ -220,13 +216,12 @@ namespace ICU4N.Util
             }
         }
 
-        /**
-         * Gets the LocaleData object associated with the ULocale specified in locale
-         *
-         * @param locale    Locale with thich the locale data object is associated.
-         * @return          A locale data object.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Gets the <see cref="LocaleData"/> object associated with the <see cref="ULocale"/> specified in <paramref name="locale"/>.
+        /// </summary>
+        /// <param name="locale"><see cref="ULocale"/> with thich the locale data object is associated.</param>
+        /// <returns>A locale data object.</returns>
+        /// <stable>ICU 3.4</stable>
         public static LocaleData GetInstance(ULocale locale)
         {
             LocaleData ld = new LocaleData();
@@ -236,46 +231,25 @@ namespace ICU4N.Util
             return ld;
         }
 
-        /**
-         * Gets the LocaleData object associated with the default <code>FORMAT</code> locale
-         *
-         * @return          A locale data object.
-         * @see Category#FORMAT
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Gets the <see cref="LocaleData"/> object associated with the default <see cref="Category.FORMAT"/> locale.
+        /// </summary>
+        /// <returns>A locale data object.</returns>
+        /// <see cref="Category.FORMAT"/>
+        /// <stable>ICU 3.4</stable>
         public static LocaleData GetInstance()
         {
             return LocaleData.GetInstance(ULocale.GetDefault(Category.FORMAT));
         }
 
-        ///**
-        // * Sets the "no substitute" behavior of this locale data object.
-        // *
-        // * @param setting   Value for the no substitute behavior.  If TRUE,
-        // *                  methods of this locale data object will return
-        // *                  an error when no data is available for that method,
-        // *                  given the locale ID supplied to the constructor.
-        // * @stable ICU 3.4
-        // */
-        //public void SetNoSubstitute(bool setting)
-        //{
-        //    noSubstitute = setting;
-        //}
-
-        ///**
-        // * Gets the "no substitute" behavior of this locale data object.
-        // *
-        // * @return          Value for the no substitute behavior.  If TRUE,
-        // *                  methods of this locale data object will return
-        // *                  an error when no data is available for that method,
-        // *                  given the locale ID supplied to the constructor.
-        // * @stable ICU 3.4
-        // */
-        //public bool GetNoSubstitute()
-        //{
-        //    return noSubstitute;
-        //}
-
+        /// <summary>
+        /// Gets or sets the "no substitute" behavior of this locale data object.
+        /// <para/>
+        /// If <c>true</c>, methods of this locale data object will return
+        /// an error when no data is available for that method,
+        /// given the locale ID supplied to the constructor.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
         public bool NoSubstitute
         {
             get { return noSubstitute; }
@@ -289,15 +263,16 @@ namespace ICU4N.Util
             "alternateQuotationEnd"
         };
 
-        /**
-         * Retrieves a delimiter string from the locale data.
-         *
-         * @param type      The type of delimiter string desired.  Currently,
-         *                  the valid choices are QUOTATION_START, QUOTATION_END,
-         *                  ALT_QUOTATION_START, or ALT_QUOTATION_END.
-         * @return          The desired delimiter string.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Retrieves a delimiter string from the locale data.
+        /// </summary>
+        /// <param name="type">
+        /// The type of delimiter string desired.  Currently,
+        /// the valid choices are <see cref="QUOTATION_START"/>, <see cref="QUOTATION_END"/>,
+        /// <see cref="ALT_QUOTATION_START"/>, or <see cref="ALT_QUOTATION_END"/>.
+        /// </param>
+        /// <returns>The desired delimiter string.</returns>
+        /// <stable>ICU 3.4</stable>
         public string GetDelimiter(int type)
         {
             ICUResourceBundle delimitersBundle = (ICUResourceBundle)bundle.Get("delimiters");
@@ -311,9 +286,9 @@ namespace ICU4N.Util
             return stringBundle.GetString();
         }
 
-        /**
-         * Utility for getMeasurementSystem and getPaperSize
-         */
+        /// <summary>
+        /// Utility for <see cref="GetMeasurementSystem(ULocale)"/> and <see cref="GetPaperSize(ULocale)"/>
+        /// </summary>
         private static UResourceBundle MeasurementTypeBundleForLocale(ULocale locale, string measurementType)
         {
             // Much of this is taken from getCalendarType in impl/CalendarUtil.java
@@ -362,35 +337,33 @@ namespace ICU4N.Util
 
         public sealed class MeasurementSystem
         {
-            /**
-             * Measurement system specified by Le Syst&#x00E8;me International d'Unit&#x00E9;s (SI)
-             * otherwise known as Metric system.
-             * @stable ICU 2.8
-             */
+            /// <summary>
+            /// Measurement system specified by Le Syst&#x00E8;me International d'Unit&#x00E9;s (SI)
+            /// otherwise known as Metric system.
+            /// </summary>
+            /// <stable>ICU 2.8</stable>
             public static readonly MeasurementSystem SI = new MeasurementSystem();
-
-            /**
-             * Measurement system followed in the United States of America.
-             * @stable ICU 2.8
-             */
+            /// <summary>
+            /// Measurement system followed in the United States of America.
+            /// </summary>
+            /// <stable>ICU 2.8</stable>
             public static readonly MeasurementSystem US = new MeasurementSystem();
 
-            /**
-             * Mix of metric and imperial units used in Great Britain.
-             * @stable ICU 55
-             */
+            /// <summary>
+            /// Mix of metric and imperial units used in Great Britain.
+            /// </summary>
+            /// <stable>ICU 55</stable>
             public static readonly MeasurementSystem UK = new MeasurementSystem();
 
             private MeasurementSystem() { }
         }
 
-        /**
-         * Returns the measurement system used in the locale specified by the locale.
-         *
-         * @param locale      The locale for which the measurement system to be retrieved.
-         * @return MeasurementSystem the measurement system used in the locale.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Returns the measurement system used in the locale specified by the locale.
+        /// </summary>
+        /// <param name="locale">The locale for which the measurement system to be retrieved.</param>
+        /// <returns>The <see cref="MeasurementSystem"/> used in the locale.</returns>
+        /// <stable>ICU 3.0</stable>
         public static MeasurementSystem GetMeasurementSystem(ULocale locale)
         {
             UResourceBundle sysBundle = MeasurementTypeBundleForLocale(locale, MEASUREMENT_SYSTEM);
@@ -407,11 +380,11 @@ namespace ICU4N.Util
             }
         }
 
-        /**
-         * A class that represents the size of letter head
-         * used in the country
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// A class that represents the size of letter head
+        /// used in the country.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
         public sealed class PaperSize
         {
             private int height;
@@ -422,33 +395,33 @@ namespace ICU4N.Util
                 height = h;
                 width = w;
             }
-            /**
-             * Retruns the height of the paper
-             * @return the height
-             * @stable ICU 2.8
-             */
+
+            /// <summary>
+            /// Gets the height of the paper.
+            /// </summary>
+            /// <stable>ICU 2.8</stable>
             public int Height
             {
                 get { return height; }
             }
-            /**
-             * Returns the width of the paper
-             * @return the width
-             * @stable ICU 2.8
-             */
+
+            /// <summary>
+            /// Gets the width of the paper.
+            /// </summary>
+            /// <stable>ICU 2.8</stable>
             public int Width
             {
                 get { return width; }
             }
         }
 
-        /**
-         * Returns the size of paper used in the locale. The paper sizes returned are always in
-         * <em>milli-meters</em>.
-         * @param locale The locale for which the measurement system to be retrieved.
-         * @return The paper size used in the locale
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// Returns the size of paper used in the locale. The paper sizes returned are always in
+        /// <em>milli-meters</em>.
+        /// </summary>
+        /// <param name="locale">The locale for which the measurement system to be retrieved.</param>
+        /// <returns>The paper size used in the locale.</returns>
+        /// <stable>ICU 3.0</stable>
         public static PaperSize GetPaperSize(ULocale locale)
         {
             UResourceBundle obj = MeasurementTypeBundleForLocale(locale, PAPER_SIZE);
@@ -456,11 +429,11 @@ namespace ICU4N.Util
             return new PaperSize(size[0], size[1]);
         }
 
-        /**
-         * Returns LocaleDisplayPattern for this locale, e.g., {0}({1})
-         * @return locale display pattern as a String.
-         * @stable ICU 4.2
-         */
+        /// <summary>
+        /// Returns LocaleDisplayPattern for this locale, e.g., {0}({1})
+        /// </summary>
+        /// <returns>Locale display pattern as a <see cref="string"/>.</returns>
+        /// <stable>ICU 4.2</stable>
         public string GetLocaleDisplayPattern()
         {
             ICUResourceBundle locDispBundle = (ICUResourceBundle)langBundle.Get(LOCALE_DISPLAY_PATTERN);
@@ -468,11 +441,11 @@ namespace ICU4N.Util
             return localeDisplayPattern;
         }
 
-        /**
-         * Returns LocaleDisplaySeparator for this locale.
-         * @return locale display separator as a char.
-         * @stable ICU 4.2
-         */
+        /// <summary>
+        /// Returns LocaleDisplaySeparator for this locale.
+        /// </summary>
+        /// <returns>Locale display separator as a char.</returns>
+        /// <stable>ICU 4.2</stable>
         public string GetLocaleSeparator()
         {
             string sub0 = "{0}";
@@ -490,10 +463,10 @@ namespace ICU4N.Util
 
         private static VersionInfo gCLDRVersion = null;
 
-        /**
-         * Returns the current CLDR version
-         * @stable ICU 4.2
-         */
+        /// <summary>
+        /// Returns the current CLDR version
+        /// </summary>
+        /// <stable>ICU 4.2</stable>
         public static VersionInfo GetCLDRVersion()
         {
             // fetching this data should be idempotent.

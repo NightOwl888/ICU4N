@@ -22,7 +22,7 @@ namespace ICU4N.Impl
         /// highest argument number plus one, not the number of occurrences of arguments.
         /// </summary>
         /// <param name="pattern">The pattern string.</param>
-        /// <param name="sb">A <see cref="StringBuilder" buffer that will contain the output in immutable form.</param>
+        /// <param name="sb">A <see cref="StringBuilder"/> buffer that will contain the output in immutable form.</param>
         /// <param name="min">The pattern must have at least this many arguments.</param>
         /// <param name="max">The pattern must have at most this many arguments.</param>
         /// <returns>The compiled-pattern string.</returns>
@@ -165,7 +165,7 @@ namespace ICU4N.Impl
         /// highest argument number plus one, not the number of occurrences of arguments.
         /// </summary>
         /// <param name="pattern">The pattern StringBuilder.</param>
-        /// <param name="sb">A <see cref="StringBuilder" buffer that will contain the output in immutable form.</param>
+        /// <param name="sb">A <see cref="StringBuilder"/> buffer that will contain the output in immutable form.</param>
         /// <param name="min">The pattern must have at least this many arguments.</param>
         /// <param name="max">The pattern must have at most this many arguments.</param>
         /// <returns>The compiled-pattern string.</returns>
@@ -308,7 +308,7 @@ namespace ICU4N.Impl
         /// highest argument number plus one, not the number of occurrences of arguments.
         /// </summary>
         /// <param name="pattern">The pattern char[].</param>
-        /// <param name="sb">A <see cref="StringBuilder" buffer that will contain the output in immutable form.</param>
+        /// <param name="sb">A <see cref="StringBuilder"/> buffer that will contain the output in immutable form.</param>
         /// <param name="min">The pattern must have at least this many arguments.</param>
         /// <param name="max">The pattern must have at most this many arguments.</param>
         /// <returns>The compiled-pattern string.</returns>
@@ -451,7 +451,7 @@ namespace ICU4N.Impl
         /// highest argument number plus one, not the number of occurrences of arguments.
         /// </summary>
         /// <param name="pattern">The pattern ICharSequence.</param>
-        /// <param name="sb">A <see cref="StringBuilder" buffer that will contain the output in immutable form.</param>
+        /// <param name="sb">A <see cref="StringBuilder"/> buffer that will contain the output in immutable form.</param>
         /// <param name="min">The pattern must have at least this many arguments.</param>
         /// <param name="max">The pattern must have at most this many arguments.</param>
         /// <returns>The compiled-pattern string.</returns>

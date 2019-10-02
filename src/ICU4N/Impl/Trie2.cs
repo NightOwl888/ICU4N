@@ -21,7 +21,7 @@ namespace ICU4N.Impl
     /// {
     ///     public int Map(int input)
     ///     {
-    ///         return input & 0x1f;
+    ///         return input &amp; 0x1f;
     ///     }
     /// }
     /// 

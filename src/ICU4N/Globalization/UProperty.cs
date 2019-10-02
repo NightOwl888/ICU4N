@@ -652,7 +652,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Enumerated property General_Category.
-        /// Same as <see cref="UChar.GetType(int)"/>, returns <see cref="UUnicodeCategory"/> values.
+        /// Same as <see cref="UChar.GetUnicodeCategory(int)"/>, returns <see cref="UUnicodeCategory"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         General_Category = 0x1005,

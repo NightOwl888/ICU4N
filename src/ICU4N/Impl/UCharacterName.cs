@@ -1166,12 +1166,12 @@ namespace ICU4N.Impl
         //private static int MAX_ISO_COMMENT_LENGTH_ = 0;
 
         /// <summary>
-        /// Set of chars used in character names (regular & 1.0).
+        /// Set of chars used in character names (regular &amp; 1.0).
         /// Chars are platform-dependent (can be EBCDIC).
         /// </summary>
         private int[] m_nameSet_ = new int[8];
         /// <summary>
-        /// Set of chars used in ISO comments. (regular & 1.0).
+        /// Set of chars used in ISO comments. (regular &amp; 1.0).
         /// Chars are platform-dependent (can be EBCDIC).
         /// </summary>
         private int[] m_ISOCommentSet_ = new int[8];

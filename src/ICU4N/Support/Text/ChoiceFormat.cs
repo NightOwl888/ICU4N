@@ -18,52 +18,42 @@ namespace ICU4N.Support.Text
 
         private string[] choiceFormats;
 
-        /**
-         * Constructs a new {@code ChoiceFormat} with the specified double values
-         * and associated strings. When calling
-         * {@link #format(double, StringBuffer, FieldPosition) format} with a double
-         * value {@code d}, then the element {@code i} in {@code formats} is
-         * selected where {@code i} fulfills {@code limits[i] &lt;= d &lt; limits[i+1]}.
-         * <p>
-         * The length of the {@code limits} and {@code formats} arrays must be the
-         * same.
-         *
-         * @param limits
-         *            an array of doubles in ascending order. The lowest and highest
-         *            possible values are negative and positive infinity.
-         * @param formats
-         *            the strings associated with the ranges defined through {@code
-         *            limits}. The lower bound of the associated range is at the
-         *            same index as the string.
-         */
+        /// <summary>
+        /// Constructs a new <see cref="ChoiceFormat"/> with the specified <see cref="double"/> values
+        /// and associated strings. When calling
+        /// <see cref="Format(double, StringBuffer, FieldPosition)"/> with a double
+        /// value <c>d</c>, then the element <c>i</c> in <paramref name="formats"/> is
+        /// selected where <c>i</c> fulfills <c>limits[i] &lt;= d &lt; limits[i + 1]</c>.
+        /// <para/>
+        /// The length of the <paramref name="limits"/> and <paramref name="formats"/> arrays must be the
+        /// same.
+        /// </summary>
+        /// <param name="limits">An array of <see cref="double"/>s in ascending order. The lowest and highest
+        /// possible values are negative and positive infinity.</param>
+        /// <param name="formats">the strings associated with the ranges defined through <paramref name="limits"/>.
+        /// The lower bound of the associated range is at the same index as the string.</param>
         public ChoiceFormat(double[] limits, string[] formats)
         {
             SetChoices(limits, formats);
         }
 
-        /**
-         * Constructs a new {@code ChoiceFormat} with the strings and limits parsed
-         * from the specified pattern.
-         * 
-         * @param template
-         *            the pattern of strings and ranges.
-         * @throws IllegalArgumentException
-         *            if an error occurs while parsing the pattern.
-         */
+        /// <summary>
+        /// Constructs a new <see cref="ChoiceFormat"/> with the strings and limits parsed
+        /// from the specified pattern.
+        /// </summary>
+        /// <param name="template">The pattern of strings and ranges.</param>
+        /// <exception cref="ArgumentException">If an error occurs while parsing the pattern.</exception>
         public ChoiceFormat(string template)
         {
             ApplyPattern(template);
         }
 
-        /**
-         * Parses the pattern to determine new strings and ranges for this
-         * {@code ChoiceFormat}.
-         * 
-         * @param template
-         *            the pattern of strings and ranges.
-         * @throws IllegalArgumentException
-         *            if an error occurs while parsing the pattern.
-         */
+        /// <summary>
+        /// Parses the pattern to determine new strings and ranges for this
+        /// <see cref="ChoiceFormat"/>.
+        /// </summary>
+        /// <param name="template">The pattern of strings and ranges.</param>
+        /// <exception cref="ArgumentException">If an error occurs while parsing the pattern.</exception>
         public void ApplyPattern(string template)
         {
             double[] limits = new double[5];
@@ -122,11 +112,11 @@ namespace ICU4N.Support.Text
                         next = NextDouble(Convert.ToDouble(value));
                         break;
                     default:
-                        throw new ArgumentException();
+                        throw new ArgumentException(); // ICU4N TODO: Shouldn't this be FormatException in .NET?
                 }
                 if (limitCount > 0 && next <= limits[limitCount - 1])
                 {
-                    throw new ArgumentException();
+                    throw new ArgumentException(); // ICU4N TODO: Shouldn't this be FormatException in .NET?
                 }
                 buffer.Length = (0);
                 position.Index = (index);
@@ -137,14 +127,11 @@ namespace ICU4N.Support.Text
             }
         }
 
-        /**
-         * Returns a new instance of {@code ChoiceFormat} with the same ranges and
-         * strings as this {@code ChoiceFormat}.
-         * 
-         * @return a shallow copy of this {@code ChoiceFormat}.
-         * 
-         * @see java.lang.Cloneable
-         */
+        /// <summary>
+        /// Returns a new instance of <see cref="ChoiceFormat"/> with the same ranges and
+        /// strings as this <see cref="ChoiceFormat"/>.
+        /// </summary>
+        /// <returns>A shallow copy of this <see cref="ChoiceFormat"/>.</returns>
         public override object Clone()
         {
             ChoiceFormat clone = (ChoiceFormat)base.MemberwiseClone();
@@ -153,17 +140,15 @@ namespace ICU4N.Support.Text
             return clone;
         }
 
-        /**
-         * Compares the specified object with this {@code ChoiceFormat}. The object
-         * must be an instance of {@code ChoiceFormat} and have the same limits and
-         * formats to be equal to this instance.
-         * 
-         * @param object
-         *            the object to compare with this instance.
-         * @return {@code true} if the specified object is equal to this instance;
-         *         {@code false} otherwise.
-         * @see #hashCode
-         */
+        /// <summary>
+        /// Compares the specified object with this <see cref="ChoiceFormat"/>. The object
+        /// must be an instance of <see cref="ChoiceFormat"/> and have the same limits and
+        /// formats to be equal to this instance.
+        /// </summary>
+        /// <param name="obj">The object to compare with this instance.</param>
+        /// <returns><c>true</c> if the specified object is equal to this instance;
+        /// <c>false</c> otherwise.</returns>
+        /// <seealso cref="GetHashCode()"/>
         public override bool Equals(object obj)
         {
             if (this == obj)
@@ -179,18 +164,14 @@ namespace ICU4N.Support.Text
                 && choiceFormats.SequenceEqual(choice.choiceFormats);
         }
 
-        /**
-         * Appends the string associated with the range in which the specified
-         * double value fits to the specified string buffer.
-         * 
-         * @param value
-         *            the double to format.
-         * @param buffer
-         *            the target string buffer to append the formatted value to.
-         * @param field
-         *            a {@code FieldPosition} which is ignored.
-         * @return the string buffer.
-         */
+        /// <summary>
+        /// Appends the string associated with the range in which the specified
+        /// <see cref="double"/> value fits to the specified string <paramref name="buffer"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="double"/> to format.</param>
+        /// <param name="buffer">The target string buffer to append the formatted value to.</param>
+        /// <param name="field">A <see cref="FieldPosition"/> which is ignored.</param>
+        /// <returns>The <see cref="StringBuffer"/>.</returns>
         public StringBuffer Format(double value, StringBuffer buffer, FieldPosition field)
         {
             for (int i = choiceLimits.Length - 1; i >= 0; i--)
@@ -204,54 +185,44 @@ namespace ICU4N.Support.Text
                     .Append(choiceFormats[0]);
         }
 
-        /**
-         * Appends the string associated with the range in which the specified long
-         * value fits to the specified string buffer.
-         * 
-         * @param value
-         *            the long to format.
-         * @param buffer
-         *            the target string buffer to append the formatted value to.
-         * @param field
-         *            a {@code FieldPosition} which is ignored.
-         * @return the string buffer.
-         */
+        /// <summary>
+        /// Appends the string associated with the range in which the specified <see cref="long"/>
+        /// value fits to the specified string <paramref name="buffer"/>.
+        /// </summary>
+        /// <param name="value">The <see cref="long"/> to format.</param>
+        /// <param name="buffer">The target string buffer to append the formatted value to.</param>
+        /// <param name="field">A <see cref="FieldPosition"/> which is ignored.</param>
+        /// <returns>The <see cref="StringBuffer"/>.</returns>
         //@Override
         public StringBuffer Format(long value, StringBuffer buffer, FieldPosition field)
         {
             return Format((double)value, buffer, field);
         }
 
-        /**
-         * Returns the strings associated with the ranges of this {@code
-         * ChoiceFormat}.
-         * 
-         * @return an array of format strings.
-         */
-        public object[] GetFormats()
+        /// <summary>
+        /// Returns the strings associated with the ranges of this <see cref="ChoiceFormat"/>.
+        /// </summary>
+        /// <returns>An array of format strings.</returns>
+        public object[] GetFormats() // ICU4N TODO: API - should this be string[] instead of object?
         {
             return choiceFormats;
         }
 
-        /**
-         * Returns the limits of this {@code ChoiceFormat}.
-         * 
-         * @return the array of doubles which make up the limits of this {@code
-         *         ChoiceFormat}.
-         */
+        /// <summary>
+        /// Returns the limits of this <see cref="ChoiceFormat"/>.
+        /// </summary>
+        /// <returns>The array of <see cref="double"/>s which make up the limits of this <see cref="ChoiceFormat"/>.</returns>
         public double[] GetLimits()
         {
             return choiceLimits;
         }
 
-        /**
-         * Returns an integer hash code for the receiver. Objects which are equal
-         * return the same value for this method.
-         * 
-         * @return the receiver's hash.
-         * 
-         * @see #equals
-         */
+        /// <summary>
+        /// Returns an <see cref="int"/> hash code for the receiver. Objects which are equal
+        /// return the same value for this method.
+        /// </summary>
+        /// <returns>The receiver's hash.</returns>
+        /// <seealso cref="Equals(object)"/>
         public override int GetHashCode()
         {
             int hashCode = 0;
@@ -263,14 +234,12 @@ namespace ICU4N.Support.Text
             return hashCode;
         }
 
-        /**
-         * Returns the double value which is closest to the specified double but
-         * larger.
-         * 
-         * @param value
-         *            a double value.
-         * @return the next larger double value.
-         */
+        /// <summary>
+        /// Returns the <see cref="double"/> value which is closest to the specified <see cref="double"/> but
+        /// larger.
+        /// </summary>
+        /// <param name="value">A <see cref="double"/> value.</param>
+        /// <returns>The next larger <see cref="double"/> value.</returns>
         public static double NextDouble(double value)
         {
             if (value == Double.PositiveInfinity)
@@ -290,54 +259,63 @@ namespace ICU4N.Support.Text
             return BitConverter.Int64BitsToDouble(value < 0 ? bits - 1 : bits + 1);
         }
 
-        /**
-         * Returns the double value which is closest to the specified double but
-         * either larger or smaller as specified.
-         * 
-         * @param value
-         *            a double value.
-         * @param increment
-         *            {@code true} to get the next larger value, {@code false} to
-         *            get the previous smaller value.
-         * @return the next larger or smaller double value.
-         */
+        /// <summary>
+        /// Returns the <see cref="double"/> value which is closest to the specified double but
+        /// either larger or smaller as specified.
+        /// </summary>
+        /// <param name="value">A <see cref="double"/> value.</param>
+        /// <param name="increment"><c>true</c> to get the next larger value, <c>false</c> to
+        /// get the previous smaller value.</param>
+        /// <returns>The next larger or smaller <see cref="double"/> value.</returns>
         public static double NextDouble(double value, bool increment)
         {
             return increment ? NextDouble(value) : PreviousDouble(value);
         }
 
-        /**
-         * Parses a double from the specified string starting at the index specified
-         * by {@code position}. The string is compared to the strings of this
-         * {@code ChoiceFormat} and if a match occurs then the lower bound of the
-         * corresponding range in the limits array is returned. If the string is
-         * successfully parsed then the index of the {@code ParsePosition} passed to
-         * this method is updated to the index following the parsed text.
-         * <p>
-         * If one of the format strings of this {@code ChoiceFormat} instance is
-         * found in {@code string} starting at {@code position.getIndex()} then
-         * <ul>
-         * <li>the index in {@code position} is set to the index following the
-         * parsed text;
-         * <li>the {@link java.lang.Double Double} corresponding to the format
-         * string is returned.</li>
-         * </ul>
-         * <p>
-         * If none of the format strings is found in {@code string} then
-         * <ul>
-         * <li>the error index in {@code position} is set to the current index in
-         * {@code position};</li>
-         * <li> {@link java.lang.Double#NaN Double.NaN} is returned.
-         * </ul>
-         * @param string
-         *            the source string to parse.
-         * @param position
-         *            input/output parameter, specifies the start index in {@code
-         *            string} from where to start parsing. See the <em>Returns</em>
-         *            section for a description of the output values.
-         * @return a Double resulting from the parse, or Double.NaN if there is an
-         *         error
-         */
+        /// <summary>
+        /// Parses a <see cref="double"/> from the specified string starting at the index specified
+        /// by <paramref name="position"/>. The string is compared to the strings of this
+        /// <see cref="ChoiceFormat"/> and if a match occurs then the lower bound of the
+        /// corresponding range in the limits array is returned. If the string is
+        /// successfully parsed then the index of the <see cref="ParsePosition"/> passed to
+        /// this method is updated to the index following the parsed text.
+        /// <para/>
+        /// If one of the format strings of this <see cref="ChoiceFormat"/> instance is
+        /// found in <paramref name="str"/> starting at <c>position.Index</c> then
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>
+        ///             the index in <paramref name="position"/> is set to the index following the
+        ///             parsed text;
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <description>
+        ///             the <see cref="double"/> corresponding to the format
+        ///             string is returned.
+        ///         </description>
+        ///     </item>
+        /// </list>
+        /// If none of the format strings is found in <paramref name="str"/> then
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>
+        ///             the error index in <paramref name="position"/> is set to the current index in
+        ///             <paramref name="position"/>;
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <description>
+        ///             <see cref="double.NaN"/> is returned.
+        ///         </description>
+        ///     </item>
+        /// </list>
+        /// </summary>
+        /// <param name="str">The source string to parse.</param>
+        /// <param name="position">Input/output parameter, specifies the start index in <paramref name="str"/>
+        /// from where to start parsing. See the <em>Returns</em>
+        /// section for a description of the output values.</param>
+        /// <returns>A <see cref="double"/> resulting from the parse, or <see cref="double.NaN"/> if there is an error.</returns>
         //@Override
         public double Parse(string str, ParsePosition position)
         {
@@ -354,14 +332,12 @@ namespace ICU4N.Support.Text
             return double.NaN;
         }
 
-        /**
-         * Returns the double value which is closest to the specified double but
-         * smaller.
-         * 
-         * @param value
-         *            a double value.
-         * @return the next smaller double value.
-         */
+        /// <summary>
+        /// Returns the double value which is closest to the specified double but
+        /// smaller.
+        /// </summary>
+        /// <param name="value">A <see cref="double"/> value.</param>
+        /// <returns>The next smaller <see cref="double"/> value.</returns>
         public static double PreviousDouble(double value)
         {
             if (value == double.NegativeInfinity)
@@ -381,24 +357,19 @@ namespace ICU4N.Support.Text
             return BitConverter.Int64BitsToDouble(value <= 0 ? bits + 1 : bits - 1);
         }
 
-        /**
-         * Sets the double values and associated strings of this ChoiceFormat. When
-         * calling {@link #format(double, StringBuffer, FieldPosition) format} with
-         * a double value {@code d}, then the element {@code i} in {@code formats}
-         * is selected where {@code i} fulfills
-         * {@code limits[i] <= d < limits[i+1]}.
-         * <p>
-         * The length of the {@code limits} and {@code formats} arrays must be the
-         * same.
-         *
-         * @param limits
-         *            an array of doubles in ascending order. The lowest and highest
-         *            possible values are negative and positive infinity.
-         * @param formats
-         *            the strings associated with the ranges defined through {@code
-         *            limits}. The lower bound of the associated range is at the
-         *            same index as the string.
-         */
+        /// <summary>
+        /// Sets the <see cref="double"/> values and associated strings of this <see cref="ChoiceFormat"/>. When
+        /// calling <see cref="Format(double, StringBuffer, FieldPosition)"/> with
+        /// a <see cref="double"/> value, <c>d</c>, then the element <c>i</c> in <paramref name="formats"/>
+        /// is selected where <c>i</c> fulfills
+        /// <c>limits[i] &lt;= d &lt; limits[i + 1]</c>.
+        /// <para/>
+        /// The length of the <paramref name="limits"/> and <paramref name="formats"/> arrays must be the same.
+        /// possible values are negative and positive infinity.</summary>
+        /// <param name="limits">An array of <see cref="double"/>s in ascending order. The lowest and highest
+        /// </param>
+        /// <param name="formats">The strings associated with the ranges defined through <paramref name="limits"/>.
+        /// The lower bound of the associated range is at the same index as the string.</param>
         public virtual void SetChoices(double[] limits, string[] formats)
         {
             if (limits.Length != formats.Length)
@@ -419,12 +390,11 @@ namespace ICU4N.Support.Text
             return index;
         }
 
-        /**
-         * Returns the pattern of this {@code ChoiceFormat} which specifies the
-         * ranges and their associated strings.
-         * 
-         * @return the pattern.
-         */
+        /// <summary>
+        /// Returns the pattern of this <see cref="ChoiceFormat"/> which specifies the
+        /// ranges and their associated strings.
+        /// </summary>
+        /// <returns>The pattern.</returns>
         public virtual string ToPattern()
         {
             StringBuilder buffer = new StringBuilder();

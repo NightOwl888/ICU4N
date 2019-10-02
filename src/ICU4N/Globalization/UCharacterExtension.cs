@@ -298,7 +298,7 @@ namespace ICU4N
         /// <returns>
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </returns>
         /// <exception cref="ArgumentException">if <paramref name="property"/> is not a valid <see cref="UProperty"/>
@@ -344,7 +344,7 @@ namespace ICU4N
         /// <returns>
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </returns>
         /// <exception cref="ArgumentException">if <paramref name="property"/> is not a valid <see cref="UProperty"/>
@@ -390,7 +390,7 @@ namespace ICU4N
         /// <returns>
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </returns>
         /// <exception cref="ArgumentException">if <paramref name="property"/> is not a valid <see cref="UProperty"/>
@@ -436,7 +436,7 @@ namespace ICU4N
         /// <returns>
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </returns>
         /// <exception cref="ArgumentException">if <paramref name="property"/> is not a valid <see cref="UProperty"/>
@@ -482,7 +482,7 @@ namespace ICU4N
         /// <param name="result">
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </param>
         /// <returns>
@@ -523,7 +523,7 @@ namespace ICU4N
         /// <param name="result">
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </param>
         /// <returns>
@@ -564,7 +564,7 @@ namespace ICU4N
         /// <param name="result">
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </param>
         /// <returns>
@@ -605,7 +605,7 @@ namespace ICU4N
         /// <param name="result">
         /// A value integer.  Note: <see cref="UProperty.General_Category"/>
         /// values are mask values produced by left-shifting 1 by
-        /// <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        /// <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         /// [:L:] to be represented.
         /// </param>
         /// <returns>

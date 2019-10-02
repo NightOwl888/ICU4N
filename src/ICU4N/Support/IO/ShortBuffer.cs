@@ -20,15 +20,12 @@ namespace ICU4N.Support.IO
     /// </summary>
     public abstract class Int16Buffer : Buffer, IComparable<Int16Buffer>
     {
-        /**
-         * Creates a short buffer based on a newly allocated short array.
-         * 
-         * @param capacity
-         *            the capacity of the new buffer.
-         * @return the created short buffer.
-         * @throws IllegalArgumentException
-         *             if {@code capacity} is less than zero.
-         */
+        /// <summary>
+        /// Creates a <see cref="Int16Buffer"/> based on a newly allocated <see cref="short"/> array.
+        /// </summary>
+        /// <param name="capacity">The capacity of the new buffer.</param>
+        /// <returns>The created <see cref="Int16Buffer"/>.</returns>
+        /// <exception cref="ArgumentException">If <paramref name="capacity"/> is less than zero.</exception>
         public static Int16Buffer Allocate(int capacity)
         {
             if (capacity < 0)
@@ -38,141 +35,116 @@ namespace ICU4N.Support.IO
             return new ReadWriteInt16ArrayBuffer(capacity);
         }
 
-        /**
-         * Creates a new short buffer by wrapping the given short array.
-         * <p>
-         * Calling this method has the same effect as
-         * {@code wrap(array, 0, array.length)}.
-         *
-         * @param array
-         *            the short array which the new buffer will be based on.
-         * @return the created short buffer.
-         */
+        /// <summary>
+        /// Creates a new <see cref="Int16Buffer"/> by wrapping the given <see cref="short"/> array.
+        /// <para/>
+        /// Calling this method has the same effect as
+        /// <c>Wrap(array, 0, array.Length)</c>.
+        /// </summary>
+        /// <param name="array">The <see cref="short"/> array which the new buffer will be based on.</param>
+        /// <returns>The created <see cref="Int16Buffer"/>.</returns>
         public static Int16Buffer Wrap(short[] array)
         {
             return Wrap(array, 0, array.Length);
         }
 
-        /**
-         * Creates a new short buffer by wrapping the given short array.
-         * <p>
-         * The new buffer's position will be {@code start}, limit will be
-         * {@code start + len}, capacity will be the length of the array.
-         *
-         * @param array
-         *            the short array which the new buffer will be based on.
-         * @param start
-         *            the start index, must not be negative and not greater than
-         *            {@code array.length}.
-         * @param len
-         *            the length, must not be negative and not greater than
-         *            {@code array.length - start}.
-         * @return the created short buffer.
-         * @exception IndexOutOfBoundsException
-         *                if either {@code start} or {@code len} is invalid.
-         */
-        public static Int16Buffer Wrap(short[] array, int start, int len)
+        /// <summary>
+        /// Creates a new <see cref="Int16Buffer"/> by wrapping the given <see cref="short"/> array.
+        /// <para/>
+        /// The new buffer's position will be <paramref name="start"/>, limit will be
+        /// <c>start + length</c>, capacity will be the length of the array.
+        /// </summary>
+        /// <param name="array">The <see cref="short"/> array which the new buffer will be based on.</param>
+        /// <param name="start">The start index, must not be negative and not greater than <c>array.Length</c>.</param>
+        /// <param name="length">The length, must not be negative and not greater than <c>array.Length - start</c>.</param>
+        /// <returns>The created <see cref="Int16Buffer"/>.</returns>
+        /// <exception cref="IndexOutOfRangeException">If either <paramref name="start"/> or <paramref name="length"/> is invalid.</exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="array"/> is <c>null</c>.</exception>
+        public static Int16Buffer Wrap(short[] array, int start, int length)
         {
             if (array == null)
             {
                 throw new ArgumentNullException(nameof(array));
             }
-            if (start < 0 || len < 0 || (long)start + (long)len > array.Length)
+            if (start < 0 || length < 0 || (long)start + (long)length > array.Length)
             {
                 throw new IndexOutOfRangeException();
             }
 
             Int16Buffer buf = new ReadWriteInt16ArrayBuffer(array);
             buf.position = start;
-            buf.limit = start + len;
+            buf.limit = start + length;
 
             return buf;
         }
 
-        /**
-         * Constructs a {@code ShortBuffer} with given capacity.
-         *
-         * @param capacity
-         *            The capacity of the buffer
-         */
+        /// <summary>
+        /// Constructs a <see cref="Int16Buffer"/> with given <paramref name="capacity"/>.
+        /// </summary>
+        /// <param name="capacity">The capacity of the buffer.</param>
         internal Int16Buffer(int capacity)
             : base(capacity)
         {
         }
 
-        /**
-         * Returns the short array which this buffer is based on, if there is one.
-         * 
-         * @return the short array which this buffer is based on.
-         * @exception ReadOnlyBufferException
-         *                if this buffer is based on an array, but it is read-only.
-         * @exception UnsupportedOperationException
-         *                if this buffer is not based on an array.
-         */
+        /// <summary>
+        /// Returns the <see cref="short"/> array which this buffer is based on, if there is one.
+        /// </summary>
+        /// <exception cref="ReadOnlyBufferException">If this buffer is based on an array, but it is read-only.</exception>
+        /// <exception cref="NotSupportedException">If this buffer is not based on an array.</exception>
         [SuppressMessage("Microsoft.Performance", "CA1819", Justification = "design requires some writable array properties")]
         public short[] Array
         {
             get { return ProtectedArray; }
         }
 
-        /**
-         * Returns the offset of the short array which this buffer is based on, if
-         * there is one.
-         * <p>
-         * The offset is the index of the array corresponding to the zero position
-         * of the buffer.
-         *
-         * @return the offset of the short array which this buffer is based on.
-         * @exception ReadOnlyBufferException
-         *                if this buffer is based on an array, but it is read-only.
-         * @exception UnsupportedOperationException
-         *                if this buffer is not based on an array.
-         */
+        /// <summary>
+        /// Returns the offset of the <see cref="short"/> array which this buffer is based on, if
+        /// there is one.
+        /// <para/>
+        /// The offset is the index of the array corresponding to the zero position
+        /// of the buffer.
+        /// </summary>
+        /// <exception cref="ReadOnlyBufferException">If this buffer is based on an array, but it is read-only.</exception>
+        /// <exception cref="NotSupportedException">If this buffer is not based on an array.</exception>
         public int ArrayOffset
         {
             get { return ProtectedArrayOffset; }
         }
 
-        /**
-         * Returns a read-only buffer that shares its content with this buffer.
-         * <p>
-         * The returned buffer is guaranteed to be a new instance, even if this
-         * buffer is read-only itself. The new buffer's position, limit, capacity
-         * and mark are the same as this buffer's.
-         * <p>
-         * The new buffer shares its content with this buffer, which means this
-         * buffer's change of content will be visible to the new buffer. The two
-         * buffer's position, limit and mark are independent.
-         *
-         * @return a read-only version of this buffer.
-         */
+        /// <summary>
+        /// Returns a read-only buffer that shares its content with this buffer.
+        /// <para/>
+        /// The returned buffer is guaranteed to be a new instance, even if this
+        /// buffer is read-only itself. The new buffer's position, limit, capacity
+        /// and mark are the same as this buffer's.
+        /// <para/>
+        /// The new buffer shares its content with this buffer, which means this
+        /// buffer's change of content will be visible to the new buffer. The two
+        /// buffer's position, limit and mark are independent.
+        /// </summary>
+        /// <returns>A read-only version of this buffer.</returns>
         public abstract Int16Buffer AsReadOnlyBuffer();
 
-        /**
-         * Compacts this short buffer.
-         * <p>
-         * The remaining shorts will be moved to the head of the buffer, starting
-         * from position zero. Then the position is set to {@code remaining()}; the
-         * limit is set to capacity; the mark is cleared.
-         *
-         * @return this buffer.
-         * @exception ReadOnlyBufferException
-         *                if no changes may be made to the contents of this buffer.
-         */
+        /// <summary>
+        /// Compacts this <see cref="Int16Buffer"/>.
+        /// <para/>
+        /// The remaining <see cref="short"/>s will be moved to the head of the buffer, starting
+        /// from position zero. Then the position is set to <see cref="Buffer.Remaining"/>; the
+        /// limit is set to capacity; the mark is cleared.
+        /// </summary>
+        /// <returns>This buffer.</returns>
+        /// <exception cref="ReadOnlyBufferException">If no changes may be made to the contents of this buffer.</exception>
         public abstract Int16Buffer Compact();
 
-        /**
-         * Compare the remaining shorts of this buffer to another short buffer's
-         * remaining shorts.
-         * 
-         * @param otherBuffer
-         *            another short buffer.
-         * @return a negative value if this is less than {@code otherBuffer}; 0 if
-         *         this equals to {@code otherBuffer}; a positive value if this is
-         *         greater than {@code otherBuffer}.
-         * @exception ClassCastException
-         *                if {@code otherBuffer} is not a short buffer.
-         */
+        /// <summary>
+        /// Compare the remaining <see cref="short"/>s of this buffer to another <see cref="Int16Buffer"/>'s
+        /// remaining <see cref="short"/>s.
+        /// </summary>
+        /// <param name="otherBuffer">Another <see cref="Int16Buffer"/>.</param>
+        /// <returns>A negative value if this is less than <paramref name="otherBuffer"/>; 0 if
+        /// this equals to <paramref name="otherBuffer"/>; a positive value if this is
+        /// greater than <paramref name="otherBuffer"/>.</returns>
         public virtual int CompareTo(Int16Buffer otherBuffer)
         {
             int compareRemaining = (Remaining < otherBuffer.Remaining) ? Remaining
@@ -195,33 +167,29 @@ namespace ICU4N.Support.IO
             return Remaining - otherBuffer.Remaining;
         }
 
-        /**
-         * Returns a duplicated buffer that shares its content with this buffer.
-         * <p>
-         * The duplicated buffer's position, limit, capacity and mark are the same
-         * as this buffer. The duplicated buffer's read-only property and byte order
-         * are the same as this buffer's.
-         * <p>
-         * The new buffer shares its content with this buffer, which means either
-         * buffer's change of content will be visible to the other. The two buffer's
-         * position, limit and mark are independent.
-         *
-         * @return a duplicated buffer that shares its content with this buffer.
-         */
+        /// <summary>
+        /// Returns a duplicated buffer that shares its content with this buffer.
+        /// <para/>
+        /// The duplicated buffer's position, limit, capacity and mark are the same
+        /// as this buffer. The duplicated buffer's read-only property and byte order
+        /// are the same as this buffer's.
+        /// <para/>
+        /// The new buffer shares its content with this buffer, which means either
+        /// buffer's change of content will be visible to the other. The two buffer's
+        /// position, limit and mark are independent.
+        /// </summary>
+        /// <returns>A duplicated buffer that shares its content with this buffer.</returns>
         public abstract Int16Buffer Duplicate();
 
-        /**
-         * Checks whether this short buffer is equal to another object.
-         * <p>
-         * If {@code other} is not a short buffer then {@code false} is returned.
-         * Two short buffers are equal if and only if their remaining shorts are
-         * exactly the same. Position, limit, capacity and mark are not considered.
-         *
-         * @param other
-         *            the object to compare with this short buffer.
-         * @return {@code true} if this short buffer is equal to {@code other},
-         *         {@code false} otherwise.
-         */
+        /// <summary>
+        /// Checks whether this <see cref="short"/> buffer is equal to another object.
+        /// <para/>
+        /// If <paramref name="other"/> is not a <see cref="short"/> buffer then <c>false</c> is returned.
+        /// Two <see cref="Int16Buffer"/>s are equal if and only if their remaining <see cref="short"/>s are
+        /// exactly the same. Position, limit, capacity and mark are not considered.
+        /// </summary>
+        /// <param name="other">The object to compare with this <see cref="Int16Buffer"/>.</param>
+        /// <returns><c>true</c> if this <see cref="Int16Buffer"/> is equal to <paramref name="other"/>, <c>false</c> otherwise.</returns>
         public override bool Equals(object other)
         {
             if (!(other is Int16Buffer))
@@ -246,100 +214,85 @@ namespace ICU4N.Support.IO
             return equalSoFar;
         }
 
-        /**
-         * Returns the short at the current position and increases the position by
-         * 1.
-         * 
-         * @return the short at the current position.
-         * @exception BufferUnderflowException
-         *                if the position is equal or greater than limit.
-         */
+        /// <summary>
+        /// Returns the <see cref="short"/> at the current position and increases the position by
+        /// 1.
+        /// </summary>
+        /// <returns>The <see cref="short"/> at the current position.</returns>
+        /// <exception cref="BufferUnderflowException">If the position is equal or greater than limit.</exception>
         public abstract short Get();
 
-        /**
-         * Reads shorts from the current position into the specified short array and
-         * increases the position by the number of shorts read.
-         * <p>
-         * Calling this method has the same effect as
-         * {@code get(dest, 0, dest.length)}.
-         *
-         * @param dest
-         *            the destination short array.
-         * @return this buffer.
-         * @exception BufferUnderflowException
-         *                if {@code dest.length} is greater than {@code remaining()}.
-         */
-        public virtual Int16Buffer Get(short[] dest)
+        /// <summary>
+        /// Reads <see cref="short"/>s from the current position into the specified <see cref="short"/> array and
+        /// increases the position by the number of <see cref="short"/>s read.
+        /// <para/>
+        /// Calling this method has the same effect as
+        /// <c>Get(destination, 0, destination.Length)</c>.
+        /// </summary>
+        /// <param name="destination">The destination <see cref="short"/> array.</param>
+        /// <returns>This buffer.</returns>
+        /// <exception cref="BufferUnderflowException">If <c>destination.Length</c> is greater than <see cref="Buffer.Remaining"/>.</exception>
+        public virtual Int16Buffer Get(short[] destination)
         {
-            return Get(dest, 0, dest.Length);
+            return Get(destination, 0, destination.Length);
         }
 
-        /**
-         * Reads shorts from the current position into the specified short array,
-         * starting from the specified offset, and increases the position by the
-         * number of shorts read.
-         * 
-         * @param dest
-         *            the target short array.
-         * @param off
-         *            the offset of the short array, must not be negative and not
-         *            greater than {@code dest.length}.
-         * @param len
-         *            the number of shorts to read, must be no less than zero and
-         *            not greater than {@code dest.length - off}.
-         * @return this buffer.
-         * @exception IndexOutOfBoundsException
-         *                if either {@code off} or {@code len} is invalid.
-         * @exception BufferUnderflowException
-         *                if {@code len} is greater than {@code remaining()}.
-         */
-        public virtual Int16Buffer Get(short[] dest, int off, int len)
+        /// <summary>
+        /// Reads <see cref="short"/>s from the current position into the specified <see cref="short"/> array,
+        /// starting from the specified offset, and increases the position by the
+        /// number of <see cref="short"/>s read.
+        /// </summary>
+        /// <param name="destination">The target <see cref="short"/> array.</param>
+        /// <param name="offset">The offset of the <see cref="short"/> array, must not be negative and not
+        /// greater than <c>destination.Length</c>.</param>
+        /// <param name="length">The number of <see cref="short"/>s to read, must be no less than zero and
+        /// not greater than <c>destination.Length - offset</c>.</param>
+        /// <returns>This buffer.</returns>
+        /// <exception cref="IndexOutOfRangeException">If either <paramref name="offset"/> or <paramref name="length"/> is invalid.</exception>
+        /// <exception cref="BufferUnderflowException">If <paramref name="length"/> is greater than <see cref="Buffer.Remaining"/>.</exception>
+        public virtual Int16Buffer Get(short[] destination, int offset, int length)
         {
-            int length = dest.Length;
-            if (off < 0 || len < 0 || (long)off + (long)len > length)
+            int len = destination.Length;
+            if (offset < 0 || length < 0 || (long)offset + (long)length > len)
             {
                 throw new IndexOutOfRangeException();
             }
-            if (len > Remaining)
+            if (length > Remaining)
             {
                 throw new BufferUnderflowException();
             }
-            for (int i = off; i < off + len; i++)
+            for (int i = offset; i < offset + length; i++)
             {
-                dest[i] = Get();
+                destination[i] = Get();
             }
             return this;
         }
 
-        /**
-         * Returns the short at the specified index; the position is not changed.
-         * 
-         * @param index
-         *            the index, must not be negative and less than limit.
-         * @return a short at the specified index.
-         * @exception IndexOutOfBoundsException
-         *                if index is invalid.
-         */
+        /// <summary>
+        /// Returns the <see cref="short"/> at the specified <paramref name="index"/>; the position is not changed.
+        /// </summary>
+        /// <param name="index">The index, must not be negative and less than limit.</param>
+        /// <returns>A <see cref="short"/> at the specified <paramref name="index"/>.</returns>
+        /// <exception cref="IndexOutOfRangeException">If index is invalid.</exception>
         public abstract short Get(int index);
 
-        /**
-         * Indicates whether this buffer is based on a short array and is
-         * read/write.
-         *
-         * @return {@code true} if this buffer is based on a short array and
-         *         provides read/write access, {@code false} otherwise.
-         */
+        /// <summary>
+        /// Indicates whether this buffer is based on a <see cref="short"/> array and is
+        /// read/write.
+        /// <para/>
+        /// Returns <c>true</c> if this buffer is based on a <see cref="short"/> array and
+        /// provides read/write access, <c>false</c> otherwise.
+        /// </summary>
         public bool HasArray
         {
             get { return ProtectedHasArray; }
         }
 
-        /**
-         * Calculates this buffer's hash code from the remaining chars. The
-         * position, limit, capacity and mark don't affect the hash code.
-         *
-         * @return the hash code calculated from the remaining shorts.
-         */
+        /// <summary>
+        /// Calculates this buffer's hash code from the remaining chars. The
+        /// position, limit, capacity and mark don't affect the hash code.
+        /// </summary>
+        /// <returns>The hash code calculated from the remaining <see cref="short"/>s.</returns>
         public override int GetHashCode()
         {
             int myPosition = position;
@@ -351,196 +304,162 @@ namespace ICU4N.Support.IO
             return hash;
         }
 
-        /**
-         * Indicates whether this buffer is direct. A direct buffer will try its
-         * best to take advantage of native memory APIs and it may not stay in the
-         * Java heap, so it is not affected by garbage collection.
-         * <p>
-         * A short buffer is direct if it is based on a byte buffer and the byte
-         * buffer is direct.
-         *
-         * @return {@code true} if this buffer is direct, {@code false} otherwise.
-         */
+        /// <summary>
+        /// Indicates whether this buffer is direct. A direct buffer will try its
+        /// best to take advantage of native memory APIs and it may not stay in the
+        /// heap, so it is not affected by garbage collection.
+        /// <para/>
+        /// A short buffer is direct if it is based on a byte buffer and the byte
+        /// buffer is direct.
+        /// <para/>
+        /// Returns <c>true</c> if this buffer is direct, <c>false</c> otherwise.
+        /// </summary>
         public abstract bool IsDirect { get; }
 
-        /**
-         * Returns the byte order used by this buffer when converting shorts from/to
-         * bytes.
-         * <p>
-         * If this buffer is not based on a byte buffer, then always return the
-         * platform's native byte order.
-         *
-         * @return the byte order used by this buffer when converting shorts from/to
-         *         bytes.
-         */
+        /// <summary>
+        /// Returns the byte order used by this buffer when converting <see cref="short"/>s from/to
+        /// bytes.
+        /// <para/>
+        /// If this buffer is not based on a byte buffer, then always return the
+        /// platform's native byte order.
+        /// </summary>
         public abstract ByteOrder Order { get; }
 
-        /**
-         * Child class implements this method to realize {@code array()}.
-         *
-         * @return see {@code array()}
-         */
+        /// <summary>
+        /// Child class implements this method to realize <see cref="Array"/>.
+        /// </summary>
+        /// <seealso cref="Array"/>
         [SuppressMessage("Microsoft.Performance", "CA1819", Justification = "design requires some writable array properties")]
         protected abstract short[] ProtectedArray { get; }
 
-        /**
-         * Child class implements this method to realize {@code arrayOffset()}.
-         *
-         * @return see {@code arrayOffset()}
-         */
+        /// <summary>
+        /// Child class implements this method to realize <see cref="ArrayOffset"/>.
+        /// </summary>
+        /// <seealso cref="ArrayOffset"/>
         protected abstract int ProtectedArrayOffset { get; }
 
-        /**
-         * Child class implements this method to realize {@code hasArray()}.
-         *
-         * @return see {@code hasArray()}
-         */
+        /// <summary>
+        /// Child class implements this method to realize <see cref="HasArray"/>.
+        /// </summary>
+        /// <seealso cref="HasArray"/>
         protected abstract bool ProtectedHasArray { get; }
 
-        /**
-         * Writes the given short to the current position and increases the position
-         * by 1.
-         * 
-         * @param s
-         *            the short to write.
-         * @return this buffer.
-         * @exception BufferOverflowException
-         *                if position is equal or greater than limit.
-         * @exception ReadOnlyBufferException
-         *                if no changes may be made to the contents of this buffer.
-         */
+        /// <summary>
+        /// Writes the given <see cref="short"/> to the current position and increases the position
+        /// by 1.
+        /// </summary>
+        /// <param name="s">The <see cref="short"/> to write.</param>
+        /// <returns>This buffer.</returns>
+        /// <exception cref="BufferOverflowException">If position is equal or greater than limit.</exception>
+        /// <exception cref="ReadOnlyBufferException">If no changes may be made to the contents of this buffer.</exception>
         public abstract Int16Buffer Put(short s);
 
-        /**
-         * Writes shorts from the given short array to the current position and
-         * increases the position by the number of shorts written.
-         * <p>
-         * Calling this method has the same effect as
-         * {@code put(src, 0, src.length)}.
-         *
-         * @param src
-         *            the source short array.
-         * @return this buffer.
-         * @exception BufferOverflowException
-         *                if {@code remaining()} is less than {@code src.length}.
-         * @exception ReadOnlyBufferException
-         *                if no changes may be made to the contents of this buffer.
-         */
-        public Int16Buffer Put(short[] src)
+        /// <summary>
+        /// Writes <see cref="short"/>s from the given <see cref="short"/> array to the current position and
+        /// increases the position by the number of <see cref="short"/>s written.
+        /// <para/>
+        /// Calling this method has the same effect as
+        /// <c>Put(source, 0, source.Length)</c>.
+        /// </summary>
+        /// <param name="source">The source <see cref="short"/> array.</param>
+        /// <returns>This buffer.</returns>
+        /// <exception cref="BufferOverflowException">If <see cref="Buffer.Remaining"/> is less than <c>source.Length</c>.</exception>
+        /// <exception cref="ReadOnlyBufferException">If no changes may be made to the contents of this buffer.</exception>
+        public Int16Buffer Put(short[] source)
         {
-            return Put(src, 0, src.Length);
+            return Put(source, 0, source.Length);
         }
 
-        /**
-         * Writes shorts from the given short array, starting from the specified
-         * offset, to the current position and increases the position by the number
-         * of shorts written.
-         * 
-         * @param src
-         *            the source short array.
-         * @param off
-         *            the offset of short array, must not be negative and not
-         *            greater than {@code src.length}.
-         * @param len
-         *            the number of shorts to write, must be no less than zero and
-         *            not greater than {@code src.length - off}.
-         * @return this buffer.
-         * @exception BufferOverflowException
-         *                if {@code remaining()} is less than {@code len}.
-         * @exception IndexOutOfBoundsException
-         *                if either {@code off} or {@code len} is invalid.
-         * @exception ReadOnlyBufferException
-         *                if no changes may be made to the contents of this buffer.
-         */
-        public virtual Int16Buffer Put(short[] src, int off, int len)
+        /// <summary>
+        /// Writes <see cref="short"/>s from the given <see cref="short"/> array, starting from the specified
+        /// offset, to the current position and increases the position by the number
+        /// of <see cref="short"/>s written.
+        /// </summary>
+        /// <param name="source">The source <see cref="short"/> array.</param>
+        /// <param name="offset">The offset of <see cref="short"/> array, must not be negative and not
+        /// greater than <c>source.Length</c>.</param>
+        /// <param name="length">The number of <see cref="short"/>s to write, must be no less than zero and
+        /// not greater than <c>source.Length - offset</c>.</param>
+        /// <returns>This buffer.</returns>
+        /// <exception cref="BufferOverflowException">If <see cref="Buffer.Remaining"/>is less than <paramref name="length"/>.</exception>
+        /// <exception cref="IndexOutOfRangeException">If either <paramref name="offset"/> or <paramref name="length"/> is invalid.</exception>
+        /// <exception cref="ReadOnlyBufferException">If no changes may be made to the contents of this buffer.</exception>
+        public virtual Int16Buffer Put(short[] source, int offset, int length)
         {
-            int length = src.Length;
-            if (off < 0 || len < 0 || (long)off + (long)len > length)
+            int len = source.Length;
+            if (offset < 0 || length < 0 || (long)offset + (long)length > len)
             {
                 throw new IndexOutOfRangeException();
             }
 
-            if (len > Remaining)
+            if (length > Remaining)
             {
                 throw new BufferOverflowException();
             }
-            for (int i = off; i < off + len; i++)
+            for (int i = offset; i < offset + length; i++)
             {
-                Put(src[i]);
+                Put(source[i]);
             }
             return this;
         }
 
-        /**
-         * Writes all the remaining shorts of the {@code src} short buffer to this
-         * buffer's current position, and increases both buffers' position by the
-         * number of shorts copied.
-         * 
-         * @param src
-         *            the source short buffer.
-         * @return this buffer.
-         * @exception BufferOverflowException
-         *                if {@code src.remaining()} is greater than this buffer's
-         *                {@code remaining()}.
-         * @exception IllegalArgumentException
-         *                if {@code src} is this buffer.
-         * @exception ReadOnlyBufferException
-         *                if no changes may be made to the contents of this buffer.
-         */
-        public virtual Int16Buffer Put(Int16Buffer src)
+        /// <summary>
+        /// Writes all the remaining <see cref="short"/>s of the <paramref name="source"/> <see cref="Int16Buffer"/> to this
+        /// buffer's current position, and increases both buffers' position by the
+        /// number of <see cref="short"/>s copied.
+        /// </summary>
+        /// <param name="source">The source <see cref="Int16Buffer"/>.</param>
+        /// <returns>This buffer.</returns>
+        /// <exception cref="BufferOverflowException">If <c>source.Remaining</c> is greater than this buffer's <see cref="Buffer.Remaining"/>.</exception>
+        /// <exception cref="ArgumentException">If <paramref name="source"/> is this buffer.</exception>
+        /// <exception cref="ReadOnlyBufferException">If no changes may be made to the contents of this buffer.</exception>
+        public virtual Int16Buffer Put(Int16Buffer source)
         {
-            if (src == this)
+            if (source == this)
             {
                 throw new ArgumentException();
             }
-            if (src.Remaining > Remaining)
+            if (source.Remaining > Remaining)
             {
                 throw new BufferOverflowException();
             }
-            short[] contents = new short[src.Remaining];
-            src.Get(contents);
+            short[] contents = new short[source.Remaining];
+            source.Get(contents);
             Put(contents);
             return this;
         }
 
-        /**
-         * Writes a short to the specified index of this buffer; the position is not
-         * changed.
-         * 
-         * @param index
-         *            the index, must not be negative and less than the limit.
-         * @param s
-         *            the short to write.
-         * @return this buffer.
-         * @exception IndexOutOfBoundsException
-         *                if index is invalid.
-         * @exception ReadOnlyBufferException
-         *                if no changes may be made to the contents of this buffer.
-         */
+        /// <summary>
+        /// Writes a <see cref="short"/> to the specified <paramref name="index"/> of this buffer; the position is not
+        /// changed.
+        /// </summary>
+        /// <param name="index">The index, must not be negative and less than the limit.</param>
+        /// <param name="s">The <see cref="short"/> to write.</param>
+        /// <returns>This buffer.</returns>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="index"/> is invalid.</exception>
+        /// <exception cref="ReadOnlyBufferException">If no changes may be made to the contents of this buffer.</exception>
         public abstract Int16Buffer Put(int index, short s);
 
-        /**
-         * Returns a sliced buffer that shares its content with this buffer.
-         * <p>
-         * The sliced buffer's capacity will be this buffer's {@code remaining()},
-         * and its zero position will correspond to this buffer's current position.
-         * The new buffer's position will be 0, limit will be its capacity, and its
-         * mark is cleared. The new buffer's read-only property and byte order are
-         * same as this buffer's.
-         * <p>
-         * The new buffer shares its content with this buffer, which means either
-         * buffer's change of content will be visible to the other. The two buffer's
-         * position, limit and mark are independent.
-         * 
-         * @return a sliced buffer that shares its content with this buffer.
-         */
+        /// <summary>
+        /// Returns a sliced buffer that shares its content with this buffer.
+        /// <para/>
+        /// The sliced buffer's capacity will be this buffer's <see cref="Buffer.Remaining"/>,
+        /// and its zero position will correspond to this buffer's current position.
+        /// The new buffer's position will be 0, limit will be its capacity, and its
+        /// mark is cleared. The new buffer's read-only property and byte order are
+        /// same as this buffer's.
+        /// <para/>
+        /// The new buffer shares its content with this buffer, which means either
+        /// buffer's change of content will be visible to the other. The two buffer's
+        /// position, limit and mark are independent.
+        /// </summary>
+        /// <returns>A sliced buffer that shares its content with this buffer.</returns>
         public abstract Int16Buffer Slice();
 
-        /**
-         * Returns a string representing the state of this short buffer.
-         * 
-         * @return a string representing the state of this short buffer.
-         */
+        /// <summary>
+        /// Returns a string representing the state of this <see cref="Int16Buffer"/>.
+        /// </summary>
+        /// <returns>A string representing the state of this <see cref="Int16Buffer"/></returns>
         public override string ToString()
         {
             StringBuilder buf = new StringBuilder();

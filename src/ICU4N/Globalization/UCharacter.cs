@@ -4713,7 +4713,7 @@ namespace ICU4N
         ///     <item><desription>
         ///         <see cref="UProperty.General_Category_Mask"/> values
         ///         are mask values produced by left-shifting 1 by
-        ///         <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        ///         <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         ///         [:L:] to be represented.  Mask values are non-contiguous.
         ///     </desription></item>
         /// </list>
@@ -4802,9 +4802,9 @@ namespace ICU4N
         ///         and range from 0..240.
         ///     </desription></item>
         ///     <item><desription>
-        ///         UProperty.GENERAL_CATEGORY_MASK values
+        ///         <see cref="UProperty.General_Category_Mask"/> values
         ///         are mask values produced by left-shifting 1 by
-        ///         <see cref="UChar.GetType(int)"/>.  This allows grouped categories such as
+        ///         <see cref="UChar.GetUnicodeCategory(int)"/>.  This allows grouped categories such as
         ///         [:L:] to be represented.  Mask values are non-contiguous.
         ///     </desription></item>
         /// </list>

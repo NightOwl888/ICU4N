@@ -974,7 +974,7 @@ namespace ICU4N.Impl
 
         // Norm16 value thresholds for quick check combinations and types of extra data.
 
-        /// <summary>Mappings & compositions in [minYesNo..minYesNoMappingsOnly[.</summary>
+        /// <summary>Mappings &amp; compositions in [minYesNo..minYesNoMappingsOnly[.</summary>
         public const int IX_MIN_YES_NO = 10;
         /// <summary>Mappings are comp-normalized.</summary>
         public const int IX_MIN_NO_NO = 11;
@@ -1666,8 +1666,8 @@ namespace ICU4N.Impl
         /// <summary>
         /// Does <paramref name="c"/> have a composition boundary before it?
         /// True if its decomposition begins with a character that has
-        /// ccc=0 && NFC_QC=Yes (<see cref="IsCompYesAndZeroCC(int)"/>).
-        /// As a shortcut, this is true if <paramref name="c"/> itself has ccc=0 && NFC_QC=Yes
+        /// ccc=0 &amp;&amp; NFC_QC=Yes (<see cref="IsCompYesAndZeroCC(int)"/>).
+        /// As a shortcut, this is true if <paramref name="c"/> itself has ccc=0 &amp;&amp; NFC_QC=Yes
         /// (<see cref="IsCompYesAndZeroCC(int)"/>) so we need not decompose.
         /// </summary>
         private bool HasCompBoundaryBefore(int c, int norm16)

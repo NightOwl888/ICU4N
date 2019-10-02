@@ -52,7 +52,7 @@ namespace ICU4N.Impl
     ///     <item><description>UTrieEnumValue and UTrieEnumRange both are implemented then implement
     ///     a subclass of TrieEnumerator, override the extract method and iterate, e.g
     ///     <code>
-    ///         utrie_enum(&normTrie, _enumPropertyStartsValue, _enumPropertyStartsRange, set);
+    ///         utrie_enum(&amp;normTrie, _enumPropertyStartsValue, _enumPropertyStartsRange, set);
     ///     </code>
     ///     In .NET:
     ///     <code>
@@ -81,7 +81,7 @@ namespace ICU4N.Impl
     ///     <item><description>UTrieEnumRange is the only implemented callback then just implement
     ///     the while loop, when utrie_enum is called
     ///     <code>
-    ///         // utrie_enum(&fcdTrie, NULL, _enumPropertyStartsRange, set);
+    ///         // utrie_enum(&amp;fcdTrie, NULL, _enumPropertyStartsRange, set);
     ///         TrieEnumerator fcdIter  = new TrieEnumerator(fcdTrieImpl.FcdTrie);
     ///         while (fcdIter.MoveNext())
     ///         {

@@ -49,7 +49,7 @@ namespace ICU4N.Impl
             /// This function calculates a lead surrogate's value including a
             /// folding offset from the 1024 supplementary code points 
             /// [start..start+1024[ .
-            /// It is U+10000 &lt;= start &lt;= U+10fc00 and (start&0x3ff)==0.
+            /// It is U+10000 &lt;= start &lt;= U+10fc00 and (start&amp;0x3ff)==0.
             /// The folding offset is provided by the caller. 
             /// It is offset=UTRIE_BMP_INDEX_LENGTH+n*UTRIE_SURROGATE_BLOCK_COUNT 
             /// with n=0..1023. 
