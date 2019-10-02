@@ -21,7 +21,7 @@ namespace ICU4N.Impl.Coll
         // ICU4N just returns int. We use these constants for ease of porting.
         public const int LESS = -1;
         public const int EQUAL = 0;
-        public const int GREATER = 1;
+        public const int GREATER = 1; // ICU4N TODO: API - Rename per .NET conventions
 
         // Special sort key bytes for all levels.
         public const int TERMINATOR_BYTE = 0;
@@ -68,7 +68,7 @@ namespace ICU4N.Impl.Coll
         internal const int SECONDARY_AND_CASE_MASK = SECONDARY_MASK | CASE_MASK;
         /// <summary>Only the 2*6 bits for the pure tertiary weight.</summary>
         public const int ONLY_TERTIARY_MASK = 0x3f3f;
-        /// <summary>Only the secondary & tertiary bits; no case, no quaternary.</summary>
+        /// <summary>Only the secondary &amp; tertiary bits; no case, no quaternary.</summary>
         internal const int ONLY_SEC_TER_MASK = SECONDARY_MASK | ONLY_TERTIARY_MASK;
         /// <summary>Case bits and tertiary bits.</summary>
         internal const int CASE_AND_TERTIARY_MASK = CASE_MASK | ONLY_TERTIARY_MASK;

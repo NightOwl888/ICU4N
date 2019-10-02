@@ -10,26 +10,26 @@ namespace ICU4N.Impl.Coll
     /// <author>Markus W. Scherer</author>
     public static class CollationFastLatin /* all static */
     {
-        /**
-     * Fast Latin format version (one byte 1..FF).
-     * Must be incremented for any runtime-incompatible changes,
-     * in particular, for changes to any of the following constants.
-     *
-     * When the major version number of the main data format changes,
-     * we can reset this fast Latin version to 1.
-     */
-        public static readonly int VERSION = 2;
+        /// <summary>
+        /// Fast Latin format version (one byte 1..FF).
+        /// Must be incremented for any runtime-incompatible changes,
+        /// in particular, for changes to any of the following constants.
+        /// <para/>
+        /// When the major version number of the main data format changes,
+        /// we can reset this fast Latin version to 1.
+        /// </summary>
+        public const int VERSION = 2; // ICU4N TODO: API - rename per .NET convetions
 
-        public static readonly int LATIN_MAX = 0x17f;
-        public static readonly int LATIN_LIMIT = LATIN_MAX + 1;
+        public const int LATIN_MAX = 0x17f; // ICU4N TODO: API - rename per .NET convetions
+        public const int LATIN_LIMIT = LATIN_MAX + 1; // ICU4N TODO: API - rename per .NET convetions
 
-        internal static readonly int LATIN_MAX_UTF8_LEAD = 0xc5;  // UTF-8 lead byte of LATIN_MAX
+        internal const int LATIN_MAX_UTF8_LEAD = 0xc5;  // UTF-8 lead byte of LATIN_MAX
 
-        internal static readonly int PUNCT_START = 0x2000;
-        internal static readonly int PUNCT_LIMIT = 0x2040;
+        internal const int PUNCT_START = 0x2000;
+        internal const int PUNCT_LIMIT = 0x2040;
 
         // excludes U+FFFE & U+FFFF
-        internal static readonly int NUM_FAST_CHARS = LATIN_LIMIT + (PUNCT_LIMIT - PUNCT_START);
+        internal const int NUM_FAST_CHARS = LATIN_LIMIT + (PUNCT_LIMIT - PUNCT_START);
 
         // Note on the supported weight ranges:
         // Analysis of UCA 6.3 and CLDR 23 non-search tailorings shows that
@@ -50,128 +50,129 @@ namespace ICU4N.Impl.Coll
         // (If we supported numeric collation, then digits would have to have long primaries
         // so that special handling does not affect the fast path.)
 
-        internal static readonly int SHORT_PRIMARY_MASK = 0xfc00;  // bits 15..10
-        internal static readonly int INDEX_MASK = 0x3ff;  // bits 9..0 for expansions & contractions
-        internal static readonly int SECONDARY_MASK = 0x3e0;  // bits 9..5
-        internal static readonly int CASE_MASK = 0x18;  // bits 4..3
-        internal static readonly int LONG_PRIMARY_MASK = 0xfff8;  // bits 15..3
-        internal static readonly int TERTIARY_MASK = 7;  // bits 2..0
-        internal static readonly int CASE_AND_TERTIARY_MASK = CASE_MASK | TERTIARY_MASK;
+        internal const int SHORT_PRIMARY_MASK = 0xfc00;  // bits 15..10
+        internal const int INDEX_MASK = 0x3ff;  // bits 9..0 for expansions & contractions
+        internal const int SECONDARY_MASK = 0x3e0;  // bits 9..5
+        internal const int CASE_MASK = 0x18;  // bits 4..3
+        internal const int LONG_PRIMARY_MASK = 0xfff8;  // bits 15..3
+        internal const int TERTIARY_MASK = 7;  // bits 2..0
+        internal const int CASE_AND_TERTIARY_MASK = CASE_MASK | TERTIARY_MASK;
 
-        internal static readonly int TWO_SHORT_PRIMARIES_MASK =
+        internal const int TWO_SHORT_PRIMARIES_MASK =
                 (SHORT_PRIMARY_MASK << 16) | SHORT_PRIMARY_MASK;  // 0xfc00fc00
-        internal static readonly int TWO_LONG_PRIMARIES_MASK =
+        internal const int TWO_LONG_PRIMARIES_MASK =
                 (LONG_PRIMARY_MASK << 16) | LONG_PRIMARY_MASK;  // 0xfff8fff8
-        internal static readonly int TWO_SECONDARIES_MASK =
+        internal const int TWO_SECONDARIES_MASK =
                 (SECONDARY_MASK << 16) | SECONDARY_MASK;  // 0x3e003e0
-        internal static readonly int TWO_CASES_MASK =
+        internal const int TWO_CASES_MASK =
                 (CASE_MASK << 16) | CASE_MASK;  // 0x180018
-        internal static readonly int TWO_TERTIARIES_MASK =
+        internal const int TWO_TERTIARIES_MASK =
                 (TERTIARY_MASK << 16) | TERTIARY_MASK;  // 0x70007
 
-        /**
-         * Contraction with one fast Latin character.
-         * Use INDEX_MASK to find the start of the contraction list after the fixed table.
-         * The first entry contains the default mapping.
-         * Otherwise use CONTR_CHAR_MASK for the contraction character index
-         * (in ascending order).
-         * Use CONTR_LENGTH_SHIFT for the length of the entry
-         * (1=BAIL_OUT, 2=one CE, 3=two CEs).
-         *
-         * Also, U+0000 maps to a contraction entry, so that the fast path need not
-         * check for NUL termination.
-         * It usually maps to a contraction list with only the completely ignorable default value.
-         */
-        internal static readonly int CONTRACTION = 0x400;
-        /**
-         * An expansion encodes two CEs.
-         * Use INDEX_MASK to find the pair of CEs after the fixed table.
-         *
-         * The higher a mini CE value, the easier it is to process.
-         * For expansions and higher, no context needs to be considered.
-         */
-        internal static readonly int EXPANSION = 0x800;
-        /**
-         * Encodes one CE with a long/low mini primary (there are 128).
-         * All potentially-variable primaries must be in this range,
-         * to make the short-primary path as fast as possible.
-         */
-        internal static readonly int MIN_LONG = 0xc00;
-        internal static readonly int LONG_INC = 8;
-        internal static readonly int MAX_LONG = 0xff8;
-        /**
-         * Encodes one CE with a short/high primary (there are 60),
-         * plus a secondary CE if the secondary weight is high.
-         * Fast handling: At least all letter primaries should be in this range.
-         */
-        internal static readonly int MIN_SHORT = 0x1000;
-        internal static readonly int SHORT_INC = 0x400;
-        /** The highest primary weight is reserved for U+FFFF. */
-        internal static readonly int MAX_SHORT = SHORT_PRIMARY_MASK;
+        /// <summary>
+        /// Contraction with one fast Latin character.
+        /// Use INDEX_MASK to find the start of the contraction list after the fixed table.
+        /// The first entry contains the default mapping.
+        /// Otherwise use CONTR_CHAR_MASK for the contraction character index
+        /// (in ascending order).
+        /// Use CONTR_LENGTH_SHIFT for the length of the entry
+        /// (1=BAIL_OUT, 2=one CE, 3=two CEs).
+        /// <para/>
+        /// Also, U+0000 maps to a contraction entry, so that the fast path need not
+        /// check for NUL termination.
+        /// It usually maps to a contraction list with only the completely ignorable default value.
+        /// </summary>
+        internal const int CONTRACTION = 0x400;
+        /// <summary>
+        /// An expansion encodes two CEs.
+        /// Use <see cref="INDEX_MASK"/> to find the pair of CEs after the fixed table.
+        /// <para/>
+        /// The higher a mini CE value, the easier it is to process.
+        /// For expansions and higher, no context needs to be considered.
+        /// </summary>
+        internal const int EXPANSION = 0x800;
+        /// <summary>
+        /// Encodes one CE with a long/low mini primary (there are 128).
+        /// All potentially-variable primaries must be in this range,
+        /// to make the short-primary path as fast as possible.
+        /// </summary>
+        internal const int MIN_LONG = 0xc00;
+        internal const int LONG_INC = 8;
+        internal const int MAX_LONG = 0xff8;
+        /// <summary>
+        /// Encodes one CE with a short/high primary (there are 60),
+        /// plus a secondary CE if the secondary weight is high.
+        /// Fast handling: At least all letter primaries should be in this range.
+        /// </summary>
+        internal const int MIN_SHORT = 0x1000;
+        internal const int SHORT_INC = 0x400;
+        /// <summary>The highest primary weight is reserved for U+FFFF.</summary>
+        internal const int MAX_SHORT = SHORT_PRIMARY_MASK;
 
-        internal static readonly int MIN_SEC_BEFORE = 0;  // must add SEC_OFFSET
-        internal static readonly int SEC_INC = 0x20;
-        internal static readonly int MAX_SEC_BEFORE = MIN_SEC_BEFORE + 4 * SEC_INC;  // 5 before common
-        internal static readonly int COMMON_SEC = MAX_SEC_BEFORE + SEC_INC;
-        internal static readonly int MIN_SEC_AFTER = COMMON_SEC + SEC_INC;
-        internal static readonly int MAX_SEC_AFTER = MIN_SEC_AFTER + 5 * SEC_INC;  // 6 after common
-        internal static readonly int MIN_SEC_HIGH = MAX_SEC_AFTER + SEC_INC;  // 20 high secondaries
-        internal static readonly int MAX_SEC_HIGH = SECONDARY_MASK;
+        internal const int MIN_SEC_BEFORE = 0;  // must add SEC_OFFSET
+        internal const int SEC_INC = 0x20;
+        internal const int MAX_SEC_BEFORE = MIN_SEC_BEFORE + 4 * SEC_INC;  // 5 before common
+        internal const int COMMON_SEC = MAX_SEC_BEFORE + SEC_INC;
+        internal const int MIN_SEC_AFTER = COMMON_SEC + SEC_INC;
+        internal const int MAX_SEC_AFTER = MIN_SEC_AFTER + 5 * SEC_INC;  // 6 after common
+        internal const int MIN_SEC_HIGH = MAX_SEC_AFTER + SEC_INC;  // 20 high secondaries
+        internal const int MAX_SEC_HIGH = SECONDARY_MASK;
 
-        /**
-         * Lookup: Add this offset to secondary weights, except for completely ignorable CEs.
-         * Must be greater than any special value, e.g., MERGE_WEIGHT.
-         * The exact value is not relevant for the format version.
-         */
-        internal static readonly int SEC_OFFSET = SEC_INC;
-        internal static readonly int COMMON_SEC_PLUS_OFFSET = COMMON_SEC + SEC_OFFSET;
+        /// <summary>
+        /// Lookup: Add this offset to secondary weights, except for completely ignorable CEs.
+        /// Must be greater than any special value, e.g., <see cref="MERGE_WEIGHT"/>.
+        /// The exact value is not relevant for the format version.
+        /// </summary>
+        internal const int SEC_OFFSET = SEC_INC;
+        internal const int COMMON_SEC_PLUS_OFFSET = COMMON_SEC + SEC_OFFSET;
 
-        internal static readonly int TWO_SEC_OFFSETS =
+        internal const int TWO_SEC_OFFSETS =
                 (SEC_OFFSET << 16) | SEC_OFFSET;  // 0x200020
-        internal static readonly int TWO_COMMON_SEC_PLUS_OFFSET =
+        internal const int TWO_COMMON_SEC_PLUS_OFFSET =
                 (COMMON_SEC_PLUS_OFFSET << 16) | COMMON_SEC_PLUS_OFFSET;
 
-        internal static readonly int LOWER_CASE = 8;  // case bits include this offset
-        internal static readonly int TWO_LOWER_CASES = (LOWER_CASE << 16) | LOWER_CASE;  // 0x80008
+        internal const int LOWER_CASE = 8;  // case bits include this offset
+        internal const int TWO_LOWER_CASES = (LOWER_CASE << 16) | LOWER_CASE;  // 0x80008
 
-        internal static readonly int COMMON_TER = 0;  // must add TER_OFFSET
-        internal static readonly int MAX_TER_AFTER = 7;  // 7 after common
+        internal const int COMMON_TER = 0;  // must add TER_OFFSET
+        internal const int MAX_TER_AFTER = 7;  // 7 after common
 
-        /**
-         * Lookup: Add this offset to tertiary weights, except for completely ignorable CEs.
-         * Must be greater than any special value, e.g., MERGE_WEIGHT.
-         * Must be greater than case bits as well, so that with combined case+tertiary weights
-         * plus the offset the tertiary bits does not spill over into the case bits.
-         * The exact value is not relevant for the format version.
-         */
-        internal static readonly int TER_OFFSET = SEC_OFFSET;
-        internal static readonly int COMMON_TER_PLUS_OFFSET = COMMON_TER + TER_OFFSET;
+        /// <summary>
+        /// Lookup: Add this offset to tertiary weights, except for completely ignorable CEs.
+        /// Must be greater than any special value, e.g., <see cref="MERGE_WEIGHT"/>.
+        /// Must be greater than case bits as well, so that with combined case+tertiary weights
+        /// plus the offset the tertiary bits does not spill over into the case bits.
+        /// The exact value is not relevant for the format version.
+        /// </summary>
+        internal const int TER_OFFSET = SEC_OFFSET;
+        internal const int COMMON_TER_PLUS_OFFSET = COMMON_TER + TER_OFFSET;
 
-        internal static readonly int TWO_TER_OFFSETS = (TER_OFFSET << 16) | TER_OFFSET;
-        internal static readonly int TWO_COMMON_TER_PLUS_OFFSET =
+        internal const int TWO_TER_OFFSETS = (TER_OFFSET << 16) | TER_OFFSET;
+        internal const int TWO_COMMON_TER_PLUS_OFFSET =
                 (COMMON_TER_PLUS_OFFSET << 16) | COMMON_TER_PLUS_OFFSET;
 
-        internal static readonly int MERGE_WEIGHT = 3;
-        internal static readonly int EOS = 2;  // end of string
-        internal static readonly char BAIL_OUT = (char)1;
+        internal const int MERGE_WEIGHT = 3;
+        internal const int EOS = 2;  // end of string
+        internal const char BAIL_OUT = (char)1;
 
-        /**
-         * Contraction result first word bits 8..0 contain the
-         * second contraction character, as a char index 0..NUM_FAST_CHARS-1.
-         * Each contraction list is terminated with a word containing CONTR_CHAR_MASK.
-         */
-        internal static readonly int CONTR_CHAR_MASK = 0x1ff;
-        /**
-         * Contraction result first word bits 10..9 contain the result length:
-         * 1=bail out, 2=one mini CE, 3=two mini CEs
-         */
-        internal static readonly int CONTR_LENGTH_SHIFT = 9;
+        /// <summary>
+        /// Contraction result first word bits 8..0 contain the
+        /// second contraction character, as a char index 0..<see cref="NUM_FAST_CHARS"/>-1.
+        /// Each contraction list is terminated with a word containing <see cref="CONTR_CHAR_MASK"/>.
+        /// </summary>
+        internal const int CONTR_CHAR_MASK = 0x1ff;
 
-        /**
-         * Comparison return value when the regular comparison must be used.
-         * The exact value is not relevant for the format version.
-         */
-        public static readonly int BAIL_OUT_RESULT = -2;
+        /// <summary>
+        /// Contraction result first word bits 10..9 contain the result length:
+        /// 1=bail out, 2=one mini CE, 3=two mini CEs
+        /// </summary>
+        internal const int CONTR_LENGTH_SHIFT = 9;
+
+        /// <summary>
+        /// Comparison return value when the regular comparison must be used.
+        /// The exact value is not relevant for the format version.
+        /// </summary>
+        public const int BAIL_OUT_RESULT = -2; // ICU4N TODO: API - rename per .NET convetions
 
         internal static int GetCharIndex(char c)
         {
@@ -192,12 +193,12 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Computes the options value for the compare functions
-         * and writes the precomputed primary weights.
-         * Returns -1 if the Latin fastpath is not supported for the data and settings.
-         * The capacity must be LATIN_LIMIT.
-         */
+        /// <summary>
+        /// Computes the options value for the compare functions
+        /// and writes the precomputed primary weights.
+        /// Returns -1 if the Latin fastpath is not supported for the data and settings.
+        /// The capacity must be <see cref="LATIN_LIMIT"/>.
+        /// </summary>
         public static int GetOptions(CollationData data, CollationSettings settings,
                 char[] primaries)
         {
@@ -317,11 +318,10 @@ namespace ICU4N.Impl.Coll
 
             // Check for supported characters, fetch mini CEs, and compare primaries.
             int leftIndex = startIndex, rightIndex = startIndex;
-            /**
-             * Single mini CE or a pair.
-             * The current mini CE is in the lower 16 bits, the next one is in the upper 16 bits.
-             * If there is only one, then it is in the lower bits, and the upper bits are 0.
-             */
+
+            // Single mini CE or a pair.
+            // The current mini CE is in the lower 16 bits, the next one is in the upper 16 bits.
+            // If there is only one, then it is in the lower bits, and the upper bits are 0.
             int leftPair = 0, rightPair = 0;
             for (; ; )
             {
@@ -821,10 +821,10 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Java returns a negative result (use the '~' operator) if sIndex is to be incremented.
-         * C++ modifies sIndex.
-         */
+        /// <summary>
+        /// .NET returns a negative result (use the '~' operator) if sIndex is to be incremented.
+        /// C++ modifies sIndex.
+        /// </summary>
         private static long NextPair(char[] table, int c, int ce, ICharSequence s16, int sIndex)
         {
             if (ce >= MIN_LONG || ce < CONTRACTION)

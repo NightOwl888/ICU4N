@@ -1,4 +1,6 @@
-﻿//using System;
+﻿// ICU4N specific - using List<T> instead (.NET has real generics so this doesn't come at a performace cost like it would in Java)
+
+//using System;
 //using System.Collections.Generic;
 //using System.Text;
 

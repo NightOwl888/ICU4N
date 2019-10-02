@@ -1,13 +1,11 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Impl.Coll;
 using ICU4N.Util;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
-using System.Text;
-using IFactory = ICU4N.Impl.ICUService.IFactory;
 using CollatorFactory = ICU4N.Text.Collator.CollatorFactory;
+using IFactory = ICU4N.Impl.ICUService.IFactory;
 using LocaleKeyFactory = ICU4N.Impl.ICULocaleService.LocaleKeyFactory;
 
 namespace ICU4N.Text
@@ -26,18 +24,18 @@ namespace ICU4N.Text
             Collator coll = (Collator)service.Get(locale, actualLoc);
             if (coll == null)
             {
-                ///CLOVER:OFF
+                ////CLOVER:OFF
                 //Can't really change coll after it's been initialized
                 throw new MissingManifestResourceException("Could not locate Collator data");
-                ///CLOVER:ON
+                ////CLOVER:ON
             }
             return (Collator)coll.Clone();
             //}
             //catch (CloneNotSupportedException e)
             //{
-            //    ///CLOVER:OFF
+            //    ////CLOVER:OFF
             //    throw new ICUCloneNotSupportedException(e);
-            //    ///CLOVER:ON
+            //    ////CLOVER:ON
             //}
         }
 
@@ -72,7 +70,7 @@ namespace ICU4N.Text
                 return @delegate.GetDisplayName(objectLocale, displayLocale);
             }
 
-            protected override ICollection<string> GetSupportedIDs() // ICU4N specific - return type changed from ISet<string> to IReadOnlyCollection<string>
+            protected override ICollection<string> GetSupportedIDs() // ICU4N specific - return type changed from ISet<string> to ICollection<string>
             {
                 return @delegate.GetSupportedLocaleIDs();
             }
@@ -148,20 +146,20 @@ namespace ICU4N.Text
                 MarkDefault();
             }
 
-            /**
-             * makeInstance() returns an appropriate Collator for any locale.
-             * It falls back to root if there is no specific data.
-             *
-             * <p>Without this override, the service code would fall back to the default locale
-             * which is not desirable for an algorithm with a good Unicode default,
-             * like collation.
-             */
+            /// <summary>
+            /// <see cref="MakeInstance(ULocale)"/> returns an appropriate <see cref="Collator"/> for any locale.
+            /// It falls back to root if there is no specific data.
+            /// <para/>
+            /// Without this override, the service code would fall back to the default locale
+            /// which is not desirable for an algorithm with a good Unicode default,
+            /// like collation.
+            /// </summary>
             public override string ValidateFallbackLocale()
             {
                 return "";
             }
 
-            ///CLOVER:OFF
+            ////CLOVER:OFF
             // The following method can not be reached by testing
             protected override object HandleDefault(Key key, string[] actualIDReturn)
             {
@@ -178,7 +176,7 @@ namespace ICU4N.Text
                     return null;
                 }
             }
-            ///CLOVER:ON
+            ////CLOVER:ON
         }
 
         // Ported from C++ Collator::makeInstance().

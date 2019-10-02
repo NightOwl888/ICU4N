@@ -271,7 +271,7 @@ namespace ICU4N.Text
         /// created by different <see cref="Collator"/>s might return incorrect
         /// results.  See class documentation.
         /// </remarks>
-        /// <param name="target">Target <see cref="CollationKey"/>.</param>
+        /// <param name="other">Target <see cref="CollationKey"/>.</param>
         /// <returns>
         /// An integer value.  If the value is less than zero this CollationKey
         /// is less than than target, if the value is zero they are equal, and

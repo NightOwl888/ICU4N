@@ -9,9 +9,14 @@ using System.Text;
 
 namespace ICU4N.Impl.Coll
 {
+    // CollationRuleParser.cs, ported from collationruleparser.h/.cpp
+    //
+    // C++ version created on: 2013apr10
+    // created by: Markus W. Scherer
+
     public sealed class CollationRuleParser
     {
-        /** Special reset positions. */
+        /// <summary>Special reset positions.</summary>
         internal enum Position
         {
             FIRST_TERTIARY_IGNORABLE,
@@ -31,31 +36,36 @@ namespace ICU4N.Impl.Coll
         }
         internal static readonly Position[] POSITION_VALUES = (Position[])Enum.GetValues(typeof(Position));
 
-        /**
-         * First character of contractions that encode special reset positions.
-         * U+FFFE cannot be tailored via rule syntax.
-         *
-         * The second contraction character is POS_BASE + Position.
-         */
-        internal static readonly char POS_LEAD = (char)0xfffe;
-        /**
-         * Base for the second character of contractions that encode special reset positions.
-         * Braille characters U+28xx are printable and normalization-inert.
-         * @see POS_LEAD
-         */
-        internal static readonly char POS_BASE = (char)0x2800;
+        /// <summary>
+        /// First character of contractions that encode special reset positions.
+        /// U+FFFE cannot be tailored via rule syntax.
+        /// <para/>
+        /// The second contraction character is <see cref="POS_BASE"/> + <see cref="Position"/>.
+        /// </summary>
+        internal const char POS_LEAD = (char)0xfffe;
+
+        /// <summary>
+        /// Base for the second character of contractions that encode special reset positions.
+        /// Braille characters U+28xx are printable and normalization-inert.
+        /// </summary>
+        /// <seealso cref="POS_LEAD"/>
+        internal const char POS_BASE = (char)0x2800;
 
         public abstract class Sink // ICU4N specific - made public because it has public subclass
         {
-            /**
-             * Adds a reset.
-             * strength=UCOL_IDENTICAL for &str.
-             * strength=UCOL_PRIMARY/UCOL_SECONDARY/UCOL_TERTIARY for &[before n]str where n=1/2/3.
-             */
+            internal Sink() { } // ICU4N specific - added internal constructor as this is not meant for end-users.
+
+            /// <summary>
+            /// Adds a reset.
+            /// <para/>
+            /// strength=<see cref="CollationStrength.Identical"/> for &amp;str.
+            /// <para/>
+            /// strength=<see cref="CollationStrength.Primary"/>/<see cref="CollationStrength.Secondary"/>/<see cref="CollationStrength.Tertiary"/> for &amp;[before n]str where n=1/2/3.
+            /// </summary>
             internal abstract void AddReset(CollationStrength strength, ICharSequence str);
-            /**
-             * Adds a relation with strength and prefix | str / extension.
-             */
+            /// <summary>
+            /// Adds a relation with strength and prefix | str / extension.
+            /// </summary>
             internal abstract void AddRelation(CollationStrength strength, ICharSequence prefix,
                     ICharSequence str, string extension); // ICU4N specific - changed extension from ICharSequence to string
 
@@ -69,29 +79,30 @@ namespace ICU4N.Impl.Coll
             string GetRules(string localeID, string collationType);
         }
 
-        /**
-         * Constructor.
-         * The Sink must be set before parsing.
-         * The Importer can be set, otherwise [import locale] syntax is not supported.
-         */
+        /// <summary>
+        /// Constructor.
+        /// The <see cref="Sink"/> must be set before parsing.
+        /// The <see cref="IImporter"/> can be set, otherwise [import locale] syntax is not supported.
+        /// </summary>
+        /// <param name="baseData"></param>
         internal CollationRuleParser(CollationData baseData)
         {
             this.baseData = baseData;
         }
 
-        /**
-         * Sets the pointer to a Sink object.
-         * The pointer is aliased: Pointer copy without cloning or taking ownership.
-         */
+        /// <summary>
+        /// Sets the pointer to a <see cref="Sink"/> object.
+        /// The pointer is aliased: Pointer copy without cloning or taking ownership.
+        /// </summary>
         internal void SetSink(Sink sinkAlias)
         {
             sink = sinkAlias;
         }
 
-        /**
-         * Sets the pointer to an Importer object.
-         * The pointer is aliased: Pointer copy without cloning or taking ownership.
-         */
+        /// <summary>
+        /// Sets the pointer to an <see cref="IImporter"/> object.
+        /// The pointer is aliased: Pointer copy without cloning or taking ownership.
+        /// </summary>
         internal void SetImporter(IImporter importerAlias)
         {
             importer = importerAlias;
@@ -103,14 +114,14 @@ namespace ICU4N.Impl.Coll
             Parse(ruleString);
         }
 
-        private static readonly int UCOL_DEFAULT = -1;
-        private static readonly int UCOL_OFF = 0;
-        private static readonly int UCOL_ON = 1;
+        private const int UCOL_DEFAULT = -1;
+        private const int UCOL_OFF = 0;
+        private const int UCOL_ON = 1;
 
-        /** UCOL_PRIMARY=0 .. UCOL_IDENTICAL=15 */
-        private static readonly int STRENGTH_MASK = 0xf;
-        private static readonly int STARRED_FLAG = 0x10;
-        private static readonly int OFFSET_SHIFT = 8;
+        /// <summary>UCOL_PRIMARY=0 .. UCOL_IDENTICAL=15</summary>
+        private const int STRENGTH_MASK = 0xf;
+        private const int STARRED_FLAG = 0x10;
+        private const int OFFSET_SHIFT = 8;
 
         private static readonly string BEFORE = "[before";
 
@@ -575,11 +586,13 @@ namespace ICU4N.Impl.Coll
                 "last trailing"
             };
 
-        /**
-         * Sets str to a contraction of U+FFFE and (U+2800 + Position).
-         * @return rule index after the special reset position
-         * @throws ParseException 
-         */
+        /// <summary>
+        /// Sets str to a contraction of U+FFFE and (U+2800 + Position).
+        /// </summary>
+        /// <param name="i"></param>
+        /// <param name="str"></param>
+        /// <returns>Rule index after the special reset position.</returns>
+        /// <exception cref="FormatException"/>
         private int ParseSpecialPosition(int i, StringBuilder str)
         {
             int j = ReadWords(i + 1, rawBuilder.StringBuilder);
@@ -905,14 +918,14 @@ namespace ICU4N.Impl.Coll
         }
 
         private static readonly string[] gSpecialReorderCodes = {
-        "space", "punct", "symbol", "currency", "digit"
-    };
+            "space", "punct", "symbol", "currency", "digit"
+        };
 
-        /**
-         * Gets a script or reorder code from its string representation.
-         * @return the script/reorder code, or
-         * -1 if not recognized
-         */
+        /// <summary>
+        /// Gets a script or reorder code from its string representation.
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns>The script/reorder code, or -1 if not recognized.</returns>
         public static int GetReorderCode(string word)
         {
             for (int i = 0; i < gSpecialReorderCodes.Length; ++i)
@@ -1107,10 +1120,10 @@ namespace ICU4N.Impl.Coll
             return msg.Append('\"').ToString();
         }
 
-        /**
-         * ASCII [:P:] and [:S:]:
-         * [\u0021-\u002F \u003A-\u0040 \u005B-\u0060 \u007B-\u007E]
-         */
+        /// <summary>
+        /// ASCII [:P:] and [:S:]:
+        /// [\u0021-\u002F \u003A-\u0040 \u005B-\u0060 \u007B-\u007E]
+        /// </summary>
         private static bool IsSyntaxChar(int c)
         {
             return 0x21 <= c && c <= 0x7e &&

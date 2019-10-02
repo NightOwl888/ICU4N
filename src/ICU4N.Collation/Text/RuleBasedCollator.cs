@@ -1,42 +1,139 @@
-﻿using ICU4N.Impl.Coll;
-using ICU4N.Impl;
+﻿using ICU4N.Impl;
+using ICU4N.Impl.Coll;
 using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using ICU4N.Text;
+using ICU4N.Support.Threading;
 using ICU4N.Util;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Reflection;
-using System.Text;
-using SortKeyByteSink = ICU4N.Impl.Coll.CollationKeys.SortKeyByteSink;
 using ReorderingBuffer = ICU4N.Impl.Normalizer2Impl.ReorderingBuffer;
-using ICU4N.Support.Threading;
+using SortKeyByteSink = ICU4N.Impl.Coll.CollationKeys.SortKeyByteSink;
 
 namespace ICU4N.Text
 {
+    /// <summary>
+    /// <see cref="RuleBasedCollator"/> is a concrete subclass of <see cref="Collator"/>. It allows customization of the <see cref="Collator"/> via user-specified rule
+    /// sets. <see cref="RuleBasedCollator"/> is designed to be fully compliant to the <a
+    /// href="http://www.unicode.org/unicode/reports/tr10/">Unicode Collation Algorithm (UCA)</a> and conforms to ISO 14651.
+    /// <para/>
+    /// A <see cref="Collator"/> is thread-safe only when frozen. See <see cref="IsFrozen"/> and <see cref="IFreezable{T}"/>.
+    /// <para/>
+    /// Users are strongly encouraged to read the <a href="http://userguide.icu-project.org/collation">User
+    /// Guide</a> for more information about the collation service before using this class.
+    /// </summary>
+    /// <remarks>
+    /// Create a <see cref="RuleBasedCollator"/> from a locale by calling the <see cref="Collator.GetInstance(System.Globalization.CultureInfo)"/> factory method in the base class
+    /// <see cref="Collator"/>. <see cref="Collator.GetInstance(System.Globalization.CultureInfo)"/> creates a <see cref="RuleBasedCollator"/> object based on the collation rules defined by the
+    /// argument locale. If a customized collation ordering or attributes is required, use the <see cref="RuleBasedCollator(string)"/>
+    /// constructor with the appropriate rules. The customized <see cref="RuleBasedCollator"/> will base its ordering on the CLDR root collation, while
+    /// re-adjusting the attributes and orders of the characters in the specified rule accordingly.
+    /// <para/>
+    /// RuleBasedCollator provides correct collation orders for most locales supported in ICU. If specific data for a locale
+    /// is not available, the orders eventually falls back to the
+    /// <a href="http://www.unicode.org/reports/tr35/tr35-collation.html#Root_Collation">CLDR root sort order</a>.
+    /// <para/>
+    /// For information about the collation rule syntax and details about customization, please refer to the <a
+    /// href="http://userguide.icu-project.org/collation/customization">Collation customization</a> section of the
+    /// User Guide.
+    /// <para/>
+    /// Note that
+    /// ICU4N's <see cref="RuleBasedCollator"/> does not support turning off the Thai/Lao vowel-consonant swapping using '!', since the UCA clearly
+    /// states that it has to be supported to ensure a correct sorting order. If a '!' is encountered, it is ignored.
+    /// <para/>
+    /// <strong>Examples</strong>
+    /// <para/>
+    /// Creating Customized <see cref="RuleBasedCollator"/>s: 
+    /// <code>
+    /// string simple = "&amp; a &lt; b &lt; c &lt; d";
+    /// RuleBasedCollator simpleCollator = new RuleBasedCollator(simple);
+    /// 
+    /// string norwegian = "&amp; a , A &lt; b , B &lt; c , C &lt; d , D &lt; e , E "
+    ///                    + "&lt; f , F &lt; g , G &lt; h , H &lt; i , I &lt; j , "
+    ///                    + "J &lt; k , K &lt; l , L &lt; m , M &lt; n , N &lt; "
+    ///                    + "o , O &lt; p , P &lt; q , Q &lt;r , R &lt;s , S &lt; "
+    ///                    + "t , T &lt; u , U &lt; v , V &lt; w , W &lt; x , X "
+    ///                    + "&lt; y , Y &lt; z , Z &lt; &#92;u00E5 = a&#92;u030A "
+    ///                    + ", &#92;u00C5 = A&#92;u030A ; aa , AA &lt; &#92;u00E6 "
+    ///                    + ", &#92;u00C6 &lt; &#92;u00F8 , &#92;u00D8";
+    /// RuleBasedCollator norwegianCollator = new RuleBasedCollator(norwegian);
+    /// </code>
+    /// <para/>
+    /// Concatenating rules to combine <c>Collator</c>s:
+    /// <code>
+    /// // Create an en-US Collator object
+    /// RuleBasedCollator en_USCollator = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US"));
+    /// // Create a da-DK Collator object
+    /// RuleBasedCollator da_DKCollator = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("da-DK"));
+    /// 
+    /// // Combine the two
+    /// 
+    /// // First, get the collation rules from en_USCollator
+    /// string en_USRules = en_USCollator.GetRules();
+    /// // Second, get the collation rules from da_DKCollator
+    /// string da_DKRules = da_DKCollator.GetRules();
+    /// RuleBasedCollator newCollator = new RuleBasedCollator(en_USRules + da_DKRules);
+    /// // newCollator has the combined rules
+    /// </code>
+    /// <para/>
+    /// Making changes to an existing <see cref="RuleBasedCollator"/> to create a new <c>Collator</c> object, by appending changes to
+    /// the existing rule: 
+    /// <code>
+    /// // Create a new Collator object with additional rules
+    /// string addRules = "&amp; C &lt; ch, cH, Ch, CH";
+    /// RuleBasedCollator myCollator = new RuleBasedCollator(en_USCollator.GetRules() + addRules);
+    /// // myCollator contains the new rules
+    /// </code>
+    /// <para/>
+    /// How to change the order of non-spacing accents: 
+    /// <code>
+    /// // old rule with main accents
+    /// string oldRules = "= &#92;u0301 ; &#92;u0300 ; &#92;u0302 ; &#92;u0308 "
+    ///                 + "; &#92;u0327 ; &#92;u0303 ; &#92;u0304 ; &#92;u0305 "
+    ///                 + "; &#92;u0306 ; &#92;u0307 ; &#92;u0309 ; &#92;u030A "
+    ///                 + "; &#92;u030B ; &#92;u030C ; &#92;u030D ; &#92;u030E "
+    ///                 + "; &#92;u030F ; &#92;u0310 ; &#92;u0311 ; &#92;u0312 "
+    ///                 + "&lt; a , A ; ae, AE ; &#92;u00e6 , &#92;u00c6 "
+    ///                 + "&lt; b , B &lt; c, C &lt; e, E &amp; C &lt; d , D";
+    /// // change the order of accent characters
+    /// string addOn = "&amp; &#92;u0300 ; &#92;u0308 ; &#92;u0302";
+    /// RuleBasedCollator myCollator = new RuleBasedCollator(oldRules + addOn);
+    /// </code>
+    /// <para/>
+    /// Putting in a new primary ordering before the default setting, e.g. sort English characters before or after Japanese
+    /// characters in the Japanese <c>Collator</c>:
+    /// <code>
+    /// // get en_US Collator rules
+    /// RuleBasedCollator en_USCollator = (RuleBasedCollator)Collator.GetInstance(new CultureInfo("en-US"));
+    /// // add a few Japanese characters to sort before English characters
+    /// // suppose the last character before the first base letter 'a' in
+    /// // the English collation rule is &#92;u2212
+    /// string jaString = "&amp; &#92;u2212 &lt;&#92;u3041, &#92;u3042 &lt;&#92;u3043, "
+    ///                   + "&#92;u3044";
+    /// RuleBasedCollator myJapaneseCollator = new RuleBasedCollator(en_USCollator.GetRules() + jaString);
+    /// </code>
+    /// <para/>
+    /// This class cannot be inherited.
+    /// </remarks>
+    /// <author>Syn Wee Quek</author>
+    /// <stable>ICU 2.8</stable>
     public sealed class RuleBasedCollator : Collator
     {
         // public constructors ---------------------------------------------------
 
-        /**
-         * <p>
-         * Constructor that takes the argument rules for customization.
-         * The collator will be based on the CLDR root collation, with the
-         * attributes and re-ordering of the characters specified in the argument rules.
-         * <p>
-         * See the User Guide's section on <a href="http://userguide.icu-project.org/collation/customization">
-         * Collation Customization</a> for details on the rule syntax.
-         *
-         * @param rules
-         *            the collation rules to build the collation table from.
-         * @exception ParseException
-         *                and IOException thrown. ParseException thrown when argument rules have an invalid syntax.
-         *                IOException thrown when an error occurred while reading internal data.
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Constructor that takes the argument rules for customization.
+        /// The collator will be based on the CLDR root collation, with the
+        /// attributes and re-ordering of the characters specified in the argument rules.
+        /// <para/>
+        /// See the User Guide's section on <a href="http://userguide.icu-project.org/collation/customization">
+        /// Collation Customization</a> for details on the rule syntax.
+        /// </summary>
+        /// <param name="rules">The collation rules to build the collation table from.</param>
+        /// <exception cref="FormatException">Thrown when argument rules have an invalid syntax.</exception>
+        /// <exception cref="System.IO.IOException">Thrown when an error occurred while reading internal data.</exception>
+        /// <stable>ICU 2.8</stable>
         public RuleBasedCollator(string rules)
         {
             if (rules == null)
@@ -47,11 +144,11 @@ namespace ICU4N.Text
             InternalBuildTailoring(rules);
         }
 
-        /**
-         * Implements from-rule constructors.
-         * @param rules rule string
-         * @throws Exception
-         */
+        /// <summary>
+        /// Implements from-rule constructors.
+        /// </summary>
+        /// <param name="rules">Rule string.</param>
+        /// <exception cref="Exception"/>
         private void InternalBuildTailoring(string rules)
         {
             // ICU4N TODO: Seems like reflection is overkill here.
@@ -85,12 +182,11 @@ namespace ICU4N.Text
 
         // public methods --------------------------------------------------------
 
-        /**
-         * Clones the RuleBasedCollator
-         * 
-         * @return a new instance of this RuleBasedCollator object
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Clones the <see cref="RuleBasedCollator"/>.
+        /// </summary>
+        /// <returns>A new instance of this <see cref="RuleBasedCollator"/> object.</returns>
+        /// <stable>ICU 2.8</stable>
         public override object Clone()
         {
             if (IsFrozen)
@@ -111,25 +207,23 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Return a CollationElementIterator for the given String.
-         * 
-         * @see CollationElementIterator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Return a <see cref="CollationElementIterator"/> for the given <see cref="string"/>.
+        /// </summary>
+        /// <seealso cref="CollationElementIterator"/>
+        /// <stable>ICU 2.8</stable>
         public CollationElementIterator GetCollationElementIterator(string source)
         {
             InitMaxExpansions();
             return new CollationElementIterator(source, this);
         }
 
-        /**
-         * Return a CollationElementIterator for the given CharacterIterator. The source iterator's integrity will be
-         * preserved since a new copy will be created for use.
-         * 
-         * @see CollationElementIterator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Return a <see cref="CollationElementIterator"/> for the given <see cref="CharacterIterator"/>. The source iterator's integrity will be
+        /// preserved since a new copy will be created for use.
+        /// </summary>
+        /// <seealso cref="CollationElementIterator"/>
+        /// <stable>ICU 2.8</stable>
         public CollationElementIterator GetCollationElementIterator(CharacterIterator source)
         {
             InitMaxExpansions();
@@ -137,13 +231,12 @@ namespace ICU4N.Text
             return new CollationElementIterator(newsource, this);
         }
 
-        /**
-         * Return a CollationElementIterator for the given UCharacterIterator. The source iterator's integrity will be
-         * preserved since a new copy will be created for use.
-         * 
-         * @see CollationElementIterator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Return a <see cref="CollationElementIterator"/> for the given <see cref="UCharacterIterator"/>. The source iterator's integrity will be
+        /// preserved since a new copy will be created for use.
+        /// </summary>
+        /// <seealso cref="CollationElementIterator"/>
+        /// <stable>ICU 2.8</stable>
         public CollationElementIterator GetCollationElementIterator(UCharacterIterator source)
         {
             InitMaxExpansions();
@@ -152,24 +245,23 @@ namespace ICU4N.Text
 
         // Freezable interface implementation -------------------------------------------------
 
-        /**
-         * Determines whether the object has been frozen or not.
-         *
-         * <p>An unfrozen Collator is mutable and not thread-safe.
-         * A frozen Collator is immutable and thread-safe.
-         *
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Determines whether the object has been frozen or not.
+        /// <para/>
+        /// An unfrozen <see cref="Collator"/> is mutable and not thread-safe.
+        /// A frozen <see cref="Collator"/> is immutable and thread-safe.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public override bool IsFrozen
         {
             get { return frozenLock != null; }
         }
 
-        /**
-         * Freezes the collator.
-         * @return the collator itself.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Freezes the collator.
+        /// </summary>
+        /// <returns>The collator itself.</returns>
+        /// <stable>ICU 4.8</stable>
         public override Collator Freeze()
         {
             if (!IsFrozen)
@@ -183,10 +275,10 @@ namespace ICU4N.Text
             return this;
         }
 
-        /**
-         * Provides for the clone operation. Any clone is initially unfrozen.
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Provides for the clone operation. Any clone is initially unfrozen.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
         public override Collator CloneAsThawed()
         {
             //try
@@ -227,28 +319,17 @@ namespace ICU4N.Text
             return tailoring.Settings.ReadOnly;
         }
 
-        /**
-         * Sets the Hiragana Quaternary mode to be on or off. When the Hiragana Quaternary mode is turned on, the collator
-         * positions Hiragana characters before all non-ignorable characters in QUATERNARY strength. This is to produce a
-         * correct JIS collation order, distinguishing between Katakana and Hiragana characters.
-         *
-         * <p>This attribute was an implementation detail of the CLDR Japanese tailoring.
-         * Since ICU 50, this attribute is not settable any more via API functions.
-         * Since CLDR 25/ICU 53, explicit quaternary relations are used
-         * to achieve the same Japanese sort order.
-         *
-         * @param flag
-         *            true if Hiragana Quaternary mode is to be on, false otherwise
-         * @see #setHiraganaQuaternaryDefault
-         * @see #isHiraganaQuaternary
-         * @deprecated ICU 50 Implementation detail, cannot be set via API, was removed from implementation.
-         */
-        //[Obsolete("ICU 50 Implementation detail, cannot be set via API, was removed from implementation.")]
-        //    public void SetHiraganaQuaternary(bool flag)
-        //{
-        //    CheckNotFrozen();
-        //}
-
+        /// <summary>
+        /// Gets or sets the Hiragana Quaternary mode to be on or off. When the Hiragana Quaternary mode is turned on, the collator
+        /// positions Hiragana characters before all non-ignorable characters in <see cref="CollationStrength.Quaternary"/> strength. This is to produce a
+        /// correct JIS collation order, distinguishing between Katakana and Hiragana characters.
+        /// <para/>
+        /// This attribute was an implementation detail of the CLDR Japanese tailoring.
+        /// Since ICU 50, this attribute is not settable any more via API functions.
+        /// Since CLDR 25/ICU 53, explicit quaternary relations are used
+        /// to achieve the same Japanese sort order.
+        /// </summary>
+        /// <seealso cref="SetHiraganaQuaternaryDefault()"/>
         [Obsolete("ICU 50 Implementation detail, cannot be set via API, was removed from implementation.")]
         public bool IsHiraganaQuaternary
         {
@@ -256,48 +337,27 @@ namespace ICU4N.Text
             set { CheckNotFrozen(); }
         }
 
-        /**
-         * Sets the Hiragana Quaternary mode to the initial mode set during construction of the RuleBasedCollator. See
-         * setHiraganaQuaternary(boolean) for more details.
-         *
-         * <p>This attribute was an implementation detail of the CLDR Japanese tailoring.
-         * Since ICU 50, this attribute is not settable any more via API functions.
-         * Since CLDR 25/ICU 53, explicit quaternary relations are used
-         * to achieve the same Japanese sort order.
-         *
-         * @see #setHiraganaQuaternary(boolean)
-         * @see #isHiraganaQuaternary
-         * @deprecated ICU 50 Implementation detail, cannot be set via API, was removed from implementation.
-         */
+        /// <summary>
+        /// Gets or sets the Hiragana Quaternary mode to the initial mode set during construction of the RuleBasedCollator. See
+        /// <see cref="IsHiraganaQuaternary"/> for more details.
+        /// <para/>
+        /// This attribute was an implementation detail of the CLDR Japanese tailoring.
+        /// Since ICU 50, this attribute is not settable any more via API functions.
+        /// Since CLDR 25/ICU 53, explicit quaternary relations are used
+        /// to achieve the same Japanese sort order.
+        /// </summary>
+        /// <seealso cref="IsHiraganaQuaternary"/>
         [Obsolete("ICU 50 Implementation detail, cannot be set via API, was removed from implementation.")]
-        public void SetHiraganaQuaternaryDefault()
+        public void SetHiraganaQuaternaryDefault() // ICU4N TODO: API - Rename SetHiraganaQuaternaryToDefault()
         {
             CheckNotFrozen();
         }
 
-        /**
-         * Sets whether uppercase characters sort before lowercase characters or vice versa, in strength TERTIARY. The
-         * default mode is false, and so lowercase characters sort before uppercase characters. If true, sort upper case
-         * characters first.
-         * 
-         * @param upperfirst
-         *            true to sort uppercase characters before lowercase characters, false to sort lowercase characters
-         *            before uppercase characters
-         * @see #isLowerCaseFirst
-         * @see #isUpperCaseFirst
-         * @see #setLowerCaseFirst
-         * @see #setCaseFirstDefault
-         * @stable ICU 2.8
-         */
-        //public void setUpperCaseFirst(bool upperfirst)
-        //{
-        //    CheckNotFrozen();
-        //    if (upperfirst == isUpperCaseFirst()) { return; }
-        //    CollationSettings ownedSettings = GetOwnedSettings();
-        //    ownedSettings.setCaseFirst(upperfirst ? CollationSettings.CASE_FIRST_AND_UPPER_MASK : 0);
-        //    setFastLatinOptions(ownedSettings);
-        //}
-
+        /// <summary>
+        /// Gets or sets whether uppercase characters sort before lowercase characters or vice versa in strength <see cref="CollationStrength.Tertiary"/>. The
+        /// default mode is false, and so lowercase characters sort before uppercase characters. If true, sort uppercase
+        /// characters first.
+        /// </summary>
         public bool IsUpperCaseFirst
         {
             get
@@ -314,29 +374,14 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Sets the orders of lower cased characters to sort before upper cased characters, in strength TERTIARY. The
-         * default mode is false. If true is set, the RuleBasedCollator will sort lower cased characters before the upper
-         * cased ones. Otherwise, if false is set, the RuleBasedCollator will ignore case preferences.
-         * 
-         * @param lowerfirst
-         *            true for sorting lower cased characters before upper cased characters, false to ignore case
-         *            preferences.
-         * @see #isLowerCaseFirst
-         * @see #isUpperCaseFirst
-         * @see #setUpperCaseFirst
-         * @see #setCaseFirstDefault
-         * @stable ICU 2.8
-         */
-        //        public void setLowerCaseFirst(boolean lowerfirst)
-        //{
-        //    CheckNotFrozen();
-        //    if (lowerfirst == isLowerCaseFirst()) { return; }
-        //    CollationSettings ownedSettings = GetOwnedSettings();
-        //    ownedSettings.setCaseFirst(lowerfirst ? CollationSettings.CASE_FIRST : 0);
-        //    setFastLatinOptions(ownedSettings);
-        //}
-
+        /// <summary>
+        /// Gets or sets the orders of lower-cased characters to sort before uppercased characters in strength <see cref="CollationStrength.Tertiary"/>. The
+        /// default mode is false. If true is set, the <see cref="RuleBasedCollator"/> will sort lowercased characters before the uppercased 
+        /// ones. Otherwise, if false is set, the <see cref="RuleBasedCollator"/> will ignore case preferences.
+        /// </summary>
+        /// <seealso cref="IsUpperCaseFirst"/>
+        /// <seealso cref="SetCaseFirstDefault()"/>
+        /// <stable>ICU 2.8</stable>
         public bool IsLowerCaseFirst
         {
             get
@@ -353,17 +398,14 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Sets the case first mode to the initial mode set during construction of the RuleBasedCollator. See
-         * setUpperCaseFirst(boolean) and setLowerCaseFirst(boolean) for more details.
-         * 
-         * @see #isLowerCaseFirst
-         * @see #isUpperCaseFirst
-         * @see #setLowerCaseFirst(boolean)
-         * @see #setUpperCaseFirst(boolean)
-         * @stable ICU 2.8
-         */
-        public void SetCaseFirstDefault()
+        /// <summary>
+        /// Sets the case first mode to the initial mode set during construction of the <see cref="RuleBasedCollator"/>. See
+        /// <see cref="IsUpperCaseFirst"/> and <see cref="IsLowerCaseFirst"/> for more details.
+        /// </summary>
+        /// <seealso cref="IsUpperCaseFirst"/>
+        /// <seealso cref="IsLowerCaseFirst"/>
+        /// <stable>ICU 2.8</stable>
+        public void SetCaseFirstDefault() // ICU4N TODO: API - Rename SetCaseFirstToDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -373,15 +415,13 @@ namespace ICU4N.Text
             SetFastLatinOptions(ownedSettings);
         }
 
-        /**
-         * Sets the alternate handling mode to the initial mode set during construction of the RuleBasedCollator. See
-         * setAlternateHandling(boolean) for more details.
-         * 
-         * @see #setAlternateHandlingShifted(boolean)
-         * @see #isAlternateHandlingShifted()
-         * @stable ICU 2.8
-         */
-        public void SetAlternateHandlingDefault()
+        /// <summary>
+        /// Sets the alternate handling mode to the initial mode set during construction of the <see cref="RuleBasedCollator"/>. See
+        /// <see cref="IsAlternateHandlingShifted"/> for more details.
+        /// </summary>
+        /// <seealso cref="IsAlternateHandlingShifted"/>
+        /// <stable>ICU 2.8</stable>
+        public void SetAlternateHandlingDefault() // ICU4N TODO: API - Rename SetAlternateHandlingToDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -391,15 +431,13 @@ namespace ICU4N.Text
             SetFastLatinOptions(ownedSettings);
         }
 
-        /**
-         * Sets the case level mode to the initial mode set during construction of the RuleBasedCollator. See
-         * setCaseLevel(boolean) for more details.
-         * 
-         * @see #setCaseLevel(boolean)
-         * @see #isCaseLevel
-         * @stable ICU 2.8
-         */
-        public void SetCaseLevelDefault()
+        /// <summary>
+        /// Sets the case level mode to the initial mode set during construction of the <see cref="RuleBasedCollator"/>. See
+        /// <seealso cref="IsCaseLevel"/> for more details.
+        /// </summary>
+        /// <seealso cref="IsCaseLevel"/>
+        /// <stable>ICU 2.8</stable>
+        public void SetCaseLevelDefault() // ICU4N TODO: API - Rename SetCaseLevelToDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -409,15 +447,13 @@ namespace ICU4N.Text
             SetFastLatinOptions(ownedSettings);
         }
 
-        /**
-         * Sets the decomposition mode to the initial mode set during construction of the RuleBasedCollator. See
-         * setDecomposition(int) for more details.
-         * 
-         * @see #getDecomposition
-         * @see #setDecomposition(int)
-         * @stable ICU 2.8
-         */
-        public void SetDecompositionDefault()
+        /// <summary>
+        /// Sets the decomposition mode to the initial mode set during construction of the <see cref="RuleBasedCollator"/>. See
+        /// <see cref="Decomposition"/> for more details.
+        /// </summary>
+        /// <seealso cref="Decomposition"/>
+        /// <stable>ICU 2.8</stable>
+        public void SetDecompositionDefault() // ICU4N TODO: API - Rename SetDecompositionToDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -427,15 +463,13 @@ namespace ICU4N.Text
             SetFastLatinOptions(ownedSettings);
         }
 
-        /**
-         * Sets the French collation mode to the initial mode set during construction of the RuleBasedCollator. See
-         * setFrenchCollation(boolean) for more details.
-         * 
-         * @see #isFrenchCollation
-         * @see #setFrenchCollation(boolean)
-         * @stable ICU 2.8
-         */
-        public void SetFrenchCollationDefault()
+        /// <summary>
+        /// Sets the French collation mode to the initial mode set during construction of the <see cref="RuleBasedCollator"/>. See
+        /// <see cref="IsFrenchCollation"/> for more details.
+        /// </summary>
+        /// <seealso cref="IsFrenchCollation"/>
+        /// <stable>ICU 2.8</stable>
+        public void SetFrenchCollationDefault() // ICU4N TODO: API - Rename SetFrenchCollationToDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -445,15 +479,13 @@ namespace ICU4N.Text
             SetFastLatinOptions(ownedSettings);
         }
 
-        /**
-         * Sets the collation strength to the initial mode set during the construction of the RuleBasedCollator. See
-         * setStrength(int) for more details.
-         * 
-         * @see #setStrength(int)
-         * @see #getStrength
-         * @stable ICU 2.8
-         */
-        public void SetStrengthDefault()
+        /// <summary>
+        /// Sets the collation strength to the initial mode set during the construction of the <see cref="RuleBasedCollator"/>. See
+        /// <see cref="Strength"/> for more details.
+        /// </summary>
+        /// <seealso cref="Strength"/>
+        /// <stable>ICU 2.8</stable>
+        public void SetStrengthDefault() // ICU4N TODO: API - rename SetStrengthToDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -463,14 +495,12 @@ namespace ICU4N.Text
             SetFastLatinOptions(ownedSettings);
         }
 
-        /**
-         * Method to set numeric collation to its default value.
-         *
-         * @see #getNumericCollation
-         * @see #setNumericCollation
-         * @stable ICU 2.8
-         */
-        public void SetNumericCollationDefault()
+        /// <summary>
+        /// Method to set numeric collation to its default value.
+        /// </summary>
+        /// <seealso cref="IsNumericCollation"/>
+        /// <stable>ICU 2.8</stable>
+        public void SetNumericCollationDefault() // ICU4N TODO: API - Rename SetNumericCollationToDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -480,27 +510,15 @@ namespace ICU4N.Text
             SetFastLatinOptions(ownedSettings);
         }
 
-        /**
-         * Sets the mode for the direction of SECONDARY weights to be used in French collation. The default value is false,
-         * which treats SECONDARY weights in the order they appear. If set to true, the SECONDARY weights will be sorted
-         * backwards. See the section on <a href="http://userguide.icu-project.org/collation/architecture">
-         * French collation</a> for more information.
-         * 
-         * @param flag
-         *            true to set the French collation on, false to set it off
-         * @stable ICU 2.8
-         * @see #isFrenchCollation
-         * @see #setFrenchCollationDefault
-         */
-        //public void setFrenchCollation(bool flag)
-        //{
-        //    CheckNotFrozen();
-        //    if (flag == isFrenchCollation()) { return; }
-        //    CollationSettings ownedSettings = GetOwnedSettings();
-        //    ownedSettings.setFlag(CollationSettings.BACKWARD_SECONDARY, flag);
-        //    SetFastLatinOptions(ownedSettings);
-        //}
-
+        /// <summary>
+        /// Gets or sets whether French Collation is enabled. Sets the mode for the direction of <see cref="CollationStrength.Secondary"/> 
+        /// weights to be used in French collation. The default value is false,
+        /// which treats <see cref="CollationStrength.Secondary"/> weights in the order they appear. If set to true, the <see cref="CollationStrength.Secondary"/> weights will be sorted
+        /// backwards. See the section on <a href="http://userguide.icu-project.org/collation/architecture">
+        /// French collation</a> for more information.
+        /// </summary>
+        /// <seealso cref="SetFrenchCollationDefault()"/>
+        /// <stable>ICU 2.8</stable>
         public bool IsFrenchCollation
         {
             get
@@ -517,30 +535,17 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Sets the alternate handling for QUATERNARY strength to be either shifted or non-ignorable. See the UCA definition
-         * on <a href="http://www.unicode.org/unicode/reports/tr10/#Variable_Weighting">Variable Weighting</a>. This
-         * attribute will only be effective when QUATERNARY strength is set. The default value for this mode is false,
-         * corresponding to the NON_IGNORABLE mode in UCA. In the NON_IGNORABLE mode, the RuleBasedCollator treats all
-         * the code points with non-ignorable primary weights in the same way. If the mode is set to true, the behavior
-         * corresponds to SHIFTED defined in UCA, this causes code points with PRIMARY orders that are equal or below the
-         * variable top value to be ignored in PRIMARY order and moved to the QUATERNARY order.
-         * 
-         * @param shifted
-         *            true if SHIFTED behavior for alternate handling is desired, false for the NON_IGNORABLE behavior.
-         * @see #isAlternateHandlingShifted
-         * @see #setAlternateHandlingDefault
-         * @stable ICU 2.8
-         */
-        //public void setAlternateHandlingShifted(boolean shifted)
-        //{
-        //    CheckNotFrozen();
-        //    if (shifted == isAlternateHandlingShifted()) { return; }
-        //    CollationSettings ownedSettings = GetOwnedSettings();
-        //    ownedSettings.setAlternateHandlingShifted(shifted);
-        //    SetFastLatinOptions(ownedSettings);
-        //}
-
+        /// <summary>
+        /// Gets or sets whether the handling for <see cref="CollationStrength.Quaternary"/> to be either shifted or non-ignorable. See the UCA definition
+        /// on <a href="http://www.unicode.org/unicode/reports/tr10/#Variable_Weighting">Variable Weighting</a>. This
+        /// property will only be effective when <see cref="Strength"/> is set to <see cref="CollationStrength.Quaternary"/>. The default value for this mode is false,
+        /// corresponding to the NON_IGNORABLE mode in UCA. In the NON_IGNORABLE mode, the RuleBasedCollator treats all
+        /// the code points with non-ignorable primary weights in the same way. If the mode is set to true, the behavior
+        /// corresponds to SHIFTED defined in UCA, this causes code points with <see cref="CollationStrength.Primary"/> orders that are equal or below the
+        /// variable top value to be ignored in <see cref="CollationStrength.Primary"/> order and moved to the <see cref="CollationStrength.Quaternary"/> order.
+        /// </summary>
+        /// <seealso cref="SetAlternateHandlingDefault()"/>
+        /// <stable>ICU 2.8</stable>
         public bool IsAlternateHandlingShifted
         {
             get
@@ -557,33 +562,20 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * <p>
-         * When case level is set to true, an additional weight is formed between the SECONDARY and TERTIARY weight, known
-         * as the case level. The case level is used to distinguish large and small Japanese Kana characters. Case level
-         * could also be used in other situations. For example to distinguish certain Pinyin characters. The default value
-         * is false, which means the case level is not generated. The contents of the case level are affected by the case
-         * first mode. A simple way to ignore accent differences in a string is to set the strength to PRIMARY and enable
-         * case level.
-         * <p>
-         * See the section on <a href="http://userguide.icu-project.org/collation/architecture">case
-         * level</a> for more information.
-         *
-         * @param flag
-         *            true if case level sorting is required, false otherwise
-         * @stable ICU 2.8
-         * @see #setCaseLevelDefault
-         * @see #isCaseLevel
-         */
-        //public void setCaseLevel(boolean flag)
-        //{
-        //    CheckNotFrozen();
-        //    if (flag == isCaseLevel()) { return; }
-        //    CollationSettings ownedSettings = GetOwnedSettings();
-        //    ownedSettings.setFlag(CollationSettings.CASE_LEVEL, flag);
-        //    SetFastLatinOptions(ownedSettings);
-        //}
-
+        /// <summary>
+        /// Gets or sets case level. When case level is set to true, an additional weight is formed between the 
+        /// <see cref="CollationStrength.Secondary"/> and <see cref="CollationStrength.Tertiary"/> weight, known
+        /// as the case level. The case level is used to distinguish large and small Japanese Kana characters. Case level
+        /// could also be used in other situations. For example to distinguish certain Pinyin characters. The default value
+        /// is false, which means the case level is not generated. The contents of the case level are affected by the case
+        /// first mode. A simple way to ignore accent differences in a string is to set the strength to <see cref="CollationStrength.Primary"/> and enable
+        /// case level.
+        /// <para/>
+        /// See the section on <a href="http://userguide.icu-project.org/collation/architecture">case
+        /// level</a> for more information.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        /// <seealso cref="SetCaseLevelDefault()"/>
         public bool IsCaseLevel
         {
             get
@@ -600,58 +592,32 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Sets the decomposition mode of this Collator.  Setting this
-         * decomposition attribute with CANONICAL_DECOMPOSITION allows the
-         * Collator to handle un-normalized text properly, producing the
-         * same results as if the text were normalized. If
-         * NO_DECOMPOSITION is set, it is the user's responsibility to
-         * insure that all text is already in the appropriate form before
-         * a comparison or before getting a CollationKey. Adjusting
-         * decomposition mode allows the user to select between faster and
-         * more complete collation behavior.
-         *
-         * <p>Since a great many of the world's languages do not require
-         * text normalization, most locales set NO_DECOMPOSITION as the
-         * default decomposition mode.
-         *
-         * The default decompositon mode for the Collator is
-         * NO_DECOMPOSITON, unless specified otherwise by the locale used
-         * to create the Collator.
-         *
-         * <p>See getDecomposition for a description of decomposition
-         * mode.
-         *
-         * @param decomposition the new decomposition mode
-         * @see #getDecomposition
-         * @see #NO_DECOMPOSITION
-         * @see #CANONICAL_DECOMPOSITION
-         * @throws IllegalArgumentException If the given value is not a valid
-         *            decomposition mode.
-         * @stable ICU 2.8
-         */
-        //@Override
-        //    public void setDecomposition(int decomposition)
-        //{
-        //    CheckNotFrozen();
-        //    boolean flag;
-        //    switch (decomposition)
-        //    {
-        //        case NO_DECOMPOSITION:
-        //            flag = false;
-        //            break;
-        //        case CANONICAL_DECOMPOSITION:
-        //            flag = true;
-        //            break;
-        //        default:
-        //            throw new IllegalArgumentException("Wrong decomposition mode.");
-        //    }
-        //    if (flag == settings.ReadOnly.getFlag(CollationSettings.CHECK_FCD)) { return; }
-        //    CollationSettings ownedSettings = GetOwnedSettings();
-        //    ownedSettings.setFlag(CollationSettings.CHECK_FCD, flag);
-        //    SetFastLatinOptions(ownedSettings);
-        //}
-
+        /// <summary>
+        /// Gets or sets the decomposition mode of this Collator. The decomposition mode
+        /// determines how Unicode composed characters are handled.
+        /// <para/>
+        /// Setting this property with <see cref="NormalizationMode.CanonicalDecomposition"/> allows the
+        /// <see cref="Collator"/> to handle un-normalized text properly, producing the
+        /// same results as if the text were normalized. If
+        /// <see cref="NormalizationMode.NoDecomposition"/> is set, it is the user's responsibility to
+        /// ensure that all text is already in the appropriate form before
+        /// a comparison or before getting a <see cref="CollationKey"/>. Adjusting
+        /// decomposition mode allows the user to select between faster and
+        /// more complete collation behavior.
+        /// <para/>
+        /// Since a great many of the world's languages do not require
+        /// text normalization, most locales set <see cref="NormalizationMode.NoDecomposition"/> as the
+        /// default decomposition mode.
+        /// <para/>
+        /// The default decompositon mode for the <see cref="Collator"/> is <see cref="NormalizationMode.NoDecomposition"/>,
+        /// unless specified otherwise by the locale used
+        /// to create the <see cref="Collator"/>.
+        /// <para/>
+        /// See the <see cref="Collator"/> documentation for more details.
+        /// </summary>
+        /// <seealso cref="NormalizationMode.NoDecomposition"/>
+        /// <seealso cref="NormalizationMode.CanonicalDecomposition"/>
+        /// <stable>ICU 2.8</stable>
         public override NormalizationMode Decomposition
         {
             get
@@ -681,35 +647,21 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Sets this Collator's strength attribute. The strength attribute determines the minimum level of difference
-         * considered significant during comparison.
-         *
-         * <p>See the Collator class description for an example of use.
-         * 
-         * @param newStrength
-         *            the new strength value.
-         * @see #getStrength
-         * @see #setStrengthDefault
-         * @see #PRIMARY
-         * @see #SECONDARY
-         * @see #TERTIARY
-         * @see #QUATERNARY
-         * @see #IDENTICAL
-         * @exception IllegalArgumentException
-         *                If the new strength value is not one of PRIMARY, SECONDARY, TERTIARY, QUATERNARY or IDENTICAL.
-         * @stable ICU 2.8
-         */
-        //        @Override
-        //    public void setStrength(int newStrength)
-        //{
-        //    CheckNotFrozen();
-        //    if (newStrength == getStrength()) { return; }
-        //    CollationSettings ownedSettings = GetOwnedSettings();
-        //    ownedSettings.setStrength(newStrength);
-        //    SetFastLatinOptions(ownedSettings);
-        //}
-
+        /// <summary>
+        /// Gets or sets this Collator's strength attribute. The strength attribute determines the minimum level of difference
+        /// considered significant during comparison.
+        /// <para/>
+        /// See the <see cref="Collator"/> documentation for an example of use.
+        /// </summary>
+        /// <seealso cref="SetStrengthDefault()"/>
+        /// <seealso cref="CollationStrength.Primary"/>
+        /// <seealso cref="CollationStrength.Secondary"/>
+        /// <seealso cref="CollationStrength.Tertiary"/>
+        /// <seealso cref="CollationStrength.Quaternary"/>
+        /// <seealso cref="CollationStrength.Identical"/>
+        /// <exception cref="ArgumentException">If the new strength value is not one of <see cref="CollationStrength.Primary"/>, <see cref="CollationStrength.Secondary"/>, 
+        /// <see cref="CollationStrength.Tertiary"/>, <see cref="CollationStrength.Quaternary"/> or <see cref="CollationStrength.Identical"/>.</exception>
+        /// <stable>ICU 2.8</stable>
         public override CollationStrength Strength
         {
             get
@@ -726,62 +678,20 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@icu} Sets the variable top to the top of the specified reordering group.
-         * The variable top determines the highest-sorting character
-         * which is affected by the alternate handling behavior.
-         * If that attribute is set to NON_IGNORABLE, then the variable top has no effect.
-         * @param group one of Collator.ReorderCodes.SPACE, Collator.ReorderCodes.PUNCTUATION,
-         *              Collator.ReorderCodes.SYMBOL, Collator.ReorderCodes.CURRENCY;
-         *              or Collator.ReorderCodes.DEFAULT to restore the default max variable group
-         * @return this
-         * @see #getMaxVariable
-         * @stable ICU 53
-         */
-        //        @Override
-        //    public RuleBasedCollator setMaxVariable(int group)
-        //{
-        //    // Convert the reorder code into a MaxVariable number, or UCOL_DEFAULT=-1.
-        //    int value;
-        //    if (group == Collator.ReorderCodes.DEFAULT)
-        //    {
-        //        value = -1;  // UCOL_DEFAULT
-        //    }
-        //    else if (Collator.ReorderCodes.FIRST <= group && group <= Collator.ReorderCodes.CURRENCY)
-        //    {
-        //        value = group - Collator.ReorderCodes.FIRST;
-        //    }
-        //    else
-        //    {
-        //        throw new IllegalArgumentException("illegal max variable group " + group);
-        //    }
-        //    int oldValue = settings.ReadOnly.getMaxVariable();
-        //    if (value == oldValue)
-        //    {
-        //        return this;
-        //    }
-        //    CollationSettings defaultSettings = GetDefaultSettings();
-        //    if (settings.ReadOnly == defaultSettings)
-        //    {
-        //        if (value < 0)
-        //        {  // UCOL_DEFAULT
-        //            return this;
-        //        }
-        //    }
-        //    CollationSettings ownedSettings = GetOwnedSettings();
-
-        //    if (group == Collator.ReorderCodes.DEFAULT)
-        //    {
-        //        group = Collator.ReorderCodes.FIRST + defaultSettings.getMaxVariable();
-        //    }
-        //    long varTop = data.getLastPrimaryForGroup(group);
-        //    assert(varTop != 0);
-        //    ownedSettings.setMaxVariable(value, defaultSettings.options);
-        //    ownedSettings.variableTop = varTop;
-        //    SetFastLatinOptions(ownedSettings);
-        //    return this;
-        //}
-
+        /// <summary>
+        /// <icu/> Gets or sets the maximum reordering group whose characters are affected by
+        /// the alternate handling behavior.
+        /// <para/>
+        /// Setter will set the variable top to the top of the specified reordering group.
+        /// The variable top determines the highest-sorting character
+        /// which is affected by the alternate handling behavior.
+        /// If that attribute is set to NON_IGNORABLE, then the variable top has no effect.
+        /// <para/>
+        /// Set to one of <see cref="ReorderCodes.Space"/>, <see cref="ReorderCodes.Punctuation"/>,
+        /// <see cref="ReorderCodes.Symbol"/>, <see cref="ReorderCodes.Currency"/>;
+        /// or <see cref="ReorderCodes.Default"/> to restore the default max variable group.
+        /// </summary>
+        /// <stable>ICU 53</stable>
         public override int MaxVariable
         {
             get
@@ -831,43 +741,32 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@icu} Returns the maximum reordering group whose characters are affected by
-         * the alternate handling behavior.
-         * @return the maximum variable reordering group.
-         * @see #setMaxVariable
-         * @stable ICU 53
-         */
-        //        @Override
-        //    public int getMaxVariable()
-        //{
-        //    return Collator.ReorderCodes.FIRST + settings.ReadOnly.getMaxVariable();
-        //}
-
-        /**
-         * {@icu} Sets the variable top to the primary weight of the specified string.
-         *
-         * <p>Beginning with ICU 53, the variable top is pinned to
-         * the top of one of the supported reordering groups,
-         * and it must not be beyond the last of those groups.
-         * See {@link #setMaxVariable(int)}.
-         * 
-         * @param varTop
-         *            one or more (if contraction) characters to which the variable top should be set
-         * @return variable top primary weight
-         * @exception IllegalArgumentException
-         *                is thrown if varTop argument is not a valid variable top element. A variable top element is
-         *                invalid when
-         *                <ul>
-         *                <li>it is a contraction that does not exist in the Collation order
-         *                <li>the variable top is beyond
-         *                    the last reordering group supported by setMaxVariable()
-         *                <li>when the varTop argument is null or zero in length.
-         *                </ul>
-         * @see #getVariableTop
-         * @see RuleBasedCollator#setAlternateHandlingShifted
-         * @deprecated ICU 53 Call {@link #setMaxVariable(int)} instead.
-         */
+        /// <summary>
+        /// <icu/>Sets the variable top to the primary weight of the specified string.
+        /// <para/>
+        /// Beginning with ICU 53, the variable top is pinned to
+        /// the top of one of the supported reordering groups,
+        /// and it must not be beyond the last of those groups.
+        /// <see cref="MaxVariable"/>.
+        /// </summary>
+        /// <param name="varTop">One or more (if contraction) characters to which the variable top should be set.</param>
+        /// <returns>Top primary weight.</returns>
+        /// <exception cref="ArgumentException">thrown if varTop argument is not a valid variable top element. A variable top element is
+        /// invalid when
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>It is a contraction that does not exist in the <see cref="Collation"/> order</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>The variable top is beyond the last reordering group supported by <see cref="MaxVariable"/>.</description>
+        ///     </item>
+        ///     <item>
+        ///         <description>When the <paramref name="varTop"/> argument is null or zero in length.</description>
+        ///     </item>
+        /// </list>
+        /// </exception>
+        /// <seealso cref="VariableTop"/>
+        /// <seealso cref="RuleBasedCollator.IsAlternateHandlingShifted"/>
         [Obsolete("ICU 53 Set MaxVariable instead.")]
         public override int SetVariableTop(string varTop)
         {
@@ -898,27 +797,17 @@ namespace ICU4N.Text
             return (int)settings.ReadOnly.VariableTop;
         }
 
-        /**
-         * {@icu} Sets the variable top to the specified primary weight.
-         *
-         * <p>Beginning with ICU 53, the variable top is pinned to
-         * the top of one of the supported reordering groups,
-         * and it must not be beyond the last of those groups.
-         * See {@link #setMaxVariable(int)}.
-         * 
-         * @param varTop primary weight, as returned by setVariableTop or getVariableTop
-         * @see #getVariableTop
-         * @see #setVariableTop(String)
-         * @deprecated ICU 53 Call setMaxVariable() instead.
-         */
-        //@Override
-        //@Deprecated
-        //    public void setVariableTop(int varTop)
-        //{
-        //    CheckNotFrozen();
-        //    internalSetVariableTop(varTop & 0xffffffffL);
-        //}
-
+        /// <summary>
+        /// <icu/>Gets or sets the variable top value of a Collator.
+        /// <para/>
+        /// Beginning with ICU 53, the variable top is pinned to
+        /// the top of one of the supported reordering groups,
+        /// and it must not be beyond the last of those groups.
+        /// See <see cref="MaxVariable"/>.
+        /// </summary>
+        /// <seealso cref="SetVariableTop(string)"/>
+        /// <seealso cref="MaxVariable"/>
+        /// <stable>ICU 2.6</stable>
         [Obsolete("ICU 53 Set MaxVariable instead.")]
         public override int VariableTop
         {
@@ -959,38 +848,24 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@icu} When numeric collation is turned on, this Collator makes
-         * substrings of digits sort according to their numeric values.
-         *
-         * <p>This is a way to get '100' to sort AFTER '2'. Note that the longest
-         * digit substring that can be treated as a single unit is
-         * 254 digits (not counting leading zeros). If a digit substring is
-         * longer than that, the digits beyond the limit will be treated as a
-         * separate digit substring.
-         *
-         * <p>A "digit" in this sense is a code point with General_Category=Nd,
-         * which does not include circled numbers, roman numerals, etc.
-         * Only a contiguous digit substring is considered, that is,
-         * non-negative integers without separators.
-         * There is no support for plus/minus signs, decimals, exponents, etc.
-         *
-         * @param flag
-         *            true to turn numeric collation on and false to turn it off
-         * @see #getNumericCollation
-         * @see #setNumericCollationDefault
-         * @stable ICU 2.8
-         */
-        //public void setNumericCollation(boolean flag)
-        //{
-        //    CheckNotFrozen();
-        //    // sort substrings of digits as numbers
-        //    if (flag == getNumericCollation()) { return; }
-        //    CollationSettings ownedSettings = GetOwnedSettings();
-        //    ownedSettings.setFlag(CollationSettings.NUMERIC, flag);
-        //    SetFastLatinOptions(ownedSettings);
-        //}
-
+        /// <summary>
+        /// <icu/>Gets or sets the numeric collation value. When numeric collation is turned on, this Collator generates a
+        /// collation key for the numeric value of substrings of digits.
+        /// <para/>
+        /// This is a way to get '100' to sort AFTER '2'. Note that the longest
+        /// digit substring that can be treated as a single unit is
+        /// 254 digits (not counting leading zeros). If a digit substring is
+        /// longer than that, the digits beyond the limit will be treated as a
+        /// separate digit substring.
+        /// <para/>
+        /// A "digit" in this sense is a code point with General_Category=Nd,
+        /// which does not include circled numbers, roman numerals, etc.
+        /// Only a contiguous digit substring is considered, that is,
+        /// non-negative integers without separators.
+        /// There is no support for plus/minus signs, decimals, exponents, etc.
+        /// </summary>
+        /// <seealso cref="SetNumericCollationDefault()"/>
+        /// <stable>ICU 2.8</stable>
         public bool IsNumericCollation
         {
             get
@@ -1008,18 +883,47 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@inheritDoc}
-         *
-         * @param order the reordering codes to apply to this collator; if this is null or an empty array
-         * then this clears any existing reordering
-         * @throws IllegalArgumentException if the reordering codes are malformed in any way (e.g. duplicates, multiple reset codes, overlapping equivalent scripts)
-         * @see #getReorderCodes
-         * @see Collator#getEquivalentReorderCodes
-         * @see Collator.ReorderCodes
-         * @see UScript
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Sets the reordering codes for this collator.
+        /// Collation reordering allows scripts and some other groups of characters
+        /// to be moved relative to each other. This reordering is done on top of
+        /// the DUCET/CLDR standard collation order. Reordering can specify groups to be placed
+        /// at the start and/or the end of the collation order. These groups are specified using
+        /// <see cref="Globalization.UScript"/> codes and <see cref="ReorderCodes"/> entries.
+        /// <para/>
+        /// By default, reordering codes specified for the start of the order are placed in the
+        /// order given after several special non-script blocks. These special groups of characters
+        /// are space, punctuation, symbol, currency, and digit. These special groups are represented with
+        /// <see cref="ReorderCodes"/> entries. Script groups can be intermingled with
+        /// these special non-script groups if those special groups are explicitly specified in the reordering.
+        /// <para/>
+        /// The special code <see cref="ReorderCodes.Others"/>
+        /// stands for any script that is not explicitly
+        /// mentioned in the list of reordering codes given. Anything that is after <see cref="ReorderCodes.Others"/>
+        /// will go at the very end of the reordering in the order given.
+        /// <para/>
+        /// The special reorder code <see cref="ReorderCodes.Default"/>
+        /// will reset the reordering for this collator
+        /// to the default for this collator. The default reordering may be the DUCET/CLDR order or may be a reordering that
+        /// was specified when this collator was created from resource data or from rules. The
+        /// DEFAULT code <b>must</b> be the sole code supplied when it is used.
+        /// If not, then an <see cref="ArgumentException"/> will be thrown.
+        /// <para/>
+        /// The special reorder code <see cref="ReorderCodes.None"/>
+        /// will remove any reordering for this collator.
+        /// The result of setting no reordering will be to have the DUCET/CLDR ordering used. The
+        /// <see cref="ReorderCodes.None"/> code <b>must</b> be the sole code supplied when it is used.
+        /// </summary>
+        /// <param name="order">
+        /// The reordering codes to apply to this collator; if this is null or an empty array
+        /// then this clears any existing reordering.
+        /// </param>
+        /// <exception cref="ArgumentException">If the reordering codes are malformed in any way (e.g. duplicates, multiple reset codes, overlapping equivalent scripts).</exception>
+        /// <seealso cref="GetReorderCodes"/>
+        /// <seealso cref="Collator.GetEquivalentReorderCodes(int)"/>
+        /// <seealso cref="ReorderCodes"/>
+        /// <seealso cref="Globalization.UScript"/>
+        /// <stable>ICU 4.8</stable>
         public override void SetReorderCodes(params int[] order)
         {
             CheckNotFrozen();
@@ -1065,37 +969,35 @@ namespace ICU4N.Text
 
         // public getters --------------------------------------------------------
 
-        /**
-         * Gets the collation tailoring rules for this RuleBasedCollator.
-         * Equivalent to String getRules(false).
-         * 
-         * @return the collation tailoring rules
-         * @see #getRules(boolean)
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Gets the collation tailoring rules for this <see cref="RuleBasedCollator"/>.
+        /// Equivalent to string <c>GetRules(false)</c>.
+        /// </summary>
+        /// <returns>The collation tailoring rules.</returns>
+        /// <stable>ICU 2.8</stable>
         public string GetRules()
         {
             return tailoring.GetRules();
         }
 
-        /**
-         * Returns current rules.
-         * The argument defines whether full rules (root collation + tailored) rules are returned
-         * or just the tailoring.
-         * 
-         * <p>The root collation rules are an <i>approximation</i> of the root collator's sort order.
-         * They are almost never used or useful at runtime and can be removed from the data.
-         * See <a href="http://userguide.icu-project.org/collation/customization#TOC-Building-on-Existing-Locales">User Guide:
-         * Collation Customization, Building on Existing Locales</a>
-         *
-         * <p>{@link #getRules()} should normally be used instead.
-         * @param fullrules
-         *            true if the rules that defines the full set of collation order is required, otherwise false for
-         *            returning only the tailored rules
-         * @return the current rules that defines this Collator.
-         * @see #getRules()
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns current rules.
+        /// The <paramref name="fullrules"/> argument defines whether full rules (root collation + tailored) rules are returned
+        /// or just the tailoring.
+        /// <para/>
+        /// The root collation rules are an <i>approximation</i> of the root collator's sort order.
+        /// They are almost never used or useful at runtime and can be removed from the data.
+        /// See <a href="http://userguide.icu-project.org/collation/customization#TOC-Building-on-Existing-Locales">User Guide:
+        /// Collation Customization, Building on Existing Locales</a>
+        /// <para/>
+        /// <see cref="GetRules()"/> should normally be used instead.
+        /// </summary>
+        /// <param name="fullrules"><c>true</c> if the rules that defines the full set of collation order is required, otherwise <c>false</c> for
+        /// returning only the tailored rules.</param>
+        /// <returns>The current rules that define this <see cref="Collator"/>.</returns>
+        /// <seealso cref="GetRules()"/>
+        /// <seealso cref="GetRules(bool)"/>
+        /// <stable>ICU 2.6</stable>
         public string GetRules(bool fullrules)
         {
             if (!fullrules)
@@ -1105,13 +1007,12 @@ namespace ICU4N.Text
             return CollationLoader.RootRules + tailoring.GetRules();
         }
 
-        /**
-         * Get a UnicodeSet that contains all the characters and sequences tailored in this collator.
-         * 
-         * @return a pointer to a UnicodeSet object containing all the code points and sequences that may sort differently
-         *         than in the root collator.
-         * @stable ICU 2.4
-         */
+        /// <summary>
+        /// Get a <see cref="UnicodeSet"/> that contains all the characters and sequences tailored in this collator.
+        /// </summary>
+        /// <returns>A pointer to a <see cref="UnicodeSet"/> object containing all the code points and sequences that may sort differently
+        /// than in the root collator.</returns>
+        /// <stable>ICU 2.4</stable>
         public override UnicodeSet GetTailoredSet()
         {
             UnicodeSet tailored = new UnicodeSet();
@@ -1122,19 +1023,14 @@ namespace ICU4N.Text
             return tailored;
         }
 
-        /**
-         * Gets unicode sets containing contractions and/or expansions of a collator
-         * 
-         * @param contractions
-         *            if not null, set to contain contractions
-         * @param expansions
-         *            if not null, set to contain expansions
-         * @param addPrefixes
-         *            add the prefix contextual elements to contractions
-         * @throws Exception
-         *             Throws an exception if any errors occurs.
-         * @stable ICU 3.4
-         */
+        /// <summary>
+        /// Gets unicode sets containing contractions and/or expansions of a collator.
+        /// </summary>
+        /// <param name="contractions">If not null, set to contain contractions.</param>
+        /// <param name="expansions">If not null, set to contain expansions.</param>
+        /// <param name="addPrefixes">Add the prefix contextual elements to contractions.</param>
+        /// <exception cref="Exception">Throws an exception if any errors occurs.</exception>
+        /// <stable>ICU 3.4</stable>
         public void GetContractionsAndExpansions(UnicodeSet contractions, UnicodeSet expansions, bool addPrefixes)
         {
             if (contractions != null)
@@ -1148,38 +1044,36 @@ namespace ICU4N.Text
             new ContractionsAndExpansions(contractions, expansions, null, addPrefixes).ForData(data);
         }
 
-        /**
-         * Adds the contractions that start with character c to the set.
-         * Ignores prefixes. Used by AlphabeticIndex.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Adds the contractions that start with character <paramref name="c"/> to the <paramref name="set"/>.
+        /// Ignores prefixes. Used by <see cref="AlphabeticIndex{T}"/>.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="set"></param>
+        [Obsolete("This API is ICU internal only.")]
         internal void InternalAddContractions(int c, UnicodeSet set)
         {
             new ContractionsAndExpansions(set, null, null, false).ForCodePoint(data, c);
         }
 
-        /**
-         * <p>
-         * Get a Collation key for the argument String source from this RuleBasedCollator.
-         * <p>
-         * General recommendation: <br>
-         * If comparison are to be done to the same String multiple times, it would be more efficient to generate
-         * CollationKeys for the Strings and use CollationKey.compareTo(CollationKey) for the comparisons. If the each
-         * Strings are compared to only once, using the method RuleBasedCollator.compare(String, String) will have a better
-         * performance.
-         * <p>
-         * See the class documentation for an explanation about CollationKeys.
-         *
-         * @param source
-         *            the text String to be transformed into a collation key.
-         * @return the CollationKey for the given String based on this RuleBasedCollator's collation rules. If the source
-         *         String is null, a null CollationKey is returned.
-         * @see CollationKey
-         * @see #compare(String, String)
-         * @see #getRawCollationKey
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Get a <see cref="CollationKey"/> for the argument <see cref="string"/> <paramref name="source"/> from this <see cref="RuleBasedCollator"/>.
+        /// <para/>
+        /// General recommendation: <br/>
+        /// If comparison are to be done to the same <see cref="string"/> multiple times, it would be more efficient to generate
+        /// <see cref="CollationKey"/>s for the <see cref="string"/> and use <see cref="CollationKey.CompareTo(CollationKey)"/> for the comparisons. If the each
+        /// <see cref="string"/>s are compared to only once, using the method <see cref="RuleBasedCollator.Compare(string, string)"/> will have a better
+        /// performance.
+        /// <para/>
+        /// See <see cref="RuleBasedCollator"/> for an explanation about <see cref="CollationKey"/>s.
+        /// </summary>
+        /// <param name="source">The text <see cref="string"/> to be transformed into a collation key.</param>
+        /// <returns>The <see cref="CollationKey"/> for the given <see cref="string"/> based on this <see cref="RuleBasedCollator"/>'s collation rules. If the source
+        /// <see cref="string"/> is null, a null <see cref="CollationKey"/> is returned.</returns>
+        /// <seealso cref="CollationKey"/>
+        /// <seealso cref="Compare(string, string)"/>
+        /// <seealso cref="GetRawCollationKey(string, RawCollationKey)"/>
+        /// <stable>ICU 2.8</stable>
         public override CollationKey GetCollationKey(string source)
         {
             if (source == null)
@@ -1212,20 +1106,20 @@ namespace ICU4N.Text
             return new CollationKey(source, buffer.RawCollationKey);
         }
 
-        /**
-         * Gets the simpler form of a CollationKey for the String source following the rules of this Collator and stores the
-         * result into the user provided argument key. If key has a internal byte array of length that's too small for the
-         * result, the internal byte array will be grown to the exact required size.
-         * 
-         * @param source the text String to be transformed into a RawCollationKey
-         * @param key output RawCollationKey to store results
-         * @return If key is null, a new instance of RawCollationKey will be created and returned, otherwise the user
-         *         provided key will be returned.
-         * @see #getCollationKey
-         * @see #compare(String, String)
-         * @see RawCollationKey
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Gets the simpler form of a <see cref="CollationKey"/> for the <see cref="string"/> <paramref name="source"/> following the rules of this <see cref="Collator"/> and stores the
+        /// result into the user provided argument key. If key has a internal byte array of length that's too small for the
+        /// result, the internal byte array will be grown to the exact required size.
+        /// </summary>
+        /// <param name="source">The text <see cref="string"/> to be transformed into a <see cref="RawCollationKey"/>.</param>
+        /// <param name="key">Output <see cref="RawCollationKey"/> to store results.</param>
+        /// <returns>If key is null, a new instance of <see cref="RawCollationKey"/> will be created and returned, otherwise the user
+        /// provided key will be returned.</returns>
+        /// <seealso cref="GetCollationKey(string)"/>
+        /// <seealso cref="GetCollationKey(string, CollationBuffer)"/>
+        /// <seealso cref="Compare(string, string)"/>
+        /// <seealso cref="RawCollationKey"/>
+        /// <stable>ICU 2.8</stable>
         public override RawCollationKey GetRawCollationKey(string source, RawCollationKey key)
         {
             if (source == null)
@@ -1358,12 +1252,11 @@ namespace ICU4N.Text
             sink.SetBufferAndAppended(sink.Key.Bytes, sink.Key.Length);
         }
 
-        /**
-         * Returns the CEs for the string.
-         * @param str the string
-         * @internal for tests &amp; tools
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Returns the CEs for the string.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <internal>For tests &amp; tools.</internal>
         [Obsolete("This API is ICU internal only.")]
         public long[] InternalGetCEs(ICharSequence str)
         {
@@ -1395,179 +1288,16 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns this Collator's strength attribute. The strength attribute
-         * determines the minimum level of difference considered significant.
-         *
-         * <p>{@icunote} This can return QUATERNARY strength, which is not supported by the
-         * JDK version.
-         *
-         * <p>See the Collator class description for more details.
-         *
-         * @return this Collator's current strength attribute.
-         * @see #setStrength
-         * @see #PRIMARY
-         * @see #SECONDARY
-         * @see #TERTIARY
-         * @see #QUATERNARY
-         * @see #IDENTICAL
-         * @stable ICU 2.8
-         */
-        //@Override
-        //    public int getStrength()
-        //{
-        //    return settings.ReadOnly.getStrength();
-        //}
+        // ICU4N specific property getters and setters combined
 
-        /**
-         * Returns the decomposition mode of this Collator. The decomposition mode
-         * determines how Unicode composed characters are handled.
-         *
-         * <p>See the Collator class description for more details.
-         *
-         * @return the decomposition mode
-         * @see #setDecomposition
-         * @see #NO_DECOMPOSITION
-         * @see #CANONICAL_DECOMPOSITION
-         * @stable ICU 2.8
-         */
-        //@Override
-        //    public int getDecomposition()
-        //{
-        //    return (settings.ReadOnly.options & CollationSettings.CHECK_FCD) != 0 ?
-        //            CANONICAL_DECOMPOSITION : NO_DECOMPOSITION;
-        //}
-
-        ///**
-        // * Return true if an uppercase character is sorted before the corresponding lowercase character. See
-        // * setCaseFirst(boolean) for details.
-        // * 
-        // * @see #setUpperCaseFirst
-        // * @see #setLowerCaseFirst
-        // * @see #isLowerCaseFirst
-        // * @see #setCaseFirstDefault
-        // * @return true if upper cased characters are sorted before lower cased characters, false otherwise
-        // * @stable ICU 2.8
-        // */
-        //public boolean isUpperCaseFirst()
-        //{
-        //    return (settings.ReadOnly.getCaseFirst() == CollationSettings.CASE_FIRST_AND_UPPER_MASK);
-        //}
-
-        ///**
-        // * Return true if a lowercase character is sorted before the corresponding uppercase character. See
-        // * setCaseFirst(boolean) for details.
-        // * 
-        // * @see #setUpperCaseFirst
-        // * @see #setLowerCaseFirst
-        // * @see #isUpperCaseFirst
-        // * @see #setCaseFirstDefault
-        // * @return true lower cased characters are sorted before upper cased characters, false otherwise
-        // * @stable ICU 2.8
-        // */
-        //public boolean isLowerCaseFirst()
-        //{
-        //    return (settings.ReadOnly.getCaseFirst() == CollationSettings.CASE_FIRST);
-        //}
-
-        /**
-         * Checks if the alternate handling behavior is the UCA defined SHIFTED or NON_IGNORABLE. If return value is true,
-         * then the alternate handling attribute for the Collator is SHIFTED. Otherwise if return value is false, then the
-         * alternate handling attribute for the Collator is NON_IGNORABLE See setAlternateHandlingShifted(boolean) for more
-         * details.
-         * 
-         * @return true or false
-         * @see #setAlternateHandlingShifted(boolean)
-         * @see #setAlternateHandlingDefault
-         * @stable ICU 2.8
-         */
-        //public boolean isAlternateHandlingShifted()
-        //{
-        //    return settings.ReadOnly.getAlternateHandling();
-        //}
-
-        /**
-         * Checks if case level is set to true. See setCaseLevel(boolean) for details.
-         * 
-         * @return the case level mode
-         * @see #setCaseLevelDefault
-         * @see #isCaseLevel
-         * @see #setCaseLevel(boolean)
-         * @stable ICU 2.8
-         */
-        //public boolean isCaseLevel()
-        //{
-        //    return (settings.ReadOnly.options & CollationSettings.CASE_LEVEL) != 0;
-        //}
-
-        ///**
-        // * Checks if French Collation is set to true. See setFrenchCollation(boolean) for details.
-        // * 
-        // * @return true if French Collation is set to true, false otherwise
-        // * @see #setFrenchCollation(boolean)
-        // * @see #setFrenchCollationDefault
-        // * @stable ICU 2.8
-        // */
-        //public boolean isFrenchCollation()
-        //{
-        //    return (settings.ReadOnly.options & CollationSettings.BACKWARD_SECONDARY) != 0;
-        //}
-
-        ///**
-        // * Checks if the Hiragana Quaternary mode is set on. See setHiraganaQuaternary(boolean) for more details.
-        // *
-        // * <p>This attribute was an implementation detail of the CLDR Japanese tailoring.
-        // * Since ICU 50, this attribute is not settable any more via API functions.
-        // * Since CLDR 25/ICU 53, explicit quaternary relations are used
-        // * to achieve the same Japanese sort order.
-        // *
-        // * @return false
-        // * @see #setHiraganaQuaternaryDefault
-        // * @see #setHiraganaQuaternary(boolean)
-        // * @deprecated ICU 50 Implementation detail, cannot be set via API, was removed from implementation.
-        // */
-        //@Deprecated
-        //    public boolean isHiraganaQuaternary()
-        //{
-        //    return false;
-        //}
-
-        /**
-         * {@icu} Gets the variable top value of a Collator.
-         * 
-         * @return the variable top primary weight
-         * @see #getMaxVariable
-         * @stable ICU 2.6
-         */
-        //@Override
-        //    public int getVariableTop()
-        //{
-        //    return (int)settings.ReadOnly.variableTop;
-        //}
-
-        /**
-         * Method to retrieve the numeric collation value. When numeric collation is turned on, this Collator generates a
-         * collation key for the numeric value of substrings of digits. This is a way to get '100' to sort AFTER '2'
-         * 
-         * @see #setNumericCollation
-         * @see #setNumericCollationDefault
-         * @return true if numeric collation is turned on, false otherwise
-         * @stable ICU 2.8
-         */
-        //public boolean getNumericCollation()
-        //{
-        //    return (settings.ReadOnly.options & CollationSettings.NUMERIC) != 0;
-        //}
-
-        /**  
-         * Retrieves the reordering codes for this collator.
-         * These reordering codes are a combination of UScript codes and ReorderCodes.
-         * @return a copy of the reordering codes for this collator; 
-         * if none are set then returns an empty array
-         * @see #setReorderCodes
-         * @see Collator#getEquivalentReorderCodes
-         * @stable ICU 4.8
-         */
+        /// <summary>
+        /// Retrieves the reordering codes for this collator.
+        /// These reordering codes are a combination of <see cref="Globalization.UScript"/> codes and <see cref="ReorderCodes"/>.
+        /// </summary>
+        /// <returns>A copy of the reordering codes for this collator;
+        /// if none are set then returns an empty array.</returns>
+        /// <seealso cref="SetReorderCodes(int[])"/>
+        /// <stable>ICU 4.8</stable>
         public override int[] GetReorderCodes()
         {
             return (int[])settings.ReadOnly.ReorderCodes.Clone();
@@ -1575,10 +1305,13 @@ namespace ICU4N.Text
 
         // public other methods -------------------------------------------------
 
-        /**
-         * {@inheritDoc}
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Compares the equality of two <see cref="RuleBasedCollator"/> objects. <see cref="RuleBasedCollator"/> objects are equal if they have the same
+        /// collation (sorting &amp; searching) behavior.
+        /// </summary>
+        /// <param name="obj">The <see cref="RuleBasedCollator"/> to compare to.</param>
+        /// <returns><c>true</c> if this <see cref="RuleBasedCollator"/> has exactly the same collation behavior as <paramref name="obj"/>, <c>false</c> otherwise.</returns>
+        /// <stable>ICU 2.8</stable>
         public override bool Equals(object obj)
         {
             if (this == obj)
@@ -1618,12 +1351,11 @@ namespace ICU4N.Text
             return true;
         }
 
-        /**
-         * Generates a unique hash code for this RuleBasedCollator.
-         * 
-         * @return the unique hash code for this Collator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Generates a unique hash code for this <see cref="RuleBasedCollator"/>.
+        /// </summary>
+        /// <returns>The unique hash code for this <see cref="Collator"/>.</returns>
+        /// <stable>ICU 2.8</stable>
         public override int GetHashCode()
         {
             int h = settings.ReadOnly.GetHashCode();
@@ -1638,32 +1370,29 @@ namespace ICU4N.Text
             return h;
         }
 
-        /**
-         * Compares the source text String to the target text String according to the collation rules, strength and
-         * decomposition mode for this RuleBasedCollator. Returns an integer less than, equal to or greater than zero
-         * depending on whether the source String is less than, equal to or greater than the target String. See the Collator
-         * class description for an example of use.
-         * <p>
-         * General recommendation: <br>
-         * If comparison are to be done to the same String multiple times, it would be more efficient to generate
-         * CollationKeys for the Strings and use CollationKey.compareTo(CollationKey) for the comparisons. If speed
-         * performance is critical and object instantiation is to be reduced, further optimization may be achieved by
-         * generating a simpler key of the form RawCollationKey and reusing this RawCollationKey object with the method
-         * RuleBasedCollator.getRawCollationKey. Internal byte representation can be directly accessed via RawCollationKey
-         * and stored for future use. Like CollationKey, RawCollationKey provides a method RawCollationKey.compareTo for key
-         * comparisons. If the each Strings are compared to only once, using the method RuleBasedCollator.compare(String,
-         * String) will have a better performance.
-         *
-         * @param source
-         *            the source text String.
-         * @param target
-         *            the target text String.
-         * @return Returns an integer value. Value is less than zero if source is less than target, value is zero if source
-         *         and target are equal, value is greater than zero if source is greater than target.
-         * @see CollationKey
-         * @see #getCollationKey
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Compares the source text <see cref="string"/> to the target text <see cref="string"/> according to the collation rules, strength and
+        /// decomposition mode for this <see cref="RuleBasedCollator"/>. Returns an <see cref="int"/> less than, equal to or greater than zero
+        /// depending on whether the source <see cref="string"/> is less than, equal to or greater than the target <see cref="string"/>. See the <see cref="Collator"/>
+        /// documentation for an example of use.
+        /// <para/>
+        /// General recommendation: <br/>
+        /// If comparison are to be done to the same <see cref="string"/> multiple times, it would be more efficient to generate
+        /// <see cref="CollationKey"/>s for the <see cref="string"/>s and use <see cref="CollationKey.CompareTo(CollationKey)"/> for the comparisons. If speed
+        /// performance is critical and object instantiation is to be reduced, further optimization may be achieved by
+        /// generating a simpler key of the form <see cref="RawCollationKey"/> and reusing this <see cref="RawCollationKey"/> object with the method
+        /// <see cref="RuleBasedCollator.GetRawCollationKey(string, RawCollationKey)"/>. Internal byte representation can be directly accessed via <see cref="RawCollationKey"/>
+        /// and stored for future use. Like <see cref="CollationKey"/>, <see cref="RawCollationKey"/> provides a method <see cref="RawCollationKey.CompareTo(ByteArrayWrapper)"/> for key
+        /// comparisons. If the each <see cref="string"/>s are compared to only once, using the method <see cref="RuleBasedCollator.Compare(string, string)"/>
+        /// will have a better performance.
+        /// </summary>
+        /// <param name="source">The source text <see cref="string"/>.</param>
+        /// <param name="target">The target text <see cref="string"/>.</param>
+        /// <returns>Returns an integer value. Value is less than zero if source is less than target, value is zero if source
+        /// and target are equal, value is greater than zero if source is greater than target.</returns>
+        /// <seealso cref="CollationKey"/>
+        /// <seealso cref="GetCollationKey(string)"/>
+        /// <stable>ICU 2.8</stable>
         public override int Compare(string source, string target)
         {
 #pragma warning disable 612, 618
@@ -1671,31 +1400,31 @@ namespace ICU4N.Text
 #pragma warning restore 612, 618
         }
 
-        /**
-        * Abstract iterator for identical-level string comparisons.
-        * Returns FCD code points and handles temporary switching to NFD.
-        *
-        * <p>As with CollationIterator,
-        * Java NFDIterator instances are partially constructed and cached,
-        * and completed when reset for use.
-        * C++ NFDIterator instances are stack-allocated.
-*/
+        /// <summary>
+        /// Abstract iterator for identical-level string comparisons.
+        /// Returns FCD code points and handles temporary switching to NFD.
+        /// <para/>
+        /// As with <see cref="CollationIterator"/>,
+        /// .NET <see cref="NFDIterator"/> instances are partially constructed and cached,
+        /// and completed when reset for use.
+        /// C++ NFDIterator instances are stack-allocated.
+        /// </summary>
         private abstract class NFDIterator
         {
-            /**
-             * Partial constructor, must call reset().
-             */
+            /// <summary>
+            /// Partial constructor, must call <see cref="Reset()"/>.
+            /// </summary>
             internal NFDIterator() { }
             internal void Reset()
             {
                 index = -1;
             }
 
-            /**
-             * Returns the next code point from the internal normalization buffer,
-             * or else the next text code point.
-             * Returns -1 at the end of the text.
-             */
+            /// <summary>
+            /// Returns the next code point from the internal normalization buffer,
+            /// or else the next text code point.
+            /// Returns -1 at the end of the text.
+            /// </summary>
             internal int NextCodePoint()
             {
                 if (index >= 0)
@@ -1713,12 +1442,13 @@ namespace ICU4N.Text
                 }
                 return NextRawCodePoint();
             }
-            /**
-             * @param nfcImpl
-             * @param c the last code point returned by nextCodePoint() or nextDecomposedCodePoint()
-             * @return the first code point in c's decomposition,
-             *         or c itself if it was decomposed already or if it does not decompose
-             */
+
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="nfcImpl"></param>
+            /// <param name="c">The last code point returned by <see cref="NextCodePoint()"/> or <see cref="NextDecomposedCodePoint(Normalizer2Impl, int)"/>.</param>
+            /// <returns>The first code point in <paramref name="c"/>'s decomposition, or <paramref name="c"/> itself if it was decomposed already or if it does not decompose.</returns>
             internal int NextDecomposedCodePoint(Normalizer2Impl nfcImpl, int c)
             {
                 if (index >= 0) { return c; }
@@ -1729,10 +1459,10 @@ namespace ICU4N.Text
                 return c;
             }
 
-            /**
-             * Returns the next text code point in FCD order.
-             * Returns -1 at the end of the text.
-             */
+            /// <summary>
+            /// Returns the next text code point in FCD order.
+            /// Returns -1 at the end of the text.
+            /// </summary>
             protected abstract int NextRawCodePoint();
 
             private string decomp;
@@ -1837,11 +1567,10 @@ namespace ICU4N.Text
             return Collation.EQUAL;
         }
 
-        /**
-         * Compares two CharSequences.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Compares two <see cref="ICharSequence"/>s.
+        /// </summary>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected override int DoCompare(ICharSequence left, ICharSequence right)
         {
@@ -1986,21 +1715,20 @@ namespace ICU4N.Text
 
         // package private methods -----------------------------------------------
 
-        /**
-         * Tests whether a character is "unsafe" for use as a collation starting point.
-         *
-         * @param c code point or code unit
-         * @return true if c is unsafe
-         * @see CollationElementIterator#setOffset(int)
-         */
+        /// <summary>
+        /// Tests whether a character is "unsafe" for use as a collation starting point.
+        /// </summary>
+        /// <param name="c">Code point or code unit.</param>
+        /// <returns><c>true</c> if <paramref name="c"/> is unsafe.</returns>
+        /// <seealso cref="CollationElementIterator.SetOffset(int)"/>
         internal bool IsUnsafe(int c)
         {
             return data.IsUnsafeBackward(c, settings.ReadOnly.IsNumeric);
         }
 
-        /**
-         * Frozen state of the collator.
-         */
+        /// <summary>
+        /// Frozen state of the collator.
+        /// </summary>
         private ReentrantLock frozenLock;
 
         private sealed class CollationBuffer
@@ -2032,12 +1760,11 @@ namespace ICU4N.Text
 
         }
 
-        /**
-         * Get the version of this collator object.
-         * 
-         * @return the version object associated with this collator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Get the version of this collator object.
+        /// </summary>
+        /// <returns>The version object associated with this collator.</returns>
+        /// <stable>ICU 2.8</stable>
         public override VersionInfo GetVersion()
         {
             int version = tailoring.Version;
@@ -2047,12 +1774,11 @@ namespace ICU4N.Text
                     ((version >> 16) & 0xff), ((version >> 8) & 0xff), (version & 0xff));
         }
 
-        /**
-         * Get the UCA version of this collator object.
-         * 
-         * @return the version object associated with this collator
-         * @stable ICU 2.8
-         */
+        /// <summary>
+        /// Get the UCA version of this collator object.
+        /// </summary>
+        /// <returns>The version object associated with this collator.</returns>
+        /// <stable>ICU 2.8</stable>
         public override VersionInfo GetUCAVersion()
         {
             VersionInfo v = GetVersion();
@@ -2089,11 +1815,31 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@inheritDoc}
-         * @draft ICU 53 (retain)
-         * @provisional This API might change or be removed in a future release.
-         */
+        /// <summary>
+        /// <icu/> Returns the locale that was used to create this object, or null.
+        /// This may may differ from the locale requested at the time of
+        /// this object's creation.  For example, if an object is created
+        /// for locale <c>en_US_CALIFORNIA</c>, the actual data may be
+        /// drawn from <c>en</c> (the <i>actual</i> locale), and
+        /// <c>en_US</c> may be the most specific locale that exists (the
+        /// <i>valid</i> locale).
+        /// <para/>
+        /// Note: This method will be implemented in ICU 3.0; ICU 2.8
+        /// contains a partial preview implementation.  The * <i>actual</i>
+        /// locale is returned correctly, but the <i>valid</i> locale is
+        /// not, in most cases.
+        /// </summary>
+        /// <param name="type">type of information requested, either 
+        /// <see cref="ULocale.VALID_LOCALE"/> or <see cref="ULocale.ACTUAL_LOCALE"/>.</param>
+        /// <returns>
+        /// the information specified by <i>type</i>, or null if
+        /// this object was not constructed from locale data.
+        /// </returns>
+        /// <seealso cref="ULocale"/>
+        /// <seealso cref="ULocale.VALID_LOCALE"/>
+        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
+        /// <draft>ICU 53 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
         public override ULocale GetLocale(ULocale.Type type)
         {
             if (type == ULocale.ACTUAL_LOCALE)
@@ -2110,9 +1856,20 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        /// <summary>
+        /// Set information about the locales that were used to create this
+        /// object.  If the object was not constructed from locale data,
+        /// both arguments should be set to null.  Otherwise, neither
+        /// should be null.  The actual locale must be at the same level or
+        /// less specific than the valid locale.  This method is intended
+        /// for use by factories or other entities that create objects of
+        /// this class.
+        /// </summary>
+        /// <param name="valid">the most specific locale containing any resource data, or null</param>
+        /// <param name="actual">the locale containing data used to construct this object, or null</param>
+        /// <seealso cref="ULocale"/>
+        /// <seealso cref="ULocale.VALID_LOCALE"/>
+        /// <seealso cref="ULocale.ACTUAL_LOCALE"/>
         internal override void SetLocale(ULocale valid, ULocale actual)
         {
             // This method is called

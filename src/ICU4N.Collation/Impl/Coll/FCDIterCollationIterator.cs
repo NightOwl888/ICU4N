@@ -272,9 +272,9 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Switches to forward checking if possible.
-         */
+        /// <summary>
+        /// Switches to forward checking if possible.
+        /// </summary>
         private void SwitchToForward()
         {
             Debug.Assert(state == State.IterCheckBwd ||

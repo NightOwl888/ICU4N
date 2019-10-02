@@ -1,79 +1,87 @@
-﻿using ICU4N.Text;
-using ICU4N.Support;
+﻿using ICU4N.Support;
 using ICU4N.Support.Collections;
+using ICU4N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
 
 namespace ICU4N.Impl.Coll
 {
+    // CollationSettings.cs, ported from collationsettings.h/.cpp
+    // 
+    // C++ version created on: 2013feb07
+    // created by: Markus W. Scherer
+
+    /// <summary>
+    /// Collation settings/options/attributes.
+    /// These are the values that can be changed via API.
+    /// </summary>
     public sealed class CollationSettings : SharedObject
     {
-        /**
-         * Options bit 0: Perform the FCD check on the input text and deliver normalized text.
-         */
+        /// <summary>
+        /// Options bit 0: Perform the FCD check on the input text and deliver normalized text.
+        /// </summary>
         public const int CHECK_FCD = 1;
-        /**
-         * Options bit 1: Numeric collation.
-         * Also known as CODAN = COllate Digits As Numbers.
-         *
-         * Treat digit sequences as numbers with CE sequences in numeric order,
-         * rather than returning a normal CE for each digit.
-         */
+        /// <summary>
+        /// Options bit 1: Numeric collation.
+        /// Also known as CODAN = COllate Digits As Numbers.
+        /// <para/>
+        /// Treat digit sequences as numbers with CE sequences in numeric order,
+        /// rather than returning a normal CE for each digit.
+        /// </summary>
         public const int NUMERIC = 2;
-        /**
-         * "Shifted" alternate handling, see ALTERNATE_MASK.
-         */
+        /// <summary>
+        /// "Shifted" alternate handling, see <see cref="ALTERNATE_MASK"/>.
+        /// </summary>
         internal const int SHIFTED = 4;
-        /**
-         * Options bits 3..2: Alternate-handling mask. 0 for non-ignorable.
-         * Reserve values 8 and 0xc for shift-trimmed and blanked.
-         */
+        /// <summary>
+        /// Options bits 3..2: Alternate-handling mask. 0 for non-ignorable.
+        /// Reserve values 8 and 0xc for shift-trimmed and blanked.
+        /// </summary>
         internal const int ALTERNATE_MASK = 0xc;
-        /**
-         * Options bits 6..4: The 3-bit maxVariable value bit field is shifted by this value.
-         */
+        /// <summary>
+        /// Options bits 6..4: The 3-bit maxVariable value bit field is shifted by this value.
+        /// </summary>
         internal const int MAX_VARIABLE_SHIFT = 4;
-        /** maxVariable options bit mask before shifting. */
+        /// <summary>maxVariable options bit mask before shifting.</summary>
         internal const int MAX_VARIABLE_MASK = 0x70;
-        /** Options bit 7: Reserved/unused/0. */
-        /**
-         * Options bit 8: Sort uppercase first if caseLevel or caseFirst is on.
-         */
+        // Options bit 7: Reserved/unused/0.
+        /// <summary>
+        /// Options bit 8: Sort uppercase first if caseLevel or caseFirst is on.
+        /// </summary>
         internal const int UPPER_FIRST = 0x100;
-        /**
-         * Options bit 9: Keep the case bits in the tertiary weight (they trump other tertiary values)
-         * unless case level is on (when they are *moved* into the separate case level).
-         * By default, the case bits are removed from the tertiary weight (ignored).
-         *
-         * When CASE_FIRST is off, UPPER_FIRST must be off too, corresponding to
-         * the tri-value UCOL_CASE_FIRST attribute: UCOL_OFF vs. UCOL_LOWER_FIRST vs. UCOL_UPPER_FIRST.
-         */
+        /// <summary>
+        /// Options bit 9: Keep the case bits in the tertiary weight (they trump other tertiary values)
+        /// unless case level is on (when they are *moved* into the separate case level).
+        /// By default, the case bits are removed from the tertiary weight (ignored).
+        /// <para/>
+        /// When <see cref="CASE_FIRST"/> is off, <see cref="UPPER_FIRST"/> must be off too, corresponding to
+        /// the tri-value UCOL_CASE_FIRST attribute: UCOL_OFF vs. UCOL_LOWER_FIRST vs. UCOL_UPPER_FIRST.
+        /// </summary>
         public const int CASE_FIRST = 0x200;
-        /**
-         * Options bit mask for caseFirst and upperFirst, before shifting.
-         * Same value as caseFirst==upperFirst.
-         */
-        public const int CASE_FIRST_AND_UPPER_MASK = CASE_FIRST | UPPER_FIRST;
-        /**
-         * Options bit 10: Insert the case level between the secondary and tertiary levels.
-         */
+        /// <summary>
+        /// Options bit mask for caseFirst and upperFirst, before shifting.
+        /// Same value as caseFirst==upperFirst.
+        /// </summary>
+        public const int CASE_FIRST_AND_UPPER_MASK = CASE_FIRST | UPPER_FIRST; // ICU4N TODO: API - convert constants to [Flags] enum? Check the C implementation for ideas.
+        /// <summary>
+        /// Options bit 10: Insert the case level between the secondary and tertiary levels.
+        /// </summary>
         public const int CASE_LEVEL = 0x400;
-        /**
-         * Options bit 11: Compare secondary weights backwards. ("French secondary")
-         */
+        /// <summary>
+        /// Options bit 11: Compare secondary weights backwards. ("French secondary")
+        /// </summary>
         public const int BACKWARD_SECONDARY = 0x800;
-        /**
-         * Options bits 15..12: The 4-bit strength value bit field is shifted by this value.
-         * It is the top used bit field in the options. (No need to mask after shifting.)
-         */
+        /// <summary>
+        /// Options bits 15..12: The 4-bit strength value bit field is shifted by this value.
+        /// It is the top used bit field in the options. (No need to mask after shifting.)
+        /// </summary>
         internal const int STRENGTH_SHIFT = 12;
-        /** Strength options bit mask before shifting. */
+        /// <summary>Strength options bit mask before shifting.</summary>
         internal const int STRENGTH_MASK = 0xf000;
 
-        /** maxVariable values */
+        /// <summary>maxVariable values</summary>
         internal const int MAX_VAR_SPACE = 0;
         internal const int MAX_VAR_PUNCT = 1;
         internal const int MAX_VAR_SYMBOL = 2;
@@ -335,23 +343,6 @@ namespace ICU4N.Impl.Coll
         // In Java, we have specific methods for getting, setting, and set-to-default,
         // except that this class uses bits in its own bit set for simple values.
 
-        //public void setStrength(int value)
-        //{
-        //    int noStrength = options & ~STRENGTH_MASK;
-        //    switch (value)
-        //    {
-        //        case Collator.PRIMARY:
-        //        case Collator.SECONDARY:
-        //        case Collator.TERTIARY:
-        //        case Collator.QUATERNARY:
-        //        case Collator.IDENTICAL:
-        //            options = noStrength | (value << STRENGTH_SHIFT);
-        //            break;
-        //        default:
-        //            throw new IllegalArgumentException("illegal strength value " + value);
-        //    }
-        //}
-
         public CollationStrength Strength
         {
             get { return GetStrength(options); }
@@ -384,12 +375,7 @@ namespace ICU4N.Impl.Coll
             return (CollationStrength)(options >> STRENGTH_SHIFT);
         }
 
-        //public int GetStrength()
-        //{
-        //    return GetStrength(options);
-        //}
-
-        /** Sets the options bit for an on/off attribute. */
+        /// <summary>Sets the options bit for an on/off attribute.</summary>
         public void SetFlag(int bit, bool value)
         {
             if (value)
@@ -412,23 +398,11 @@ namespace ICU4N.Impl.Coll
             return (options & bit) != 0;
         }
 
-        //public void setCaseFirst(int value)
-        //{
-        //    Debug.Assert(value == 0 || value == CASE_FIRST || value == CASE_FIRST_AND_UPPER_MASK);
-        //    int noCaseFirst = options & ~CASE_FIRST_AND_UPPER_MASK;
-        //    options = noCaseFirst | value;
-        //}
-
         public void SetCaseFirstDefault(int defaultOptions)
         {
             int noCaseFirst = options & ~CASE_FIRST_AND_UPPER_MASK;
             options = noCaseFirst | (defaultOptions & CASE_FIRST_AND_UPPER_MASK);
         }
-
-        //public int getCaseFirst()
-        //{
-        //    return options & CASE_FIRST_AND_UPPER_MASK;
-        //}
 
         public int CaseFirst
         {
@@ -484,19 +458,14 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        //public int getMaxVariable()
-        //{
-        //    return (options & MAX_VARIABLE_MASK) >> MAX_VARIABLE_SHIFT;
-        //}
-
         public int MaxVariable
         {
             get { return (options & MAX_VARIABLE_MASK) >> MAX_VARIABLE_SHIFT; }
         }
 
-        /**
-         * Include case bits in the tertiary level if caseLevel=off and caseFirst!=off.
-         */
+        /// <summary>
+        /// Include case bits in the tertiary level if caseLevel=off and caseFirst!=off.
+        /// </summary>
         internal static bool IsTertiaryWithCaseBits(int options)
         {
             return (options & (CASE_LEVEL | CASE_FIRST)) == CASE_FIRST;
@@ -530,41 +499,41 @@ namespace ICU4N.Impl.Coll
             get { return (options & NUMERIC) != 0; }
         }
 
-        /** CHECK_FCD etc. */
+        /// <summary>CHECK_FCD etc.</summary>
         private int options = ((int)CollationStrength.Tertiary << STRENGTH_SHIFT) |  // DEFAULT_STRENGTH
                 (MAX_VAR_PUNCT << MAX_VARIABLE_SHIFT);
-        /** Variable-top primary weight. */
+        /// <summary>Variable-top primary weight.</summary>
         private long variableTop;
-        /**
-         * 256-byte table for reordering permutation of primary lead bytes; null if no reordering.
-         * A 0 entry at a non-zero index means that the primary lead byte is "split"
-         * (there are different offsets for primaries that share that lead byte)
-         * and the reordering offset must be determined via the reorderRanges.
-         */
+        /// <summary>
+        /// 256-byte table for reordering permutation of primary lead bytes; null if no reordering.
+        /// A 0 entry at a non-zero index means that the primary lead byte is "split"
+        /// (there are different offsets for primaries that share that lead byte)
+        /// and the reordering offset must be determined via the <see cref="reorderRanges"/>.
+        /// </summary>
         private byte[] reorderTable;
-        /** Limit of last reordered range. 0 if no reordering or no split bytes. */
+        /// <summary>Limit of last reordered range. 0 if no reordering or no split bytes.</summary>
         internal long minHighNoReorder;
-        /**
-         * Primary-weight ranges for script reordering,
-         * to be used by reorder(p) for split-reordered primary lead bytes.
-         *
-         * <p>Each entry is a (limit, offset) pair.
-         * The upper 16 bits of the entry are the upper 16 bits of the
-         * exclusive primary limit of a range.
-         * Primaries between the previous limit and this one have their lead bytes
-         * modified by the signed offset (-0xff..+0xff) stored in the lower 16 bits.
-         *
-         * <p>CollationData.makeReorderRanges() writes a full list where the first range
-         * (at least for terminators and separators) has a 0 offset.
-         * The last range has a non-zero offset.
-         * minHighNoReorder is set to the limit of that last range.
-         *
-         * <p>In the settings object, the initial ranges before the first split lead byte
-         * are omitted for efficiency; they are handled by reorder(p) via the reorderTable.
-         * If there are no split-reordered lead bytes, then no ranges are needed.
-         */
+        /// <summary>
+        /// Primary-weight ranges for script reordering,
+        /// to be used by <see cref="Reorder(long)"/> for split-reordered primary lead bytes.
+        /// <para/>
+        /// Each entry is a (limit, offset) pair.
+        /// The upper 16 bits of the entry are the upper 16 bits of the
+        /// exclusive primary limit of a range.
+        /// Primaries between the previous limit and this one have their lead bytes
+        /// modified by the signed offset (-0xff..+0xff) stored in the lower 16 bits.
+        /// <para/>
+        /// <see cref="CollationData.MakeReorderRanges(int[], IList{int})"/> writes a full list where the first range
+        /// (at least for terminators and separators) has a 0 offset.
+        /// The last range has a non-zero offset.
+        /// <see cref="minHighNoReorder"/> is set to the limit of that last range.
+        /// <para/>
+        /// In the settings object, the initial ranges before the first split lead byte
+        /// are omitted for efficiency; they are handled by <see cref="Reorder(long)"/> via the <see cref="reorderTable"/>.
+        /// If there are no split-reordered lead bytes, then no ranges are needed.
+        /// </summary>
         internal long[] reorderRanges;
-        /** Array of reorder codes; ignored if length == 0. */
+        /// <summary>Array of reorder codes; ignored if length == 0.</summary>
         private int[] reorderCodes = EMPTY_INT_ARRAY;
         // Note: In C++, we keep a memory block around for the reorder codes,
         // the ranges, and the permutation table,
@@ -574,7 +543,7 @@ namespace ICU4N.Impl.Coll
         // Reorder codes from the public setter API must be cloned.
         private static readonly int[] EMPTY_INT_ARRAY = new int[0];
 
-        /** Options for CollationFastLatin. Negative if disabled. */
+        /// <summary>Options for CollationFastLatin. Negative if disabled.</summary>
         private int fastLatinOptions = -1;
         // fastLatinPrimaries.length must be equal to CollationFastLatin.LATIN_LIMIT,
         // but we do not import CollationFastLatin to reduce circular dependencies.

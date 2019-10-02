@@ -20,35 +20,35 @@ namespace ICU4N.Impl.Coll
         /// <summary>
         /// Higher than any root primary.
         /// </summary>
-        public static readonly long PRIMARY_SENTINEL = 0xffffff00L;
+        public const long PRIMARY_SENTINEL = 0xffffff00L; // ICU4N TODO: API - Rename per .NET conventions
 
         /// <summary>
         /// Flag in a root element, set if the element contains secondary &amp; tertiary weights,
         /// rather than a primary.
         /// </summary>
-        public static readonly int SEC_TER_DELTA_FLAG = 0x80;
+        public const int SEC_TER_DELTA_FLAG = 0x80; // ICU4N TODO: API - Rename per .NET conventions
         /// <summary>
         /// Mask for getting the primary range step value from a primary-range-end element.
         /// </summary>
-        public static readonly int PRIMARY_STEP_MASK = 0x7f;
+        public const int PRIMARY_STEP_MASK = 0x7f; // ICU4N TODO: API - Rename per .NET conventions
 
         /// <summary>
         /// Index of the first CE with a non-zero tertiary weight.
         /// Same as the start of the compact root elements table.
         /// </summary>
-        public static readonly int IX_FIRST_TERTIARY_INDEX = 0;
+        public const int IX_FIRST_TERTIARY_INDEX = 0; // ICU4N TODO: API - Rename per .NET conventions
         /// <summary>
         /// Index of the first CE with a non-zero secondary weight.
         /// </summary>
-        internal static readonly int IX_FIRST_SECONDARY_INDEX = 1;
+        internal const int IX_FIRST_SECONDARY_INDEX = 1;
         /// <summary>
         /// Index of the first CE with a non-zero primary weight.
         /// </summary>
-        internal static readonly int IX_FIRST_PRIMARY_INDEX = 2;
+        internal const int IX_FIRST_PRIMARY_INDEX = 2;
         /// <summary>
         /// Must match Collation.COMMON_SEC_AND_TER_CE.
         /// </summary>
-        internal static readonly int IX_COMMON_SEC_AND_TER_CE = 3;
+        internal const int IX_COMMON_SEC_AND_TER_CE = 3;
         /// <summary>
         /// Secondary &amp; tertiary boundaries.
         /// Bits 31..24: [fixed last secondary common byte 45]
@@ -56,12 +56,12 @@ namespace ICU4N.Impl.Coll
         /// Bits 15.. 8: reserved, 0
         /// Bits  7.. 0: [fixed first ignorable tertiary byte 3C]
         /// </summary>
-        internal static readonly int IX_SEC_TER_BOUNDARIES = 4;
+        internal const int IX_SEC_TER_BOUNDARIES = 4;
         /// <summary>
         /// The current number of indexes.
         /// Currently the same as elements[IX_FIRST_TERTIARY_INDEX].
         /// </summary>
-        internal static readonly int IX_COUNT = 5;
+        internal const int IX_COUNT = 5;
 
         /// <summary>
         /// Gets the boundary between tertiary weights of primary/secondary CEs
@@ -146,8 +146,6 @@ namespace ICU4N.Impl.Coll
         /// Returns the last root CE with a primary weight before <paramref name="p"/>.
         /// Intended only for reordering group boundaries.
         /// </summary>
-        /// <param name="p"></param>
-        /// <returns></returns>
         internal long LastCEWithPrimaryBefore(long p)
         {
             if (p == 0) { return 0; }
@@ -233,9 +231,6 @@ namespace ICU4N.Impl.Coll
         /// Returns the primary weight before <paramref name="p"/>.
         /// <paramref name="p"/> must be greater than the first root primary.
         /// </summary>
-        /// <param name="p"></param>
-        /// <param name="isCompressible"></param>
-        /// <returns></returns>
         internal long GetPrimaryBefore(long p, bool isCompressible)
         {
             int index = FindPrimary(p);

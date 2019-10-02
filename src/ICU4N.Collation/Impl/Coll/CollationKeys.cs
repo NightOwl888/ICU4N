@@ -1,18 +1,19 @@
-﻿using ICU4N.Text;
-using ICU4N.Support;
-using System;
-using System.Collections.Generic;
+﻿using ICU4N.Support;
+using ICU4N.Text;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICU4N.Impl.Coll
 {
+    // CollationKeys.cs, ported from collationkeys.h/.cpp
+    //
+    // C++ version created on: 2012sep02
+    // created by: Markus W. Scherer
     public static class CollationKeys /* all methods are static */
     {
-        // Java porting note: C++ SortKeyByteSink class extends a common class ByteSink,
-        // which is not available in Java. We don't need a super class created for implementing
+        // .NET porting note: C++ SortKeyByteSink class extends a common class ByteSink,
+        // which is not available in .NET. We don't need a super class created for implementing
         // collation features.
-        public abstract class SortKeyByteSink
+        public abstract class SortKeyByteSink // ICU4N TODO: API - de-nest
         {
             protected byte[] buffer_;
             // protected int capacity_; == buffer_.length
@@ -24,28 +25,22 @@ namespace ICU4N.Impl.Coll
                 buffer_ = dest;
             }
 
-            /**
-             * Needed in Java for when we write to the buffer directly.
-             * In C++, the SortKeyByteSink is a subclass of ByteSink and lower-level code can write to that.
-             * TODO: Can we make Java SortKeyByteSink have-a ByteArrayWrapper and write through to it?
-             * Or maybe create interface ByteSink, have SortKeyByteSink implement it, and have BOCSU write to that??
-             */
+            // Needed in .NET for when we write to the buffer directly.
+            // In C++, the SortKeyByteSink is a subclass of ByteSink and lower-level code can write to that.
+            // TODO: Can we make .NET SortKeyByteSink have-a ByteArrayWrapper and write through to it?
+            // Or maybe create interface ByteSink, have SortKeyByteSink implement it, and have BOCSU write to that??
             public virtual void SetBufferAndAppended(byte[] dest, int app)
             {
                 buffer_ = dest;
                 appended_ = app;
             }
 
-            /* not used in Java -- public void IgnoreBytes(int numIgnore) {
+            /* not used in .NET -- public void IgnoreBytes(int numIgnore) {
                 ignore_ = numIgnore;
             } */
 
-            /**
-             * @param bytes
-             *            the array of byte
-             * @param n
-             *            the length of bytes to be appended
-             */
+            /// <param name="bytes">The array of byte.</param>
+            /// <param name="n">The length of bytes to be appended.</param>
             public virtual void Append(byte[] bytes, int n)
             {
                 if (n <= 0 || bytes == null)
@@ -53,7 +48,7 @@ namespace ICU4N.Impl.Coll
                     return;
                 }
 
-                /* not used in Java -- if (ignore_ > 0) {
+                /* not used in .NET -- if (ignore_ > 0) {
                     int ignoreRest = ignore_ - n;
                     if (ignoreRest >= 0) {
                         ignore_ = ignoreRest;
@@ -81,7 +76,7 @@ namespace ICU4N.Impl.Coll
 
             public virtual void Append(int b)
             {
-                /* not used in Java -- if (ignore_ > 0) {
+                /* not used in .NET -- if (ignore_ > 0) {
                     --ignore_;
                 } else */
                 {
@@ -93,7 +88,7 @@ namespace ICU4N.Impl.Coll
                 }
             }
 
-            // Java porting note: This method is not used by collator implementation.
+            // .NET porting note: This method is not used by collator implementation.
             //
             // virtual char *GetAppendBuffer(int min_capacity,
             // int desired_capacity_hint,
@@ -115,48 +110,38 @@ namespace ICU4N.Impl.Coll
                 get { return appended_ > buffer_.Length; }
             }
 
-            /* not used in Java -- public boolean IsOk() {
+            /* not used in .NET -- public boolean IsOk() {
                 return true;
             } */
 
-            /**
-             * @param bytes
-             *            the array of byte
-             * @param start
-             *            the start index within the array to be appended
-             * @param n
-             *            the length of bytes to be appended
-             * @param length
-             *            the length of buffer required to store the entire data (i.e. already appended
-             *            bytes + bytes to be appended by this method)
-             */
+            /// <param name="bytes">The array of byte.</param>
+            /// <param name="start">The start index within the array to be appended.</param>
+            /// <param name="n">The length of bytes to be appended.</param>
+            /// <param name="length">The length of buffer required to store the entire data (i.e. already appended
+            /// bytes + bytes to be appended by this method).</param>
             protected abstract void AppendBeyondCapacity(byte[] bytes, int start, int n, int length);
 
             protected abstract bool Resize(int appendCapacity, int length);
         }
 
-        public class LevelCallback
+        public class LevelCallback // ICU4N TODO: API - de-nest
         {
-            /**
-             * @param level
-             *            The next level about to be written to the ByteSink.
-             * @return true if the level is to be written (the base class implementation always returns
-             *         true)
-             */
+            /// <param name="level">The next level about to be written to the <see cref="SortKeyByteSink"/>.</param>
+            /// <returns>true if the level is to be written (the base class implementation always returns true).</returns>
             internal bool NeedToWrite(int level)
             {
                 return true;
             }
         }
-        public static readonly LevelCallback SIMPLE_LEVEL_FALLBACK = new LevelCallback();
+        public static readonly LevelCallback SIMPLE_LEVEL_FALLBACK = new LevelCallback(); // ICU4N TODO: API - Rename SimpleLevelFallback
 
         private sealed class SortKeyLevel
         {
-            private static readonly int INITIAL_CAPACITY = 40;
+            private const int INITIAL_CAPACITY = 40;
 
-            byte[] buffer = new byte[INITIAL_CAPACITY];
-            int len = 0;
-            // not used in Java -- private static final boolean ok = true;  // In C++ "ok" is reset when memory allocations fail.
+            internal byte[] buffer = new byte[INITIAL_CAPACITY];
+            internal int len = 0;
+            // not used in .NET -- private static final boolean ok = true;  // In C++ "ok" is reset when memory allocations fail.
 
             internal SortKeyLevel()
             {
@@ -176,7 +161,7 @@ namespace ICU4N.Impl.Coll
                 get { return len; }
             }
 
-            // Java porting note: Java uses this instead of C++ operator [] overload
+            // .NET porting note: .NET uses this instead of C++ operator [] overload
             // uint8_t operator[](int index)
             internal byte GetAt(int index)
             {
@@ -266,7 +251,7 @@ namespace ICU4N.Impl.Coll
 
             private bool EnsureCapacity(int appendCapacity)
             {
-                /* not used in Java -- if (!ok) {
+                /* not used in .NET -- if (!ok) {
                     return false;
                 } */
                 int newCapacity = 2 * buffer.Length;
@@ -292,59 +277,56 @@ namespace ICU4N.Impl.Coll
             return (levels & level) != 0 ? new SortKeyLevel() : null;
         }
 
-        //private CollationKeys()
-        //{
-        //} // no instantiation
+        // ICU4N specific - made class static and eliminated private constructor
 
         // Secondary level: Compress up to 33 common weights as 05..25 or 25..45.
-        private static readonly int SEC_COMMON_LOW = Collation.COMMON_BYTE;
-        private static readonly int SEC_COMMON_MIDDLE = SEC_COMMON_LOW + 0x20;
-        internal static readonly int SEC_COMMON_HIGH = SEC_COMMON_LOW + 0x40; // read by CollationDataReader
-        private static readonly int SEC_COMMON_MAX_COUNT = 0x21;
+        private const int SEC_COMMON_LOW = Collation.COMMON_BYTE;
+        private const int SEC_COMMON_MIDDLE = SEC_COMMON_LOW + 0x20;
+        internal const int SEC_COMMON_HIGH = SEC_COMMON_LOW + 0x40; // read by CollationDataReader
+        private const int SEC_COMMON_MAX_COUNT = 0x21;
 
         // Case level, lowerFirst: Compress up to 7 common weights as 1..7 or 7..13.
-        private static readonly int CASE_LOWER_FIRST_COMMON_LOW = 1;
-        private static readonly int CASE_LOWER_FIRST_COMMON_MIDDLE = 7;
-        private static readonly int CASE_LOWER_FIRST_COMMON_HIGH = 13;
-        private static readonly int CASE_LOWER_FIRST_COMMON_MAX_COUNT = 7;
+        private const int CASE_LOWER_FIRST_COMMON_LOW = 1;
+        private const int CASE_LOWER_FIRST_COMMON_MIDDLE = 7;
+        private const int CASE_LOWER_FIRST_COMMON_HIGH = 13;
+        private const int CASE_LOWER_FIRST_COMMON_MAX_COUNT = 7;
 
         // Case level, upperFirst: Compress up to 13 common weights as 3..15.
-        private static readonly int CASE_UPPER_FIRST_COMMON_LOW = 3;
-        private static readonly int CASE_UPPER_FIRST_COMMON_HIGH = 15;
-        private static readonly int CASE_UPPER_FIRST_COMMON_MAX_COUNT = 13;
+        private const int CASE_UPPER_FIRST_COMMON_LOW = 3;
+        private const int CASE_UPPER_FIRST_COMMON_HIGH = 15;
+        private const int CASE_UPPER_FIRST_COMMON_MAX_COUNT = 13;
 
         // Tertiary level only (no case): Compress up to 97 common weights as 05..65 or 65..C5.
-        private static readonly int TER_ONLY_COMMON_LOW = Collation.COMMON_BYTE;
-        private static readonly int TER_ONLY_COMMON_MIDDLE = TER_ONLY_COMMON_LOW + 0x60;
-        private static readonly int TER_ONLY_COMMON_HIGH = TER_ONLY_COMMON_LOW + 0xc0;
-        private static readonly int TER_ONLY_COMMON_MAX_COUNT = 0x61;
+        private const int TER_ONLY_COMMON_LOW = Collation.COMMON_BYTE;
+        private const int TER_ONLY_COMMON_MIDDLE = TER_ONLY_COMMON_LOW + 0x60;
+        private const int TER_ONLY_COMMON_HIGH = TER_ONLY_COMMON_LOW + 0xc0;
+        private const int TER_ONLY_COMMON_MAX_COUNT = 0x61;
 
         // Tertiary with case, lowerFirst: Compress up to 33 common weights as 05..25 or 25..45.
-        private static readonly int TER_LOWER_FIRST_COMMON_LOW = Collation.COMMON_BYTE;
-        private static readonly int TER_LOWER_FIRST_COMMON_MIDDLE = TER_LOWER_FIRST_COMMON_LOW + 0x20;
-        private static readonly int TER_LOWER_FIRST_COMMON_HIGH = TER_LOWER_FIRST_COMMON_LOW + 0x40;
-        private static readonly int TER_LOWER_FIRST_COMMON_MAX_COUNT = 0x21;
+        private const int TER_LOWER_FIRST_COMMON_LOW = Collation.COMMON_BYTE;
+        private const int TER_LOWER_FIRST_COMMON_MIDDLE = TER_LOWER_FIRST_COMMON_LOW + 0x20;
+        private const int TER_LOWER_FIRST_COMMON_HIGH = TER_LOWER_FIRST_COMMON_LOW + 0x40;
+        private const int TER_LOWER_FIRST_COMMON_MAX_COUNT = 0x21;
 
         // Tertiary with case, upperFirst: Compress up to 33 common weights as 85..A5 or A5..C5.
-        private static readonly int TER_UPPER_FIRST_COMMON_LOW = Collation.COMMON_BYTE + 0x80;
-        private static readonly int TER_UPPER_FIRST_COMMON_MIDDLE = TER_UPPER_FIRST_COMMON_LOW + 0x20;
-        private static readonly int TER_UPPER_FIRST_COMMON_HIGH = TER_UPPER_FIRST_COMMON_LOW + 0x40;
-        private static readonly int TER_UPPER_FIRST_COMMON_MAX_COUNT = 0x21;
+        private const int TER_UPPER_FIRST_COMMON_LOW = Collation.COMMON_BYTE + 0x80;
+        private const int TER_UPPER_FIRST_COMMON_MIDDLE = TER_UPPER_FIRST_COMMON_LOW + 0x20;
+        private const int TER_UPPER_FIRST_COMMON_HIGH = TER_UPPER_FIRST_COMMON_LOW + 0x40;
+        private const int TER_UPPER_FIRST_COMMON_MAX_COUNT = 0x21;
 
         // Quaternary level: Compress up to 113 common weights as 1C..8C or 8C..FC.
-        private static readonly int QUAT_COMMON_LOW = 0x1c;
-        private static readonly int QUAT_COMMON_MIDDLE = QUAT_COMMON_LOW + 0x70;
-        private static readonly int QUAT_COMMON_HIGH = QUAT_COMMON_LOW + 0xE0;
-        private static readonly int QUAT_COMMON_MAX_COUNT = 0x71;
+        private const int QUAT_COMMON_LOW = 0x1c;
+        private const int QUAT_COMMON_MIDDLE = QUAT_COMMON_LOW + 0x70;
+        private const int QUAT_COMMON_HIGH = QUAT_COMMON_LOW + 0xE0;
+        private const int QUAT_COMMON_MAX_COUNT = 0x71;
         // Primary weights shifted to quaternary level must be encoded with
         // a lead byte below the common-weight compression range.
-        private static readonly int QUAT_SHIFTED_LIMIT_BYTE = QUAT_COMMON_LOW - 1; // 0x1b
-
-        /**
-         * Map from collation strength (UColAttributeValue) to a mask of Collation.Level bits up to that
-         * strength, excluding the CASE_LEVEL which is independent of the strength, and excluding
-         * IDENTICAL_LEVEL which this function does not write.
-         */
+        private const int QUAT_SHIFTED_LIMIT_BYTE = QUAT_COMMON_LOW - 1; // 0x1b
+        /// <summary>
+        /// Map from collation strength (UColAttributeValue) to a mask of Collation.Level bits up to that
+        /// strength, excluding the <see cref="Collation.CASE_LEVEL"/> which is independent of the strength, and excluding
+        /// <see cref="Collation.IDENTICAL_LEVEL"/> which this function does not write.
+        /// </summary>
         private static readonly int[] levelMasks = new int[] {
                 2,          // UCOL_PRIMARY -> PRIMARY_LEVEL
                 6,          // UCOL_SECONDARY -> up to SECONDARY_LEVEL
@@ -356,11 +338,18 @@ namespace ICU4N.Impl.Coll
                 0x36        // UCOL_IDENTICAL -> up to QUATERNARY_LEVEL
             };
 
-        /**
-         * Writes the sort key bytes for minLevel up to the iterator data's strength. Optionally writes
-         * the case level. Stops writing levels when callback.needToWrite(level) returns false.
-         * Separates levels with the LEVEL_SEPARATOR_BYTE but does not write a TERMINATOR_BYTE.
-         */
+        /// <summary>
+        /// Writes the sort key bytes for minLevel up to the iterator data's strength. Optionally writes
+        /// the case level. Stops writing levels when callback.NeedToWrite(level) returns false.
+        /// Separates levels with the <see cref="Collation.LEVEL_SEPARATOR_BYTE"/> but does not write a <see cref="Collation.TERMINATOR_BYTE"/>.
+        /// </summary>
+        /// <param name="iter"></param>
+        /// <param name="compressibleBytes"></param>
+        /// <param name="settings"></param>
+        /// <param name="sink"></param>
+        /// <param name="minLevel"></param>
+        /// <param name="callback"></param>
+        /// <param name="preflight"></param>
         public static void WriteSortKeyUpToQuaternary(CollationIterator iter, bool[] compressibleBytes,
                 CollationSettings settings, SortKeyByteSink sink, int minLevel, LevelCallback callback,
                 bool preflight)
@@ -946,9 +935,9 @@ namespace ICU4N.Impl.Coll
                 quaternaries.AppendTo(sink);
             }
 
-            // not used in Java -- if (!ok || !sink.IsOk()) {
-            // Java porting note: U_MEMORY_ALLOCATION_ERROR is set here in
-            // C implementation. IsOk() in Java always returns true, so this
+            // not used in .NET -- if (!ok || !sink.IsOk()) {
+            // .NET porting note: U_MEMORY_ALLOCATION_ERROR is set here in
+            // C implementation. IsOk() in .NET always returns true, so this
             // is a dead code.
         }
     }

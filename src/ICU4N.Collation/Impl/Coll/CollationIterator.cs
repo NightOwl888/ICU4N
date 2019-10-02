@@ -8,12 +8,23 @@ using Hangul = ICU4N.Impl.Normalizer2Impl.Hangul;
 
 namespace ICU4N.Impl.Coll
 {
+    // CollationIterator.cs, ported from collationiterator.h/.cpp
+    //
+    // C++ version created on: 2010oct27
+    // created by: Markus W. Scherer
+
+    /// <summary>
+    /// Collation element iterator and abstract character iterator.
+    /// <para/>
+    /// When a method returns a code point value, it must be in 0..10FFFF,
+    /// except it can be negative as a sentinel value.
+    /// </summary>
     public abstract class CollationIterator
     {
         private sealed class CEBuffer
         {
-            /** Large enough for CEs of most short strings. */
-            private static readonly int INITIAL_CAPACITY = 40;
+            /// <summary>Large enough for CEs of most short strings.</summary>
+            private const int INITIAL_CAPACITY = 40;
 
             internal CEBuffer() { }
 
@@ -62,13 +73,7 @@ namespace ICU4N.Impl.Coll
                 ++length;
             }
 
-            //internal long Set(int i, long ce)
-            //{
-            //    return buffer[i] = ce;
-            //}
-            //internal long Get(int i) { return buffer[i]; }
-
-            internal long this[int index]
+            internal long this[int index] // ICU4N specific - converted from Get() and Set() methods in Java to .NET indexer
             {
                 get { return buffer[index]; }
                 set { buffer[index] = value; }
@@ -192,16 +197,16 @@ namespace ICU4N.Impl.Coll
             private CharsTrie.State state = new CharsTrie.State();
         };
 
-        /**
-         * Partially constructs the iterator.
-         * In Java, we cache partially constructed iterators
-         * and finish their setup when starting to work on text
-         * (via reset(boolean) and the setText(numeric, ...) methods of subclasses).
-         * This avoids memory allocations for iterators that remain unused.
-         *
-         * <p>In C++, there is only one constructor, and iterators are
-         * stack-allocated as needed.
-         */
+        /// <summary>
+        /// Partially constructs the iterator.
+        /// In .NET, we cache partially constructed iterators
+        /// and finish their setup when starting to work on text
+        /// (via <see cref="Reset(bool)"/> and the SetText(numeric, ...) methods of subclasses).
+        /// <para/>
+        /// In C++, there is only one constructor, and iterators are
+        /// stack-allocated as needed.
+        /// </summary>
+        /// <param name="d"></param>
         public CollationIterator(CollationData d)
         {
             trie = d.trie;
@@ -250,18 +255,18 @@ namespace ICU4N.Impl.Coll
             return 0;
         }
 
-        /**
-         * Resets the iterator state and sets the position to the specified offset.
-         * Subclasses must implement, and must call the parent class method,
-         * or CollationIterator.reset().
-         */
+        /// <summary>
+        /// Resets the iterator state and sets the position to the specified offset.
+        /// Subclasses must implement, and must call the parent class method,
+        /// or <see cref="CollationIterator.Reset()"/>.
+        /// </summary>
         public abstract void ResetToOffset(int newOffset);
 
         public abstract int Offset { get; }
 
-        /**
-         * Returns the next collation element.
-         */
+        /// <summary>
+        /// Returns the next collation element.
+        /// </summary>
         public long NextCE()
         {
             if (cesIndex < ceBuffer.Length)
@@ -314,10 +319,10 @@ namespace ICU4N.Impl.Coll
             return NextCEFromCE32(d, c, ce32);
         }
 
-        /**
-         * Fetches all CEs.
-         * @return getCEsLength()
-         */
+        /// <summary>
+        /// Fetches all CEs.
+        /// </summary>
+        /// <returns>GetCEsLength()</returns>
         public int FetchCEs()
         {
             while (NextCE() != Collation.NO_CE)
@@ -328,18 +333,18 @@ namespace ICU4N.Impl.Coll
             return ceBuffer.Length;
         }
 
-        /**
-         * Overwrites the current CE (the last one returned by nextCE()).
-         */
+        /// <summary>
+        /// Overwrites the current CE (the last one returned by <see cref="NextCE()"/>).
+        /// </summary>
         internal void SetCurrentCE(long ce)
         {
             Debug.Assert(cesIndex > 0);
             ceBuffer[cesIndex - 1] = ce;
         }
 
-        /**
-         * Returns the previous collation element.
-         */
+        /// <summary>
+        /// Returns the previous collation element.
+        /// </summary>
         public long PreviousCE(IList<int> offsets)
         {
             if (ceBuffer.Length > 0)
@@ -411,16 +416,16 @@ namespace ICU4N.Impl.Coll
             if (cesIndex == ceBuffer.Length) { ClearCEs(); }
         }
 
-        /**
-         * Returns the next code point (with post-increment).
-         * Public for identical-level comparison and for testing.
-         */
+        /// <summary>
+        /// Returns the next code point (with post-increment).
+        /// Public for identical-level comparison and for testing.
+        /// </summary>
         public abstract int NextCodePoint();
 
-        /**
-         * Returns the previous code point (with pre-decrement).
-         * Public for identical-level comparison and for testing.
-         */
+        /// <summary>
+        /// Returns the previous code point (with pre-decrement).
+        /// Public for identical-level comparison and for testing.
+        /// </summary>
         public abstract int PreviousCodePoint();
 
         protected void Reset()
@@ -428,13 +433,14 @@ namespace ICU4N.Impl.Coll
             cesIndex = ceBuffer.Length = 0;
             if (skipped != null) { skipped.Clear(); }
         }
-        /**
-         * Resets the state as well as the numeric setting,
-         * and completes the initialization.
-         * Only exists in Java where we reset cached CollationIterator instances
-         * rather than stack-allocating temporary ones.
-         * (See also the constructor comments.)
-         */
+
+        /// <summary>
+        /// Resets the state as well as the numeric setting,
+        /// and completes the initialization.
+        /// Only exists where we reset cached <see cref="CollationIterator"/> instances
+        /// rather than stack-allocating temporary ones.
+        /// (See also the constructor comments.)
+        /// </summary>
         protected void Reset(bool numeric)
         {
             if (ceBuffer == null)
@@ -445,16 +451,15 @@ namespace ICU4N.Impl.Coll
             isNumeric = numeric;
         }
 
-        /**
-         * Returns the next code point and its local CE32 value.
-         * Returns Collation.FALLBACK_CE32 at the end of the text (c&lt;0)
-         * or when c's CE32 value is to be looked up in the base data (fallback).
-         *
-         * The code point is used for fallbacks, context and implicit weights.
-         * It is ignored when the returned CE32 is not special (e.g., FFFD_CE32).
-         *
-         * Returns the code point in bits 63..32 (signed) and the CE32 in bits 31..0.
-         */
+        /// <summary>
+        /// Returns the next code point and its local CE32 value.
+        /// Returns <see cref="Collation.FALLBACK_CE32"/> at the end of the text (c&lt;0)
+        /// or when c's CE32 value is to be looked up in the base data (fallback).
+        /// <para/>
+        /// The code point is used for fallbacks, context and implicit weights.
+        /// It is ignored when the returned CE32 is not special (e.g., FFFD_CE32).
+        /// </summary>
+        /// <returns>Returns the code point in bits 63..32 (signed) and the CE32 in bits 31..0.</returns>
         protected virtual long HandleNextCE32()
         {
             int c = NextCodePoint();
@@ -467,30 +472,30 @@ namespace ICU4N.Impl.Coll
         }
         protected static readonly long NO_CP_AND_CE32 = (-1L << 32) | (Collation.FALLBACK_CE32 & 0xffffffffL);
 
-        /**
-         * Called when handleNextCE32() returns a LEAD_SURROGATE_TAG for a lead surrogate code unit.
-         * Returns the trail surrogate in that case and advances past it,
-         * if a trail surrogate follows the lead surrogate.
-         * Otherwise returns any other code unit and does not advance.
-         */
+        /// <summary>
+        /// Called when <see cref="HandleNextCE32()"/> returns a LEAD_SURROGATE_TAG for a lead surrogate code unit.
+        /// Returns the trail surrogate in that case and advances past it,
+        /// if a trail surrogate follows the lead surrogate.
+        /// Otherwise returns any other code unit and does not advance.
+        /// </summary>
         protected virtual char HandleGetTrailSurrogate()
         {
             return (char)0;
         }
 
-        /**
-         * Called when handleNextCE32() returns with c==0, to see whether it is a NUL terminator.
-         * (Not needed in Java.)
-         */
-        /*protected boolean foundNULTerminator() {
-            return false;
-        }*/
+        /////**
+        //// * Called when handleNextCE32() returns with c==0, to see whether it is a NUL terminator.
+        //// * (Not needed in Java.)
+        //// */
+        /////*protected boolean foundNULTerminator() {
+        ////    return false;
+        ////}*/
 
-        /**
-         * @return false if surrogate code points U+D800..U+DFFF
-         *         map to their own implicit primary weights (for UTF-16),
-         *         or true if they map to CE(U+FFFD) (for UTF-8)
-         */
+        /// <summary>
+        /// false if surrogate code points U+D800..U+DFFF
+        ///         map to their own implicit primary weights (for UTF-16),
+        ///         or true if they map to CE(U+FFFD) (for UTF-8)
+        /// </summary>
         protected virtual bool ForbidSurrogateCodePoints
         {
             get { return false; }
@@ -500,11 +505,11 @@ namespace ICU4N.Impl.Coll
 
         protected abstract void BackwardNumCodePoints(int num);
 
-        /**
-         * Returns the CE32 from the data trie.
-         * Normally the same as data.getCE32(), but overridden in the builder.
-         * Call this only when the faster data.getCE32() cannot be used.
-         */
+        /// <summary>
+        /// Returns the CE32 from the data trie.
+        /// Normally the same as <c>data.GetCE32()</c>, but overridden in the builder.
+        /// Call this only when the faster <c>data.GetCE32()</c> cannot be used.
+        /// </summary>
         protected virtual int GetDataCE32(int c)
         {
             return data.GetCE32(c);
@@ -1029,9 +1034,9 @@ namespace ICU4N.Impl.Coll
             return ce32;
         }
 
-        /**
-         * Returns the previous CE when data.isUnsafeBackward(c, isNumeric).
-         */
+        /// <summary>
+        /// Returns the previous CE when <c>data.IsUnsafeBackward(c, isNumeric)</c>.
+        /// </summary>
         private long PreviousCEUnsafe(int c, IList<int> offsets)
         {
             // We just move through the input counting safe and unsafe code points
@@ -1102,13 +1107,13 @@ namespace ICU4N.Impl.Coll
             return ceBuffer[--ceBuffer.Length];
         }
 
-        /**
-         * Turns a string of digits (bytes 0..9)
-         * into a sequence of CEs that will sort in numeric order.
-         *
-         * Starts from this ce32's digit value and consumes the following/preceding digits.
-         * The digits string must not be empty and must not have leading zeros.
-         */
+        /// <summary>
+        /// Turns a string of digits (bytes 0..9)
+        /// into a sequence of CEs that will sort in numeric order.
+        /// <para/>
+        /// Starts from this <paramref name="ce32"/>'s digit value and consumes the following/preceding digits.
+        /// The digits string must not be empty and must not have leading zeros.
+        /// </summary>
         private void AppendNumericCEs(int ce32, bool forward)
         {
             // Collect digits.
@@ -1171,10 +1176,10 @@ namespace ICU4N.Impl.Coll
             } while (pos < digits.Length);
         }
 
-        /**
-         * Turns 1..254 digits into a sequence of CEs.
-         * Called by appendNumericCEs() for each segment of at most 254 digits.
-         */
+        /// <summary>
+        /// Turns 1..254 digits into a sequence of CEs.
+        /// Called by <see cref="AppendNumericCEs(int, bool)"/> for each segment of at most 254 digits.
+        /// </summary>
         private void AppendNumericSegmentCEs(ICharSequence digits)
         {
             int length = digits.Length;

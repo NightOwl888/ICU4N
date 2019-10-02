@@ -2,7 +2,6 @@
 using ICU4N.Util;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Resources;
 using System.Text;
 
@@ -13,11 +12,7 @@ namespace ICU4N.Impl.Coll
     /// </summary>
     public static class CollationLoader
     {
-        // ICU4N specific - just marking class static will suffice
-        //// not implemented, all methods are static
-        //private CollationLoader()
-        //{
-        //}
+        // ICU4N specific - removed private constructor and made class static
 
         private static volatile string rootRules = null;
 
@@ -49,10 +44,10 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Simpler/faster methods for ASCII than ones based on Unicode data.
-         * TODO: There should be code like this somewhere already??
-         */
+        /// <summary>
+        /// Simpler/faster methods for ASCII than ones based on Unicode data.
+        /// </summary>
+        // TODO: There should be code like this somewhere already??
         private sealed class ASCII
         {
             internal static string ToLower(string s)

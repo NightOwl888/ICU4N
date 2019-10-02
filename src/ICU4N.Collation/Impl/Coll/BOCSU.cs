@@ -148,11 +148,11 @@ namespace ICU4N.Impl.Coll
         /// <summary>
         /// Do not use byte values 0, 1, 2 because they are separators in sort keys.
         /// </summary>
-        private static readonly int SLOPE_MIN_ = 3;
-        private static readonly int SLOPE_MAX_ = 0xff;
-        private static readonly int SLOPE_MIDDLE_ = 0x81;
-        private static readonly int SLOPE_TAIL_COUNT_ = SLOPE_MAX_ - SLOPE_MIN_ + 1;
-        private static readonly int SLOPE_MAX_BYTES_ = 4;
+        private const int SLOPE_MIN_ = 3;
+        private const int SLOPE_MAX_ = 0xff;
+        private const int SLOPE_MIDDLE_ = 0x81;
+        private const int SLOPE_TAIL_COUNT_ = SLOPE_MAX_ - SLOPE_MIN_ + 1;
+        private const int SLOPE_MAX_BYTES_ = 4;
 
         /// <summary>
         /// Number of lead bytes:
@@ -177,59 +177,50 @@ namespace ICU4N.Impl.Coll
         /// With an equal distribution of even and odd differences there is also
         /// no advantage to asymmetrical lead byte counts.
         /// </summary>
-        private static readonly int SLOPE_SINGLE_ = 80;
-        private static readonly int SLOPE_LEAD_2_ = 42;
-        private static readonly int SLOPE_LEAD_3_ = 3;
-        //private static readonly int SLOPE_LEAD_4_ = 1;
+        private const int SLOPE_SINGLE_ = 80;
+        private const int SLOPE_LEAD_2_ = 42;
+        private const int SLOPE_LEAD_3_ = 3;
+        //private const int SLOPE_LEAD_4_ = 1;
 
         /// <summary>
         /// The difference value range for single-byters.
         /// </summary>
-        private static readonly int SLOPE_REACH_POS_1_ = SLOPE_SINGLE_;
-        private static readonly int SLOPE_REACH_NEG_1_ = (-SLOPE_SINGLE_);
+        private const int SLOPE_REACH_POS_1_ = SLOPE_SINGLE_;
+        private const int SLOPE_REACH_NEG_1_ = (-SLOPE_SINGLE_);
 
         /// <summary>
         /// The difference value range for double-byters.
         /// </summary>
-        private static readonly int SLOPE_REACH_POS_2_ =
+        private const int SLOPE_REACH_POS_2_ =
             SLOPE_LEAD_2_ * SLOPE_TAIL_COUNT_ + SLOPE_LEAD_2_ - 1;
-        private static readonly int SLOPE_REACH_NEG_2_ = (-SLOPE_REACH_POS_2_ - 1);
+        private const int SLOPE_REACH_NEG_2_ = (-SLOPE_REACH_POS_2_ - 1);
 
         /// <summary>
         /// The difference value range for 3-byters.
         /// </summary>
-        private static readonly int SLOPE_REACH_POS_3_ = SLOPE_LEAD_3_
+        private const int SLOPE_REACH_POS_3_ = SLOPE_LEAD_3_
             * SLOPE_TAIL_COUNT_
             * SLOPE_TAIL_COUNT_
             + (SLOPE_LEAD_3_ - 1)
             * SLOPE_TAIL_COUNT_ +
             (SLOPE_TAIL_COUNT_ - 1);
-        private static readonly int SLOPE_REACH_NEG_3_ = (-SLOPE_REACH_POS_3_ - 1);
+        private const int SLOPE_REACH_NEG_3_ = (-SLOPE_REACH_POS_3_ - 1);
 
         /// <summary>
         /// The lead byte start values.
         /// </summary>
-        private static readonly int SLOPE_START_POS_2_ = SLOPE_MIDDLE_
+        private const int SLOPE_START_POS_2_ = SLOPE_MIDDLE_
             + SLOPE_SINGLE_ + 1;
-        private static readonly int SLOPE_START_POS_3_ = SLOPE_START_POS_2_
+        private const int SLOPE_START_POS_3_ = SLOPE_START_POS_2_
             + SLOPE_LEAD_2_;
-        private static readonly int SLOPE_START_NEG_2_ = SLOPE_MIDDLE_ +
+        private const int SLOPE_START_NEG_2_ = SLOPE_MIDDLE_ +
             SLOPE_REACH_NEG_1_;
-        private static readonly int SLOPE_START_NEG_3_ = SLOPE_START_NEG_2_
+        private const int SLOPE_START_NEG_3_ = SLOPE_START_NEG_2_
             - SLOPE_LEAD_2_;
 
         // private constructor ---------------------------------------------------
 
-        // ICU4N specific - removed constructor and made class static
-
-        ///**
-        // * Constructor private to prevent initialization
-        // */
-        /////CLOVER:OFF
-        //private BOCSU()
-        //{
-        //}
-        /////CLOVER:ON                                                                                       
+        // ICU4N specific - removed constructor and made class static                                                                                   
 
         // private methods -------------------------------------------------------
 

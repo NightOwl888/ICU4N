@@ -1,6 +1,4 @@
 ﻿using ICU4N.Support.Text;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
@@ -256,11 +254,11 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Switches to forward checking if possible.
-         * To be called when checkDir < 0 || (checkDir == 0 && pos == limit).
-         * Returns with checkDir > 0 || (checkDir == 0 && pos != limit).
-         */
+        /// <summary>
+        /// Switches to forward checking if possible.
+        /// To be called when checkDir &lt; 0 || (checkDir == 0 &amp;&amp; pos == limit).
+        /// Returns with checkDir &gt; 0 || (checkDir == 0 &amp;&amp; pos != limit).
+        /// </summary>
         private void SwitchToForward()
         {
             Debug.Assert((checkDir < 0 && seq == rawSeq) || (checkDir == 0 && pos == limit));
@@ -301,11 +299,11 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Extend the FCD text segment forward or normalize around pos.
-         * To be called when checkDir > 0 && pos != limit.
-         * Returns with checkDir == 0 and pos != limit.
-         */
+        /// <summary>
+        /// Extend the FCD text segment forward or normalize around pos.
+        /// To be called when checkDir > 0 &amp;&amp; pos != limit.
+        /// Returns with checkDir == 0 and pos != limit.
+        /// </summary>
         private void NextSegment()
         {
             Debug.Assert(checkDir > 0 && seq == rawSeq && pos != limit);
@@ -352,11 +350,11 @@ namespace ICU4N.Impl.Coll
             checkDir = 0;
         }
 
-        /**
-         * Switches to backward checking.
-         * To be called when checkDir > 0 || (checkDir == 0 && pos == start).
-         * Returns with checkDir < 0 || (checkDir == 0 && pos != start).
-         */
+        /// <summary>
+        /// Switches to backward checking.
+        /// To be called when checkDir &gt; 0 || (checkDir == 0 &amp;&amp; pos == start).
+        /// Returns with checkDir &lt; 0 || (checkDir == 0 &amp;&amp; pos != start).
+        /// </summary>
         private void SwitchToBackward()
         {
             Debug.Assert((checkDir > 0 && seq == rawSeq) || (checkDir == 0 && pos == start));
@@ -393,11 +391,11 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Extend the FCD text segment backward or normalize around pos.
-         * To be called when checkDir &lt; 0 && pos != start.
-         * Returns with checkDir == 0 and pos != start.
-         */
+        /// <summary>
+        /// Extend the FCD text segment backward or normalize around pos.
+        /// To be called when checkDir &lt; 0 &amp;&amp; pos != start.
+        /// Returns with checkDir == 0 and pos != start.
+        /// </summary>
         private void PreviousSegment()
         {
             Debug.Assert(checkDir < 0 && seq == rawSeq && pos != start);

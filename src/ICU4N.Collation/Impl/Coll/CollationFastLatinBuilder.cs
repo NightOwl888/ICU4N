@@ -17,9 +17,9 @@ namespace ICU4N.Impl.Coll
     {
         // #define DEBUG_COLLATION_FAST_LATIN_BUILDER 0  // 0 or 1 or 2
 
-        /**
-         * Compare two signed long values as if they were unsigned.
-         */
+        /// <summary>
+        /// Compare two signed long values as if they were unsigned.
+        /// </summary>
         private static int CompareInt64AsUnsigned(long a, long b)
         {
             a += unchecked((long)0x8000000000000000L);
@@ -38,12 +38,14 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Like Java Collections.binarySearch(List, String, Comparator).
-         *
-         * @return the index>=0 where the item was found,
-         *         or the index<0 for inserting the string at ~index in sorted order
-         */
+        /// <summary>
+        /// Like <see cref="System.Collections.Generic.List{T}.BinarySearch(int, int, T, IComparer{T})"/>.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="limit"></param>
+        /// <param name="ce"></param>
+        /// <returns>The index>=0 where the item was found,
+        /// or the index&lt;0 for inserting the string at ~index in sorted order.</returns>
         private static int BinarySearch(IList<long> list, int limit, long ce)
         {
             if (limit == 0) { return ~0; }
@@ -836,10 +838,10 @@ namespace ICU4N.Impl.Coll
         }
 
         // space, punct, symbol, currency (not digit)
-        private static readonly int NUM_SPECIAL_GROUPS =
+        private const int NUM_SPECIAL_GROUPS =
                 ReorderCodes.Currency - ReorderCodes.First + 1;
 
-        private static readonly long CONTRACTION_FLAG = 0x80000000L;
+        private const long CONTRACTION_FLAG = 0x80000000L;
 
         // temporary "buffer"
         private long ce0, ce1;

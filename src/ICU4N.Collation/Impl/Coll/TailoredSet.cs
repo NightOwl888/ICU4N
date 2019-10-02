@@ -8,6 +8,23 @@ using static ICU4N.Impl.Normalizer2Impl;
 
 namespace ICU4N.Impl.Coll
 {
+    /// <summary>
+    /// Finds the set of characters and strings that sort differently in the tailoring
+    /// from the base data.
+    ///
+    /// <para/>Every mapping in the tailoring needs to be compared to the base,
+    /// because some mappings are copied for optimization, and
+    /// all contractions for a character are copied if any contractions for that character
+    /// are added, modified or removed.
+    ///
+    /// <para/>It might be simpler to re-parse the rule string, but:
+    /// <list type="bullet">
+    ///     <item><description>That would require duplicating some of the from-rules builder code.</description></item>
+    ///     <item><description>That would make the runtime code depend on the builder.</description></item>
+    ///     <item><description>That would only work if we have the rule string, and we allow users to
+    ///                        omit the rule string from data files.</description></item>
+    /// </list>
+    /// </summary>
     public sealed class TailoredSet
     {
         private CollationData data;

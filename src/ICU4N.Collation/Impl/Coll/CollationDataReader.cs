@@ -3,10 +3,7 @@ using ICU4N.Support.Collections;
 using ICU4N.Support.IO;
 using ICU4N.Text;
 using ICU4N.Util;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICU4N.Impl.Coll
 {
@@ -19,24 +16,25 @@ namespace ICU4N.Impl.Coll
     {
         // The following constants are also copied into source/common/ucol_swp.cpp.
         // Keep them in sync!
-        /**
-         * Number of int indexes.
-         *
-         * Can be 2 if there are only options.
-         * Can be 7 or 8 if there are only options and a script reordering.
-         * The loader treats any index>=indexes[IX_INDEXES_LENGTH] as 0.
-         */
+        /// <summary>
+        /// Number of int indexes.
+        /// <para/>
+        /// Can be 2 if there are only options.
+        /// Can be 7 or 8 if there are only options and a script reordering.
+        /// The loader treats any index>=indexes[IX_INDEXES_LENGTH] as 0.
+        /// </summary>
         internal const int IX_INDEXES_LENGTH = 0;
-        /**
-         * Bits 31..24: numericPrimary, for numeric collation
-         *      23..16: fast Latin format version (0 = no fast Latin table)
-         *      15.. 0: options bit set
-         */
+
+        /// <summary>
+        /// Bits 31..24: numericPrimary, for numeric collation
+        ///      23..16: fast Latin format version (0 = no fast Latin table)
+        ///      15.. 0: options bit set
+        /// </summary>
         internal const int IX_OPTIONS = 1;
         internal const int IX_RESERVED2 = 2;
         internal const int IX_RESERVED3 = 3;
 
-        /** Array offset to Jamo CE32s in ce32s[], or <0 if none. */
+        /// <summary>Array offset to Jamo CE32s in ce32s[], or &lt;0 if none.</summary>
         internal const int IX_JAMO_CE32S_START = 4;
 
         // Byte offsets from the start of the data, after the generic header.
@@ -46,40 +44,42 @@ namespace ICU4N.Impl.Coll
         // to minimize the need for padding.
         // Each item's byte length is given by the difference between its offset and
         // the next index/offset value.
-        /** Byte offset to int reorderCodes[]. */
+        /// <summary>Byte offset to int reorderCodes[].</summary>
         internal const int IX_REORDER_CODES_OFFSET = 5;
-        /**
-         * Byte offset to uint8_t reorderTable[].
-         * Empty table if <256 bytes (padding only).
-         * Otherwise 256 bytes or more (with padding).
-         */
+
+        /// <summary>
+        /// Byte offset to uint8_t reorderTable[].
+        /// Empty table if &lt;256 bytes (padding only).
+        /// Otherwise 256 bytes or more (with padding).
+        /// </summary>
         internal const int IX_REORDER_TABLE_OFFSET = 6;
-        /** Byte offset to the collation trie. Its length is a multiple of 8 bytes. */
+        /// <summary>Byte offset to the collation trie. Its length is a multiple of 8 bytes.</summary>
         internal const int IX_TRIE_OFFSET = 7;
 
         internal const int IX_RESERVED8_OFFSET = 8;
-        /** Byte offset to long ces[]. */
+        /// <summary>Byte offset to long ces[].</summary>
         internal const int IX_CES_OFFSET = 9;
         internal const int IX_RESERVED10_OFFSET = 10;
-        /** Byte offset to int ce32s[]. */
+        /// <summary>Byte offset to int ce32s[].</summary>
         internal const int IX_CE32S_OFFSET = 11;
 
-        /** Byte offset to uint32_t rootElements[]. */
+        /// <summary>Byte offset to uint32_t rootElements[].</summary>
         internal const int IX_ROOT_ELEMENTS_OFFSET = 12;
-        /** Byte offset to UChar *contexts[]. */
+        /// <summary>Byte offset to UChar *contexts[].</summary>
         internal const int IX_CONTEXTS_OFFSET = 13;
-        /** Byte offset to char [] with serialized unsafeBackwardSet. */
+        /// <summary>Byte offset to char[] with serialized unsafeBackwardSet.</summary>
         internal const int IX_UNSAFE_BWD_OFFSET = 14;
-        /** Byte offset to char fastLatinTable[]. */
+        /// <summary>Byte offset to char fastLatinTable[].</summary>
         internal const int IX_FAST_LATIN_TABLE_OFFSET = 15;
 
-        /** Byte offset to char scripts[]. */
+        /// <summary>Byte offset to char scripts[].</summary>
         internal const int IX_SCRIPTS_OFFSET = 16;
-        /**
-         * Byte offset to boolean compressibleBytes[].
-         * Empty table if <256 bytes (padding only).
-         * Otherwise 256 bytes or more (with padding).
-         */
+
+        /// <summary>
+        /// Byte offset to boolean compressibleBytes[].
+        /// Empty table if &lt;256 bytes (padding only).
+        /// Otherwise 256 bytes or more (with padding).
+        /// </summary>
         internal const int IX_COMPRESSIBLE_BYTES_OFFSET = 17;
         internal const int IX_RESERVED18_OFFSET = 18;
         internal const int IX_TOTAL_SIZE = 19;
@@ -585,8 +585,7 @@ namespace ICU4N.Impl.Coll
         private static readonly IsAcceptable IS_ACCEPTABLE = new IsAcceptable();
         private static readonly int DATA_FORMAT = 0x55436f6c;  // "UCol"
 
-        //private CollationDataReader() { }  // no constructor
-        //}
+        // ICU4N specific - made class static instead of having private constructor
 
         /*
          * Format of collation data (ucadata.icu, binary data in coll/ *.res files):

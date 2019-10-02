@@ -3462,8 +3462,8 @@ namespace ICU4N.Text
         /// A value in the range <see cref="UChar.GetIntPropertyMinValue(UProperty)"/>..
         /// <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>, with one exception.
         /// If prop is <see cref="UProperty.General_Category_Mask"/>, then value should not be
-        /// a <see cref="UChar.GetType(int)"/> result, but rather a mask value produced
-        /// by logically ORing (1 &lt;&lt; <see cref="UChar.GetType(int)"/>) values together.
+        /// a <see cref="UChar.GetUnicodeCategory(int)"/> result, but rather a mask value produced
+        /// by logically ORing (1 &lt;&lt; <see cref="UChar.GetUnicodeCategory(int)"/>) values together.
         /// <para/>
         /// This allows grouped categories such as [:L:] to be represented.
         /// </param>

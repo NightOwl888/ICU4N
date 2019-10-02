@@ -64,19 +64,18 @@ namespace ICU4N.Impl.Coll
             maxBytes[4] = 0x3f;
         }
 
-        /**
-         * Determine heuristically
-         * what ranges to use for a given number of weights between (excluding)
-         * two limits.
-         *
-         * @param lowerLimit A collation element weight; the ranges will be filled to cover
-         *                   weights greater than this one.
-         * @param upperLimit A collation element weight; the ranges will be filled to cover
-         *                   weights less than this one.
-         * @param n          The number of collation element weights w necessary such that
-         *                   lowerLimit&lt;w&lt;upperLimit in lexical order.
-         * @return true if it is possible to fit n elements between the limits
-         */
+        /// <summary>
+        /// Determine heuristically
+        /// what ranges to use for a given number of weights between (excluding)
+        /// two limits.
+        /// </summary>
+        /// <param name="lowerLimit">A collation element weight; the ranges will be filled to cover
+        /// weights greater than this one.</param>
+        /// <param name="upperLimit">A collation element weight; the ranges will be filled to cover
+        /// weights less than this one.</param>
+        /// <param name="n">The number of collation element weights w necessary such that
+        /// lowerLimit&lt;w&lt;upperLimit in lexical order.</param>
+        /// <returns><c>true</c> if it is possible to fit n elements between the limits.</returns>
         public bool AllocWeights(long lowerLimit, long upperLimit, int n)
         {
             // Call getWeightRanges() and then determine heuristically
@@ -129,13 +128,12 @@ namespace ICU4N.Impl.Coll
             return true;
         }
 
-        /**
-         * Given a set of ranges calculated by allocWeights(),
-         * iterate through the weights.
-         * The ranges are modified to keep the current iteration state.
-         *
-         * @return The next weight in the ranges, or 0xffffffff if there is none left.
-         */
+        /// <summary>
+        /// Given a set of ranges calculated by <see cref="AllocWeights(long, long, int)"/>,
+        /// iterate through the weights.
+        /// The ranges are modified to keep the current iteration state.
+        /// </summary>
+        /// <returns>The next weight in the ranges, or 0xffffffff if there is none left.</returns>
         public long NextWeight()
         {
             if (rangeIndex >= rangeCount)
@@ -163,7 +161,7 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /** @internal */
+        /// <internal/>
         private sealed class WeightRange : IComparable<WeightRange>
         {
             internal long Start { get; set; }
@@ -270,7 +268,7 @@ namespace ICU4N.Impl.Coll
             return weight - (1L << (8 * (4 - length)));
         }
 
-        /** @return number of usable byte values for byte idx */
+        /// <returns>Number of usable byte values for byte <paramref name="idx"/>.</returns>
         private int CountBytes(int idx)
         {
             return maxBytes[idx] - minBytes[idx] + 1;
@@ -325,11 +323,11 @@ namespace ICU4N.Impl.Coll
             range.Length = length;
         }
 
-        /**
-         * Takes two CE weights and calculates the
-         * possible ranges of weights between the two limits, excluding them.
-         * For weights with up to 4 bytes there are up to 2*4-1=7 ranges.
-         */
+        /// <summary>
+        /// Takes two CE weights and calculates the
+        /// possible ranges of weights between the two limits, excluding them.
+        /// For weights with up to 4 bytes there are up to 2*4-1=7 ranges.
+        /// </summary>
         private bool GetWeightRanges(long lowerLimit, long upperLimit)
         {
             Debug.Assert(lowerLimit != 0);

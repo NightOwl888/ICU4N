@@ -13,22 +13,28 @@ using Hangul = ICU4N.Impl.Normalizer2Impl.Hangul;
 namespace ICU4N.Impl.Coll
 {
     /// <summary>
-    /// Low-level CollationData builder.
+    /// Low-level <see cref="CollationData"/> builder.
     /// Takes (character, CE) pairs and builds them into runtime data structures.
     /// Supports characters with context prefixes and contraction suffixes.
     /// </summary>
     internal sealed class CollationDataBuilder // not final in C++
     {
-        /**
-         * Collation element modifier. Interface class for a modifier
-         * that changes a tailoring builder's temporary CEs to final CEs.
-         * Called for every non-special CE32 and every expansion CE.
-         */
+        /// <summary>
+        /// Collation element modifier. Interface class for a modifier
+        /// that changes a tailoring builder's temporary CEs to final CEs.
+        /// Called for every non-special CE32 and every expansion CE.
+        /// </summary>
         internal interface ICEModifier
         {
-            /** Returns a new CE to replace the non-special input CE32, or else Collation.NO_CE. */
+            /// <summary>
+            /// Returns a new CE to replace the non-special input CE32, or else <see cref="Collation.NO_CE"/>.
+            /// </summary>
+            /// <param name="ce32"></param>
+            /// <returns></returns>
             long ModifyCE32(int ce32);
-            /** Returns a new CE to replace the input CE, or else Collation.NO_CE. */
+            /// <summary>
+            /// Returns a new CE to replace the input CE, or else <see cref="Collation.NO_CE"/>.
+            /// </summary>
             long ModifyCE(long ce);
         }
 
@@ -96,14 +102,12 @@ namespace ICU4N.Impl.Coll
             return IsCompressibleLeadByte(((int)p).TripleShift(24));
         }
 
-        /**
-         * @return true if this builder has mappings (e.g., add() has been called)
-         */
+        /// <summary>
+        /// <c>true</c> if this builder has mappings (e.g., <see cref="Add(ICharSequence, ICharSequence, long[], int)"/> has been called)
+        /// </summary>
         internal bool HasMappings { get { return modified; } }
 
-        /**
-         * @return true if c has CEs in this builder
-         */
+        /// <returns><c>true</c> if c has CEs in this builder.</returns>
         internal bool IsAssigned(int c)
         {
             return Collation.IsAssignedCE32(trie.Get(c));
@@ -115,12 +119,15 @@ namespace ICU4N.Impl.Coll
             AddCE32(prefix, s, ce32);
         }
 
-        /**
-         * Encodes the ces as either the returned ce32 by itself,
-         * or by storing an expansion, with the returned ce32 referring to that.
-         *
-         * <p>add(p, s, ces, cesLength) = addCE32(p, s, encodeCEs(ces, cesLength))
-         */
+        /// <summary>
+        /// Encodes the ces as either the returned ce32 by itself,
+        /// or by storing an expansion, with the returned ce32 referring to that.
+        /// <para/>
+        /// <c>Add(p, s, ces, cesLength) = AddCE32(p, s, EncodeCEs(ces, cesLength))</c>
+        /// </summary>
+        /// <param name="ces"></param>
+        /// <param name="cesLength"></param>
+        /// <returns></returns>
         internal int EncodeCEs(long[] ces, int cesLength)
         {
             if (cesLength < 0 || cesLength > Collation.MAX_EXPANSION_LENGTH)
@@ -271,10 +278,10 @@ namespace ICU4N.Impl.Coll
             modified = true;
         }
 
-        /**
-         * Copies all mappings from the src builder, with modifications.
-         * This builder here must not be built yet, and should be empty.
-         */
+        /// <summary>
+        /// Copies all mappings from the src builder, with modifications.
+        /// This builder here must not be built yet, and should be empty.
+        /// </summary>
         internal void CopyFrom(CollationDataBuilder src, ICEModifier modifier)
         {
             if (!IsMutable)
@@ -359,15 +366,14 @@ namespace ICU4N.Impl.Coll
             BuildFastLatinTable(data);
         }
 
-        /**
-         * Looks up CEs for s and appends them to the ces array.
-         * Does not handle normalization: s should be in FCD form.
-         *
-         * Does not write completely ignorable CEs.
-         * Does not write beyond Collation.MAX_EXPANSION_LENGTH.
-         *
-         * @return incremented cesLength
-         */
+        /// <summary>
+        /// Looks up CEs for s and appends them to the ces array.
+        /// Does not handle normalization: s should be in FCD form.
+        /// <para/>
+        /// Does not write completely ignorable CEs.
+        /// Does not write beyond <see cref="Collation.MAX_EXPANSION_LENGTH"/>.
+        /// </summary>
+        /// <returns>Incremented cesLength.</returns>
         internal int GetCEs(ICharSequence s, long[] ces, int cesLength)
         {
             return GetCEs(s, 0, ces, cesLength);
@@ -386,15 +392,15 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /**
-         * Build-time context and CE32 for a code point.
-         * If a code point has contextual mappings, then the default (no-context) mapping
-         * and all conditional mappings are stored in a singly-linked list
-         * of ConditionalCE32, sorted by context strings.
-         *
-         * Context strings sort by prefix length, then by prefix, then by contraction suffix.
-         * Context strings must be unique and in ascending order.
-         */
+        /// <summary>
+        /// Build-time context and CE32 for a code point.
+        /// If a code point has contextual mappings, then the default (no-context) mapping
+        /// and all conditional mappings are stored in a singly-linked list
+        /// of ConditionalCE32, sorted by context strings.
+        /// <para/>
+        /// Context strings sort by prefix length, then by prefix, then by contraction suffix.
+        /// Context strings must be unique and in ascending order.
+        /// </summary>
         private sealed class ConditionalCE32
         {
             internal ConditionalCE32(string ct, int ce)
@@ -409,35 +415,39 @@ namespace ICU4N.Impl.Coll
             internal bool HasContext { get { return Context.Length > 1; } }
             internal int PrefixLength { get { return Context[0]; } }
 
-            /**
-             * "\0" for the first entry for any code point, with its default CE32.
-             *
-             * Otherwise one unit with the length of the prefix string,
-             * then the prefix string, then the contraction suffix.
-             */
+            /// <summary>
+            /// "\0" for the first entry for any code point, with its default CE32.
+            /// <para/>
+            /// Otherwise one unit with the length of the prefix string,
+            /// then the prefix string, then the contraction suffix.
+            /// </summary>
             internal string Context { get; set; }
-            /**
-             * CE32 for the code point and its context.
-             * Can be special (e.g., for an expansion) but not contextual (prefix or contraction tag).
-             */
+
+            /// <summary>
+            /// CE32 for the code point and its context.
+            /// Can be special (e.g., for an expansion) but not contextual (prefix or contraction tag).
+            /// </summary>
             internal int Ce32 { get; set; }
-            /**
-             * Default CE32 for all contexts with this same prefix.
-             * Initially NO_CE32. Set only while building runtime data structures,
-             * and only on one of the nodes of a sub-list with the same prefix.
-             */
+
+            /// <summary>
+            /// Default CE32 for all contexts with this same prefix.
+            /// Initially <see cref="Collation.NO_CE32"/>. Set only while building runtime data structures,
+            /// and only on one of the nodes of a sub-list with the same prefix.
+            /// </summary>
             internal int DefaultCE32 { get; set; }
-            /**
-             * CE32 for the built contexts.
-             * When fetching CEs from the builder, the contexts are built into their runtime form
-             * so that the normal collation implementation can process them.
-             * The result is cached in the list head. It is reset when the contexts are modified.
-             */
+
+            /// <summary>
+            /// CE32 for the built contexts.
+            /// When fetching CEs from the builder, the contexts are built into their runtime form
+            /// so that the normal collation implementation can process them.
+            /// The result is cached in the list head. It is reset when the contexts are modified.
+            /// </summary>
             internal int BuiltCE32 { get; set; }
-            /**
-             * Index of the next ConditionalCE32.
-             * Negative for the end of the list.
-             */
+
+            /// <summary>
+            /// Index of the next <see cref="ConditionalCE32"/>.
+            /// Negative for the end of the list.
+            /// </summary>
             internal int Next { get; set; }
         }
 
@@ -730,11 +740,11 @@ namespace ICU4N.Impl.Coll
             return ce32;
         }
 
-        /**
-         * Copies base contractions to a list of ConditionalCE32.
-         * Sets cond.next to the index of the first new item
-         * and returns the index of the last new item.
-         */
+        /// <summary>
+        /// Copies base contractions to a list of <see cref="ConditionalCE32"/>.
+        /// Sets <c>cond.Next</c> to the index of the first new item
+        /// and returns the index of the last new item.
+        /// </summary>
         private int CopyContractionsFromBaseCE32(StringBuilder context, int c, int ce32,
                 ConditionalCE32 cond)
         {
@@ -1408,25 +1418,25 @@ namespace ICU4N.Impl.Coll
             return Hangul.JAMO_T_BASE + 1 + i;
         }
 
-        /**
-         * Build-time collation element and character iterator.
-         * Uses the runtime CollationIterator for fetching CEs for a string
-         * but reads from the builder's unfinished data structures.
-         * In particular, this class reads from the unfinished trie
-         * and has to avoid CollationIterator.nextCE() and redirect other
-         * calls to data.getCE32() and data.getCE32FromSupplementary().
-         *
-         * We do this so that we need not implement the collation algorithm
-         * again for the builder and make it behave exactly like the runtime code.
-         * That would be more difficult to test and maintain than this indirection.
-         *
-         * Some CE32 tags (for example, the DIGIT_TAG) do not occur in the builder data,
-         * so the data accesses from those code paths need not be modified.
-         *
-         * This class iterates directly over whole code points
-         * so that the CollationIterator does not need the finished trie
-         * for handling the LEAD_SURROGATE_TAG.
-         */
+        /// <summary>
+        /// Build-time collation element and character iterator.
+        /// Uses the runtime <see cref="CollationIterator"/> for fetching CEs for a string
+        /// but reads from the builder's unfinished data structures.
+        /// <para/>
+        /// In particular, this class reads from the unfinished trie
+        /// and has to avoid <see cref="CollationIterator.NextCE()"/> and redirect other
+        /// calls to data.GetCE32() and data.GetCE32FromSupplementary().
+        /// <para/>
+        /// We do this so that we need not implement the collation algorithm
+        /// again for the builder and make it behave exactly like the runtime code.
+        /// That would be more difficult to test and maintain than this indirection.
+        /// Some CE32 tags (for example, the DIGIT_TAG) do not occur in the builder data,
+        /// so the data accesses from those code paths need not be modified.
+        /// <para/>
+        /// This class iterates directly over whole code points
+        /// so that the <see cref="CollationIterator"/> does not need the finished trie
+        /// for handling the LEAD_SURROGATE_TAG.
+        /// </summary>
         private sealed class DataBuilderCollationIterator : CollationIterator
         {
             internal DataBuilderCollationIterator(CollationDataBuilder b, CollationData newData)
@@ -1583,7 +1593,9 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /** @see Collation.BUILDER_DATA_TAG */
+        /// <summary>
+        /// <see cref="Collation.BUILDER_DATA_TAG"/>
+        /// </summary>
         private static readonly int IS_BUILDER_JAMO_CE32 = 0x100;
 
         private Normalizer2Impl nfcImpl;

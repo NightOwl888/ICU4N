@@ -97,7 +97,7 @@ namespace ICU4N.Impl.Coll
             return tailoring;
         }
 
-        /// <summary>Implements CollationRuleParser.Sink.</summary>
+        /// <summary>Implements <see cref="CollationRuleParser.Sink"/>.</summary>
         internal override void AddReset(CollationStrength strength, ICharSequence str)
         {
             Debug.Assert(str.Length != 0);
@@ -491,7 +491,7 @@ namespace ICU4N.Impl.Coll
             return ce;
         }
 
-        /// <summary>Implements CollationRuleParser.Sink.</summary>
+        /// <summary>Implements <see cref="CollationRuleParser.Sink"/>.</summary>
         internal override void AddRelation(CollationStrength strength, ICharSequence prefix, ICharSequence str, string extension) // ICU4N specific - changed extension from ICharSequence to string
         {
             StringCharSequence nfdPrefix;

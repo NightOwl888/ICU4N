@@ -3,7 +3,39 @@ using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll
 {
-    public sealed class CollationFCD
+    /// <summary>
+    /// Data and functions for the FCD check fast path.
+    /// <para/>
+    /// The fast path looks at a pair of 16-bit code units and checks
+    /// whether there is an FCD boundary between them;
+    /// there is if the first unit has a trailing ccc=0 (!hasTccc(first))
+    /// or the second unit has a leading ccc=0 (!hasLccc(second)),
+    /// or both.
+    /// When the fast path finds a possible non-boundary,
+    /// then the FCD check slow path looks at the actual sequence of FCD values.
+    /// <para/>
+    /// This is a pure optimization.
+    /// The fast path must at least find all possible non-boundaries.
+    /// If the fast path is too pessimistic, it costs performance.
+    /// <para/>
+    /// For a pair of BMP characters, the fast path tests are precise (1 bit per character).
+    /// <para/>
+    /// For a supplementary code point, the two units are its lead and trail surrogates.
+    /// We set hasTccc(lead)=true if any of its 1024 associated supplementary code points
+    /// has lccc!=0 or tccc!=0.
+    /// We set hasLccc(trail)=true for all trail surrogates.
+    /// As a result, we leave the fast path if the lead surrogate might start a
+    /// supplementary code point that is not FCD-inert.
+    /// (So the fast path need not detect that there is a surrogate pair,
+    /// nor look ahead to the next full code point.)
+    /// <para/>
+    /// HasLccc(lead)=true if any of its 1024 associated supplementary code points
+    /// has lccc!=0, for fast boundary checking between BMP &amp; supplementary.
+    /// <para/>
+    /// HasTccc(trail)=false:
+    /// It should only be tested for unpaired trail surrogates which are FCD-inert.
+    /// </summary>
+    public static class CollationFCD // ICU4N specific - Changed from sealed to static, since all members are static
     {
         public static bool HasLccc(int c)
         {
@@ -44,39 +76,37 @@ namespace ICU4N.Impl.Coll
                 (lcccBits[i] & (1 << (c & 0x1f))) != 0;
         }
 
-        /**
-         * Tibetan composite vowel signs (U+0F73, U+0F75, U+0F81)
-         * must be decomposed before reaching the core collation code,
-         * or else some sequences including them, even ones passing the FCD check,
-         * do not yield canonically equivalent results.
-         *
-         * This is a fast and imprecise test.
-         *
-         * @param c a code point
-         * @return true if c is U+0F73, U+0F75 or U+0F81 or one of several other Tibetan characters
-         */
+        /// <summary>
+        /// Tibetan composite vowel signs (U+0F73, U+0F75, U+0F81)
+        /// must be decomposed before reaching the core collation code,
+        /// or else some sequences including them, even ones passing the FCD check,
+        /// do not yield canonically equivalent results.
+        /// <para/>
+        /// This is a fast and imprecise test.
+        /// </summary>
+        /// <param name="c">A code point.</param>
+        /// <returns><c>true</c> if c is U+0F73, U+0F75 or U+0F81 or one of several other Tibetan characters.</returns>
         internal static bool MaybeTibetanCompositeVowel(int c)
         {
             return (c & 0x1fff01) == 0xf01;
         }
 
-        /**
-         * Tibetan composite vowel signs (U+0F73, U+0F75, U+0F81)
-         * must be decomposed before reaching the core collation code,
-         * or else some sequences including them, even ones passing the FCD check,
-         * do not yield canonically equivalent results.
-         *
-         * They have distinct lccc/tccc combinations: 129/130 or 129/132.
-         *
-         * @param fcd16 the FCD value (lccc/tccc combination) of a code point
-         * @return true if fcd16 is from U+0F73, U+0F75 or U+0F81
-         */
+        /// <summary>
+        /// Tibetan composite vowel signs (U+0F73, U+0F75, U+0F81)
+        /// must be decomposed before reaching the core collation code,
+        /// or else some sequences including them, even ones passing the FCD check,
+        /// do not yield canonically equivalent results.
+        /// <para/>
+        /// They have distinct lccc/tccc combinations: 129/130 or 129/132.
+        /// </summary>
+        /// <param name="fcd16">The FCD value (lccc/tccc combination) of a code point.</param>
+        /// <returns><c>true</c> if fcd16 is from U+0F73, U+0F75 or U+0F81.</returns>
         internal static bool IsFCD16OfTibetanCompositeVowel(int fcd16)
         {
             return fcd16 == 0x8182 || fcd16 == 0x8184;
         }
 
-        // CollationFCD();  // No instantiation.
+        // ICU4N specific - removed private constructor and made class static
 
         // TODO: machine-generate by: icu/tools/unicode/c/genuca/genuca.cpp
 

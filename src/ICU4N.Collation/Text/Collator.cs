@@ -1,44 +1,43 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Impl.Coll;
-using ICU4N.Globalization;
 using ICU4N.Support;
 using ICU4N.Support.Text;
-using ICU4N.Text;
 using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
-using System.Text;
 using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: De-nest?
 
 namespace ICU4N.Text
 {
-    /// <summary>Use this to set the strength of a Collator object.
-	///  This is also used to determine the strength of sort keys
-	///  generated from Collator objects
-	/// The usual strength for most locales (except Japanese) is tertiary.
-	/// Quaternary strength is useful when combined with shifted setting
-	/// for alternate handling attribute and for JIS x 4061 collation,
-	/// when it is used to distinguish between Katakana and Hiragana
-	/// (this is achieved by setting the <see cref="RuleBasedCollator.IsHiraganaQuaternary"/> to true.
-	/// Otherwise, quaternary level is affected only by the number of
-	/// non ignorable code points in the string.
-	/// </summary>
+    /// <summary>
+    /// Use this to set the strength of a <see cref="Collator"/> object.
+    /// This is also used to determine the strength of sort keys
+    /// generated from <see cref="Collator"/> objects
+    /// The usual strength for most locales (except Japanese) is tertiary.
+    /// Quaternary strength is useful when combined with shifted setting
+    /// for alternate handling attribute and for JIS x 4061 collation,
+    /// when it is used to distinguish between Katakana and Hiragana
+    /// (this is achieved by setting the <see cref="RuleBasedCollator.IsHiraganaQuaternary"/> to true.
+    /// Otherwise, quaternary level is affected only by the number of
+    /// non ignorable code points in the string.
+    /// </summary>
     public enum CollationStrength
     {
         
-		//Default = -1,
+        //Default = -1,
 
         /// <summary>
-		/// Strongest collator strength value. Typically used to denote differences
+        /// Strongest collator strength value. Typically used to denote differences
         /// between base characters. See <see cref="Collator"/> documentation for more explanation.
         /// <para/>
         /// Base letter represents a primary difference.  Set comparison
         /// level to Primary to ignore secondary and tertiary differences.
         /// Example of primary difference, "abc" &lt; "abd"
-		/// </summary>
+        /// </summary>
         /// <seealso cref="Collator.Strength"/>
         /// <stable>ICU 2.8</stable>
         Primary = 0,
@@ -226,7 +225,7 @@ namespace ICU4N.Text
     /// <remarks>
     /// A Collator is thread-safe only when frozen. See <see cref="IsFrozen"/> and <see cref="IFreezable{T}"/>.
     /// <para/>
-    /// Following the <a href=http://www.unicode.org>Unicode Consortium</a>'s specifications for the
+    /// Following the <a href="http://www.unicode.org">Unicode Consortium</a>'s specifications for the
     /// <a href="http://www.unicode.org/unicode/reports/tr10/">Unicode Collation Algorithm (UCA)</a>, 
     /// there are 5 different levels of strength used in comparisons:
     /// <list type="table">
@@ -243,7 +242,7 @@ namespace ICU4N.Text
     ///         <term><see cref="CollationStrength.Secondary"/> strength:</term>
     ///         <description>
     ///             Accents in the characters are considered secondary
-    ///             differences (for example, "as" &lt; "&agrave;s" &lt; "at"). Other
+    ///             differences (for example, "as" &lt; "&amp;agrave;s" &lt; "at"). Other
     ///             differences between letters can also be considered secondary differences, depending
     ///             on the language. A secondary difference is ignored when there is a
     ///             primary difference anywhere in the strings.
@@ -254,7 +253,7 @@ namespace ICU4N.Text
     ///         <description>
     ///             Upper and lower case differences in characters are
     ///             distinguished at tertiary strength (for example, "ao" &lt; "Ao" &lt;
-    ///             "a&ograve;"). In addition, a variant of a letter differs from the base
+    ///             "a&amp;ograve;"). In addition, a variant of a letter differs from the base
     ///             form on the tertiary strength (such as "A" and "Ⓐ"). Another
     ///             example is the difference between large and small Kana. A tertiary difference is ignored
     ///             when there is a primary or secondary difference anywhere in the strings.
@@ -320,22 +319,22 @@ namespace ICU4N.Text
     ///     // Compare two strings in the default locale
     ///     Collator myCollator = Collator.GetInstance();
     ///     myCollator.Decomposition = NormalizationMode.NoDecomposition;
-    ///     if (myCollator.Compare("&agrave;&#92;u0325", "a&#92;u0325&#768;") != 0)
+    ///     if (myCollator.Compare("&amp;agrave;&#92;u0325", "a&#92;u0325&#768;") != 0)
     ///     {
-    ///         Console.WriteLine("&agrave;&#92;u0325 is not equals to a&#92;u0325&#768; without decomposition");
+    ///         Console.WriteLine("&amp;agrave;&#92;u0325 is not equals to a&#92;u0325&#768; without decomposition");
     ///         myCollator.Decomposition = NormalizationMode.CanonicalDecomposition;
-    ///         if (myCollator.Compare("&agrave;&#92;u0325", "a&#92;u0325&#768;") != 0)
+    ///         if (myCollator.Compare("&amp;agrave;&#92;u0325", "a&#92;u0325&#768;") != 0)
     ///         {
-    ///             Console.WriteLine("Error: &agrave;&#92;u0325 should be equals to a&#92;u0325&#768; with decomposition");
+    ///             Console.WriteLine("Error: &amp;agrave;&#92;u0325 should be equals to a&#92;u0325&#768; with decomposition");
     ///         }
     ///         else
     ///         {
-    ///             Console.WriteLine("&agrave;&#92;u0325 is equals to a&#92;u0325&#768; with decomposition");
+    ///             Console.WriteLine("&amp;agrave;&#92;u0325 is equals to a&#92;u0325&#768; with decomposition");
     ///         }
     ///     }
     ///     else
     ///     {
-    ///         Console.WriteLine("Error: &agrave;&#92;u0325 should be not equals to a&#92;u0325&#768; without decomposition");
+    ///         Console.WriteLine("Error: &amp;agrave;&#92;u0325 should be not equals to a&#92;u0325&#768; without decomposition");
     ///     }
     /// </code>
     /// </remarks>
@@ -351,9 +350,9 @@ namespace ICU4N.Text
         //// public data members ---------------------------------------------------
 
         /// <summary>
-		/// Strongest collator strength value. Typically used to denote differences
+        /// Strongest collator strength value. Typically used to denote differences
         /// between base characters. See class documentation for more explanation.
-		/// </summary>
+        /// </summary>
         /// <seealso cref="Collator.Strength"/>
         /// <stable>ICU 2.8</stable>
         public const CollationStrength Primary = CollationStrength.Primary; // ICU4N: changed API from public to internal, since we have CollationStrength enum
@@ -469,8 +468,8 @@ namespace ICU4N.Text
         /// The base class checks for null and for equal types.
         /// Subclasses should override.
         /// </summary>
-        /// <param name="obj">the <see cref="Collator"/> to compare to.</param>
-        /// <returns>true if this <see cref="Collator"/> has exactly the same collation behavior as obj, false otherwise.</returns>
+        /// <param name="obj">The <see cref="Collator"/> to compare to.</param>
+        /// <returns><c>true</c> if this <see cref="Collator"/> has exactly the same collation behavior as <paramref name="obj"/>, <c>false</c> otherwise.</returns>
         /// <stable>ICU 2.8</stable>
         public override bool Equals(object obj)
         {
@@ -628,7 +627,7 @@ namespace ICU4N.Text
         /// <seealso cref="CultureInfo.CurrentCulture"/>
         /// <seealso cref="GetInstance(CultureInfo)"/>
         /// <stable>ICU 2.8</stable>
-        public static Collator GetInstance()
+        public static Collator GetInstance() // ICU4N TODO: API - make this method's return type generic to eliminate casting with RuleBasedCollator
         {
             return GetInstance(ULocale.GetDefault());
         }
@@ -783,19 +782,19 @@ namespace ICU4N.Text
                 }
                 catch (MissingManifestResourceException e)
                 {
-                    ///CLOVER:OFF
+                    ////CLOVER:OFF
                     throw e;
-                    ///CLOVER:ON
+                    ////CLOVER:ON
                 }
                 catch (Exception e)
                 {
-                    ///CLOVER:OFF
+                    ////CLOVER:OFF
                     if (DEBUG)
                     {
                         e.PrintStackTrace();
                     }
                     throw new ICUException(e);
-                    ///CLOVER:ON
+                    ////CLOVER:ON
                 }
             }
             return shim;
@@ -1052,7 +1051,7 @@ namespace ICU4N.Text
         /// <seealso cref="GetInstance(CultureInfo)"/>
         /// <seealso cref="GetInstance()"/>
         /// <stable>ICU 3.0</stable>
-        public static Collator GetInstance(ULocale locale)
+        public static Collator GetInstance(ULocale locale) // ICU4N TODO: API - make this method's return type generic to eliminate casting with RuleBasedCollator
         {
             // fetching from service cache is faster than instantiation
             if (locale == null)
@@ -1090,7 +1089,7 @@ namespace ICU4N.Text
         /// <seealso cref="GetInstance(CultureInfo)"/>
         /// <seealso cref="GetInstance()"/>
         /// <stable>ICU 2.8</stable>
-        public static Collator GetInstance(CultureInfo locale)
+        public static Collator GetInstance(CultureInfo locale) // ICU4N TODO: API - make this method's return type generic to eliminate casting with RuleBasedCollator
         {
             return GetInstance(ULocale.ForLocale(locale));
         }
@@ -1188,20 +1187,20 @@ namespace ICU4N.Text
         /// the resource data.
         /// </summary>
         /// <since>ICU 3.0</since>
-        private static readonly string[] KEYWORDS = { "collation" };
+        private static readonly string[] KEYWORDS = { "collation" }; // ICU4N TODO: API - Rename Keywords ? Possible collision
 
         /// <summary>
         /// The resource name for this service.  Note that this is not the same as
         /// the keyword for this service.
         /// </summary>
         /// <since>ICU 3.0</since>
-        private static readonly string RESOURCE = "collations";
+        private static readonly string RESOURCE = "collations"; // ICU4N TODO: API - Rename Resource
 
         /// <summary>
         /// The resource bundle base name for this service.
         /// </summary>
         /// <since>ICU 3.0</since>
-        private static readonly string BASE = ICUData.ICU_COLLATION_BASE_NAME;
+        private static readonly string BASE = ICUData.ICU_COLLATION_BASE_NAME; // ICU4N TODO: API - Rename Base
 
         /// <summary>
         /// <icu/> Returns a list of all possible keywords that are relevant to
