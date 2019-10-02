@@ -7,7 +7,7 @@ using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: API de-nest?
 namespace ICU4N.Util
 {
     /// <summary>
-    /// Exemplar set types for <see cref="LocaleData.GetExemplarSet(PatternOptions, int)"/>.
+    /// Exemplar set types for <see cref="LocaleData.GetExemplarSet(PatternOptions, ExemplarSetType)"/>.
     /// Corresponds to the CLDR exemplars in
     /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
     /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
@@ -112,11 +112,11 @@ namespace ICU4N.Util
     public sealed class LocaleData
     {
         //    private static final String EXEMPLAR_CHARS      = "ExemplarCharacters";
-        private static readonly string MEASUREMENT_SYSTEM = "MeasurementSystem";
-        private static readonly string PAPER_SIZE = "PaperSize";
-        private static readonly string LOCALE_DISPLAY_PATTERN = "localeDisplayPattern";
-        private static readonly string PATTERN = "pattern";
-        private static readonly string SEPARATOR = "separator";
+        private const string MEASUREMENT_SYSTEM = "MeasurementSystem";
+        private const string PAPER_SIZE = "PaperSize";
+        private const string LOCALE_DISPLAY_PATTERN = "localeDisplayPattern";
+        private const string PATTERN = "pattern";
+        private const string SEPARATOR = "separator";
         private bool noSubstitute;
         private ICUResourceBundle bundle;
         private ICUResourceBundle langBundle;
