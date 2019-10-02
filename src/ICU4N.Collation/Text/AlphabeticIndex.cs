@@ -613,7 +613,7 @@ namespace ICU4N.Text
         /// </summary>
         private void AddIndexExemplars(ULocale locale)
         {
-            UnicodeSet exemplars = LocaleData.GetExemplarSet(locale, 0, LocaleData.ES_INDEX);
+            UnicodeSet exemplars = LocaleData.GetExemplarSet(locale, 0, ExemplarSetType.Index);
             if (exemplars != null)
             {
                 initialLabels.AddAll(exemplars);
@@ -622,7 +622,7 @@ namespace ICU4N.Text
 
             // The locale data did not include explicit Index characters.
             // Synthesize a set of them from the locale's standard exemplar characters.
-            exemplars = LocaleData.GetExemplarSet(locale, 0, LocaleData.ES_STANDARD);
+            exemplars = LocaleData.GetExemplarSet(locale, 0, ExemplarSetType.Standard);
 
             exemplars = exemplars.CloneAsThawed();
             // question: should we add auxiliary exemplars?

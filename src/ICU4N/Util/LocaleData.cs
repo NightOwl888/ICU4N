@@ -7,6 +7,67 @@ using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: API de-nest?
 namespace ICU4N.Util
 {
     /// <summary>
+    /// Exemplar set types for <see cref="LocaleData.GetExemplarSet(PatternOptions, int)"/>.
+    /// Corresponds to the CLDR exemplars in
+    /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+    /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+    /// </summary>
+    public enum ExemplarSetType
+    {
+        /// <summary>
+        /// EXType for <see cref="LocaleData.GetExemplarSet(PatternOptions, ExemplarSetType)"/>.
+        /// Corresponds to the 'main' (aka 'standard') CLDR exemplars in
+        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        Standard = 0,
+
+        /// <summary>
+        /// EXType for <see cref="LocaleData.GetExemplarSet(PatternOptions, ExemplarSetType)"/>.
+        /// Corresponds to the 'auxiliary' CLDR exemplars in
+        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        /// </summary>
+        /// <stable>ICU 3.4</stable>
+        Auxiliary = 1,
+
+        /// <summary>
+        /// EXType for <see cref="LocaleData.GetExemplarSet(PatternOptions, ExemplarSetType)"/>.
+        /// Corresponds to the 'index' CLDR exemplars in
+        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        Index = 2,
+
+        ///// <summary>
+        ///// EXType for <see cref="LocaleData.GetExemplarSet(PatternOptions, ExemplarSetType)"/>.
+        ///// Corresponds to the 'currencySymbol' CLDR exemplars in
+        ///// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        ///// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        ///// Note: This type is no longer supported.
+        ///// </summary>
+        //[Obsolete("ICU 51 This type is no longer supported.")]
+        //Currency = 3,
+
+        /// <summary>
+        /// Corresponds to the 'punctuation' CLDR exemplars in
+        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
+        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
+        /// EXType for <see cref="LocaleData.GetExemplarSet(PatternOptions, ExemplarSetType)"/>.
+        /// </summary>
+        /// <stable>ICU 49</stable>
+        Punctuation = 4,
+
+        ///// <summary>
+        ///// Count of EXTypes for <see cref="GetExemplarSet(PatternOptions, ExemplarSetType)"/>.
+        ///// </summary>
+        //[Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        //Count = 5; // ICU4N TODO: API - Make enum ExemplarSetType
+    }
+
+    /// <summary>
     /// A class for accessing miscellaneous data in the locale bundles
     /// </summary>
     /// <author>ram</author>
@@ -23,57 +84,7 @@ namespace ICU4N.Util
         private ICUResourceBundle bundle;
         private ICUResourceBundle langBundle;
 
-        /// <summary>
-        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
-        /// Corresponds to the 'main' (aka 'standard') CLDR exemplars in
-        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-        /// </summary>
-        /// <stable>ICU 3.4</stable>
-        public static readonly int ES_STANDARD = 0; // ICU4N TODO: API - Make enum ExemplarSetType
-
-        /// <summary>
-        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
-        /// Corresponds to the 'auxiliary' CLDR exemplars in
-        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-        /// </summary>
-        /// <stable>ICU 3.4</stable>
-        public static readonly int ES_AUXILIARY = 1; // ICU4N TODO: API - Make enum ExemplarSetType
-
-        /// <summary>
-        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
-        /// Corresponds to the 'index' CLDR exemplars in
-        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-        /// </summary>
-        /// <stable>ICU 4.4</stable>
-        public static readonly int ES_INDEX = 2; // ICU4N TODO: API - Make enum ExemplarSetType
-
-        /// <summary>
-        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
-        /// Corresponds to the 'currencySymbol' CLDR exemplars in
-        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-        /// Note: This type is no longer supported.
-        /// </summary>
-        [Obsolete("ICU 51 This type is no longer supported.")]
-        public static readonly int ES_CURRENCY = 3; // ICU4N TODO: API - Make enum ExemplarSetType
-
-        /// <summary>
-        /// Corresponds to the 'punctuation' CLDR exemplars in
-        /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
-        /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
-        /// EXType for <see cref="GetExemplarSet(PatternOptions, int)"/>.
-        /// </summary>
-        /// <stable>ICU 49</stable>
-        public static readonly int ES_PUNCTUATION = 4; // ICU4N TODO: API - Make enum ExemplarSetType
-
-        /// <summary>
-        /// Count of EXTypes for <see cref="GetExemplarSet(PatternOptions, int)"/>.
-        /// </summary>
-        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        public static readonly int ES_COUNT = 5; // ICU4N TODO: API - Make enum ExemplarSetType
+        // ICU4N specific - moved ES_ (exemplar set type) constants to ExemplarSetType enum and de-nested
 
         /// <summary>
         /// Delimiter type for <see cref="GetDelimiter(int)"/>.
@@ -112,8 +123,8 @@ namespace ICU4N.Util
 
         /// <summary>
         /// Returns the set of exemplar characters for a locale. Equivalent to calling 
-        /// <see cref="GetExemplarSet(ULocale, PatternOptions, int)"/> with the
-        /// extype == <see cref="ES_STANDARD"/>.
+        /// <see cref="GetExemplarSet(ULocale, PatternOptions, ExemplarSetType)"/> with the
+        /// extype == <see cref="ExemplarSetType.Standard"/>.
         /// </summary>
         /// <param name="locale">Locale for which the exemplar character set
         /// is to be retrieved.</param>
@@ -129,12 +140,12 @@ namespace ICU4N.Util
         /// <stable>ICU 3.0</stable>
         public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options)
         {
-            return LocaleData.GetInstance(locale).GetExemplarSet(options, ES_STANDARD);
+            return LocaleData.GetInstance(locale).GetExemplarSet(options, ExemplarSetType.Standard);
         }
 
         /// <summary>
         /// Returns the set of exemplar characters for a <paramref name="locale"/>.
-        /// Equivalent to calling <c>new LocaleData(locale)</c>. <see cref="GetExemplarSet(PatternOptions, int)"/>.
+        /// Equivalent to calling <c>new LocaleData(locale)</c>. <see cref="GetExemplarSet(PatternOptions, ExemplarSetType)"/>.
         /// </summary>
         /// <param name="locale">Locale for which the exemplar character set
         /// is to be retrieved.</param>
@@ -146,10 +157,12 @@ namespace ICU4N.Util
         /// <see cref="PatternOptions.IgnoreSpace"/> bit is always set, regardless of the
         /// value of <paramref name="options"/>.
         /// </param>
-        /// <param name="extype">The type of exemplar character set to retrieve.</param>
+        /// <param name="extype">The type of exemplar set to be retrieved,
+        /// <see cref="ExemplarSetType.Standard"/>, <see cref="ExemplarSetType.Index"/>, 
+        /// <see cref="ExemplarSetType.Auxiliary"/>, or <see cref="ExemplarSetType.Punctuation"/>.</param>
         /// <returns>The set of exemplar characters for the given <paramref name="locale"/>.</returns>
         /// <stable>ICU 3.0</stable>
-        public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options, int extype) // ICU4N TODO: API - make extype into enum ExemplarSetType
+        public static UnicodeSet GetExemplarSet(ULocale locale, PatternOptions options, ExemplarSetType extype)
         {
             return LocaleData.GetInstance(locale).GetExemplarSet(options, extype);
         }
@@ -167,7 +180,8 @@ namespace ICU4N.Util
         /// value of <paramref name="options"/>.
         /// </param>
         /// <param name="extype">The type of exemplar set to be retrieved,
-        /// <see cref="ES_STANDARD"/>, <see cref="ES_INDEX"/>, <see cref="ES_AUXILIARY"/>, or <see cref="ES_PUNCTUATION"/></param>
+        /// <see cref="ExemplarSetType.Standard"/>, <see cref="ExemplarSetType.Index"/>, 
+        /// <see cref="ExemplarSetType.Auxiliary"/>, or <see cref="ExemplarSetType.Punctuation"/>.</param>
         /// <returns>
         /// The set of exemplar characters for the given locale.
         /// If there is nothing available for the locale,
@@ -176,7 +190,7 @@ namespace ICU4N.Util
         /// </returns>
         /// <exception cref="IndexOutOfRangeException">If <paramref name="extype"/> is invalid.</exception>
         /// <stable>ICU 3.4</stable>
-        public UnicodeSet GetExemplarSet(PatternOptions options, int extype) // ICU4N TODO: API - make extype into enum ExemplarSetType
+        public UnicodeSet GetExemplarSet(PatternOptions options, ExemplarSetType extype)
         {
             string[] exemplarSetTypes = {
                     "ExemplarCharacters",
@@ -186,17 +200,18 @@ namespace ICU4N.Util
                     "ExemplarCharactersPunctuation"
             };
 
-#pragma warning disable 612, 618
-            if (extype == ES_CURRENCY)
-#pragma warning restore 612, 618
-            {
-                // currency symbol exemplar is no longer available
-                return noSubstitute ? null : UnicodeSet.Empty;
-            }
+            // ICU4N: Currency was never supported in .NET
+//#pragma warning disable 612, 618
+//            if (extype == ES_CURRENCY)
+//#pragma warning restore 612, 618
+//            {
+//                // currency symbol exemplar is no longer available
+//                return noSubstitute ? null : UnicodeSet.Empty;
+//            }
 
             try
             {
-                string aKey = exemplarSetTypes[extype]; // will throw an out-of-bounds exception
+                string aKey = exemplarSetTypes[(int)extype]; // will throw an out-of-bounds exception
                 ICUResourceBundle stringBundle = (ICUResourceBundle)bundle.Get(aKey);
 
                 if (noSubstitute && !bundle.IsRoot && stringBundle.IsRoot)
