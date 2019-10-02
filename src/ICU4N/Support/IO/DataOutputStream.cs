@@ -299,7 +299,16 @@ namespace ICU4N.Support.IO
 
         public void Dispose()
         {
-            @out.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                @out.Dispose();
+            }
         }
 
         #endregion
