@@ -16,99 +16,99 @@ namespace ICU4N.Text
         // Data members
         //----------------------------------------------------------------------
 
-        /**
-         * PUBLIC data member.
-         * A Vector of RuleBasedTransliterator.Data objects, one for each discrete group
-         * of rules in the rule set
-         */
+        /// <summary>
+        /// PUBLIC data member.
+        /// An <see cref="IList{Data}"/>, one for each discrete group
+        /// of rules in the rule set
+        /// </summary>
 #pragma warning disable 612, 618
         public IList<Data> DataVector { get; set; }
 #pragma warning restore 612, 618
 
-        /**
-         * PUBLIC data member.
-         * A Vector of Strings containing all of the ID blocks in the rule set
-         */
+        /// <summary>
+        /// PUBLIC data member.
+        /// An <see cref="IList{String}"/> containing all of the ID blocks in the rule set
+        /// </summary>
         public IList<string> IdBlockVector { get; set; }
 
-        /**
-         * The current data object for which we are parsing rules
-         */
+        /// <summary>
+        /// The current data object for which we are parsing rules
+        /// </summary>
 #pragma warning disable 612, 618
         private Data curData;
 #pragma warning restore 612, 618
 
-        /**
-         * PUBLIC data member containing the parsed compound filter, if any.
-         */
+        /// <summary>
+        /// PUBLIC data member containing the parsed compound filter, if any.
+        /// </summary>
         public UnicodeSet CompoundFilter { get; set; }
 
 
         private TransliterationDirection direction;
 
-        /**
-         * Temporary symbol table used during parsing.
-         */
+        /// <summary>
+        /// Temporary symbol table used during parsing.
+        /// </summary>
         private ParseData parseData;
 
-        /**
-         * Temporary vector of set variables.  When parsing is complete, this
-         * is copied into the array data.variables.  As with data.variables,
-         * element 0 corresponds to character data.variablesBase.
-         */
-        private List<Object> variablesVector;
+        /// <summary>
+        /// Temporary vector of set variables.  When parsing is complete, this
+        /// is copied into the array <see cref="Data.variables"/>.  As with <see cref="Data.variables"/>,
+        /// element 0 corresponds to character <see cref="Data.variablesBase"/>.
+        /// </summary>
+        private IList<object> variablesVector;
 
-        /**
-         * Temporary table of variable names.  When parsing is complete, this is
-         * copied into data.variableNames.
-         */
+        /// <summary>
+        /// Temporary table of variable names.  When parsing is complete, this is
+        /// copied into <see cref="Data.variableNames"/>.
+        /// </summary>
         private IDictionary<string, char[]> variableNames;
 
-        /**
-         * String of standins for segments.  Used during the parsing of a single
-         * rule.  segmentStandins.charAt(0) is the standin for "$1" and corresponds
-         * to StringMatcher object segmentObjects.elementAt(0), etc.
-         */
+        /// <summary>
+        /// String of standins for segments.  Used during the parsing of a single
+        /// rule.  <see cref="segmentStandins"/>[0] is the standin for "$1" and corresponds
+        /// to <see cref="StringMatcher"/> object <see cref="segmentObjects"/>[0], etc.
+        /// </summary>
         private StringBuffer segmentStandins;
 
-        /**
-         * Vector of StringMatcher objects for segments.  Used during the
-         * parsing of a single rule.
-         * segmentStandins.charAt(0) is the standin for "$1" and corresponds
-         * to StringMatcher object segmentObjects.elementAt(0), etc.
-         */
+        /// <summary>
+        /// Vector of <see cref="StringMatcher"/> objects for segments.  Used during the
+        /// parsing of a single rule.
+        /// <see cref="segmentStandins"/>[0] is the standin for "$1" and corresponds
+        /// to <see cref="StringMatcher"/> object <see cref="segmentObjects"/>[0], etc.
+        /// </summary>
         private IList<StringMatcher> segmentObjects;
 
-        /**
-         * The next available stand-in for variables.  This starts at some point in
-         * the private use area (discovered dynamically) and increments up toward
-         * <code>variableLimit</code>.  At any point during parsing, available
-         * variables are <code>variableNext..variableLimit-1</code>.
-         */
+        /// <summary>
+        /// The next available stand-in for variables.  This starts at some point in
+        /// the private use area (discovered dynamically) and increments up toward
+        /// <see cref="variableLimit"/>.  At any point during parsing, available
+        /// variables are <c>variableNext..variableLimit-1</c>.
+        /// </summary>
         private char variableNext;
 
-        /**
-         * The last available stand-in for variables.  This is discovered
-         * dynamically.  At any point during parsing, available variables are
-         * <code>variableNext..variableLimit-1</code>.  During variable definition
-         * we use the special value variableLimit-1 as a placeholder.
-         */
+        /// <summary>
+        /// The last available stand-in for variables.  This is discovered
+        /// dynamically.  At any point during parsing, available variables are
+        /// <c>variableNext..variableLimit-1</c>.  During variable definition
+        /// we use the special value <see cref="variableLimit"/>-1 as a placeholder.
+        /// </summary>
         private char variableLimit;
 
-        /**
-         * When we encounter an undefined variable, we do not immediately signal
-         * an error, in case we are defining this variable, e.g., "$a = [a-z];".
-         * Instead, we save the name of the undefined variable, and substitute
-         * in the placeholder char variableLimit - 1, and decrement
-         * variableLimit.
-         */
+        /// <summary>
+        /// When we encounter an undefined variable, we do not immediately signal
+        /// an error, in case we are defining this variable, e.g., "$a = [a-z];".
+        /// Instead, we save the name of the undefined variable, and substitute
+        /// in the placeholder char <see cref="variableLimit"/> - 1, and decrement
+        /// <see cref="variableLimit"/>.
+        /// </summary>
         private string undefinedVariableName;
 
-        /**
-         * The stand-in character for the 'dot' set, represented by '.' in
-         * patterns.  This is allocated the first time it is needed, and
-         * reused thereafter.
-         */
+        /// <summary>
+        /// The stand-in character for the 'dot' set, represented by '.' in
+        /// patterns.  This is allocated the first time it is needed, and
+        /// reused thereafter.
+        /// </summary>
         private int dotStandIn = -1;
 
         //----------------------------------------------------------------------
@@ -175,24 +175,24 @@ namespace ICU4N.Text
         private const char ALT_FUNCTION = '\u2206'; // Increment (~Greek Capital Delta)
 
         // Special characters disallowed at the top level
-        private static UnicodeSet ILLEGAL_TOP = new UnicodeSet("[\\)]");
+        private static readonly UnicodeSet ILLEGAL_TOP = new UnicodeSet("[\\)]");
 
         // Special characters disallowed within a segment
-        private static UnicodeSet ILLEGAL_SEG = new UnicodeSet("[\\{\\}\\|\\@]");
+        private static readonly UnicodeSet ILLEGAL_SEG = new UnicodeSet("[\\{\\}\\|\\@]");
 
         // Special characters disallowed within a function argument
-        private static UnicodeSet ILLEGAL_FUNC = new UnicodeSet("[\\^\\(\\.\\*\\+\\?\\{\\}\\|\\@]");
+        private static readonly UnicodeSet ILLEGAL_FUNC = new UnicodeSet("[\\^\\(\\.\\*\\+\\?\\{\\}\\|\\@]");
 
         //----------------------------------------------------------------------
         // class ParseData
         //----------------------------------------------------------------------
 
-        /**
-         * This class implements the SymbolTable interface.  It is used
-         * during parsing to give UnicodeSet access to variables that
-         * have been defined so far.  Note that it uses variablesVector,
-         * _not_ data.variables.
-         */
+        /// <summary>
+        /// This class implements the <see cref="ISymbolTable"/> interface.  It is used
+        /// during parsing to give <see cref="UnicodeSet"/> access to variables that
+        /// have been defined so far.  Note that it uses <see cref="variablesVector"/>,
+        /// _not_ <see cref="Data.variables"/>.
+        /// </summary>
         private class ParseData : ISymbolTable
         {
             private readonly TransliteratorParser outerInstance;
@@ -202,17 +202,17 @@ namespace ICU4N.Text
                 this.outerInstance = outerInstance;
             }
 
-            /**
-             * Implement SymbolTable API.
-             */
+            /// <summary>
+            /// Implement <see cref="ISymbolTable"/> API.
+            /// </summary>
             public virtual char[] Lookup(string name)
             {
                 return outerInstance.variableNames.Get(name);
             }
 
-            /**
-             * Implement SymbolTable API.
-             */
+            /// <summary>
+            /// Implement <see cref="ISymbolTable"/> API.
+            /// </summary>
             public virtual IUnicodeMatcher LookupMatcher(int ch)
             {
                 // Note that we cannot use data.lookup() because the
@@ -225,10 +225,10 @@ namespace ICU4N.Text
                 return null;
             }
 
-            /**
-             * Implement SymbolTable API.  Parse out a symbol reference
-             * name.
-             */
+            /// <summary>
+            /// Implement <see cref="ISymbolTable"/> API.  Parse out a symbol reference
+            /// name.
+            /// </summary>
             public virtual string ParseReference(string text, ParsePosition pos, int limit)
             {
                 int start = pos.Index;
@@ -251,10 +251,10 @@ namespace ICU4N.Text
                 return text.Substring(start, i - start); // ICU4N: Corrected 2nd parameter
             }
 
-            /**
-             * Return true if the given character is a matcher standin or a plain
-             * character (non standin).
-             */
+            /// <summary>
+            /// Return true if the given character is a matcher standin or a plain
+            /// character (non standin).
+            /// </summary>
             public virtual bool IsMatcher(int ch)
             {
                 // Note that we cannot use data.lookup() because the
@@ -267,10 +267,10 @@ namespace ICU4N.Text
                 return true;
             }
 
-            /**
-             * Return true if the given character is a replacer standin or a plain
-             * character (non standin).
-             */
+            /// <summary>
+            /// Return true if the given character is a replacer standin or a plain
+            /// character (non standin).
+            /// </summary>
             public virtual bool IsReplacer(int ch)
             {
                 // Note that we cannot use data.lookup() because the
@@ -288,22 +288,21 @@ namespace ICU4N.Text
         // classes RuleBody, RuleArray, and RuleReader
         //----------------------------------------------------------------------
 
-        /**
-         * A private abstract class representing the interface to rule
-         * source code that is broken up into lines.  Handles the
-         * folding of lines terminated by a backslash.  This folding
-         * is limited; it does not account for comments, quotes, or
-         * escapes, so its use to be limited.
-         */
+        /// <summary>
+        /// A private abstract class representing the interface to rule
+        /// source code that is broken up into lines.  Handles the
+        /// folding of lines terminated by a backslash.  This folding
+        /// is limited; it does not account for comments, quotes, or
+        /// escapes, so its use to be limited.
+        /// </summary>
         private abstract class RuleBody
         {
-
-            /**
-             * Retrieve the next line of the source, or return null if
-             * none.  Folds lines terminated by a backslash into the
-             * next line, without regard for comments, quotes, or
-             * escapes.
-             */
+            /// <summary>
+            /// Retrieve the next line of the source, or return null if
+            /// none.  Folds lines terminated by a backslash into the
+            /// next line, without regard for comments, quotes, or
+            /// escapes.
+            /// </summary>
             internal virtual string NextLine()
             {
                 string s = HandleNextLine();
@@ -328,20 +327,20 @@ namespace ICU4N.Text
                 return s;
             }
 
-            /**
-             * Reset to the first line of the source.
-             */
+            /// <summary>
+            /// Reset to the first line of the source.
+            /// </summary>
             public abstract void Reset();
 
-            /**
-             * Subclass method to return the next line of the source.
-             */
+            /// <summary>
+            /// Subclass method to return the next line of the source.
+            /// </summary>
             public abstract string HandleNextLine();
         }
 
-        /**
-         * RuleBody subclass for a String[] array.
-         */
+        /// <summary>
+        /// <see cref="RuleBody"/> subclass for a <see cref="T:string[]"/> array.
+        /// </summary>
         private class RuleArray : RuleBody
         {
             internal string[] array;
@@ -380,11 +379,11 @@ namespace ICU4N.Text
         // class RuleHalf
         //----------------------------------------------------------------------
 
-        /**
-         * A class representing one side of a rule.  This class knows how to
-         * parse half of a rule.  It is tightly coupled to the method
-         * TransliteratorParser.parseRule().
-         */
+        /// <summary>
+        /// A class representing one side of a rule.  This class knows how to
+        /// parse half of a rule.  It is tightly coupled to the method
+        /// <see cref="TransliteratorParser.ParseRule(string, int, int)"/>.
+        /// </summary>
         private class RuleHalf
         {
             public string Text { get; set; }
@@ -411,18 +410,22 @@ namespace ICU4N.Text
             public bool AnchorStart { get; set; } = false;
             public bool AnchorEnd { get; set; } = false;
 
-            /**
-             * The segment number from 1..n of the next '(' we see
-             * during parsing; 1-based.
-             */
+            /// <summary>
+            /// The segment number from 1..n of the next '(' we see
+            /// during parsing; 1-based.
+            /// </summary>
             private int nextSegmentNumber = 1;
 
-            /**
-             * Parse one side of a rule, stopping at either the limit,
-             * the END_OF_RULE character, or an operator.
-             * @return the index after the terminating character, or
-             * if limit was reached, limit
-             */
+            /// <summary>
+            /// Parse one side of a <paramref name="rule"/>, stopping at either the <paramref name="limit"/>,
+            /// the <see cref="END_OF_RULE"/> character, or an operator.
+            /// </summary>
+            /// <param name="rule"></param>
+            /// <param name="pos"></param>
+            /// <param name="limit"></param>
+            /// <param name="parser"></param>
+            /// <returns>The index after the terminating character, or
+            /// if <paramref name="limit"/> was reached, <paramref name="limit"/>.</returns>
             public virtual int Parse(string rule, int pos, int limit,
                              TransliteratorParser parser)
             {
@@ -439,29 +442,34 @@ namespace ICU4N.Text
                 return pos;
             }
 
-            /**
-             * Parse a section of one side of a rule, stopping at either
-             * the limit, the END_OF_RULE character, an operator, or a
-             * segment close character.  This method parses both a
-             * top-level rule half and a segment within such a rule half.
-             * It calls itself recursively to parse segments and nested
-             * segments.
-             * @param buf buffer into which to accumulate the rule pattern
-             * characters, either literal characters from the rule or
-             * standins for UnicodeMatcher objects including segments.
-             * @param illegal the set of special characters that is illegal during
-             * this parse.
-             * @param isSegment if true, then we've already seen a '(' and
-             * pos on entry points right after it.  Accumulate everything
-             * up to the closing ')', put it in a segment matcher object,
-             * generate a standin for it, and add the standin to buf.  As
-             * a side effect, update the segments vector with a reference
-             * to the segment matcher.  This works recursively for nested
-             * segments.  If isSegment is false, just accumulate
-             * characters into buf.
-             * @return the index after the terminating character, or
-             * if limit was reached, limit
-             */
+            /// <summary>
+            /// Parse a section of one side of a <paramref name="rule"/>, stopping at either
+            /// the <paramref name="limit"/>, the <see cref="END_OF_RULE"/> character, an operator, or a
+            /// segment close character.  This method parses both a
+            /// top-level rule half and a segment within such a rule half.
+            /// It calls itself recursively to parse segments and nested
+            /// segments.
+            /// </summary>
+            /// <param name="rule"></param>
+            /// <param name="pos"></param>
+            /// <param name="limit"></param>
+            /// <param name="parser"></param>
+            /// <param name="buf">Buffer into which to accumulate the rule pattern
+            /// characters, either literal characters from the <paramref name="rule"/> or
+            /// standins for <see cref="IUnicodeMatcher"/> objects including segments.</param>
+            /// <param name="illegal">The set of special characters that is illegal during
+            /// this parse.</param>
+            /// <param name="isSegment">If true, then we've already seen a '(' and
+            /// <paramref name="pos"/> on entry points right after it.  Accumulate everything
+            /// up to the closing ')', put it in a segment matcher object,
+            /// generate a standin for it, and add the standin to <paramref name="buf"/>.  As
+            /// a side effect, update the segments vector with a reference
+            /// to the segment matcher.  This works recursively for nested
+            /// segments.  If <paramref name="isSegment"/> is false, just accumulate
+            /// characters into <paramref name="buf"/>.
+            /// </param>
+            /// <returns>The index after the terminating character, or
+            /// if <paramref name="limit"/> was reached, <paramref name="limit"/>.</returns>
             private int ParseSection(string rule, int pos, int limit,
                                      TransliteratorParser parser,
                                      StringBuffer buf,
@@ -490,13 +498,13 @@ namespace ICU4N.Text
                     // HALF_ENDERS is all chars that end a rule half: "<>=;"
                     if (HALF_ENDERS.IndexOf(c) >= 0)
                     {
-                        ///CLOVER:OFF
+                        ////CLOVER:OFF
                         // isSegment is always false
                         if (isSegment)
                         {
                             SyntaxError("Unclosed segment", rule, start);
                         }
-                        ///CLOVER:ON
+                        ////CLOVER:ON
                         goto main_break;
                     }
                     if (AnchorEnd)
@@ -740,7 +748,7 @@ namespace ICU4N.Text
                             //  $v+     matches  xyxyxy if $v == xy
                             //  (seg)+  matches  segsegseg
                             {
-                                ///CLOVER:OFF
+                                ////CLOVER:OFF
                                 // isSegment is always false
                                 if (isSegment && buf.Length == bufStart)
                                 {
@@ -748,7 +756,7 @@ namespace ICU4N.Text
                                     SyntaxError("Misplaced quantifier", rule, start);
                                     break;
                                 }
-                                ///CLOVER:ON
+                                ////CLOVER:ON
 
                                 int qstart, qlimit;
                                 // The */+ follows an isolated character or quote
@@ -895,9 +903,9 @@ namespace ICU4N.Text
                 return pos;
             }
 
-            /**
-             * Remove context.
-             */
+            /// <summary>
+            /// Remove context.
+            /// </summary>
             internal virtual void RemoveContext()
             {
                 int start = Ante < 0 ? 0 : Ante;
@@ -907,10 +915,10 @@ namespace ICU4N.Text
                 AnchorStart = AnchorEnd = false;
             }
 
-            /**
-             * Return true if this half looks like valid output, that is, does not
-             * contain quantifiers or other special input-only elements.
-             */
+            /// <summary>
+            /// Return true if this half looks like valid output, that is, does not
+            /// contain quantifiers or other special input-only elements.
+            /// </summary>
             public virtual bool IsValidOutput(TransliteratorParser parser)
             {
                 for (int i = 0; i < Text.Length;)
@@ -925,10 +933,10 @@ namespace ICU4N.Text
                 return true;
             }
 
-            /**
-             * Return true if this half looks like valid input, that is, does not
-             * contain functions or other special output-only elements.
-             */
+            /// <summary>
+            /// Return true if this half looks like valid input, that is, does not
+            /// contain functions or other special output-only elements.
+            /// </summary>
             public virtual bool IsValidInput(TransliteratorParser parser)
             {
                 for (int i = 0; i < Text.Length;)
@@ -948,47 +956,47 @@ namespace ICU4N.Text
         // PUBLIC methods
         //----------------------------------------------------------------------
 
-        /**
-         * Constructor.
-         */
+        /// <summary>
+        /// Constructor.
+        /// </summary>
         public TransliteratorParser()
         {
         }
 
-        /**
-         * Parse a set of rules.  After the parse completes, examine the public
-         * data members for results.
-         */
+        /// <summary>
+        /// Parse a set of rules.  After the parse completes, examine the public
+        /// data members for results.
+        /// </summary>
         public virtual void Parse(string rules, TransliterationDirection dir)
         {
             ParseRules(new RuleArray(new string[] { rules }), dir);
         }
 
-        /*
-         * Parse a set of rules.  After the parse completes, examine the public
-         * data members for results.
-         */
-        /*    public void parse(ResourceReader rules, int direction) {
-                parseRules(new RuleReader(rules), direction);
-            }*/
+        ///// <summary>
+        ///// Parse a set of rules.  After the parse completes, examine the public
+        ///// data members for results.
+        ///// </summary>
+        //public void Parse(ResourceReader rules, int direction)
+        //{
+        //    ParseRules(new RuleReader(rules), direction);
+        //}
 
         //----------------------------------------------------------------------
         // PRIVATE methods
         //----------------------------------------------------------------------
 
-        /**
-         * Parse an array of zero or more rules.  The strings in the array are
-         * treated as if they were concatenated together, with rule terminators
-         * inserted between array elements if not present already.
-         *
-         * Any previous rules are discarded.  Typically this method is called exactly
-         * once, during construction.
-         *
-         * The member this.data will be set to null if there are no rules.
-         *
-         * @exception IllegalIcuArgumentException if there is a syntax error in the
-         * rules
-         */
+        /// <summary>
+        /// Parse an array of zero or more rules.  The strings in the array are
+        /// treated as if they were concatenated together, with rule terminators
+        /// inserted between array elements if not present already.
+        /// <para/>
+        /// Any previous rules are discarded.  Typically this method is called exactly
+        /// once, during construction.
+        /// <para/>
+        /// The member this.data will be set to null if there are no rules.
+        /// </summary>
+        /// <exception cref="IcuArgumentException">If there is a syntax error in the
+        /// rules.</exception>
         private void ParseRules(RuleBody ruleArray, TransliterationDirection dir)
         {
             bool parsingIDs = true;
@@ -1211,8 +1219,8 @@ namespace ICU4N.Text
 #pragma warning disable 612, 618
                 Data data = DataVector[i];
 #pragma warning restore 612, 618
-                data.variables = new Object[variablesVector.Count];
-                variablesVector.CopyTo(data.variables);
+                data.variables = new object[variablesVector.Count];
+                variablesVector.CopyTo(data.variables, 0);
                 data.variableNames = new Dictionary<string, char[]>();
                 data.variableNames.PutAll(variableNames);
             }
@@ -1270,21 +1278,21 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * MAIN PARSER.  Parse the next rule in the given rule string, starting
-         * at pos.  Return the index after the last character parsed.  Do not
-         * parse characters at or after limit.
-         *
-         * Important:  The character at pos must be a non-whitespace character
-         * that is not the comment character.
-         *
-         * This method handles quoting, escaping, and whitespace removal.  It
-         * parses the end-of-rule character.  It recognizes context and cursor
-         * indicators.  Once it does a lexical breakdown of the rule at pos, it
-         * creates a rule object and adds it to our rule list.
-         *
-         * This method is tightly coupled to the inner class RuleHalf.
-         */
+        /// <summary>
+        /// MAIN PARSER.  Parse the next rule in the given <paramref name="rule"/> string, starting
+        /// at <paramref name="pos"/>.  Return the index after the last character parsed.  Do not
+        /// parse characters at or after <paramref name="limit"/>.
+        /// <para/>
+        /// Important:  The character at pos must be a non-whitespace character
+        /// that is not the comment character.
+        /// <para/>
+        /// This method handles quoting, escaping, and whitespace removal.  It
+        /// parses the end-of-rule character.  It recognizes context and cursor
+        /// indicators.  Once it does a lexical breakdown of the rule at <paramref name="pos"/>, it
+        /// creates a rule object and adds it to our rule list.
+        /// <para/>
+        /// This method is tightly coupled to the inner class <see cref="RuleHalf"/>.
+        /// </summary>
         private int ParseRule(string rule, int pos, int limit)
         {
             // Locate the left side, operator, and right side
@@ -1481,9 +1489,9 @@ namespace ICU4N.Text
             return pos;
         }
 
-        /**
-         * Set the variable range to [start, end] (inclusive).
-         */
+        /// <summary>
+        /// Set the variable range to [start, end] (inclusive).
+        /// </summary>
         private void SetVariableRange(int start, int end)
         {
             if (start > end || start < 0 || end > 0xFFFF)
@@ -1500,11 +1508,11 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Assert that the given character is NOT within the variable range.
-         * If it is, signal an error.  This is neccesary to ensure that the
-         * variable range does not overlap characters used in a rule.
-         */
+        /// <summary>
+        /// Assert that the given character is NOT within the variable range.
+        /// If it is, signal an error.  This is neccesary to ensure that the
+        /// variable range does not overlap characters used in a <paramref name="rule"/>.
+        /// </summary>
         private void CheckVariableRange(int ch, string rule, int start)
         {
             if (ch >= curData.variablesBase && ch < variableLimit)
@@ -1516,26 +1524,28 @@ namespace ICU4N.Text
         // (The following method is part of an unimplemented feature.
         // Remove this clover pragma after the feature is implemented.
         // 2003-06-11 ICU 2.6 Alan)
-        ///CLOVER:OFF
-        /**
-         * Set the maximum backup to 'backup', in response to a pragma
-         * statement.
-         */
+        ////CLOVER:OFF
+
+        /// <summary>
+        /// Set the maximum backup to <paramref name="backup"/>, in response to a pragma
+        /// statement.
+        /// </summary>
         private void PragmaMaximumBackup(int backup)
         {
             //TODO Finish
             throw new IcuArgumentException("use maximum backup pragma not implemented yet");
         }
-        ///CLOVER:ON
+        ////CLOVER:ON
 
         // (The following method is part of an unimplemented feature.
         // Remove this clover pragma after the feature is implemented.
         // 2003-06-11 ICU 2.6 Alan)
-        ///CLOVER:OFF
-        /**
-         * Begin normalizing all rules using the given mode, in response
-         * to a pragma statement.
-         */
+        ////CLOVER:OFF
+
+        /// <summary>
+        /// Begin normalizing all rules using the given <paramref name="mode"/>, in response
+        /// to a pragma statement.
+        /// </summary>
 #pragma warning disable 612, 618
         private void PragmaNormalizeRules(NormalizerMode mode)
 #pragma warning restore 612, 618
@@ -1543,29 +1553,31 @@ namespace ICU4N.Text
             //TODO Finish
             throw new IcuArgumentException("use normalize rules pragma not implemented yet");
         }
-        ///CLOVER:ON
+        ////CLOVER:ON
 
-        /**
-         * Return true if the given rule looks like a pragma.
-         * @param pos offset to the first non-whitespace character
-         * of the rule.
-         * @param limit pointer past the last character of the rule.
-         */
+        /// <summary>
+        /// Return true if the given <paramref name="rule"/> looks like a pragma.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <param name="pos">Offset to the first non-whitespace character
+        /// of the <paramref name="rule"/>.</param>
+        /// <param name="limit">Pointer past the last character of the <paramref name="rule"/>.</param>
         internal static bool ResemblesPragma(string rule, int pos, int limit)
         {
             // Must start with /use\s/i
             return Utility.ParsePattern(rule, pos, limit, "use ", null) >= 0;
         }
 
-        /**
-         * Parse a pragma.  This method assumes resemblesPragma() has
-         * already returned true.
-         * @param pos offset to the first non-whitespace character
-         * of the rule.
-         * @param limit pointer past the last character of the rule.
-         * @return the position index after the final ';' of the pragma,
-         * or -1 on failure.
-         */
+        /// <summary>
+        /// Parse a pragma.  This method assumes <see cref="ResemblesPragma(string, int, int)"/> has
+        /// already returned true.
+        /// </summary>
+        /// <param name="rule"></param>
+        /// <param name="pos">Offset to the first non-whitespace character
+        /// of the <paramref name="rule"/>.</param>
+        /// <param name="limit">Pointer past the last character of the <paramref name="rule"/>.</param>
+        /// <returns>The position index after the final ';' of the pragma,
+        /// or -1 on failure.</returns>
         private int ParsePragma(string rule, int pos, int limit)
         {
             int[] array = new int[2];
@@ -1615,16 +1627,16 @@ namespace ICU4N.Text
             return -1;
         }
 
-        /**
-         * Throw an exception indicating a syntax error.  Search the rule string
-         * for the probable end of the rule.  Of course, if the error is that
-         * the end of rule marker is missing, then the rule end will not be found.
-         * In any case the rule start will be correctly reported.
-         * @param msg error description
-         * @param rule pattern string
-         * @param start position of first character of current rule
-         */
-        internal static void SyntaxError(String msg, String rule, int start)
+        /// <summary>
+        /// Throw an exception indicating a syntax error.  Search the <paramref name="rule"/> string
+        /// for the probable end of the rule.  Of course, if the error is that
+        /// the end of rule marker is missing, then the rule end will not be found.
+        /// In any case the rule start will be correctly reported.
+        /// </summary>
+        /// <param name="msg">Error description.</param>
+        /// <param name="rule">Pattern string.</param>
+        /// <param name="start">Position of first character of current <paramref name="rule"/>.</param>
+        internal static void SyntaxError(string msg, string rule, int start)
         {
             int end = RuleEnd(rule, start, rule.Length);
             throw new IcuArgumentException(msg + " in \"" +
@@ -1641,10 +1653,10 @@ namespace ICU4N.Text
             return end;
         }
 
-        /**
-         * Parse a UnicodeSet out, store it, and return the stand-in character
-         * used to represent it.
-         */
+        /// <summary>
+        /// Parse a <see cref="UnicodeSet"/> out, store it, and return the stand-in character
+        /// used to represent it.
+        /// </summary>
         private char ParseSet(string rule, ParsePosition pos)
         {
             UnicodeSet set = new UnicodeSet(rule, pos, parseData);
@@ -1656,10 +1668,10 @@ namespace ICU4N.Text
             return GenerateStandInFor(set);
         }
 
-        /**
-         * Generate and return a stand-in for a new UnicodeMatcher or UnicodeReplacer.
-         * Store the object.
-         */
+        /// <summary>
+        /// Generate and return a stand-in for a new <see cref="IUnicodeMatcher"/> or <see cref="IUnicodeReplacer"/>.
+        /// Store the object.
+        /// </summary>
         internal virtual char GenerateStandInFor(object obj)
         {
             // assert(obj != null);
@@ -1682,9 +1694,9 @@ namespace ICU4N.Text
             return variableNext++;
         }
 
-        /**
-         * Return the standin for segment seg (1-based).
-         */
+        /// <summary>
+        /// Return the standin for segment seg (1-based).
+        /// </summary>
         public virtual char GetSegmentStandin(int seg)
         {
             if (segmentStandins.Length < seg)
@@ -1708,9 +1720,9 @@ namespace ICU4N.Text
             return c;
         }
 
-        /**
-         * Set the object for segment seg (1-based).
-         */
+        /// <summary>
+        /// Set the object for segment seg (1-based).
+        /// </summary>
         public virtual void SetSegmentObject(int seg, StringMatcher obj)
         {
             // Since we call parseSection() recursively, nested
@@ -1731,10 +1743,10 @@ namespace ICU4N.Text
             variablesVector[index] = obj;
         }
 
-        /**
-         * Return the stand-in for the dot set.  It is allocated the first
-         * time and reused thereafter.
-         */
+        /// <summary>
+        /// Return the stand-in for the dot set.  It is allocated the first
+        /// time and reused thereafter.
+        /// </summary>
         internal virtual char GetDotStandIn()
         {
             if (dotStandIn == -1)
@@ -1744,11 +1756,11 @@ namespace ICU4N.Text
             return (char)dotStandIn;
         }
 
-        /**
-         * Append the value of the given variable name to the given
-         * StringBuffer.
-         * @exception IllegalIcuArgumentException if the name is unknown.
-         */
+        /// <summary>
+        /// Append the value of the given variable name to the given 
+        /// <see cref="StringBuffer"/>.
+        /// </summary>
+        /// <exception cref="IcuArgumentException">If the name is unknown.</exception>
         private void AppendVariableDef(string name, StringBuffer buf)
         {
             char[] ch = variableNames.Get(name);

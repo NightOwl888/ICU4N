@@ -2,7 +2,6 @@
 using ICU4N.Support.Text;
 using ICU4N.Util;
 using System;
-using System.Globalization;
 
 namespace ICU4N.Text
 {
@@ -29,14 +28,14 @@ namespace ICU4N.Text
         {
         }
 
-        ///CLOVER:OFF
+        ////CLOVER:OFF
         // The following method is not called by anything and can't be reached
         public virtual string Insertion
         {
             get { return insertion; }
             set { insertion = value; }
         }
-        ///CLOVER:ON
+        ////CLOVER:ON
 
         /////CLOVER:OFF
         //// The following method is not called by anything and can't be reached
@@ -54,13 +53,13 @@ namespace ICU4N.Text
             return bi;
         }
 
-        ///CLOVER:OFF
+        ////CLOVER:OFF
         // The following method is not called by anything and can't be reached
         public void SetBreakIterator(BreakIterator bi)
         {
             this.bi = bi;
         }
-        ///CLOVER:ON
+        ////CLOVER:ON
 
         internal static readonly int LETTER_OR_MARK_MASK =
               (1 << UUnicodeCategory.UppercaseLetter.ToInt32())
@@ -142,11 +141,10 @@ namespace ICU4N.Text
             }
         }
 
-
-        /**
-         * Registers standard variants with the system.  Called by
-         * Transliterator during initialization.
-         */
+        /// <summary>
+        /// Registers standard variants with the system.  Called by
+        /// Transliterator during initialization.
+        /// </summary>
         internal static void Register()
         {
             // false means that it is invisible
@@ -170,41 +168,36 @@ namespace ICU4N.Text
             // invariant: begin <= pos <= end
             private int pos;
 
-            /**
-            * Constructs an iterator with an initial index of 0.
-            */
-            /*public ReplaceableCharacterIterator(Replaceable text)
-            {
-                this(text, 0);
-            }*/
+            ///// <summary>
+            ///// Constructs an iterator with an initial index of 0.
+            ///// </summary>
+            ///// <param name="text">The <see cref="string"/> to be iterated over.</param>
+            //public ReplaceableCharacterIterator(IReplaceable text)
+            //    : this(text, 0)
+            //{
+            //}
 
-            /**
-            * Constructs an iterator with the specified initial index.
-            *
-            * @param  text   The String to be iterated over
-            * @param  pos    Initial iterator position
-            */
-            /*public ReplaceableCharacterIterator(Replaceable text, int pos)
-            {
-                this(text, 0, text.length(), pos);
-            }*/
+            ///// <summary>
+            ///// Constructs an iterator with the specified initial index.
+            ///// </summary>
+            ///// <param name="text">The <see cref="string"/> to be iterated over.</param>
+            ///// <param name="pos">Initial iterator position.</param>
+            //public ReplaceableCharacterIterator(IReplaceable text, int pos)
+            //    : this(text, 0, text.Length, pos)
+            //{
+            //}
 
-            /**
-            * Constructs an iterator over the given range of the given string, with the
-            * index set at the specified position.
-            *
-            * @param  text   The String to be iterated over
-            * @param  begin  Index of the first character
-            * @param  end    Index of the character following the last character
-            * @param  pos    Initial iterator position
-            */
+            /// <summary>
+            /// Constructs an iterator over the given range of the given string, with the
+            /// index set at the specified position.
+            /// </summary>
+            /// <param name="text">The <see cref="string"/> to be iterated over.</param>
+            /// <param name="begin">Index of the first character.</param>
+            /// <param name="end">Index of the character following the last character.</param>
+            /// <param name="pos">Initial iterator position.</param>
             public ReplaceableCharacterIterator(IReplaceable text, int begin, int end, int pos)
             {
-                if (text == null)
-                {
-                    throw new ArgumentNullException(nameof(text));
-                }
-                this.text = text;
+                this.text = text ?? throw new ArgumentNullException(nameof(text));
 
                 if (begin < 0 || begin > end || end > text.Length)
                 {
@@ -221,40 +214,36 @@ namespace ICU4N.Text
                 this.pos = pos;
             }
 
-            /**
-            * Reset this iterator to point to a new string.  This package-visible
-            * method is used by other java.text classes that want to avoid allocating
-            * new ReplaceableCharacterIterator objects every time their setText method
-            * is called.
-            *
-            * @param  text   The String to be iterated over
-            */
+            /// <summary>
+            /// Reset this iterator to point to a new string.  This public
+            /// method is used by classes that want to avoid allocating
+            /// new <see cref="ReplaceableCharacterIterator"/> objects every 
+            /// time their <see cref="SetText(IReplaceable)"/> method
+            /// is called.
+            /// </summary>
+            /// <param name="text">The <see cref="string"/> to be iterated over.</param>
             public void SetText(IReplaceable text)
             {
-                if (text == null)
-                {
-                    throw new ArgumentNullException(nameof(text));
-                }
-                this.text = text;
+                this.text = text ?? throw new ArgumentNullException(nameof(text));
                 this.begin = 0;
                 this.end = text.Length;
                 this.pos = 0;
             }
 
-            /**
-            * Implements CharacterIterator.first() for String.
-            * @see CharacterIterator#first
-            */
+            /// <summary>
+            /// Implements <see cref="CharacterIterator.First()"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="CharacterIterator.First()"/>
             public override char First()
             {
                 pos = begin;
                 return Current;
             }
 
-            /**
-            * Implements CharacterIterator.last() for String.
-            * @see CharacterIterator#last
-            */
+            /// <summary>
+            /// Implements <see cref="CharacterIterator.Last()"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="CharacterIterator.Last()"/>
             public override char Last()
             {
                 if (end != begin)
@@ -268,10 +257,10 @@ namespace ICU4N.Text
                 return Current;
             }
 
-            /**
-            * Implements CharacterIterator.setIndex() for String.
-            * @see CharacterIterator#setIndex
-            */
+            /// <summary>
+            /// Implements <see cref="CharacterIterator.SetIndex(int)"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="CharacterIterator.SetIndex(int)"/>
             public override char SetIndex(int p)
             {
                 if (p < begin || p > end)
@@ -282,10 +271,10 @@ namespace ICU4N.Text
                 return Current;
             }
 
-            /**
-            * Implements CharacterIterator.current() for String.
-            * @see CharacterIterator#current
-            */
+            /// <summary>
+            /// Implements <see cref="CharacterIterator.Current"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="CharacterIterator.Current"/>
             public override char Current
             {
                 get
@@ -301,10 +290,10 @@ namespace ICU4N.Text
                 }
             }
 
-            /**
-            * Implements CharacterIterator.next() for String.
-            * @see CharacterIterator#next
-            */
+            /// <summary>
+            /// Implements <see cref="CharacterIterator.Next()"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="CharacterIterator.Next()"/>
             public override char Next()
             {
                 if (pos < end - 1)
@@ -319,10 +308,10 @@ namespace ICU4N.Text
                 }
             }
 
-            /**
-            * Implements CharacterIterator.previous() for String.
-            * @see CharacterIterator#previous
-            */
+            /// <summary>
+            /// Implements <see cref="CharacterIterator.Previous()"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="CharacterIterator.Previous()"/>
             public override char Previous()
             {
                 if (pos > begin)
@@ -336,39 +325,39 @@ namespace ICU4N.Text
                 }
             }
 
-            /**
-            * Implements CharacterIterator.getBeginIndex() for String.
-            * @see CharacterIterator#getBeginIndex
-            */
+            /// <summary>
+            /// Implements <see cref="CharacterIterator.BeginIndex"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="CharacterIterator.BeginIndex"/>
             public override int BeginIndex
             {
                 get { return begin; }
             }
 
-            /**
-            * Implements CharacterIterator.getEndIndex() for String.
-            * @see CharacterIterator#getEndIndex
-            */
+            /// <summary>
+            /// Implements <see cref="CharacterIterator.EndIndex"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="CharacterIterator.EndIndex"/>
             public override int EndIndex
             {
                 get { return end; }
             }
 
-            /**
-            * Implements CharacterIterator.getIndex() for String.
-            * @see CharacterIterator#getIndex
-            */
+            /// <summary>
+            /// Implements <see cref="CharacterIterator.Index"/> for <see cref="string"/>.
+            /// </summary>
+            /// <seealso cref="CharacterIterator.Index"/>
             public override int Index
             {
                 get { return pos; }
             }
 
-            /**
-            * Compares the equality of two ReplaceableCharacterIterator objects.
-            * @param obj the ReplaceableCharacterIterator object to be compared with.
-            * @return true if the given obj is the same as this
-            * ReplaceableCharacterIterator object; false otherwise.
-            */
+            /// <summary>
+            /// Compares the equality of two <see cref="ReplaceableCharacterIterator"/> objects.
+            /// </summary>
+            /// <param name="obj">The <see cref="ReplaceableCharacterIterator"/> object to be compared with.</param>
+            /// <returns><c>true</c> if the given obj is the same as this
+            /// <see cref="ReplaceableCharacterIterator"/> object; <c>false</c> otherwise.</returns>
             public override bool Equals(object obj)
             {
                 if (this == obj)
@@ -397,19 +386,19 @@ namespace ICU4N.Text
                 return true;
             }
 
-            /**
-            * Computes a hashcode for this iterator.
-            * @return A hash code
-            */
+            /// <summary>
+            /// Computes a hash code for this iterator.
+            /// </summary>
+            /// <returns>A hash code.</returns>
             public override int GetHashCode()
             {
                 return text.GetHashCode() ^ pos ^ begin ^ end;
             }
 
-            /**
-            * Creates a copy of this iterator.
-            * @return A copy of this
-            */
+            /// <summary>
+            /// Creates a copy of this iterator.
+            /// </summary>
+            /// <returns>A copy of this iterator.</returns>
             public override object Clone()
             {
                 ReplaceableCharacterIterator other = (ReplaceableCharacterIterator)base.MemberwiseClone();

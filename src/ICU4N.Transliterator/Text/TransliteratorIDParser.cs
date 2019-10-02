@@ -10,6 +10,27 @@ using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
+    /// <summary>
+    /// Parsing component for transliterator IDs.  This class contains only
+    /// static members; it cannot be instantiated.  Methods in this class
+    /// parse various ID formats, including the following:
+    /// <para/>
+    /// A basic ID, which contains source, target, and variant, but no
+    /// filter and no explicit inverse.  Examples include
+    /// "Latin-Greek/UNGEGN" and "Null".
+    /// <para/>
+    /// A single ID, which is a basic ID plus optional filter and optional
+    /// explicit inverse.  Examples include "[a-zA-Z] Latin-Greek" and
+    /// "Lower (Upper)".
+    /// <para/>
+    /// A compound ID, which is a sequence of one or more single IDs,
+    /// separated by semicolons, with optional forward and reverse global
+    /// filters.  The global filters are <see cref="UnicodeSet"/> patterns prepended or
+    /// appended to the IDs, separated by semicolons.  An appended filter
+    /// must be enclosed in parentheses and applies in the reverse
+    /// direction.
+    /// </summary>
+    /// <author>Alan Liu</author>
     internal class TransliteratorIDParser
     {
         private const char ID_DELIM = ';';
@@ -31,20 +52,20 @@ namespace ICU4N.Text
         private static readonly IDictionary<CaseInsensitiveString, string> SPECIAL_INVERSES =
             new ConcurrentDictionary<CaseInsensitiveString, string>();
 
-        /**
-         * A structure containing the parsed data of a filtered ID, that
-         * is, a basic ID optionally with a filter.
-         *
-         * 'source' and 'target' will always be non-null.  The 'variant'
-         * will be non-null only if a non-empty variant was parsed.
-         *
-         * 'sawSource' is true if there was an explicit source in the
-         * parsed id.  If there was no explicit source, then an implied
-         * source of ANY is returned and 'sawSource' is set to false.
-         * 
-         * 'filter' is the parsed filter pattern, or null if there was no
-         * filter.
-         */
+        /// <summary>
+        /// A structure containing the parsed data of a filtered ID, that
+        /// is, a basic ID optionally with a filter.
+        /// <para/>
+        /// <see cref="Source"/> and <see cref="Target"/> will always be non-null.  The 
+        /// <see cref="Variant"/> will be non-null only if a non-empty variant was parsed.
+        /// <para/>
+        /// <see cref="SawSource"/> is true if there was an explicit source in the
+        /// parsed id.  If there was no explicit source, then an implied
+        /// source of ANY is returned and <see cref="SawSource"/> is set to false.
+        /// <para/>
+        /// <see cref="Filter"/> is the parsed filter pattern, or null if there was no
+        /// filter.
+        /// </summary>
         private class Specs
         {
             public string Source { get; set; } // not null
@@ -62,21 +83,21 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * A structure containing the canonicalized data of a filtered ID,
-         * that is, a basic ID optionally with a filter.
-         *
-         * 'canonID' is always non-null.  It may be the empty string "".
-         * It is the id that should be assigned to the created
-         * transliterator.  It _cannot_ be instantiated directly.
-         *
-         * 'basicID' is always non-null and non-empty.  It is always of
-         * the form S-T or S-T/V.  It is designed to be fed to low-level
-         * instantiation code that only understands these two formats.
-         *
-         * 'filter' may be null, if there is none, or non-null and
-         * non-empty.
-         */
+        /// <summary>
+        /// A structure containing the canonicalized data of a filtered ID,
+        /// that is, a basic ID optionally with a filter.
+        /// <para/>
+        /// <see cref="CanonID"/> is always non-null.  It may be the empty string "".
+        /// It is the id that should be assigned to the created
+        /// transliterator.  It _cannot_ be instantiated directly.
+        /// <para/>
+        /// <see cref="BasicID"/> is always non-null and non-empty.  It is always of
+        /// the form S-T or S-T/V.  It is designed to be fed to low-level
+        /// instantiation code that only understands these two formats.
+        /// <para/>
+        /// <see cref="Filter"/> may be null, if there is none, or non-null and
+        /// non-empty.
+        /// </summary>
         internal class SingleID
         {
             public string CanonID { get; set; }
@@ -114,15 +135,15 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Parse a filter ID, that is, an ID of the general form
-         * "[f1] s1-t1/v1", with the filters optional, and the variants optional.
-         * @param id the id to be parsed
-         * @param pos INPUT-OUTPUT parameter.  On input, the position of
-         * the first character to parse.  On output, the position after
-         * the last character parsed.
-         * @return a SingleID object or null if the parse fails
-         */
+        /// <summary>
+        /// Parse a filter <paramref name="id"/>, that is, an ID of the general form
+        /// "[f1] s1-t1/v1", with the filters optional, and the variants optional.
+        /// </summary>
+        /// <param name="id">The id to be parsed.</param>
+        /// <param name="pos">INPUT-OUTPUT parameter.  On input, the position of
+        /// the first character to parse.  On output, the position after
+        /// the last character parsed.</param>
+        /// <returns>A <see cref="SingleID"/> object or null if the parse fails.</returns>
         public static SingleID ParseFilterID(string id, int[] pos)
         {
 
@@ -140,18 +161,18 @@ namespace ICU4N.Text
             return single;
         }
 
-        /**
-         * Parse a single ID, that is, an ID of the general form
-         * "[f1] s1-t1/v1 ([f2] s2-t3/v2)", with the parenthesized element
-         * optional, the filters optional, and the variants optional.
-         * @param id the id to be parsed
-         * @param pos INPUT-OUTPUT parameter.  On input, the position of
-         * the first character to parse.  On output, the position after
-         * the last character parsed.
-         * @param dir the direction.  If the direction is REVERSE then the
-         * SingleID is constructed for the reverse direction.
-         * @return a SingleID object or null
-         */
+        /// <summary>
+        /// Parse a single <paramref name="id"/>, that is, an ID of the general form
+        /// "[f1] s1-t1/v1 ([f2] s2-t3/v2)", with the parenthesized element
+        /// optional, the filters optional, and the variants optional.
+        /// </summary>
+        /// <param name="id">The id to be parsed.</param>
+        /// <param name="pos">INPUT-OUTPUT parameter.  On input, the position of
+        /// the first character to parse.  On output, the position after
+        /// the last character parsed.</param>
+        /// <param name="dir">The direction.  If the direction is <see cref="TransliterationDirection.Reverse"/> then the
+        /// <see cref="SingleID"/> is constructed for the reverse direction.</param>
+        /// <returns>A <see cref="SingleID"/> object or null.</returns>
         public static SingleID ParseSingleID(string id, int[] pos, TransliterationDirection dir)
         {
 
@@ -239,28 +260,28 @@ namespace ICU4N.Text
             return single;
         }
 
-        /**
-         * Parse a global filter of the form "[f]" or "([f])", depending
-         * on 'withParens'.
-         * @param id the pattern the parse
-         * @param pos INPUT-OUTPUT parameter.  On input, the position of
-         * the first character to parse.  On output, the position after
-         * the last character parsed.
-         * @param dir the direction.
-         * @param withParens INPUT-OUTPUT parameter.  On entry, if
-         * withParens[0] is 0, then parens are disallowed.  If it is 1,
-         * then parens are requires.  If it is -1, then parens are
-         * optional, and the return result will be set to 0 or 1.
-         * @param canonID OUTPUT parameter.  The pattern for the filter
-         * added to the canonID, either at the end, if dir is FORWARD, or
-         * at the start, if dir is REVERSE.  The pattern will be enclosed
-         * in parentheses if appropriate, and will be suffixed with an
-         * ID_DELIM character.  May be null.
-         * @return a UnicodeSet object or null.  A non-null results
-         * indicates a successful parse, regardless of whether the filter
-         * applies to the given direction.  The caller should discard it
-         * if withParens != (dir == REVERSE).
-         */
+        /// <summary>
+        /// Parse a global filter of the form "[f]" or "([f])", depending
+        /// on <paramref name="withParens"/>.
+        /// </summary>
+        /// <param name="id">The pattern to parse.</param>
+        /// <param name="pos">INPUT-OUTPUT parameter.  On input, the position of
+        /// the first character to parse.  On output, the position after
+        /// the last character parsed.</param>
+        /// <param name="dir">The direction.</param>
+        /// <param name="withParens">INPUT-OUTPUT parameter.  On entry, if
+        /// withParens[0] is 0, then parens are disallowed.  If it is 1,
+        /// then parens are requires.  If it is -1, then parens are
+        /// optional, and the return result will be set to 0 or 1.</param>
+        /// <param name="canonID">OUTPUT parameter.  The pattern for the filter
+        /// added to the canonID, either at the end, if dir is <see cref="TransliterationDirection.Forward"/>, or
+        /// at the start, if dir is <see cref="TransliterationDirection.Reverse"/>.  The pattern will be enclosed
+        /// in parentheses if appropriate, and will be suffixed with an
+        /// <see cref="ID_DELIM"/> character.  May be null.</param>
+        /// <returns>A <see cref="UnicodeSet"/> object or null.  A non-null results
+        /// indicates a successful parse, regardless of whether the filter
+        /// applies to the given direction.  The caller should discard it
+        /// if withParens != (dir == <see cref="TransliterationDirection.Reverse"/>).</returns>
         public static UnicodeSet ParseGlobalFilter(string id, int[] pos, TransliterationDirection dir,
                                                    int[] withParens,
                                                    StringBuffer canonID)
@@ -332,28 +353,28 @@ namespace ICU4N.Text
             return filter;
         }
 
-        /**
-         * Parse a compound ID, consisting of an optional forward global
-         * filter, a separator, one or more single IDs delimited by
-         * separators, an an optional reverse global filter.  The
-         * separator is a semicolon.  The global filters are UnicodeSet
-         * patterns.  The reverse global filter must be enclosed in
-         * parentheses.
-         * @param id the pattern the parse
-         * @param dir the direction.
-         * @param canonID OUTPUT parameter that receives the canonical ID,
-         * consisting of canonical IDs for all elements, as returned by
-         * parseSingleID(), separated by semicolons.  Previous contents
-         * are discarded.
-         * @param list OUTPUT parameter that receives a list of SingleID
-         * objects representing the parsed IDs.  Previous contents are
-         * discarded.
-         * @param globalFilter OUTPUT parameter that receives a pointer to
-         * a newly created global filter for this ID in this direction, or
-         * null if there is none.
-         * @return true if the parse succeeds, that is, if the entire
-         * id is consumed without syntax error.
-         */
+        /// <summary>
+        /// Parse a compound <paramref name="id"/>, consisting of an optional forward global
+        /// filter, a separator, one or more single IDs delimited by
+        /// separators, an an optional reverse global filter.  The
+        /// separator is a semicolon.  The global filters are <see cref="UnicodeSet"/>
+        /// patterns.  The reverse global filter must be enclosed in
+        /// parentheses.
+        /// </summary>
+        /// <param name="id">The pattern to parse.</param>
+        /// <param name="dir">The direction.</param>
+        /// <param name="canonID">OUTPUT parameter that receives the canonical ID,
+        /// consisting of canonical IDs for all elements, as returned by
+        /// <see cref="ParseSingleID(string, int[], TransliterationDirection)"/></param>, separated by semicolons.  Previous contents
+        /// are discarded.
+        /// <param name="list">OUTPUT parameter that receives a list of <see cref="SingleID"/>
+        /// objects representing the parsed IDs.  Previous contents are
+        /// discarded.</param>
+        /// <param name="globalFilter">OUTPUT parameter that receives a pointer to
+        /// a newly created global filter for this ID in this direction, or
+        /// null if there is none.</param>
+        /// <returns><c>true</c> if the parse succeeds, that is, if the entire
+        /// <paramref name="id"/> is consumed without syntax error.</returns>
         public static bool ParseCompoundID(string id, TransliterationDirection dir,
                                               StringBuffer canonID,
                                               IList<SingleID> list,
@@ -450,13 +471,12 @@ namespace ICU4N.Text
             return true;
         }
 
-        /**
-         * Returns the list of Transliterator objects for the
-         * given list of SingleID objects.
-         * 
-         * @param ids list vector of SingleID objects.
-         * @return Actual transliterators for the list of SingleIDs
-         */
+        /// <summary>
+        /// Returns the list of <see cref="Transliterator"/> objects for the
+        /// given list of <see cref="SingleID"/> objects.
+        /// </summary>
+        /// <param name="ids">List vector of <see cref="SingleID"/> objects.</param>
+        /// <returns>Actual transliterators for the list of <see cref="SingleID"/>s.</returns>
         internal static IList<Transliterator> InstantiateList(IList<SingleID> ids)
         {
             Transliterator t;
@@ -489,17 +509,17 @@ namespace ICU4N.Text
             return translits;
         }
 
-        /**
-         * Parse an ID into pieces.  Take IDs of the form T, T/V, S-T,
-         * S-T/V, or S/V-T.  If the source is missing, return a source of
-         * ANY.
-         * @param id the id string, in any of several forms
-         * @return an array of 4 strings: source, target, variant, and
-         * isSourcePresent.  If the source is not present, ANY will be
-         * given as the source, and isSourcePresent will be null.  Otherwise
-         * isSourcePresent will be non-null.  The target may be empty if the
-         * id is not well-formed.  The variant may be empty.
-         */
+        /// <summary>
+        /// Parse an <paramref name="id"/> into pieces.  Take IDs of the form T, T/V, S-T,
+        /// S-T/V, or S/V-T.  If the source is missing, return a source of
+        /// ANY.
+        /// </summary>
+        /// <param name="id">The id string, in any of several forms.</param>
+        /// <returns>An array of 4 strings: source, target, variant, and
+        /// isSourcePresent.  If the source is not present, ANY will be
+        /// given as the source, and isSourcePresent will be null.  Otherwise
+        /// isSourcePresent will be non-null.  The target may be empty if the
+        /// id is not well-formed.  The variant may be empty.</returns>
         public static string[] IDtoSTV(string id)
         {
             string source = ANY;
@@ -552,11 +572,11 @@ namespace ICU4N.Text
                               isSourcePresent ? "" : null };
         }
 
-        /**
-         * Given source, target, and variant strings, concatenate them into a
-         * full ID.  If the source is empty, then "Any" will be used for the
-         * source, so the ID will always be of the form s-t/v or s-t.
-         */
+        /// <summary>
+        /// Given <paramref name="source"/>, <paramref name="target"/>, and <paramref name="variant"/> strings, concatenate them into a
+        /// full ID.  If the source is empty, then "Any" will be used for the
+        /// source, so the ID will always be of the form s-t/v or s-t.
+        /// </summary>
         public static string STVtoID(string source,
                                      string target,
                                      string variant)
@@ -574,38 +594,41 @@ namespace ICU4N.Text
             return id.ToString();
         }
 
-        /**
-         * Register two targets as being inverses of one another.  For
-         * example, calling registerSpecialInverse("NFC", "NFD", true) causes
-         * Transliterator to form the following inverse relationships:
-         *
-         * <pre>NFC => NFD
-         * Any-NFC => Any-NFD
-         * NFD => NFC
-         * Any-NFD => Any-NFC</pre>
-         *
-         * (Without the special inverse registration, the inverse of NFC
-         * would be NFC-Any.)  Note that NFD is shorthand for Any-NFD, but
-         * that the presence or absence of "Any-" is preserved.
-         *
-         * <p>The relationship is symmetrical; registering (a, b) is
-         * equivalent to registering (b, a).
-         *
-         * <p>The relevant IDs must still be registered separately as
-         * factories or classes.
-         *
-         * <p>Only the targets are specified.  Special inverses always
-         * have the form Any-Target1 <=> Any-Target2.  The target should
-         * have canonical casing (the casing desired to be produced when
-         * an inverse is formed) and should contain no whitespace or other
-         * extraneous characters.
-         *
-         * @param target the target against which to register the inverse
-         * @param inverseTarget the inverse of target, that is
-         * Any-target.getInverse() => Any-inverseTarget
-         * @param bidirectional if true, register the reverse relation
-         * as well, that is, Any-inverseTarget.getInverse() => Any-target
-         */
+        /// <summary>
+        /// Register two targets as being inverses of one another.  For
+        /// example, calling <c>RegisterSpecialInverse("NFC", "NFD", true)</c> causes
+        /// <see cref="Transliterator"/> to form the following inverse relationships:
+        /// <code>
+        /// NFC => NFD
+        /// Any-NFC => Any-NFD
+        /// NFD => NFC
+        /// Any-NFD => Any-NFC
+        /// </code>
+        /// 
+        /// (Without the special inverse registration, the inverse of NFC
+        /// would be NFC-Any.)  Note that NFD is shorthand for Any-NFD, but
+        /// that the presence or absence of "Any-" is preserved.
+        /// 
+        /// <para/>
+        /// The relationship is symmetrical; registering (a, b) is
+        /// equivalent to registering (b, a).
+        /// 
+        /// <para/>
+        /// The relevant IDs must still be registered separately as
+        /// factories or types.
+        /// 
+        /// <para/>
+        /// Only the targets are specified.  Special inverses always
+        /// have the form Any-Target1 &lt;=&gt; Any-Target2.  The target should
+        /// have canonical casing (the casing desired to be produced when
+        /// an inverse is formed) and should contain no whitespace or other
+        /// extraneous characters.
+        /// </summary>
+        /// <param name="target">The target against which to register the inverse.</param>
+        /// <param name="inverseTarget">The inverse of target, that is
+        /// Any-target.GetInverse() => Any-inverseTarget.</param>
+        /// <param name="bidirectional">If true, register the reverse relation
+        /// as well, that is, Any-inverseTarget.GetInverse() => Any-target.</param>
         public static void RegisterSpecialInverse(string target,
                                                   string inverseTarget,
                                                   bool bidirectional)
@@ -621,25 +644,25 @@ namespace ICU4N.Text
         // Private implementation
         //----------------------------------------------------------------
 
-        /**
-         * Parse an ID into component pieces.  Take IDs of the form T,
-         * T/V, S-T, S-T/V, or S/V-T.  If the source is missing, return a
-         * source of ANY.
-         * @param id the id string, in any of several forms
-         * @param pos INPUT-OUTPUT parameter.  On input, pos[0] is the
-         * offset of the first character to parse in id.  On output,
-         * pos[0] is the offset after the last parsed character.  If the
-         * parse failed, pos[0] will be unchanged.
-         * @param allowFilter if true, a UnicodeSet pattern is allowed
-         * at any location between specs or delimiters, and is returned
-         * as the fifth string in the array.
-         * @return a Specs object, or null if the parse failed.  If
-         * neither source nor target was seen in the parsed id, then the
-         * parse fails.  If allowFilter is true, then the parsed filter
-         * pattern is returned in the Specs object, otherwise the returned
-         * filter reference is null.  If the parse fails for any reason
-         * null is returned.
-         */
+        /// <summary>
+        /// Parse an ID into component pieces.  Take IDs of the form T,
+        /// T/V, S-T, S-T/V, or S/V-T.  If the source is missing, return a
+        /// source of ANY.
+        /// </summary>
+        /// <param name="id">The id string, in any of several forms.</param>
+        /// <param name="pos">INPUT-OUTPUT parameter.  On input, pos[0] is the
+        /// offset of the first character to parse in id.  On output,
+        /// pos[0] is the offset after the last parsed character.  If the
+        /// parse failed, pos[0] will be unchanged.</param>
+        /// <param name="allowFilter">If true, a <see cref="UnicodeSet"/> pattern is allowed
+        /// at any location between specs or delimiters, and is returned
+        /// as the fifth string in the array.</param>
+        /// <returns>A <see cref="Specs"/> object, or null if the parse failed.  If
+        /// neither source nor target was seen in the parsed id, then the
+        /// parse fails.  If <paramref name="allowFilter"/> is true, then the parsed filter
+        /// pattern is returned in the <see cref="Specs"/> object, otherwise the returned
+        /// filter reference is null.  If the parse fails for any reason
+        /// null is returned.</returns>
         private static Specs ParseFilterID(string id, int[] pos,
                                            bool allowFilter)
         {
@@ -757,13 +780,13 @@ namespace ICU4N.Text
             return new Specs(source, target, variant, sawSource, filter);
         }
 
-        /**
-         * Givens a Spec object, convert it to a SingleID object.  The
-         * Spec object is a more unprocessed parse result.  The SingleID
-         * object contains information about canonical and basic IDs.
-         * @return a SingleID; never returns null.  Returned object always
-         * has 'filter' field of null.
-         */
+        /// <summary>
+        /// Given a <see cref="Specs"/> object, convert it to a <see cref="SingleID"/> object.  The
+        /// Spec object is a more unprocessed parse result.  The SingleID
+        /// object contains information about canonical and basic IDs.
+        /// </summary>
+        /// <returns>A <see cref="SingleID"/> or null. Returned object always has
+        /// <see cref="SingleID.Filter"/> value of null.</returns>
         private static SingleID SpecsToID(Specs specs, TransliterationDirection dir)
         {
             string canonID = "";
@@ -802,13 +825,13 @@ namespace ICU4N.Text
             return new SingleID(canonID, basicID);
         }
 
-        /**
-         * Given a Specs object, return a SingleID representing the
-         * special inverse of that ID.  If there is no special inverse
-         * then return null.
-         * @return a SingleID or null.  Returned object always has
-         * 'filter' field of null.
-         */
+        /// <summary>
+        /// Given a <see cref="Specs"/> object, return a <see cref="SingleID"/> representing the
+        /// special inverse of that ID.  If there is no special inverse
+        /// then return null.
+        /// </summary>
+        /// <returns>A <see cref="SingleID"/> or null. Returned object always has
+        /// <see cref="SingleID.Filter"/> value of null.</returns>
         private static SingleID SpecsToSpecialInverse(Specs specs)
         {
             if (!specs.Source.Equals(ANY, StringComparison.OrdinalIgnoreCase))

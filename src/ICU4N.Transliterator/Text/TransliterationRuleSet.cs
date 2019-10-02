@@ -13,11 +13,12 @@ namespace ICU4N.Text
     /// <para/>
     /// A <see cref="TransliterationRuleSet"/> has one important operation, that of
     /// finding a matching rule at a given point in the text.  This is accomplished
-    /// by the <see cref="FindMatch()"/> method.
+    /// by the FindMatch() method.
     /// <para/>
-    /// Copyright &copy; IBM Corporation 1999.  All rights reserved.
+    /// Copyright &#169; IBM Corporation 1999.  All rights reserved.
     /// </summary>
     /// <author>Alan Liu</author>
+    // ICU4N TODO: The FindMatch() method described above doesn't seem to exist.
     internal class TransliterationRuleSet
     {
         /// <summary>
@@ -39,7 +40,7 @@ namespace ICU4N.Text
         private TransliterationRule[] rules;
 
         /// <summary>
-        /// Index table.  For text having a first character c, compute x = c&0xFF.
+        /// Index table.  For text having a first character c, compute x = c&amp;0xFF.
         /// Now use rules[index[x]..index[x+1]-1].  This index table is created by
         /// <see cref="Freeze()"/>.
         /// </summary>

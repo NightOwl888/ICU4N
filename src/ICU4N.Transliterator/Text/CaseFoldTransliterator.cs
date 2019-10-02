@@ -1,5 +1,4 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Globalization;
 using System.Text;
 
 namespace ICU4N.Text
@@ -10,16 +9,16 @@ namespace ICU4N.Text
     /// </summary>
     internal class CaseFoldTransliterator : Transliterator
     {
-        /**
-         * Package accessible ID.
-         */
+        /// <summary>
+        /// Package accessible ID.
+        /// </summary>
         internal static readonly string _ID = "Any-CaseFold";
 
         // TODO: Add variants for tr, az, lt, default = default locale
 
-        /**
-         * System registration hook.
-         */
+        /// <summary>
+        /// System registration hook.
+        /// </summary>
         internal static void Register()
         {
             Transliterator.RegisterFactory(_ID, new Transliterator.Factory(getInstance: (id) =>
@@ -34,10 +33,9 @@ namespace ICU4N.Text
         private ReplaceableContextIterator iter;
         private StringBuilder result;
 
-        /**
-         * Constructs a transliterator.
-         */
-
+        /// <summary>
+        /// Constructs a transliterator.
+        /// </summary>
         public CaseFoldTransliterator()
                 : base(_ID, null)
         {
@@ -46,9 +44,9 @@ namespace ICU4N.Text
             result = new StringBuilder();
         }
 
-        /**
-         * Implements {@link Transliterator#handleTransliterate}.
-         */
+        /// <summary>
+        /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>
+        /// </summary>
         protected override void HandleTransliterate(IReplaceable text,
                                            TransliterationPosition offsets, bool isIncremental)
         {

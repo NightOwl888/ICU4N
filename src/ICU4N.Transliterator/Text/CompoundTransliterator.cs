@@ -19,7 +19,7 @@ namespace ICU4N.Text
     /// transliterator.  See the class documentation for 
     /// <see cref="Transliterator"/> for details.
     /// <para/>
-    /// Copyright &copy; IBM Corporation 1999.  All rights reserved.
+    /// Copyright &#169; IBM Corporation 1999.  All rights reserved.
     /// </remarks>
     /// <author>Alan Liu</author>
     internal class CompoundTransliterator : Transliterator
@@ -28,67 +28,70 @@ namespace ICU4N.Text
 
         private int numAnonymousRBTs = 0;
 
-        /**
-         * Constructs a new compound transliterator given an array of
-         * transliterators.  The array of transliterators may be of any
-         * length, including zero or one, however, useful compound
-         * transliterators have at least two components.
-         * @param transliterators array of <code>Transliterator</code>
-         * objects
-         * @param filter the filter.  Any character for which
-         * <tt>filter.contains()</tt> returns <tt>false</tt> will not be
-         * altered by this transliterator.  If <tt>filter</tt> is
-         * <tt>null</tt> then no filtering is applied.
-         */
-        /*public CompoundTransliterator(Transliterator[] transliterators,
-                                      UnicodeFilter filter) {
-            super(joinIDs(transliterators), filter);
-            trans = new Transliterator[transliterators.length];
-            System.arraycopy(transliterators, 0, trans, 0, trans.length);
-            computeMaximumContextLength();
-        }*/
+        ///// <summary>
+        ///// Constructs a new compound transliterator given an array of
+        ///// transliterators.  The array of transliterators may be of any
+        ///// length, including zero or one, however, useful compound
+        ///// transliterators have at least two components.
+        ///// </summary>
+        ///// <param name="transliterators">Array of <see cref="Transliterator"/> objects.</param>
+        ///// <param name="filter">the filter.  Any character for which
+        ///// <c>filter.Contains()</c> returns <c>false</c> will not be
+        ///// altered by this transliterator.  If <c>filter</c> is
+        ///// <c>null</c> then no filtering is applied.
+        ///// </param>
+        //public CompoundTransliterator(Transliterator[] transliterators,
+        //                              UnicodeFilter filter)
+        //    : base(JoinIDs(transliterators), filter)
+        //{
+        //    trans = new Transliterator[transliterators.Length];
+        //    System.Array.Copy(transliterators, 0, trans, 0, trans.Length);
+        //    ComputeMaximumContextLength();
+        //}
 
-        /**
-         * Constructs a new compound transliterator given an array of
-         * transliterators.  The array of transliterators may be of any
-         * length, including zero or one, however, useful compound
-         * transliterators have at least two components.
-         * @param transliterators array of <code>Transliterator</code>
-         * objects
-         */
-        /*public CompoundTransliterator(Transliterator[] transliterators) {
-            this(transliterators, null);
-        }*/
+        ///// <summary>
+        ///// Constructs a new compound transliterator given an array of
+        ///// transliterators.  The array of transliterators may be of any
+        ///// length, including zero or one, however, useful compound
+        ///// transliterators have at least two components.
+        ///// </summary>
+        ///// <param name="transliterators">Array of <see cref="Transliterator"/> objects.</param>
+        //public CompoundTransliterator(Transliterator[] transliterators)
+        //    : this(transliterators, null)
+        //{
+        //}
 
-        /**
-         * Constructs a new compound transliterator.
-         * @param ID compound ID
-         * @param direction either Transliterator.FORWARD or Transliterator.REVERSE
-         * @param filter a global filter for this compound transliterator
-         * or null
-         */
-        /*public CompoundTransliterator(String ID, int direction,
-                                      UnicodeFilter filter) {
-            super(ID, filter);
-            init(ID, direction, true);
-        }*/
+        ///// <summary>
+        ///// Constructs a new compound transliterator.
+        ///// </summary>
+        ///// <param name="ID">compound ID</param>
+        ///// <param name="direction">Either <see cref="TransliterationDirection.Forward"/> or <see cref="TransliterationDirection.Reverse"/>.</param>
+        ///// <param name="filter">A global filter for this compound transliterator.</param>
+        //public CompoundTransliterator(string ID, TransliterationDirection direction,
+        //                              UnicodeFilter filter)
+        //    : base(ID, filter)
+        //{
+        //    Init(ID, direction, true);
+        //}
 
-        /**
-         * Constructs a new compound transliterator with no filter.
-         * @param ID compound ID
-         * @param direction either Transliterator.FORWARD or Transliterator.REVERSE
-         */
-        /*public CompoundTransliterator(String ID, int direction) {
-            this(ID, direction, null);
-        }*/
+        ///// <summary>
+        ///// Constructs a new compound transliterator with no filter.
+        ///// </summary>
+        ///// <param name="ID">compound ID</param>
+        ///// <param name="direction">Either <see cref="TransliterationDirection.Forward"/> or <see cref="TransliterationDirection.Reverse"/>.</param>
+        //public CompoundTransliterator(string ID, TransliterationDirection direction)
+        //    : this(ID, direction, null)
+        //{
+        //}
 
-        /**
-         * Constructs a new forward compound transliterator with no filter.
-         * @param ID compound ID
-         */
-        /*public CompoundTransliterator(String ID) {
-            this(ID, FORWARD, null);
-        }*/
+        ///// <summary>
+        ///// Constructs a new forward compound transliterator with no filter.
+        ///// </summary>
+        ///// <param name="ID">compound ID</param>
+        //public CompoundTransliterator(string ID)
+        //    : this(ID, TransliterationDirection.Forward, null)
+        //{
+        //}
 
         /// <summary>
         /// Internal constructor for Transliterator from a vector of
@@ -124,42 +127,36 @@ namespace ICU4N.Text
             numAnonymousRBTs = numAnonymousRBTs2;
         }
 
-        /**
-         * Finish constructing a transliterator: only to be called by
-         * constructors.  Before calling init(), set trans and filter to NULL.
-         * @param id the id containing ';'-separated entries
-         * @param direction either FORWARD or REVERSE
-         * @param idSplitPoint the index into id at which the
-         * splitTrans should be inserted, if there is one, or
-         * -1 if there is none.
-         * @param splitTrans a transliterator to be inserted
-         * before the entry at offset idSplitPoint in the id string.  May be
-         * NULL to insert no entry.
-         * @param fixReverseID if TRUE, then reconstruct the ID of reverse
-         * entries by calling getID() of component entries.  Some constructors
-         * do not require this because they apply a facade ID anyway.
-         */
-        /*private void init(String id,
-                          int direction,
-                          boolean fixReverseID) {
-            // assert(trans == 0);
+        ///// <summary>
+        ///// Finish constructing a transliterator: only to be called by
+        ///// constructors.  Before calling Init(), set trans and filter to NULL.
+        ///// </summary>
+        ///// <param name="id">The id containing ';'-separated entries.</param>
+        ///// <param name="direction">Either <see cref="TransliterationDirection.Forward"/> or <see cref="TransliterationDirection.Reverse"/>.</param>
+        ///// <param name="fixReverseID">if TRUE, then reconstruct the ID of reverse
+        ///// entries by calling ID of component entries.  Some constructors
+        ///// do not require this because they apply a facade ID anyway.</param>
+        //private void Init(string id,
+        //                  TransliterationDirection direction,
+        //                  bool fixReverseID) {
+        //    // Debug.Assert(trans == 0);
 
-            Vector list = new Vector();
-            UnicodeSet[] compoundFilter = new UnicodeSet[1];
-            StringBuffer regenID = new StringBuffer();
-            if (!TransliteratorIDParser.parseCompoundID(id, direction,
-                     regenID, list, compoundFilter)) {
-                throw new IllegalArgumentException("Invalid ID " + id);
-            }
+        //    var list = new List<TransliteratorIDParser.SingleID>();
+        //    UnicodeSet[] compoundFilter = new UnicodeSet[1];
+        //    StringBuffer regenID = new StringBuffer();
+        //    if (!TransliteratorIDParser.ParseCompoundID(id, direction,
+        //             regenID, list, compoundFilter)) {
+        //        throw new ArgumentException("Invalid ID " + id);
+        //    }
 
-            TransliteratorIDParser.instantiateList(list);
+        //    TransliteratorIDParser.InstantiateList(list);
 
-            init(list, direction, fixReverseID);
+        //    Init(list, direction, fixReverseID);
 
-            if (compoundFilter[0] != null) {
-                setFilter(compoundFilter[0]);
-            }
-        }*/
+        //    if (compoundFilter[0] != null) {
+        //        Filter = compoundFilter[0];
+        //    }
+        //}
 
         /// <summary>
         /// Finish constructing a transliterator: only to be called by
@@ -212,21 +209,24 @@ namespace ICU4N.Text
             ComputeMaximumContextLength();
         }
 
-        /**
-         * Return the IDs of the given list of transliterators, concatenated
-         * with ';' delimiting them.  Equivalent to the perlish expression
-         * join(';', map($_.getID(), transliterators).
-         */
-        /*private static String joinIDs(Transliterator[] transliterators) {
-            StringBuffer id = new StringBuffer();
-            for (int i=0; i<transliterators.length; ++i) {
-                if (i > 0) {
-                    id.append(';');
-                }
-                id.append(transliterators[i].getID());
-            }
-            return id.toString();
-        }*/
+        ///// <summary>
+        ///// Return the IDs of the given list of transliterators, concatenated
+        ///// with ';' delimiting them.  Equivalent to the perlish expression
+        ///// join(';', map($_.getID(), transliterators).
+        ///// </summary>
+        //private static string JoinIDs(Transliterator[] transliterators)
+        //{
+        //    StringBuffer id = new StringBuffer();
+        //    for (int i = 0; i < transliterators.Length; ++i)
+        //    {
+        //        if (i > 0)
+        //        {
+        //            id.Append(';');
+        //        }
+        //        id.Append(transliterators[i].ID);
+        //    }
+        //    return id.ToString();
+        //}
 
         /// <summary>
         /// Gets the number of transliterators in this chain.
@@ -386,7 +386,7 @@ namespace ICU4N.Text
              * - limit' is the value of limit after calling handleKT
              */
 
-            /**
+            /*
              * Example: 3 transliterators.  This example illustrates the
              * mechanics we need to implement.  C, S, and L are the contextStart,
              * start, and limit.  gl is the globalLimit.  contextLimit is
@@ -436,7 +436,7 @@ namespace ICU4N.Text
             int delta = 0; // delta in length
 
             StringBuffer log = null;
-            ///CLOVER:OFF
+            ////CLOVER:OFF
             if (DEBUG)
             {
                 log = new StringBuffer("CompoundTransliterator{" + ID +
@@ -444,7 +444,7 @@ namespace ICU4N.Text
                 UtilityExtensions.FormatInput(log, text, index);
                 Console.Out.WriteLine(Utility.Escape(log.ToString()));
             }
-            ///CLOVER:ON
+            ////CLOVER:ON
 
             // Give each transliterator a crack at the run of characters.
             // See comments at the top of the method for more detail.
@@ -456,7 +456,7 @@ namespace ICU4N.Text
                 if (index.Start == index.Limit)
                 {
                     // Short circuit for empty range
-                    ///CLOVER:OFF
+                    ////CLOVER:OFF
                     if (DEBUG)
                     {
                         Console.Out.WriteLine("CompoundTransliterator[" + i +
@@ -465,11 +465,11 @@ namespace ICU4N.Text
                                            UtilityExtensions.FormatInput(text, index) +
                                            " (NOTHING TO DO)");
                     }
-                    ///CLOVER:ON
+                    ////CLOVER:ON
                     break;
                 }
 
-                ///CLOVER:OFF
+                ////CLOVER:OFF
                 if (DEBUG)
                 {
                     log.Length = 0;
@@ -478,7 +478,7 @@ namespace ICU4N.Text
                                (incremental ? "]i: " : "]: "));
                     UtilityExtensions.FormatInput(log, text, index);
                 }
-                ///CLOVER:ON
+                ////CLOVER:ON
 
                 trans[i].FilteredTransliterate(text, index, incremental);
 
@@ -494,14 +494,14 @@ namespace ICU4N.Text
                     throw new Exception("ERROR: Incomplete non-incremental transliteration by " + trans[i].ID);
                 }
 
-                ///CLOVER:OFF
+                ////CLOVER:OFF
                 if (DEBUG)
                 {
                     log.Append(" => ");
                     UtilityExtensions.FormatInput(log, text, index);
                     Console.Out.WriteLine(Utility.Escape(log.ToString()));
                 }
-                ///CLOVER:ON
+                ////CLOVER:ON
 
                 // Cumulative delta for insertions/deletions
                 delta += index.Limit - limit;
@@ -524,7 +524,7 @@ namespace ICU4N.Text
             // adjustments for deletions/insertions.
             index.Limit = compoundLimit;
 
-            ///CLOVER:OFF
+            ////CLOVER:OFF
             if (DEBUG)
             {
                 log.Length = 0;
@@ -533,7 +533,7 @@ namespace ICU4N.Text
                 UtilityExtensions.FormatInput(log, text, index);
                 Console.Out.WriteLine(Utility.Escape(log.ToString()));
             }
-            ///CLOVER:ON
+            ////CLOVER:ON
         }
 
         /// <summary>

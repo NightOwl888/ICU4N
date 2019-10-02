@@ -60,94 +60,93 @@ namespace ICU4N.Text
         Transliterator GetInstance(string id);
     }
 
-    /**
-    * Position structure for incremental transliteration.  This data
-    * structure defines two substrings of the text being
-    * transliterated.  The first region, [contextStart,
-    * contextLimit), defines what characters the transliterator will
-    * read as context.  The second region, [start, limit), defines
-    * what characters will actually be transliterated.  The second
-    * region should be a subset of the first.
-    *
-    * <p>After a transliteration operation, some of the indices in this
-    * structure will be modified.  See the field descriptions for
-    * details.
-    *
-    * <p>contextStart &lt;= start &lt;= limit &lt;= contextLimit
-    *
-    * <p>Note: All index values in this structure must be at code point
-    * boundaries.  That is, none of them may occur between two code units
-    * of a surrogate pair.  If any index does split a surrogate pair,
-    * results are unspecified.
-    * @stable ICU 2.0
-    */
+    /// <summary>
+    /// <see cref="TransliterationPosition"/> structure for incremental transliteration.  This data
+    /// structure defines two substrings of the text being
+    /// transliterated.  The first region, [<see cref="ContextStart"/>,
+    /// <see cref="ContextLimit"/>), defines what characters the transliterator will
+    /// read as context.  The second region, [<see cref="Start"/>, <see cref="Limit"/>), defines
+    /// what characters will actually be transliterated.  The second
+    /// region should be a subset of the first.
+    /// <para/>
+    /// After a transliteration operation, some of the indices in this
+    /// structure will be modified.  See the field descriptions for
+    /// details.
+    /// <para/>
+    /// <see cref="ContextStart"/> &lt;= <see cref="Start"/> &lt;= <see cref="Limit"/> &lt;= <see cref="ContextLimit"/>
+    /// <para/>
+    /// Note: All index values in this structure must be at code point
+    /// boundaries.  That is, none of them may occur between two code units
+    /// of a surrogate pair.  If any index does split a surrogate pair,
+    /// results are unspecified.
+    /// </summary>
+    /// <stable>ICU 2.0</stable>
     public class TransliterationPosition
     {
-
-        /**
-         * Beginning index, inclusive, of the context to be considered for
-         * a transliteration operation.  The transliterator will ignore
-         * anything before this index.  INPUT/OUTPUT parameter: This parameter
-         * is updated by a transliteration operation to reflect the maximum
-         * amount of antecontext needed by a transliterator.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Beginning index, inclusive, of the context to be considered for
+        /// a transliteration operation.  The transliterator will ignore
+        /// anything before this index.  INPUT/OUTPUT parameter: This parameter
+        /// is updated by a transliteration operation to reflect the maximum
+        /// amount of antecontext needed by a transliterator.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public int ContextStart { get; set; }
 
-        /**
-         * Ending index, exclusive, of the context to be considered for a
-         * transliteration operation.  The transliterator will ignore
-         * anything at or after this index.  INPUT/OUTPUT parameter: This
-         * parameter is updated to reflect changes in the length of the
-         * text, but points to the same logical position in the text.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Ending index, exclusive, of the context to be considered for a
+        /// transliteration operation.  The transliterator will ignore
+        /// anything at or after this index.  INPUT/OUTPUT parameter: This
+        /// parameter is updated to reflect changes in the length of the
+        /// text, but points to the same logical position in the text.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public int ContextLimit { get; set; }
 
-        /**
-         * Beginning index, inclusive, of the text to be transliteratd.
-         * INPUT/OUTPUT parameter: This parameter is advanced past
-         * characters that have already been transliterated by a
-         * transliteration operation.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Beginning index, inclusive, of the text to be transliteratd.
+        /// INPUT/OUTPUT parameter: This parameter is advanced past
+        /// characters that have already been transliterated by a
+        /// transliteration operation.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public int Start { get; set; }
 
-        /**
-         * Ending index, exclusive, of the text to be transliteratd.
-         * INPUT/OUTPUT parameter: This parameter is updated to reflect
-         * changes in the length of the text, but points to the same
-         * logical position in the text.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Ending index, exclusive, of the text to be transliteratd.
+        /// INPUT/OUTPUT parameter: This parameter is updated to reflect
+        /// changes in the length of the text, but points to the same
+        /// logical position in the text.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public int Limit { get; set; }
 
-        /**
-         * Constructs a Position object with start, limit,
-         * contextStart, and contextLimit all equal to zero.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Constructs a <see cref="TransliterationPosition"/> object with <see cref="Start"/>, <see cref="Limit"/>,
+        /// <see cref="ContextStart"/>, and <see cref="ContextLimit"/> all equal to zero.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public TransliterationPosition()
             : this(0, 0, 0, 0)
         {
         }
 
-        /**
-         * Constructs a Position object with the given start,
-         * contextStart, and contextLimit.  The limit is set to the
-         * contextLimit.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Constructs a <see cref="TransliterationPosition"/> object with the given <paramref name="start"/>,
+        /// <paramref name="contextStart"/>, and <paramref name="contextLimit"/>. The limit is set to the
+        /// <paramref name="contextLimit"/>.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public TransliterationPosition(int contextStart, int contextLimit, int start)
             : this(contextStart, contextLimit, start, contextLimit)
         {
         }
 
-        /**
-         * Constructs a Position object with the given start, limit,
-         * contextStart, and contextLimit.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Constructs a <see cref="TransliterationPosition"/> object with the given <paramref name="start"/>, <paramref name="limit"/>,
+        /// <paramref name="contextStart"/>, and <paramref name="contextLimit"/>.
+        /// </summary>
+        /// <stable>ICU 2.0</stable>
         public TransliterationPosition(int contextStart, int contextLimit,
                         int start, int limit)
         {
@@ -157,19 +156,19 @@ namespace ICU4N.Text
             this.Limit = limit;
         }
 
-        /**
-         * Constructs a Position object that is a copy of another.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Constructs a <see cref="TransliterationPosition"/> object that is a copy of another.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public TransliterationPosition(TransliterationPosition pos)
         {
             Set(pos);
         }
 
-        /**
-         * Copies the indices of this position from another.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Copies the indices of this position from another.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public virtual void Set(TransliterationPosition pos)
         {
             ContextStart = pos.ContextStart;
@@ -178,10 +177,10 @@ namespace ICU4N.Text
             Limit = pos.Limit;
         }
 
-        /**
-         * Returns true if this Position is equal to the given object.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns true if this <see cref="TransliterationPosition"/> is equal to the given object.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public override bool Equals(object obj)
         {
             if (obj is TransliterationPosition)
@@ -195,12 +194,11 @@ namespace ICU4N.Text
             return false;
         }
 
-        /**
-         * Mock implementation of hashCode(). This implementation always returns a constant
-         * value. When Java assertion is enabled, this method triggers an assertion failure.
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Mock implementation of <see cref="object.GetHashCode()"/>. This implementation always returns a constant
+        /// value. When assertion is enabled, this method triggers an assertion failure.
+        /// </summary>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
 #pragma warning disable 809
         public override int GetHashCode()
@@ -210,10 +208,10 @@ namespace ICU4N.Text
             return 42;
         }
 
-        /**
-         * Returns a string representation of this Position.
-         * @stable ICU 2.6
-         */
+        /// <summary>
+        /// Returns a string representation of this <see cref="TransliterationPosition"/>.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
         public override string ToString()
         {
             return "[cs=" + ContextStart
@@ -223,13 +221,12 @@ namespace ICU4N.Text
                 + "]";
         }
 
-        /**
-         * Check all bounds.  If they are invalid, throw an exception.
-         * @param length the length of the string this object applies to
-         * @exception IllegalArgumentException if any indices are out
-         * of bounds
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Check all bounds.  If they are invalid, throw an exception.
+        /// </summary>
+        /// <param name="length">The length of the string this object applies to.</param>
+        /// <exception cref="ArgumentException">If any indices are out of bounds.</exception>
+        /// <stable>ICU 2.0</stable>
         public void Validate(int length)
         {
             if (ContextStart < 0 ||
@@ -249,6 +246,184 @@ namespace ICU4N.Text
     }
 
 
+    /// <summary>
+    /// <see cref="Transliterator"/> is an abstract class that transliterates text from one format to another. The most common
+    /// kind of transliterator is a script, or alphabet, transliterator. For example, a Russian to Latin transliterator
+    /// changes Russian text written in Cyrillic characters to phonetically equivalent Latin characters. It does not
+    /// <em>translate</em> Russian to English! Transliteration, unlike translation, operates on characters, without reference
+    /// to the meanings of words and sentences.
+    /// <para/>
+    /// Although script conversion is its most common use, a transliterator can actually perform a more general class of
+    /// tasks. In fact, <see cref="Transliterator"/> defines a very general API which specifies only that a segment of the
+    /// input text is replaced by new text. The particulars of this conversion are determined entirely by subclasses of
+    /// <see cref="Transliterator"/>.
+    /// </summary>
+    /// <remarks>
+    /// <b>Transliterators are stateless</b>
+    /// 
+    /// <para/>
+    /// <see cref="Transliterator"/> objects are <em>stateless</em>; they retain no information between calls to
+    /// <see cref="Transliterate(IReplaceable)"/>. As a result, threads may share transliterators without synchronizing them. This might
+    /// seem to limit the complexity of the transliteration operation. In practice, subclasses perform complex
+    /// transliterations by delaying the replacement of text until it is known that no other replacements are possible. In
+    /// other words, although the <see cref="Transliterator"/> objects are stateless, the source text itself embodies all the
+    /// needed information, and delayed operation allows arbitrary complexity.
+    /// <para/>
+    /// <b>Batch transliteration</b>
+    /// 
+    /// <para/>
+    /// The simplest way to perform transliteration is all at once, on a string of existing text. This is referred to as
+    /// <em>batch</em> transliteration. For example, given a string <c>input</c> and a transliterator <c>t</c>,
+    /// the call
+    /// <code>string result = t.Transliterate(input);</code>
+    /// will transliterate it and return the result. Other methods allow the client to specify a substring to be
+    /// transliterated and to use <see cref="IReplaceable"/> objects instead of strings, in order to preserve out-of-band
+    /// information (such as text styles).
+    /// <para/>
+    /// 
+    /// <b>Keyboard transliteration</b>
+    /// 
+    /// <para/>
+    /// Somewhat more involved is <em>keyboard</em>, or incremental transliteration. This is the transliteration of text that
+    /// is arriving from some source (typically the user's keyboard) one character at a time, or in some other piecemeal
+    /// fashion.
+    /// <para/>
+    /// In keyboard transliteration, a <see cref="IReplaceable"/> buffer stores the text. As text is inserted, as much as
+    /// possible is transliterated on the fly. This means a GUI that displays the contents of the buffer may show text being
+    /// modified as each new character arrives.
+    /// <para/>
+    /// Consider the simple <see cref="RuleBasedTransliterator"/>:
+    /// <code>
+    /// th&gt;{theta}<br/>
+    /// t&gt;{tau}
+    /// </code>
+    /// When the user types 't', nothing will happen, since the transliterator is waiting to see if the next character is
+    /// 'h'. To remedy this, we introduce the notion of a cursor, marked by a '|' in the output string:
+    /// <code>
+    /// t&gt;|{tau}<br/>
+    /// {tau}h&gt;{theta}
+    /// </code>
+    /// Now when the user types 't', tau appears, and if the next character is 'h', the tau changes to a theta. This is
+    /// accomplished by maintaining a cursor position (independent of the insertion point, and invisible in the GUI) across
+    /// calls to <see cref="Transliterate(IReplaceable)"/>. Typically, the cursor will be coincident with the insertion point, but in a
+    /// case like the one above, it will precede the insertion point.
+    /// <para/>
+    /// Keyboard transliteration methods maintain a set of three indices that are updated with each call to
+    /// <see cref="Transliterate(IReplaceable, TransliterationPosition)"/>, including the cursor, start, and limit. These indices are changed by the method, and
+    /// they are passed in and out via a <see cref="TransliterationPosition"/> object. The <c>start</c> index marks the beginning of the substring
+    /// that the transliterator will look at. It is advanced as text becomes committed (but it is not the committed index;
+    /// that's the <c>cursor</c>). The <c>cursor</c> index, described above, marks the point at which the
+    /// transliterator last stopped, either because it reached the end, or because it required more characters to
+    /// disambiguate between possible inputs. The <c>cursor</c> can also be explicitly set by rules in a
+    /// <see cref="RuleBasedTransliterator"/>. Any characters before the <c>cursor</c> index are frozen; future keyboard
+    /// transliteration calls within this input sequence will not change them. New text is inserted at the <c>limit</c>
+    /// index, which marks the end of the substring that the transliterator looks at.
+    /// <para/>
+    /// Because keyboard transliteration assumes that more characters are to arrive, it is conservative in its operation. It
+    /// only transliterates when it can do so unambiguously. Otherwise it waits for more characters to arrive. When the
+    /// client code knows that no more characters are forthcoming, perhaps because the user has performed some input
+    /// termination operation, then it should call <see cref="FinishTransliteration(IReplaceable, TransliterationPosition)"/> to complete any pending
+    /// transliterations.
+    /// <para/>
+    /// 
+    /// <b>Inverses</b>
+    /// 
+    /// <para/>
+    /// Pairs of transliterators may be inverses of one another. For example, if transliterator <b>A</b> transliterates
+    /// characters by incrementing their Unicode value (so "abc" -&gt; "def"), and transliterator <b>B</b> decrements character
+    /// values, then <b>A</b> is an inverse of <b>B</b> and vice versa. If we compose <b>A</b> with <b>B</b> in a compound
+    /// transliterator, the result is the indentity transliterator, that is, a transliterator that does not change its input
+    /// text.
+    /// <para/>
+    /// The <see cref="Transliterator.GetInverse()"/> method returns a transliterator's inverse, if one exists,
+    /// or <c>null</c> otherwise. However, the result of <see cref="Transliterator.GetInverse()"/> usually will <em>not</em> be a true
+    /// mathematical inverse. This is because true inverse transliterators are difficult to formulate. For example, consider
+    /// two transliterators: <b>AB</b>, which transliterates the character 'A' to 'B', and <b>BA</b>, which transliterates
+    /// 'B' to 'A'. It might seem that these are exact inverses, since
+    /// <code>
+    /// "A" x <b>AB</b> -&gt; "B"<br/>
+    /// "B" x <b>BA</b> -&gt; "A"
+    /// </code>
+    /// where 'x' represents transliteration. However,
+    /// <code>
+    /// "ABCD" x <b>AB</b> -&gt; "BBCD"<br/>
+    /// "BBCD" x <b>BA</b> -&gt; "AACD"
+    /// </code>
+    /// so <b>AB</b> composed with <b>BA</b> is not the identity. Nonetheless, <b>BA</b> may be usefully considered to be
+    /// <b>AB</b>'s inverse, and it is on this basis that <b>AB</b><c>.GetInverse()</c> could legitimately return
+    /// <b>BA</b>.
+    /// <para/>
+    /// 
+    /// <b>Filtering</b>
+    /// 
+    /// <para/>
+    /// Each transliterator has a filter, which restricts changes to those characters selected by the filter. The
+    /// filter affects just the characters that are changed -- the characters outside of the filter are still part of the
+    /// context for the filter. For example, in the following even though 'x' is filtered out, and doesn't convert to y, it does affect the conversion of 'a'.
+    /// <code>
+    /// string rules = &quot;x &gt; y; x{a} &gt; b; &quot;
+    /// Transliterator tempTrans = Transliterator.CreateFromRules(&quot;temp&quot;, rules, TransliterationDirection.Forward)
+    /// {
+    ///     Filter = new UnicodeSet(&quot;[a]&quot;);
+    /// };
+    /// string tempResult = tempTrans.Transform(&quot;xa&quot;);
+    /// // results in &quot;xb&quot;
+    /// </code>
+    /// <para/>
+    /// 
+    /// <b>IDs and display names</b>
+    /// 
+    /// <para/>
+    /// A transliterator is designated by a short identifier string or <em>ID</em>. IDs follow the format
+    /// <em>source-destination</em>, where <em>source</em> describes the entity being replaced, and <em>destination</em>
+    /// describes the entity replacing <em>source</em>. The entities may be the names of scripts, particular sequences of
+    /// characters, or whatever else it is that the transliterator converts to or from. For example, a transliterator from
+    /// Russian to Latin might be named "Russian-Latin". A transliterator from keyboard escape sequences to Latin-1
+    /// characters might be named "KeyboardEscape-Latin1". By convention, system entity names are in English, with the
+    /// initial letters of words capitalized; user entity names may follow any format so long as they do not contain dashes.
+    /// <para/>
+    /// In addition to programmatic IDs, transliterator objects have display names for presentation in user interfaces,
+    /// returned by <see cref="GetDisplayName(string)"/>.
+    /// <para/>
+    /// 
+    /// <b>Factory methods and registration</b>
+    /// 
+    /// <para/>
+    /// In general, client code should use the factory method <see cref="GetInstance(string)"/> to obtain an instance of a
+    /// transliterator given its ID. Valid IDs may be enumerated using <see cref="GetAvailableIDs()"/>. Since transliterators
+    /// are stateless, multiple calls to <see cref="GetInstance(string)"/> with the same ID will return the same object.
+    /// <para/>
+    /// In addition to the system transliterators registered at startup, user transliterators may be registered by calling
+    /// <see cref="RegisterInstance(Transliterator)"/> at run time. To register a transliterator subclass without instantiating it (until it
+    /// is needed), users may call <see cref="RegisterType(string, Type, string)"/>.
+    /// <para/>
+    /// 
+    /// <b>Composed transliterators</b>
+    /// 
+    /// <para/>
+    /// In addition to built-in system transliterators like "Latin-Greek", there are also built-in <em>composed</em>
+    /// transliterators. These are implemented by composing two or more component transliterators. For example, if we have
+    /// scripts "A", "B", "C", and "D", and we want to transliterate between all pairs of them, then we need to write 12
+    /// transliterators: "A-B", "A-C", "A-D", "B-A",..., "D-A", "D-B", "D-C". If it is possible to convert all scripts to an
+    /// intermediate script "M", then instead of writing 12 rule sets, we only need to write 8: "A~M", "B~M", "C~M", "D~M",
+    /// "M~A", "M~B", "M~C", "M~D". (This might not seem like a big win, but it's really 2<em>n</em> vs. <em>n</em>
+    /// <sup>2</sup> - <em>n</em>, so as <em>n</em> gets larger the gain becomes significant. With 9 scripts, it's 18 vs. 72
+    /// rule sets, a big difference.) Note the use of "~" rather than "-" for the script separator here; this indicates that
+    /// the given transliterator is intended to be composed with others, rather than be used as is.
+    /// <para/>
+    /// Composed transliterators can be instantiated as usual. For example, the system transliterator "Devanagari-Gujarati"
+    /// is a composed transliterator built internally as "Devanagari~InterIndic;InterIndic~Gujarati". When this
+    /// transliterator is instantiated, it appears externally to be a standard transliterator (e.g., <see cref="ID"/> returns
+    /// "Devanagari-Gujarati").
+    /// <para/>
+    /// 
+    /// <b>Subclassing</b>
+    /// 
+    /// <para/>
+    /// Subclasses must implement the abstract method <see cref="HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>.
+    /// </remarks>
+    /// <author>Alan Liu</author>
+    /// <stable>ICU 2.0</stable>
     public abstract class Transliterator : IStringTransform
     {
         // ICU4N specific - need to use the current assembly for resources
@@ -270,90 +445,89 @@ namespace ICU4N.Text
         /// direction, and B to A when operating in the reverse direction.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public static readonly TransliterationDirection Reverse = TransliterationDirection.Reverse; 
+        public static readonly TransliterationDirection Reverse = TransliterationDirection.Reverse;
 
         // ICU4N specific - de-nested the Postion class and renamed it TransliteratorPosition
 
-        /**
-         * Programmatic name, e.g., "Latin-Arabic".
-         */
+        /// <summary>
+        /// Programmatic name, e.g., "Latin-Arabic".
+        /// </summary>
         private string id;
 
-        /**
-         * This transliterator's filter.  Any character for which
-         * <tt>filter.contains()</tt> returns <tt>false</tt> will not be
-         * altered by this transliterator.  If <tt>filter</tt> is
-         * <tt>null</tt> then no filtering is applied.
-         */
+        /// <summary>
+        /// This transliterator's filter.  Any character for which
+        /// <c>filter.Contains()</c> returns <c>false</c> will not be
+        /// altered by this transliterator.  If <see cref="filter"/> is
+        /// <c>null</c> then no filtering is applied.
+        /// </summary>
         private UnicodeSet filter;
 
         private int maximumContextLength = 0;
 
-        /**
-         * System transliterator registry.
-         */
+        /// <summary>
+        /// System transliterator registry.
+        /// </summary>
         private static TransliteratorRegistry registry;
 
         private static IDictionary<CaseInsensitiveString, string> displayNameCache;
 
-        /**
-         * Prefix for resource bundle key for the display name for a
-         * transliterator.  The ID is appended to this to form the key.
-         * The resource bundle value should be a String.
-         */
-        private static readonly string RB_DISPLAY_NAME_PREFIX = "%Translit%%";
+        /// <summary>
+        /// Prefix for resource bundle key for the display name for a
+        /// transliterator.  The ID is appended to this to form the key.
+        /// The resource bundle value should be a <see cref="string"/>.
+        /// </summary>
+        private const string RB_DISPLAY_NAME_PREFIX = "%Translit%%";
 
-        /**
-         * Prefix for resource bundle key for the display name for a
-         * transliterator SCRIPT.  The ID is appended to this to form the key.
-         * The resource bundle value should be a String.
-         */
-        private static readonly string RB_SCRIPT_DISPLAY_NAME_PREFIX = "%Translit%";
+        /// <summary>
+        /// Prefix for resource bundle key for the display name for a
+        /// transliterator SCRIPT.  The ID is appended to this to form the key.
+        /// The resource bundle value should be a <see cref="string"/>.
+        /// </summary>
+        private const string RB_SCRIPT_DISPLAY_NAME_PREFIX = "%Translit%";
 
-        /**
-         * Resource bundle key for display name pattern.
-         * The resource bundle value should be a String forming a
-         * MessageFormat pattern, e.g.:
-         * "{0,choice,0#|1#{1} Transliterator|2#{1} to {2} Transliterator}".
-         */
-        private static readonly string RB_DISPLAY_NAME_PATTERN = "TransliteratorNamePattern";
+        /// <summary>
+        /// Resource bundle key for display name pattern.
+        /// The resource bundle value should be a <see cref="string"/> forming a
+        /// <see cref="MessageFormat"/>, e.g.:
+        /// "{0,choice,0#|1#{1} Transliterator|2#{1} to {2} Transliterator}".
+        /// </summary>
+        private const string RB_DISPLAY_NAME_PATTERN = "TransliteratorNamePattern";
 
-        /**
-         * Delimiter between elements in a compound ID.
-         */
-        internal static readonly char ID_DELIM = ';';
+        /// <summary>
+        /// Delimiter between elements in a compound ID.
+        /// </summary>
+        internal const char ID_DELIM = ';';
 
-        /**
-         * Delimiter before target in an ID.
-         */
-        internal static readonly char ID_SEP = '-';
+        /// <summary>
+        /// Delimiter before target in an ID.
+        /// </summary>
+        internal const char ID_SEP = '-';
 
-        /**
-         * Delimiter before variant in an ID.
-         */
-        internal static readonly char VARIANT_SEP = '/';
+        /// <summary>
+        /// Delimiter before variant in an ID.
+        /// </summary>
+        internal const char VARIANT_SEP = '/';
 
-        /**
-         * To enable debugging output in the Transliterator component, set
-         * DEBUG to true.
-         *
-         * N.B. Make sure to recompile all of the com.ibm.icu.text package
-         * after changing this.  Easiest way to do this is 'ant clean
-         * core' ('ant' will NOT pick up the dependency automatically).
-         *
-         * <<This generates a lot of output.>>
-         */
+        /// <summary>
+        /// To enable debugging output in the Transliterator component, set
+        /// <see cref="DEBUG"/> to true.
+        /// <para/>
+        /// N.B. Make sure to recompile all of the ICU4N assembly
+        /// after changing this.
+        /// <para/>
+        /// <strong>This generates a lot of output.</strong>
+        /// </summary>
         internal static readonly bool DEBUG = false;
 
-        /**
-         * Default constructor.
-         * @param ID the string identifier for this transliterator
-         * @param filter the filter.  Any character for which
-         * <tt>filter.contains()</tt> returns <tt>false</tt> will not be
-         * altered by this transliterator.  If <tt>filter</tt> is
-         * <tt>null</tt> then no filtering is applied.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <param name="id">The string identifier for this transliterator.</param>
+        /// <param name="filter">The filter.  Any character for which
+        /// <c>filter.Contains()</c> returns <c>false</c> will not be
+        /// altered by this transliterator.  If <paramref name="filter"/> is
+        /// <c>null</c> then no filtering is applied.</param>
+        /// <stable>ICU 2.0</stable>
         protected Transliterator(string id, UnicodeFilter filter)
         {
             if (id == null)
@@ -364,21 +538,20 @@ namespace ICU4N.Text
             Filter = filter;
         }
 
-        /**
-         * Transliterates a segment of a string, with optional filtering.
-         *
-         * @param text the string to be transliterated
-         * @param start the beginning index, inclusive; <code>0 &lt;= start
-         * &lt;= limit</code>.
-         * @param limit the ending index, exclusive; <code>start &lt;= limit
-         * &lt;= text.length()</code>.
-         * @return The new limit index.  The text previously occupying <code>[start,
-         * limit)</code> has been transliterated, possibly to a string of a different
-         * length, at <code>[start, </code><em>new-limit</em><code>)</code>, where
-         * <em>new-limit</em> is the return value. If the input offsets are out of bounds,
-         * the returned value is -1 and the input string remains unchanged.
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Transliterates a segment of a string, with optional filtering.
+        /// </summary>
+        /// <param name="text">The string to be transliterated.</param>
+        /// <param name="start">the beginning index, inclusive; <c>0 &lt;= start
+        /// &lt;= limit</c>.</param>
+        /// <param name="limit">The ending index, exclusive; <c>start &lt;= limit
+        /// &lt;= text.length()</c>.</param>
+        /// <returns>The new limit index.  The text previously occupying <c>[start,
+        /// limit)</c> has been transliterated, possibly to a string of a different
+        /// length, at <c>[start, </c><em>new-limit</em><c>)</c>, where
+        /// <em>new-limit</em> is the return value. If the input offsets are out of bounds,
+        /// the returned value is -1 and the input string remains unchanged.</returns>
+        /// <stable>ICU 2.0</stable>
         public int Transliterate(IReplaceable text, int start, int limit)
         {
             if (start < 0 ||
@@ -393,23 +566,22 @@ namespace ICU4N.Text
             return pos.Limit;
         }
 
-        /**
-         * Transliterates an entire string in place. Convenience method.
-         * @param text the string to be transliterated
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Transliterates an entire string in place. Convenience method.
+        /// </summary>
+        /// <param name="text">The string to be transliterated.</param>
+        /// <stable>ICU 2.0</stable>
         public void Transliterate(IReplaceable text)
         {
             Transliterate(text, 0, text.Length);
         }
 
-        /**
-         * Transliterate an entire string and returns the result. Convenience method.
-         *
-         * @param text the string to be transliterated
-         * @return The transliterated text
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Transliterate an entire string and returns the result. Convenience method.
+        /// </summary>
+        /// <param name="text">The string to be transliterated.</param>
+        /// <returns>The transliterated text.</returns>
+        /// <stable>ICU 2.0</stable>
         public string Transliterate(string text)
         {
             ReplaceableString result = new ReplaceableString(text);
@@ -417,54 +589,53 @@ namespace ICU4N.Text
             return result.ToString();
         }
 
-        /**
-         * Transliterates the portion of the text buffer that can be
-         * transliterated unambiguosly after new text has been inserted,
-         * typically as a result of a keyboard event.  The new text in
-         * <code>insertion</code> will be inserted into <code>text</code>
-         * at <code>index.contextLimit</code>, advancing
-         * <code>index.contextLimit</code> by <code>insertion.length()</code>.
-         * Then the transliterator will try to transliterate characters of
-         * <code>text</code> between <code>index.start</code> and
-         * <code>index.contextLimit</code>.  Characters before
-         * <code>index.start</code> will not be changed.
-         *
-         * <p>Upon return, values in <code>index</code> will be updated.
-         * <code>index.contextStart</code> will be advanced to the first
-         * character that future calls to this method will read.
-         * <code>index.start</code> and <code>index.contextLimit</code> will
-         * be adjusted to delimit the range of text that future calls to
-         * this method may change.
-         *
-         * <p>Typical usage of this method begins with an initial call
-         * with <code>index.contextStart</code> and <code>index.contextLimit</code>
-         * set to indicate the portion of <code>text</code> to be
-         * transliterated, and <code>index.start == index.contextStart</code>.
-         * Thereafter, <code>index</code> can be used without
-         * modification in future calls, provided that all changes to
-         * <code>text</code> are made via this method.
-         *
-         * <p>This method assumes that future calls may be made that will
-         * insert new text into the buffer.  As a result, it only performs
-         * unambiguous transliterations.  After the last call to this
-         * method, there may be untransliterated text that is waiting for
-         * more input to resolve an ambiguity.  In order to perform these
-         * pending transliterations, clients should call {@link
-         * #finishTransliteration} after the last call to this
-         * method has been made.
-         *
-         * @param text the buffer holding transliterated and untransliterated text
-         * @param index the start and limit of the text, the position
-         * of the cursor, and the start and limit of transliteration.
-         * @param insertion text to be inserted and possibly
-         * transliterated into the translation buffer at
-         * <code>index.contextLimit</code>.  If <code>null</code> then no text
-         * is inserted.
-         * @see #handleTransliterate
-         * @exception IllegalArgumentException if <code>index</code>
-         * is invalid
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Transliterates the portion of the text buffer that can be
+        /// transliterated unambiguosly after new text has been inserted,
+        /// typically as a result of a keyboard event.  The new text in
+        /// <paramref name="insertion"/> will be inserted into <paramref name="text"/>
+        /// at <c>text.ContextLimit</c>, advancing
+        /// <c>index.ContextLimit</c> by <c>insertion.Length</c>.
+        /// Then the transliterator will try to transliterate characters of
+        /// <paramref name="text"/> between <c>index.Start</c> and
+        /// <c>index.ContextLimit</c>.  Characters before
+        /// <c>index.Start</c> will not be changed.
+        /// <para/>
+        /// Upon return, values in <paramref name="index"/> will be updated.
+        /// <c>index.ContextStart</c> will be advanced to the first
+        /// character that future calls to this method will read.
+        /// <c>index.Start</c> and <c>index.ContextLimit</c> will
+        /// be adjusted to delimit the range of text that future calls to
+        /// this method may change.
+        /// <para/>
+        /// Typical usage of this method begins with an initial call
+        /// with <c>index.ContextStart</c> and <c>index.ContextLimit</c>
+        /// set to indicate the portion of <paramref name="text"/> to be
+        /// transliterated, and <c>index.Start == index.ContextStart</c>.
+        /// Thereafter, <paramref name="index"/> can be used without
+        /// modification in future calls, provided that all changes to
+        /// <paramref name="text"/> are made via this method.
+        /// <para/>
+        /// This method assumes that future calls may be made that will
+        /// insert new text into the buffer.  As a result, it only performs
+        /// unambiguous transliterations.  After the last call to this
+        /// method, there may be untransliterated text that is waiting for
+        /// more input to resolve an ambiguity.  In order to perform these
+        /// pending transliterations, clients should call <see cref="FinishTransliteration(IReplaceable, TransliterationPosition)"/>
+        /// after the last call to this
+        /// method has been made.
+        /// </summary>
+        /// <param name="text">The buffer holding transliterated and untransliterated text.</param>
+        /// <param name="index">The start and limit of the text, the position
+        /// of the cursor, and the start and limit of transliteration.</param>
+        /// <param name="insertion">Text to be inserted and possibly
+        /// transliterated into the translation buffer at
+        /// <c>index.ContextLimit</c>.  If <c>null</c> then no text
+        /// is inserted.</param>
+        /// <seealso cref="HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>
+        /// <exception cref="ArgumentException">If <paramref name="index"/>
+        /// is invalid.</exception>
+        /// <stable>ICU 2.0</stable>
         public void Transliterate(IReplaceable text, TransliterationPosition index,
                                         string insertion)
         {
@@ -498,56 +669,55 @@ namespace ICU4N.Text
             //                                      originalStart);
         }
 
-        /**
-         * Transliterates the portion of the text buffer that can be
-         * transliterated unambiguosly after a new character has been
-         * inserted, typically as a result of a keyboard event.  This is a
-         * convenience method; see {@link #transliterate(Replaceable,
-         * Transliterator.Position, String)} for details.
-         * @param text the buffer holding transliterated and
-         * untransliterated text
-         * @param index the start and limit of the text, the position
-         * of the cursor, and the start and limit of transliteration.
-         * @param insertion text to be inserted and possibly
-         * transliterated into the translation buffer at
-         * <code>index.contextLimit</code>.
-         * @see #transliterate(Replaceable, Transliterator.Position, String)
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Transliterates the portion of the text buffer that can be
+        /// transliterated unambiguosly after a new character has been
+        /// inserted, typically as a result of a keyboard event.  This is a
+        /// convenience method; see <see cref="Transliterate(IReplaceable, TransliterationPosition, string)"/> for details.
+        /// </summary>
+        /// <param name="text">The buffer holding transliterated and
+        /// untransliterated text.</param>
+        /// <param name="index">The start and limit of the text, the position
+        /// of the cursor, and the start and limit of transliteration.</param>
+        /// <param name="insertion">Text to be inserted and possibly
+        /// transliterated into the translation buffer at
+        /// <c>index.ContextLimit</c>.</param>
+        /// <seealso cref="Transliterate(IReplaceable, TransliterationPosition, string)"/>
+        /// <stable>ICU 2.0</stable>
         public void Transliterate(IReplaceable text, TransliterationPosition index,
                                         int insertion)
         {
             Transliterate(text, index, UTF16.ValueOf(insertion));
         }
 
-        /**
-         * Transliterates the portion of the text buffer that can be
-         * transliterated unambiguosly.  This is a convenience method; see
-         * {@link #transliterate(Replaceable, Transliterator.Position,
-         * String)} for details.
-         * @param text the buffer holding transliterated and
-         * untransliterated text
-         * @param index the start and limit of the text, the position
-         * of the cursor, and the start and limit of transliteration.
-         * @see #transliterate(Replaceable, Transliterator.Position, String)
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Transliterates the portion of the text buffer that can be
+        /// transliterated unambiguosly.  This is a convenience method; see
+        /// <see cref="Transliterate(IReplaceable, TransliterationPosition, string)"/>
+        /// for details.
+        /// </summary>
+        /// <param name="text">The buffer holding transliterated and
+        /// untransliterated text.</param>
+        /// <param name="index">The start and limit of the text, the position
+        /// of the cursor, and the start and limit of transliteration.</param>
+        /// <seealso cref="Transliterate(IReplaceable, TransliterationPosition, string)"/>
+        /// <stable>ICU 2.0</stable>
         public void Transliterate(IReplaceable text, TransliterationPosition index)
         {
             Transliterate(text, index, null);
         }
 
-        /**
-         * Finishes any pending transliterations that were waiting for
-         * more characters.  Clients should call this method as the last
-         * call after a sequence of one or more calls to
-         * <code>transliterate()</code>.
-         * @param text the buffer holding transliterated and
-         * untransliterated text.
-         * @param index the array of indices previously passed to {@link
-         * #transliterate}
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Finishes any pending transliterations that were waiting for
+        /// more characters.  Clients should call this method as the last
+        /// call after a sequence of one or more calls to
+        /// <see cref="Transliterate(IReplaceable, TransliterationPosition)"/>.
+        /// </summary>
+        /// <param name="text">The buffer holding transliterated and
+        /// untransliterated text.</param>
+        /// <param name="index">The array of indices previously passed to 
+        /// <see cref="Transliterate(IReplaceable, TransliterationPosition)"/>.</param>
+        /// <stable>ICU 2.0</stable>
         public void FinishTransliteration(IReplaceable text,
                                                 TransliterationPosition index)
         {
@@ -555,85 +725,107 @@ namespace ICU4N.Text
             FilteredTransliterate(text, index, false, true);
         }
 
-        /**
-         * Abstract method that concrete subclasses define to implement
-         * their transliteration algorithm.  This method handles both
-         * incremental and non-incremental transliteration.  Let
-         * <code>originalStart</code> refer to the value of
-         * <code>pos.start</code> upon entry.
-         *
-         * <ul>
-         *  <li>If <code>incremental</code> is false, then this method
-         *  should transliterate all characters between
-         *  <code>pos.start</code> and <code>pos.limit</code>. Upon return
-         *  <code>pos.start</code> must == <code> pos.limit</code>.</li>
-         *
-         *  <li>If <code>incremental</code> is true, then this method
-         *  should transliterate all characters between
-         *  <code>pos.start</code> and <code>pos.limit</code> that can be
-         *  unambiguously transliterated, regardless of future insertions
-         *  of text at <code>pos.limit</code>.  Upon return,
-         *  <code>pos.start</code> should be in the range
-         *  [<code>originalStart</code>, <code>pos.limit</code>).
-         *  <code>pos.start</code> should be positioned such that
-         *  characters [<code>originalStart</code>, <code>
-         *  pos.start</code>) will not be changed in the future by this
-         *  transliterator and characters [<code>pos.start</code>,
-         *  <code>pos.limit</code>) are unchanged.</li>
-         * </ul>
-         *
-         * <p>Implementations of this method should also obey the
-         * following invariants:</p>
-         *
-         * <ul>
-         *  <li> <code>pos.limit</code> and <code>pos.contextLimit</code>
-         *  should be updated to reflect changes in length of the text
-         *  between <code>pos.start</code> and <code>pos.limit</code>. The
-         *  difference <code> pos.contextLimit - pos.limit</code> should
-         *  not change.</li>
-         *
-         *  <li><code>pos.contextStart</code> should not change.</li>
-         *
-         *  <li>Upon return, neither <code>pos.start</code> nor
-         *  <code>pos.limit</code> should be less than
-         *  <code>originalStart</code>.</li>
-         *
-         *  <li>Text before <code>originalStart</code> and text after
-         *  <code>pos.limit</code> should not change.</li>
-         *
-         *  <li>Text before <code>pos.contextStart</code> and text after
-         *  <code> pos.contextLimit</code> should be ignored.</li>
-         * </ul>
-         *
-         * <p>Subclasses may safely assume that all characters in
-         * [<code>pos.start</code>, <code>pos.limit</code>) are filtered.
-         * In other words, the filter has already been applied by the time
-         * this method is called.  See
-         * <code>filteredTransliterate()</code>.
-         *
-         * <p>This method is <b>not</b> for public consumption.  Calling
-         * this method directly will transliterate
-         * [<code>pos.start</code>, <code>pos.limit</code>) without
-         * applying the filter. End user code should call <code>
-         * transliterate()</code> instead of this method. Subclass code
-         * should call <code>filteredTransliterate()</code> instead of
-         * this method.<p>
-         *
-         * @param text the buffer holding transliterated and
-         * untransliterated text
-         *
-         * @param pos the indices indicating the start, limit, context
-         * start, and context limit of the text.
-         *
-         * @param incremental if true, assume more text may be inserted at
-         * <code>pos.limit</code> and act accordingly.  Otherwise,
-         * transliterate all text between <code>pos.start</code> and
-         * <code>pos.limit</code> and move <code>pos.start</code> up to
-         * <code>pos.limit</code>.
-         *
-         * @see #transliterate
-         * @stable ICU 2.0
-         */
+        /// <summary>
+        /// Abstract method that concrete subclasses define to implement
+        /// their transliteration algorithm.  This method handles both
+        /// incremental and non-incremental transliteration.  Let
+        /// <c>originalStart</c> refer to the value of
+        /// <c>pos.Start</c> upon entry.
+        /// <para/>
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>
+        ///             If <paramref name="incremental"/> is false, then this method
+        ///             should transliterate all characters between
+        ///             <c>pos.Start</c> and <code>pos.Limit</code>. Upon return
+        ///             <code>pos.Start</code> must == <c>pos.Limit</c>.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <description>
+        ///             If <paramref name="incremental"/> is true, then this method
+        ///             should transliterate all characters between
+        ///             <c>pos.Start</c> and <c>pos.Limit</c> that can be
+        ///             unambiguously transliterated, regardless of future insertions
+        ///             of text at <c>pos.Limit</c>.  Upon return,
+        ///             <c>pos.Start</c> should be in the range
+        ///             [<c>originalStart</c>, <c>pos.Limit</c>).
+        ///             <c>pos.Start</c> should be positioned such that
+        ///             characters [<c>originalStart</c>, <c>
+        ///             pos.Start</c>) will not be changed in the future by this
+        ///             transliterator and characters [<c>pos.start</c>,
+        ///             <c>pos.limit</c>) are unchanged.
+        ///         </description>
+        ///     </item>
+        /// </list>
+        /// <para/>
+        /// Implementations of this method should also obey the
+        /// following invariants:
+        /// <list type="bullet">
+        ///     <item>
+        ///         <description>
+        ///             <c>pos.Limit</c> and <c>pos.ContextLimit</c>
+        ///             should be updated to reflect changes in length of the text
+        ///             between <c>pos.Start</c> and <c>pos.Limit</c>. The
+        ///             difference <c>pos.ContextLimit - pos.Limit</c> should
+        ///             not change.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <description>
+        ///             <c>pos.ContextStart</c> should not change.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <description>
+        ///             Upon return, neither <c>pos.Start</c> nor
+        ///             <c>pos.Limit</c> should be less than
+        ///             <c>originalStart</c>.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <description>
+        ///             Text before <c>originalStart</c> and text after
+        ///             <c>pos.Limit</c> should not change.
+        ///         </description>
+        ///     </item>
+        ///     <item>
+        ///         <description>
+        ///             Text before <code>pos.contextStart</code> and text after
+        ///             <c>pos.contextLimit</c> should be ignored.
+        ///         </description>
+        ///     </item>
+        /// </list>
+        /// <para/>
+        /// Subclasses may safely assume that all characters in
+        /// [<c>pos.Start</c>, <c>pos.Limit</c>) are filtered.
+        /// In other words, the filter has already been applied by the time
+        /// this method is called.  See <see cref="FilteredTransliterate(IReplaceable, TransliterationPosition, bool, bool)"/>.
+        /// <para/>
+        /// This method is <b>not</b> for public consumption.  Calling
+        /// this method directly will transliterate
+        /// [<c>pos.Start</c>, <c>pos.Limit</c>) without
+        /// applying the filter. End user code should call 
+        /// <see cref="Transliterate(IReplaceable, TransliterationPosition)"/>
+        /// instead of this method. Subclass code
+        /// should call <see cref="FilteredTransliterate(IReplaceable, TransliterationPosition, bool, bool)"/> instead of
+        /// this method.
+        /// </summary>
+        /// <param name="text">The buffer holding transliterated and
+        /// untransliterated text.</param>
+        /// <param name="pos">The indices indicating the start, limit, context
+        /// start, and context limit of the text.</param>
+        /// <param name="incremental">if true, assume more text may be inserted at
+        /// <c>pos.Limit</c> and act accordingly.  Otherwise,
+        /// transliterate all text between <c>pos.Start</c> and
+        /// <c>pos.Limit</c> and move <c>pos.Start</c> up to
+        /// <c>pos.Limit</c>.</param>
+        /// <seealso cref="Transliterate(IReplaceable)"/>
+        /// <seealso cref="Transliterate(IReplaceable, int, int)"/>
+        /// <seealso cref="Transliterate(IReplaceable, TransliterationPosition)"/>
+        /// <seealso cref="Transliterate(IReplaceable, TransliterationPosition, int)"/>
+        /// <seealso cref="Transliterate(IReplaceable, TransliterationPosition, string)"/>
+        /// <stable>ICU 2.0</stable>
         protected abstract void HandleTransliterate(IReplaceable text,
                                                     TransliterationPosition pos, bool incremental);
 

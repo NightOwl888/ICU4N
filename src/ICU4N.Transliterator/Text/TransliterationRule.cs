@@ -5,6 +5,39 @@ using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text
 {
+    /// <summary>
+    /// A transliteration rule used by
+    /// <see cref="RuleBasedTransliterator"/>.
+    /// <see cref="TransliterationRule"/> is an immutable object.
+    /// </summary>
+    /// <remarks>
+    /// A rule consists of an input pattern and an output string.  When
+    /// the input pattern is matched, the output string is emitted.  The
+    /// input pattern consists of zero or more characters which are matched
+    /// exactly (the key) and optional context.  Context must match if it
+    /// is specified.  Context may be specified before the key, after the
+    /// key, or both.  The key, preceding context, and following context
+    /// may contain variables.  Variables represent a set of Unicode
+    /// characters, such as the letters <i>a</i> through <i>z</i>.
+    /// Variables are detected by looking up each character in a supplied
+    /// variable list to see if it has been so defined.
+    /// <para/>
+    /// A rule may contain segments in its input string and segment
+    /// references in its output string.  A segment is a substring of the
+    /// input pattern, indicated by an offset and limit.  The segment may
+    /// be in the preceding or following context.  It may not span a
+    /// context boundary.  A segment reference is a special character in
+    /// the output string that causes a segment of the input string (not
+    /// the input pattern) to be copied to the output string.  The range of
+    /// special characters that represent segment references is defined by
+    /// <see cref="RuleBasedTransliterator.Data"/>.
+    /// <para/>
+    /// Example: The rule "([a-z]) . ([0-9]) > $2 . $1" will change the input
+    /// string "abc.123" to "ab1.c23".
+    /// <para/>
+    /// Copyright &#169; IBM Corporation 1999.  All rights reserved.
+    /// </remarks>
+    /// <author>Alan Liu</author>
     internal class TransliterationRule
     {
         // TODO Eliminate the pattern and keyLength data members.  They
@@ -13,108 +46,106 @@ namespace ICU4N.Text
         // methods and pattern/keyLength can be isolated into a separate
         // object.
 
-        /**
-         * The match that must occur before the key, or null if there is no
-         * preceding context.
-         */
+        /// <summary>
+        /// The match that must occur before the <see cref="key"/>, or null if there is no
+        /// preceding context.
+        /// </summary>
         private StringMatcher anteContext;
 
-        /**
-         * The matcher object for the key.  If null, then the key is empty.
-         */
+        /// <summary>
+        /// The matcher object for the key.  If null, then the key is empty.
+        /// </summary>
         private StringMatcher key;
 
-        /**
-         * The match that must occur after the key, or null if there is no
-         * following context.
-         */
+        /// <summary>
+        /// The match that must occur after the <see cref="key"/>, or null if there is no
+        /// following context.
+        /// </summary>
         private StringMatcher postContext;
 
-        /**
-         * The object that performs the replacement if the key,
-         * anteContext, and postContext are matched.  Never null.
-         */
+        /// <summary>
+        /// The object that performs the replacement if the key,
+        /// <see cref="anteContext"/>, and <see cref="postContext"/> are matched.  Never null.
+        /// </summary>
         private IUnicodeReplacer output;
 
-        /**
-         * The string that must be matched, consisting of the anteContext, key,
-         * and postContext, concatenated together, in that order.  Some components
-         * may be empty (zero length).
-         * @see anteContextLength
-         * @see keyLength
-         */
+        /// <summary>
+        /// The string that must be matched, consisting of the <see cref="anteContext"/>, <see cref="key"/>,
+        /// and <see cref="postContext"/>, concatenated together, in that order.  Some components
+        /// may be empty (zero length).
+        /// </summary>
+        /// <seealso cref="anteContextLength"/>
+        /// <seealso cref="keyLength"/>
         private string pattern;
 
-        /**
-         * An array of matcher objects corresponding to the input pattern
-         * segments.  If there are no segments this is null.  N.B. This is
-         * a UnicodeMatcher for generality, but in practice it is always a
-         * StringMatcher.  In the future we may generalize this, but for
-         * now we sometimes cast down to StringMatcher.
-         */
+        /// <summary>
+        /// An array of matcher objects corresponding to the input pattern
+        /// segments.  If there are no segments this is null.  N.B. This is
+        /// a <see cref="IUnicodeMatcher"/> for generality, but in practice it is always a
+        /// <see cref="StringMatcher"/>.  In the future we may generalize this, but for
+        /// now we sometimes cast down to <see cref="StringMatcher"/>.
+        /// </summary>
         internal IUnicodeMatcher[] segments;
 
-        /**
-         * The length of the string that must match before the key.  If
-         * zero, then there is no matching requirement before the key.
-         * Substring [0,anteContextLength) of pattern is the anteContext.
-         */
+        /// <summary>
+        /// The length of the string that must match before the key.  If
+        /// zero, then there is no matching requirement before the key.
+        /// Substring [0,anteContextLength) of pattern is the anteContext.
+        /// </summary>
         private int anteContextLength;
 
-        /**
-         * The length of the key.  Substring [anteContextLength,
-         * anteContextLength + keyLength) is the key.
-         */
+        /// <summary>
+        /// The length of the key.  Substring [anteContextLength,
+        /// anteContextLength + keyLength) is the key.
+        /// </summary>
         private int keyLength;
 
-        /**
-         * Miscellaneous attributes.
-         */
+        /// <summary>
+        /// Miscellaneous attributes.
+        /// </summary>
         internal byte flags;
 
-        /**
-         * Flag attributes.
-         */
-        internal static readonly int ANCHOR_START = 1;
-        internal static readonly int ANCHOR_END = 2;
+        /// <summary>
+        /// Flag attributes.
+        /// </summary>
+        internal const int ANCHOR_START = 1;
+        internal const int ANCHOR_END = 2;
 
-        /**
-         * An alias pointer to the data for this rule.  The data provides
-         * lookup services for matchers and segments.
-         */
+        /// <summary>
+        /// An alias pointer to the data for this rule.  The data provides
+        /// lookup services for matchers and segments.
+        /// </summary>
 #pragma warning disable 612, 618
         private readonly RuleBasedTransliterator.Data data;
 #pragma warning restore 612, 618
 
-
-        /**
-         * Construct a new rule with the given input, output text, and other
-         * attributes.  A cursor position may be specified for the output text.
-         * @param input input string, including key and optional ante and
-         * post context
-         * @param anteContextPos offset into input to end of ante context, or -1 if
-         * none.  Must be <= input.length() if not -1.
-         * @param postContextPos offset into input to start of post context, or -1
-         * if none.  Must be <= input.length() if not -1, and must be >=
-         * anteContextPos.
-         * @param output output string
-         * @param cursorPos offset into output at which cursor is located, or -1 if
-         * none.  If less than zero, then the cursor is placed after the
-         * <code>output</code>; that is, -1 is equivalent to
-         * <code>output.length()</code>.  If greater than
-         * <code>output.length()</code> then an exception is thrown.
-         * @param cursorOffset an offset to be added to cursorPos to position the
-         * cursor either in the ante context, if < 0, or in the post context, if >
-         * 0.  For example, the rule "abc{def} > | @@@ xyz;" changes "def" to
-         * "xyz" and moves the cursor to before "a".  It would have a cursorOffset
-         * of -3.
-         * @param segs array of UnicodeMatcher corresponding to input pattern
-         * segments, or null if there are none
-         * @param anchorStart true if the the rule is anchored on the left to
-         * the context start
-         * @param anchorEnd true if the rule is anchored on the right to the
-         * context limit
-         */
+        /// <summary>
+        /// Construct a new rule with the given <paramref name="input"/>, <paramref name="output"/> text, and other
+        /// attributes.  A cursor position <paramref name="cursorPos"/> may be specified for the <paramref name="output"/> text.
+        /// </summary>
+        /// <param name="input">Input string, including key and optional ante and post context.</param>
+        /// <param name="anteContextPos">Offset into <paramref name="input"/> to end of ante context, or -1 if
+        /// none.  Must be &lt;= input.Length if not -1.</param>
+        /// <param name="postContextPos">Offset into input to start of post context, or -1
+        /// if none.  Must be &lt;= input.Length if not -1, and must be >=
+        /// <paramref name="anteContextPos"/>.</param>
+        /// <param name="output">Output string.</param>
+        /// <param name="cursorPos">Offset into <paramref name="output"/> at which cursor is located, or -1 if
+        /// none.  If less than zero, then the cursor is placed after the
+        /// <paramref name="output"/>; that is, -1 is equivalent to <c>output.Length</c>.  If greater than
+        /// <c>output.Length</c> then an exception is thrown.</param>
+        /// <param name="cursorOffset">An offset to be added to <paramref name="cursorPos"/> to position the
+        /// cursor either in the ante context, if &lt; 0, or in the post context, if &gt;
+        /// 0.  For example, the rule "abc{def} > | @@@ xyz;" changes "def" to
+        /// "xyz" and moves the cursor to before "a".  It would have a <paramref name="cursorOffset"/>
+        /// of -3.</param>
+        /// <param name="segs">Array of <see cref="IUnicodeMatcher"/> corresponding to input pattern
+        /// segments, or null if there are none.</param>
+        /// <param name="anchorStart"><c>true</c> if the the rule is anchored on the left to
+        /// the context start.</param>
+        /// <param name="anchorEnd"><c>true</c> if the rule is anchored on the right to the
+        /// context limit.</param>
+        /// <param name="theData"></param>
         public TransliterationRule(string input,
                                    int anteContextPos, int postContextPos,
                                    string output,
@@ -204,22 +235,21 @@ namespace ICU4N.Text
             this.output = new StringReplacer(output, cursorPos + cursorOffset, data);
         }
 
-        /**
-         * Return the preceding context length.  This method is needed to
-         * support the <code>Transliterator</code> method
-         * <code>getMaximumContextLength()</code>.
-         */
+        /// <summary>
+        /// Gets the preceding context length.  This property is needed to
+        /// support <see cref="Transliterator.MaximumContextLength"/>.
+        /// </summary>
         public virtual int AnteContextLength
         {
             get { return anteContextLength + (((flags & ANCHOR_START) != 0) ? 1 : 0); }
         }
 
-        /**
-         * Internal method.  Returns 8-bit index value for this rule.
-         * This is the low byte of the first character of the key,
-         * unless the first character of the key is a set.  If it's a
-         * set, or otherwise can match multiple keys, the index value is -1.
-         */
+        /// <summary>
+        /// Internal method.  Returns 8-bit index value for this rule.
+        /// This is the low byte of the first character of the key,
+        /// unless the first character of the key is a set.  If it's a
+        /// set, or otherwise can match multiple keys, the index value is -1.
+        /// </summary>
         internal int GetIndexValue()
         {
             if (anteContextLength == pattern.Length)
@@ -232,16 +262,16 @@ namespace ICU4N.Text
             return data.LookupMatcher(c) == null ? (c & 0xFF) : -1;
         }
 
-        /**
-         * Internal method.  Returns true if this rule matches the given
-         * index value.  The index value is an 8-bit integer, 0..255,
-         * representing the low byte of the first character of the key.
-         * It matches this rule if it matches the first character of the
-         * key, or if the first character of the key is a set, and the set
-         * contains any character with a low byte equal to the index
-         * value.  If the rule contains only ante context, as in foo)>bar,
-         * then it will match any key.
-         */
+        /// <summary>
+        /// Internal method.  Returns true if this rule matches the given
+        /// index value.  The index value is an 8-bit integer, 0..255,
+        /// representing the low byte of the first character of the key.
+        /// It matches this rule if it matches the first character of the
+        /// key, or if the first character of the key is a set, and the set
+        /// contains any character with a low byte equal to the index
+        /// value.  If the rule contains only ante context, as in foo)>bar,
+        /// then it will match any key.
+        /// </summary>
         internal bool MatchesIndexValue(int v)
         {
             // Delegate to the key, or if there is none, to the postContext.
@@ -250,12 +280,12 @@ namespace ICU4N.Text
             return (m != null) ? m.MatchesIndexValue(v) : true;
         }
 
-        /**
-         * Return true if this rule masks another rule.  If r1 masks r2 then
-         * r1 matches any input string that r2 matches.  If r1 masks r2 and r2 masks
-         * r1 then r1 == r2.  Examples: "a>x" masks "ab>y".  "a>x" masks "a[b]>y".
-         * "[c]a>x" masks "[dc]a>y".
-         */
+        /// <summary>
+        /// Return true if this rule masks another rule.  If r1 masks <paramref name="r2"/> then
+        /// r1 matches any input string that <paramref name="r2"/> matches.  If r1 masks <paramref name="r2"/> and <paramref name="r2"/> masks
+        /// r1 then r1 == r2.  Examples: "a>x" masks "ab>y".  "a>x" masks "a[b]>y".
+        /// "[c]a>x" masks "[dc]a>y".
+        /// </summary>
         public virtual bool Masks(TransliterationRule r2)
         {
             /* Rule r1 masks rule r2 if the string formed of the
@@ -336,29 +366,28 @@ namespace ICU4N.Text
                 pos + 1;
         }
 
-        /**
-         * Attempt a match and replacement at the given position.  Return
-         * the degree of match between this rule and the given text.  The
-         * degree of match may be mismatch, a partial match, or a full
-         * match.  A mismatch means at least one character of the text
-         * does not match the context or key.  A partial match means some
-         * context and key characters match, but the text is not long
-         * enough to match all of them.  A full match means all context
-         * and key characters match.
-         *
-         * If a full match is obtained, perform a replacement, update pos,
-         * and return U_MATCH.  Otherwise both text and pos are unchanged.
-         *
-         * @param text the text
-         * @param pos the position indices
-         * @param incremental if TRUE, test for partial matches that may
-         * be completed by additional text inserted at pos.limit.
-         * @return one of <code>U_MISMATCH</code>,
-         * <code>U_PARTIAL_MATCH</code>, or <code>U_MATCH</code>.  If
-         * incremental is FALSE then U_PARTIAL_MATCH will not be returned.
-         */
+        /// <summary>
+        /// Attempt a match and replacement at the given <paramref name="position"/>.  Return
+        /// the degree of match between this rule and the given <paramref name="text"/>text.  The
+        /// degree of match may be mismatch, a partial match, or a full
+        /// match.  A mismatch means at least one character of the <paramref name="text"/>
+        /// does not match the context or key.  A partial match means some
+        /// context and key characters match, but the text is not long
+        /// enough to match all of them.  A full match means all context
+        /// and key characters match.
+        /// <para/>
+        /// If a full match is obtained, perform a replacement, update <paramref name="position"/>,
+        /// and return <see cref="MatchDegree.Match"/>.  Otherwise both <paramref name="text"/> 
+        /// and <paramref name="position"/> are unchanged.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="position">The position indices.</param>
+        /// <param name="incremental">If <c>true</c>, test for partial matches that may
+        /// be completed by additional text inserted at <c>position.Limit</c>.</param>
+        /// <returns>One of <see cref="MatchDegree.Mismatch"/>, <see cref="MatchDegree.PartialMatch"/>, or <see cref="MatchDegree.Match"/>. If
+        /// <paramref name="incremental"/> is <c>false</c> then <see cref="MatchDegree.PartialMatch"/> will not be returned.</returns>
         public virtual MatchDegree MatchAndReplace(IReplaceable text,
-                                   TransliterationPosition pos,
+                                   TransliterationPosition position,
                                    bool incremental)
         {
             // Matching and replacing are done in one method because the
@@ -394,12 +423,12 @@ namespace ICU4N.Text
             // always in the BMP and because we are doing a literal match
             // operation, which can be done 16-bits at a time.
 
-            int anteLimit = PosBefore(text, pos.ContextStart);
+            int anteLimit = PosBefore(text, position.ContextStart);
 
             MatchDegree match;
 
             // Start reverse match at char before pos.start
-            intRef[0] = PosBefore(text, pos.Start);
+            intRef[0] = PosBefore(text, position.Start);
 
             if (anteContext != null)
             {
@@ -423,11 +452,11 @@ namespace ICU4N.Text
 
             // -------------------- Key and Post Context --------------------
 
-            intRef[0] = pos.Start;
+            intRef[0] = position.Start;
 
             if (key != null)
             {
-                match = key.Matches(text, intRef, pos.Limit, incremental);
+                match = key.Matches(text, intRef, position.Limit, incremental);
                 if (match != MatchDegree.Match)
                 {
                     return match;
@@ -438,7 +467,7 @@ namespace ICU4N.Text
 
             if (postContext != null)
             {
-                if (incremental && keyLimit == pos.Limit)
+                if (incremental && keyLimit == position.Limit)
                 {
                     // The key matches just before pos.limit, and there is
                     // a postContext.  Since we are in incremental mode,
@@ -447,7 +476,7 @@ namespace ICU4N.Text
                     return MatchDegree.PartialMatch;
                 }
 
-                match = postContext.Matches(text, intRef, pos.ContextLimit, incremental);
+                match = postContext.Matches(text, intRef, position.ContextLimit, incremental);
                 if (match != MatchDegree.Match)
                 {
                     return match;
@@ -460,7 +489,7 @@ namespace ICU4N.Text
 
             if (((flags & ANCHOR_END)) != 0)
             {
-                if (oText != pos.ContextLimit)
+                if (oText != position.ContextLimit)
                 {
                     return MatchDegree.Mismatch;
                 }
@@ -475,15 +504,15 @@ namespace ICU4N.Text
             // We have a full match.  The key is between pos.start and
             // keyLimit.
 
-            int newLength = output.Replace(text, pos.Start, keyLimit, intRef);
-            int lenDelta = newLength - (keyLimit - pos.Start);
+            int newLength = output.Replace(text, position.Start, keyLimit, intRef);
+            int lenDelta = newLength - (keyLimit - position.Start);
             int newStart = intRef[0];
 
             oText += lenDelta;
-            pos.Limit += lenDelta;
-            pos.ContextLimit += lenDelta;
+            position.Limit += lenDelta;
+            position.ContextLimit += lenDelta;
             // Restrict new value of start to [minOText, min(oText, pos.limit)].
-            pos.Start = Math.Max(minOText, Math.Min(Math.Min(oText, pos.Limit), newStart));
+            position.Start = Math.Max(minOText, Math.Min(Math.Min(oText, position.Limit), newStart));
             return MatchDegree.Match;
         }
 

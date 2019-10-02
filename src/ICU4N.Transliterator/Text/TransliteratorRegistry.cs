@@ -23,56 +23,56 @@ namespace ICU4N.Text
         private const string NO_VARIANT = ""; // empty string
         private const string ANY = "Any";
 
-        /**
-         * Dynamic registry mapping full IDs to Entry objects.  This
-         * contains both public and internal entities.  The visibility is
-         * controlled by whether an entry is listed in availableIDs and
-         * specDAG or not.
-         *
-         * Keys are CaseInsensitiveString objects.
-         * Values are objects of class Class (subclass of Transliterator),
-         * RuleBasedTransliterator.Data, Transliterator.Factory, or one
-         * of the entry classes defined here (AliasEntry or ResourceEntry).
-         */
+        /// <summary>
+        /// Dynamic registry mapping full IDs to Entry objects.  This
+        /// contains both public and internal entities.  The visibility is
+        /// controlled by whether an entry is listed in <see cref="availableIDs"/> and
+        /// specDAG or not.
+        /// <para/>
+        /// Keys are <see cref="CaseInsensitiveString"/> objects.
+        /// Values are objects of class Class (subclass of <see cref="Transliterator"/>),
+        /// <see cref="RuleBasedTransliterator.Data"/>, <see cref="Transliterator.Factory"/>, or one
+        /// of the entry classes defined here (<see cref="AliasEntry"/> or <see cref="ResourceEntry"/>).
+        /// </summary>
         private IDictionary<CaseInsensitiveString, object[]> registry;
 
-        /**
-         * DAG of visible IDs by spec.  Hashtable: source => (Hashtable:
-         * target => (Vector: variant)) The Vector of variants is never
-         * empty.  For a source-target with no variant, the special
-         * variant NO_VARIANT (the empty string) is stored in slot zero of
-         * the UVector.
-         *
-         * Keys are CaseInsensitiveString objects.
-         * Values are Hashtable of (CaseInsensitiveString -> Vector of
-         * CaseInsensitiveString)
-         */
+        /// <summary>
+        /// DAG of visible IDs by spec.  IDictionary: source => (IDictionary:
+        /// target => (Vector: variant)) The Vector of variants is never
+        /// empty.  For a source-target with no variant, the special
+        /// variant <see cref="NO_VARIANT"/> (the empty string) is stored in slot zero of
+        /// the UVector.
+        /// <para/>
+        /// Keys are <see cref="CaseInsensitiveString"/> objects.
+        /// Values are IDictionary of (<see cref="CaseInsensitiveString"/> -> Vector of
+        /// <see cref="CaseInsensitiveString"/>)
+        /// </summary>
         private IDictionary<CaseInsensitiveString, IDictionary<CaseInsensitiveString, IList<CaseInsensitiveString>>> specDAG;
 
-        /**
-         * Vector of public full IDs (CaseInsensitiveString objects).
-         */
+        /// <summary>
+        /// Vector of public full IDs (<see cref="CaseInsensitiveString"/> objects).
+        /// </summary>
         private IList<CaseInsensitiveString> availableIDs;
 
         //----------------------------------------------------------------------
         // class Spec
         //----------------------------------------------------------------------
 
-        /**
-         * A Spec is a string specifying either a source or a target.  In more
-         * general terms, it may also specify a variant, but we only use the
-         * Spec class for sources and targets.
-         *
-         * A Spec may be a locale or a script.  If it is a locale, it has a
-         * fallback chain that goes xx_YY_ZZZ -> xx_YY -> xx -> ssss, where
-         * ssss is the script mapping of xx_YY_ZZZ.  The Spec API methods
-         * hasFallback(), next(), and reset() iterate over this fallback
-         * sequence.
-         *
-         * The Spec class canonicalizes itself, so the locale is put into
-         * canonical form, or the script is transformed from an abbreviation
-         * to a full name.
-         */
+        /// <summary>
+        /// A <see cref="Spec"/> is a string specifying either a source or a target.  In more
+        /// general terms, it may also specify a variant, but we only use the
+        /// <see cref="Spec"/> class for sources and targets.
+        /// <para/>
+        /// A <see cref="Spec"/> may be a locale or a script.  If it is a locale, it has a
+        /// fallback chain that goes xx_YY_ZZZ -> xx_YY -> xx -> ssss, where
+        /// ssss is the script mapping of xx_YY_ZZZ.  The Spec API methods
+        /// <see cref="HasFallback"/>, <see cref="Next()"/>, <see cref="Reset()"/>
+        /// iterate over this fallback sequence.
+        /// <para/>
+        /// The <see cref="Spec"/> class canonicalizes itself, so the locale is put into
+        /// canonical form, or the script is transformed from an abbreviation
+        /// to a full name.
+        /// </summary>
         internal class Spec
         {
             private string top;        // top spec
@@ -125,11 +125,11 @@ namespace ICU4N.Text
                 }
                 catch (MissingManifestResourceException)
                 {
-                    ///CLOVER:OFF
+                    ////CLOVER:OFF
                     // The constructor is called from multiple private methods
                     //  that protects an invalid scriptName
                     scriptName = null;
-                    ///CLOVER:ON
+                    ////CLOVER:ON
                 }
                 // assert(spec != top);
                 Reset();
@@ -205,13 +205,13 @@ namespace ICU4N.Text
                 get { return isSpecLocale; }
             }
 
-            /**
-             * Return the ResourceBundle for this spec, at the current
-             * level of iteration.  The level of iteration goes from
-             * aa_BB_CCC to aa_BB to aa.  If the bundle does not
-             * correspond to the current level of iteration, return null.
-             * If isLocale() is false, always return null.
-             */
+            /// <summary>
+            /// Return the ResourceBundle for this spec, at the current
+            /// level of iteration.  The level of iteration goes from
+            /// aa_BB_CCC to aa_BB to aa.  If the bundle does not
+            /// correspond to the current level of iteration, return null.
+            /// If <see cref="IsLocale"/> is false, always return null.
+            /// </summary>
             public virtual ResourceBundle GetBundle()
             {
                 if (res != null &&
@@ -329,16 +329,16 @@ namespace ICU4N.Text
             availableIDs = new List<CaseInsensitiveString>();
         }
 
-        /**
-         * Given a simple ID (forward direction, no inline filter, not
-         * compound) attempt to instantiate it from the registry.  Return
-         * 0 on failure.
-         *
-         * Return a non-empty aliasReturn value if the ID points to an alias.
-         * We cannot instantiate it ourselves because the alias may contain
-         * filters or compounds, which we do not understand.  Caller should
-         * make aliasReturn empty before calling.
-         */
+        /// <summary>
+        /// Given a simple <paramref name="id"/> (forward direction, no inline filter, not
+        /// compound) attempt to instantiate it from the registry.  Return
+        /// 0 on failure.
+        /// <para/>
+        /// Return a non-empty <paramref name="aliasReturn"/> value if the <paramref name="id"/> points to an alias.
+        /// We cannot instantiate it ourselves because the alias may contain
+        /// filters or compounds, which we do not understand.  Caller should
+        /// make <paramref name="aliasReturn"/> empty before calling.
+        /// </summary>
         public virtual Transliterator Get(string id,
                                   StringBuffer aliasReturn)
         {
@@ -347,11 +347,11 @@ namespace ICU4N.Text
                 : InstantiateEntry(id, entry, aliasReturn);
         }
 
-        /**
-         * Register a class.  This adds an entry to the
-         * dynamic store, or replaces an existing entry.  Any entry in the
-         * underlying static locale resource store is masked.
-         */
+        /// <summary>
+        /// Register a <see cref="Type"/>.  This adds an entry to the
+        /// dynamic store, or replaces an existing entry.  Any entry in the
+        /// underlying static locale resource store is masked.
+        /// </summary>
         public virtual void Put(string id,
                         Type transliteratorSubclass,
                         bool visible)
@@ -359,11 +359,11 @@ namespace ICU4N.Text
             RegisterEntry(id, transliteratorSubclass, visible);
         }
 
-        /**
-         * Register an ID and a factory function pointer.  This adds an
-         * entry to the dynamic store, or replaces an existing entry.  Any
-         * entry in the underlying static locale resource store is masked.
-         */
+        /// <summary>
+        /// Register an <paramref name="id"/> and a <paramref name="factory"/> function pointer.  This adds an
+        /// entry to the dynamic store, or replaces an existing entry.  Any
+        /// entry in the underlying static locale resource store is masked.
+        /// </summary>
         public virtual void Put(string id,
                         ITransliteratorFactory factory,
                         bool visible)
@@ -371,11 +371,11 @@ namespace ICU4N.Text
             RegisterEntry(id, factory, visible);
         }
 
-        /**
-         * Register an ID and a resource name.  This adds an entry to the
-         * dynamic store, or replaces an existing entry.  Any entry in the
-         * underlying static locale resource store is masked.
-         */
+        /// <summary>
+        /// Register an <paramref name="id"/> and a <paramref name="resourceName"/>. This adds an entry to the
+        /// dynamic store, or replaces an existing entry.  Any entry in the
+        /// underlying static locale resource store is masked.
+        /// </summary>
         public virtual void Put(string id,
                         string resourceName,
                         TransliterationDirection dir,
@@ -384,11 +384,11 @@ namespace ICU4N.Text
             RegisterEntry(id, new ResourceEntry(resourceName, dir), visible);
         }
 
-        /**
-         * Register an ID and an alias ID.  This adds an entry to the
-         * dynamic store, or replaces an existing entry.  Any entry in the
-         * underlying static locale resource store is masked.
-         */
+        /// <summary>
+        /// Register an <paramref name="id"/> and an <paramref name="alias"/> ID.  This adds an entry to the
+        /// dynamic store, or replaces an existing entry.  Any entry in the
+        /// underlying static locale resource store is masked.
+        /// </summary>
         public virtual void Put(string id,
                         string alias,
                         bool visible)
@@ -396,11 +396,11 @@ namespace ICU4N.Text
             RegisterEntry(id, new AliasEntry(alias), visible);
         }
 
-        /**
-         * Register an ID and a Transliterator object.  This adds an entry
-         * to the dynamic store, or replaces an existing entry.  Any entry
-         * in the underlying static locale resource store is masked.
-         */
+        /// <summary>
+        /// Register an <paramref name="id"/> and a <see cref="Transliterator"/> object.  This adds an entry
+        /// to the dynamic store, or replaces an existing entry.  Any entry
+        /// in the underlying static locale resource store is masked.
+        /// </summary>
         public virtual void Put(string id,
                         Transliterator trans,
                         bool visible)
@@ -408,11 +408,11 @@ namespace ICU4N.Text
             RegisterEntry(id, trans, visible);
         }
 
-        /**
-         * Unregister an ID.  This removes an entry from the dynamic store
-         * if there is one.  The static locale resource store is
-         * unaffected.
-         */
+        /// <summary>
+        /// Unregister an <paramref name="id"/>.  This removes an entry from the dynamic store
+        /// if there is one.  The static locale resource store is
+        /// unaffected.
+        /// </summary>
         public virtual void Remove(string id)
         {
             string[] stv = TransliteratorIDParser.IDtoSTV(id);
@@ -427,47 +427,46 @@ namespace ICU4N.Text
         // class TransliteratorRegistry: Public ID and spec management
         //----------------------------------------------------------------------
 
-        ///**
-        // * An internal class that adapts an enumeration over
-        // * CaseInsensitiveStrings to an enumeration over Strings.
-        // */
-        //private class IDEnumerable : IEnumerable<string> {
-        //    IEnumerable<CaseInsensitiveString> en;
+        /////**
+        //// * An internal class that adapts an enumeration over
+        //// * CaseInsensitiveStrings to an enumeration over Strings.
+        //// */
+        ////private class IDEnumerable : IEnumerable<string> {
+        ////    IEnumerable<CaseInsensitiveString> en;
 
-        //public IDEnumerable(IEnumerable<CaseInsensitiveString> e)
-        //{
-        //    en = e;
-        //}
+        ////public IDEnumerable(IEnumerable<CaseInsensitiveString> e)
+        ////{
+        ////    en = e;
+        ////}
 
-        //    public IEnumerator<string> GetEnumerator()
-        //    {
-        //        throw new NotImplementedException();
-        //    }
+        ////    public IEnumerator<string> GetEnumerator()
+        ////    {
+        ////        throw new NotImplementedException();
+        ////    }
 
-        //    IEnumerator IEnumerable.GetEnumerator()
-        //    {
-        //        throw new NotImplementedException();
-        //    }
+        ////    IEnumerator IEnumerable.GetEnumerator()
+        ////    {
+        ////        throw new NotImplementedException();
+        ////    }
 
-        //    //@Override
-        //    //public boolean hasMoreElements()
-        //    //{
-        //    //    return en != null && en.hasMoreElements();
-        //    //}
+        ////    //@Override
+        ////    //public boolean hasMoreElements()
+        ////    //{
+        ////    //    return en != null && en.hasMoreElements();
+        ////    //}
 
-        //    //@Override
-        //    //public String nextElement()
-        //    //{
-        //    //    return (en.nextElement()).getString();
-        //    //}
-        //}
+        ////    //@Override
+        ////    //public String nextElement()
+        ////    //{
+        ////    //    return (en.nextElement()).getString();
+        ////    //}
+        ////}
 
-        /**
-         * Returns an enumeration over the programmatic names of visible
-         * registered transliterators.
-         *
-         * @return An <code>Enumeration</code> over <code>String</code> objects
-         */
+        /// <summary>
+        /// Returns an enumerable over the programmatic names of visible
+        /// registered transliterators.
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{String}"/>.</returns>
         public virtual IEnumerable<string> GetAvailableIDs()
         {
             // Since the cache contains CaseInsensitiveString objects, but
@@ -476,11 +475,10 @@ namespace ICU4N.Text
                 yield return id.String;
         }
 
-        /**
-         * Returns an enumeration over all visible source names.
-         *
-         * @return An <code>Enumeration</code> over <code>String</code> objects
-         */
+        /// <summary>
+        /// Returns an enumerable over all visible source names.
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{String}"/>.</returns>
         public virtual IEnumerable<string> GetAvailableSources()
         {
             //return new IDEnumeration(Collections.enumeration(specDAG.keySet()));
@@ -488,12 +486,11 @@ namespace ICU4N.Text
                 yield return id.String;
         }
 
-        /**
-         * Returns an enumeration over visible target names for the given
-         * source.
-         *
-         * @return An <code>Enumeration</code> over <code>String</code> objects
-         */
+        /// <summary>
+        /// Returns an enumerable over visible target names for the given
+        /// <paramref name="source"/>.
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{String}"/>.</returns>
         public virtual IEnumerable<string> GetAvailableTargets(string source)
         {
             CaseInsensitiveString cisrc = new CaseInsensitiveString(source);
@@ -505,12 +502,11 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Returns an enumeration over visible variant names for the given
-         * source and target.
-         *
-         * @return An <code>Enumeration</code> over <code>String</code> objects
-         */
+        /// <summary>
+        /// Returns an enumerable over visible variant names for the given
+        /// <paramref name="source"/> and <paramref name="target"/>.
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{String}"/>.</returns>
         public virtual IEnumerable<string> GetAvailableVariants(string source, string target)
         {
             CaseInsensitiveString cisrc = new CaseInsensitiveString(source);
@@ -531,9 +527,9 @@ namespace ICU4N.Text
         // class TransliteratorRegistry: internal
         //----------------------------------------------------------------------
 
-        /**
-         * Convenience method.  Calls 6-arg registerEntry().
-         */
+        /// <summary>
+        /// Convenience method. Calls <see cref="RegisterEntry(string, string, string, string, object, bool)"/>.
+        /// </summary>
         private void RegisterEntry(string source,
                                    string target,
                                    string variant,
@@ -549,9 +545,9 @@ namespace ICU4N.Text
             RegisterEntry(ID, s, target, variant, entry, visible);
         }
 
-        /**
-         * Convenience method.  Calls 6-arg registerEntry().
-         */
+        /// <summary>
+        /// Convenience method. Calls <see cref="RegisterEntry(string, string, string, string, object, bool)"/>.
+        /// </summary>
         private void RegisterEntry(string ID,
                                    object entry,
                                    bool visible)
@@ -562,10 +558,10 @@ namespace ICU4N.Text
             RegisterEntry(id, stv[0], stv[1], stv[2], entry, visible);
         }
 
-        /**
-         * Register an entry object (adopted) with the given ID, source,
-         * target, and variant strings.
-         */
+        /// <summary>
+        /// Register an <paramref name="entry"/> object (adopted) with the given <paramref name="ID"/>, <paramref name="source"/>,
+        /// <paramref name="target"/>, and <paramref name="variant"/> strings.
+        /// </summary>
         private void RegisterEntry(string ID,
                                    string source,
                                    string target,
@@ -602,12 +598,12 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Register a source-target/variant in the specDAG.  Variant may be
-         * empty, but source and target must not be.  If variant is empty then
-         * the special variant NO_VARIANT is stored in slot zero of the
-         * UVector of variants.
-         */
+        /// <summary>
+        /// Register a source-target/variant in the specDAG.  Variant may be
+        /// empty, but <paramref name="source"/> and <paramref name="target"/> must not be.  If variant is empty then
+        /// the special variant <see cref="NO_VARIANT"/> is stored in slot zero of the
+        /// UVector of variants.
+        /// </summary>
         private void RegisterSTV(string source,
                                  string target,
                                  string variant)
@@ -645,9 +641,9 @@ namespace ICU4N.Text
             }
         }
 
-        /**
-         * Remove a source-target/variant from the specDAG.
-         */
+        /// <summary>
+        /// Remove a source-target/variant from the specDAG.
+        /// </summary>
         private void RemoveSTV(string source,
                                string target,
                                string variant)
@@ -680,46 +676,46 @@ namespace ICU4N.Text
 
         private static readonly bool DEBUG = false;
 
-        /**
-         * Attempt to find a source-target/variant in the dynamic registry
-         * store.  Return 0 on failure.
-         */
+        /// <summary>
+        /// Attempt to find a source-target/variant in the dynamic registry
+        /// store.  Return 0 on failure.
+        /// </summary>
         private object[] FindInDynamicStore(Spec src,
                                           Spec trg,
                                           string variant)
         {
             string ID = TransliteratorIDParser.STVtoID(src.Get(), trg.Get(), variant);
-            ///CLOVER:OFF
+            ////CLOVER:OFF
             if (DEBUG)
             {
                 Console.Out.WriteLine("TransliteratorRegistry.findInDynamicStore:" +
                                    ID);
             }
-            ///CLOVER:ON
+            ////CLOVER:ON
             return registry.Get(new CaseInsensitiveString(ID));
         }
 
-        /**
-         * Attempt to find a source-target/variant in the static locale
-         * resource store.  Do not perform fallback.  Return 0 on failure.
-         *
-         * On success, create a new entry object, register it in the dynamic
-         * store, and return a pointer to it, but do not make it public --
-         * just because someone requested something, we do not expand the
-         * available ID list (or spec DAG).
-         */
+        /// <summary>
+        /// Attempt to find a source-target/variant in the static locale
+        /// resource store.  Do not perform fallback.  Return 0 on failure.
+        /// <para/>
+        /// On success, create a new entry object, register it in the dynamic
+        /// store, and return a pointer to it, but do not make it public --
+        /// just because someone requested something, we do not expand the
+        /// available ID list (or spec DAG).
+        /// </summary>
         private object[] FindInStaticStore(Spec src,
                                          Spec trg,
                                          string variant)
         {
-            ///CLOVER:OFF
+            ////CLOVER:OFF
             if (DEBUG)
             {
                 string ID = TransliteratorIDParser.STVtoID(src.Get(), trg.Get(), variant);
                 Console.Out.WriteLine("TransliteratorRegistry.findInStaticStore:" +
                                    ID);
             }
-            ///CLOVER:ON
+            ////CLOVER:ON
             object[] entry = null;
             if (src.IsLocale)
             {
@@ -740,16 +736,16 @@ namespace ICU4N.Text
             return entry;
         }
 
-        /**
-         * Attempt to find an entry in a single resource bundle.  This is
-         * a one-sided lookup.  findInStaticStore() performs up to two such
-         * lookups, one for the source, and one for the target.
-         *
-         * Do not perform fallback.  Return 0 on failure.
-         *
-         * On success, create a new Entry object, populate it, and return it.
-         * The caller owns the returned object.
-         */
+        /// <summary>
+        /// Attempt to find an entry in a single resource bundle.  This is
+        /// a one-sided lookup. <see cref="FindInStaticStore(Spec, Spec, string)"/> performs up to two such
+        /// lookups, one for the source, and one for the target.
+        /// <para/>
+        /// Do not perform fallback.  Return 0 on failure.
+        /// <para/>
+        /// On success, create a new Entry object, populate it, and return it.
+        /// The caller owns the returned object.
+        /// </summary>
         private object[] FindInBundle(Spec specToOpen,
                                       Spec specToFind,
                                       string variant,
@@ -824,9 +820,9 @@ namespace ICU4N.Text
                 }
                 catch (MissingManifestResourceException e)
                 {
-                    ///CLOVER:OFF
+                    ////CLOVER:OFF
                     if (DEBUG) Console.Out.WriteLine("missing resource: " + e);
-                    ///CLOVER:ON
+                    ////CLOVER:ON
                 }
             }
 
@@ -835,36 +831,38 @@ namespace ICU4N.Text
             return null;
         }
 
-        /**
-         * Convenience method.  Calls 3-arg find().
-         */
+        /// <summary>
+        /// Convenience method. Calls <see cref="Find(string, string, string)"/>.
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
         private object[] Find(string ID)
         {
             string[] stv = TransliteratorIDParser.IDtoSTV(ID);
             return Find(stv[0], stv[1], stv[2]);
         }
 
-        /**
-         * Top-level find method.  Attempt to find a source-target/variant in
-         * either the dynamic or the static (locale resource) store.  Perform
-         * fallback.
-         *
-         * Lookup sequence for ss_SS_SSS-tt_TT_TTT/v:
-         *
-         *   ss_SS_SSS-tt_TT_TTT/v -- in hashtable
-         *   ss_SS_SSS-tt_TT_TTT/v -- in ss_SS_SSS (no fallback)
-         *
-         *     repeat with t = tt_TT_TTT, tt_TT, tt, and tscript
-         *
-         *     ss_SS_SSS-t/*
-         *     ss_SS-t/*
-         *     ss-t/*
-         *     sscript-t/*
-         *
-         * Here * matches the first variant listed.
-         *
-         * Caller does NOT own returned object.  Return 0 on failure.
-         */
+        /// <summary>
+        /// Top-level find method.  Attempt to find a source-target/variant in
+        /// either the dynamic or the static (locale resource) store.  Perform
+        /// fallback.
+        /// <para/>
+        /// Lookup sequence for ss_SS_SSS-tt_TT_TTT/v:
+        /// <code>
+        ///   ss_SS_SSS-tt_TT_TTT/v -- in hashtable
+        ///   ss_SS_SSS-tt_TT_TTT/v -- in ss_SS_SSS (no fallback)
+        ///   
+        ///     repeat with t = tt_TT_TTT, tt_TT, tt, and tscript
+        /// 
+        ///     ss_SS_SSS-t/*
+        ///     ss_SS-t/*
+        ///     ss-t/*
+        ///     sscript-t/*
+        /// </code>
+        /// Here * matches the first variant listed.
+        /// <para/>
+        /// Caller does NOT own returned object.  Return 0 on failure.
+        /// </summary>
         private object[] Find(string source,
                               string target,
                               string variant)
@@ -926,18 +924,18 @@ namespace ICU4N.Text
             return null;
         }
 
-        /**
-         * Given an Entry object, instantiate it.  Caller owns result.  Return
-         * 0 on failure.
-         *
-         * Return a non-empty aliasReturn value if the ID points to an alias.
-         * We cannot instantiate it ourselves because the alias may contain
-         * filters or compounds, which we do not understand.  Caller should
-         * make aliasReturn empty before calling.
-         *
-         * The entry object is assumed to reside in the dynamic store.  It may be
-         * modified.
-         */
+        /// <summary>
+        /// Given an Entry object, instantiate it.  Caller owns result.  Return
+        /// 0 on failure.
+        /// <para/>
+        /// Return a non-empty <paramref name="aliasReturn"/> value if the <paramref name="ID"/> points to an alias.
+        /// We cannot instantiate it ourselves because the alias may contain
+        /// filters or compounds, which we do not understand.  Caller should
+        /// make <paramref name="aliasReturn"/> empty before calling.
+        /// <para/>
+        /// The entry object is assumed to reside in the dynamic store.  It may be
+        /// modified.
+        /// </summary>
         private Transliterator InstantiateEntry(string ID,
                                                 object[] entryWrapper,
                                                 StringBuffer aliasReturn)

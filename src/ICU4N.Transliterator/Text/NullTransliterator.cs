@@ -22,9 +22,6 @@
         /// <summary>
         /// Implements <see cref="Transliterator.HandleTransliterate(IReplaceable, TransliterationPosition, bool)"/>.
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="offsets"></param>
-        /// <param name="incremental"></param>
         protected override void HandleTransliterate(IReplaceable text,
                                            TransliterationPosition offsets, bool incremental)
         {

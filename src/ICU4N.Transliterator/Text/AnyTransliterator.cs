@@ -305,9 +305,9 @@ namespace ICU4N.Text
             }
             catch (MissingManifestResourceException)
             {
-                ///CLOVER:OFF
+                ////CLOVER:OFF
                 return UScript.InvalidCode;
-                ///CLOVER:ON
+                ////CLOVER:ON
             }
         }
 
