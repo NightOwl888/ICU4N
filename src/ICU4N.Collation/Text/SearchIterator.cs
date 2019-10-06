@@ -1,7 +1,5 @@
 ﻿using ICU4N.Support.Text;
-using ICU4N.Text;
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ICU4N.Text
@@ -729,7 +727,7 @@ namespace ICU4N.Text
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         //TODO: This protected method is @stable 2.0 in ICU4C
-        protected void SetMatchNotFound()
+        protected virtual void SetMatchNotFound()
         {
             search_.matchedIndex_ = Done;
             search_.MatchedLength=0;
@@ -762,7 +760,7 @@ namespace ICU4N.Text
     /// </summary>
     /// <seealso cref="SearchIterator.ElementComparisonType"/>
     /// <stable>ICU 53</stable>
-    public enum SearchIteratorElementComparisonType
+    public enum SearchIteratorElementComparisonType // ICU4N TODO: API Rename back to ElementComparisonType
     {
         /// <summary>
         /// Standard collation element comparison at the specified collator strength.

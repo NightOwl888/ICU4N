@@ -18,10 +18,8 @@ namespace ICU4N.Support.Text
         /// </summary>
         /// <param name="value">The source string to iterate over.</param>
         public StringCharacterIterator(string value)
+            : this(value, 0)
         {
-            str = value;
-            start = offset = 0;
-            end = str.Length;
         }
 
         /// <summary>
@@ -34,15 +32,8 @@ namespace ICU4N.Support.Text
         /// <exception cref="ArgumentException">If <paramref name="location"/> is negative or greater than the length
         /// of <paramref name="value"/>.</exception>
         public StringCharacterIterator(string value, int location)
+            : this(value, 0, value.Length, location)
         {
-            str = value;
-            start = 0;
-            end = str.Length;
-            if (location < 0 || location > end)
-            {
-                throw new ArgumentException();
-            }
-            offset = location;
         }
 
         /// <summary>
@@ -58,7 +49,7 @@ namespace ICU4N.Support.Text
         public StringCharacterIterator(string value, int start, int end,
                 int location)
         {
-            str = value;
+            str = value ?? throw new ArgumentNullException(nameof(value));
             if (start < 0 || end > str.Length || start > end
                     || location < start || location > end)
             {
@@ -222,7 +213,7 @@ namespace ICU4N.Support.Text
         {
             if (location < start || location > end)
             {
-                throw new ArgumentException();
+                throw new ArgumentException("Invalid index");
             }
             offset = location;
             if (offset == end)
@@ -239,7 +230,7 @@ namespace ICU4N.Support.Text
         /// <param name="value">The new source string.</param>
         public void SetText(string value)
         {
-            str = value;
+            str = value ?? throw new ArgumentNullException(nameof(value));
             start = offset = 0;
             end = value.Length;
         }
