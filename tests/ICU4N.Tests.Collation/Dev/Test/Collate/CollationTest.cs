@@ -67,7 +67,7 @@ namespace ICU4N.Dev.Test.Collate
             int[] orders = new int[maxSize];
 
             int order;
-            while ((order = iter.Next()) != CollationElementIterator.NULLORDER)
+            while ((order = iter.Next()) != CollationElementIterator.NullOrder)
             {
                 if (size == maxSize)
                 {
@@ -101,7 +101,7 @@ namespace ICU4N.Dev.Test.Collate
             // reset the iterator
             iter.Reset();
 
-            while ((o = iter.Previous()) != CollationElementIterator.NULLORDER)
+            while ((o = iter.Previous()) != CollationElementIterator.NullOrder)
             {
                 if (o != orders[--index])
                 {
@@ -137,14 +137,14 @@ namespace ICU4N.Dev.Test.Collate
 
                 iter.Reset();
                 TestFmwk.Err("next: ");
-                while ((o = iter.Next()) != CollationElementIterator.NULLORDER)
+                while ((o = iter.Next()) != CollationElementIterator.NullOrder)
                 {
                     String hexString = "0x" + Utility.Hex(o) + " ";
                     TestFmwk.Err(hexString);
                 }
                 TestFmwk.Errln("");
                 TestFmwk.Err("prev: ");
-                while ((o = iter.Previous()) != CollationElementIterator.NULLORDER)
+                while ((o = iter.Previous()) != CollationElementIterator.NullOrder)
                 {
                     String hexString = "0x" + Utility.Hex(o) + " ";
                     TestFmwk.Err(hexString);

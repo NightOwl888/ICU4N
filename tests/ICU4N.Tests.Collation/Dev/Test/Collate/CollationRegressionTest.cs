@@ -34,7 +34,7 @@ namespace ICU4N.Dev.Test.Collate
                 return;
             }
 
-            while (i1.Next() != CollationElementIterator.NULLORDER)
+            while (i1.Next() != CollationElementIterator.NullOrder)
             {
                 //
             }
@@ -65,7 +65,7 @@ namespace ICU4N.Dev.Test.Collate
                     break;
                 }
                 count += 1;
-            } while (c1 != CollationElementIterator.NULLORDER);
+            } while (c1 != CollationElementIterator.NullOrder);
         }
 
         // @bug 4051866
@@ -733,7 +733,7 @@ namespace ICU4N.Dev.Test.Collate
             }
             CollationElementIterator i = c.GetCollationElementIterator(nothing);
             i.Reset();
-            if (i.Next() != CollationElementIterator.NULLORDER)
+            if (i.Next() != CollationElementIterator.NullOrder)
             {
                 Errln("next did not return NULLORDER");
             }
@@ -1126,7 +1126,7 @@ namespace ICU4N.Dev.Test.Collate
 
             int elt = iter.Next();
             int count = 0;
-            while (elt != CollationElementIterator.NULLORDER)
+            while (elt != CollationElementIterator.NullOrder)
             {
                 ++count;
                 elt = iter.Next();
@@ -1139,7 +1139,7 @@ namespace ICU4N.Dev.Test.Collate
             iter.Reset();
             elt = iter.Next();
             count = 0;
-            while (elt != CollationElementIterator.NULLORDER)
+            while (elt != CollationElementIterator.NullOrder)
             {
                 nextElements[count++] = testText.Substring(lastPos, iter.GetOffset() - lastPos); // ICU4N: Corrected 2nd parameter
                 lastPos = iter.GetOffset();
@@ -1220,7 +1220,7 @@ namespace ICU4N.Dev.Test.Collate
             int elem;
 
             // Iterate forward and collect all of the elements into a Vector
-            while ((elem = iter.Next()) != CollationElementIterator.NULLORDER)
+            while ((elem = iter.Next()) != CollationElementIterator.NullOrder)
             {
                 elements.Add(elem);
             }
@@ -1228,7 +1228,7 @@ namespace ICU4N.Dev.Test.Collate
             // Now iterate backward and make sure they're the same
             iter.Reset();
             int index = elements.Count - 1;
-            while ((elem = iter.Previous()) != CollationElementIterator.NULLORDER)
+            while ((elem = iter.Previous()) != CollationElementIterator.NullOrder)
             {
                 int expect = (int)elements[index];
 

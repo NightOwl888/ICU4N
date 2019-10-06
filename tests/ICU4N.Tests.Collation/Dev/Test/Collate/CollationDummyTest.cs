@@ -523,7 +523,7 @@ namespace ICU4N.Dev.Test.Collate
                             Errln("ERROR: ucol_next failed for iteration " + j);
                             break;
                         }
-                        if (ceX == CollationElementIterator.NULLORDER)
+                        if (ceX == CollationElementIterator.NullOrder)
                         {
                             break;
                         }

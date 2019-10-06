@@ -117,7 +117,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         /// <seealso cref="Next()"/>
         /// <seealso cref="Previous()"/>
-        public const int NULLORDER = unchecked((int)0xffffffff); // ICU4N TODO: API - Rename NullOrder
+        public const int NullOrder = unchecked((int)0xffffffff);
 
         /// <summary>
         /// This constant is returned by the iterator in the methods
@@ -129,7 +129,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         /// <seealso cref="Next()"/>
         /// <seealso cref="Previous()"/>
-        public const int IGNORABLE = 0; // ICU4N TODO: API - Rename Ingorable
+        public const int Ingorable = 0;
 
         /// <summary>
         /// Return the primary order of the specified collation element,
@@ -196,7 +196,7 @@ namespace ICU4N.Text
         /// <see cref="CollationElementIterator"/> constructor. This takes a source
         /// string and a <see cref="Text.RuleBasedCollator"/>. The iterator will walk through
         /// the source string based on the rules defined by the
-        /// collator. If the source string is empty, <see cref="NULLORDER"/> will be
+        /// collator. If the source string is empty, <see cref="NullOrder"/> will be
         /// returned on the first call to <see cref="Next()"/>.
         /// </summary>
         /// <param name="source">The source string.</param>
@@ -220,7 +220,7 @@ namespace ICU4N.Text
         /// <see cref="CollationElementIterator"/> constructor. This takes a source
         /// character iterator and a <see cref="Text.RuleBasedCollator"/>. The iterator will
         /// walk through the source string based on the rules defined by
-        /// the collator. If the source string is empty, <see cref="NULLORDER"/> will be
+        /// the collator. If the source string is empty, <see cref="NullOrder"/> will be
         /// returned on the first call to <see cref="Next()"/>.
         /// </summary>
         /// <param name="source">The source string iterator.</param>
@@ -236,7 +236,7 @@ namespace ICU4N.Text
         /// <see cref="CollationElementIterator"/> constructor. This takes a source
         /// character iterator and a <see cref="Text.RuleBasedCollator"/>. The iterator will
         /// walk through the source string based on the rules defined by
-        /// the collator. If the source string is empty, <see cref="NULLORDER"/> will be
+        /// the collator. If the source string is empty, <see cref="NullOrder"/> will be
         /// returned on the first call to <see cref="Next()"/>.
         /// </summary>
         /// <param name="source">The source string iterator.</param>
@@ -320,7 +320,7 @@ namespace ICU4N.Text
         /// iterator is currently pointing to, and then updates the
         /// internal pointer to point to the next element.
         /// </summary>
-        /// <returns>The next collation element or <see cref="NULLORDER"/> if the end of the iteration has been reached.</returns>
+        /// <returns>The next collation element or <see cref="NullOrder"/> if the end of the iteration has been reached.</returns>
         /// <stable>ICU 2.8</stable>
         public int Next()
         {
@@ -355,7 +355,7 @@ namespace ICU4N.Text
             long ce = iter_.NextCE();
             if (ce == Collation.NoCE)
             {
-                return NULLORDER;
+                return NullOrder;
             }
             // Turn the 64-bit CE into two old-style 32-bit CEs, without quaternary bits.
             long p = ce.TripleShift(32);
@@ -384,7 +384,7 @@ namespace ICU4N.Text
         /// pointing to and then returns that element, while <see cref="Next()"/> returns
         /// the current element and then updates the pointer.
         /// </summary>
-        /// <returns>The previous collation element, or <see cref="NULLORDER"/> when the start of
+        /// <returns>The previous collation element, or <see cref="NullOrder"/> when the start of
         /// the iteration has been reached.</returns>
         /// <stable>ICU 2.8</stable>
         public int Previous()
@@ -426,7 +426,7 @@ namespace ICU4N.Text
             long ce = iter_.PreviousCE(offsets_);
             if (ce == Collation.NoCE)
             {
-                return NULLORDER;
+                return NullOrder;
             }
             // Turn the 64-bit CE into two old-style 32-bit CEs, without quaternary bits.
             long p = ce.TripleShift(32);

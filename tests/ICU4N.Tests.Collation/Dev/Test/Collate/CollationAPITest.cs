@@ -356,7 +356,7 @@ namespace ICU4N.Dev.Test.Collate
             // doAssert((CollationElementIterator.SecondaryOrder(order1) !=
             //    CollationElementIterator.SecondaryOrder(order3)), "The secondary orders should not be the same");
 
-            DoAssert((order1 != CollationElementIterator.NULLORDER), "Unexpected end of iterator reached");
+            DoAssert((order1 != CollationElementIterator.NullOrder), "Unexpected end of iterator reached");
 
             iterator1.Reset();
             iterator2.Reset();
@@ -397,7 +397,7 @@ namespace ICU4N.Dev.Test.Collate
             // obsolete invalid test, removed
             // doAssert((CollationElementIterator.SecondaryOrder(order1) !=
             //    CollationElementIterator.SecondaryOrder(order3)), "The secondary orders should not be the same");
-            DoAssert((order1 != CollationElementIterator.NULLORDER), "Unexpected end of iterator reached");
+            DoAssert((order1 != CollationElementIterator.NullOrder), "Unexpected end of iterator reached");
             DoAssert(!(iterator2.Equals(iterator3)), "The iterators should be different");
             Logln("testing CollationElementIterator ends...");
         }
@@ -690,7 +690,7 @@ namespace ICU4N.Dev.Test.Collate
                     {
                         Errln("! modifier test failed");
                     }
-                    if (ce == CollationElementIterator.NULLORDER)
+                    if (ce == CollationElementIterator.NullOrder)
                     {
                         break;
                     }

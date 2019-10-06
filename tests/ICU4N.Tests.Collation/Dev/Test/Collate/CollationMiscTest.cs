@@ -1303,12 +1303,12 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 iter1 = rbc.GetCollationElementIterator("CH");
                 iter2 = rbc.GetCollationElementIterator("\u0427");
-                int ce1 = CollationElementIterator.IGNORABLE;
-                int ce2 = CollationElementIterator.IGNORABLE;
+                int ce1 = CollationElementIterator.Ingorable;
+                int ce2 = CollationElementIterator.Ingorable;
                 // The ICU 53 builder code sets the uppercase flag only on the first CE.
                 int mask = ~0;
-                while (ce1 != CollationElementIterator.NULLORDER
-                       && ce2 != CollationElementIterator.NULLORDER)
+                while (ce1 != CollationElementIterator.NullOrder
+                       && ce2 != CollationElementIterator.NullOrder)
                 {
                     ce1 = iter1.Next();
                     ce2 = iter2.Next();
@@ -1624,7 +1624,7 @@ namespace ICU4N.Dev.Test.Collate
                         return;
                     }
                     ce = iter2.Next();
-                    while (ce != CollationElementIterator.NULLORDER)
+                    while (ce != CollationElementIterator.NullOrder)
                     {
                         if (iter1.Next() != ce)
                         {
@@ -1635,7 +1635,7 @@ namespace ICU4N.Dev.Test.Collate
                     }
                     j++;
                 }
-                if (iter1.Next() != CollationElementIterator.NULLORDER)
+                if (iter1.Next() != CollationElementIterator.NullOrder)
                 {
                     Errln("Collation elements not exhausted\n");
                     return;
@@ -1976,7 +1976,7 @@ namespace ICU4N.Dev.Test.Collate
                         /*int ce =*/
                         iter.Next();
                         int ce2 = iter.Next();
-                        if (ce2 == CollationElementIterator.NULLORDER)
+                        if (ce2 == CollationElementIterator.NullOrder)
                         {
                             Errln("Token " + tokens[i] + " not expected to fail");
                         }
@@ -3404,8 +3404,8 @@ namespace ICU4N.Dev.Test.Collate
                 CollationElementIterator iter1 = coll.GetCollationElementIterator(str1);
                 CollationElementIterator iter2 = coll.GetCollationElementIterator(str2);
                 int ce1, ce2;
-                while ((ce1 = iter1.Next()) != CollationElementIterator.NULLORDER &&
-                      (ce2 = iter2.Next()) != CollationElementIterator.NULLORDER)
+                while ((ce1 = iter1.Next()) != CollationElementIterator.NullOrder &&
+                      (ce2 = iter2.Next()) != CollationElementIterator.NullOrder)
                 {
                     if (ce1 > ce2)
                     {

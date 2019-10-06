@@ -135,7 +135,7 @@ namespace ICU4N.Dev.Test.Collate
                     order = iter.Previous();
                 }
 
-                while (iter.Previous() != CollationElementIterator.NULLORDER)
+                while (iter.Previous() != CollationElementIterator.NullOrder)
                 {
                     count++;
                 }
@@ -250,13 +250,13 @@ namespace ICU4N.Dev.Test.Collate
             CollationElementIterator iter = en_us.GetCollationElementIterator(test1);
             // testing boundaries
             iter.SetOffset(0);
-            if (iter.Previous() != CollationElementIterator.NULLORDER)
+            if (iter.Previous() != CollationElementIterator.NullOrder)
             {
                 Errln("Error: After setting offset to 0, we should be at the end "
                       + "of the backwards iteration");
             }
             iter.SetOffset(test1.Length);
-            if (iter.Next() != CollationElementIterator.NULLORDER)
+            if (iter.Next() != CollationElementIterator.NullOrder)
             {
                 Errln("Error: After setting offset to the end of the string, we "
                       + "should be at the end of the forwards iteration");
@@ -357,7 +357,7 @@ namespace ICU4N.Dev.Test.Collate
                     break;
                 }
                 count += 1;
-            } while (c1 != CollationElementIterator.NULLORDER);
+            } while (c1 != CollationElementIterator.NullOrder);
             CollationTest.BackAndForth(this, i1);
             CollationTest.BackAndForth(this, i2);
         }
@@ -473,7 +473,7 @@ namespace ICU4N.Dev.Test.Collate
             int c = iter2.Next();
             int i = 0;
 
-            while (++i < 10 && c != CollationElementIterator.NULLORDER)
+            while (++i < 10 && c != CollationElementIterator.NullOrder)
             {
                 try
                 {
@@ -701,7 +701,7 @@ namespace ICU4N.Dev.Test.Collate
                         String resultstr = tgt[count].Substring(s, e - s); // ICU4N: Corrected 2nd parameter
                         resultiter.SetText(resultstr);
                         int ce = resultiter.Next();
-                        while (ce != CollationElementIterator.NULLORDER)
+                        while (ce != CollationElementIterator.NullOrder)
                         {
                             if (ce != iter.Next())
                             {
@@ -877,7 +877,7 @@ namespace ICU4N.Dev.Test.Collate
                     {
                         Errln("Error: in locale " + localeString + ", CEIterator next() returned more elements than expected");
                     }
-                } while (element != CollationElementIterator.NULLORDER);
+                } while (element != CollationElementIterator.NullOrder);
                 if (ioff < noff)
                 {
                     Errln("Error: in locale " + localeString + ", CEIterator next() returned fewer elements than expected");
@@ -908,7 +908,7 @@ namespace ICU4N.Dev.Test.Collate
                     {
                         Errln("Error: in locale " + localeString + ", CEIterator previous() returned more elements than expected");
                     }
-                } while (element != CollationElementIterator.NULLORDER);
+                } while (element != CollationElementIterator.NullOrder);
                 if (ioff > 0)
                 {
                     Errln("Error: in locale " + localeString + ", CEIterator previous() returned fewer elements than expected");

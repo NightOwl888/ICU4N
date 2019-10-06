@@ -715,11 +715,11 @@ namespace ICU4N.Text
                     }
                     else
                     {
-                        sourcece = CollationElementIterator.IGNORABLE;
+                        sourcece = CollationElementIterator.Ingorable;
                     }
                 }
             }
-            else if (strength_ >= CollationStrength.Quaternary && sourcece == CollationElementIterator.IGNORABLE)
+            else if (strength_ >= CollationStrength.Quaternary && sourcece == CollationElementIterator.Ingorable)
             {
                 sourcece = 0xFFFF;
             }
@@ -807,10 +807,10 @@ namespace ICU4N.Text
             int result = 0;
             int ce;
 
-            while ((ce = coleiter.Next()) != CollationElementIterator.NULLORDER)
+            while ((ce = coleiter.Next()) != CollationElementIterator.NullOrder)
             {
                 int newce = GetCE(ce);
-                if (newce != CollationElementIterator.IGNORABLE /* 0 */)
+                if (newce != CollationElementIterator.Ingorable /* 0 */)
                 {
                     int[] temp = AddToInt32Array(cetable, offset, newce,
                             patternlength - coleiter.GetOffset() + 1);
@@ -1951,7 +1951,7 @@ namespace ICU4N.Text
 
                     if (primary == 0)
                     {
-                        return CollationElementIterator.IGNORABLE;
+                        return CollationElementIterator.Ingorable;
                     }
 
                     if (strength_ >= CollationStrength.Quaternary)
@@ -1987,7 +1987,7 @@ namespace ICU4N.Text
             /// if an error has occurred or if the end of string has been reached.</returns>
             public long NextProcessed(Range range)
             {
-                long result = CollationElementIterator.IGNORABLE;
+                long result = CollationElementIterator.Ingorable;
                 int low = 0, high = 0;
 
                 pceBuffer_.Reset();
@@ -1998,14 +1998,14 @@ namespace ICU4N.Text
                     int ce = cei_.Next();
                     high = cei_.GetOffset();
 
-                    if (ce == CollationElementIterator.NULLORDER)
+                    if (ce == CollationElementIterator.NullOrder)
                     {
                         result = PROCESSED_NULLORDER;
                         break;
                     }
 
                     result = ProcessCE(ce);
-                } while (result == CollationElementIterator.IGNORABLE);
+                } while (result == CollationElementIterator.Ingorable);
 
                 if (range != null)
                 {
@@ -2029,7 +2029,7 @@ namespace ICU4N.Text
             /// string has been reached.</returns>
             public long PreviousProcessed(Range range)
             {
-                long result = CollationElementIterator.IGNORABLE;
+                long result = CollationElementIterator.Ingorable;
                 int low = 0, high = 0;
 
                 // pceBuffer_.reset();
@@ -2049,7 +2049,7 @@ namespace ICU4N.Text
                         ce = cei_.Previous();
                         low = cei_.GetOffset();
 
-                        if (ce == CollationElementIterator.NULLORDER)
+                        if (ce == CollationElementIterator.NullOrder)
                         {
                             if (!rceb.Empty())
                             {
@@ -2075,7 +2075,7 @@ namespace ICU4N.Text
 
                         result = ProcessCE(rcei.CE);
 
-                        if (result != CollationElementIterator.IGNORABLE)
+                        if (result != CollationElementIterator.Ingorable)
                         {
                             pceBuffer_.Put(result, rcei.Low, rcei.High);
                         }
@@ -2090,7 +2090,7 @@ namespace ICU4N.Text
                         range.IxLow = -1;
                         range.IxHigh = -1;
                     }
-                    return CollationElementIterator.NULLORDER;
+                    return CollationElementIterator.NullOrder;
                 }
 
                 PCEI pcei = pceBuffer_.Get();
