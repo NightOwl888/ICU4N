@@ -437,7 +437,7 @@ namespace ICU4N.Impl.Coll
                 if (leftPrimary != rightPrimary)
                 {
                     // Return the primary difference.
-                    return (leftPrimary < rightPrimary) ? Collation.LESS : Collation.GREATER;
+                    return (leftPrimary < rightPrimary) ? Collation.Less : Collation.Greater;
                 }
                 if (leftPair == EOS) { break; }
                 //leftPair >>>= 16;
@@ -557,7 +557,7 @@ namespace ICU4N.Impl.Coll
                             // and moving backwards between merge separators.
                             return BAIL_OUT_RESULT;
                         }
-                        return (leftSecondary < rightSecondary) ? Collation.LESS : Collation.GREATER;
+                        return (leftSecondary < rightSecondary) ? Collation.Less : Collation.Greater;
                     }
                     if (leftPair == EOS) { break; }
                     //leftPair >>>= 16;
@@ -630,11 +630,11 @@ namespace ICU4N.Impl.Coll
                     {
                         if ((options & CollationSettings.UPPER_FIRST) == 0)
                         {
-                            return (leftCase < rightCase) ? Collation.LESS : Collation.GREATER;
+                            return (leftCase < rightCase) ? Collation.Less : Collation.Greater;
                         }
                         else
                         {
-                            return (leftCase < rightCase) ? Collation.GREATER : Collation.LESS;
+                            return (leftCase < rightCase) ? Collation.Greater : Collation.Less;
                         }
                     }
                     if (leftPair == EOS) { break; }
@@ -644,7 +644,7 @@ namespace ICU4N.Impl.Coll
                     rightPair = rightPair.TripleShift(16);
                 }
             }
-            if (CollationSettings.GetStrength(options) <= CollationStrength.Secondary) { return Collation.EQUAL; }
+            if (CollationSettings.GetStrength(options) <= CollationStrength.Secondary) { return Collation.Equal; }
 
             // Remove the case bits from the tertiary weight when caseLevel is on or caseFirst is off.
             bool withCaseBits = CollationSettings.IsTertiaryWithCaseBits(options);
@@ -721,7 +721,7 @@ namespace ICU4N.Impl.Coll
                             rightTertiary ^= CASE_MASK;
                         }
                     }
-                    return (leftTertiary < rightTertiary) ? Collation.LESS : Collation.GREATER;
+                    return (leftTertiary < rightTertiary) ? Collation.Less : Collation.Greater;
                 }
                 if (leftPair == EOS) { break; }
                 //leftPair >>>= 16;
@@ -729,7 +729,7 @@ namespace ICU4N.Impl.Coll
                 leftPair = leftPair.TripleShift(16);
                 rightPair = rightPair.TripleShift(16);
             }
-            if (CollationSettings.GetStrength(options) <= CollationStrength.Tertiary) { return Collation.EQUAL; }
+            if (CollationSettings.GetStrength(options) <= CollationStrength.Tertiary) { return Collation.Equal; }
 
             leftIndex = rightIndex = startIndex;
             leftPair = rightPair = 0;
@@ -789,7 +789,7 @@ namespace ICU4N.Impl.Coll
                 int rightQuaternary = rightPair & 0xffff;
                 if (leftQuaternary != rightQuaternary)
                 {
-                    return (leftQuaternary < rightQuaternary) ? Collation.LESS : Collation.GREATER;
+                    return (leftQuaternary < rightQuaternary) ? Collation.Less : Collation.Greater;
                 }
                 if (leftPair == EOS) { break; }
                 //leftPair >>>= 16;
@@ -797,7 +797,7 @@ namespace ICU4N.Impl.Coll
                 leftPair = leftPair.TripleShift(16);
                 rightPair = rightPair.TripleShift(16);
             }
-            return Collation.EQUAL;
+            return Collation.Equal;
         }
 
         private static int Lookup(char[] table, int c)

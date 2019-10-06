@@ -65,7 +65,7 @@ namespace ICU4N.Impl.Coll
         {
             if (pos == limit)
             {
-                return Collation.SENTINEL_CP;
+                return Collation.SentinelCodePoint;
             }
             char c = seq[pos++];
             char trail;
@@ -85,7 +85,7 @@ namespace ICU4N.Impl.Coll
         {
             if (pos == start)
             {
-                return Collation.SENTINEL_CP;
+                return Collation.SentinelCodePoint;
             }
             char c = seq[--pos];
             char lead;

@@ -33,7 +33,7 @@ namespace ICU4N.Impl.Coll
                 {
                     long ce = left.NextCE();
                     leftPrimary = ce.TripleShift(32);
-                    if (leftPrimary < variableTop && leftPrimary > Collation.MERGE_SEPARATOR_PRIMARY)
+                    if (leftPrimary < variableTop && leftPrimary > Collation.MergeSeparatorPrimary)
                     {
                         // Variable CE, shift it to quaternary level.
                         // Ignore all following primary ignorables, and shift further variable CEs.
@@ -55,7 +55,7 @@ namespace ICU4N.Impl.Coll
                                     break;
                                 }
                             }
-                        } while (leftPrimary < variableTop && leftPrimary > Collation.MERGE_SEPARATOR_PRIMARY);
+                        } while (leftPrimary < variableTop && leftPrimary > Collation.MergeSeparatorPrimary);
                     }
                 } while (leftPrimary == 0);
 
@@ -64,7 +64,7 @@ namespace ICU4N.Impl.Coll
                 {
                     long ce = right.NextCE();
                     rightPrimary = ce.TripleShift(32);
-                    if (rightPrimary < variableTop && rightPrimary > Collation.MERGE_SEPARATOR_PRIMARY)
+                    if (rightPrimary < variableTop && rightPrimary > Collation.MergeSeparatorPrimary)
                     {
                         // Variable CE, shift it to quaternary level.
                         // Ignore all following primary ignorables, and shift further variable CEs.
@@ -86,7 +86,7 @@ namespace ICU4N.Impl.Coll
                                     break;
                                 }
                             }
-                        } while (rightPrimary < variableTop && rightPrimary > Collation.MERGE_SEPARATOR_PRIMARY);
+                        } while (rightPrimary < variableTop && rightPrimary > Collation.MergeSeparatorPrimary);
                     }
                 } while (rightPrimary == 0);
 
@@ -98,7 +98,7 @@ namespace ICU4N.Impl.Coll
                         leftPrimary = settings.Reorder(leftPrimary);
                         rightPrimary = settings.Reorder(rightPrimary);
                     }
-                    return (leftPrimary < rightPrimary) ? Collation.LESS : Collation.GREATER;
+                    return (leftPrimary < rightPrimary) ? Collation.Less : Collation.Greater;
                 }
                 if (leftPrimary == Collation.NO_CE_PRIMARY)
                 {
@@ -131,7 +131,7 @@ namespace ICU4N.Impl.Coll
 
                         if (leftSecondary != rightSecondary)
                         {
-                            return (leftSecondary < rightSecondary) ? Collation.LESS : Collation.GREATER;
+                            return (leftSecondary < rightSecondary) ? Collation.Less : Collation.Greater;
                         }
                         if (leftSecondary == Collation.NO_CE_WEIGHT16)
                         {
@@ -150,13 +150,13 @@ namespace ICU4N.Impl.Coll
                         // Find the merge separator or the NO_CE terminator.
                         long p;
                         int leftLimit = leftStart;
-                        while ((p = left.GetCE(leftLimit).TripleShift(32)) > Collation.MERGE_SEPARATOR_PRIMARY
+                        while ((p = left.GetCE(leftLimit).TripleShift(32)) > Collation.MergeSeparatorPrimary
                                 || p == 0)
                         {
                             ++leftLimit;
                         }
                         int rightLimit = rightStart;
-                        while ((p = right.GetCE(rightLimit).TripleShift(32)) > Collation.MERGE_SEPARATOR_PRIMARY
+                        while ((p = right.GetCE(rightLimit).TripleShift(32)) > Collation.MergeSeparatorPrimary
                                 || p == 0)
                         {
                             ++rightLimit;
@@ -181,7 +181,7 @@ namespace ICU4N.Impl.Coll
 
                             if (leftSecondary != rightSecondary)
                             {
-                                return (leftSecondary < rightSecondary) ? Collation.LESS : Collation.GREATER;
+                                return (leftSecondary < rightSecondary) ? Collation.Less : Collation.Greater;
                             }
                             if (leftSecondary == 0)
                             {
@@ -272,11 +272,11 @@ namespace ICU4N.Impl.Coll
                     {
                         if ((options & CollationSettings.UPPER_FIRST) == 0)
                         {
-                            return (leftCase < rightCase) ? Collation.LESS : Collation.GREATER;
+                            return (leftCase < rightCase) ? Collation.Less : Collation.Greater;
                         }
                         else
                         {
-                            return (leftCase < rightCase) ? Collation.GREATER : Collation.LESS;
+                            return (leftCase < rightCase) ? Collation.Greater : Collation.Less;
                         }
                     }
                     if ((leftLower32.TripleShift(16)) == Collation.NO_CE_WEIGHT16)
@@ -287,7 +287,7 @@ namespace ICU4N.Impl.Coll
             }
             if (CollationSettings.GetStrength(options) <= CollationStrength.Secondary)
             {
-                return Collation.EQUAL;
+                return Collation.Equal;
             }
 
             int tertiaryMask = CollationSettings.GetTertiaryMask(options);
@@ -302,7 +302,7 @@ namespace ICU4N.Impl.Coll
                 {
                     leftLower32 = (int)left.GetCE(leftIndex++);
                     anyQuaternaries |= leftLower32;
-                    Debug.Assert((leftLower32 & Collation.ONLY_TERTIARY_MASK) != 0 || (leftLower32 & 0xc0c0) == 0);
+                    Debug.Assert((leftLower32 & Collation.OnlyTertiaryMask) != 0 || (leftLower32 & 0xc0c0) == 0);
                     leftTertiary = leftLower32 & tertiaryMask;
                 } while (leftTertiary == 0);
 
@@ -311,7 +311,7 @@ namespace ICU4N.Impl.Coll
                 {
                     rightLower32 = (int)right.GetCE(rightIndex++);
                     anyQuaternaries |= rightLower32;
-                    Debug.Assert((rightLower32 & Collation.ONLY_TERTIARY_MASK) != 0 || (rightLower32 & 0xc0c0) == 0);
+                    Debug.Assert((rightLower32 & Collation.OnlyTertiaryMask) != 0 || (rightLower32 & 0xc0c0) == 0);
                     rightTertiary = rightLower32 & tertiaryMask;
                 } while (rightTertiary == 0);
 
@@ -347,7 +347,7 @@ namespace ICU4N.Impl.Coll
                             }
                         }
                     }
-                    return (leftTertiary < rightTertiary) ? Collation.LESS : Collation.GREATER;
+                    return (leftTertiary < rightTertiary) ? Collation.Less : Collation.Greater;
                 }
                 if (leftTertiary == Collation.NO_CE_WEIGHT16)
                 {
@@ -356,14 +356,14 @@ namespace ICU4N.Impl.Coll
             }
             if (CollationSettings.GetStrength(options) <= CollationStrength.Tertiary)
             {
-                return Collation.EQUAL;
+                return Collation.Equal;
             }
 
             if (!anyVariable && (anyQuaternaries & 0xc0) == 0)
             {
                 // If there are no "variable" CEs and no non-zero quaternary weights,
                 // then there are no quaternary differences.
-                return Collation.EQUAL;
+                return Collation.Equal;
             }
 
             leftIndex = 0;
@@ -414,14 +414,14 @@ namespace ICU4N.Impl.Coll
                         leftQuaternary = settings.Reorder(leftQuaternary);
                         rightQuaternary = settings.Reorder(rightQuaternary);
                     }
-                    return (leftQuaternary < rightQuaternary) ? Collation.LESS : Collation.GREATER;
+                    return (leftQuaternary < rightQuaternary) ? Collation.Less : Collation.Greater;
                 }
                 if (leftQuaternary == Collation.NO_CE_PRIMARY)
                 {
                     break;
                 }
             }
-            return Collation.EQUAL;
+            return Collation.Equal;
         }
     }
 }

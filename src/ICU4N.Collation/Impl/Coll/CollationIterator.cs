@@ -294,7 +294,7 @@ namespace ICU4N.Impl.Coll
             {
                 if (c < 0)
                 {
-                    return ceBuffer[cesIndex++] = Collation.NO_CE;
+                    return ceBuffer[cesIndex++] = Collation.NoCE;
                 }
                 d = data.Base;
                 ce32 = d.GetCE32(c);
@@ -314,7 +314,7 @@ namespace ICU4N.Impl.Coll
             {
                 // Forced-inline of ceFromLongPrimaryCE32(ce32).
                 return ceBuffer[cesIndex++] =
-                        ((long)(ce32 - t) << 32) | Collation.COMMON_SEC_AND_TER_CE;
+                        ((long)(ce32 - t) << 32) | Collation.CommonSecondaryAndTertiaryCE;
             }
             return NextCEFromCE32(d, c, ce32);
         }
@@ -325,7 +325,7 @@ namespace ICU4N.Impl.Coll
         /// <returns>GetCEsLength()</returns>
         public int FetchCEs()
         {
-            while (NextCE() != Collation.NO_CE)
+            while (NextCE() != Collation.NoCE)
             {
                 // No need to loop for each expansion CE.
                 cesIndex = ceBuffer.Length;
@@ -355,7 +355,7 @@ namespace ICU4N.Impl.Coll
             offsets.Clear();
             int limitOffset = Offset;
             int c = PreviousCodePoint();
-            if (c < 0) { return Collation.NO_CE; }
+            if (c < 0) { return Collation.NoCE; }
             if (data.IsUnsafeBackward(c, isNumeric))
             {
                 return PreviousCEUnsafe(c, offsets);
@@ -682,15 +682,15 @@ namespace ICU4N.Impl.Coll
                             {
                                 // We should not need to compute each Jamo code point.
                                 // In particular, there should be no offset or implicit ce32.
-                                AppendCEsFromCE32(d, Collation.SENTINEL_CP, jamoCE32s[c], forward);
-                                AppendCEsFromCE32(d, Collation.SENTINEL_CP, jamoCE32s[19 + v], forward);
+                                AppendCEsFromCE32(d, Collation.SentinelCodePoint, jamoCE32s[c], forward);
+                                AppendCEsFromCE32(d, Collation.SentinelCodePoint, jamoCE32s[19 + v], forward);
                                 if (t == 0) { return; }
                                 // offset 39 = 19 + 21 - 1:
                                 // 19 = JAMO_L_COUNT
                                 // 21 = JAMO_T_COUNT
                                 // -1 = omit t==0
                                 ce32 = jamoCE32s[39 + t];
-                                c = Collation.SENTINEL_CP;
+                                c = Collation.SentinelCodePoint;
                                 break;
                             }
                         }
@@ -799,7 +799,7 @@ namespace ICU4N.Impl.Coll
         private int NextSkippedCodePoint()
         {
             if (skipped != null && skipped.HasNext) { return skipped.Next(); }
-            if (numCpFwd == 0) { return Collation.SENTINEL_CP; }
+            if (numCpFwd == 0) { return Collation.SentinelCodePoint; }
             int c = NextCodePoint();
             if (skipped != null && !skipped.IsEmpty && c >= 0) { skipped.IncBeyond(); }
             if (numCpFwd > 0 && c >= 0) { --numCpFwd; }
@@ -1006,7 +1006,7 @@ namespace ICU4N.Impl.Coll
                 // and we are not in a recursive discontiguous contraction.
                 // Append CEs from the contraction ce32
                 // and then from the combining marks that we skipped before the match.
-                c = Collation.SENTINEL_CP;
+                c = Collation.SentinelCodePoint;
                 for (; ; )
                 {
                     AppendCEsFromCE32(d, c, ce32, true);
@@ -1079,7 +1079,7 @@ namespace ICU4N.Impl.Coll
                 --numCpFwd;
                 // Append one or more CEs to the ceBuffer.
                 NextCE();
-                Debug.Assert(ceBuffer[ceBuffer.Length - 1] != Collation.NO_CE);
+                Debug.Assert(ceBuffer[ceBuffer.Length - 1] != Collation.NoCE);
                 // No need to loop for getting each expansion CE from nextCE().
                 cesIndex = ceBuffer.Length;
                 // However, we need to write an offset for each CE.

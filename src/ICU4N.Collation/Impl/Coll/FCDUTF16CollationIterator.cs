@@ -110,7 +110,7 @@ namespace ICU4N.Impl.Coll
                 {
                     if (pos == limit)
                     {
-                        return Collation.SENTINEL_CP;
+                        return Collation.SentinelCodePoint;
                     }
                     c = seq[pos++];
                     if (CollationFCD.HasTccc(c))
@@ -157,7 +157,7 @@ namespace ICU4N.Impl.Coll
                 {
                     if (pos == start)
                     {
-                        return Collation.SENTINEL_CP;
+                        return Collation.SentinelCodePoint;
                     }
                     c = seq[--pos];
                     if (CollationFCD.HasLccc(c))

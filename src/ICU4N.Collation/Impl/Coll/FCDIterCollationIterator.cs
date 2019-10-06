@@ -69,7 +69,7 @@ namespace ICU4N.Impl.Coll
                             iter.Previous();
                             if (!NextSegment())
                             {
-                                return Collation.SENTINEL_CP;
+                                return Collation.SentinelCodePoint;
                             }
                             continue;
                         }
@@ -121,11 +121,11 @@ namespace ICU4N.Impl.Coll
                     {
                         start = pos = 0;
                         state = State.IterInFCDSegment;
-                        return Collation.SENTINEL_CP;
+                        return Collation.SentinelCodePoint;
                     }
                     if (CollationFCD.HasLccc(c))
                     {
-                        int prev = Collation.SENTINEL_CP;
+                        int prev = Collation.SentinelCodePoint;
                         if (CollationFCD.MaybeTibetanCompositeVowel(c) ||
                                 CollationFCD.HasTccc(prev = iter.Previous()))
                         {
@@ -136,7 +136,7 @@ namespace ICU4N.Impl.Coll
                             }
                             if (!PreviousSegment())
                             {
-                                return Collation.SENTINEL_CP;
+                                return Collation.SentinelCodePoint;
                             }
                             continue;
                         }
@@ -199,7 +199,7 @@ namespace ICU4N.Impl.Coll
                             iter.Previous();
                             if (!NextSegment())
                             {
-                                c = Collation.SENTINEL_CP;
+                                c = Collation.SentinelCodePoint;
                                 return Collation.FALLBACK_CE32;
                             }
                             continue;

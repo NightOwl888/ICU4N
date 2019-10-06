@@ -341,7 +341,7 @@ namespace ICU4N.Impl.Coll
         /// <summary>
         /// Writes the sort key bytes for minLevel up to the iterator data's strength. Optionally writes
         /// the case level. Stops writing levels when callback.NeedToWrite(level) returns false.
-        /// Separates levels with the <see cref="Collation.LEVEL_SEPARATOR_BYTE"/> but does not write a <see cref="Collation.TERMINATOR_BYTE"/>.
+        /// Separates levels with the <see cref="Collation.LevelSeparatorByte"/> but does not write a <see cref="Collation.TerminatorByte"/>.
         /// </summary>
         /// <param name="iter"></param>
         /// <param name="compressibleBytes"></param>
@@ -403,7 +403,7 @@ namespace ICU4N.Impl.Coll
                 iter.ClearCEsIfNoneRemaining();
                 long ce = iter.NextCE();
                 long p = ce.TripleShift(32);
-                if (p < variableTop && p > Collation.MERGE_SEPARATOR_PRIMARY)
+                if (p < variableTop && p > Collation.MergeSeparatorPrimary)
                 {
                     // Variable CE, shift it to quaternary level.
                     // Ignore all following primary ignorables, and shift further variable CEs.
@@ -440,7 +440,7 @@ namespace ICU4N.Impl.Coll
                             ce = iter.NextCE();
                             p = ce.TripleShift(32);
                         } while (p == 0);
-                    } while (p < variableTop && p > Collation.MERGE_SEPARATOR_PRIMARY);
+                    } while (p < variableTop && p > Collation.MergeSeparatorPrimary);
                 }
                 // ce could be primary ignorable, or NO_CE, or the merge separator,
                 // or a regular primary CE, but it is not variable.
@@ -463,14 +463,14 @@ namespace ICU4N.Impl.Coll
                             {
                                 // No primary compression terminator
                                 // at the end of the level or merged segment.
-                                if (p1 > Collation.MERGE_SEPARATOR_BYTE)
+                                if (p1 > Collation.MergeSeparatorByte)
                                 {
-                                    sink.Append(Collation.PRIMARY_COMPRESSION_LOW_BYTE);
+                                    sink.Append(Collation.PrimaryCompressionLowByte);
                                 }
                             }
                             else
                             {
-                                sink.Append(Collation.PRIMARY_COMPRESSION_HIGH_BYTE);
+                                sink.Append(Collation.PrimaryCompressionHighByte);
                             }
                         }
                         sink.Append(p1);
@@ -517,9 +517,9 @@ namespace ICU4N.Impl.Coll
                     {
                         // secondary ignorable
                     }
-                    else if (s == Collation.COMMON_WEIGHT16 &&
+                    else if (s == Collation.CommonWeight16 &&
                           ((options & CollationSettings.BACKWARD_SECONDARY) == 0 ||
-                              p != Collation.MERGE_SEPARATOR_PRIMARY))
+                              p != Collation.MergeSeparatorPrimary))
                     {
                         // s is a common secondary weight, and
                         // backwards-secondary is off or the ce is not the merge separator.
@@ -536,7 +536,7 @@ namespace ICU4N.Impl.Coll
                                 commonSecondaries -= SEC_COMMON_MAX_COUNT;
                             }
                             int b;
-                            if (s < Collation.COMMON_WEIGHT16)
+                            if (s < Collation.CommonWeight16)
                             {
                                 b = SEC_COMMON_LOW + commonSecondaries;
                             }
@@ -557,7 +557,7 @@ namespace ICU4N.Impl.Coll
                             // Append reverse weights. The level will be re-reversed later.
                             int remainder = commonSecondaries % SEC_COMMON_MAX_COUNT;
                             int b;
-                            if (prevSecondary < Collation.COMMON_WEIGHT16)
+                            if (prevSecondary < Collation.CommonWeight16)
                             {
                                 b = SEC_COMMON_LOW + remainder;
                             }
@@ -575,7 +575,7 @@ namespace ICU4N.Impl.Coll
                             }
                             // commonSecondaries == 0
                         }
-                        if (0 < p && p <= Collation.MERGE_SEPARATOR_PRIMARY)
+                        if (0 < p && p <= Collation.MergeSeparatorPrimary)
                         {
                             // The backwards secondary level compares secondary weights backwards
                             // within segments separated by the merge separator (U+FFFE).
@@ -588,7 +588,7 @@ namespace ICU4N.Impl.Coll
                                 secs[last--] = b;
                             }
                             secondaries.AppendByte(p == Collation.NO_CE_PRIMARY ?
-                                Collation.LEVEL_SEPARATOR_BYTE : Collation.MERGE_SEPARATOR_BYTE);
+                                Collation.LevelSeparatorByte : Collation.MergeSeparatorByte);
                             prevSecondary = 0;
                             secSegmentStart = secondaries.Length;
                         }
@@ -613,7 +613,7 @@ namespace ICU4N.Impl.Coll
                     {
                         int c = (lower32.TripleShift(8)) & 0xff; // case bits & tertiary lead byte
                         Debug.Assert((c & 0xc0) != 0xc0);
-                        if ((c & 0xc0) == 0 && c > Collation.LEVEL_SEPARATOR_BYTE)
+                        if ((c & 0xc0) == 0 && c > Collation.LevelSeparatorByte)
                         {
                             ++commonCases;
                         }
@@ -627,7 +627,7 @@ namespace ICU4N.Impl.Coll
                                 // then we need not write anything.
                                 // Level length differences are handled already on the next-higher level.
                                 if (commonCases != 0 &&
-                                        (c > Collation.LEVEL_SEPARATOR_BYTE || !cases.IsEmpty))
+                                        (c > Collation.LevelSeparatorByte || !cases.IsEmpty))
                                 {
                                     --commonCases;
                                     while (commonCases >= CASE_LOWER_FIRST_COMMON_MAX_COUNT)
@@ -636,7 +636,7 @@ namespace ICU4N.Impl.Coll
                                         commonCases -= CASE_LOWER_FIRST_COMMON_MAX_COUNT;
                                     }
                                     int b;
-                                    if (c <= Collation.LEVEL_SEPARATOR_BYTE)
+                                    if (c <= Collation.LevelSeparatorByte)
                                     {
                                         b = CASE_LOWER_FIRST_COMMON_LOW + commonCases;
                                     }
@@ -647,7 +647,7 @@ namespace ICU4N.Impl.Coll
                                     cases.AppendByte(b << 4);
                                     commonCases = 0;
                                 }
-                                if (c > Collation.LEVEL_SEPARATOR_BYTE)
+                                if (c > Collation.LevelSeparatorByte)
                                 {
                                     c = (CASE_LOWER_FIRST_COMMON_HIGH + (c.TripleShift(6))) << 4; // 14 or 15
                                 }
@@ -669,7 +669,7 @@ namespace ICU4N.Impl.Coll
                                     cases.AppendByte((CASE_UPPER_FIRST_COMMON_LOW + commonCases) << 4);
                                     commonCases = 0;
                                 }
-                                if (c > Collation.LEVEL_SEPARATOR_BYTE)
+                                if (c > Collation.LevelSeparatorByte)
                                 {
                                     c = (CASE_UPPER_FIRST_COMMON_LOW - (c.TripleShift(6))) << 4; // 2 or 1
                                 }
@@ -685,7 +685,7 @@ namespace ICU4N.Impl.Coll
                 {
                     int t = lower32 & tertiaryMask;
                     Debug.Assert((lower32 & 0xc000) != 0xc000);
-                    if (t == Collation.COMMON_WEIGHT16)
+                    if (t == Collation.CommonWeight16)
                     {
                         ++commonTertiaries;
                     }
@@ -702,7 +702,7 @@ namespace ICU4N.Impl.Coll
                                 commonTertiaries -= TER_ONLY_COMMON_MAX_COUNT;
                             }
                             int b;
-                            if (t < Collation.COMMON_WEIGHT16)
+                            if (t < Collation.CommonWeight16)
                             {
                                 b = TER_ONLY_COMMON_LOW + commonTertiaries;
                             }
@@ -713,7 +713,7 @@ namespace ICU4N.Impl.Coll
                             tertiaries.AppendByte(b);
                             commonTertiaries = 0;
                         }
-                        if (t > Collation.COMMON_WEIGHT16)
+                        if (t > Collation.CommonWeight16)
                         {
                             t += 0xc000;
                         }
@@ -732,7 +732,7 @@ namespace ICU4N.Impl.Coll
                                 commonTertiaries -= TER_LOWER_FIRST_COMMON_MAX_COUNT;
                             }
                             int b;
-                            if (t < Collation.COMMON_WEIGHT16)
+                            if (t < Collation.CommonWeight16)
                             {
                                 b = TER_LOWER_FIRST_COMMON_LOW + commonTertiaries;
                             }
@@ -743,7 +743,7 @@ namespace ICU4N.Impl.Coll
                             tertiaries.AppendByte(b);
                             commonTertiaries = 0;
                         }
-                        if (t > Collation.COMMON_WEIGHT16)
+                        if (t > Collation.CommonWeight16)
                         {
                             t += 0x4000;
                         }
@@ -827,13 +827,13 @@ namespace ICU4N.Impl.Coll
                         // There are also exactly as many quaternary weights as tertiary weights,
                         // so level length differences are handled already on tertiary level.
                         // Any above-common quaternary weight will compare greater regardless.
-                        quaternaries.AppendByte(Collation.LEVEL_SEPARATOR_BYTE);
+                        quaternaries.AppendByte(Collation.LevelSeparatorByte);
                     }
                     else
                     {
                         if (q == Collation.NO_CE_WEIGHT16)
                         {
-                            q = Collation.LEVEL_SEPARATOR_BYTE;
+                            q = Collation.LevelSeparatorByte;
                         }
                         else
                         {
@@ -863,7 +863,7 @@ namespace ICU4N.Impl.Coll
                     }
                 }
 
-                if ((lower32.TripleShift(24)) == Collation.LEVEL_SEPARATOR_BYTE)
+                if ((lower32.TripleShift(24)) == Collation.LevelSeparatorByte)
                 {
                     break;
                 } // ce == NO_CE
@@ -878,7 +878,7 @@ namespace ICU4N.Impl.Coll
                     return;
                 }
                 // not used in Java -- ok &= secondaries.isOk();
-                sink.Append(Collation.LEVEL_SEPARATOR_BYTE);
+                sink.Append(Collation.LevelSeparatorByte);
                 secondaries.AppendTo(sink);
             }
 
@@ -889,7 +889,7 @@ namespace ICU4N.Impl.Coll
                     return;
                 }
                 // not used in Java -- ok &= cases.isOk();
-                sink.Append(Collation.LEVEL_SEPARATOR_BYTE);
+                sink.Append(Collation.LevelSeparatorByte);
                 // Write pairs of nibbles as bytes, except separator bytes as themselves.
                 int length = cases.Length - 1; // Ignore the trailing NO_CE.
                 byte b = 0;
@@ -920,7 +920,7 @@ namespace ICU4N.Impl.Coll
                     return;
                 }
                 // not used in Java -- ok &= tertiaries.isOk();
-                sink.Append(Collation.LEVEL_SEPARATOR_BYTE);
+                sink.Append(Collation.LevelSeparatorByte);
                 tertiaries.AppendTo(sink);
             }
 
@@ -931,7 +931,7 @@ namespace ICU4N.Impl.Coll
                     return;
                 }
                 // not used in Java -- ok &= quaternaries.isOk();
-                sink.Append(Collation.LEVEL_SEPARATOR_BYTE);
+                sink.Append(Collation.LevelSeparatorByte);
                 quaternaries.AppendTo(sink);
             }
 

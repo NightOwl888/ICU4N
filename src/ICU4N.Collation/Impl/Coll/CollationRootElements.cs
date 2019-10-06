@@ -163,7 +163,7 @@ namespace ICU4N.Impl.Coll
                 {
                     // Primary CE just before p.
                     p = secTer & 0xffffff00L;
-                    secTer = Collation.COMMON_SEC_AND_TER_CE;
+                    secTer = Collation.CommonSecondaryAndTertiaryCE;
                 }
                 else
                 {
@@ -186,7 +186,7 @@ namespace ICU4N.Impl.Coll
                 // p > elements[index] which is the previous primary.
                 // Find the last secondary & tertiary weights for it.
                 p = q & 0xffffff00L;
-                secTer = Collation.COMMON_SEC_AND_TER_CE;
+                secTer = Collation.CommonSecondaryAndTertiaryCE;
                 for (; ; )
                 {
                     q = elements[++index];
@@ -224,7 +224,7 @@ namespace ICU4N.Impl.Coll
                 }
             }
             // The code above guarantees that p has at most 3 bytes: (p & 0xff) == 0.
-            return (p << 32) | Collation.COMMON_SEC_AND_TER_CE;
+            return (p << 32) | Collation.CommonSecondaryAndTertiaryCE;
         }
 
         /// <summary>
@@ -301,7 +301,7 @@ namespace ICU4N.Impl.Coll
         /// <summary>Returns the tertiary weight before [p, s, t].</summary>
         internal int GetTertiaryBefore(long p, int s, int t)
         {
-            Debug.Assert((t & ~Collation.ONLY_TERTIARY_MASK) == 0);
+            Debug.Assert((t & ~Collation.OnlyTertiaryMask) == 0);
             int index;
             int previousTer;
             long secTer;
@@ -487,13 +487,13 @@ namespace ICU4N.Impl.Coll
             if ((secTer & SEC_TER_DELTA_FLAG) == 0)
             {
                 // No sec/ter delta.
-                return Collation.COMMON_SEC_AND_TER_CE;
+                return Collation.CommonSecondaryAndTertiaryCE;
             }
             secTer &= ~SEC_TER_DELTA_FLAG;
-            if (secTer > Collation.COMMON_SEC_AND_TER_CE)
+            if (secTer > Collation.CommonSecondaryAndTertiaryCE)
             {
                 // Implied sec/ter.
-                return Collation.COMMON_SEC_AND_TER_CE;
+                return Collation.CommonSecondaryAndTertiaryCE;
             }
             // Explicit sec/ter below common/common.
             return secTer;

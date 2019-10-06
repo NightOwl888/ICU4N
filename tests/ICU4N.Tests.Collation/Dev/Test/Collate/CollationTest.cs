@@ -263,14 +263,14 @@ namespace ICU4N.Dev.Test.Collate
             }
 
             long ce = ces[0];
-            long expected = Collation.MakeCE(Collation.MERGE_SEPARATOR_PRIMARY);
+            long expected = Collation.MakeCE(Collation.MergeSeparatorPrimary);
             if (ce != expected)
             {
                 Errln("CE(U+fffe)=0x" + Utility.Hex(ce) + " != 02..");
             }
 
             ce = ces[1];
-            expected = Collation.MakeCE(Collation.MAX_PRIMARY);
+            expected = Collation.MakeCE(Collation.MaxPrimary);
             if (ce != expected)
             {
                 Errln("CE(U+ffff)=0x" + Utility.Hex(ce) + " != max..");
@@ -323,14 +323,14 @@ namespace ICU4N.Dev.Test.Collate
                     ci.SetText(false, buffer, 0);
                     long ce = ci.NextCE();
                     long ce2 = ci.NextCE();
-                    if (ce == Collation.NO_CE || ce2 != Collation.NO_CE)
+                    if (ce == Collation.NoCE || ce2 != Collation.NoCE)
                     {
                         Errln("CollationIterator.nextCE(0x" + Utility.Hex(c)
                                 + ") did not yield exactly one CE");
                         continue;
 
                     }
-                    if ((ce & 0xffffffffL) != Collation.COMMON_SEC_AND_TER_CE)
+                    if ((ce & 0xffffffffL) != Collation.CommonSecondaryAndTertiaryCE)
                     {
                         Errln("CollationIterator.nextCE(U+" + Utility.Hex(c, 4)
                                 + ") has non-common sec/ter weights: 0x" + Utility.Hex(ce & 0xffffffffL, 8));
@@ -465,12 +465,12 @@ namespace ICU4N.Dev.Test.Collate
 
             internal int Next()
             {
-                return (pos < length) ? cp[pos++] : Collation.SENTINEL_CP;
+                return (pos < length) ? cp[pos++] : Collation.SentinelCodePoint;
             }
 
             internal int Previous()
             {
-                return (pos > 0) ? cp[--pos] : Collation.SENTINEL_CP;
+                return (pos > 0) ? cp[--pos] : Collation.SentinelCodePoint;
             }
 
             internal int Length
@@ -709,11 +709,11 @@ namespace ICU4N.Dev.Test.Collate
             long s1 = s.TripleShift(8);
             long s2 = s & 0xff;
             // ctq = Case, Tertiary, Quaternary
-            long c = (ctq & Collation.CASE_MASK).TripleShift(14);
-            long t = ctq & Collation.ONLY_TERTIARY_MASK;
+            long c = (ctq & Collation.CaseMask).TripleShift(14);
+            long t = ctq & Collation.OnlyTertiaryMask;
             long t1 = t.TripleShift(8);
             long t2 = t & 0xff;
-            long q = ctq & Collation.QUATERNARY_MASK;
+            long q = ctq & Collation.QuaternaryMask;
             // No leading zero bytes.
             if ((p != 0 && p1 == 0) || (s != 0 && s1 == 0) || (t != 0 && t1 == 0))
             {
@@ -729,9 +729,9 @@ namespace ICU4N.Dev.Test.Collate
                 return false;
             }
             // Minimum & maximum lead bytes.
-            if ((p1 != 0 && p1 <= Collation.MERGE_SEPARATOR_BYTE)
-                    || s1 == Collation.LEVEL_SEPARATOR_BYTE
-                    || t1 == Collation.LEVEL_SEPARATOR_BYTE || t1 > 0x3f)
+            if ((p1 != 0 && p1 <= Collation.MergeSeparatorByte)
+                    || s1 == Collation.LevelSeparatorByte
+                    || t1 == Collation.LevelSeparatorByte || t1 > 0x3f)
             {
                 return false;
             }
@@ -744,15 +744,15 @@ namespace ICU4N.Dev.Test.Collate
             {
                 if (data.IsCompressibleLeadByte((int)p1))
                 {
-                    if (p2 <= Collation.PRIMARY_COMPRESSION_LOW_BYTE
-                            || Collation.PRIMARY_COMPRESSION_HIGH_BYTE <= p2)
+                    if (p2 <= Collation.PrimaryCompressionLowByte
+                            || Collation.PrimaryCompressionHighByte <= p2)
                     {
                         return false;
                     }
                 }
                 else
                 {
-                    if (p2 <= Collation.LEVEL_SEPARATOR_BYTE)
+                    if (p2 <= Collation.LevelSeparatorByte)
                     {
                         return false;
                     }
@@ -761,8 +761,8 @@ namespace ICU4N.Dev.Test.Collate
             // Other bytes just need to avoid the level separator.
             // Trailing zeros are ok.
             // assert (Collation.LEVEL_SEPARATOR_BYTE == 1);
-            if (p3 == Collation.LEVEL_SEPARATOR_BYTE || p4 == Collation.LEVEL_SEPARATOR_BYTE
-                    || s2 == Collation.LEVEL_SEPARATOR_BYTE || t2 == Collation.LEVEL_SEPARATOR_BYTE)
+            if (p3 == Collation.LevelSeparatorByte || p4 == Collation.LevelSeparatorByte
+                    || s2 == Collation.LevelSeparatorByte || t2 == Collation.LevelSeparatorByte)
             {
                 return false;
             }
@@ -801,7 +801,7 @@ namespace ICU4N.Dev.Test.Collate
             else
             {
                 // Primary CE.
-                if (s == 0 || (Collation.COMMON_WEIGHT16 < s && s <= re.LastCommonSecondary)
+                if (s == 0 || (Collation.CommonWeight16 < s && s <= re.LastCommonSecondary)
                         || s >= re.SecondaryBoundary)
                 {
                     return false;
@@ -889,7 +889,7 @@ namespace ICU4N.Dev.Test.Collate
                 // or does it imply a common one?
                 if (index == length)
                 {
-                    secTer = Collation.COMMON_SEC_AND_TER_CE;
+                    secTer = Collation.CommonSecondaryAndTertiaryCE;
                 }
                 else
                 {
@@ -897,15 +897,15 @@ namespace ICU4N.Dev.Test.Collate
                     if ((secTer & CollationRootElements.SEC_TER_DELTA_FLAG) == 0)
                     {
                         // No sec/ter delta.
-                        secTer = Collation.COMMON_SEC_AND_TER_CE;
+                        secTer = Collation.CommonSecondaryAndTertiaryCE;
                     }
                     else
                     {
                         secTer &= ~CollationRootElements.SEC_TER_DELTA_FLAG;
-                        if (secTer > Collation.COMMON_SEC_AND_TER_CE)
+                        if (secTer > Collation.CommonSecondaryAndTertiaryCE)
                         {
                             // Implied sec/ter.
-                            secTer = Collation.COMMON_SEC_AND_TER_CE;
+                            secTer = Collation.CommonSecondaryAndTertiaryCE;
                         }
                         else
                         {
@@ -959,13 +959,13 @@ namespace ICU4N.Dev.Test.Collate
                 long pri = iter.getPrimary();
                 long secTer = iter.getSecTer();
                 // CollationRootElements CEs must have 0 case and quaternary bits.
-                if ((secTer & Collation.CASE_AND_QUATERNARY_MASK) != 0)
+                if ((secTer & Collation.CaseAndQuaternaryMask) != 0)
                 {
                     Errln("CollationRootElements CE has non-zero case and/or quaternary bits: "
                             + "0x" + Utility.Hex(pri, 8) + " 0x" + Utility.Hex(secTer, 8));
                 }
                 long sec = secTer.TripleShift(16);
-                long ter = secTer & Collation.ONLY_TERTIARY_MASK;
+                long ter = secTer & Collation.OnlyTertiaryMask;
                 long ctq = ter;
                 if (pri == 0 && sec == 0 && ter != 0)
                 {
@@ -983,7 +983,7 @@ namespace ICU4N.Dev.Test.Collate
                     if (pri != prevPri)
                     {
                         long newWeight = 0;
-                        if (prevPri == 0 || prevPri >= Collation.FFFD_PRIMARY)
+                        if (prevPri == 0 || prevPri >= Collation.FFFD_Primary)
                         {
                             // There is currently no tailoring gap after primary ignorables,
                             // and we forbid tailoring after U+FFFD and U+FFFF.
@@ -1776,7 +1776,7 @@ namespace ICU4N.Dev.Test.Collate
         private static CollationSortKeyLevel GetDifferenceLevel(CollationKey prevKey, CollationKey key,
                 int order, bool collHasCaseLevel)
         {
-            if (order == Collation.EQUAL)
+            if (order == Collation.Equal)
             {
                 return CollationSortKeyLevel.Unspecified; // Collation.NO_LEVEL;
             }
@@ -1790,7 +1790,7 @@ namespace ICU4N.Dev.Test.Collate
                 {
                     break;
                 }
-                if (b == Collation.LEVEL_SEPARATOR_BYTE)
+                if (b == Collation.LevelSeparatorByte)
                 {
                     ++level;
                     if (level == CollationSortKeyLevel.Case && !collHasCaseLevel)
@@ -1864,7 +1864,7 @@ namespace ICU4N.Dev.Test.Collate
             }
             bool collHasCaseLevel = ((RuleBasedCollator)coll).IsCaseLevel;
             CollationSortKeyLevel level = GetDifferenceLevel(prevKey, key, order, collHasCaseLevel);
-            if (order != Collation.EQUAL && expectedLevel != CollationSortKeyLevel.Unspecified)
+            if (order != Collation.Equal && expectedLevel != CollationSortKeyLevel.Unspecified)
             {
                 if (level != expectedLevel)
                 {
@@ -1909,7 +1909,7 @@ namespace ICU4N.Dev.Test.Collate
                     return false;
                 }
                 CollationSortKeyLevel mergedLevel = GetDifferenceLevel(prevKey, key, order, collHasCaseLevel);
-                if (order != Collation.EQUAL && expectedLevel != CollationSortKeyLevel.Unspecified)
+                if (order != Collation.Equal && expectedLevel != CollationSortKeyLevel.Unspecified)
                 {
                     if (mergedLevel != level)
                     {
@@ -1956,7 +1956,7 @@ namespace ICU4N.Dev.Test.Collate
                     continue;
                 }
                 String s = sOut;
-                int expectedOrder = (relation == CollationSortKeyLevel.Zero) ? Collation.EQUAL : Collation.LESS;
+                int expectedOrder = (relation == CollationSortKeyLevel.Zero) ? Collation.Equal : Collation.Less;
                 CollationSortKeyLevel expectedLevel = relation;
                 bool isOk = true;
                 if (!NeedsNormalization(prevString) && !NeedsNormalization(s))

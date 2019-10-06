@@ -27,13 +27,13 @@ namespace ICU4N.Impl.Coll
         internal interface ICEModifier
         {
             /// <summary>
-            /// Returns a new CE to replace the non-special input CE32, or else <see cref="Collation.NO_CE"/>.
+            /// Returns a new CE to replace the non-special input CE32, or else <see cref="Collation.NoCE"/>.
             /// </summary>
             /// <param name="ce32"></param>
             /// <returns></returns>
             long ModifyCE32(int ce32);
             /// <summary>
-            /// Returns a new CE to replace the input CE, or else <see cref="Collation.NO_CE"/>.
+            /// Returns a new CE to replace the input CE, or else <see cref="Collation.NoCE"/>.
             /// </summary>
             long ModifyCE(long ce);
         }
@@ -525,7 +525,7 @@ namespace ICU4N.Impl.Coll
                 // normal form ppppsstt
                 return (int)p | (lower32.TripleShift(16)) | (t >> 8);
             }
-            else if ((ce & 0xffffffffffL) == Collation.COMMON_SEC_AND_TER_CE)
+            else if ((ce & 0xffffffffffL) == Collation.CommonSecondaryAndTertiaryCE)
             {
                 // long-primary form ppppppC1
                 return Collation.MakeLongPrimaryCE32(p);
@@ -811,7 +811,7 @@ namespace ICU4N.Impl.Coll
                 if (!Collation.IsSpecialCE32(ce32))
                 {
                     long ce = modifier.ModifyCE32(ce32);
-                    if (ce != Collation.NO_CE)
+                    if (ce != Collation.NoCE)
                     {
                         ce32 = dest.EncodeOneCE(ce);
                     }
@@ -832,7 +832,7 @@ namespace ICU4N.Impl.Coll
                             ce32 = srcCE32s[srcIndex + i];
                             long ce;
                             if (Collation.IsSpecialCE32(ce32) ||
-                                    (ce = modifier.ModifyCE32(ce32)) == Collation.NO_CE)
+                                    (ce = modifier.ModifyCE32(ce32)) == Collation.NoCE)
                             {
                                 if (isModified)
                                 {
@@ -873,7 +873,7 @@ namespace ICU4N.Impl.Coll
                         {
                             long srcCE = srcCEs[srcIndex + i];
                             long ce = modifier.ModifyCE(srcCE);
-                            if (ce == Collation.NO_CE)
+                            if (ce == Collation.NoCE)
                             {
                                 if (isModified)
                                 {
@@ -1514,7 +1514,7 @@ namespace ICU4N.Impl.Coll
             {
                 if (pos == s.Length)
                 {
-                    return Collation.SENTINEL_CP;
+                    return Collation.SentinelCodePoint;
                 }
                 int c = Character.CodePointAt(s, pos);
                 pos += Character.CharCount(c);
@@ -1525,7 +1525,7 @@ namespace ICU4N.Impl.Coll
             {
                 if (pos == 0)
                 {
-                    return Collation.SENTINEL_CP;
+                    return Collation.SentinelCodePoint;
                 }
                 int c = Character.CodePointBefore(s, pos);
                 pos -= Character.CharCount(c);

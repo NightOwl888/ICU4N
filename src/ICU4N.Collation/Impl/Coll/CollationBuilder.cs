@@ -105,7 +105,7 @@ namespace ICU4N.Impl.Coll
             {
                 ces[0] = GetSpecialResetPosition(str);
                 cesLength = 1;
-                Debug.Assert((ces[0] & Collation.CASE_AND_QUATERNARY_MASK) == 0);
+                Debug.Assert((ces[0] & Collation.CaseAndQuaternaryMask) == 0);
             }
             else
             {
@@ -208,12 +208,12 @@ namespace ICU4N.Impl.Coll
                         CollationStrength previousStrength = StrengthFromNode(node);
                         if (previousStrength < strength)
                         {
-                            Debug.Assert(weight16 >= Collation.COMMON_WEIGHT16 || i == previousIndex);
+                            Debug.Assert(weight16 >= Collation.CommonWeight16 || i == previousIndex);
                             // Either the reset element has an above-common weight and
                             // the parent node provides the implied common weight,
                             // or the reset element has a weight<=common in the node
                             // right after the parent, and we need to insert the preceding weight.
-                            previousWeight16 = Collation.COMMON_WEIGHT16;
+                            previousWeight16 = Collation.CommonWeight16;
                             break;
                         }
                         else if (previousStrength == strength && !IsTailoredNode(node))
@@ -266,7 +266,7 @@ namespace ICU4N.Impl.Coll
             }
             else
             {
-                t = Collation.COMMON_WEIGHT16;  // Stronger node with implied common weight.
+                t = Collation.CommonWeight16;  // Stronger node with implied common weight.
             }
             while (StrengthFromNode(node) > CollationStrength.Secondary)
             {
@@ -284,7 +284,7 @@ namespace ICU4N.Impl.Coll
             }
             else
             {
-                s = Collation.COMMON_WEIGHT16;  // Stronger node with implied common weight.
+                s = Collation.CommonWeight16;  // Stronger node with implied common weight.
             }
             while (StrengthFromNode(node) > CollationStrength.Primary)
             {
@@ -305,7 +305,7 @@ namespace ICU4N.Impl.Coll
             else
             {
                 weight16 = rootElements.GetTertiaryBefore(p, s, t);
-                Debug.Assert((weight16 & ~Collation.ONLY_TERTIARY_MASK) == 0);
+                Debug.Assert((weight16 & ~Collation.OnlyTertiaryMask) == 0);
             }
             return weight16;
         }
@@ -648,7 +648,7 @@ namespace ICU4N.Impl.Coll
                 index = FindOrInsertWeakNode(index, lower32.TripleShift(16), CollationStrength.Secondary);
                 if (strength >= CollationStrength.Tertiary)
                 {
-                    index = FindOrInsertWeakNode(index, lower32 & Collation.ONLY_TERTIARY_MASK,
+                    index = FindOrInsertWeakNode(index, lower32 & Collation.OnlyTertiaryMask,
                                                 CollationStrength.Tertiary);
                 }
             }
@@ -720,7 +720,7 @@ namespace ICU4N.Impl.Coll
             Debug.Assert(0 <= index && index < nodes.Count);
             Debug.Assert(CollationStrength.Secondary <= level && level <= CollationStrength.Tertiary);
 
-            if (weight16 == Collation.COMMON_WEIGHT16)
+            if (weight16 == Collation.CommonWeight16)
             {
                 return FindCommonNode(index, level);
             }
@@ -729,14 +729,14 @@ namespace ICU4N.Impl.Coll
             // then we will also need to insert a common weight after it.
             long node = nodes[index];
             Debug.Assert(StrengthFromNode(node) < level);  // parent node is stronger
-            if (weight16 != 0 && weight16 < Collation.COMMON_WEIGHT16)
+            if (weight16 != 0 && weight16 < Collation.CommonWeight16)
             {
                 int hasThisLevelBefore = level == CollationStrength.Secondary ? HAS_BEFORE2 : HAS_BEFORE3;
                 if ((node & hasThisLevelBefore) == 0)
                 {
                     // The parent node has an implied level-common weight.
                     long commonNode =
-                        NodeFromWeight16(Collation.COMMON_WEIGHT16) | NodeFromStrength(level);
+                        NodeFromWeight16(Collation.CommonWeight16) | NodeFromStrength(level);
                     if (level == CollationStrength.Secondary)
                     {
                         // Move the HAS_BEFORE3 flag from the parent node
@@ -871,7 +871,7 @@ namespace ICU4N.Impl.Coll
             index = NextIndexFromNode(node);
             node = nodes[index];
             Debug.Assert(!IsTailoredNode(node) && StrengthFromNode(node) == strength &&
-            Weight16FromNode(node) < Collation.COMMON_WEIGHT16);
+            Weight16FromNode(node) < Collation.CommonWeight16);
             // Skip to the explicit common node.
             do
             {
@@ -879,8 +879,8 @@ namespace ICU4N.Impl.Coll
                 node = nodes[index];
                 Debug.Assert(StrengthFromNode(node) >= strength);
             } while (IsTailoredNode(node) || StrengthFromNode(node) > strength ||
-                    Weight16FromNode(node) < Collation.COMMON_WEIGHT16);
-            Debug.Assert(Weight16FromNode(node) == Collation.COMMON_WEIGHT16);
+                    Weight16FromNode(node) < Collation.CommonWeight16);
+            Debug.Assert(Weight16FromNode(node) == Collation.CommonWeight16);
             return index;
         }
 
@@ -902,7 +902,7 @@ namespace ICU4N.Impl.Coll
                 ICharSequence s = nfdString;
                 UTF16CollationIterator baseCEs = new UTF16CollationIterator(baseData, false, s, 0);
                 int baseCEsLength = baseCEs.FetchCEs() - 1;
-                Debug.Assert(baseCEsLength >= 0 && baseCEs.GetCE(baseCEsLength) == Collation.NO_CE);
+                Debug.Assert(baseCEsLength >= 0 && baseCEs.GetCE(baseCEsLength) == Collation.NoCE);
 
                 int lastCase = 0;
                 int numBasePrimaries = 0;
@@ -1131,7 +1131,7 @@ namespace ICU4N.Impl.Coll
             // Small optimization: We keep the source character across loop iterations
             // because we do not always consume it,
             // and then need not fetch it again nor look up its combining class again.
-            int sourceChar = Collation.SENTINEL_CP;
+            int sourceChar = Collation.SentinelCodePoint;
             // The cc variables need to be declared before the loop so that at the end
             // they are set to the last combining classes seen.
             int sourceCC = 0;
@@ -1177,7 +1177,7 @@ namespace ICU4N.Impl.Coll
                     newNFDString.AppendCodePoint(decompChar);
                     decompIndex += Character.CharCount(decompChar);
                     sourceIndex += Character.CharCount(decompChar);
-                    sourceChar = Collation.SENTINEL_CP;
+                    sourceChar = Collation.SentinelCodePoint;
                 }
             }
             // We are at the end of at least one of the two inputs.
@@ -1342,7 +1342,7 @@ namespace ICU4N.Impl.Coll
                 int i = rootPrimaryIndexes[rpi];
                 long node = nodes[i];
                 long p = Weight32FromNode(node);
-                int s = p == 0 ? 0 : Collation.COMMON_WEIGHT16;
+                int s = p == 0 ? 0 : Collation.CommonWeight16;
                 int t = s;
                 int q = 0;
                 bool pIsTailored = false;
@@ -1394,7 +1394,7 @@ namespace ICU4N.Impl.Coll
                                     {
                                         // Gap at the beginning of the tertiary CE range.
                                         t = rootElements.TertiaryBoundary - 0x100;
-                                        tLimit = (int)rootElements.FirstTertiaryCE & Collation.ONLY_TERTIARY_MASK;
+                                        tLimit = (int)rootElements.FirstTertiaryCE & Collation.OnlyTertiaryMask;
                                     }
                                     else if (!pIsTailored && !sIsTailored)
                                     {
@@ -1403,15 +1403,15 @@ namespace ICU4N.Impl.Coll
                                     }
                                     else if (t == Collation.BEFORE_WEIGHT16)
                                     {
-                                        tLimit = Collation.COMMON_WEIGHT16;
+                                        tLimit = Collation.CommonWeight16;
                                     }
                                     else
                                     {
                                         // [p, s] is tailored.
-                                        Debug.Assert(t == Collation.COMMON_WEIGHT16);
+                                        Debug.Assert(t == Collation.CommonWeight16);
                                         tLimit = rootElements.TertiaryBoundary;
                                     }
-                                    Debug.Assert(tLimit == 0x4000 || (tLimit & ~Collation.ONLY_TERTIARY_MASK) == 0);
+                                    Debug.Assert(tLimit == 0x4000 || (tLimit & ~Collation.OnlyTertiaryMask) == 0);
                                     tertiaries.InitForTertiary();
                                     if (!tertiaries.AllocWeights(t, tLimit, tCount))
                                     {
@@ -1464,15 +1464,15 @@ namespace ICU4N.Impl.Coll
                                         }
                                         else if (s == Collation.BEFORE_WEIGHT16)
                                         {
-                                            sLimit = Collation.COMMON_WEIGHT16;
+                                            sLimit = Collation.CommonWeight16;
                                         }
                                         else
                                         {
                                             // p is a tailored primary.
-                                            Debug.Assert(s == Collation.COMMON_WEIGHT16);
+                                            Debug.Assert(s == Collation.CommonWeight16);
                                             sLimit = rootElements.SecondaryBoundary;
                                         }
-                                        if (s == Collation.COMMON_WEIGHT16)
+                                        if (s == Collation.CommonWeight16)
                                         {
                                             // Do not tailor into the getSortKey() range of
                                             // compressed common secondaries.
@@ -1531,10 +1531,10 @@ namespace ICU4N.Impl.Coll
                                 }
                                 p = primaries.NextWeight();
                                 Debug.Assert(p != 0xffffffffL);
-                                s = Collation.COMMON_WEIGHT16;
+                                s = Collation.CommonWeight16;
                                 sIsTailored = false;
                             }
-                            t = s == 0 ? 0 : Collation.COMMON_WEIGHT16;
+                            t = s == 0 ? 0 : Collation.CommonWeight16;
                             tIsTailored = false;
                         }
                         q = 0;
@@ -1595,7 +1595,7 @@ namespace ICU4N.Impl.Coll
                 }
                 else
                 {
-                    return Collation.NO_CE;
+                    return Collation.NoCE;
                 }
             }
                 public long ModifyCE(long ce)
@@ -1607,7 +1607,7 @@ namespace ICU4N.Impl.Coll
                 }
                 else
                 {
-                    return Collation.NO_CE;
+                    return Collation.NoCE;
                 }
             }
 

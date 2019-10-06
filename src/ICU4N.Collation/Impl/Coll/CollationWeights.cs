@@ -16,12 +16,12 @@ namespace ICU4N.Impl.Coll
         public void InitForPrimary(bool compressible)
         {
             middleLength = 1;
-            minBytes[1] = Collation.MERGE_SEPARATOR_BYTE + 1;
+            minBytes[1] = Collation.MergeSeparatorByte + 1;
             maxBytes[1] = Collation.TRAIL_WEIGHT_BYTE;
             if (compressible)
             {
-                minBytes[2] = Collation.PRIMARY_COMPRESSION_LOW_BYTE + 1;
-                maxBytes[2] = Collation.PRIMARY_COMPRESSION_HIGH_BYTE - 1;
+                minBytes[2] = Collation.PrimaryCompressionLowByte + 1;
+                maxBytes[2] = Collation.PrimaryCompressionHighByte - 1;
             }
             else
             {
@@ -42,7 +42,7 @@ namespace ICU4N.Impl.Coll
             maxBytes[1] = 0;
             minBytes[2] = 0;
             maxBytes[2] = 0;
-            minBytes[3] = Collation.LEVEL_SEPARATOR_BYTE + 1;
+            minBytes[3] = Collation.LevelSeparatorByte + 1;
             maxBytes[3] = 0xff;
             minBytes[4] = 2;
             maxBytes[4] = 0xff;
@@ -58,7 +58,7 @@ namespace ICU4N.Impl.Coll
             maxBytes[2] = 0;
             // We use only 6 bits per byte.
             // The other bits are used for case & quaternary weights.
-            minBytes[3] = Collation.LEVEL_SEPARATOR_BYTE + 1;
+            minBytes[3] = Collation.LevelSeparatorByte + 1;
             maxBytes[3] = 0x3f;
             minBytes[4] = 2;
             maxBytes[4] = 0x3f;

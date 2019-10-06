@@ -326,7 +326,7 @@ namespace ICU4N.Impl.Coll
                     data.rootElements[i] = inBytes.GetInt32() & 0xffffffffL;  // unsigned int -> long
                 }
                 long commonSecTer = data.rootElements[CollationRootElements.IX_COMMON_SEC_AND_TER_CE];
-                if (commonSecTer != Collation.COMMON_SEC_AND_TER_CE)
+                if (commonSecTer != Collation.CommonSecondaryAndTertiaryCE)
                 {
                     throw new ICUException("Common sec/ter weights in base data differ from the hardcoded value");
                 }
@@ -487,7 +487,7 @@ namespace ICU4N.Impl.Coll
                 inChars.Get(data.scriptsIndex = new char[data.numScripts + 16]);
                 inChars.Get(data.scriptStarts = new char[scriptStartsLength]);
                 if (!(data.scriptStarts[0] == 0 &&
-                        data.scriptStarts[1] == ((Collation.MERGE_SEPARATOR_BYTE + 1) << 8) &&
+                        data.scriptStarts[1] == ((Collation.MergeSeparatorByte + 1) << 8) &&
                         data.scriptStarts[scriptStartsLength - 1] ==
                                 (Collation.TRAIL_WEIGHT_BYTE << 8)))
                 {

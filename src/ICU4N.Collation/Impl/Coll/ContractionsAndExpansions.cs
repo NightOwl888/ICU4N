@@ -237,7 +237,7 @@ namespace ICU4N.Impl.Coll
                                 iter.SetText(false, hangul, 0);
                                 int length = iter.FetchCEs();
                                 // Ignore the terminating non-CE.
-                                Debug.Assert(length >= 2 && iter.GetCE(length - 1) == Collation.NO_CE);
+                                Debug.Assert(length >= 2 && iter.GetCE(length - 1) == Collation.NoCE);
                                 sink.HandleExpansion(iter.GetCEs(), 0, length - 1);
                             }
                         }

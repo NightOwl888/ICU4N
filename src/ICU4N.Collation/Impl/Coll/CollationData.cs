@@ -385,7 +385,7 @@ namespace ICU4N.Impl.Coll
             Debug.Assert(scriptStarts.Length >= 2);
             Debug.Assert(scriptStarts[0] == 0);
             int lowStart = scriptStarts[1];
-            Debug.Assert(lowStart == ((Collation.MERGE_SEPARATOR_BYTE + 1) << 8));
+            Debug.Assert(lowStart == ((Collation.MergeSeparatorByte + 1) << 8));
             int highLimit = scriptStarts[scriptStarts.Length - 1];
             Debug.Assert(highLimit == (Collation.TRAIL_WEIGHT_BYTE << 8));
 

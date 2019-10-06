@@ -789,7 +789,7 @@ namespace ICU4N.Text
                 ce1 = ci.NextCE();
                 ce2 = ci.NextCE();
             }
-            if (ce1 == Collation.NO_CE || ce2 != Collation.NO_CE)
+            if (ce1 == Collation.NoCE || ce2 != Collation.NoCE)
             {
                 throw new ArgumentException("Variable top argument string must map to exactly one collation element");
             }
@@ -1225,14 +1225,14 @@ namespace ICU4N.Text
             {
                 WriteIdenticalLevel(s, sink);
             }
-            sink.Append(Collation.TERMINATOR_BYTE);
+            sink.Append(Collation.TerminatorByte);
         }
 
         private void WriteIdenticalLevel(ICharSequence s, CollationKeyByteSink sink)
         {
             // NFD quick check
             int nfdQCYesLimit = data.nfcImpl.Decompose(s, 0, s.Length, null);
-            sink.Append(Collation.LEVEL_SEPARATOR_BYTE);
+            sink.Append(Collation.LevelSeparatorByte);
             // Sync the ByteArrayWrapper size with the key length.
             sink.Key.Length = sink.NumberOfBytesAppended;
             int prev = 0;
@@ -1277,7 +1277,7 @@ namespace ICU4N.Text
                     iter = buffer.LeftFCDUTF16Iter;
                 }
                 int length = iter.FetchCEs() - 1;
-                Debug.Assert(length >= 0 && iter.GetCE(length) == Collation.NO_CE);
+                Debug.Assert(length >= 0 && iter.GetCE(length) == Collation.NoCE);
                 long[] ces = new long[length];
                 System.Array.Copy(iter.GetCEs(), 0, ces, 0, length);
                 return ces;
@@ -1481,7 +1481,7 @@ namespace ICU4N.Text
 
             protected override int NextRawCodePoint()
             {
-                if (pos == s.Length) { return Collation.SENTINEL_CP; }
+                if (pos == s.Length) { return Collation.SentinelCodePoint; }
                 int c = Character.CodePointAt(s, pos);
                 pos += Character.CharCount(c);
                 return c;
@@ -1561,10 +1561,10 @@ namespace ICU4N.Text
                 {
                     rightCp = right.NextDecomposedCodePoint(nfcImpl, rightCp);
                 }
-                if (leftCp < rightCp) { return Collation.LESS; }
-                if (leftCp > rightCp) { return Collation.GREATER; }
+                if (leftCp < rightCp) { return Collation.Less; }
+                if (leftCp > rightCp) { return Collation.Greater; }
             }
-            return Collation.EQUAL;
+            return Collation.Equal;
         }
 
         /// <summary>
@@ -1576,7 +1576,7 @@ namespace ICU4N.Text
         {
             if (left == right)
             {
-                return Collation.EQUAL;
+                return Collation.Equal;
             }
 
             // Identical-prefix test.
@@ -1585,7 +1585,7 @@ namespace ICU4N.Text
             {
                 if (equalPrefixLength == left.Length)
                 {
-                    if (equalPrefixLength == right.Length) { return Collation.EQUAL; }
+                    if (equalPrefixLength == right.Length) { return Collation.Equal; }
                     break;
                 }
                 else if (equalPrefixLength == right.Length ||
@@ -1662,7 +1662,7 @@ namespace ICU4N.Text
                     ReleaseCollationBuffer(buffer);
                 }
             }
-            if (result != Collation.EQUAL || roSettings.Strength < CollationStrength.Identical)
+            if (result != Collation.Equal || roSettings.Strength < CollationStrength.Identical)
             {
                 return result;
             }

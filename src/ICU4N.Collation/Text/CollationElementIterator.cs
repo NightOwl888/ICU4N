@@ -353,7 +353,7 @@ namespace ICU4N.Text
             // No need to keep all CEs in the buffer when we iterate.
             iter_.ClearCEsIfNoneRemaining();
             long ce = iter_.NextCE();
-            if (ce == Collation.NO_CE)
+            if (ce == Collation.NoCE)
             {
                 return NULLORDER;
             }
@@ -424,7 +424,7 @@ namespace ICU4N.Text
             // write offsets for an artificial expansion.
             int limitOffset = iter_.CEsLength == 0 ? iter_.Offset : 0;
             long ce = iter_.PreviousCE(offsets_);
-            if (ce == Collation.NO_CE)
+            if (ce == Collation.NoCE)
             {
                 return NULLORDER;
             }

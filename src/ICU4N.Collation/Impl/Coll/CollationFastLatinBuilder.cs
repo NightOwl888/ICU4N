@@ -264,7 +264,7 @@ namespace ICU4N.Impl.Coll
                 else
                 {
                     // bail out for c
-                    charCEs[i][0] = ce0 = Collation.NO_CE;
+                    charCEs[i][0] = ce0 = Collation.NoCE;
                     charCEs[i][1] = ce1 = 0;
                 }
                 if (c == 0 && !IsContractionCharCE(ce0))
@@ -364,7 +364,7 @@ namespace ICU4N.Impl.Coll
                 if (sc0 != Collation.COMMON_SECONDARY_CE) { return false; }
             }
             // No below-common tertiary weights.
-            if ((lower32_0 & Collation.ONLY_TERTIARY_MASK) < Collation.COMMON_WEIGHT16) { return false; }
+            if ((lower32_0 & Collation.OnlyTertiaryMask) < Collation.CommonWeight16) { return false; }
             if (ce1 != 0)
             {
                 // Both primaries must be in the same group,
@@ -385,10 +385,10 @@ namespace ICU4N.Impl.Coll
                     if (sc1 != Collation.COMMON_SECONDARY_CE) { return false; }
                 }
                 // No below-common tertiary weights.
-                if ((lower32_0 & Collation.ONLY_TERTIARY_MASK) < Collation.COMMON_WEIGHT16) { return false; }
+                if ((lower32_0 & Collation.OnlyTertiaryMask) < Collation.CommonWeight16) { return false; }
             }
             // No quaternary weights.
-            if (((ce0 | ce1) & Collation.QUATERNARY_MASK) != 0) { return false; }
+            if (((ce0 | ce1) & Collation.QuaternaryMask) != 0) { return false; }
             return true;
         }
 
@@ -400,14 +400,14 @@ namespace ICU4N.Impl.Coll
                                                          // the default ce32 must not be another contraction.
             Debug.Assert(!Collation.IsContractionCE32(ce32));
             int contractionIndex = contractionCEs.Count;
-            if (GetCEsFromCE32(data, Collation.SENTINEL_CP, ce32))
+            if (GetCEsFromCE32(data, Collation.SentinelCodePoint, ce32))
             {
                 AddContractionEntry(CollationFastLatin.CONTR_CHAR_MASK, ce0, ce1);
             }
             else
             {
                 // Bail out for c-without-contraction.
-                AddContractionEntry(CollationFastLatin.CONTR_CHAR_MASK, Collation.NO_CE, 0);
+                AddContractionEntry(CollationFastLatin.CONTR_CHAR_MASK, Collation.NoCE, 0);
             }
             // Handle an encodable contraction unless the next contraction is too long
             // and starts with the same character.
@@ -426,7 +426,7 @@ namespace ICU4N.Impl.Coll
                         if (addContraction)
                         {
                             // Bail out for all contractions starting with this character.
-                            AddContractionEntry(x, Collation.NO_CE, 0);
+                            AddContractionEntry(x, Collation.NoCE, 0);
                             addContraction = false;
                         }
                         continue;
@@ -436,13 +436,13 @@ namespace ICU4N.Impl.Coll
                         AddContractionEntry(prevX, ce0, ce1);
                     }
                     ce32 = entry.Value;
-                    if (suffix.Length == 1 && GetCEsFromCE32(data, Collation.SENTINEL_CP, ce32))
+                    if (suffix.Length == 1 && GetCEsFromCE32(data, Collation.SentinelCodePoint, ce32))
                     {
                         addContraction = true;
                     }
                     else
                     {
-                        AddContractionEntry(x, Collation.NO_CE, 0);
+                        AddContractionEntry(x, Collation.NoCE, 0);
                         addContraction = false;
                     }
                     prevX = x;
@@ -474,7 +474,7 @@ namespace ICU4N.Impl.Coll
         private void AddUniqueCE(long ce)
         {
             if (ce == 0 || (ce.TripleShift(32)) == Collation.NO_CE_PRIMARY) { return; }
-            ce &= ~(long)Collation.CASE_MASK;  // blank out case bits
+            ce &= ~(long)Collation.CaseMask;  // blank out case bits
             int i = BinarySearch(uniqueCEs, uniqueCEs.Count, ce);
             if (i < 0)
             {
@@ -484,7 +484,7 @@ namespace ICU4N.Impl.Coll
 
         private int GetMiniCE(long ce)
         {
-            ce &= ~(long)Collation.CASE_MASK;  // blank out case bits
+            ce &= ~(long)Collation.CaseMask;  // blank out case bits
             int index = BinarySearch(uniqueCEs, uniqueCEs.Count, ce);
             Debug.Assert(index >= 0);
             return miniCEs[index];
@@ -567,7 +567,7 @@ namespace ICU4N.Impl.Coll
                         }
                     }
                     prevPrimary = p;
-                    prevSecondary = Collation.COMMON_WEIGHT16;
+                    prevSecondary = Collation.CommonWeight16;
                     sec = CollationFastLatin.COMMON_SEC;
                     ter = CollationFastLatin.COMMON_TER;
                 }
@@ -593,7 +593,7 @@ namespace ICU4N.Impl.Coll
                         prevSecondary = s;
                         ter = CollationFastLatin.COMMON_TER;
                     }
-                    else if (s < Collation.COMMON_WEIGHT16)
+                    else if (s < Collation.CommonWeight16)
                     {
                         if (sec == CollationFastLatin.COMMON_SEC)
                         {
@@ -609,7 +609,7 @@ namespace ICU4N.Impl.Coll
                             continue;
                         }
                     }
-                    else if (s == Collation.COMMON_WEIGHT16)
+                    else if (s == Collation.CommonWeight16)
                     {
                         sec = CollationFastLatin.COMMON_SEC;
                     }
@@ -632,9 +632,9 @@ namespace ICU4N.Impl.Coll
                     prevSecondary = s;
                     ter = CollationFastLatin.COMMON_TER;
                 }
-                Debug.Assert((lower32 & Collation.CASE_MASK) == 0);  // blanked out in uniqueCEs
-                int t = lower32 & Collation.ONLY_TERTIARY_MASK;
-                if (t > Collation.COMMON_WEIGHT16)
+                Debug.Assert((lower32 & Collation.CaseMask) == 0);  // blanked out in uniqueCEs
+                int t = lower32 & Collation.OnlyTertiaryMask;
+                if (t > Collation.CommonWeight16)
                 {
                     if (ter < CollationFastLatin.MAX_TER_AFTER)
                     {
@@ -786,7 +786,7 @@ namespace ICU4N.Impl.Coll
             {
                 return 0;  // completely ignorable
             }
-            if (first == Collation.NO_CE)
+            if (first == Collation.NoCE)
             {
                 return CollationFastLatin.BAIL_OUT;
             }
@@ -798,7 +798,7 @@ namespace ICU4N.Impl.Coll
             {
                 // Extract & copy the case bits.
                 // Shift them from normal CE bits 15..14 to mini CE bits 4..3.
-                int c = (((int)first & Collation.CASE_MASK) >> (14 - 3));
+                int c = (((int)first & Collation.CaseMask) >> (14 - 3));
                 // Only in mini CEs: Ignorable case bits = 0, lowercase = 1.
                 c += CollationFastLatin.LOWER_CASE;
                 miniCE |= c;
@@ -808,7 +808,7 @@ namespace ICU4N.Impl.Coll
             int miniCE1 = GetMiniCE(second);
             if (miniCE1 == CollationFastLatin.BAIL_OUT) { return miniCE1; }
 
-            int case1 = (int)second & Collation.CASE_MASK;
+            int case1 = (int)second & Collation.CaseMask;
             if (miniCE >= CollationFastLatin.MIN_SHORT &&
                     (miniCE & CollationFastLatin.SECONDARY_MASK) == CollationFastLatin.COMMON_SEC)
             {
@@ -834,7 +834,7 @@ namespace ICU4N.Impl.Coll
 
         private static bool IsContractionCharCE(long ce)
         {
-            return (ce.TripleShift(32)) == Collation.NO_CE_PRIMARY && ce != Collation.NO_CE;
+            return (ce.TripleShift(32)) == Collation.NO_CE_PRIMARY && ce != Collation.NoCE;
         }
 
         // space, punct, symbol, currency (not digit)

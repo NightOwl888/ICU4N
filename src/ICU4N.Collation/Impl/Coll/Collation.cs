@@ -35,17 +35,17 @@ namespace ICU4N.Impl.Coll
         /// UChar32 U_SENTINEL.
         /// </summary>
         // TODO: Create a common, public constant?
-        public const int SENTINEL_CP = -1;
+        public const int SentinelCodePoint = -1; // ICU4N specific - renamed from SENTINEL_CP
 
         // ICU4C compare() API returns enum UCollationResult values (with UCOL_ prefix).
         // ICU4N just returns int. We use these constants for ease of porting.
-        public const int LESS = -1;
-        public const int EQUAL = 0;
-        public const int GREATER = 1; // ICU4N TODO: API - Rename per .NET conventions
+        public const int Less = -1;
+        public const int Equal = 0;
+        public const int Greater = 1;
 
         // Special sort key bytes for all levels.
-        public const int TERMINATOR_BYTE = 0;
-        public const int LEVEL_SEPARATOR_BYTE = 1;
+        public const int TerminatorByte = 0;
+        public const int LevelSeparatorByte = 1;
 
         /// <summary>The secondary/tertiary lower limit for tailoring before any root elements.</summary>
         internal const int BEFORE_WEIGHT16 = 0x100;
@@ -56,45 +56,45 @@ namespace ICU4N.Impl.Coll
         /// Must not be used as primary compression low terminator.
         /// Otherwise usable.
         /// </summary>
-        public const int MERGE_SEPARATOR_BYTE = 2;
-        public const long MERGE_SEPARATOR_PRIMARY = 0x02000000;  // U+FFFE
+        public const int MergeSeparatorByte = 2;
+        public const long MergeSeparatorPrimary = 0x02000000;  // U+FFFE
         internal const int MERGE_SEPARATOR_CE32 = 0x02000505;  // U+FFFE
 
         /// <summary>
-        /// Primary compression low terminator, must be greater than <see cref="MERGE_SEPARATOR_BYTE"/>.
+        /// Primary compression low terminator, must be greater than <see cref="MergeSeparatorByte"/>.
         /// Reserved value in primary second byte if the lead byte is compressible.
         /// Otherwise usable in all CE weight bytes.
         /// </summary>
-        public const int PRIMARY_COMPRESSION_LOW_BYTE = 3;
+        public const int PrimaryCompressionLowByte = 3;
         /// <summary>
         /// Primary compression high terminator.
         /// Reserved value in primary second byte if the lead byte is compressible.
         /// Otherwise usable in all CE weight bytes.
         /// </summary>
-        public const int PRIMARY_COMPRESSION_HIGH_BYTE = 0xff;
+        public const int PrimaryCompressionHighByte = 0xff;
 
         /// <summary>Default secondary/tertiary weight lead byte.</summary>
         internal const int COMMON_BYTE = 5;
-        public const int COMMON_WEIGHT16 = 0x0500;
+        public const int CommonWeight16 = 0x0500;
         /// <summary>Middle 16 bits of a CE with a common secondary weight.</summary>
         internal const int COMMON_SECONDARY_CE = 0x05000000;
         /// <summary>Lower 16 bits of a CE with a common tertiary weight.</summary>
         internal const int COMMON_TERTIARY_CE = 0x0500;
         /// <summary>Lower 32 bits of a CE with common secondary and tertiary weights.</summary>
-        public const int COMMON_SEC_AND_TER_CE = 0x05000500;
+        public const int CommonSecondaryAndTertiaryCE = 0x05000500;
 
         internal const int SECONDARY_MASK = unchecked((int)0xffff0000);
-        public const int CASE_MASK = 0xc000;
-        internal const int SECONDARY_AND_CASE_MASK = SECONDARY_MASK | CASE_MASK;
+        public const int CaseMask = 0xc000;
+        internal const int SECONDARY_AND_CASE_MASK = SECONDARY_MASK | CaseMask;
         /// <summary>Only the 2*6 bits for the pure tertiary weight.</summary>
-        public const int ONLY_TERTIARY_MASK = 0x3f3f;
+        public const int OnlyTertiaryMask = 0x3f3f;
         /// <summary>Only the secondary &amp; tertiary bits; no case, no quaternary.</summary>
-        internal const int ONLY_SEC_TER_MASK = SECONDARY_MASK | ONLY_TERTIARY_MASK;
+        internal const int ONLY_SEC_TER_MASK = SECONDARY_MASK | OnlyTertiaryMask;
         /// <summary>Case bits and tertiary bits.</summary>
-        internal const int CASE_AND_TERTIARY_MASK = CASE_MASK | ONLY_TERTIARY_MASK;
-        public const int QUATERNARY_MASK = 0xc0;
+        internal const int CASE_AND_TERTIARY_MASK = CaseMask | OnlyTertiaryMask;
+        public const int QuaternaryMask = 0xc0;
         /// <summary>Case bits and quaternary bits.</summary>
-        public const int CASE_AND_QUATERNARY_MASK = CASE_MASK | QUATERNARY_MASK;
+        public const int CaseAndQuaternaryMask = CaseMask | QuaternaryMask;
 
         internal const int UNASSIGNED_IMPLICIT_BYTE = 0xfe;  // compressible
 
@@ -110,12 +110,12 @@ namespace ICU4N.Impl.Coll
 
         internal const int TRAIL_WEIGHT_BYTE = 0xff;  // not compressible
         internal const long FIRST_TRAILING_PRIMARY = 0xff020200L;  // [first trailing]
-        public const long MAX_PRIMARY = 0xffff0000L;  // U+FFFF
+        public const long MaxPrimary = 0xffff0000L;  // U+FFFF
         internal const int MAX_REGULAR_CE32 = unchecked((int)0xffff0505);  // U+FFFF
 
         // CE32 value for U+FFFD as well as illegal UTF-8 byte sequences (which behave like U+FFFD).
         // We use the third-highest primary weight for U+FFFD (as in UCA 6.3+).
-        public const long FFFD_PRIMARY = MAX_PRIMARY - 0x20000;
+        public const long FFFD_Primary = MaxPrimary - 0x20000;
         internal const int FFFD_CE32 = MAX_REGULAR_CE32 - 0x20000;
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace ICU4N.Impl.Coll
         /// <summary>No CE: End of input. Only used in runtime code, not stored in data.</summary>
         internal const long NO_CE_PRIMARY = 1;  // not a left-adjusted weight
         internal const int NO_CE_WEIGHT16 = 0x0100;  // weight of LEVEL_SEPARATOR_BYTE
-        public const long NO_CE = 0x101000100L;  // NO_CE_PRIMARY, NO_CE_WEIGHT16, NO_CE_WEIGHT16
+        public const long NoCE = 0x101000100L;  // NO_CE_PRIMARY, NO_CE_WEIGHT16, NO_CE_WEIGHT16
 
         // ICU4N specific - moved sort key levels to enum named CollationSortKeyLevel
 
@@ -167,7 +167,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal const int FALLBACK_TAG = 0;
         /// <summary>
-        /// Long-primary CE with <see cref="COMMON_SEC_AND_TER_CE"/>.
+        /// Long-primary CE with <see cref="CommonSecondaryAndTertiaryCE"/>.
         /// Bits 31..8: Three-byte primary.
         /// </summary>
         internal const int LONG_PRIMARY_TAG = 1;
@@ -319,7 +319,7 @@ namespace ICU4N.Impl.Coll
         }
         internal static long CeFromLongPrimaryCE32(int ce32)
         {
-            return ((long)(ce32 & 0xffffff00) << 32) | COMMON_SEC_AND_TER_CE;
+            return ((long)(ce32 & 0xffffff00) << 32) | CommonSecondaryAndTertiaryCE;
         }
 
         internal static int MakeLongSecondaryCE32(int lower32)
@@ -460,7 +460,7 @@ namespace ICU4N.Impl.Coll
                 if ((tertiary & 0xf) == LONG_PRIMARY_TAG)
                 {
                     // long-primary form ppppppC1 -> pppppp00050000500
-                    return ((long)ce32 << 32) | COMMON_SEC_AND_TER_CE;
+                    return ((long)ce32 << 32) | CommonSecondaryAndTertiaryCE;
                 }
                 else
                 {
@@ -474,7 +474,7 @@ namespace ICU4N.Impl.Coll
         /// <summary>Creates a CE from a primary weight.</summary>
         public static long MakeCE(long p)
         {
-            return (p << 32) | COMMON_SEC_AND_TER_CE;
+            return (p << 32) | CommonSecondaryAndTertiaryCE;
         }
         /// <summary>
         /// Creates a CE from a primary weight,

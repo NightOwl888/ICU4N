@@ -459,7 +459,7 @@ namespace ICU4N.Text
                 while (offset < m_key_.Length && m_key_[offset] != 0)
                 {
                     if (m_key_[offset++]
-                            == Collation.LEVEL_SEPARATOR_BYTE)
+                            == Collation.LevelSeparatorByte)
                     {
                         keystrength++;
                         noOfLevels--;
@@ -592,13 +592,13 @@ namespace ICU4N.Text
 
                 // if both sort keys have another level, then add a 01 level
                 // separator and continue
-                if (m_key_[index] == Collation.LEVEL_SEPARATOR_BYTE
+                if (m_key_[index] == Collation.LevelSeparatorByte
                     && source.m_key_[sourceindex]
-                            == Collation.LEVEL_SEPARATOR_BYTE)
+                            == Collation.LevelSeparatorByte)
                 {
                     ++index;
                     ++sourceindex;
-                    result[rindex++] = Collation.LEVEL_SEPARATOR_BYTE;
+                    result[rindex++] = Collation.LevelSeparatorByte;
                 }
                 else
                 {

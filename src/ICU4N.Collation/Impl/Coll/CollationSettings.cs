@@ -474,7 +474,7 @@ namespace ICU4N.Impl.Coll
         {
             // Remove the case bits from the tertiary weight when caseLevel is on or caseFirst is off.
             return IsTertiaryWithCaseBits(options) ?
-                    Collation.CASE_AND_TERTIARY_MASK : Collation.ONLY_TERTIARY_MASK;
+                    Collation.CASE_AND_TERTIARY_MASK : Collation.OnlyTertiaryMask;
         }
 
         internal static bool SortsTertiaryUpperCaseFirst(int options)
