@@ -1274,9 +1274,9 @@ namespace ICU4N.Dev.Test.Collate
             return i;
         }
 
-        private int ParseRelationAndString(out String s)
+        private CollationSortKeyLevel ParseRelationAndString(out String s)
         {
-            int relation = Collation.NO_LEVEL;
+            CollationSortKeyLevel relation = CollationSortKeyLevel.Unspecified;
             int start;
             if (fileLine[0] == '<')
             {
@@ -1285,32 +1285,32 @@ namespace ICU4N.Dev.Test.Collate
                 switch (second)
                 {
                     case (char)0x31:  // <1
-                        relation = Collation.PRIMARY_LEVEL;
+                        relation = CollationSortKeyLevel.Primary;
                         break;
                     case (char)0x32:  // <2
-                        relation = Collation.SECONDARY_LEVEL;
+                        relation = CollationSortKeyLevel.Secondary;
                         break;
                     case (char)0x33:  // <3
-                        relation = Collation.TERTIARY_LEVEL;
+                        relation = CollationSortKeyLevel.Tertiary;
                         break;
                     case (char)0x34:  // <4
-                        relation = Collation.QUATERNARY_LEVEL;
+                        relation = CollationSortKeyLevel.Quaternary;
                         break;
                     case (char)0x63:  // <c
-                        relation = Collation.CASE_LEVEL;
+                        relation = CollationSortKeyLevel.Case;
                         break;
                     case (char)0x69:  // <i
-                        relation = Collation.IDENTICAL_LEVEL;
+                        relation = CollationSortKeyLevel.Identical;
                         break;
                     default:  // just <
-                        relation = Collation.NO_LEVEL;
+                        relation = CollationSortKeyLevel.Unspecified;
                         start = 1;
                         break;
                 }
             }
             else if (fileLine[0] == '=')
             {
-                relation = Collation.ZERO_LEVEL;
+                relation = CollationSortKeyLevel.Zero;
                 start = 1;
             }
             else
@@ -1773,16 +1773,16 @@ namespace ICU4N.Dev.Test.Collate
             return true;
         }
 
-        private static int GetDifferenceLevel(CollationKey prevKey, CollationKey key,
+        private static CollationSortKeyLevel GetDifferenceLevel(CollationKey prevKey, CollationKey key,
                 int order, bool collHasCaseLevel)
         {
             if (order == Collation.EQUAL)
             {
-                return Collation.NO_LEVEL;
+                return CollationSortKeyLevel.Unspecified; // Collation.NO_LEVEL;
             }
             byte[] prevBytes = prevKey.ToByteArray();
             byte[] bytes = key.ToByteArray();
-            int level = Collation.PRIMARY_LEVEL;
+            CollationSortKeyLevel level = CollationSortKeyLevel.Primary; // Collation.PRIMARY_LEVEL;
             for (int i = 0; ; ++i)
             {
                 byte b = prevBytes[i];
@@ -1793,7 +1793,7 @@ namespace ICU4N.Dev.Test.Collate
                 if (b == Collation.LEVEL_SEPARATOR_BYTE)
                 {
                     ++level;
-                    if (level == Collation.CASE_LEVEL && !collHasCaseLevel)
+                    if (level == CollationSortKeyLevel.Case && !collHasCaseLevel)
                     {
                         ++level;
                     }
@@ -1803,7 +1803,7 @@ namespace ICU4N.Dev.Test.Collate
         }
 
         private bool CheckCompareTwo(String norm, String prevFileLine, String prevString, String s,
-                                        int expectedOrder, int expectedLevel)
+                                        int expectedOrder, CollationSortKeyLevel expectedLevel)
         {
             // Get the sort keys first, for error debug output.
             CollationKey prevKeyOut = null;
@@ -1863,8 +1863,8 @@ namespace ICU4N.Dev.Test.Collate
                 return false;
             }
             bool collHasCaseLevel = ((RuleBasedCollator)coll).IsCaseLevel;
-            int level = GetDifferenceLevel(prevKey, key, order, collHasCaseLevel);
-            if (order != Collation.EQUAL && expectedLevel != Collation.NO_LEVEL)
+            CollationSortKeyLevel level = GetDifferenceLevel(prevKey, key, order, collHasCaseLevel);
+            if (order != Collation.EQUAL && expectedLevel != CollationSortKeyLevel.Unspecified)
             {
                 if (level != expectedLevel)
                 {
@@ -1908,8 +1908,8 @@ namespace ICU4N.Dev.Test.Collate
                     Logln(PrintCollationKey(key));
                     return false;
                 }
-                int mergedLevel = GetDifferenceLevel(prevKey, key, order, collHasCaseLevel);
-                if (order != Collation.EQUAL && expectedLevel != Collation.NO_LEVEL)
+                CollationSortKeyLevel mergedLevel = GetDifferenceLevel(prevKey, key, order, collHasCaseLevel);
+                if (order != Collation.EQUAL && expectedLevel != CollationSortKeyLevel.Unspecified)
                 {
                     if (mergedLevel != level)
                     {
@@ -1938,7 +1938,7 @@ namespace ICU4N.Dev.Test.Collate
             {
                 // Parse the line even if it will be ignored (when we do not have a Collator)
                 // in order to report syntax issues.
-                int relation;
+                CollationSortKeyLevel relation;
                 try
                 {
                     relation = ParseRelationAndString(out sOut);
@@ -1956,8 +1956,8 @@ namespace ICU4N.Dev.Test.Collate
                     continue;
                 }
                 String s = sOut;
-                int expectedOrder = (relation == Collation.ZERO_LEVEL) ? Collation.EQUAL : Collation.LESS;
-                int expectedLevel = relation;
+                int expectedOrder = (relation == CollationSortKeyLevel.Zero) ? Collation.EQUAL : Collation.LESS;
+                CollationSortKeyLevel expectedLevel = relation;
                 bool isOk = true;
                 if (!NeedsNormalization(prevString) && !NeedsNormalization(s))
                 {

@@ -4,6 +4,26 @@ using System.Diagnostics;
 namespace ICU4N.Impl.Coll
 {
     /// <summary>
+    /// Sort key levels.
+    /// </summary>
+    public enum CollationSortKeyLevel
+    {
+        /// <summary>Unspecified level.</summary>
+        // ICU4N specific: This was NO_LEVEL in ICU4J
+        Unspecified = 0,
+
+        Primary = 1,
+        Secondary = 2,
+        Case = 3,
+        Tertiary = 4,
+        Quaternary = 5,
+        Identical = 6,
+
+        /// <summary>Beyond sort key bytes.</summary>
+        Zero = 7
+    }
+
+    /// <summary>
     /// Collation v2 basic definitions and static helper functions.
     /// <para/>
     /// Data structures except for expansion tables store 32-bit CEs which are
@@ -119,18 +139,7 @@ namespace ICU4N.Impl.Coll
         internal const int NO_CE_WEIGHT16 = 0x0100;  // weight of LEVEL_SEPARATOR_BYTE
         public const long NO_CE = 0x101000100L;  // NO_CE_PRIMARY, NO_CE_WEIGHT16, NO_CE_WEIGHT16
 
-        /** Sort key levels. */
-
-        /// <summary>Unspecified level.</summary>
-        public const int NO_LEVEL = 0; // ICU4N TODO: API - make enum ?
-        public const int PRIMARY_LEVEL = 1;
-        public const int SECONDARY_LEVEL = 2;
-        public const int CASE_LEVEL = 3;
-        public const int TERTIARY_LEVEL = 4;
-        public const int QUATERNARY_LEVEL = 5;
-        public const int IDENTICAL_LEVEL = 6;
-        /// <summary>Beyond sort key bytes.</summary>
-        public const int ZERO_LEVEL = 7;
+        // ICU4N specific - moved sort key levels to enum named CollationSortKeyLevel
 
         /// <summary>
         /// Sort key level flags: xx_FLAG = 1 &lt;&lt; xx_LEVEL.

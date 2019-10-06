@@ -128,7 +128,7 @@ namespace ICU4N.Impl.Coll
         {
             /// <param name="level">The next level about to be written to the <see cref="SortKeyByteSink"/>.</param>
             /// <returns>true if the level is to be written (the base class implementation always returns true).</returns>
-            internal bool NeedToWrite(int level)
+            internal bool NeedToWrite(CollationSortKeyLevel level)
             {
                 return true;
             }
@@ -324,8 +324,8 @@ namespace ICU4N.Impl.Coll
         private const int QUAT_SHIFTED_LIMIT_BYTE = QUAT_COMMON_LOW - 1; // 0x1b
         /// <summary>
         /// Map from collation strength (UColAttributeValue) to a mask of Collation.Level bits up to that
-        /// strength, excluding the <see cref="Collation.CASE_LEVEL"/> which is independent of the strength, and excluding
-        /// <see cref="Collation.IDENTICAL_LEVEL"/> which this function does not write.
+        /// strength, excluding the <see cref="CollationSortKeyLevel.Case"/> which is independent of the strength, and excluding
+        /// <see cref="CollationSortKeyLevel.Identical"/> which this function does not write.
         /// </summary>
         private static readonly int[] levelMasks = new int[] {
                 2,          // UCOL_PRIMARY -> PRIMARY_LEVEL
@@ -351,7 +351,7 @@ namespace ICU4N.Impl.Coll
         /// <param name="callback"></param>
         /// <param name="preflight"></param>
         public static void WriteSortKeyUpToQuaternary(CollationIterator iter, bool[] compressibleBytes,
-                CollationSettings settings, SortKeyByteSink sink, int minLevel, LevelCallback callback,
+                CollationSettings settings, SortKeyByteSink sink, CollationSortKeyLevel minLevel, LevelCallback callback,
                 bool preflight)
         {
 
@@ -363,7 +363,7 @@ namespace ICU4N.Impl.Coll
                 levels |= Collation.CASE_LEVEL_FLAG;
             }
             // Minus the levels below minLevel.
-            levels &= ~((1 << minLevel) - 1);
+            levels &= ~((1 << (int)minLevel) - 1);
             if (levels == 0)
             {
                 return;
@@ -873,7 +873,7 @@ namespace ICU4N.Impl.Coll
             // not used in Java -- boolean ok = true;
             if ((levels & Collation.SECONDARY_LEVEL_FLAG) != 0)
             {
-                if (!callback.NeedToWrite(Collation.SECONDARY_LEVEL))
+                if (!callback.NeedToWrite(CollationSortKeyLevel.Secondary))
                 {
                     return;
                 }
@@ -884,7 +884,7 @@ namespace ICU4N.Impl.Coll
 
             if ((levels & Collation.CASE_LEVEL_FLAG) != 0)
             {
-                if (!callback.NeedToWrite(Collation.CASE_LEVEL))
+                if (!callback.NeedToWrite(CollationSortKeyLevel.Case))
                 {
                     return;
                 }
@@ -915,7 +915,7 @@ namespace ICU4N.Impl.Coll
 
             if ((levels & Collation.TERTIARY_LEVEL_FLAG) != 0)
             {
-                if (!callback.NeedToWrite(Collation.TERTIARY_LEVEL))
+                if (!callback.NeedToWrite(CollationSortKeyLevel.Tertiary))
                 {
                     return;
                 }
@@ -926,7 +926,7 @@ namespace ICU4N.Impl.Coll
 
             if ((levels & Collation.QUATERNARY_LEVEL_FLAG) != 0)
             {
-                if (!callback.NeedToWrite(Collation.QUATERNARY_LEVEL))
+                if (!callback.NeedToWrite(CollationSortKeyLevel.Quaternary))
                 {
                     return;
                 }

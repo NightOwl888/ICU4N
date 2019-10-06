@@ -1210,7 +1210,7 @@ namespace ICU4N.Text
                 buffer.LeftUTF16CollIter.SetText(numeric, s, 0);
                 CollationKeys.WriteSortKeyUpToQuaternary(
                         buffer.LeftUTF16CollIter, data.compressibleBytes, settings.ReadOnly,
-                        sink, Collation.PRIMARY_LEVEL,
+                        sink, CollationSortKeyLevel.Primary,
                         CollationKeys.SIMPLE_LEVEL_FALLBACK, true);
             }
             else
@@ -1218,7 +1218,7 @@ namespace ICU4N.Text
                 buffer.LeftFCDUTF16Iter.SetText(numeric, s, 0);
                 CollationKeys.WriteSortKeyUpToQuaternary(
                         buffer.LeftFCDUTF16Iter, data.compressibleBytes, settings.ReadOnly,
-                        sink, Collation.PRIMARY_LEVEL,
+                        sink, CollationSortKeyLevel.Primary,
                         CollationKeys.SIMPLE_LEVEL_FALLBACK, true);
             }
             if (settings.ReadOnly.Strength == CollationStrength.Identical)
