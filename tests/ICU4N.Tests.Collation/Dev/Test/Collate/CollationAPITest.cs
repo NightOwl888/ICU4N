@@ -1074,37 +1074,37 @@ namespace ICU4N.Dev.Test.Collate
             {
                 Errln("Setting upper case first failed");
             }
-            collator.SetDecompositionDefault();
+            collator.SetDecompositionToDefault();
             if (collator.Decomposition != decomp)
             {
                 Errln("Setting decomposition default failed");
             }
-            collator.SetStrengthDefault();
+            collator.SetStrengthToDefault();
             if (collator.Strength != strength)
             {
                 Errln("Setting strength default failed");
             }
-            collator.SetAlternateHandlingDefault();
+            collator.SetAlternateHandlingToDefault();
             if (collator.IsAlternateHandlingShifted != alt)
             {
                 Errln("Setting alternate handling default failed");
             }
-            collator.SetCaseLevelDefault();
+            collator.SetCaseLevelToDefault();
             if (collator.IsCaseLevel != caselevel)
             {
                 Errln("Setting case level default failed");
             }
-            collator.SetFrenchCollationDefault();
+            collator.SetFrenchCollationToDefault();
             if (collator.IsFrenchCollation != french)
             {
                 Errln("Setting french handling default failed");
             }
-            collator.SetHiraganaQuaternaryDefault();
+            collator.SetHiraganaQuaternaryToDefault();
             if (collator.IsHiraganaQuaternary != hquart)
             {
                 Errln("Setting Hiragana Quartenary default failed");
             }
-            collator.SetCaseFirstDefault();
+            collator.SetCaseFirstToDefault();
             if (collator.IsLowerCaseFirst != lowercase
                 || collator.IsUpperCaseFirst != uppercase)
             {

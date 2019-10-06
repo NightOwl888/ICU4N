@@ -328,7 +328,7 @@ namespace ICU4N.Text
         /// Since CLDR 25/ICU 53, explicit quaternary relations are used
         /// to achieve the same Japanese sort order.
         /// </summary>
-        /// <seealso cref="SetHiraganaQuaternaryDefault()"/>
+        /// <seealso cref="SetHiraganaQuaternaryToDefault()"/>
         [Obsolete("ICU 50 Implementation detail, cannot be set via API, was removed from implementation.")]
         public bool IsHiraganaQuaternary
         {
@@ -347,7 +347,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="IsHiraganaQuaternary"/>
         [Obsolete("ICU 50 Implementation detail, cannot be set via API, was removed from implementation.")]
-        public void SetHiraganaQuaternaryDefault() // ICU4N TODO: API - Rename SetHiraganaQuaternaryToDefault()
+        public void SetHiraganaQuaternaryToDefault() // ICU4N specific - Renamed from SetHiraganaQuaternaryDefault()
         {
             CheckNotFrozen();
         }
@@ -379,7 +379,7 @@ namespace ICU4N.Text
         /// ones. Otherwise, if false is set, the <see cref="RuleBasedCollator"/> will ignore case preferences.
         /// </summary>
         /// <seealso cref="IsUpperCaseFirst"/>
-        /// <seealso cref="SetCaseFirstDefault()"/>
+        /// <seealso cref="SetCaseFirstToDefault()"/>
         /// <stable>ICU 2.8</stable>
         public bool IsLowerCaseFirst
         {
@@ -404,7 +404,7 @@ namespace ICU4N.Text
         /// <seealso cref="IsUpperCaseFirst"/>
         /// <seealso cref="IsLowerCaseFirst"/>
         /// <stable>ICU 2.8</stable>
-        public void SetCaseFirstDefault() // ICU4N TODO: API - Rename SetCaseFirstToDefault()
+        public void SetCaseFirstToDefault() // ICU4N specific - Renamed from SetCaseFirstDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -420,7 +420,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="IsAlternateHandlingShifted"/>
         /// <stable>ICU 2.8</stable>
-        public void SetAlternateHandlingDefault() // ICU4N TODO: API - Rename SetAlternateHandlingToDefault()
+        public void SetAlternateHandlingToDefault() // ICU4N specific - Renamed from SetAlternateHandlingDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -436,7 +436,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="IsCaseLevel"/>
         /// <stable>ICU 2.8</stable>
-        public void SetCaseLevelDefault() // ICU4N TODO: API - Rename SetCaseLevelToDefault()
+        public void SetCaseLevelToDefault() // ICU4N specific - Renamed from SetCaseLevelDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -452,7 +452,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="Decomposition"/>
         /// <stable>ICU 2.8</stable>
-        public void SetDecompositionDefault() // ICU4N TODO: API - Rename SetDecompositionToDefault()
+        public void SetDecompositionToDefault() // ICU4N specfic - Renamed from SetDecompositionDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -468,7 +468,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="IsFrenchCollation"/>
         /// <stable>ICU 2.8</stable>
-        public void SetFrenchCollationDefault() // ICU4N TODO: API - Rename SetFrenchCollationToDefault()
+        public void SetFrenchCollationToDefault() // ICU4N specific - Renamed from SetFrenchCollationDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -484,7 +484,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="Strength"/>
         /// <stable>ICU 2.8</stable>
-        public void SetStrengthDefault() // ICU4N TODO: API - rename SetStrengthToDefault()
+        public void SetStrengthToDefault() // ICU4N specific - renamed from SetStrengthDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -499,7 +499,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="IsNumericCollation"/>
         /// <stable>ICU 2.8</stable>
-        public void SetNumericCollationDefault() // ICU4N TODO: API - Rename SetNumericCollationToDefault()
+        public void SetNumericCollationToDefault() // ICU4N specific - Renamed from SetNumericCollationDefault()
         {
             CheckNotFrozen();
             CollationSettings defaultSettings = GetDefaultSettings();
@@ -516,7 +516,7 @@ namespace ICU4N.Text
         /// backwards. See the section on <a href="http://userguide.icu-project.org/collation/architecture">
         /// French collation</a> for more information.
         /// </summary>
-        /// <seealso cref="SetFrenchCollationDefault()"/>
+        /// <seealso cref="SetFrenchCollationToDefault()"/>
         /// <stable>ICU 2.8</stable>
         public bool IsFrenchCollation
         {
@@ -543,7 +543,7 @@ namespace ICU4N.Text
         /// corresponds to SHIFTED defined in UCA, this causes code points with <see cref="CollationStrength.Primary"/> orders that are equal or below the
         /// variable top value to be ignored in <see cref="CollationStrength.Primary"/> order and moved to the <see cref="CollationStrength.Quaternary"/> order.
         /// </summary>
-        /// <seealso cref="SetAlternateHandlingDefault()"/>
+        /// <seealso cref="SetAlternateHandlingToDefault()"/>
         /// <stable>ICU 2.8</stable>
         public bool IsAlternateHandlingShifted
         {
@@ -574,7 +574,7 @@ namespace ICU4N.Text
         /// level</a> for more information.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        /// <seealso cref="SetCaseLevelDefault()"/>
+        /// <seealso cref="SetCaseLevelToDefault()"/>
         public bool IsCaseLevel
         {
             get
@@ -652,7 +652,7 @@ namespace ICU4N.Text
         /// <para/>
         /// See the <see cref="Collator"/> documentation for an example of use.
         /// </summary>
-        /// <seealso cref="SetStrengthDefault()"/>
+        /// <seealso cref="SetStrengthToDefault()"/>
         /// <seealso cref="CollationStrength.Primary"/>
         /// <seealso cref="CollationStrength.Secondary"/>
         /// <seealso cref="CollationStrength.Tertiary"/>
@@ -863,7 +863,7 @@ namespace ICU4N.Text
         /// non-negative integers without separators.
         /// There is no support for plus/minus signs, decimals, exponents, etc.
         /// </summary>
-        /// <seealso cref="SetNumericCollationDefault()"/>
+        /// <seealso cref="SetNumericCollationToDefault()"/>
         /// <stable>ICU 2.8</stable>
         public bool IsNumericCollation
         {

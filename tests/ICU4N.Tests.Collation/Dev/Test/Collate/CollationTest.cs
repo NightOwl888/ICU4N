@@ -1410,7 +1410,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 else if (valueString.Equals("default"))
                 {
-                    if (rbc != null) rbc.SetFrenchCollationDefault();
+                    if (rbc != null) rbc.SetFrenchCollationToDefault();
                 }
                 else
                 {
@@ -1429,7 +1429,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 else if (valueString.Equals("default"))
                 {
-                    if (rbc != null) rbc.SetAlternateHandlingDefault();
+                    if (rbc != null) rbc.SetAlternateHandlingToDefault();
                 }
                 else
                 {
@@ -1448,7 +1448,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 else if (valueString.Equals("default"))
                 {
-                    if (rbc != null) rbc.SetCaseFirstDefault();
+                    if (rbc != null) rbc.SetCaseFirstToDefault();
                 }
                 else
                 {
@@ -1467,7 +1467,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 else if (valueString.Equals("default"))
                 {
-                    if (rbc != null) rbc.SetCaseLevelDefault();
+                    if (rbc != null) rbc.SetCaseLevelToDefault();
                 }
                 else
                 {
@@ -1498,7 +1498,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 else if (valueString.Equals("default"))
                 {
-                    if (rbc != null) rbc.SetStrengthDefault();
+                    if (rbc != null) rbc.SetStrengthToDefault();
                 }
                 else
                 {
@@ -1517,7 +1517,7 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 else if (valueString.Equals("default"))
                 {
-                    if (rbc != null) rbc.SetNumericCollationDefault();
+                    if (rbc != null) rbc.SetNumericCollationToDefault();
                 }
                 else
                 {

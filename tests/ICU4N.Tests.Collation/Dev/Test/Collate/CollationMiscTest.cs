@@ -2322,7 +2322,7 @@ namespace ICU4N.Dev.Test.Collate
 
             //cover setNumericCollationDefault, getNumericCollation
             assertTrue("The Numeric Collation setting is on", coll.IsNumericCollation);
-            coll.SetNumericCollationDefault();
+            coll.SetNumericCollationToDefault();
             Logln("After set Numeric to default, the setting is: " + coll.IsNumericCollation);
         }
 
