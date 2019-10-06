@@ -848,20 +848,20 @@ namespace ICU4N.Dev.Test.Collate
                     return false;
                 }
                 long p = elements[index];
-                if (p == CollationRootElements.PRIMARY_SENTINEL)
+                if (p == CollationRootElements.PrimarySentinel)
                 {
                     return false;
                 }
-                if ((p & CollationRootElements.SEC_TER_DELTA_FLAG) != 0)
+                if ((p & CollationRootElements.SecondaryTertiaryDeltaFlag) != 0)
                 {
                     ++index;
-                    secTer = p & ~CollationRootElements.SEC_TER_DELTA_FLAG;
+                    secTer = p & ~CollationRootElements.SecondaryTertiaryDeltaFlag;
                     return true;
                 }
-                if ((p & CollationRootElements.PRIMARY_STEP_MASK) != 0)
+                if ((p & CollationRootElements.PrimaryStepMask) != 0)
                 {
                     // End of a range, enumerate the primaries in the range.
-                    int step = (int)p & CollationRootElements.PRIMARY_STEP_MASK;
+                    int step = (int)p & CollationRootElements.PrimaryStepMask;
                     p &= 0xffffff00;
                     if (pri == p)
                     {
@@ -894,14 +894,14 @@ namespace ICU4N.Dev.Test.Collate
                 else
                 {
                     secTer = elements[index];
-                    if ((secTer & CollationRootElements.SEC_TER_DELTA_FLAG) == 0)
+                    if ((secTer & CollationRootElements.SecondaryTertiaryDeltaFlag) == 0)
                     {
                         // No sec/ter delta.
                         secTer = Collation.CommonSecondaryAndTertiaryCE;
                     }
                     else
                     {
-                        secTer &= ~CollationRootElements.SEC_TER_DELTA_FLAG;
+                        secTer &= ~CollationRootElements.SecondaryTertiaryDeltaFlag;
                         if (secTer > Collation.CommonSecondaryAndTertiaryCE)
                         {
                             // Implied sec/ter.

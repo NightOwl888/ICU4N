@@ -20,23 +20,23 @@ namespace ICU4N.Impl.Coll
         /// <summary>
         /// Higher than any root primary.
         /// </summary>
-        public const long PRIMARY_SENTINEL = 0xffffff00L; // ICU4N TODO: API - Rename per .NET conventions
+        public const long PrimarySentinel = 0xffffff00L;
 
         /// <summary>
         /// Flag in a root element, set if the element contains secondary &amp; tertiary weights,
         /// rather than a primary.
         /// </summary>
-        public const int SEC_TER_DELTA_FLAG = 0x80; // ICU4N TODO: API - Rename per .NET conventions
+        public const int SecondaryTertiaryDeltaFlag = 0x80;
         /// <summary>
         /// Mask for getting the primary range step value from a primary-range-end element.
         /// </summary>
-        public const int PRIMARY_STEP_MASK = 0x7f; // ICU4N TODO: API - Rename per .NET conventions
+        public const int PrimaryStepMask = 0x7f;
 
         /// <summary>
         /// Index of the first CE with a non-zero tertiary weight.
         /// Same as the start of the compact root elements table.
         /// </summary>
-        public const int IX_FIRST_TERTIARY_INDEX = 0; // ICU4N TODO: API - Rename per .NET conventions
+        internal const int IX_FIRST_TERTIARY_INDEX = 0; // ICU4N specific - made internal instead of public - it appears this was only done because a test uses this value
         /// <summary>
         /// Index of the first CE with a non-zero secondary weight.
         /// </summary>
@@ -79,7 +79,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal long FirstTertiaryCE
         {
-            get { return elements[(int)elements[IX_FIRST_TERTIARY_INDEX]] & ~SEC_TER_DELTA_FLAG; }
+            get { return elements[(int)elements[IX_FIRST_TERTIARY_INDEX]] & ~SecondaryTertiaryDeltaFlag; }
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal long LastTertiaryCE
         {
-            get { return elements[(int)elements[IX_FIRST_SECONDARY_INDEX] - 1] & ~SEC_TER_DELTA_FLAG; }
+            get { return elements[(int)elements[IX_FIRST_SECONDARY_INDEX] - 1] & ~SecondaryTertiaryDeltaFlag; }
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal long FirstSecondaryCE
         {
-            get { return elements[(int)elements[IX_FIRST_SECONDARY_INDEX]] & ~SEC_TER_DELTA_FLAG; }
+            get { return elements[(int)elements[IX_FIRST_SECONDARY_INDEX]] & ~SecondaryTertiaryDeltaFlag; }
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal long LastSecondaryCE
         {
-            get { return elements[(int)elements[IX_FIRST_PRIMARY_INDEX] - 1] & ~SEC_TER_DELTA_FLAG; }
+            get { return elements[(int)elements[IX_FIRST_PRIMARY_INDEX] - 1] & ~SecondaryTertiaryDeltaFlag; }
         }
 
         /// <summary>
@@ -157,9 +157,9 @@ namespace ICU4N.Impl.Coll
             {
                 // p == elements[index] is a root primary. Find the CE before it.
                 // We must not be in a primary range.
-                Debug.Assert((q & PRIMARY_STEP_MASK) == 0);
+                Debug.Assert((q & PrimaryStepMask) == 0);
                 secTer = elements[index - 1];
-                if ((secTer & SEC_TER_DELTA_FLAG) == 0)
+                if ((secTer & SecondaryTertiaryDeltaFlag) == 0)
                 {
                     // Primary CE just before p.
                     p = secTer & 0xffffff00L;
@@ -172,7 +172,7 @@ namespace ICU4N.Impl.Coll
                     for (; ; )
                     {
                         p = elements[index];
-                        if ((p & SEC_TER_DELTA_FLAG) == 0)
+                        if ((p & SecondaryTertiaryDeltaFlag) == 0)
                         {
                             p &= 0xffffff00L;
                             break;
@@ -190,16 +190,16 @@ namespace ICU4N.Impl.Coll
                 for (; ; )
                 {
                     q = elements[++index];
-                    if ((q & SEC_TER_DELTA_FLAG) == 0)
+                    if ((q & SecondaryTertiaryDeltaFlag) == 0)
                     {
                         // We must not be in a primary range.
-                        Debug.Assert((q & PRIMARY_STEP_MASK) == 0);
+                        Debug.Assert((q & PrimaryStepMask) == 0);
                         break;
                     }
                     secTer = q;
                 }
             }
-            return (p << 32) | (secTer & ~SEC_TER_DELTA_FLAG);
+            return (p << 32) | (secTer & ~SecondaryTertiaryDeltaFlag);
         }
 
         /// <summary>
@@ -215,10 +215,10 @@ namespace ICU4N.Impl.Coll
                 for (; ; )
                 {
                     p = elements[++index];
-                    if ((p & SEC_TER_DELTA_FLAG) == 0)
+                    if ((p & SecondaryTertiaryDeltaFlag) == 0)
                     {
                         // First primary after p. We must not be in a primary range.
-                        Debug.Assert((p & PRIMARY_STEP_MASK) == 0);
+                        Debug.Assert((p & PrimaryStepMask) == 0);
                         break;
                     }
                 }
@@ -240,14 +240,14 @@ namespace ICU4N.Impl.Coll
             {
                 // Found p itself. Return the previous primary.
                 // See if p is at the end of a previous range.
-                step = (int)q & PRIMARY_STEP_MASK;
+                step = (int)q & PrimaryStepMask;
                 if (step == 0)
                 {
                     // p is not at the end of a range. Look for the previous primary.
                     do
                     {
                         p = elements[--index];
-                    } while ((p & SEC_TER_DELTA_FLAG) != 0);
+                    } while ((p & SecondaryTertiaryDeltaFlag) != 0);
                     return p & 0xffffff00L;
                 }
             }
@@ -256,7 +256,7 @@ namespace ICU4N.Impl.Coll
                 // p is in a range, and not at the start.
                 long nextElement = elements[index + 1];
                 Debug.Assert(IsEndOfPrimaryRange(nextElement));
-                step = (int)nextElement & PRIMARY_STEP_MASK;
+                step = (int)nextElement & PrimaryStepMask;
             }
             // Return the previous range primary.
             if ((p & 0xffff) == 0)
@@ -291,7 +291,7 @@ namespace ICU4N.Impl.Coll
             while (s > sec)
             {
                 previousSec = sec;
-                Debug.Assert((elements[index] & SEC_TER_DELTA_FLAG) != 0);
+                Debug.Assert((elements[index] & SecondaryTertiaryDeltaFlag) != 0);
                 sec = (int)(elements[index++] >> 16);
             }
             Debug.Assert(sec == s);
@@ -318,7 +318,7 @@ namespace ICU4N.Impl.Coll
                     index = (int)elements[IX_FIRST_SECONDARY_INDEX];
                     previousTer = Collation.BEFORE_WEIGHT16;
                 }
-                secTer = elements[index] & ~SEC_TER_DELTA_FLAG;
+                secTer = elements[index] & ~SecondaryTertiaryDeltaFlag;
             }
             else
             {
@@ -330,8 +330,8 @@ namespace ICU4N.Impl.Coll
             while (st > secTer)
             {
                 if ((int)(secTer >> 16) == s) { previousTer = (int)secTer; }
-                Debug.Assert((elements[index] & SEC_TER_DELTA_FLAG) != 0);
-                secTer = elements[index++] & ~SEC_TER_DELTA_FLAG;
+                Debug.Assert((elements[index] & SecondaryTertiaryDeltaFlag) != 0);
+                secTer = elements[index++] & ~SecondaryTertiaryDeltaFlag;
             }
             Debug.Assert(secTer == st);
             return previousTer & 0xffff;
@@ -362,7 +362,7 @@ namespace ICU4N.Impl.Coll
             Debug.Assert(p == (elements[index] & 0xffffff00L) || IsEndOfPrimaryRange(elements[index + 1]));
             long q = elements[++index];
             int step;
-            if ((q & SEC_TER_DELTA_FLAG) == 0 && (step = (int)q & PRIMARY_STEP_MASK) != 0)
+            if ((q & SecondaryTertiaryDeltaFlag) == 0 && (step = (int)q & PrimaryStepMask) != 0)
             {
                 // Return the next primary in this range.
                 if ((p & 0xffff) == 0)
@@ -377,11 +377,11 @@ namespace ICU4N.Impl.Coll
             else
             {
                 // Return the next primary in the list.
-                while ((q & SEC_TER_DELTA_FLAG) != 0)
+                while ((q & SecondaryTertiaryDeltaFlag) != 0)
                 {
                     q = elements[++index];
                 }
-                Debug.Assert((q & PRIMARY_STEP_MASK) == 0);
+                Debug.Assert((q & PrimaryStepMask) == 0);
                 return q;
             }
         }
@@ -421,7 +421,7 @@ namespace ICU4N.Impl.Coll
                 int sec = (int)(secTer >> 16);
                 if (sec > s) { return sec; }
                 secTer = elements[++index];
-                if ((secTer & SEC_TER_DELTA_FLAG) == 0) { return secLimit; }
+                if ((secTer & SecondaryTertiaryDeltaFlag) == 0) { return secLimit; }
             }
         }
         /// <summary>
@@ -454,7 +454,7 @@ namespace ICU4N.Impl.Coll
                     // Gap for tertiaries of primary/secondary CEs.
                     terLimit = TertiaryBoundary;
                 }
-                secTer = elements[index] & ~SEC_TER_DELTA_FLAG;
+                secTer = elements[index] & ~SecondaryTertiaryDeltaFlag;
             }
             else
             {
@@ -473,8 +473,8 @@ namespace ICU4N.Impl.Coll
                 }
                 secTer = elements[++index];
                 // No tertiary greater than t for this primary+secondary.
-                if ((secTer & SEC_TER_DELTA_FLAG) == 0 || (secTer >> 16) > s) { return terLimit; }
-                secTer &= ~SEC_TER_DELTA_FLAG;
+                if ((secTer & SecondaryTertiaryDeltaFlag) == 0 || (secTer >> 16) > s) { return terLimit; }
+                secTer &= ~SecondaryTertiaryDeltaFlag;
             }
         }
 
@@ -484,12 +484,12 @@ namespace ICU4N.Impl.Coll
         private long GetFirstSecTerForPrimary(int index)
         {
             long secTer = elements[index];
-            if ((secTer & SEC_TER_DELTA_FLAG) == 0)
+            if ((secTer & SecondaryTertiaryDeltaFlag) == 0)
             {
                 // No sec/ter delta.
                 return Collation.CommonSecondaryAndTertiaryCE;
             }
-            secTer &= ~SEC_TER_DELTA_FLAG;
+            secTer &= ~SecondaryTertiaryDeltaFlag;
             if (secTer > Collation.CommonSecondaryAndTertiaryCE)
             {
                 // Implied sec/ter.
@@ -513,7 +513,7 @@ namespace ICU4N.Impl.Coll
             int start = (int)elements[IX_FIRST_PRIMARY_INDEX];
             Debug.Assert(p >= elements[start]);
             int limit = elements.Length - 1;
-            Debug.Assert(elements[limit] >= PRIMARY_SENTINEL);
+            Debug.Assert(elements[limit] >= PrimarySentinel);
             Debug.Assert(p < elements[limit]);
             while ((start + 1) < limit)
             {
@@ -521,7 +521,7 @@ namespace ICU4N.Impl.Coll
                 // and elements[start]<=p<=elements[limit].
                 int i = (int)(((long)start + (long)limit) / 2);
                 long q = elements[i];
-                if ((q & SEC_TER_DELTA_FLAG) != 0)
+                if ((q & SecondaryTertiaryDeltaFlag) != 0)
                 {
                     // Find the next primary.
                     int j = i + 1;
@@ -529,14 +529,14 @@ namespace ICU4N.Impl.Coll
                     {
                         if (j == limit) { break; }
                         q = elements[j];
-                        if ((q & SEC_TER_DELTA_FLAG) == 0)
+                        if ((q & SecondaryTertiaryDeltaFlag) == 0)
                         {
                             i = j;
                             break;
                         }
                         ++j;
                     }
-                    if ((q & SEC_TER_DELTA_FLAG) != 0)
+                    if ((q & SecondaryTertiaryDeltaFlag) != 0)
                     {
                         // Find the preceding primary.
                         j = i - 1;
@@ -544,14 +544,14 @@ namespace ICU4N.Impl.Coll
                         {
                             if (j == start) { break; }
                             q = elements[j];
-                            if ((q & SEC_TER_DELTA_FLAG) == 0)
+                            if ((q & SecondaryTertiaryDeltaFlag) == 0)
                             {
                                 i = j;
                                 break;
                             }
                             --j;
                         }
-                        if ((q & SEC_TER_DELTA_FLAG) != 0)
+                        if ((q & SecondaryTertiaryDeltaFlag) != 0)
                         {
                             // No primary between start and limit.
                             break;
@@ -572,7 +572,7 @@ namespace ICU4N.Impl.Coll
 
         private static bool IsEndOfPrimaryRange(long q)
         {
-            return (q & SEC_TER_DELTA_FLAG) == 0 && (q & PRIMARY_STEP_MASK) != 0;
+            return (q & SecondaryTertiaryDeltaFlag) == 0 && (q & PrimaryStepMask) != 0;
         }
 
         /// <summary>
