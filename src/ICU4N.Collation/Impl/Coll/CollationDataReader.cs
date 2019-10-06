@@ -437,7 +437,7 @@ namespace ICU4N.Impl.Coll
             {
                 data.fastLatinTable = null;
                 data.fastLatinTableHeader = null;
-                if (((inIndexes[IX_OPTIONS] >> 16) & 0xff) == CollationFastLatin.VERSION)
+                if (((inIndexes[IX_OPTIONS] >> 16) & 0xff) == CollationFastLatin.Version)
                 {
                     if (length >= 2)
                     {
@@ -452,7 +452,7 @@ namespace ICU4N.Impl.Coll
                         int tableLength = length / 2 - headerLength;
                         data.fastLatinTable = ICUBinary.GetChars(inBytes, tableLength, length & 1);
                         length = 0;
-                        if ((header0 >> 8) != CollationFastLatin.VERSION)
+                        if ((header0 >> 8) != CollationFastLatin.Version)
                         {
                             throw new ICUException("Fast-Latin table version differs from version in data header");
                         }
@@ -543,7 +543,7 @@ namespace ICU4N.Impl.Coll
 
             CollationSettings ts = tailoring.Settings.ReadOnly;
             int options = inIndexes[IX_OPTIONS] & 0xffff;
-            char[] fastLatinPrimaries = new char[CollationFastLatin.LATIN_LIMIT];
+            char[] fastLatinPrimaries = new char[CollationFastLatin.LatinLimit];
             int fastLatinOptions = CollationFastLatin.GetOptions(
                     tailoring.Data, ts, fastLatinPrimaries);
             if (options == ts.Options && ts.VariableTop != 0 &&

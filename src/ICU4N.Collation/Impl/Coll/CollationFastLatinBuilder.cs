@@ -154,7 +154,7 @@ namespace ICU4N.Impl.Coll
         private bool LoadGroups(CollationData data)
         {
             headerLength = 1 + NUM_SPECIAL_GROUPS;
-            int r0 = (CollationFastLatin.VERSION << 8) | headerLength;
+            int r0 = (CollationFastLatin.Version << 8) | headerLength;
             result.Append((char)r0);
             // The first few reordering groups should be special groups
             // (space, punct, ..., digit) followed by Latn, then Grek and other scripts.
@@ -235,7 +235,7 @@ namespace ICU4N.Impl.Coll
             int i = 0;
             for (char c = (char)0; ; ++i, ++c)
             {
-                if (c == CollationFastLatin.LATIN_LIMIT)
+                if (c == CollationFastLatin.LatinLimit)
                 {
                     c = (char)CollationFastLatin.PUNCT_START;
                 }

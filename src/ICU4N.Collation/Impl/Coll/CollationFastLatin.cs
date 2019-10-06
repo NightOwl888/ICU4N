@@ -18,10 +18,10 @@ namespace ICU4N.Impl.Coll
         /// When the major version number of the main data format changes,
         /// we can reset this fast Latin version to 1.
         /// </summary>
-        public const int VERSION = 2; // ICU4N TODO: API - rename per .NET convetions
+        public const int Version = 2;
 
-        public const int LATIN_MAX = 0x17f; // ICU4N TODO: API - rename per .NET convetions
-        public const int LATIN_LIMIT = LATIN_MAX + 1; // ICU4N TODO: API - rename per .NET convetions
+        public const int LatinMax = 0x17f;
+        public const int LatinLimit = LatinMax + 1;
 
         internal const int LATIN_MAX_UTF8_LEAD = 0xc5;  // UTF-8 lead byte of LATIN_MAX
 
@@ -29,7 +29,7 @@ namespace ICU4N.Impl.Coll
         internal const int PUNCT_LIMIT = 0x2040;
 
         // excludes U+FFFE & U+FFFF
-        internal const int NUM_FAST_CHARS = LATIN_LIMIT + (PUNCT_LIMIT - PUNCT_START);
+        internal const int NUM_FAST_CHARS = LatinLimit + (PUNCT_LIMIT - PUNCT_START);
 
         // Note on the supported weight ranges:
         // Analysis of UCA 6.3 and CLDR 23 non-search tailorings shows that
@@ -172,17 +172,17 @@ namespace ICU4N.Impl.Coll
         /// Comparison return value when the regular comparison must be used.
         /// The exact value is not relevant for the format version.
         /// </summary>
-        public const int BAIL_OUT_RESULT = -2; // ICU4N TODO: API - rename per .NET convetions
+        public const int BailOutResult = -2;
 
         internal static int GetCharIndex(char c)
         {
-            if (c <= LATIN_MAX)
+            if (c <= LatinMax)
             {
                 return c;
             }
             else if (PUNCT_START <= c && c < PUNCT_LIMIT)
             {
-                return c - (PUNCT_START - LATIN_LIMIT);
+                return c - (PUNCT_START - LatinLimit);
             }
             else
             {
@@ -197,15 +197,15 @@ namespace ICU4N.Impl.Coll
         /// Computes the options value for the compare functions
         /// and writes the precomputed primary weights.
         /// Returns -1 if the Latin fastpath is not supported for the data and settings.
-        /// The capacity must be <see cref="LATIN_LIMIT"/>.
+        /// The capacity must be <see cref="LatinLimit"/>.
         /// </summary>
         public static int GetOptions(CollationData data, CollationSettings settings,
                 char[] primaries)
         {
             char[] header = data.fastLatinTableHeader;
             if (header == null) { return -1; }
-            Debug.Assert((header[0] >> 8) == VERSION);
-            if (primaries.Length != LATIN_LIMIT)
+            Debug.Assert((header[0] >> 8) == Version);
+            if (primaries.Length != LatinLimit)
             {
                 Debug.Assert(false);
                 return -1;
@@ -279,7 +279,7 @@ namespace ICU4N.Impl.Coll
             }
 
             char[] table = data.fastLatinTable;  // skip the header
-            for (int c = 0; c < LATIN_LIMIT; ++c)
+            for (int c = 0; c < LatinLimit; ++c)
             {
                 int p = table[c];
                 if (p >= MIN_SHORT)
@@ -334,19 +334,19 @@ namespace ICU4N.Impl.Coll
                         break;
                     }
                     int c = left[leftIndex++];
-                    if (c <= LATIN_MAX)
+                    if (c <= LatinMax)
                     {
                         leftPair = primaries[c];
                         if (leftPair != 0) { break; }
                         if (c <= 0x39 && c >= 0x30 && (options & CollationSettings.NUMERIC) != 0)
                         {
-                            return BAIL_OUT_RESULT;
+                            return BailOutResult;
                         }
                         leftPair = table[c];
                     }
                     else if (PUNCT_START <= c && c < PUNCT_LIMIT)
                     {
-                        leftPair = table[c - PUNCT_START + LATIN_LIMIT];
+                        leftPair = table[c - PUNCT_START + LatinLimit];
                     }
                     else
                     {
@@ -371,7 +371,7 @@ namespace ICU4N.Impl.Coll
                             pairAndInc = ~pairAndInc;
                         }
                         leftPair = (int)pairAndInc;
-                        if (leftPair == BAIL_OUT) { return BAIL_OUT_RESULT; }
+                        if (leftPair == BAIL_OUT) { return BailOutResult; }
                         leftPair = GetPrimaries(variableTop, leftPair);
                     }
                 }
@@ -384,19 +384,19 @@ namespace ICU4N.Impl.Coll
                         break;
                     }
                     int c = right[rightIndex++];
-                    if (c <= LATIN_MAX)
+                    if (c <= LatinMax)
                     {
                         rightPair = primaries[c];
                         if (rightPair != 0) { break; }
                         if (c <= 0x39 && c >= 0x30 && (options & CollationSettings.NUMERIC) != 0)
                         {
-                            return BAIL_OUT_RESULT;
+                            return BailOutResult;
                         }
                         rightPair = table[c];
                     }
                     else if (PUNCT_START <= c && c < PUNCT_LIMIT)
                     {
-                        rightPair = table[c - PUNCT_START + LATIN_LIMIT];
+                        rightPair = table[c - PUNCT_START + LatinLimit];
                     }
                     else
                     {
@@ -421,7 +421,7 @@ namespace ICU4N.Impl.Coll
                             pairAndInc = ~pairAndInc;
                         }
                         rightPair = (int)pairAndInc;
-                        if (rightPair == BAIL_OUT) { return BAIL_OUT_RESULT; }
+                        if (rightPair == BAIL_OUT) { return BailOutResult; }
                         rightPair = GetPrimaries(variableTop, rightPair);
                     }
                 }
@@ -465,13 +465,13 @@ namespace ICU4N.Impl.Coll
                             break;
                         }
                         int c = left[leftIndex++];
-                        if (c <= LATIN_MAX)
+                        if (c <= LatinMax)
                         {
                             leftPair = table[c];
                         }
                         else if (PUNCT_START <= c && c < PUNCT_LIMIT)
                         {
-                            leftPair = table[c - PUNCT_START + LATIN_LIMIT];
+                            leftPair = table[c - PUNCT_START + LatinLimit];
                         }
                         else
                         {
@@ -507,13 +507,13 @@ namespace ICU4N.Impl.Coll
                             break;
                         }
                         int c = right[rightIndex++];
-                        if (c <= LATIN_MAX)
+                        if (c <= LatinMax)
                         {
                             rightPair = table[c];
                         }
                         else if (PUNCT_START <= c && c < PUNCT_LIMIT)
                         {
-                            rightPair = table[c - PUNCT_START + LATIN_LIMIT];
+                            rightPair = table[c - PUNCT_START + LatinLimit];
                         }
                         else
                         {
@@ -555,7 +555,7 @@ namespace ICU4N.Impl.Coll
                         {
                             // Full support for backwards secondary requires backwards contraction matching
                             // and moving backwards between merge separators.
-                            return BAIL_OUT_RESULT;
+                            return BailOutResult;
                         }
                         return (leftSecondary < rightSecondary) ? Collation.Less : Collation.Greater;
                     }
@@ -582,7 +582,7 @@ namespace ICU4N.Impl.Coll
                             break;
                         }
                         int c = left[leftIndex++];
-                        leftPair = (c <= LATIN_MAX) ? table[c] : Lookup(table, c);
+                        leftPair = (c <= LatinMax) ? table[c] : Lookup(table, c);
                         if (leftPair < MIN_LONG)
                         {
                             long pairAndInc = NextPair(table, c, leftPair, left, leftIndex);
@@ -604,7 +604,7 @@ namespace ICU4N.Impl.Coll
                             break;
                         }
                         int c = right[rightIndex++];
-                        rightPair = (c <= LATIN_MAX) ? table[c] : Lookup(table, c);
+                        rightPair = (c <= LatinMax) ? table[c] : Lookup(table, c);
                         if (rightPair < MIN_LONG)
                         {
                             long pairAndInc = NextPair(table, c, rightPair, right, rightIndex);
@@ -661,7 +661,7 @@ namespace ICU4N.Impl.Coll
                         break;
                     }
                     int c = left[leftIndex++];
-                    leftPair = (c <= LATIN_MAX) ? table[c] : Lookup(table, c);
+                    leftPair = (c <= LatinMax) ? table[c] : Lookup(table, c);
                     if (leftPair < MIN_LONG)
                     {
                         long pairAndInc = NextPair(table, c, leftPair, left, leftIndex);
@@ -683,7 +683,7 @@ namespace ICU4N.Impl.Coll
                         break;
                     }
                     int c = right[rightIndex++];
-                    rightPair = (c <= LATIN_MAX) ? table[c] : Lookup(table, c);
+                    rightPair = (c <= LatinMax) ? table[c] : Lookup(table, c);
                     if (rightPair < MIN_LONG)
                     {
                         long pairAndInc = NextPair(table, c, rightPair, right, rightIndex);
@@ -743,7 +743,7 @@ namespace ICU4N.Impl.Coll
                         break;
                     }
                     int c = left[leftIndex++];
-                    leftPair = (c <= LATIN_MAX) ? table[c] : Lookup(table, c);
+                    leftPair = (c <= LatinMax) ? table[c] : Lookup(table, c);
                     if (leftPair < MIN_LONG)
                     {
                         long pairAndInc = NextPair(table, c, leftPair, left, leftIndex);
@@ -765,7 +765,7 @@ namespace ICU4N.Impl.Coll
                         break;
                     }
                     int c = right[rightIndex++];
-                    rightPair = (c <= LATIN_MAX) ? table[c] : Lookup(table, c);
+                    rightPair = (c <= LatinMax) ? table[c] : Lookup(table, c);
                     if (rightPair < MIN_LONG)
                     {
                         long pairAndInc = NextPair(table, c, rightPair, right, rightIndex);
@@ -802,10 +802,10 @@ namespace ICU4N.Impl.Coll
 
         private static int Lookup(char[] table, int c)
         {
-            Debug.Assert(c > LATIN_MAX);
+            Debug.Assert(c > LatinMax);
             if (PUNCT_START <= c && c < PUNCT_LIMIT)
             {
-                return table[c - PUNCT_START + LATIN_LIMIT];
+                return table[c - PUNCT_START + LatinLimit];
             }
             else if (c == 0xfffe)
             {
@@ -848,11 +848,11 @@ namespace ICU4N.Impl.Coll
                     int c2;
                     int nextIndex = sIndex;
                     c2 = s16[nextIndex++];
-                    if (c2 > LATIN_MAX)
+                    if (c2 > LatinMax)
                     {
                         if (PUNCT_START <= c2 && c2 < PUNCT_LIMIT)
                         {
-                            c2 = c2 - PUNCT_START + LATIN_LIMIT;  // 2000..203F -> 0180..01BF
+                            c2 = c2 - PUNCT_START + LatinLimit;  // 2000..203F -> 0180..01BF
                         }
                         else if (c2 == 0xfffe || c2 == 0xffff)
                         {

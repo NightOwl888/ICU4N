@@ -1622,9 +1622,9 @@ namespace ICU4N.Text
             int fastLatinOptions = roSettings.FastLatinOptions;
             if (fastLatinOptions >= 0 &&
                     (equalPrefixLength == left.Length ||
-                        left[equalPrefixLength] <= CollationFastLatin.LATIN_MAX) &&
+                        left[equalPrefixLength] <= CollationFastLatin.LatinMax) &&
                     (equalPrefixLength == right.Length ||
-                        right[equalPrefixLength] <= CollationFastLatin.LATIN_MAX))
+                        right[equalPrefixLength] <= CollationFastLatin.LatinMax))
             {
                 result = CollationFastLatin.CompareUTF16(data.fastLatinTable,
                                                           roSettings.FastLatinPrimaries,
@@ -1633,10 +1633,10 @@ namespace ICU4N.Text
             }
             else
             {
-                result = CollationFastLatin.BAIL_OUT_RESULT;
+                result = CollationFastLatin.BailOutResult;
             }
 
-            if (result == CollationFastLatin.BAIL_OUT_RESULT)
+            if (result == CollationFastLatin.BailOutResult)
             {
                 CollationBuffer buffer = null;
                 try
