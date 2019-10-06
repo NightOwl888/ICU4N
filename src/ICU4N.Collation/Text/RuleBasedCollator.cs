@@ -1210,7 +1210,7 @@ namespace ICU4N.Text
                 CollationKeys.WriteSortKeyUpToQuaternary(
                         buffer.LeftUTF16CollIter, data.compressibleBytes, settings.ReadOnly,
                         sink, CollationSortKeyLevel.Primary,
-                        CollationKeys.SIMPLE_LEVEL_FALLBACK, true);
+                        CollationKeys.SimpleLevelFallback, true);
             }
             else
             {
@@ -1218,7 +1218,7 @@ namespace ICU4N.Text
                 CollationKeys.WriteSortKeyUpToQuaternary(
                         buffer.LeftFCDUTF16Iter, data.compressibleBytes, settings.ReadOnly,
                         sink, CollationSortKeyLevel.Primary,
-                        CollationKeys.SIMPLE_LEVEL_FALLBACK, true);
+                        CollationKeys.SimpleLevelFallback, true);
             }
             if (settings.ReadOnly.Strength == CollationStrength.Identical)
             {

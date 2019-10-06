@@ -138,7 +138,7 @@ namespace ICU4N.Impl.Coll
 
         // ICU4N specific - de-nested LevelCallback
 
-        public static readonly LevelCallback SIMPLE_LEVEL_FALLBACK = new LevelCallback(); // ICU4N TODO: API - Rename SimpleLevelFallback
+        public static readonly LevelCallback SimpleLevelFallback = new LevelCallback();
 
         private sealed class SortKeyLevel
         {
