@@ -111,7 +111,7 @@ namespace ICU4N.Text
 
             internal bool isCanonicalMatch_;
 
-            internal SearchIteratorElementComparisonType elementComparisonType_;
+            internal ElementComparisonType elementComparisonType_;
 
             internal BreakIterator internalBreakIter_;
 
@@ -551,7 +551,7 @@ namespace ICU4N.Text
             SetIndex(search_.BeginIndex);
             search_.isOverlap_ = false;
             search_.isCanonicalMatch_ = false;
-            search_.elementComparisonType_ = SearchIteratorElementComparisonType.StandardElementComparison;
+            search_.elementComparisonType_ = ElementComparisonType.StandardElementComparison;
             search_.isForwardSearching_ = true;
             search_.reset_ = true;
         }
@@ -675,7 +675,7 @@ namespace ICU4N.Text
             }
             search_.isOverlap_ = false;
             search_.isCanonicalMatch_ = false;
-            search_.elementComparisonType_ = SearchIteratorElementComparisonType.StandardElementComparison;
+            search_.elementComparisonType_ = ElementComparisonType.StandardElementComparison;
             search_.isForwardSearching_ = true;
             search_.reset_ = true;
             search_.matchedIndex_ = Done;
@@ -736,11 +736,11 @@ namespace ICU4N.Text
         /// <summary>
         /// Gets or sets the collation element comparison type.
         /// <para/>
-        /// The default comparison type is <see cref="SearchIteratorElementComparisonType.StandardElementComparison"/>.
+        /// The default comparison type is <see cref="ElementComparisonType.StandardElementComparison"/>.
         /// </summary>
-        /// <seealso cref="SearchIteratorElementComparisonType"/>
+        /// <seealso cref="Text.ElementComparisonType"/>
         /// <stable>ICU 53</stable>
-        public virtual SearchIteratorElementComparisonType ElementComparisonType
+        public virtual ElementComparisonType ElementComparisonType
         {
             get { return search_.elementComparisonType_; }
             set { search_.elementComparisonType_ = value; }
@@ -760,7 +760,7 @@ namespace ICU4N.Text
     /// </summary>
     /// <seealso cref="SearchIterator.ElementComparisonType"/>
     /// <stable>ICU 53</stable>
-    public enum SearchIteratorElementComparisonType // ICU4N TODO: API Rename back to ElementComparisonType
+    public enum ElementComparisonType
     {
         /// <summary>
         /// Standard collation element comparison at the specified collator strength.

@@ -17,7 +17,7 @@ namespace ICU4N.Dev.Test.Search
         internal class SearchData
         {
             internal SearchData(String text, String pattern,
-                        String coll, CollationStrength strength, SearchIteratorElementComparisonType cmpType, String breaker,
+                        String coll, CollationStrength strength, ElementComparisonType cmpType, String breaker,
                         int[] offset, int[] size)
             {
 
@@ -34,7 +34,7 @@ namespace ICU4N.Dev.Test.Search
             internal String pattern;
             internal String collator;
             internal CollationStrength strength;
-            internal SearchIteratorElementComparisonType cmpType;
+            internal ElementComparisonType cmpType;
             internal String breaker;
             internal int[] offset;
             internal int[] size;
@@ -50,7 +50,7 @@ namespace ICU4N.Dev.Test.Search
         // Just calling SearchData constructor, to make the test data source code
         // nice and short
         private static SearchData SD(String text, String pattern, String coll, CollationStrength strength,
-                        SearchIteratorElementComparisonType cmpType, String breaker, int[] offset, int[] size)
+                        ElementComparisonType cmpType, String breaker, int[] offset, int[] size)
         {
             return new SearchData(text, pattern, coll, strength, cmpType, breaker, offset, size);
         }
@@ -62,71 +62,71 @@ namespace ICU4N.Dev.Test.Search
         }
 
         static SearchData[] BASIC = {
-            SD("xxxxxxxxxxxxxxxxxxxx", "fisher", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("silly spring string", "string", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(13, -1), IA(6)),
-            SD("silly spring string string", "string", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(13, 20, -1), IA(6, 6)),
-            SD("silly string spring string", "string", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(6, 20, -1), IA(6, 6)),
-            SD("string spring string", "string", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 14, -1), IA(6, 6)),
-            SD("Scott Ganyo", "c", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(1)),
-            SD("Scott Ganyo", " ", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(5, -1), IA(1)),
-            SD("\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325", "\u0300\u0325", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300b", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u00c9", "e", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("xxxxxxxxxxxxxxxxxxxx", "fisher", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("silly spring string", "string", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(13, -1), IA(6)),
+            SD("silly spring string string", "string", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(13, 20, -1), IA(6, 6)),
+            SD("silly string spring string", "string", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(6, 20, -1), IA(6, 6)),
+            SD("string spring string", "string", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, 14, -1), IA(6, 6)),
+            SD("Scott Ganyo", "c", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(1)),
+            SD("Scott Ganyo", " ", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(5, -1), IA(1)),
+            SD("\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325", "\u0300\u0325", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300b", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u00c9", "e", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
         };
 
         SearchData[] BREAKITERATOREXACT = {
-            SD("foxy fox", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(0, 5, -1), IA(3, 3)),
-            SD("foxy fox", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(5, -1), IA(3)),
-            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(10, 14, -1), IA(3, 2)),
-            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(10, -1), IA(3)),
-            SD("Channel, another channel, more channels, and one last Channel", "Channel", "es", CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(0, 54, -1), IA(7, 7)),
+            SD("foxy fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(0, 5, -1), IA(3, 3)),
+            SD("foxy fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(5, -1), IA(3)),
+            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(10, 14, -1), IA(3, 2)),
+            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(10, -1), IA(3)),
+            SD("Channel, another channel, more channels, and one last Channel", "Channel", "es", CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(0, 54, -1), IA(7, 7)),
             /* jitterbug 1745 */
-            SD("testing that \u00e9 does not match e", "e", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(1, 17, 30, -1), IA(1, 1, 1)),
-            SD("testing that string ab\u00e9cd does not match e", "e", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(1, 28, 41, -1), IA(1, 1, 1)),
-            SD("\u00c9", "e", "fr", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(0, -1), IA(1)),
+            SD("testing that \u00e9 does not match e", "e", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(1, 17, 30, -1), IA(1, 1, 1)),
+            SD("testing that string ab\u00e9cd does not match e", "e", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(1, 28, 41, -1), IA(1, 1, 1)),
+            SD("\u00c9", "e", "fr", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(0, -1), IA(1)),
         };
 
         SearchData[] BREAKITERATORCANONICAL = {
-            SD("foxy fox", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(0, 5, -1), IA(3, 3)),
-            SD("foxy fox", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(5, -1), IA(3)),
-            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(10, 14, -1), IA(3, 2)),
-            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(10, -1), IA(3)),
-            SD("Channel, another channel, more channels, and one last Channel", "Channel", "es", CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(0, 54, -1), IA(7, 7)),
+            SD("foxy fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(0, 5, -1), IA(3, 3)),
+            SD("foxy fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(5, -1), IA(3)),
+            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(10, 14, -1), IA(3, 2)),
+            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(10, -1), IA(3)),
+            SD("Channel, another channel, more channels, and one last Channel", "Channel", "es", CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(0, 54, -1), IA(7, 7)),
             /* jitterbug 1745 */
-            SD("testing that \u00e9 does not match e", "e", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(1, 17, 30, -1), IA(1, 1, 1)),
-            SD("testing that string ab\u00e9cd does not match e", "e", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(1, 28, 41, -1), IA(1, 1, 1)),
-            SD("\u00c9", "e", "fr", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "characterbreaker", IA(0, -1), IA(1)),
+            SD("testing that \u00e9 does not match e", "e", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(1, 17, 30, -1), IA(1, 1, 1)),
+            SD("testing that string ab\u00e9cd does not match e", "e", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(1, 28, 41, -1), IA(1, 1, 1)),
+            SD("\u00c9", "e", "fr", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "characterbreaker", IA(0, -1), IA(1)),
         };
 
         SearchData[] BASICCANONICAL = {
-            SD("xxxxxxxxxxxxxxxxxxxx", "fisher", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("silly spring string", "string", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(13, -1), IA(6)),
-            SD("silly spring string string", "string", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(13, 20, -1), IA(6, 6)),
-            SD("silly string spring string", "string", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(6, 20, -1), IA(6, 6)),
-            SD("string spring string", "string", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 14, -1), IA(6, 6)),
-            SD("Scott Ganyo", "c", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(1)),
-            SD("Scott Ganyo", " ", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(5, -1), IA(1)),
+            SD("xxxxxxxxxxxxxxxxxxxx", "fisher", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("silly spring string", "string", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(13, -1), IA(6)),
+            SD("silly spring string string", "string", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(13, 20, -1), IA(6, 6)),
+            SD("silly string spring string", "string", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(6, 20, -1), IA(6, 6)),
+            SD("string spring string", "string", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, 14, -1), IA(6, 6)),
+            SD("Scott Ganyo", "c", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(1)),
+            SD("Scott Ganyo", " ", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(5, -1), IA(1)),
 
-            SD("\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325", "\u0300\u0325", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300b", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325b", "\u0300b", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u0325\u0300A\u0325\u0300", "\u0300A\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u0325\u0300A\u0325\u0300", "\u0325A\u0325", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325b\u0300\u0325c \u0325b\u0300 \u0300b\u0325", "\u0300b\u0325", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325", "\u0300\u0325", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300b", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325b", "\u0300b", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0325\u0300A\u0325\u0300", "\u0300A\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0325\u0300A\u0325\u0300", "\u0325A\u0325", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325b\u0300\u0325c \u0325b\u0300 \u0300b\u0325", "\u0300b\u0325", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u00c4\u0323", "A\u0323\u0308", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(2)),
-            SD("\u0308\u0323", "\u0323\u0308", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(2)),
+            SD("\u00c4\u0323", "A\u0323\u0308", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(2)),
+            SD("\u0308\u0323", "\u0323\u0308", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(2)),
         };
 
         SearchData[] COLLATOR = {
             /* english */
-            SD("fox fpx", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
+            SD("fox fpx", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
             /* tailored */
-            SD("fox fpx", "fox", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 4, -1), IA(3, 3)),
+            SD("fox fpx", "fox", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(0, 4, -1), IA(3, 3)),
         };
 
         String TESTCOLLATORRULE = "& o,O ; p,P";
@@ -134,155 +134,155 @@ namespace ICU4N.Dev.Test.Search
 
         SearchData[] COLLATORCANONICAL = {
             /* english */
-            SD("fox fpx", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
+            SD("fox fpx", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
             /* tailored */
-            SD("fox fpx", "fox", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 4, -1), IA(3, 3)),
+            SD("fox fpx", "fox", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(0, 4, -1), IA(3, 3)),
         };
 
         SearchData[] COMPOSITEBOUNDARIES = {
-            SD("\u00C0", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("A\u00C0C", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
-            SD("\u00C0A", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(1)),
-            SD("B\u00C0", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u00C0B", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u00C0", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u00C0", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("A\u00C0C", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u00C0A", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(1)),
+            SD("B\u00C0", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u00C0B", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u00C0", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /* first one matches only because it's at the start of the text */
-            SD("\u0300\u00C0", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u0300\u00C0", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
 
             /* \\u0300 blocked by \\u0300 */
-            SD("\u00C0\u0300", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u00C0\u0300", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /* A + 030A + 0301 */
-            SD("\u01FA", "\u01FA", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
-            SD("\u01FA", "A\u030A\u0301", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u01FA", "\u01FA", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u01FA", "A\u030A\u0301", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
 
-            SD("\u01FA", "\u030A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u01FA", "A\u030A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u030A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "A\u030A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u01FA", "\u030AA", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u030AA", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u01FA", "\u0301", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u0301", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /* blocked accent */
-            SD("\u01FA", "A\u0301", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u01FA", "\u0301A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "A\u0301", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u0301A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u01FA", "\u030A\u0301", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("A\u01FA", "A\u030A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u01FAA", "\u0301A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u030A\u0301", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("A\u01FA", "A\u030A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FAA", "\u0301A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u0F73", "\u0F73", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u0F73", "\u0F73", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
 
-            SD("\u0F73", "\u0F71", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u0F73", "\u0F72", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0F73", "\u0F71", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0F73", "\u0F72", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u0F73", "\u0F71\u0F72", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u0F73", "\u0F71\u0F72", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
 
-            SD("A\u0F73", "A\u0F71", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u0F73A", "\u0F72A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u01FA A\u0301\u030A A\u030A\u0301 A\u030A \u01FA", "A\u030A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(10, -1), IA(2)),
+            SD("A\u0F73", "A\u0F71", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0F73A", "\u0F72A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA A\u0301\u030A A\u030A\u0301 A\u030A \u01FA", "A\u030A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(10, -1), IA(2)),
         };
 
         SearchData[] COMPOSITEBOUNDARIESCANONICAL = {
-            SD("\u00C0", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("A\u00C0C", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
-            SD("\u00C0A", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(1)),
-            SD("B\u00C0", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u00C0B", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u00C0", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u00C0", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("A\u00C0C", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u00C0A", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(1)),
+            SD("B\u00C0", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u00C0B", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u00C0", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /* first one matches only because it's at the start of the text */
-            SD("\u0300\u00C0", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u0300\u00C0", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
 
             /* \u0300 blocked by \u0300 */
-            SD("\u00C0\u0300", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u00C0\u0300", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /* A + 030A + 0301 */
-            SD("\u01FA", "\u01FA", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
-            SD("\u01FA", "A\u030A\u0301", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u01FA", "\u01FA", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u01FA", "A\u030A\u0301", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
 
-            SD("\u01FA", "\u030A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u01FA", "A\u030A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u030A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "A\u030A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u01FA", "\u030AA", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u030AA", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u01FA", "\u0301", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u0301", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /* blocked accent */
-            SD("\u01FA", "A\u0301", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u01FA", "\u0301A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "A\u0301", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u0301A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u01FA", "\u030A\u0301", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("A\u01FA", "A\u030A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u01FAA", "\u0301A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FA", "\u030A\u0301", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("A\u01FA", "A\u030A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u01FAA", "\u0301A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u0F73", "\u0F73", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u0F73", "\u0F73", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
 
-            SD("\u0F73", "\u0F71", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u0F73", "\u0F72", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0F73", "\u0F71", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0F73", "\u0F72", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u0F73", "\u0F71\u0F72", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
+            SD("\u0F73", "\u0F71\u0F72", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(1)),
 
-            SD("A\u0F73", "A\u0F71", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u0F73A", "\u0F72A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("A\u0F73", "A\u0F71", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0F73A", "\u0F72A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("\u01FA A\u0301\u030A A\u030A\u0301 A\u030A \u01FA", "A\u030A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(10, -1), IA(2)),
+            SD("\u01FA A\u0301\u030A A\u030A\u0301 A\u030A \u01FA", "A\u030A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(10, -1), IA(2)),
         };
 
         SearchData[] SUPPLEMENTARY = {
             SD("abc \uD800\uDC00 \uD800\uDC01 \uD801\uDC00 \uD800\uDC00abc abc\uD800\uDC00 \uD800\uD800\uDC00 \uD800\uDC00\uDC00",
-                    "\uD800\uDC00", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(4, 13, 22, 26, 29, -1), IA(2, 2, 2, 2, 2)),
-            SD("and\uD834\uDDB9this sentence", "\uD834\uDDB9", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(2)),
-            SD("and \uD834\uDDB9 this sentence", " \uD834\uDDB9 ", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
-            SD("and-\uD834\uDDB9-this sentence", "-\uD834\uDDB9-", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
-            SD("and,\uD834\uDDB9,this sentence", ",\uD834\uDDB9,", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
-            SD("and?\uD834\uDDB9?this sentence", "?\uD834\uDDB9?", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
+                    "\uD800\uDC00", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(4, 13, 22, 26, 29, -1), IA(2, 2, 2, 2, 2)),
+            SD("and\uD834\uDDB9this sentence", "\uD834\uDDB9", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(2)),
+            SD("and \uD834\uDDB9 this sentence", " \uD834\uDDB9 ", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
+            SD("and-\uD834\uDDB9-this sentence", "-\uD834\uDDB9-", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
+            SD("and,\uD834\uDDB9,this sentence", ",\uD834\uDDB9,", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
+            SD("and?\uD834\uDDB9?this sentence", "?\uD834\uDDB9?", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
         };
 
         String CONTRACTIONRULE = "&z = ab/c < AB < X\u0300 < ABC < X\u0300\u0315";
 
         SearchData[] CONTRACTION = {
             /* common discontiguous */
-            SD("A\u0300\u0315", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("A\u0300\u0315", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("A\u0300\u0315", "\u0300\u0315", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("A\u0300\u0315", "\u0300\u0315", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /* contraction prefix */
-            SD("AB\u0315C", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("AB\u0315C", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("AB\u0315C", "AB", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("AB\u0315C", "\u0315", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("AB\u0315C", "AB", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("AB\u0315C", "\u0315", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /*
              * discontiguous problem here for backwards iteration. accents not found because discontiguous stores all
              * information
              */
-            SD("X\u0300\u0319\u0315", "\u0319", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("X\u0300\u0319\u0315", "\u0319", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
             /* ends not with a contraction character */
-            SD("X\u0315\u0300D", "\u0300\u0315", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("X\u0315\u0300D", "X\u0300\u0315", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
-            SD("X\u0300\u031A\u0315D", "X\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("X\u0315\u0300D", "\u0300\u0315", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("X\u0315\u0300D", "X\u0300\u0315", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
+            SD("X\u0300\u031A\u0315D", "X\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
             /* blocked discontiguous */
-            SD("X\u0300\u031A\u0315D", "\u031A\u0315D", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("X\u0300\u031A\u0315D", "\u031A\u0315D", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /*
              * "ab" generates a contraction that's an expansion. The "z" matches the first CE of the expansion but the
              * match fails because it ends in the middle of an expansion...
              */
-            SD("ab", "z", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("ab", "z", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
         };
 
         SearchData[] CONTRACTIONCANONICAL = {
             /* common discontiguous */
-            SD("A\u0300\u0315", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("A\u0300\u0315", "\u0300\u0315", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("A\u0300\u0315", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("A\u0300\u0315", "\u0300\u0315", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /* contraction prefix */
-            SD("AB\u0315C", "A", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("AB\u0315C", "A", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
-            SD("AB\u0315C", "AB", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("AB\u0315C", "\u0315", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("AB\u0315C", "AB", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("AB\u0315C", "\u0315", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /*
              * discontiguous problem here for backwards iteration. forwards gives 0, 4 but backwards give 1, 3
@@ -292,25 +292,25 @@ namespace ICU4N.Dev.Test.Search
              */
 
             /* ends not with a contraction character */
-            SD("X\u0315\u0300D", "\u0300\u0315", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("X\u0315\u0300D", "X\u0300\u0315", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
+            SD("X\u0315\u0300D", "\u0300\u0315", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("X\u0315\u0300D", "X\u0300\u0315", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
 
-            SD("X\u0300\u031A\u0315D", "X\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("X\u0300\u031A\u0315D", "X\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /* blocked discontiguous */
-            SD("X\u0300\u031A\u0315D", "\u031A\u0315D", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("X\u0300\u031A\u0315D", "\u031A\u0315D", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
 
             /*
              * "ab" generates a contraction that's an expansion. The "z" matches the first CE of the expansion but the
              * match fails because it ends in the middle of an expansion...
              */
-            SD("ab", "z", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(2)),
+            SD("ab", "z", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(2)),
         };
 
         SearchData[] MATCH = {
-            SD("a busy bee is a very busy beeee", "bee", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(7, 26, -1), IA(3, 3)),
+            SD("a busy bee is a very busy beeee", "bee", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(7, 26, -1), IA(3, 3)),
             /*  012345678901234567890123456789012345678901234567890 */
-            SD("a busy bee is a very busy beeee with no bee life", "bee", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(7, 26, 40, -1), IA(3, 3, 3)),
+            SD("a busy bee is a very busy beeee with no bee life", "bee", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(7, 26, 40, -1), IA(3, 3, 3)),
         };
 
         String IGNORABLERULE = "&a = \u0300";
@@ -320,57 +320,57 @@ namespace ICU4N.Dev.Test.Search
              * This isn't much of a test when matches have to be on grapheme boundiaries. The match at 0 only works because it's
              * at the start of the text.
              */
-            SD("\u0300\u0315 \u0300\u0315 ", "\u0300", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(2)),
+            SD("\u0300\u0315 \u0300\u0315 ", "\u0300", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(2)),
         };
 
         SearchData[] DIACTRICMATCH = {
-            SD("\u0061\u0061\u00E1", "\u0061\u00E1", null, CollationStrength.Secondary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(2)),
+            SD("\u0061\u0061\u00E1", "\u0061\u00E1", null, CollationStrength.Secondary, ElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(2)),
             SD("\u0020\u00C2\u0303\u0020\u0041\u0061\u1EAA\u0041\u0302\u0303\u00C2\u0303\u1EAB\u0061\u0302\u0303\u00E2\u0303\uD806\uDC01\u0300\u0020", "\u00C2\u0303",
-                null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(1, 4, 5, 6, 7, 10, 12, 13, 16, -1), IA(2, 1, 1, 1, 3, 2, 1, 3, 2)),
-            SD("\u03BA\u03B1\u03B9\u0300\u0020\u03BA\u03B1\u1F76", "\u03BA\u03B1\u03B9", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 5, -1), IA(4, 3)),
+                null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(1, 4, 5, 6, 7, 10, 12, 13, 16, -1), IA(2, 1, 1, 1, 3, 2, 1, 3, 2)),
+            SD("\u03BA\u03B1\u03B9\u0300\u0020\u03BA\u03B1\u1F76", "\u03BA\u03B1\u03B9", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(0, 5, -1), IA(4, 3)),
         };
 
         SearchData[] NORMCANONICAL = {
-            SD("\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("\u0300\u0325", "\u0325", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325", "\u0325\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325", "\u0300\u0325", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325", "\u0325", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
-            SD("a\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("\u0300\u0325", "\u0325", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325", "\u0325\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325", "\u0300\u0325", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325", "\u0325", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325", "\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
         };
 
         SearchData[] NORMEXACT = {
-            SD("a\u0300\u0325", "a\u0325\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
+            SD("a\u0300\u0325", "a\u0325\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, -1), IA(3)),
         };
 
         SearchData[] NONNORMEXACT = {
-            SD("a\u0300\u0325", "\u0325\u0300", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("a\u0300\u0325", "\u0325\u0300", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
         };
 
         SearchData[] OVERLAP = {
-            SD("abababab", "abab", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 2, 4, -1), IA(4, 4, 4)),
+            SD("abababab", "abab", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, 2, 4, -1), IA(4, 4, 4)),
         };
 
         SearchData[] NONOVERLAP = {
-            SD("abababab", "abab", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 4, -1), IA(4, 4)),
+            SD("abababab", "abab", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, 4, -1), IA(4, 4)),
         };
 
         SearchData[] OVERLAPCANONICAL = {
-            SD("abababab", "abab", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 2, 4, -1), IA(4, 4, 4)),
+            SD("abababab", "abab", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, 2, 4, -1), IA(4, 4, 4)),
         };
 
         SearchData[] NONOVERLAPCANONICAL = {
-            SD("abababab", "abab", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 4, -1), IA(4, 4)),
+            SD("abababab", "abab", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, 4, -1), IA(4, 4)),
         };
 
         SearchData[] PATTERNCANONICAL = {
-            SD("The quick brown fox jumps over the lazy foxes", "the", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 31, -1), IA(3, 3)),
-            SD("The quick brown fox jumps over the lazy foxes", "fox", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(16, 40, -1), IA(3, 3)),
+            SD("The quick brown fox jumps over the lazy foxes", "the", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(0, 31, -1), IA(3, 3)),
+            SD("The quick brown fox jumps over the lazy foxes", "fox", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(16, 40, -1), IA(3, 3)),
         };
 
         SearchData[] PATTERN = {
-            SD("The quick brown fox jumps over the lazy foxes", "the", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 31, -1), IA(3, 3)),
-            SD("The quick brown fox jumps over the lazy foxes", "fox", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(16, 40, -1), IA(3, 3)),
+            SD("The quick brown fox jumps over the lazy foxes", "the", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(0, 31, -1), IA(3, 3)),
+            SD("The quick brown fox jumps over the lazy foxes", "fox", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(16, 40, -1), IA(3, 3)),
         };
 
         const String PECHE_WITH_ACCENTS = "un p\u00E9ch\u00E9, "
@@ -397,113 +397,113 @@ namespace ICU4N.Dev.Test.Search
 
         SearchData[] STRENGTH = {
             /*  012345678901234567890123456789012345678901234567890123456789 */
-            SD("The quick brown fox jumps over the lazy foxes", "fox", "en", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(16, 40, -1), IA(3, 3)),
-            SD("The quick brown fox jumps over the lazy foxes", "fox", "en", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(16, -1), IA(3)),
+            SD("The quick brown fox jumps over the lazy foxes", "fox", "en", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(16, 40, -1), IA(3, 3)),
+            SD("The quick brown fox jumps over the lazy foxes", "fox", "en", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(16, -1), IA(3)),
             SD("blackbirds Pat p\u00E9ch\u00E9 p\u00EAche p\u00E9cher p\u00EAcher Tod T\u00F6ne black Tofu blackbirds Ton PAT toehold blackbird black-bird pat toe big Toe",
-                    "peche", "fr", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(15, 21, 27, 34, -1), IA(5, 5, 5, 5)),
-            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(10, 14, -1), IA(3, 2)),
-            SD("A channel, another CHANNEL, more Channels, and one last channel...", "channel", "es", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(2, 19, 33, 56, -1), IA(7, 7, 7, 7)),
-            SD("\u00c0 should match but not A", "A\u0300", "en", CollationStrength.Identical, SearchIteratorElementComparisonType.StandardElementComparison,  null, IA(0, -1), IA(1, 0)),
+                    "peche", "fr", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(15, 21, 27, 34, -1), IA(5, 5, 5, 5)),
+            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(10, 14, -1), IA(3, 2)),
+            SD("A channel, another CHANNEL, more Channels, and one last channel...", "channel", "es", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(2, 19, 33, 56, -1), IA(7, 7, 7, 7)),
+            SD("\u00c0 should match but not A", "A\u0300", "en", CollationStrength.Identical, ElementComparisonType.StandardElementComparison,  null, IA(0, -1), IA(1, 0)),
 
             /* some tests for modified element comparison, ticket #7093 */
-            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(107, -1), IA(5)),
-            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(24, 69, 79, -1), IA(5, 5, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(79, -1), IA(5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 24, 69, 79, -1), IA(5, 5, 5, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 79, -1), IA(5, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 24, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 79, 94, 107, -1), IA(5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 59, 94, -1), IA(5, 5, 6)),
-            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 59, 94, -1), IA(5, 5, 6)),
-            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche\u0301", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 59, 94, -1), IA(5, 5, 6)),
-            SD(PECHE_WITH_ACCENTS, "peche\u0301", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 59, 94, -1), IA(5, 5, 6)),
-            SD(PECHE_WITH_ACCENTS, "peche\u0301", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche\u0301", "en", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Secondary, ElementComparisonType.StandardElementComparison, null, IA(107, -1), IA(5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "en", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, ElementComparisonType.StandardElementComparison, null, IA(24, 69, 79, -1), IA(5, 5, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(79, -1), IA(5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 24, 69, 79, -1), IA(5, 5, 5, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 79, -1), IA(5, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 24, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "en", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 79, 94, 107, -1), IA(5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "en", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 59, 94, -1), IA(5, 5, 6)),
+            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "en", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 59, 94, -1), IA(5, 5, 6)),
+            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "en", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "en", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche\u0301", "en", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 59, 94, -1), IA(5, 5, 6)),
+            SD(PECHE_WITH_ACCENTS, "peche\u0301", "en", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 59, 94, -1), IA(5, 5, 6)),
+            SD(PECHE_WITH_ACCENTS, "peche\u0301", "en", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche\u0301", "en", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
 
             /* more tests for modified element comparison (with fr), ticket #7093 */
-            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(107, -1), IA(5)),
-            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(24, 69, 79, -1), IA(5, 5, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(79, -1), IA(5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 24, 69, 79, -1), IA(5, 5, 5, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 79, -1), IA(5, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 24, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 79, 94, 107, -1), IA(5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 59, 94, -1), IA(5, 5, 6)),
-            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 59, 94, -1), IA(5, 5, 6)),
-            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche\u0301", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 59, 94, -1), IA(5, 5, 6)),
-            SD(PECHE_WITH_ACCENTS, "peche\u0301", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 59, 94, -1), IA(5, 5, 6)),
-            SD(PECHE_WITH_ACCENTS, "peche\u0301", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
-            SD(PECHE_WITH_ACCENTS, "peche\u0301", "fr", CollationStrength.Secondary, SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Secondary, ElementComparisonType.StandardElementComparison, null, IA(107, -1), IA(5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche", "fr", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, ElementComparisonType.StandardElementComparison, null, IA(24, 69, 79, -1), IA(5, 5, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(79, -1), IA(5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 24, 69, 79, -1), IA(5, 5, 5, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 79, -1), IA(5, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 24, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "p\u00E9che", "fr", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 79, 94, 107, -1), IA(5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "fr", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 59, 94, -1), IA(5, 5, 6)),
+            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "fr", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 59, 94, -1), IA(5, 5, 6)),
+            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "fr", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "pech\u00E9", "fr", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche\u0301", "fr", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, null, IA(3, 59, 94, -1), IA(5, 5, 6)),
+            SD(PECHE_WITH_ACCENTS, "peche\u0301", "fr", CollationStrength.Secondary, ElementComparisonType.PatternBaseWeightIsWildcard, "wordbreaker", IA(3, 59, 94, -1), IA(5, 5, 6)),
+            SD(PECHE_WITH_ACCENTS, "peche\u0301", "fr", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, null, IA(3, 13, 24, 36, 46, 59, 69, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 5, 5, 5, 6, 5)),
+            SD(PECHE_WITH_ACCENTS, "peche\u0301", "fr", CollationStrength.Secondary, ElementComparisonType.AnyBaseWeightIsWildcard, "wordbreaker", IA(3, 13, 36, 59, 79, 94, 107, -1), IA(5, 5, 5, 5, 5, 6, 5)),
 
         };
 
         SearchData[] STRENGTHCANONICAL = {
             /*  012345678901234567890123456789012345678901234567890123456789 */
-            SD("The quick brown fox jumps over the lazy foxes", "fox", "en", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(16, 40, -1), IA(3, 3)),
-            SD("The quick brown fox jumps over the lazy foxes", "fox", "en", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, "wordbreaker", IA(16, -1), IA(3)),
+            SD("The quick brown fox jumps over the lazy foxes", "fox", "en", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(16, 40, -1), IA(3, 3)),
+            SD("The quick brown fox jumps over the lazy foxes", "fox", "en", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, "wordbreaker", IA(16, -1), IA(3)),
             SD("blackbirds Pat p\u00E9ch\u00E9 p\u00EAche p\u00E9cher p\u00EAcher Tod T\u00F6ne black Tofu blackbirds Ton PAT toehold blackbird black-bird pat toe big Toe",
-                    "peche", "fr", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(15, 21, 27, 34, -1), IA(5, 5, 5, 5)),
-            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(10, 14, -1), IA(3, 2)),
-            SD("A channel, another CHANNEL, more Channels, and one last channel...", "channel", "es", CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(2, 19, 33, 56, -1), IA(7, 7, 7, 7)),
+                    "peche", "fr", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(15, 21, 27, 34, -1), IA(5, 5, 5, 5)),
+            SD("This is a toe T\u00F6ne", "toe", "de", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(10, 14, -1), IA(3, 2)),
+            SD("A channel, another CHANNEL, more Channels, and one last channel...", "channel", "es", CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(2, 19, 33, 56, -1), IA(7, 7, 7, 7)),
         };
 
         SearchData[] SUPPLEMENTARYCANONICAL = {
             /*  012345678901234567890123456789012345678901234567890012345678901234567890123456789012345678901234567890012345678901234567890123456789 */
             SD("abc \uD800\uDC00 \uD800\uDC01 \uD801\uDC00 \uD800\uDC00abc abc\uD800\uDC00 \uD800\uD800\uDC00 \uD800\uDC00\uDC00", "\uD800\uDC00",
-                null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(4, 13, 22, 26, 29, -1), IA(2, 2, 2, 2, 2)),
-            SD("and\uD834\uDDB9this sentence", "\uD834\uDDB9", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(2)),
-            SD("and \uD834\uDDB9 this sentence", " \uD834\uDDB9 ", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
-            SD("and-\uD834\uDDB9-this sentence", "-\uD834\uDDB9-", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
-            SD("and,\uD834\uDDB9,this sentence", ",\uD834\uDDB9,", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
-            SD("and?\uD834\uDDB9?this sentence", "?\uD834\uDDB9?", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
+                null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(4, 13, 22, 26, 29, -1), IA(2, 2, 2, 2, 2)),
+            SD("and\uD834\uDDB9this sentence", "\uD834\uDDB9", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(2)),
+            SD("and \uD834\uDDB9 this sentence", " \uD834\uDDB9 ", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
+            SD("and-\uD834\uDDB9-this sentence", "-\uD834\uDDB9-", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
+            SD("and,\uD834\uDDB9,this sentence", ",\uD834\uDDB9,", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
+            SD("and?\uD834\uDDB9?this sentence", "?\uD834\uDDB9?", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(3, -1), IA(4)),
         };
 
         static SearchData[] VARIABLE = {
             /*  012345678901234567890123456789012345678901234567890123456789 */
-            SD("blackbirds black blackbirds blackbird black-bird", "blackbird", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 17, 28, 38, -1), IA(9, 9, 9, 10)),
+            SD("blackbirds black blackbirds blackbird black-bird", "blackbird", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(0, 17, 28, 38, -1), IA(9, 9, 9, 10)),
 
             /*
              * to see that it doesn't go into an infinite loop if the start of text is a ignorable character
              */
-            SD(" on", "go", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD(" on", "go", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
             SD("abcdefghijklmnopqrstuvwxyz", "   ",
-                null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null,
+                null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null,
                 IA(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1),
                 IA(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)),
 
             /* testing tightest match */
-            SD(" abc  a bc   ab c    a  bc     ab  c", "abc", null, CollationStrength.Quaternary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(3)),
+            SD(" abc  a bc   ab c    a  bc     ab  c", "abc", null, CollationStrength.Quaternary, ElementComparisonType.StandardElementComparison, null, IA(1, -1), IA(3)),
             /*  012345678901234567890123456789012345678901234567890123456789 */
-            SD(" abc  a bc   ab c    a  bc     ab  c", "abc", null, CollationStrength.Secondary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(1, 6, 13, 21, 31, -1), IA(3, 4, 4, 5, 5)),
+            SD(" abc  a bc   ab c    a  bc     ab  c", "abc", null, CollationStrength.Secondary, ElementComparisonType.StandardElementComparison, null, IA(1, 6, 13, 21, 31, -1), IA(3, 4, 4, 5, 5)),
 
             /* totally ignorable text */
-            SD("           ---------------", "abc", null, CollationStrength.Secondary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
+            SD("           ---------------", "abc", null, CollationStrength.Secondary, ElementComparisonType.StandardElementComparison, null, IA(-1), IA(0)),
         };
 
         static SearchData[] TEXTCANONICAL = {
-            SD("the foxy brown fox", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(4, 15, -1), IA(3, 3)),
-            SD("the quick brown fox", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(16, -1), IA(3)),
+            SD("the foxy brown fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(4, 15, -1), IA(3, 3)),
+            SD("the quick brown fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(16, -1), IA(3)),
         };
 
         static SearchData[] INDICPREFIXMATCH = {
             SD("\u0915\u0020\u0915\u0901\u0020\u0915\u0902\u0020\u0915\u0903\u0020\u0915\u0940\u0020\u0915\u093F\u0020\u0915\u0943\u0020\u0915\u093C\u0020\u0958",
-                    "\u0915", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 2, 5, 8, 11, 14, 17, 20, 23,-1), IA(1, 2, 2, 2, 1, 1, 1, 2, 1)),
+                    "\u0915", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(0, 2, 5, 8, 11, 14, 17, 20, 23,-1), IA(1, 2, 2, 2, 1, 1, 1, 2, 1)),
             SD("\u0915\u0924\u0020\u0915\u0924\u0940\u0020\u0915\u0924\u093F\u0020\u0915\u0924\u0947\u0020\u0915\u0943\u0924\u0020\u0915\u0943\u0924\u0947",
-                    "\u0915\u0924", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(0, 3, 7, 11, -1), IA(2, 2, 2, 2)),
+                    "\u0915\u0924", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(0, 3, 7, 11, -1), IA(2, 2, 2, 2)),
             SD("\u0915\u0924\u0020\u0915\u0924\u0940\u0020\u0915\u0924\u093F\u0020\u0915\u0924\u0947\u0020\u0915\u0943\u0924\u0020\u0915\u0943\u0924\u0947",
-                    "\u0915\u0943\u0924", null, CollationStrength.Primary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(15, 19, -1), IA(3, 3)),
+                    "\u0915\u0943\u0924", null, CollationStrength.Primary, ElementComparisonType.StandardElementComparison, null, IA(15, 19, -1), IA(3, 3)),
         };
 
         /**
@@ -1308,12 +1308,12 @@ namespace ICU4N.Dev.Test.Search
                 Errln("Error setting canonical match false");
             }
 
-            if (strsrch.ElementComparisonType != SearchIteratorElementComparisonType.StandardElementComparison)
+            if (strsrch.ElementComparisonType != ElementComparisonType.StandardElementComparison)
             {
                 Errln("Error default element comparison type should be SearchIteratorElementComparisonType.StandardElementComparison");
             }
-            strsrch.ElementComparisonType = (SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard);
-            if (strsrch.ElementComparisonType != SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard)
+            strsrch.ElementComparisonType = (ElementComparisonType.PatternBaseWeightIsWildcard);
+            if (strsrch.ElementComparisonType != ElementComparisonType.PatternBaseWeightIsWildcard)
             {
                 Errln("Error setting element comparison type SearchIteratorElementComparisonType.PatternBaseWeightIsWildcard");
             }
@@ -2169,8 +2169,8 @@ namespace ICU4N.Dev.Test.Search
         public void TestText()
         {
             SearchData[] TEXT = {
-            SD("the foxy brown fox", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(4, 15, -1), IA(3, 3)),
-            SD("the quick brown fox", "fox", null, CollationStrength.Tertiary, SearchIteratorElementComparisonType.StandardElementComparison, null, IA(16, -1), IA(3))
+            SD("the foxy brown fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(4, 15, -1), IA(3, 3)),
+            SD("the quick brown fox", "fox", null, CollationStrength.Tertiary, ElementComparisonType.StandardElementComparison, null, IA(16, -1), IA(3))
         };
             StringCharacterIterator t = new StringCharacterIterator(TEXT[0].text);
             StringSearch strsrch = new StringSearch(TEXT[0].pattern, t, m_en_us_, null);

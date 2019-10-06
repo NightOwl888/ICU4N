@@ -110,7 +110,7 @@ namespace ICU4N.Text
     /// <para/>
     /// Options are also provided to implement "asymmetric search" as described in
     /// <a href="http://www.unicode.org/reports/tr10/#Asymmetric_Search">
-    /// UTS #10 Unicode Collation Algorithm</a>, specifically the <see cref="SearchIteratorElementComparisonType"/>
+    /// UTS #10 Unicode Collation Algorithm</a>, specifically the <see cref="ElementComparisonType"/>
     /// values.
     /// <para/>
     /// Though collator attributes will be taken into consideration while
@@ -498,7 +498,7 @@ namespace ICU4N.Text
             search_.matchedIndex_ = Done;
             search_.isOverlap_ = false;
             search_.isCanonicalMatch_ = false;
-            search_.elementComparisonType_ = SearchIteratorElementComparisonType.StandardElementComparison;
+            search_.elementComparisonType_ = ElementComparisonType.StandardElementComparison;
             search_.isForwardSearching_ = true;
             search_.reset_ = true;
         }
@@ -1052,13 +1052,13 @@ namespace ICU4N.Text
         private static int CE_LEVEL2_BASE = 0x00000005;
         private static int CE_LEVEL3_BASE = 0x00050000;
 
-        private static int CompareCE64s(long targCE, long patCE, SearchIteratorElementComparisonType compareType)
+        private static int CompareCE64s(long targCE, long patCE, ElementComparisonType compareType)
         {
             if (targCE == patCE)
             {
                 return CE_MATCH;
             }
-            if (compareType == SearchIteratorElementComparisonType.StandardElementComparison)
+            if (compareType == ElementComparisonType.StandardElementComparison)
             {
                 return CE_NO_MATCH;
             }
@@ -1077,7 +1077,7 @@ namespace ICU4N.Text
                     return CE_SKIP_TARG;
                 }
                 if (patLev1 == 0
-                        && compareType == SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard)
+                        && compareType == ElementComparisonType.AnyBaseWeightIsWildcard)
                 {
                     return CE_SKIP_PATN;
                 }
@@ -1094,12 +1094,12 @@ namespace ICU4N.Text
                     return CE_SKIP_TARG;
                 }
                 if (patLev2 == 0
-                        && compareType == SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard)
+                        && compareType == ElementComparisonType.AnyBaseWeightIsWildcard)
                 {
                     return CE_SKIP_PATN;
                 }
                 return (patLev2 == CE_LEVEL2_BASE ||
-                        (compareType == SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard &&
+                        (compareType == ElementComparisonType.AnyBaseWeightIsWildcard &&
                             targLev2 == CE_LEVEL2_BASE)) ? CE_MATCH : CE_NO_MATCH;
             }
 
@@ -1109,7 +1109,7 @@ namespace ICU4N.Text
             if (targLev3 != patLev3)
             {
                 return (patLev3 == CE_LEVEL3_BASE ||
-                        (compareType == SearchIteratorElementComparisonType.AnyBaseWeightIsWildcard &&
+                        (compareType == ElementComparisonType.AnyBaseWeightIsWildcard &&
                             targLev3 == CE_LEVEL3_BASE)) ? CE_MATCH : CE_NO_MATCH;
             }
 
@@ -1245,7 +1245,7 @@ namespace ICU4N.Text
                 //    2. The last CE that was part of the match is in an expansion that extends
                 //       to the first CE after the match. In this case, we reject the match.
                 CEI nextCEI = null;
-                if (search_.elementComparisonType_ == SearchIteratorElementComparisonType.StandardElementComparison)
+                if (search_.elementComparisonType_ == ElementComparisonType.StandardElementComparison)
                 {
                     nextCEI = ceb.Get(targetIx + targetIxOffset);
                     maxLimit = nextCEI.LowIndex;
@@ -2248,7 +2248,7 @@ namespace ICU4N.Text
             {
                 strSearch_ = ss;
                 bufSize_ = ss.pattern_.PCELength + CEBUFFER_EXTRA;
-                if (ss.search_.elementComparisonType_ != SearchIteratorElementComparisonType.StandardElementComparison)
+                if (ss.search_.elementComparisonType_ != ElementComparisonType.StandardElementComparison)
                 {
                     string patText = ss.pattern_.Text;
                     if (patText != null)
