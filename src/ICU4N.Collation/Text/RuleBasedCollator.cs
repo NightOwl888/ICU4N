@@ -9,7 +9,6 @@ using System;
 using System.Diagnostics;
 using System.Reflection;
 using ReorderingBuffer = ICU4N.Impl.Normalizer2Impl.ReorderingBuffer;
-using SortKeyByteSink = ICU4N.Impl.Coll.CollationKeys.SortKeyByteSink;
 
 namespace ICU4N.Text
 {
@@ -1151,13 +1150,13 @@ namespace ICU4N.Text
                 // n > 0 && appended_ > capacity_
                 if (Resize(n, length))
                 {
-                    System.Array.Copy(bytes, start, buffer_, length, n);
+                    System.Array.Copy(bytes, start, m_buffer, length, n);
                 }
             }
 
             protected override bool Resize(int appendCapacity, int length)
             {
-                int newCapacity = 2 * buffer_.Length;
+                int newCapacity = 2 * m_buffer.Length;
                 int altCapacity = length + 2 * appendCapacity;
                 if (newCapacity < altCapacity)
                 {
@@ -1171,8 +1170,8 @@ namespace ICU4N.Text
                 // keep key_.size in sync with appended_.
                 // We only set it when we are done.
                 byte[] newBytes = new byte[newCapacity];
-                System.Array.Copy(buffer_, 0, newBytes, 0, length);
-                buffer_ = key_.Bytes = newBytes;
+                System.Array.Copy(m_buffer, 0, newBytes, 0, length);
+                m_buffer = key_.Bytes = newBytes;
                 return true;
             }
 

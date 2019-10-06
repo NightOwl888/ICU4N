@@ -4,135 +4,140 @@ using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll
 {
+    // .NET porting note: C++ SortKeyByteSink class extends a common class ByteSink,
+    // which is not available in .NET. We don't need a super class created for implementing
+    // collation features.
+    public abstract class SortKeyByteSink
+    {
+        protected byte[] m_buffer;
+        // protected int capacity_; == buffer_.length
+        private int appended_ = 0;
+        // not used in Java -- private int ignore_ = 0;
+
+        protected SortKeyByteSink(byte[] dest)
+        {
+            m_buffer = dest;
+        }
+
+        // Needed in .NET for when we write to the buffer directly.
+        // In C++, the SortKeyByteSink is a subclass of ByteSink and lower-level code can write to that.
+        // TODO: Can we make .NET SortKeyByteSink have-a ByteArrayWrapper and write through to it?
+        // Or maybe create interface ByteSink, have SortKeyByteSink implement it, and have BOCSU write to that??
+        public virtual void SetBufferAndAppended(byte[] dest, int app)
+        {
+            m_buffer = dest;
+            appended_ = app;
+        }
+
+        /* not used in .NET -- public void IgnoreBytes(int numIgnore) {
+            ignore_ = numIgnore;
+        } */
+
+        /// <param name="bytes">The array of byte.</param>
+        /// <param name="n">The length of bytes to be appended.</param>
+        public virtual void Append(byte[] bytes, int n)
+        {
+            if (n <= 0 || bytes == null)
+            {
+                return;
+            }
+
+            /* not used in .NET -- if (ignore_ > 0) {
+                int ignoreRest = ignore_ - n;
+                if (ignoreRest >= 0) {
+                    ignore_ = ignoreRest;
+                    return;
+                } else {
+                    start = ignore_;
+                    n = -ignoreRest;
+                    ignore_ = 0;
+                }
+            } */
+
+            int length = appended_;
+            appended_ += n;
+
+            int available = m_buffer.Length - length;
+            if (n <= available)
+            {
+                System.Array.Copy(bytes, 0, m_buffer, length, n);
+            }
+            else
+            {
+                AppendBeyondCapacity(bytes, 0, n, length);
+            }
+        }
+
+        public virtual void Append(int b)
+        {
+            /* not used in .NET -- if (ignore_ > 0) {
+                --ignore_;
+            } else */
+            {
+                if (appended_ < m_buffer.Length || Resize(1, appended_))
+                {
+                    m_buffer[appended_] = (byte)b;
+                }
+                ++appended_;
+            }
+        }
+
+        // .NET porting note: This method is not used by collator implementation.
+        //
+        // virtual char *GetAppendBuffer(int min_capacity,
+        // int desired_capacity_hint,
+        // char *scratch, int scratch_capacity,
+        // int *result_capacity);
+
+        public virtual int NumberOfBytesAppended
+        {
+            get { return appended_; }
+        }
+
+        public virtual int RemainingCapacity
+        {
+            get { return /* not used in Java -- ignore_ + */ m_buffer.Length - appended_; }
+        }
+
+        public virtual bool Overflowed
+        {
+            get { return appended_ > m_buffer.Length; }
+        }
+
+        /* not used in .NET -- public boolean IsOk() {
+            return true;
+        } */
+
+        /// <param name="bytes">The array of byte.</param>
+        /// <param name="start">The start index within the array to be appended.</param>
+        /// <param name="n">The length of bytes to be appended.</param>
+        /// <param name="length">The length of buffer required to store the entire data (i.e. already appended
+        /// bytes + bytes to be appended by this method).</param>
+        protected abstract void AppendBeyondCapacity(byte[] bytes, int start, int n, int length);
+
+        protected abstract bool Resize(int appendCapacity, int length);
+    }
+
+    public class LevelCallback
+    {
+        /// <param name="level">The next level about to be written to the <see cref="SortKeyByteSink"/>.</param>
+        /// <returns>true if the level is to be written (the base class implementation always returns true).</returns>
+        internal bool NeedToWrite(CollationSortKeyLevel level)
+        {
+            return true;
+        }
+    }
+
     // CollationKeys.cs, ported from collationkeys.h/.cpp
     //
     // C++ version created on: 2012sep02
     // created by: Markus W. Scherer
     public static class CollationKeys /* all methods are static */
     {
-        // .NET porting note: C++ SortKeyByteSink class extends a common class ByteSink,
-        // which is not available in .NET. We don't need a super class created for implementing
-        // collation features.
-        public abstract class SortKeyByteSink // ICU4N TODO: API - de-nest
-        {
-            protected byte[] buffer_;
-            // protected int capacity_; == buffer_.length
-            private int appended_ = 0;
-            // not used in Java -- private int ignore_ = 0;
+        // ICU4N specific - de-nested SortKeyByteSink
 
-            public SortKeyByteSink(byte[] dest)
-            {
-                buffer_ = dest;
-            }
+        // ICU4N specific - de-nested LevelCallback
 
-            // Needed in .NET for when we write to the buffer directly.
-            // In C++, the SortKeyByteSink is a subclass of ByteSink and lower-level code can write to that.
-            // TODO: Can we make .NET SortKeyByteSink have-a ByteArrayWrapper and write through to it?
-            // Or maybe create interface ByteSink, have SortKeyByteSink implement it, and have BOCSU write to that??
-            public virtual void SetBufferAndAppended(byte[] dest, int app)
-            {
-                buffer_ = dest;
-                appended_ = app;
-            }
-
-            /* not used in .NET -- public void IgnoreBytes(int numIgnore) {
-                ignore_ = numIgnore;
-            } */
-
-            /// <param name="bytes">The array of byte.</param>
-            /// <param name="n">The length of bytes to be appended.</param>
-            public virtual void Append(byte[] bytes, int n)
-            {
-                if (n <= 0 || bytes == null)
-                {
-                    return;
-                }
-
-                /* not used in .NET -- if (ignore_ > 0) {
-                    int ignoreRest = ignore_ - n;
-                    if (ignoreRest >= 0) {
-                        ignore_ = ignoreRest;
-                        return;
-                    } else {
-                        start = ignore_;
-                        n = -ignoreRest;
-                        ignore_ = 0;
-                    }
-                } */
-
-                int length = appended_;
-                appended_ += n;
-
-                int available = buffer_.Length - length;
-                if (n <= available)
-                {
-                    System.Array.Copy(bytes, 0, buffer_, length, n);
-                }
-                else
-                {
-                    AppendBeyondCapacity(bytes, 0, n, length);
-                }
-            }
-
-            public virtual void Append(int b)
-            {
-                /* not used in .NET -- if (ignore_ > 0) {
-                    --ignore_;
-                } else */
-                {
-                    if (appended_ < buffer_.Length || Resize(1, appended_))
-                    {
-                        buffer_[appended_] = (byte)b;
-                    }
-                    ++appended_;
-                }
-            }
-
-            // .NET porting note: This method is not used by collator implementation.
-            //
-            // virtual char *GetAppendBuffer(int min_capacity,
-            // int desired_capacity_hint,
-            // char *scratch, int scratch_capacity,
-            // int *result_capacity);
-
-            public virtual int NumberOfBytesAppended
-            {
-                get { return appended_; }
-            }
-
-            public virtual int RemainingCapacity
-            {
-                get { return /* not used in Java -- ignore_ + */ buffer_.Length - appended_; }
-            }
-
-            public virtual bool Overflowed
-            {
-                get { return appended_ > buffer_.Length; }
-            }
-
-            /* not used in .NET -- public boolean IsOk() {
-                return true;
-            } */
-
-            /// <param name="bytes">The array of byte.</param>
-            /// <param name="start">The start index within the array to be appended.</param>
-            /// <param name="n">The length of bytes to be appended.</param>
-            /// <param name="length">The length of buffer required to store the entire data (i.e. already appended
-            /// bytes + bytes to be appended by this method).</param>
-            protected abstract void AppendBeyondCapacity(byte[] bytes, int start, int n, int length);
-
-            protected abstract bool Resize(int appendCapacity, int length);
-        }
-
-        public class LevelCallback // ICU4N TODO: API - de-nest
-        {
-            /// <param name="level">The next level about to be written to the <see cref="SortKeyByteSink"/>.</param>
-            /// <returns>true if the level is to be written (the base class implementation always returns true).</returns>
-            internal bool NeedToWrite(CollationSortKeyLevel level)
-            {
-                return true;
-            }
-        }
         public static readonly LevelCallback SIMPLE_LEVEL_FALLBACK = new LevelCallback(); // ICU4N TODO: API - Rename SimpleLevelFallback
 
         private sealed class SortKeyLevel
