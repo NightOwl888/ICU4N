@@ -213,7 +213,7 @@ namespace ICU4N.Impl
             return m_data_[INDEX_STAGE_3_MASK_ + 1 + ch];
         }
 
-        ///CLOVER:OFF
+        ////CLOVER:OFF
         /// <summary>
         /// Checks if the argument <see cref="Trie"/> has the same data as this <see cref="Trie"/>.
         /// </summary>
@@ -240,7 +240,7 @@ namespace ICU4N.Impl
             Debug.Assert(false, "hashCode not designed");
             return 42;
         }
-        ///CLOVER:ON
+        ////CLOVER:ON
 
         ///// protected methods -----------------------------------------------
 
