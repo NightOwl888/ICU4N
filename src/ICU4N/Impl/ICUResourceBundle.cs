@@ -468,13 +468,13 @@ namespace ICU4N.Impl
             ICUResourceBundleImpl impl = (ICUResourceBundleImpl)this;
             readerValue.reader = impl.wholeBundle.reader;
             readerValue.res = impl.GetResource();
-            key.SetString(this.key != null ? this.key : "");
-            sink.Put(key, readerValue, parent == null);
-            if (parent != null)
+            key.SetString(this.m_key != null ? this.m_key : "");
+            sink.Put(key, readerValue, m_parent == null);
+            if (m_parent != null)
             {
                 // We might try to query the sink whether
                 // any fallback from the parent bundle is still possible.
-                ICUResourceBundle parentBundle = (ICUResourceBundle)parent;
+                ICUResourceBundle parentBundle = (ICUResourceBundle)m_parent;
                 ICUResourceBundle rb;
                 int depth = GetResDepth();
                 if (depth == 0)
@@ -1568,7 +1568,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Data member where the subclasses store the key.
         /// </summary>
-        protected string key; // ICU4N TODO: API - rename m_key (matches property name)
+        protected string m_key;
 
         /// <summary>
         /// A resource word value that means "no resource".
@@ -1657,19 +1657,19 @@ namespace ICU4N.Impl
 
         public override void SetParent(ResourceBundle parent)
         {
-            this.parent = parent;
+            this.m_parent = parent;
         }
 
         new public ICUResourceBundle Parent // ICU4N: Since the only purpose here is to cast, using the new keyword is fine
         {
-            get { return (ICUResourceBundle)parent; }
-            set { this.parent = value; }
+            get { return (ICUResourceBundle)m_parent; }
+            set { this.m_parent = value; }
         }
 
 
         public override string Key
         {
-            get { return key; }
+            get { return m_key; }
         }
 
         /// <summary>
@@ -1715,10 +1715,10 @@ namespace ICU4N.Impl
         // constructor for inner classes
         protected ICUResourceBundle(ICUResourceBundle container, string key)
         {
-            this.key = key;
+            this.m_key = key;
             wholeBundle = container.wholeBundle;
             this.container = container;
-            parent = container.parent;
+            m_parent = container.m_parent;
         }
 
         private static readonly char RES_PATH_SEP_CHAR = '/';

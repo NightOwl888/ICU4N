@@ -108,7 +108,7 @@ namespace ICU4N.Impl
 
         new public UResourceBundle Parent
         {
-            get { return (UResourceBundle)parent; }
+            get { return (UResourceBundle)m_parent; }
         }
 
         // Flag for enabling/disabling debugging code

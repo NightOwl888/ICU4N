@@ -12,19 +12,81 @@ using System.Collections;
 
 namespace ICU4N.Util
 {
+    /// <summary>
+    /// <icuenhanced/>A class representing a collection of resource information pertaining to a given
+    /// locale. A resource bundle provides a way of accessing locale- specific information in a
+    /// data file. You create a resource bundle that manages the resources for a given locale
+    /// and then ask it for individual resources.
+    ///
+    /// <para/>In ResourceBundle, an object is created and the sub-items are fetched using the
+    /// getString and getObject methods.  In UResourceBundle, each individual element of a
+    /// resource is a resource by itself.
+    ///
+    /// <para/>Resource bundles in ICU are currently defined using text files that conform to the
+    /// following <a
+    /// href="http://source.icu-project.org/repos/icu/icuhtml/trunk/design/bnf_rb.txt">BNF
+    /// definition</a>.  More on resource bundle concepts and syntax can be found in the <a
+    /// href="http://www.icu-project.org/userguide/ResourceManagement.html">Users Guide</a>.
+    ///
+    /// <para/>The packaging of ICU ///.res files can be of two types
+    /// ICU4C:
+    /// <pre>
+    ///       root.res
+    ///         |
+    ///      --------
+    ///     |        |
+    ///   fr.res  en.res
+    ///     |
+    ///   --------
+    ///  |        |
+    /// fr_CA.res fr_FR.res
+    /// </pre>
+    /// JAVA/JDK:
+    /// <pre>
+    ///    LocaleElements.res
+    ///         |
+    ///      -------------------
+    ///     |                   |
+    /// LocaleElements_fr.res  LocaleElements_en.res
+    ///     |
+    ///   ---------------------------
+    ///  |                            |
+    /// LocaleElements_fr_CA.res   LocaleElements_fr_FR.res
+    /// </pre>
+    ///
+    /// Depending on the organization of your resources, the syntax to GetBundleInstance will
+    /// change.  To open ICU style organization use:
+    ///
+    /// <pre>
+    ///      UResourceBundle bundle =
+    ///          UResourceBundle.GetBundleInstance("com/mycompany/resources",
+    ///                                            "en_US", myAssembly);
+    /// </pre>
+    /// To open Java/JDK style organization use:
+    /// <pre>
+    ///      UResourceBundle bundle =
+    ///          UResourceBundle.GetBundleInstance("com.mycompany.resources.LocaleElements",
+    ///                                            "en-US", myAssembly);
+    /// </pre>
+    ///
+    /// <para/>Note: Please use pass an <see cref="Assembly"/> for loading non-ICU resources. .NET does not
+    /// allow loading of resources across assembly files. You must provide your <see cref="Assembly"/> reference
+    /// to load the resources.
+    /// </summary>
+    /// <stable>ICU 3.0</stable>
+    /// <author>ram</author>
     public abstract class UResourceBundle : ResourceBundle, IEnumerable<UResourceBundle> //: ResourceManager
     {
-        /**
-         * {@icu} Creates a resource bundle using the specified base name and locale.
-         * ICU_DATA_CLASS is used as the default root.
-         * @param baseName string containing the name of the data package.
-         *                    If null the default ICU package name is used.
-         * @param localeName the locale for which a resource bundle is desired
-         * @throws MissingResourceException If no resource bundle for the specified base name
-         * can be found
-         * @return a resource bundle for the given base name and locale
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Creates a resource bundle using the specified base name and locale.
+        /// <see cref="ICUResourceBundle.ICU_DATA_CLASS_LOADER"/> is used as the default root.
+        /// </summary>
+        /// <param name="baseName">String containing the name of the data package.
+        /// If null the default ICU package name is used.</param>
+        /// <param name="localeName">The locale for which a resource bundle is desired.</param>
+        /// <exception cref="MissingManifestResourceException">If no resource bundle for the specified <paramref name="baseName"/> can be found.</exception>
+        /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="localeName"/>.</returns>
+        /// <stable>ICU 3.0</stable>
         public static UResourceBundle GetBundleInstance(string baseName, string localeName)
         {
             return GetBundleInstance(baseName, localeName, GetAssembly(baseName),
@@ -43,65 +105,59 @@ namespace ICU4N.Util
             return ICUResourceBundle.ICU_DATA_CLASS_LOADER;
         }
 
-
-        /**
-         * {@icu} Creates a resource bundle using the specified base name, locale, and class root.
-         *
-         * @param baseName string containing the name of the data package.
-         *                    If null the default ICU package name is used.
-         * @param localeName the locale for which a resource bundle is desired
-         * @param root the class object from which to load the resource bundle
-         * @throws MissingResourceException If no resource bundle for the specified base name
-         * can be found
-         * @return a resource bundle for the given base name and locale
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Creates a resource bundle using the specified <paramref name="baseName"/>, <paramref name="localeName"/>, 
+        /// and assembly <paramref name="root"/>.
+        /// </summary>
+        /// <param name="baseName">String containing the name of the data package.
+        /// If null the default ICU package name is used.</param>
+        /// <param name="localeName">The locale for which a resource bundle is desired.</param>
+        /// <param name="root">The <see cref="Assembly"/> from which to load the resource bundle.</param>
+        /// <exception cref="MissingManifestResourceException">If no resource bundle for the specified <paramref name="baseName"/> can be found.</exception>
+        /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="localeName"/>.</returns>
+        /// <stable>ICU 3.0</stable>
         public static UResourceBundle GetBundleInstance(string baseName, string localeName,
                                                         Assembly root)
         {
             return GetBundleInstance(baseName, localeName, root, false);
         }
 
-        /**
-         * {@icu} Creates a resource bundle using the specified base name, locale, and class
-         * root.
-         *
-         * @param baseName string containing the name of the data package.
-         *                    If null the default ICU package name is used.
-         * @param localeName the locale for which a resource bundle is desired
-         * @param root the class object from which to load the resource bundle
-         * @param disableFallback Option to disable locale inheritence.
-         *                          If true the fallback chain will not be built.
-         * @throws MissingResourceException
-         *     if no resource bundle for the specified base name can be found
-         * @return a resource bundle for the given base name and locale
-         * @stable ICU 3.0
-         *
-         */
+        /// <summary>
+        /// <icu/> Creates a resource bundle using the specified <paramref name="baseName"/>, <paramref name="localeName"/>, and assembly
+        /// <paramref name="root"/>.
+        /// </summary>
+        /// <param name="baseName">String containing the name of the data package.
+        /// If null the default ICU package name is used.</param>
+        /// <param name="localeName">The locale for which a resource bundle is desired.</param>
+        /// <param name="root">The <see cref="Assembly"/> from which to load the resource bundle.</param>
+        /// <param name="disableFallback">Option to disable locale inheritence.
+        /// If true the fallback chain will not be built.</param>
+        /// <exception cref="MissingManifestResourceException">If no resource bundle for the specified <paramref name="baseName"/> can be found.</exception>
+        /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="localeName"/>.</returns>
+        /// <stable>ICU 3.0</stable>
         protected static UResourceBundle GetBundleInstance(string baseName, string localeName,
                                                            Assembly root, bool disableFallback)
         {
             return InstantiateBundle(baseName, localeName, root, disableFallback);
         }
 
-        /**
-         * {@icu} Sole constructor.  (For invocation by subclass constructors, typically
-         * implicit.)  This is public for compatibility with Java, whose compiler
-         * will generate public default constructors for an abstract class.
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Sole constructor.  (For invocation by subclass constructors, typically
+        /// implicit.)
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         public UResourceBundle()
         {
         }
 
-        /**
-         * {@icu} Creates a UResourceBundle for the locale specified, from which users can extract
-         * resources by using their corresponding keys.
-         * @param locale  specifies the locale for which we want to open the resource.
-         *                If null the bundle for default locale is opened.
-         * @return a resource bundle for the given locale
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Creates a UResourceBundle for the locale specified, from which users can extract
+        /// resources by using their corresponding keys.
+        /// </summary>
+        /// <param name="locale">Specifies the locale for which we want to open the resource.
+        /// If null the bundle for default locale is opened.</param>
+        /// <returns>A resource bundle for the given <paramref name="locale"/>.</returns>
+        /// <stable>ICU 3.0</stable>
         public static UResourceBundle GetBundleInstance(ULocale locale)
         {
             if (locale == null)
@@ -112,14 +168,14 @@ namespace ICU4N.Util
                                      ICUResourceBundle.ICU_DATA_CLASS_LOADER, false);
         }
 
-        /**
-         * {@icu} Creates a UResourceBundle for the default locale and specified base name,
-         * from which users can extract resources by using their corresponding keys.
-         * @param baseName string containing the name of the data package.
-         *                    If null the default ICU package name is used.
-         * @return a resource bundle for the given base name and default locale
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Creates a <see cref="UResourceBundle"/> for the default locale and specified <paramref name="baseName"/>,
+        /// from which users can extract resources by using their corresponding keys.
+        /// </summary>
+        /// <param name="baseName">String containing the name of the data package.
+        /// If null the default ICU package name is used.</param>
+        /// <returns>A resource bundle for the given <paramref name="baseName"/> and default locale.</returns>
+        /// <stable>ICU 3.0</stable>
         public static UResourceBundle GetBundleInstance(string baseName)
         {
             if (baseName == null)
@@ -133,17 +189,16 @@ namespace ICU4N.Util
                                      false);
         }
 
-        /**
-         * {@icu} Creates a UResourceBundle for the specified locale and specified base name,
-         * from which users can extract resources by using their corresponding keys.
-         * @param baseName string containing the name of the data package.
-         *                    If null the default ICU package name is used.
-         * @param locale  specifies the locale for which we want to open the resource.
-         *                If null the bundle for default locale is opened.
-         * @return a resource bundle for the given base name and locale
-         * @stable ICU 3.0
-         */
-
+        /// <summary>
+        /// <icu/> Creates a <see cref="UResourceBundle"/> for the specified <paramref name="locale"/>locale and specified <paramref name="baseName"/>,
+        /// from which users can extract resources by using their corresponding keys.
+        /// </summary>
+        /// <param name="baseName">String containing the name of the data package.
+        /// If null the default ICU package name is used.</param>
+        /// <param name="locale">Specifies the locale for which we want to open the resource.
+        /// If null the bundle for default locale is opened.</param>
+        /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="locale"/>.</returns>
+        /// <stable>ICU 3.0</stable>
         public static UResourceBundle GetBundleInstance(string baseName, CultureInfo locale)
         {
             if (baseName == null)
@@ -158,16 +213,16 @@ namespace ICU4N.Util
                 GetAssembly(baseName), false);
         }
 
-        /**
-         * {@icu} Creates a UResourceBundle, from which users can extract resources by using
-         * their corresponding keys.
-         * @param baseName string containing the name of the data package.
-         *                    If null the default ICU package name is used.
-         * @param locale  specifies the locale for which we want to open the resource.
-         *                If null the bundle for default locale is opened.
-         * @return a resource bundle for the given base name and locale
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Creates a <see cref="UResourceBundle"/>, from which users can extract resources by using
+        /// their corresponding keys.
+        /// </summary>
+        /// <param name="baseName">String containing the name of the data package.
+        /// If null the default ICU package name is used.</param>
+        /// <param name="locale">Specifies the locale for which we want to open the resource.
+        /// If null the bundle for default locale is opened.</param>
+        /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="locale"/>.</returns>
+        /// <stable>ICU 3.0</stable>
         public static UResourceBundle GetBundleInstance(string baseName, ULocale locale)
         {
             if (baseName == null)
@@ -184,44 +239,45 @@ namespace ICU4N.Util
                 GetAssembly(baseName), false);
         }
 
-        /**
-         * {@icu} Creates a UResourceBundle for the specified locale and specified base name,
-         * from which users can extract resources by using their corresponding keys.
-         * @param baseName string containing the name of the data package.
-         *                    If null the default ICU package name is used.
-         * @param locale  specifies the locale for which we want to open the resource.
-         *                If null the bundle for default locale is opened.
-         * @param loader  the loader to use
-         * @return a resource bundle for the given base name and locale
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Creates a <see cref="UResourceBundle"/> for the specified locale and specified base name,
+        /// from which users can extract resources by using their corresponding keys.
+        /// </summary>
+        /// <param name="baseName">String containing the name of the data package.
+        /// If null the default ICU package name is used.</param>
+        /// <param name="locale">Specifies the locale for which we want to open the resource.
+        /// If null the bundle for default locale is opened.</param>
+        /// <param name="assembly">The assembly to use.</param>
+        /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="locale"/>.</returns>
+        /// <stable>ICU 3.8</stable>
         public static UResourceBundle GetBundleInstance(string baseName, CultureInfo locale,
-                                                        Assembly loader)
+                                                        Assembly assembly)
         {
             if (baseName == null)
             {
                 baseName = ICUData.ICU_BASE_NAME;
             }
             ULocale uloc = locale == null ? ULocale.GetDefault() : ULocale.ForLocale(locale);
-            return GetBundleInstance(baseName, uloc.GetBaseName(), loader, false);
+            return GetBundleInstance(baseName, uloc.GetBaseName(), assembly, false);
         }
 
-        /**
-         * {@icu} Creates a UResourceBundle, from which users can extract resources by using
-         * their corresponding keys.<br><br>
-         * Note: Please use this API for loading non-ICU resources. Java security does not
-         * allow loading of resources across jar files. You must provide your class loader
-         * to load the resources
-         * @param baseName string containing the name of the data package.
-         *                    If null the default ICU package name is used.
-         * @param locale  specifies the locale for which we want to open the resource.
-         *                If null the bundle for default locale is opened.
-         * @param loader  the loader to use
-         * @return a resource bundle for the given base name and locale
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Creates a <see cref="UResourceBundle"/>, from which users can extract resources by using
+        /// their corresponding keys.
+        /// <para/>
+        /// Note: Please use this API for loading non-ICU resources. .NET does not
+        /// allow loading of resources across assemblies. You must provide your assembly
+        /// to load the resources.
+        /// </summary>
+        /// <param name="baseName">String containing the name of the data package.
+        ///  If null the default ICU package name is used.</param>
+        /// <param name="locale">Specifies the locale for which we want to open the resource.
+        /// If null the bundle for default locale is opened.</param>
+        /// <param name="assembly">The assembly to use.</param>
+        /// <returns>A resource bundle for the given <paramref name="baseName"/> and <paramref name="locale"/>.</returns>
+        /// <stable>ICU 3.8</stable>
         public static UResourceBundle GetBundleInstance(string baseName, ULocale locale,
-                                                        Assembly loader)
+                                                        Assembly assembly)
         {
             if (baseName == null)
             {
@@ -231,53 +287,48 @@ namespace ICU4N.Util
             {
                 locale = ULocale.GetDefault();
             }
-            return GetBundleInstance(baseName, locale.GetBaseName(), loader, false);
+            return GetBundleInstance(baseName, locale.GetBaseName(), assembly, false);
         }
 
-        /**
-         * {@icu} Returns the RFC 3066 conformant locale id of this resource bundle.
-         * This method can be used after a call to getBundleInstance() to
-         * determine whether the resource bundle returned really
-         * corresponds to the requested locale or is a fallback.
-         *
-         * @return the locale of this resource bundle
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Returns the RFC 3066 conformant locale id of this resource bundle.
+        /// This method can be used after a call to <see cref="GetBundleInstance(string)"/> to
+        /// determine whether the resource bundle returned really
+        /// corresponds to the requested locale or is a fallback.
+        /// </summary>
+        /// <returns>The locale of this resource bundle.</returns>
+        /// <stable>ICU 3.0</stable>
         public abstract ULocale GetULocale();
 
-        /**
-         * {@icu} Returns the localeID
-         * @return The string representation of the localeID
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Returns the localeID.
+        /// </summary>
+        /// <returns>The string representation of the localeID.</returns>
+        /// <stable>ICU 3.0</stable>
         protected abstract string GetLocaleID();
 
-        /**
-         * {@icu} Returns the base name of the resource bundle
-         * @return The string representation of the base name
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Returns the base name of the resource bundle.
+        /// </summary>
+        /// <returns>The string representation of the base name.</returns>
+        /// <stable>ICU 3.0</stable>
         protected internal abstract string GetBaseName();
 
-
-        /**
-         * {@icu} Returns the parent bundle
-         * @return The parent bundle
-         * @stable ICU 3.0
-         */
-        //public override abstract UResourceBundle Parent { get; }
+        /// <summary>
+        /// <icu/> Gets the parent bundle, as <see cref="UResourceBundle"/>.
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
         new public virtual UResourceBundle Parent
         {
-            get { return (UResourceBundle)base.parent; }
+            get { return (UResourceBundle)base.m_parent; }
         }
 
-
-        /**
-         * Returns the locale of this bundle
-         * @return the locale of this resource bundle
-         * @stable ICU 3.0
-         */
-        public override CultureInfo GetLocale()
+        /// <summary>
+        /// Returns the locale of this bundle.
+        /// </summary>
+        /// <returns>The locale of this resource bundle.</returns>
+        /// <stable>ICU 3.0</stable>
+        public override CultureInfo GetLocale() // ICU4N TODO: API - rename GetCulture()
         {
             return GetULocale().ToLocale();
         }
@@ -323,19 +374,18 @@ namespace ICU4N.Util
             ROOT_CACHE[baseName] = rootType;
         }
 
-        /**
-         * {@icu} Loads a new resource bundle for the given base name, locale and class loader.
-         * Optionally will disable loading of fallback bundles.
-         * @param baseName string containing the name of the data package.
-         *                    If null the default ICU package name is used.
-         * @param localeName the locale for which a resource bundle is desired
-         * @param root the class object from which to load the resource bundle
-         * @param disableFallback disables loading of fallback lookup chain
-         * @throws MissingResourceException If no resource bundle for the specified base name
-         * can be found
-         * @return a resource bundle for the given base name and locale
-         * @stable ICU 3.0
-         */
+        /// <summary>
+        /// <icu/> Loads a new resource bundle for the given base name, locale and assembly.
+        /// Optionally will disable loading of fallback bundles.
+        /// </summary>
+        /// <param name="baseName">String containing the name of the data package.
+        /// If null the default ICU package name is used.</param>
+        /// <param name="localeName">The locale for which a resource bundle is desired.</param>
+        /// <param name="root">The class object from which to load the resource bundle.</param>
+        /// <param name="disableFallback">Disables loading of fallback lookup chain.</param>
+        /// <exception cref="MissingManifestResourceException">If no resource bundle for the specified base name can be found.</exception>
+        /// <returns>A resource bundle for the given base name and locale.</returns>
+        /// <stable>ICU 3.0</stable>
         protected static UResourceBundle InstantiateBundle(string baseName, string localeName,
                                                            Assembly root, bool disableFallback)
         {
@@ -369,124 +419,115 @@ namespace ICU4N.Util
             }
         }
 
-        /**
-         * {@icu} Returns a binary data item from a binary resource, as a read-only ByteBuffer.
-         *
-         * @return a pointer to a chunk of unsigned bytes which live in a memory mapped/DLL
-         * file.
-         * @see #getIntVector
-         * @see #getInt
-         * @throws MissingResourceException If no resource bundle can be found.
-         * @throws UResourceTypeMismatchException If the resource has a type mismatch.
-         * @stable ICU 3.8
-         */
-        public virtual ByteBuffer GetBinary()
+        /// <summary>
+        /// <icu/> Returns a binary data item from a binary resource, as a read-only <see cref="ByteBuffer"/>.
+        /// </summary>
+        /// <returns>A pointer to a chunk of unsigned bytes which live in a memory mapped/DLL
+        /// file.</returns>
+        /// <seealso cref="GetInt32Vector()"/>
+        /// <seealso cref="GetInt32()"/>
+        /// <exception cref="MissingManifestResourceException">If resource bundle is missing.</exception>
+        /// <exception cref="UResourceTypeMismatchException">If resource bundle type mismatch.</exception>
+        /// <stable>ICU 3.8</stable>
+        public virtual ByteBuffer GetBinary() // ICU4N TODO: API - change return type to byte[]
         {
             throw new UResourceTypeMismatchException("");
         }
 
-        /**
-         * Returns a string from a string resource type
-         *
-         * @return a string
-         * @see #getBinary()
-         * @see #getIntVector
-         * @see #getInt
-         * @throws MissingResourceException If resource bundle is missing.
-         * @throws UResourceTypeMismatchException If resource bundle has a type mismatch.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Returns a string from a string resource type.
+        /// </summary>
+        /// <returns>A string.</returns>
+        /// <seealso cref="GetBinary()"/>
+        /// <seealso cref="GetInt32Vector()"/>
+        /// <exception cref="MissingManifestResourceException">If resource bundle is missing.</exception>
+        /// <exception cref="UResourceTypeMismatchException">If resource bundle type mismatch.</exception>
+        /// <stable>ICU 3.8</stable>
         public virtual string GetString()
         {
             throw new UResourceTypeMismatchException("");
         }
 
-        /**
-         * Returns a string array from a array resource type
-         *
-         * @return a string
-         * @see #getString()
-         * @see #getIntVector
-         * @throws MissingResourceException If resource bundle is missing.
-         * @throws UResourceTypeMismatchException If resource bundle has a type mismatch.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Returns a string array from a array resource type.
+        /// </summary>
+        /// <returns>A string array.</returns>
+        /// <seealso cref="GetString()"/>
+        /// <seealso cref="GetInt32Vector()"/>
+        /// <exception cref="MissingManifestResourceException">If resource bundle is missing.</exception>
+        /// <exception cref="UResourceTypeMismatchException">If resource bundle type mismatch.</exception>
+        /// <stable>ICU 3.8</stable>
         public virtual string[] GetStringArray()
         {
             throw new UResourceTypeMismatchException("");
         }
 
-        /**
-         * {@icu} Returns a binary data from a binary resource, as a byte array with a copy
-         * of the bytes from the resource bundle.
-         *
-         * @param ba  The byte array to write the bytes to. A null variable is OK.
-         * @return an array of bytes containing the binary data from the resource.
-         * @see #getIntVector
-         * @see #getInt
-         * @throws MissingResourceException If resource bundle is missing.
-         * @throws UResourceTypeMismatchException If resource bundle has a type mismatch.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Returns a binary data from a binary resource, as a byte array with a copy
+        /// of the bytes from the resource bundle.
+        /// </summary>
+        /// <param name="ba">The byte array to write the bytes to. A null variable is OK.</param>
+        /// <returns>An array of bytes containing the binary data from the resource.</returns>
+        /// <seealso cref="GetInt32Vector()"/>
+        /// <seealso cref="GetInt32()"/>
+        /// <exception cref="MissingManifestResourceException">If resource bundle is missing.</exception>
+        /// <exception cref="UResourceTypeMismatchException">If resource bundle type mismatch.</exception>
+        /// <stable>ICU 3.8</stable>
         public virtual byte[] GetBinary(byte[] ba)
         {
             throw new UResourceTypeMismatchException("");
         }
 
-        /**
-         * {@icu} Returns a 32 bit integer array from a resource.
-         *
-         * @return a pointer to a chunk of unsigned bytes which live in a memory mapped/DLL file.
-         * @see #getBinary()
-         * @see #getInt
-         * @throws MissingResourceException If resource bundle is missing.
-         * @throws UResourceTypeMismatchException If resource bundle has a type mismatch.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Returns a 32 bit integer array from a resource.
+        /// </summary>
+        /// <returns>A pointer to a chunk of unsigned bytes which live in a memory mapped/DLL file.</returns>
+        /// <seealso cref="GetBinary()"/>
+        /// <seealso cref="GetInt32()"/>
+        /// <exception cref="MissingManifestResourceException">If resource bundle is missing.</exception>
+        /// <exception cref="UResourceTypeMismatchException">If resource bundle type mismatch.</exception>
+        /// <stable>ICU 3.8</stable>
         public virtual int[] GetInt32Vector()
         {
             throw new UResourceTypeMismatchException("");
         }
 
-        /**
-         * {@icu} Returns a signed integer from a resource.
-         *
-         * @return an integer value
-         * @see #getIntVector
-         * @see #getBinary()
-         * @throws MissingResourceException If resource bundle is missing.
-         * @throws UResourceTypeMismatchException If resource bundle type mismatch.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Returns a signed integer from a resource.
+        /// </summary>
+        /// <returns>An <see cref="int"/> value.</returns>
+        /// <seealso cref="GetInt32Vector()"/>
+        /// <seealso cref="GetBinary()"/>
+        /// <exception cref="MissingManifestResourceException">If resource bundle is missing.</exception>
+        /// <exception cref="UResourceTypeMismatchException">If resource bundle type mismatch.</exception>
+        /// <stable>ICU 3.8</stable>
         public virtual int GetInt32()
         {
             throw new UResourceTypeMismatchException("");
         }
 
-        /**
-         * {@icu} Returns a unsigned integer from a resource.
-         * This integer is originally 28 bit and the sign gets propagated.
-         *
-         * @return an integer value
-         * @see #getIntVector
-         * @see #getBinary()
-         * @throws MissingResourceException If resource bundle is missing.
-         * @throws UResourceTypeMismatchException If resource bundle type mismatch.
-         * @stable ICU 3.8
-         */
-        public virtual int GetUInt32()
+        /// <summary>
+        /// <icu/> Returns a unsigned integer from a resource.
+        /// This integer is originally 28 bit and the sign gets propagated.
+        /// </summary>
+        /// <returns>An <see cref="int"/> value.</returns>
+        /// <seealso cref="GetInt32Vector()"/>
+        /// <seealso cref="GetBinary()"/>
+        /// <exception cref="MissingManifestResourceException">If resource bundle is missing.</exception>
+        /// <exception cref="UResourceTypeMismatchException">If resource bundle type mismatch.</exception>
+        /// <stable>ICU 3.8</stable>
+        public virtual int GetUInt32() // ICU4N TODO: API - return type should be uint (and marked CLSCompliant(false))
         {
             throw new UResourceTypeMismatchException("");
         }
 
-        /**
-         * {@icu} Returns a resource in a given resource that has a given key.
-         *
-         * @param aKey               a key associated with the wanted resource
-         * @return                  a resource bundle object representing the resource
-         * @throws MissingResourceException If resource bundle is missing.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Returns a resource in a given resource that has a given key.
+        /// </summary>
+        /// <param name="aKey">A key associated with the wanted resource.</param>
+        /// <returns>A resource bundle object representing the resource.</returns>
+        /// <exception cref="MissingManifestResourceException">If resource bundle is missing.</exception>
+        /// <stable>ICU 3.8</stable>
         public virtual UResourceBundle Get(string aKey) // ICU4N TODO: API make into indexer property
         {
 #pragma warning disable 612, 618
@@ -502,16 +543,14 @@ namespace ICU4N.Util
             return obj;
         }
 
-        /**
-         * Returns a resource in a given resource that has a given key, or null if the
-         * resource is not found.
-         *
-         * @param aKey the key associated with the wanted resource
-         * @return the resource, or null
-         * @see #get(String)
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Returns a resource in a given resource that has a given key, or null if the
+        /// resource is not found.
+        /// </summary>
+        /// <param name="aKey">The key associated with the wanted resource.</param>
+        /// <returns>The resource, or null.</returns>
+        /// <seealso cref="Get(string)"/>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected virtual UResourceBundle FindTopLevel(string aKey)
         {
@@ -529,15 +568,14 @@ namespace ICU4N.Util
             return null;
         }
 
-        /**
-         * Returns the string in a given resource at the specified index.
-         *
-         * @param index an index to the wanted string.
-         * @return a string which lives in the resource.
-         * @throws IndexOutOfBoundsException If the index value is out of bounds of accepted values.
-         * @throws UResourceTypeMismatchException If resource bundle type mismatch.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Returns the string in a given resource at the specified index.
+        /// </summary>
+        /// <param name="index">An index to the wanted string.</param>
+        /// <returns>A string which lives in the resource.</returns>
+        /// <exception cref="IndexOutOfRangeException">If the index value is out of bounds of accepted values.</exception>
+        /// <exception cref="UResourceTypeMismatchException">If resource bundle type mismatch.</exception>
+        /// <stable>ICU 3.8</stable>
         public virtual string GetString(int index)
         {
             ICUResourceBundle temp = (ICUResourceBundle)Get(index);
@@ -548,15 +586,14 @@ namespace ICU4N.Util
             throw new UResourceTypeMismatchException("");
         }
 
-        /**
-         * {@icu} Returns the resource in a given resource at the specified index.
-         *
-         * @param index an index to the wanted resource.
-         * @return the sub resource UResourceBundle object
-         * @throws IndexOutOfBoundsException If the index value is out of bounds of accepted values.
-         * @throws MissingResourceException If the resource bundle is missing.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Returns the resource in a given resource at the specified index.
+        /// </summary>
+        /// <param name="index">An index to the wanted resource.</param>
+        /// <returns>The sub resource <see cref="UResourceBundle"/> object.</returns>
+        /// <exception cref="IndexOutOfRangeException">If the index value is out of bounds of accepted values.</exception>
+        /// <exception cref="MissingManifestResourceException">If the resource bundle is missing.</exception>
+        /// <stable>ICU 3.8</stable>
         public virtual UResourceBundle Get(int index) // ICU4N TODO: API make into indexer property
         {
             UResourceBundle obj = HandleGet(index, null, this);
@@ -576,16 +613,14 @@ namespace ICU4N.Util
             return obj;
         }
 
-        /**
-         * Returns a resource in a given resource that has a given index, or null if the
-         * resource is not found.
-         *
-         * @param index the index of the resource
-         * @return the resource, or null
-         * @see #get(int)
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Returns a resource in a given resource that has a given index, or null if the
+        /// resource is not found.
+        /// </summary>
+        /// <param name="index">The index of the resource.</param>
+        /// <returns>The resource, or null.</returns>
+        /// <seealso cref="Get(int)"/>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected virtual UResourceBundle FindTopLevel(int index)
         {
@@ -606,24 +641,22 @@ namespace ICU4N.Util
             return null;
         }
 
-        /**
-         * Returns the keys in this bundle as an enumeration
-         * @return an enumeration containing key strings,
-         *         which is empty if this is not a bundle or a table resource
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// Gets the keys in this bundle as an <see cref="IEnumerable{String}"/>,
+        /// which is empty if this is not a bundle or a table resource.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
         public override IEnumerable<string> GetKeys() // ICU4N TODO: API - change to Keys property
         {
             return KeySet();
         }
 
-        /**
-         * Returns a Set of all keys contained in this ResourceBundle and its parent bundles.
-         * @return a Set of all keys contained in this ResourceBundle and its parent bundles,
-         *         which is empty if this is not a bundle or a table resource
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Returns a <see cref="ISet{String}"/> of all keys contained in this ResourceBundle and its parent bundles.
+        /// </summary>
+        /// <returns>a <see cref="ISet{String}"/> of all keys contained in this ResourceBundle and its parent bundles,
+        /// which is empty if this is not a bundle or a table resource.</returns>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
 #pragma warning disable 809
         public override ISet<string> KeySet() // ICU4N TODO: API - change to KeySet property
@@ -648,13 +681,13 @@ namespace ICU4N.Util
                 if (IsTopLevelResource)
                 {
                     SortedSet<string> newKeySet;
-                    if (parent == null)
+                    if (m_parent == null)
                     {
                         newKeySet = new SortedSet<string>();
                     }
-                    else if (parent is UResourceBundle)
+                    else if (m_parent is UResourceBundle)
                     {
-                        newKeySet = new SortedSet<string>(((UResourceBundle)parent).KeySet());
+                        newKeySet = new SortedSet<string>(((UResourceBundle)m_parent).KeySet());
                     }
                     else
                     {
@@ -684,14 +717,13 @@ namespace ICU4N.Util
             return keys;
         }
 
-        /**
-         * Returns a Set of the keys contained <i>only</i> in this ResourceBundle.
-         * This does not include further keys from parent bundles.
-         * @return a Set of the keys contained only in this ResourceBundle,
-         *         which is empty if this is not a bundle or a table resource
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Returns a <see cref="ISet{String}"/> of the keys contained <i>only</i> in this ResourceBundle.
+        /// This does not include further keys from parent bundles.
+        /// </summary>
+        /// <returns>A <see cref="ISet{String}"/> of the keys contained only in this ResourceBundle,
+        /// which is empty if this is not a bundle or a table resource.</returns>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
 #pragma warning disable 809
         protected override ISet<string> HandleKeySet()
@@ -700,15 +732,14 @@ namespace ICU4N.Util
             return new HashSet<string>();
         }
 
-        /**
-         * {@icu} Returns the size of a resource. Size for scalar types is always 1, and for
-         * vector/table types is the number of child resources.
-         *
-         * <br><b>Note:</b> Integer array is treated as a scalar type. There are no APIs to
-         * access individual members of an integer array. It is always returned as a whole.
-         * @return number of resources in a given resource.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Gets the number of resources in a given resource. Number for scalar types is always 1, and for
+        /// vector/table types is the number of child resources.
+        /// <para/>
+        /// <b>Note:</b> Integer array is treated as a scalar type. There are no APIs to
+        /// access individual members of an integer array. It is always returned as a whole.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
         public virtual int Length
         {
             get { return 1; }
@@ -728,24 +759,22 @@ namespace ICU4N.Util
             get { return NONE; }
         }
 
-        /**
-         * {@icu} Return the version number associated with this UResourceBundle as an
-         * VersionInfo object.
-         * @return VersionInfo object containing the version of the bundle
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Gets the version number associated with this <see cref="UResourceBundle"/> as an
+        /// <see cref="VersionInfo"/> object.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
         public VersionInfo Version
         {
             get { return null; }
         }
 
-
-        /**
-         * {@icu} Returns the iterator which iterates over this
-         * resource bundle
-         * @return UResourceBundleIterator that iterates over the resources in the bundle
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Returns the enumerator which iterates over this
+        /// resource bundle
+        /// </summary>.
+        /// <returns><see cref="UResourceBundleEnumerator"/> that iterates over the resources in the bundle.</returns>
+        /// <stable>ICU 3.8</stable>
         public UResourceBundleEnumerator GetEnumerator()
         {
             return new UResourceBundleEnumerator(this);
@@ -763,13 +792,11 @@ namespace ICU4N.Util
         }
         #endregion
 
-
-        /**
-         * {@icu} Returns the key associated with a given resource. Not all the resources have
-         * a key - only those that are members of a table.
-         * @return a key associated to this resource, or null if it doesn't have a key
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/>Gets the key associated with a given resource. Not all the resources have
+        /// a key - only those that are members of a table. Returns <c>null</c> if it doesn't have a key.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
         public virtual string Key
         {
             get { return null; }
@@ -822,67 +849,68 @@ namespace ICU4N.Util
 
         //====== protected members ==============
 
-        /**
-         * {@icu} Actual worker method for fetching a resource based on the given key.
-         * Sub classes must override this method if they support resources with keys.
-         * @param aKey the key string of the resource to be fetched
-         * @param aliasesVisited hashtable object to hold references of resources already seen
-         * @param requested the original resource bundle object on which the get method was invoked.
-         *                  The requested bundle and the bundle on which this method is invoked
-         *                  are the same, except in the cases where aliases are involved.
-         * @return UResourceBundle a resource associated with the key
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Actual worker method for fetching a resource based on the given key.
+        /// Sub classes must override this method if they support resources with keys.
+        /// </summary>
+        /// <param name="aKey">The key string of the resource to be fetched.</param>
+        /// <param name="aliasesVisited"><see cref="IDictionary{String, String}"/> to hold references of resources already seen.</param>
+        /// <param name="requested">The original resource bundle object on which the get method was invoked.
+        /// The requested bundle and the bundle on which this method is invoked
+        /// are the same, except in the cases where aliases are involved.</param>
+        /// <returns><see cref="UResourceBundle"/> resource associated with the index.</returns>
+        /// <stable>ICU 3.8</stable>
         protected virtual UResourceBundle HandleGet(string aKey, IDictionary<string, string> aliasesVisited,
                                             UResourceBundle requested)
         {
             return null;
         }
 
-        /**
-         * {@icu} Actual worker method for fetching a resource based on the given index.
-         * Sub classes must override this method if they support arrays of resources.
-         * @param index the index of the resource to be fetched
-         * @param aliasesVisited hashtable object to hold references of resources already seen
-         * @param requested the original resource bundle object on which the get method was invoked.
-         *                  The requested bundle and the bundle on which this method is invoked
-         *                  are the same, except in the cases where aliases are involved.
-         * @return UResourceBundle a resource associated with the index
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Actual worker method for fetching a resource based on the given index.
+        /// Sub classes must override this method if they support arrays of resources.
+        /// </summary>
+        /// <param name="index">The index of the resource to be fetched.</param>
+        /// <param name="aliasesVisited"><see cref="IDictionary{String, String}"/> to hold references of resources already seen.</param>
+        /// <param name="requested">The original resource bundle object on which the get method was invoked.
+        /// The requested bundle and the bundle on which this method is invoked
+        /// are the same, except in the cases where aliases are involved.</param>
+        /// <returns><see cref="UResourceBundle"/> resource associated with the index.</returns>
+        /// <stable>ICU 3.8</stable>
         protected virtual UResourceBundle HandleGet(int index, IDictionary<string, string> aliasesVisited,
                                             UResourceBundle requested)
         {
             return null;
         }
 
-        /**
-         * {@icu} Actual worker method for fetching the array of strings in a resource.
-         * Sub classes must override this method if they support arrays of strings.
-         * @return String[] An array of strings containing strings
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Actual worker method for fetching the array of strings in a resource.
+        /// Sub classes must override this method if they support arrays of strings.
+        /// </summary>
+        /// <returns><see cref="T:string[]"/> array containing resource strings.</returns>
+        /// <stable>ICU 3.8</stable>
         protected virtual string[] HandleGetStringArray()
         {
             return null;
         }
 
-        /**
-         * {@icu} Actual worker method for fetching the keys of resources contained in the resource.
-         * Sub classes must override this method if they support keys and associated resources.
-         *
-         * @return Enumeration An enumeration of all the keys in this resource.
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// <icu/> Actual worker method for fetching the keys of resources contained in the resource.
+        /// Sub classes must override this method if they support keys and associated resources.
+        /// </summary>
+        /// <returns><see cref="IEnumerable{String}"/> of all the keys in this resource.</returns>
+        /// <stable>ICU 3.8</stable>
         protected virtual IEnumerable<string> HandleGetKeys()
         {
             return null;
         }
 
-        /**
-         * {@inheritDoc}
-         * @stable ICU 3.8
-         */
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        // {@inheritDoc}
+
         // this method is declared in ResourceBundle class
         // so cannot change the signature
         // Override this method
@@ -891,9 +919,9 @@ namespace ICU4N.Util
             return HandleGetObjectImpl(aKey, this);
         }
 
-        /**
-         * Override the superclass method
-         */
+        /// <summary>
+        /// Override the superclass method
+        /// </summary>
         // To facilitate XPath style aliases we need a way to pass the reference
         // to requested locale. The only way I could figure out is to implement
         // the look up logic here. This has a disadvantage that if the client
@@ -948,12 +976,12 @@ namespace ICU4N.Util
             return obj;
         }
 
-        /**
-         * Is this a top-level resource, that is, a whole bundle?
-         * @return true if this is a top-level resource
-         * @internal
-         * @deprecated This API is ICU internal only.
-         */
+        /// <summary>
+        /// Is this a top-level resource, that is, a whole bundle?
+        /// <para/>
+        /// Returns <c>true</c> if this is a top-level resource.
+        /// </summary>
+        /// <internal/>
         [Obsolete("This API is ICU internal only.")]
         protected virtual bool IsTopLevelResource
         {
@@ -969,17 +997,17 @@ namespace ICU4N.Util
          * The parent bundle is searched by {@link #getObject getObject}
          * when this bundle does not contain a particular resource.
          */
-        protected internal ResourceBundle parent = null;
+        protected internal ResourceBundle m_parent = null;
 
         public virtual ResourceBundle Parent
         {
-            get { return parent; }
-            set { parent = value; }
+            get { return m_parent; }
+            set { m_parent = value; }
         }
 
         public virtual void SetParent(ResourceBundle parent)
         {
-            this.parent = parent;
+            this.m_parent = parent;
         }
 
         public abstract CultureInfo GetLocale();
@@ -990,9 +1018,9 @@ namespace ICU4N.Util
             object obj = HandleGetObject(key);
             if (obj == null)
             {
-                if (parent != null)
+                if (m_parent != null)
                 {
-                    obj = parent.GetObject(key);
+                    obj = m_parent.GetObject(key);
                 }
                 if (obj == null)
                 {
@@ -1018,21 +1046,21 @@ namespace ICU4N.Util
         public virtual ISet<string> KeySet()
         {
             ISet<string> keys = new HashSet<string>();
-            for (ResourceBundle rb = this; rb != null; rb = rb.parent)
+            for (ResourceBundle rb = this; rb != null; rb = rb.m_parent)
             {
                 keys.UnionWith(rb.HandleKeySet());
             }
             return keys;
         }
 
-        protected ISet<string> keySet = null;
+        protected ISet<string> m_keySet = null;
 
         protected virtual ISet<string> HandleKeySet()
         {
-            if (keySet == null)
+            if (m_keySet == null)
             {
                 lock(this) {
-                    if (keySet == null)
+                    if (m_keySet == null)
                     {
                         ISet<string> keys = new HashSet<string>();
                         using (var enumKeys = GetKeys().GetEnumerator())
@@ -1046,11 +1074,11 @@ namespace ICU4N.Util
                                 }
                             }
                         }
-                        keySet = keys;
+                        m_keySet = keys;
                     }
                 }
             }
-            return keySet;
+            return m_keySet;
         }
 
         protected abstract object HandleGetObject(string key);
