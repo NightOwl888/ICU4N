@@ -123,7 +123,7 @@ namespace ICU4N.Impl.Coll
         private const int STARRED_FLAG = 0x10;
         private const int OFFSET_SHIFT = 8;
 
-        private static readonly string BEFORE = "[before";
+        private const string BEFORE = "[before";
 
         // In C++, we parse into temporary UnicodeString objects named "raw" or "str".
         // In Java, we reuse this StringBuilder.
@@ -1080,7 +1080,7 @@ namespace ICU4N.Impl.Coll
             return new FormatException(AppendErrorContext(reason) /*, ruleIndex*/, innerException);
         }
 
-        private static readonly int U_PARSE_CONTEXT_LEN = 16;
+        private const int U_PARSE_CONTEXT_LEN = 16;
 
         // C++ setErrorContext()
         private string AppendErrorContext(string reason)

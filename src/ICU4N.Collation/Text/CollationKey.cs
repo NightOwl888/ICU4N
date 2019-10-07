@@ -649,7 +649,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Collation key merge seperator
         /// </summary>
-        private static readonly byte MERGE_SEPERATOR_ = 2;
+        private const byte MERGE_SEPERATOR_ = 2;
 
         // private methods ------------------------------------------------------
 

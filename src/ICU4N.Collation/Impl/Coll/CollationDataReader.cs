@@ -583,7 +583,7 @@ namespace ICU4N.Impl.Coll
             }
         }
         private static readonly IsAcceptable IS_ACCEPTABLE = new IsAcceptable();
-        private static readonly int DATA_FORMAT = 0x55436f6c;  // "UCol"
+        private const int DATA_FORMAT = 0x55436f6c;  // "UCol"
 
         // ICU4N specific - made class static instead of having private constructor
 
