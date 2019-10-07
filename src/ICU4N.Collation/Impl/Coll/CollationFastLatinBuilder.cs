@@ -7,6 +7,7 @@ using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Text;
 
 namespace ICU4N.Impl.Coll
@@ -138,7 +139,6 @@ namespace ICU4N.Impl.Coll
         internal char[] GetHeader()
         {
             char[] resultArray = new char[headerLength];
-            //result.GetChars(0, headerLength, resultArray, 0);
             result.CopyTo(0, resultArray, 0, headerLength - 0);
             return resultArray;
         }
@@ -146,8 +146,7 @@ namespace ICU4N.Impl.Coll
         internal char[] GetTable()
         {
             char[] resultArray = new char[result.Length - headerLength];
-            //result.getChars(headerLength, result.Length, resultArray, 0);
-            result.CopyTo(headerLength, resultArray, 0, result.Length - headerLength); // ICU4N TODO: check this
+            result.CopyTo(headerLength, resultArray, 0, result.Length - headerLength);
             return resultArray;
         }
 
@@ -166,8 +165,8 @@ namespace ICU4N.Impl.Coll
                     // missing data
                     return false;
                 }
-                // ICU4N TODO: Check this (not sure about char data type)
-                result.Append((char)0);  // reserve a slot for this group
+                // ICU4N: Use char instead of int to append the value to ensure ambient culture has no effect
+                result.Append('0');  // reserve a slot for this group
             }
 
             firstDigitPrimary = data.GetFirstPrimaryForGroup(ReorderCodes.Digit);
@@ -672,8 +671,8 @@ namespace ICU4N.Impl.Coll
             int miniCEsStart = result.Length;
             for (int i = 0; i < CollationFastLatin.NUM_FAST_CHARS; ++i)
             {
-                // ICU4N TODO: Check this (not sure if this should be char)
-                result.Append((char)0);  // initialize to completely ignorable
+                // ICU4N: Use char instead of int to append the value to ensure ambient culture has no effect
+                result.Append('0');  // initialize to completely ignorable
             }
             int indexBase = result.Length;
             for (int i = 0; i < CollationFastLatin.NUM_FAST_CHARS; ++i)
