@@ -42,7 +42,7 @@ namespace ICU4N.Impl.Coll
         {
             nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
             base_ = null;
-            baseSettings = null;
+            //baseSettings = null; // ICU4N specific - not used
             trie = null;
             ce32s = new List<int>(32);
             ce64s = new List<long>(32);
@@ -1600,7 +1600,7 @@ namespace ICU4N.Impl.Coll
 
         private Normalizer2Impl nfcImpl;
         private CollationData base_;
-        private CollationSettings baseSettings;
+        //private CollationSettings baseSettings; // ICU4N specific - not used
         private Trie2Writable trie;
         private IList<int> ce32s;
         private IList<long> ce64s;
