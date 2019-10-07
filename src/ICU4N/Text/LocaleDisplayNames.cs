@@ -80,11 +80,11 @@ namespace ICU4N.Text
                     result = (LocaleDisplayNames)FACTORY_DIALECTHANDLING.Invoke(null,
                         new object[] { locale, dialectHandling });
                 }
-                catch (TargetInvocationException e)
+                catch (TargetInvocationException)
                 {
                     // fall through
                 }
-                //catch (IllegalAccessException e)
+                //catch (IllegalAccessException)
                 //{
                 //    // fall through
                 //}

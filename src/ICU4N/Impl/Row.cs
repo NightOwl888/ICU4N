@@ -160,7 +160,7 @@ namespace ICU4N.Impl
                 }
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

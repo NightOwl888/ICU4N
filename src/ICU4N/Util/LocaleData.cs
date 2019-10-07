@@ -234,7 +234,7 @@ namespace ICU4N.Util
             {
                 throw new ArgumentException(aiooe.Message, aiooe);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return noSubstitute ? null : UnicodeSet.Empty;
             }
@@ -333,14 +333,14 @@ namespace ICU4N.Util
                     measDataBundle = measurementData.Get(region);
                     measTypeBundle = measDataBundle.Get(measurementType);
                 }
-                catch (MissingManifestResourceException mre)
+                catch (MissingManifestResourceException)
                 {
                     // use "001" as fallback
                     measDataBundle = measurementData.Get("001");
                     measTypeBundle = measDataBundle.Get(measurementType);
                 }
             }
-            catch (MissingManifestResourceException mre)
+            catch (MissingManifestResourceException)
             {
                 // fall through
             }

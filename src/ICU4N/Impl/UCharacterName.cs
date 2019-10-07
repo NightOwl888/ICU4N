@@ -807,7 +807,7 @@ namespace ICU4N.Impl
                 switch (m_type_)
                 {
                     case (byte)TYPE_0_:
-                        try
+                        try // ICU4N TODO: Use int.TryParse to eliminate the exception
                         {
                             int result = System.Convert.ToInt32(name.Substring(prefixlen),
                                                           16);
@@ -817,7 +817,7 @@ namespace ICU4N.Impl
                                 return result;
                             }
                         }
-                        catch (FormatException e)
+                        catch (FormatException)
                         {
                             return -1;
                         }

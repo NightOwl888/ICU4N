@@ -53,7 +53,7 @@ namespace ICU4N.Impl
                 {
                     iterator.SetIndex(value);
                 }
-                catch (ArgumentException e)
+                catch (ArgumentException)
                 {
                     throw new IndexOutOfRangeException();
                 }

@@ -135,7 +135,7 @@ namespace ICU4N.Impl
                 Type clzz = Type.GetType("ICU4N.Impl.ICUCurrencyDisplayInfoProvider, ICU4N.CurrencyData");
                 temp = (ICurrencyDisplayInfoProvider)Activator.CreateInstance(clzz); //clzz.newInstance();
             }
-            catch (Exception t)
+            catch (Exception)
             {
                 temp = new FallbackCurrencyDisplayInfoProvider();
             }

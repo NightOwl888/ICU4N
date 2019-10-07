@@ -50,7 +50,7 @@ namespace ICU4N.Impl
                     obj = current.bundle.GetObject(aKey);
                     break;
                 }
-                catch (MissingManifestResourceException ex)
+                catch (MissingManifestResourceException)
                 {
                     current = (ResourceBundleWrapper)current.Parent;
                 }
@@ -203,11 +203,11 @@ namespace ICU4N.Impl
                     b.baseName = baseName;
                     b.localeID = localeID;
                 }
-                catch (TargetInvocationException e)
+                catch (TargetInvocationException)
                 {
                     loadFromProperties = true;
                 }
-                catch (MissingMethodException e)
+                catch (MissingMethodException)
                 {
                     loadFromProperties = true;
                 }

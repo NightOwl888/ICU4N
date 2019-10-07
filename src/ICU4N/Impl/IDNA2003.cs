@@ -395,7 +395,7 @@ namespace ICU4N.Impl
                     src.Index = saveIndex;
                     processOut = namePrep.Prepare(src, (StringPrepOptions)options);
                 }
-                catch (StringPrepParseException ex)
+                catch (StringPrepParseException)
                 {
                     return new StringBuffer(src.GetText());
                 }
@@ -426,7 +426,7 @@ namespace ICU4N.Impl
                 {
                     decodeOut = new StringBuffer(Punycode.Decode(temp, caseFlags).ToString());
                 }
-                catch (StringPrepParseException e)
+                catch (StringPrepParseException)
                 {
                     decodeOut = null;
                 }

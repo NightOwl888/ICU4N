@@ -234,7 +234,7 @@ namespace ICU4N.Impl
                 {
                     rb.GetAllItemsWithFallback("contextTransforms", sink);
                 }
-                catch (MissingManifestResourceException e)
+                catch (MissingManifestResourceException)
                 {
                     // Silently ignore.  Not every locale has contextTransforms.
                 }

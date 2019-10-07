@@ -240,7 +240,7 @@ namespace ICU4N.Impl.Locale
             {
                 typeAliasRes = keyTypeDataRes.Get("typeAlias");
             }
-            catch (MissingManifestResourceException e)
+            catch (MissingManifestResourceException)
             {
                 // fall through
             }
@@ -249,7 +249,7 @@ namespace ICU4N.Impl.Locale
             {
                 bcpTypeAliasRes = keyTypeDataRes.Get("bcpTypeAlias");
             }
-            catch (MissingManifestResourceException e)
+            catch (MissingManifestResourceException)
             {
                 // fall through
             }
@@ -286,7 +286,7 @@ namespace ICU4N.Impl.Locale
                         {
                             typeAliasResByKey = typeAliasRes.Get(legacyKeyId);
                         }
-                        catch (MissingManifestResourceException e)
+                        catch (MissingManifestResourceException)
                         {
                             // fall through
                         }
@@ -325,7 +325,7 @@ namespace ICU4N.Impl.Locale
                         {
                             bcpTypeAliasResByKey = bcpTypeAliasRes.Get(bcpKeyId);
                         }
-                        catch (MissingManifestResourceException e)
+                        catch (MissingManifestResourceException)
                         {
                             // fall through
                         }
@@ -360,7 +360,7 @@ namespace ICU4N.Impl.Locale
                     {
                         typeMapResByKey = typeMapRes.Get(legacyKeyId);
                     }
-                    catch (MissingManifestResourceException e)
+                    catch (MissingManifestResourceException)
                     {
                         // type map for each key must exist
                         Debug.Assert(false);

@@ -150,7 +150,7 @@ namespace ICU4N.Impl
                     }
                     defLoc = r.GetULocale();
                 }
-                catch (MissingManifestResourceException t)
+                catch (MissingManifestResourceException)
                 {
                     // Ignore error and continue search.
                 }
@@ -183,7 +183,7 @@ namespace ICU4N.Impl
                         defDepth = resDepth;
                     }
                 }
-                catch (MissingManifestResourceException t)
+                catch (MissingManifestResourceException)
                 {
                     // Ignore error,
                 }
@@ -230,7 +230,7 @@ namespace ICU4N.Impl
                             defDepth = resDepth;
                         }
                     }
-                    catch (MissingManifestResourceException t)
+                    catch (MissingManifestResourceException)
                     {
                         // Ignore error, continue search.
                     }
@@ -295,7 +295,7 @@ namespace ICU4N.Impl
                         }
                     }
                 }
-                catch (Exception t)
+                catch (Exception)
                 {
                     //System.err.println("Error in - " + new Integer(i).toString()
                     // + " - " + t.toString());
@@ -417,7 +417,7 @@ namespace ICU4N.Impl
             {
                 GetAllItemsWithFallback(path, sink);
             }
-            catch (MissingManifestResourceException e)
+            catch (MissingManifestResourceException)
             {
                 // Quietly ignore the exception.
             }
@@ -664,7 +664,7 @@ namespace ICU4N.Impl
                 bundle = (ICUResourceBundle)UResourceBundle.InstantiateBundle(baseName, ICU_RESOURCE_INDEX, root, true);
                 bundle = (ICUResourceBundle)bundle.Get(INSTALLED_LOCALES);
             }
-            catch (MissingManifestResourceException e)
+            catch (MissingManifestResourceException)
             {
                 if (DEBUG)
                 {

@@ -227,7 +227,7 @@ namespace ICU4N.Util
                 }
                 return true;
             }
-            catch (InvalidCastException e)
+            catch (InvalidCastException)
             {
             }
             return false;

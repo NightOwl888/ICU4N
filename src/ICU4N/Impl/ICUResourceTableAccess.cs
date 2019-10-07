@@ -96,7 +96,7 @@ namespace ICU4N.Impl
                             bundle.GetBaseName(), fallbackLocale);
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 // If something is seriously wrong, we might call getString on a resource that is
                 // not a string.  That will throw an exception, which we catch and ignore here.

@@ -298,14 +298,14 @@ namespace ICU4N.Util
                     ICUResourceBundle.GetBundleInstance(baseName, rootLocale, root, true);
                     rootType = RootType.ICU;
                 }
-                catch (MissingManifestResourceException ex)
+                catch (MissingManifestResourceException)
                 {
                     try
                     {
                         ResourceBundleWrapper.GetBundleInstance(baseName, rootLocale, root, true);
                         rootType = RootType.JAVA;
                     }
-                    catch (MissingManifestResourceException e)
+                    catch (MissingManifestResourceException)
                     {
                         //throw away the exception
                         rootType = RootType.MISSING;
@@ -359,7 +359,7 @@ namespace ICU4N.Util
                                                                 disableFallback);
                         SetRootType(baseName, RootType.ICU);
                     }
-                    catch (MissingManifestResourceException ex)
+                    catch (MissingManifestResourceException)
                     {
                         b = ResourceBundleWrapper.GetBundleInstance(baseName, localeName, root,
                                                                     disableFallback);

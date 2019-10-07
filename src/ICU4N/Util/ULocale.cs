@@ -2163,7 +2163,7 @@ namespace ICU4N.Util
             {
                 acceptList = ParseAcceptLanguage(acceptLanguageList, true); // ICU4N TODO: TryParseAcceptLanguage
             }
-            catch (FormatException pe)
+            catch (FormatException)
             {
                 acceptList = null;
             }
@@ -3291,7 +3291,7 @@ namespace ICU4N.Util
             {
                 return bundle.GetString(localeId);
             }
-            catch (MissingManifestResourceException e)
+            catch (MissingManifestResourceException)
             {
                 return null;
             }
@@ -4495,7 +4495,7 @@ namespace ICU4N.Util
                                 {
                                     intbld.SetUnicodeLocaleKeyword(bcpKey, bcpType);
                                 }
-                                catch (FormatException e) // ICU4N TODO: Make a TrySet version so we don't have an expensive try catch
+                                catch (FormatException) // ICU4N TODO: Make a TrySet version so we don't have an expensive try catch
                                 {
                                     // ignore and fall through
                                 }
@@ -4508,7 +4508,7 @@ namespace ICU4N.Util
                                 intbld.SetExtension(key[0], GetKeywordValue(key).Replace("_",
                                         LanguageTag.SEP));
                             }
-                            catch (FormatException e) // ICU4N TODO: Make a TrySet version so we don't have an expensive try catch
+                            catch (FormatException) // ICU4N TODO: Make a TrySet version so we don't have an expensive try catch
                             {
                                 // ignore and fall through
                             }

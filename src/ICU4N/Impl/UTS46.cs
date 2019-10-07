@@ -229,7 +229,7 @@ namespace ICU4N.Impl
                 {
                     fromPunycode = Punycode.Decode(dest.SubSequence(labelStart + 4, labelStart + labelLength), null);
                 }
-                catch (StringPrepParseException e)
+                catch (StringPrepParseException)
                 {
 #pragma warning disable 612, 618
                     AddLabelError(info, IDNAError.Punycode);
