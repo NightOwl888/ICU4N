@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using Hangul = ICU4N.Impl.Normalizer2Impl.Hangul;
 
 namespace ICU4N.Impl.Coll
 {

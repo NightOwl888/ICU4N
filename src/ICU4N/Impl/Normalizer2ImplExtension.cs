@@ -14,131 +14,135 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
+    public sealed partial class Hangul
+    {
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
+        /// and returns the length of the decomposition (2 or 3).
+        /// </summary>
+        public static int Decompose(int c, StringBuilder buffer)
+        {
+            try
+            {
+                c -= HANGUL_BASE;
+                int c2 = c % JAMO_T_COUNT;
+                c /= JAMO_T_COUNT;
+                buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
+                buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
+                if (c2 == 0)
+                {
+                    return 2;
+                }
+                else
+                {
+                    buffer.Append((char)(JAMO_T_BASE + c2));
+                    return 3;
+                }
+            }
+            catch (IOException e)
+            {
+                // Will not occur because we do not write to I/O.
+                throw new ICUUncheckedIOException(e);
+            }
+        }
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
+        /// and returns the length of the decomposition (2 or 3).
+        /// </summary>
+        internal static int Decompose(int c, IAppendable buffer)
+        {
+            try
+            {
+                c -= HANGUL_BASE;
+                int c2 = c % JAMO_T_COUNT;
+                c /= JAMO_T_COUNT;
+                buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
+                buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
+                if (c2 == 0)
+                {
+                    return 2;
+                }
+                else
+                {
+                    buffer.Append((char)(JAMO_T_BASE + c2));
+                    return 3;
+                }
+            }
+            catch (IOException e)
+            {
+                // Will not occur because we do not write to I/O.
+                throw new ICUUncheckedIOException(e);
+            }
+        }
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
+        /// This is the raw, not recursive, decomposition. Its length is always 2.
+        /// </summary>
+        public static void GetRawDecomposition(int c, StringBuilder buffer)
+        {
+            try
+            {
+                int orig = c;
+                c -= HANGUL_BASE;
+                int c2 = c % JAMO_T_COUNT;
+                if (c2 == 0)
+                {
+                    c /= JAMO_T_COUNT;
+                    buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
+                    buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
+                }
+                else
+                {
+                    buffer.Append((char)(orig - c2));  // LV syllable
+                    buffer.Append((char)(JAMO_T_BASE + c2));
+                }
+            }
+            catch (IOException e)
+            {
+                // Will not occur because we do not write to I/O.
+                throw new ICUUncheckedIOException(e);
+            }
+        }
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
+        /// This is the raw, not recursive, decomposition. Its length is always 2.
+        /// </summary>
+        internal static void GetRawDecomposition(int c, IAppendable buffer)
+        {
+            try
+            {
+                int orig = c;
+                c -= HANGUL_BASE;
+                int c2 = c % JAMO_T_COUNT;
+                if (c2 == 0)
+                {
+                    c /= JAMO_T_COUNT;
+                    buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
+                    buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
+                }
+                else
+                {
+                    buffer.Append((char)(orig - c2));  // LV syllable
+                    buffer.Append((char)(JAMO_T_BASE + c2));
+                }
+            }
+            catch (IOException e)
+            {
+                // Will not occur because we do not write to I/O.
+                throw new ICUUncheckedIOException(e);
+            }
+        }
+    }
+
+
+
     public sealed partial class Normalizer2Impl
     {
-        public sealed partial class Hangul
-        {
 
-            /// <summary>
-            /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
-            /// and returns the length of the decomposition (2 or 3).
-            /// </summary>
-            public static int Decompose(int c, StringBuilder buffer)
-            {
-                try
-                {
-                    c -= HANGUL_BASE;
-                    int c2 = c % JAMO_T_COUNT;
-                    c /= JAMO_T_COUNT;
-                    buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
-                    buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
-                    if (c2 == 0)
-                    {
-                        return 2;
-                    }
-                    else
-                    {
-                        buffer.Append((char)(JAMO_T_BASE + c2));
-                        return 3;
-                    }
-                }
-                catch (IOException e)
-                {
-                    // Will not occur because we do not write to I/O.
-                    throw new ICUUncheckedIOException(e);
-                }
-            }
-
-            /// <summary>
-            /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
-            /// and returns the length of the decomposition (2 or 3).
-            /// </summary>
-            internal static int Decompose(int c, IAppendable buffer)
-            {
-                try
-                {
-                    c -= HANGUL_BASE;
-                    int c2 = c % JAMO_T_COUNT;
-                    c /= JAMO_T_COUNT;
-                    buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
-                    buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
-                    if (c2 == 0)
-                    {
-                        return 2;
-                    }
-                    else
-                    {
-                        buffer.Append((char)(JAMO_T_BASE + c2));
-                        return 3;
-                    }
-                }
-                catch (IOException e)
-                {
-                    // Will not occur because we do not write to I/O.
-                    throw new ICUUncheckedIOException(e);
-                }
-            }
-
-            /// <summary>
-            /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
-            /// This is the raw, not recursive, decomposition. Its length is always 2.
-            /// </summary>
-            public static void GetRawDecomposition(int c, StringBuilder buffer)
-            {
-                try
-                {
-                    int orig = c;
-                    c -= HANGUL_BASE;
-                    int c2 = c % JAMO_T_COUNT;
-                    if (c2 == 0)
-                    {
-                        c /= JAMO_T_COUNT;
-                        buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
-                        buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
-                    }
-                    else
-                    {
-                        buffer.Append((char)(orig - c2));  // LV syllable
-                        buffer.Append((char)(JAMO_T_BASE + c2));
-                    }
-                }
-                catch (IOException e)
-                {
-                    // Will not occur because we do not write to I/O.
-                    throw new ICUUncheckedIOException(e);
-                }
-            }
-
-            /// <summary>
-            /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
-            /// This is the raw, not recursive, decomposition. Its length is always 2.
-            /// </summary>
-            internal static void GetRawDecomposition(int c, IAppendable buffer)
-            {
-                try
-                {
-                    int orig = c;
-                    c -= HANGUL_BASE;
-                    int c2 = c % JAMO_T_COUNT;
-                    if (c2 == 0)
-                    {
-                        c /= JAMO_T_COUNT;
-                        buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
-                        buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
-                    }
-                    else
-                    {
-                        buffer.Append((char)(orig - c2));  // LV syllable
-                        buffer.Append((char)(JAMO_T_BASE + c2));
-                    }
-                }
-                catch (IOException e)
-                {
-                    // Will not occur because we do not write to I/O.
-                    throw new ICUUncheckedIOException(e);
-                }
-            }
-		}
 
 		public sealed partial class ReorderingBuffer
         {

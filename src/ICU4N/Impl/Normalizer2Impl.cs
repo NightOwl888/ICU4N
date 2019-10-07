@@ -9,6 +9,65 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
+    public sealed partial class Hangul
+    {
+        // ICU4N TODO: API - rename constants to follow .NET Conventions ?
+        /* Korean Hangul and Jamo constants */
+        public const int JAMO_L_BASE = 0x1100;     /* "lead" jamo */
+        public const int JAMO_L_END = 0x1112;
+        public const int JAMO_V_BASE = 0x1161;     /* "vowel" jamo */
+        public const int JAMO_V_END = 0x1175;
+        public const int JAMO_T_BASE = 0x11a7;     /* "trail" jamo */
+        public const int JAMO_T_END = 0x11c2;
+
+        public const int HANGUL_BASE = 0xac00;
+        public const int HANGUL_END = 0xd7a3;
+
+        public const int JAMO_L_COUNT = 19;
+        public const int JAMO_V_COUNT = 21;
+        public const int JAMO_T_COUNT = 28;
+
+        public const int JAMO_L_LIMIT = JAMO_L_BASE + JAMO_L_COUNT;
+        public const int JAMO_V_LIMIT = JAMO_V_BASE + JAMO_V_COUNT;
+
+        public const int JAMO_VT_COUNT = JAMO_V_COUNT * JAMO_T_COUNT;
+
+        public const int HANGUL_COUNT = JAMO_L_COUNT * JAMO_V_COUNT * JAMO_T_COUNT;
+        public const int HANGUL_LIMIT = HANGUL_BASE + HANGUL_COUNT;
+
+        public static bool IsHangul(int c)
+        {
+            return HANGUL_BASE <= c && c < HANGUL_LIMIT;
+        }
+        public static bool IsHangulLV(int c)
+        {
+            c -= HANGUL_BASE;
+            return 0 <= c && c < HANGUL_COUNT && c % JAMO_T_COUNT == 0;
+        }
+        public static bool IsJamoL(int c)
+        {
+            return JAMO_L_BASE <= c && c < JAMO_L_LIMIT;
+        }
+        public static bool IsJamoV(int c)
+        {
+            return JAMO_V_BASE <= c && c < JAMO_V_LIMIT;
+        }
+        public static bool IsJamoT(int c)
+        {
+            int t = c - JAMO_T_BASE;
+            return 0 < t && t < JAMO_T_COUNT;  // not JAMO_T_BASE itself
+        }
+        public static bool IsJamo(int c)
+        {
+            return JAMO_L_BASE <= c && c <= JAMO_T_END &&
+                (c <= JAMO_L_END || (JAMO_V_BASE <= c && c <= JAMO_V_END) || JAMO_T_BASE < c);
+        }
+
+        // ICU4N specific - Decompose(int c, IAppendable buffer) moved to Normalizer2ImplExtension.tt
+
+        // ICU4N specific - GetRawDecomposition(int c, IAppendable buffer) moved to Normalizer2ImplExtension.tt
+    }
+
     /// <summary>
     /// Low-level implementation of the Unicode Normalization Algorithm.
     /// For the data structure and details see the documentation at the end of
@@ -17,64 +76,8 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed partial class Normalizer2Impl
     {
-        public sealed partial class Hangul // ICU4N TODO: API - de-nest?
-        {
-            // ICU4N TODO: API - rename constants to follow .NET Conventions ?
-            /* Korean Hangul and Jamo constants */
-            public const int JAMO_L_BASE = 0x1100;     /* "lead" jamo */
-            public const int JAMO_L_END = 0x1112;
-            public const int JAMO_V_BASE = 0x1161;     /* "vowel" jamo */
-            public const int JAMO_V_END = 0x1175;
-            public const int JAMO_T_BASE = 0x11a7;     /* "trail" jamo */
-            public const int JAMO_T_END = 0x11c2;
-
-            public const int HANGUL_BASE = 0xac00;
-            public const int HANGUL_END = 0xd7a3;
-
-            public const int JAMO_L_COUNT = 19;
-            public const int JAMO_V_COUNT = 21;
-            public const int JAMO_T_COUNT = 28;
-
-            public const int JAMO_L_LIMIT = JAMO_L_BASE + JAMO_L_COUNT;
-            public const int JAMO_V_LIMIT = JAMO_V_BASE + JAMO_V_COUNT;
-
-            public const int JAMO_VT_COUNT = JAMO_V_COUNT * JAMO_T_COUNT;
-
-            public const int HANGUL_COUNT = JAMO_L_COUNT * JAMO_V_COUNT * JAMO_T_COUNT;
-            public const int HANGUL_LIMIT = HANGUL_BASE + HANGUL_COUNT;
-
-            public static bool IsHangul(int c)
-            {
-                return HANGUL_BASE <= c && c < HANGUL_LIMIT;
-            }
-            public static bool IsHangulLV(int c)
-            {
-                c -= HANGUL_BASE;
-                return 0 <= c && c < HANGUL_COUNT && c % JAMO_T_COUNT == 0;
-            }
-            public static bool IsJamoL(int c)
-            {
-                return JAMO_L_BASE <= c && c < JAMO_L_LIMIT;
-            }
-            public static bool IsJamoV(int c)
-            {
-                return JAMO_V_BASE <= c && c < JAMO_V_LIMIT;
-            }
-            public static bool IsJamoT(int c)
-            {
-                int t = c - JAMO_T_BASE;
-                return 0 < t && t < JAMO_T_COUNT;  // not JAMO_T_BASE itself
-            }
-            public static bool IsJamo(int c)
-            {
-                return JAMO_L_BASE <= c && c <= JAMO_T_END &&
-                    (c <= JAMO_L_END || (JAMO_V_BASE <= c && c <= JAMO_V_END) || JAMO_T_BASE < c);
-            }
-
-            // ICU4N specific - Decompose(int c, IAppendable buffer) moved to Normalizer2ImplExtension.tt
-
-            // ICU4N specific - GetRawDecomposition(int c, IAppendable buffer) moved to Normalizer2ImplExtension.tt
-        }
+        // ICU4N specific - de-nested Hangul class
+        
 
         /// <summary>
         /// Writable buffer that takes care of canonical ordering.

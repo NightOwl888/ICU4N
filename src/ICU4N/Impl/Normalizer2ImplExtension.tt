@@ -33,75 +33,79 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
-    public sealed partial class Normalizer2Impl
+    public sealed partial class Hangul
     {
-        public sealed partial class Hangul
-        {
 <# foreach (var appendable in appendables) { #>
 
-            /// <summary>
-            /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
-            /// and returns the length of the decomposition (2 or 3).
-            /// </summary>
-            <#= appendable == "IAppendable" ? charSequenceAccessibility : "public"#> static int Decompose(int c, <#=appendable#> buffer)
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
+        /// and returns the length of the decomposition (2 or 3).
+        /// </summary>
+        <#= appendable == "IAppendable" ? charSequenceAccessibility : "public"#> static int Decompose(int c, <#=appendable#> buffer)
+        {
+            try
             {
-                try
+                c -= HANGUL_BASE;
+                int c2 = c % JAMO_T_COUNT;
+                c /= JAMO_T_COUNT;
+                buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
+                buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
+                if (c2 == 0)
                 {
-                    c -= HANGUL_BASE;
-                    int c2 = c % JAMO_T_COUNT;
+                    return 2;
+                }
+                else
+                {
+                    buffer.Append((char)(JAMO_T_BASE + c2));
+                    return 3;
+                }
+            }
+            catch (IOException e)
+            {
+                // Will not occur because we do not write to I/O.
+                throw new ICUUncheckedIOException(e);
+            }
+        }
+<# } #>
+<# foreach (var appendable in appendables) { #>
+
+        /// <summary>
+        /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
+        /// This is the raw, not recursive, decomposition. Its length is always 2.
+        /// </summary>
+        <#= appendable == "IAppendable" ? charSequenceAccessibility : "public"#> static void GetRawDecomposition(int c, <#=appendable#> buffer)
+        {
+            try
+            {
+                int orig = c;
+                c -= HANGUL_BASE;
+                int c2 = c % JAMO_T_COUNT;
+                if (c2 == 0)
+                {
                     c /= JAMO_T_COUNT;
                     buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
                     buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
-                    if (c2 == 0)
-                    {
-                        return 2;
-                    }
-                    else
-                    {
-                        buffer.Append((char)(JAMO_T_BASE + c2));
-                        return 3;
-                    }
                 }
-                catch (IOException e)
+                else
                 {
-                    // Will not occur because we do not write to I/O.
-                    throw new ICUUncheckedIOException(e);
+                    buffer.Append((char)(orig - c2));  // LV syllable
+                    buffer.Append((char)(JAMO_T_BASE + c2));
                 }
             }
-<# } #>
-<# foreach (var appendable in appendables) { #>
-
-            /// <summary>
-            /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
-            /// This is the raw, not recursive, decomposition. Its length is always 2.
-            /// </summary>
-            <#= appendable == "IAppendable" ? charSequenceAccessibility : "public"#> static void GetRawDecomposition(int c, <#=appendable#> buffer)
+            catch (IOException e)
             {
-                try
-                {
-                    int orig = c;
-                    c -= HANGUL_BASE;
-                    int c2 = c % JAMO_T_COUNT;
-                    if (c2 == 0)
-                    {
-                        c /= JAMO_T_COUNT;
-                        buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
-                        buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
-                    }
-                    else
-                    {
-                        buffer.Append((char)(orig - c2));  // LV syllable
-                        buffer.Append((char)(JAMO_T_BASE + c2));
-                    }
-                }
-                catch (IOException e)
-                {
-                    // Will not occur because we do not write to I/O.
-                    throw new ICUUncheckedIOException(e);
-                }
+                // Will not occur because we do not write to I/O.
+                throw new ICUUncheckedIOException(e);
             }
+        }
 <# } #>
-		}
+    }
+
+
+
+    public sealed partial class Normalizer2Impl
+    {
+
 
 		public sealed partial class ReorderingBuffer
         {
