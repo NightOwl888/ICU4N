@@ -1766,7 +1766,7 @@ namespace ICU4N.Text
         public override VersionInfo GetVersion()
         {
             int version = tailoring.Version;
-            int rtVersion = VersionInfo.UCOL_RUNTIME_VERSION.Major;
+            int rtVersion = VersionInfo.CollationRuntimeVersion.Major;
             return VersionInfo.GetInstance(
                     (version.TripleShift(24)) + (rtVersion << 4) + (rtVersion >> 4),
                     ((version >> 16) & 0xff), ((version >> 8) & 0xff), (version & 0xff));

@@ -22,7 +22,7 @@ namespace ICU4N.Dev.Test
          */
         static public bool IsICUVersionBefore(int major, int minor, int milli)
         {
-            return VersionInfo.ICU_VERSION.CompareTo(VersionInfo.GetInstance(major, minor, milli)) < 0;
+            return VersionInfo.IcuVersion.CompareTo(VersionInfo.GetInstance(major, minor, milli)) < 0;
         }
 
         /**

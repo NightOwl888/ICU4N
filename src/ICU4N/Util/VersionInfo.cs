@@ -26,175 +26,175 @@ namespace ICU4N.Util
         /// Unicode 1.0 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_1_0 = GetInstance(1, 0, 0, 0);
+        public static readonly VersionInfo Unicode_1_0 = GetInstance(1, 0, 0, 0);
 
         /// <summary>
         /// Unicode 1.0.1 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_1_0_1 = GetInstance(1, 0, 1, 0);
+        public static readonly VersionInfo Unicode_1_0_1 = GetInstance(1, 0, 1, 0);
 
         /// <summary>
         /// Unicode 1.1.0 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_1_1_0 = GetInstance(1, 1, 0, 0);
+        public static readonly VersionInfo Unicode_1_1_0 = GetInstance(1, 1, 0, 0);
 
         /// <summary>
         /// Unicode 1.1.5 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_1_1_5 = GetInstance(1, 1, 5, 0);
+        public static readonly VersionInfo Unicode_1_1_5 = GetInstance(1, 1, 5, 0);
 
         /// <summary>
         /// Unicode 2.0 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_2_0 = GetInstance(2, 0, 0, 0);
+        public static readonly VersionInfo Unicode_2_0 = GetInstance(2, 0, 0, 0);
 
         /// <summary>
         /// Unicode 2.1.2 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_2_1_2 = GetInstance(2, 1, 2, 0);
+        public static readonly VersionInfo Unicode_2_1_2 = GetInstance(2, 1, 2, 0);
 
         /// <summary>
         /// Unicode 2.1.5 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_2_1_5 = GetInstance(2, 1, 5, 0);
+        public static readonly VersionInfo Unicode_2_1_5 = GetInstance(2, 1, 5, 0);
 
         /// <summary>
         /// Unicode 2.1.8 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_2_1_8 = GetInstance(2, 1, 8, 0);
+        public static readonly VersionInfo Unicode_2_1_8 = GetInstance(2, 1, 8, 0);
 
         /// <summary>
         /// Unicode 2.1.9 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_2_1_9 = GetInstance(2, 1, 9, 0);
+        public static readonly VersionInfo Unicode_2_1_9 = GetInstance(2, 1, 9, 0);
 
         /// <summary>
         /// Unicode 3.0 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_3_0 = GetInstance(3, 0, 0, 0);
+        public static readonly VersionInfo Unicode_3_0 = GetInstance(3, 0, 0, 0);
 
         /// <summary>
         /// Unicode 3.0.1 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_3_0_1 = GetInstance(3, 0, 1, 0);
+        public static readonly VersionInfo Unicode_3_0_1 = GetInstance(3, 0, 1, 0);
 
         /// <summary>
         /// Unicode 3.1.0 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_3_1_0 = GetInstance(3, 1, 0, 0);
+        public static readonly VersionInfo Unicode_3_1_0 = GetInstance(3, 1, 0, 0);
 
         /// <summary>
         /// Unicode 3.1.1 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_3_1_1 = GetInstance(3, 1, 1, 0);
+        public static readonly VersionInfo Unicode_3_1_1 = GetInstance(3, 1, 1, 0);
 
         /// <summary>
         /// Unicode 3.2 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_3_2 = GetInstance(3, 2, 0, 0);
+        public static readonly VersionInfo Unicode_3_2 = GetInstance(3, 2, 0, 0);
 
         /// <summary>
         /// Unicode 4.0 version
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        public static readonly VersionInfo UNICODE_4_0 = GetInstance(4, 0, 0, 0);
+        public static readonly VersionInfo Unicode_4_0 = GetInstance(4, 0, 0, 0);
 
         /// <summary>
         /// Unicode 4.0.1 version
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public static readonly VersionInfo UNICODE_4_0_1 = GetInstance(4, 0, 1, 0);
+        public static readonly VersionInfo Unicode_4_0_1 = GetInstance(4, 0, 1, 0);
 
         /// <summary>
         /// Unicode 4.1 version
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public static readonly VersionInfo UNICODE_4_1 = GetInstance(4, 1, 0, 0);
+        public static readonly VersionInfo Unicode_4_1 = GetInstance(4, 1, 0, 0);
 
         /// <summary>
         /// Unicode 5.0 version
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public static readonly VersionInfo UNICODE_5_0 = GetInstance(5, 0, 0, 0);
+        public static readonly VersionInfo Unicode_5_0 = GetInstance(5, 0, 0, 0);
 
         /// <summary>
         /// Unicode 5.1 version
         /// </summary>
         /// <stable>ICU 4.2</stable>
-        public static readonly VersionInfo UNICODE_5_1 = GetInstance(5, 1, 0, 0);
+        public static readonly VersionInfo Unicode_5_1 = GetInstance(5, 1, 0, 0);
 
         /// <summary>
         /// Unicode 5.2 version
         /// </summary>
         /// <stable>ICU 4.4</stable>
-        public static readonly VersionInfo UNICODE_5_2 = GetInstance(5, 2, 0, 0);
+        public static readonly VersionInfo Unicode_5_2 = GetInstance(5, 2, 0, 0);
 
         /// <summary>
         /// Unicode 6.0 version
         /// </summary>
         /// <stable>ICU 4.6</stable>
-        public static readonly VersionInfo UNICODE_6_0 = GetInstance(6, 0, 0, 0);
+        public static readonly VersionInfo Unicode_6_0 = GetInstance(6, 0, 0, 0);
 
         /// <summary>
         /// Unicode 6.1 version
         /// </summary>
         /// <stable>ICU 49</stable>
-        public static readonly VersionInfo UNICODE_6_1 = GetInstance(6, 1, 0, 0);
+        public static readonly VersionInfo Unicode_6_1 = GetInstance(6, 1, 0, 0);
 
         /// <summary>
         /// Unicode 6.2 version
         /// </summary>
         /// <stable>ICU 50</stable>
-        public static readonly VersionInfo UNICODE_6_2 = GetInstance(6, 2, 0, 0);
+        public static readonly VersionInfo Unicode_6_2 = GetInstance(6, 2, 0, 0);
 
         /// <summary>
         /// Unicode 6.3 version
         /// </summary>
         /// <stable>ICU 52</stable>
-        public static readonly VersionInfo UNICODE_6_3 = GetInstance(6, 3, 0, 0);
+        public static readonly VersionInfo Unicode_6_3 = GetInstance(6, 3, 0, 0);
 
         /// <summary>
         /// Unicode 7.0 version
         /// </summary>
         /// <stable>ICU 54</stable>
-        public static readonly VersionInfo UNICODE_7_0 = GetInstance(7, 0, 0, 0);
+        public static readonly VersionInfo Unicode_7_0 = GetInstance(7, 0, 0, 0);
 
         /// <summary>
         /// Unicode 8.0 version
         /// </summary>
         /// <stable>ICU 56</stable>
-        public static readonly VersionInfo UNICODE_8_0 = GetInstance(8, 0, 0, 0);
+        public static readonly VersionInfo Unicode_8_0 = GetInstance(8, 0, 0, 0);
 
         /// <summary>
         /// Unicode 9.0 version
         /// </summary>
         /// <stable>ICU 58</stable>
-        public static readonly VersionInfo UNICODE_9_0 = GetInstance(9, 0, 0, 0);
+        public static readonly VersionInfo Unicode_9_0 = GetInstance(9, 0, 0, 0);
 
         /// <summary>
         /// Unicode 10.0 version
         /// </summary>
         /// <stable>ICU 60</stable>
-        public static readonly VersionInfo UNICODE_10_0 = GetInstance(10, 0, 0, 0);
+        public static readonly VersionInfo Unicode_10_0 = GetInstance(10, 0, 0, 0);
 
         /// <summary>
         /// ICU4N current release version
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public static readonly VersionInfo ICU_VERSION = GetInstance(60, 1, 0, 0);
+        public static readonly VersionInfo IcuVersion = GetInstance(60, 1, 0, 0);
 
         /// <summary>
         /// Data version string for ICU's internal data.
@@ -202,14 +202,14 @@ namespace ICU4N.Util
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public static readonly string ICU_DATA_VERSION_PATH = "60b";
+        internal static readonly string IcuDataVersionPath = "60b";
 
         /// <summary>
         /// Data version in ICU4N.
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public static readonly VersionInfo ICU_DATA_VERSION = GetInstance(60, 0, 1, 0);
+        internal static readonly VersionInfo IcuDataVersion = GetInstance(60, 0, 1, 0);
 
         /// <summary>
         /// Collation runtime version (sort key generator, string comparisons).
@@ -217,7 +217,7 @@ namespace ICU4N.Util
         /// This value may change in subsequent releases of ICU.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public static readonly VersionInfo UCOL_RUNTIME_VERSION = GetInstance(9);
+        public static readonly VersionInfo CollationRuntimeVersion = GetInstance(9); // ICU4N: Renamed from UCOL_RUNTIME_VERSION
 
         /// <summary>
         ///  Collation builder code version.
@@ -226,7 +226,7 @@ namespace ICU4N.Util
         ///  This value may change in subsequent releases of ICU.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        public static readonly VersionInfo UCOL_BUILDER_VERSION = GetInstance(9);
+        public static readonly VersionInfo CollationBuilderVersion = GetInstance(9); // ICU4N: Renamed from UCOL_BUILDER_VERSION
 
         /// <summary>
         /// Constant version 1.
@@ -234,7 +234,7 @@ namespace ICU4N.Util
         /// but instead the tailoring data carries a version number.
         /// </summary>
         [Obsolete("ICU 54")]
-        public static readonly VersionInfo UCOL_TAILORINGS_VERSION = GetInstance(1);
+        public static readonly VersionInfo CollationTailoringsVersion = GetInstance(1); // ICU4N: Renamed from UCOL_TAILORINGS_VERSION
 
 
         // public methods ------------------------------------------------------
@@ -493,7 +493,7 @@ namespace ICU4N.Util
         /// which gets the version number from a data file.
         /// We do not want <see cref="VersionInfo"/> to have an import dependency on <see cref="UChar"/>.
         /// </summary>
-        private static readonly VersionInfo UNICODE_VERSION = UNICODE_10_0;
+        private static readonly VersionInfo UNICODE_VERSION = Unicode_10_0;
 
         /// <summary>
         /// Version number stored as a byte for each of the major, minor, milli and
@@ -502,17 +502,17 @@ namespace ICU4N.Util
         /// micro numbers.
         /// </summary>
         private int m_version_;
-        
+
         // ICU4N specific - moved MAP_ to the top so the initialization order is correct.
 
         /// <summary>
         /// Last byte mask
         /// </summary>
-        private static readonly int LAST_BYTE_MASK_ = 0xFF;
+        private const int LAST_BYTE_MASK_ = 0xFF;
         /// <summary>
         /// Error statement string
         /// </summary>
-        private static readonly string INVALID_VERSION_NUMBER_ =
+        private const string INVALID_VERSION_NUMBER_ =
                 "Invalid version number: Version number may be negative or greater than 255";
 
         // static declaration ------------------------------------------------
@@ -551,38 +551,38 @@ namespace ICU4N.Util
         {
             string icuApiVer;
 
-            if (ICU_VERSION.Major <= 4)
+            if (IcuVersion.Major <= 4)
             {
-                if (ICU_VERSION.Minor % 2 != 0)
+                if (IcuVersion.Minor % 2 != 0)
                 {
                     // Development mile stone
-                    int major = ICU_VERSION.Major;
-                    int minor = ICU_VERSION.Minor + 1;
+                    int major = IcuVersion.Major;
+                    int minor = IcuVersion.Minor + 1;
                     if (minor >= 10)
                     {
                         minor -= 10;
                         major++;
                     }
-                    icuApiVer = "" + major + "." + minor + "M" + ICU_VERSION.Milli;
+                    icuApiVer = "" + major + "." + minor + "M" + IcuVersion.Milli;
                 }
                 else
                 {
 #pragma warning disable 612, 618
-                    icuApiVer = ICU_VERSION.GetVersionString(2, 2);
+                    icuApiVer = IcuVersion.GetVersionString(2, 2);
 #pragma warning restore 612, 618
                 }
             }
             else
             {
-                if (ICU_VERSION.Minor == 0)
+                if (IcuVersion.Minor == 0)
                 {
                     // Development mile stone
-                    icuApiVer = "" + ICU_VERSION.Major + "M" + ICU_VERSION.Milli;
+                    icuApiVer = "" + IcuVersion.Major + "M" + IcuVersion.Milli;
                 }
                 else
                 {
 #pragma warning disable 612, 618
-                    icuApiVer = ICU_VERSION.GetVersionString(2, 2);
+                    icuApiVer = IcuVersion.GetVersionString(2, 2);
 #pragma warning restore 612, 618
                 }
             }
@@ -592,7 +592,7 @@ namespace ICU4N.Util
 
             Console.Out.WriteLine("");
 #pragma warning disable 612, 618
-            Console.Out.WriteLine("Implementation Version: " + ICU_VERSION.GetVersionString(2, 4));
+            Console.Out.WriteLine("Implementation Version: " + IcuVersion.GetVersionString(2, 4));
             Console.Out.WriteLine("Unicode Data Version:   " + UNICODE_VERSION.GetVersionString(2, 4));
             Console.Out.WriteLine("CLDR Data Version:      " + LocaleData.GetCLDRVersion().GetVersionString(2, 4));
 #pragma warning restore 612, 618
@@ -659,7 +659,7 @@ namespace ICU4N.Util
                     {
                         UResourceBundle tzbundle = UResourceBundle.GetBundleInstance("Impl/Data/icudt"
 #pragma warning disable 612, 618
-                                + VersionInfo.ICU_DATA_VERSION_PATH, "zoneinfo64");
+                                + VersionInfo.IcuDataVersionPath, "zoneinfo64");
 #pragma warning restore 612, 618
                         TZDATA_VERSION = tzbundle.GetString("TZVersion");
                     }

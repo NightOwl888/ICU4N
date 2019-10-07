@@ -24,7 +24,7 @@ namespace ICU4N.Impl
         /// of the package entry names.
         /// </summary>
 #pragma warning disable 612, 618
-        internal static readonly string PACKAGE_NAME = "icudt" + VersionInfo.ICU_DATA_VERSION_PATH; // ICU4N TODO: API - rename to follow .NET Conventions
+        internal static readonly string PACKAGE_NAME = "icudt" + VersionInfo.IcuDataVersionPath; // ICU4N TODO: API - rename to follow .NET Conventions
 #pragma warning restore 612, 618
         /// <summary>
         /// The data path to be used with <see cref="Assembly.GetManifestResourceStream(string)"/>.

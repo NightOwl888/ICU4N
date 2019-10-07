@@ -70,7 +70,7 @@ namespace ICU4N.Impl.Coll
         internal static VersionInfo MakeBaseVersion(VersionInfo ucaVersion)
         {
             return VersionInfo.GetInstance(
-                    VersionInfo.UCOL_BUILDER_VERSION.Major,
+                    VersionInfo.CollationBuilderVersion.Major,
                     (ucaVersion.Major << 3) + ucaVersion.Minor,
                     ucaVersion.Milli << 6,
                     0);
@@ -82,7 +82,7 @@ namespace ICU4N.Impl.Coll
             int s = (rulesVersion >> 16) & 0xff;
             int t = (rulesVersion >> 8) & 0xff;
             int q = rulesVersion & 0xff;
-            version = (VersionInfo.UCOL_BUILDER_VERSION.Major << 24) |
+            version = (VersionInfo.CollationBuilderVersion.Major << 24) |
                     (baseVersion & 0xffc000) |  // UCA version u.v.w
                     ((r + (r >> 6)) & 0x3f00) |
                     (((s << 3) + (s >> 5) + t + (q << 4) + (q >> 4)) & 0xff);
