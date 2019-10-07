@@ -424,9 +424,9 @@ namespace ICU4N.Impl
                         string src = UTF16.ValueOf(c);
                         StringBuilder dest = new StringBuilder();
                         // Small destCapacity for NFKC_CF(c).
-                        Normalizer2Impl.ReorderingBuffer buffer = new Normalizer2Impl.ReorderingBuffer(kcf, dest, 5);
+                        ReorderingBuffer buffer = new ReorderingBuffer(kcf, dest, 5);
                         kcf.Compose(src, 0, src.Length, false, true, buffer);
-                        return !Normalizer2Impl.UTF16Plus.Equal(dest, src);
+                        return !UTF16Plus.Equal(dest, src);
                     }),
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI),
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI_PRESENTATION),

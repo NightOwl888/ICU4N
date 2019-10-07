@@ -3141,7 +3141,7 @@ namespace ICU4N.Text
                 {
                     char c;
 
-                    if (Normalizer2Impl.UTF16Plus.IsSurrogateLead(c1))
+                    if (UTF16Plus.IsSurrogateLead(c1))
                     {
                         if (s1 != limit1 && char.IsLowSurrogate(c = cs1[s1]))
                         {
@@ -3163,7 +3163,7 @@ namespace ICU4N.Text
                 {
                     char c;
 
-                    if (Normalizer2Impl.UTF16Plus.IsSurrogateLead(c2))
+                    if (UTF16Plus.IsSurrogateLead(c2))
                     {
                         if (s2 != limit2 && char.IsLowSurrogate(c = cs2[s2]))
                         {
@@ -3192,7 +3192,7 @@ namespace ICU4N.Text
                     /* cp1 case-folds to the code point "length" or to p[length] */
                     if (UTF16.IsSurrogate((char)c1))
                     {
-                        if (Normalizer2Impl.UTF16Plus.IsSurrogateLead(c1))
+                        if (UTF16Plus.IsSurrogateLead(c1))
                         {
                             /* advance beyond source surrogate pair if it case-folds */
                             ++s1;
@@ -3249,7 +3249,7 @@ namespace ICU4N.Text
                     /* cp2 case-folds to the code point "length" or to p[length] */
                     if (UTF16.IsSurrogate((char)c2))
                     {
-                        if (Normalizer2Impl.UTF16Plus.IsSurrogateLead(c2))
+                        if (UTF16Plus.IsSurrogateLead(c2))
                         {
                             /* advance beyond source surrogate pair if it case-folds */
                             ++s2;
@@ -3306,7 +3306,7 @@ namespace ICU4N.Text
                     /* cp1 decomposes into p[length] */
                     if (UTF16.IsSurrogate((char)c1))
                     {
-                        if (Normalizer2Impl.UTF16Plus.IsSurrogateLead(c1))
+                        if (UTF16Plus.IsSurrogateLead(c1))
                         {
                             /* advance beyond source surrogate pair if it decomposes */
                             ++s1;
@@ -3357,7 +3357,7 @@ namespace ICU4N.Text
                     /* cp2 decomposes into p[length] */
                     if (UTF16.IsSurrogate((char)c2))
                     {
-                        if (Normalizer2Impl.UTF16Plus.IsSurrogateLead(c2))
+                        if (UTF16Plus.IsSurrogateLead(c2))
                         {
                             /* advance beyond source surrogate pair if it decomposes */
                             ++s2;

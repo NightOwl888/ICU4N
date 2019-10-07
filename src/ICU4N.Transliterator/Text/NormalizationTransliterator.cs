@@ -102,7 +102,7 @@ namespace ICU4N.Text
                     break;
                 }
                 norm2.Normalize(segment, normalized);
-                if (!Normalizer2Impl.UTF16Plus.Equal(segment, normalized))
+                if (!UTF16Plus.Equal(segment, normalized))
                 {
                     // replace the input chunk with its normalized form
                     text.Replace(prev, start, normalized.ToString());

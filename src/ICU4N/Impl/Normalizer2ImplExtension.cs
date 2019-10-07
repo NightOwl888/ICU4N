@@ -138,1255 +138,1256 @@ namespace ICU4N.Impl
         }
     }
 
+    public sealed partial class ReorderingBuffer
+    {
+
+        public bool Equals(string s, int start, int limit)
+        {
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
+        }
+
+        public bool Equals(StringBuilder s, int start, int limit)
+        {
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
+        }
+
+        public bool Equals(char[] s, int start, int limit)
+        {
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
+        }
+
+        internal bool Equals(ICharSequence s, int start, int limit)
+        {
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
+        }
+
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(string s, int start, int limit,
+            int leadCC, int trailCC)
+        {
+            if (start == limit)
+            {
+                return;
+            }
+            if (lastCC <= leadCC || leadCC == 0)
+            {
+                if (trailCC <= 1)
+                {
+                    reorderStart = str.Length + (limit - start);
+                }
+                else if (leadCC <= 1)
+                {
+                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
+                }
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                lastCC = trailCC;
+            }
+            else
+            {
+                int c = Character.CodePointAt(s, start);
+                start += Character.CharCount(c);
+                Insert(c, leadCC);  // insert first code point
+                while (start < limit)
+                {
+                    c = Character.CodePointAt(s, start);
+                    start += Character.CharCount(c);
+                    if (start < limit)
+                    {
+                        // s must be in NFD, otherwise we need to use getCC().
+                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
+                    }
+                    else
+                    {
+                        leadCC = trailCC;
+                    }
+                    Append(c, leadCC);
+                }
+            }
+        }
+
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(StringBuilder s, int start, int limit,
+            int leadCC, int trailCC)
+        {
+            if (start == limit)
+            {
+                return;
+            }
+            if (lastCC <= leadCC || leadCC == 0)
+            {
+                if (trailCC <= 1)
+                {
+                    reorderStart = str.Length + (limit - start);
+                }
+                else if (leadCC <= 1)
+                {
+                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
+                }
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                lastCC = trailCC;
+            }
+            else
+            {
+                int c = Character.CodePointAt(s, start);
+                start += Character.CharCount(c);
+                Insert(c, leadCC);  // insert first code point
+                while (start < limit)
+                {
+                    c = Character.CodePointAt(s, start);
+                    start += Character.CharCount(c);
+                    if (start < limit)
+                    {
+                        // s must be in NFD, otherwise we need to use getCC().
+                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
+                    }
+                    else
+                    {
+                        leadCC = trailCC;
+                    }
+                    Append(c, leadCC);
+                }
+            }
+        }
+
+        // s must be in NFD, otherwise change the implementation.
+        public void Append(char[] s, int start, int limit,
+            int leadCC, int trailCC)
+        {
+            if (start == limit)
+            {
+                return;
+            }
+            if (lastCC <= leadCC || leadCC == 0)
+            {
+                if (trailCC <= 1)
+                {
+                    reorderStart = str.Length + (limit - start);
+                }
+                else if (leadCC <= 1)
+                {
+                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
+                }
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                lastCC = trailCC;
+            }
+            else
+            {
+                int c = Character.CodePointAt(s, start);
+                start += Character.CharCount(c);
+                Insert(c, leadCC);  // insert first code point
+                while (start < limit)
+                {
+                    c = Character.CodePointAt(s, start);
+                    start += Character.CharCount(c);
+                    if (start < limit)
+                    {
+                        // s must be in NFD, otherwise we need to use getCC().
+                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
+                    }
+                    else
+                    {
+                        leadCC = trailCC;
+                    }
+                    Append(c, leadCC);
+                }
+            }
+        }
+
+        // s must be in NFD, otherwise change the implementation.
+        internal void Append(ICharSequence s, int start, int limit,
+            int leadCC, int trailCC)
+        {
+            if (start == limit)
+            {
+                return;
+            }
+            if (lastCC <= leadCC || leadCC == 0)
+            {
+                if (trailCC <= 1)
+                {
+                    reorderStart = str.Length + (limit - start);
+                }
+                else if (leadCC <= 1)
+                {
+                    reorderStart = str.Length + 1;  // Ok if not a code point boundary.
+                }
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                lastCC = trailCC;
+            }
+            else
+            {
+                int c = Character.CodePointAt(s, start);
+                start += Character.CharCount(c);
+                Insert(c, leadCC);  // insert first code point
+                while (start < limit)
+                {
+                    c = Character.CodePointAt(s, start);
+                    start += Character.CharCount(c);
+                    if (start < limit)
+                    {
+                        // s must be in NFD, otherwise we need to use getCC().
+                        leadCC = Normalizer2Impl.GetCCFromYesOrMaybe(impl.GetNorm16(c));
+                    }
+                    else
+                    {
+                        leadCC = trailCC;
+                    }
+                    Append(c, leadCC);
+                }
+            }
+        }
+
+        public ReorderingBuffer Append(string s)
+        {
+            if (s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+            return this;
+        }
+
+        public ReorderingBuffer Append(StringBuilder s)
+        {
+            if (s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+            return this;
+        }
+
+        public ReorderingBuffer Append(char[] s)
+        {
+            if (s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+            return this;
+        }
+
+        internal ReorderingBuffer Append(ICharSequence s)
+        {
+            if (s.Length != 0)
+            {
+                str.Append(s);
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+            return this;
+        }
+
+        public ReorderingBuffer Append(string s, int start, int limit)
+        {
+            if (start != limit)
+            {
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+            return this;
+        }
+
+        public ReorderingBuffer Append(StringBuilder s, int start, int limit)
+        {
+            if (start != limit)
+            {
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+            return this;
+        }
+
+        public ReorderingBuffer Append(char[] s, int start, int limit)
+        {
+            if (start != limit)
+            {
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+            return this;
+        }
+
+        internal ReorderingBuffer Append(ICharSequence s, int start, int limit)
+        {
+            if (start != limit)
+            {
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                lastCC = 0;
+                reorderStart = str.Length;
+            }
+            return this;
+        }
+
+        /// <summary>
+        /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
+        /// if they are different objects.
+        /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
+        /// Normally used after quick check loops find a non-empty sequence.
+        /// </summary>
+        public ReorderingBuffer FlushAndAppendZeroCC(string s, int start, int limit)
+        {
+            if (appIsStringBuilder)
+            {
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                reorderStart = str.Length;
+            }
+            else
+            {
+                try
+                {
+                    app.Append(str).Append(s, start, limit);
+                    str.Length = 0;
+                    reorderStart = 0;
+                }
+                catch (IOException e)
+                {
+                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
+                }
+            }
+            lastCC = 0;
+            return this;
+        }
+
+        /// <summary>
+        /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
+        /// if they are different objects.
+        /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
+        /// Normally used after quick check loops find a non-empty sequence.
+        /// </summary>
+        public ReorderingBuffer FlushAndAppendZeroCC(StringBuilder s, int start, int limit)
+        {
+            if (appIsStringBuilder)
+            {
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                reorderStart = str.Length;
+            }
+            else
+            {
+                try
+                {
+                    app.Append(str).Append(s, start, limit);
+                    str.Length = 0;
+                    reorderStart = 0;
+                }
+                catch (IOException e)
+                {
+                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
+                }
+            }
+            lastCC = 0;
+            return this;
+        }
+
+        /// <summary>
+        /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
+        /// if they are different objects.
+        /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
+        /// Normally used after quick check loops find a non-empty sequence.
+        /// </summary>
+        public ReorderingBuffer FlushAndAppendZeroCC(char[] s, int start, int limit)
+        {
+            if (appIsStringBuilder)
+            {
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                reorderStart = str.Length;
+            }
+            else
+            {
+                try
+                {
+                    app.Append(str).Append(s, start, limit);
+                    str.Length = 0;
+                    reorderStart = 0;
+                }
+                catch (IOException e)
+                {
+                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
+                }
+            }
+            lastCC = 0;
+            return this;
+        }
+
+        /// <summary>
+        /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
+        /// if they are different objects.
+        /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
+        /// Normally used after quick check loops find a non-empty sequence.
+        /// </summary>
+        internal ReorderingBuffer FlushAndAppendZeroCC(ICharSequence s, int start, int limit)
+        {
+            if (appIsStringBuilder)
+            {
+                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                reorderStart = str.Length;
+            }
+            else
+            {
+                try
+                {
+                    app.Append(str).Append(s, start, limit);
+                    str.Length = 0;
+                    reorderStart = 0;
+                }
+                catch (IOException e)
+                {
+                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
+                }
+            }
+            lastCC = 0;
+            return this;
+        }
+    }
+
+    public sealed partial class UTF16Plus
+    {
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(string s1, string s2)
+        {
+            if (s1 == s2)
+            {
+                return true;
+            }
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(string s1, StringBuilder s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(string s1, char[] s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        internal static bool Equal(string s1, ICharSequence s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(StringBuilder s1, string s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(StringBuilder s1, StringBuilder s2)
+        {
+            if (s1 == s2)
+            {
+                return true;
+            }
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(StringBuilder s1, char[] s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        internal static bool Equal(StringBuilder s1, ICharSequence s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(char[] s1, string s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(char[] s1, StringBuilder s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        public static bool Equal(char[] s1, char[] s2)
+        {
+            if (s1 == s2)
+            {
+                return true;
+            }
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        internal static bool Equal(char[] s1, ICharSequence s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        internal static bool Equal(ICharSequence s1, string s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        internal static bool Equal(ICharSequence s1, StringBuilder s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        internal static bool Equal(ICharSequence s1, char[] s2)
+        {
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character sequence objects for binary equality.
+        /// </summary>
+        /// <param name="s1">s1 first sequence</param>
+        /// <param name="s2">s2 second sequence</param>
+        /// <returns>true if s1 contains the same text as s2.</returns>
+        internal static bool Equal(ICharSequence s1, ICharSequence s2)
+        {
+            if (s1 == s2)
+            {
+                return true;
+            }
+            int length = s1.Length;
+            if (length != s2.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < length; ++i)
+            {
+                if (s1[i] != s2[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(string s1, int start1, int limit1,
+            string s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            if (s1 == s2 && start1 == start2)
+            {
+                return true;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(string s1, int start1, int limit1,
+            StringBuilder s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(string s1, int start1, int limit1,
+            char[] s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        internal static bool Equal(string s1, int start1, int limit1,
+            ICharSequence s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(StringBuilder s1, int start1, int limit1,
+            string s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(StringBuilder s1, int start1, int limit1,
+            StringBuilder s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            if (s1 == s2 && start1 == start2)
+            {
+                return true;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(StringBuilder s1, int start1, int limit1,
+            char[] s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        internal static bool Equal(StringBuilder s1, int start1, int limit1,
+            ICharSequence s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(char[] s1, int start1, int limit1,
+            string s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(char[] s1, int start1, int limit1,
+            StringBuilder s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        public static bool Equal(char[] s1, int start1, int limit1,
+            char[] s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            if (s1 == s2 && start1 == start2)
+            {
+                return true;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        internal static bool Equal(char[] s1, int start1, int limit1,
+            ICharSequence s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        internal static bool Equal(ICharSequence s1, int start1, int limit1,
+            string s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        internal static bool Equal(ICharSequence s1, int start1, int limit1,
+            StringBuilder s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        internal static bool Equal(ICharSequence s1, int start1, int limit1,
+            char[] s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+    
+        /// <summary>
+        /// Compares two character subsequences for binary equality.
+        /// </summary>
+        /// <param name="s1">first sequence</param>
+        /// <param name="start1">start offset in first sequence</param>
+        /// <param name="limit1">limit offset in first sequence</param>
+        /// <param name="s2">second sequence</param>
+        /// <param name="start2">start offset in second sequence</param>
+        /// <param name="limit2">limit offset in second sequence</param>
+        /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
+        internal static bool Equal(ICharSequence s1, int start1, int limit1,
+            ICharSequence s2, int start2, int limit2)
+        {
+            if ((limit1 - start1) != (limit2 - start2))
+            {
+                return false;
+            }
+            if (s1 == s2 && start1 == start2)
+            {
+                return true;
+            }
+            while (start1 < limit1)
+            {
+                if (s1[start1++] != s2[start2++])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        }
+
 
 
     public sealed partial class Normalizer2Impl
     {
 
 
-		public sealed partial class ReorderingBuffer
-        {
-
-            public bool Equals(string s, int start, int limit)
-            {
-                return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
-            }
-
-            public bool Equals(StringBuilder s, int start, int limit)
-            {
-                return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
-            }
-
-            public bool Equals(char[] s, int start, int limit)
-            {
-                return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
-            }
-
-            internal bool Equals(ICharSequence s, int start, int limit)
-            {
-                return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
-            }
-
-            // s must be in NFD, otherwise change the implementation.
-            public void Append(string s, int start, int limit,
-                int leadCC, int trailCC)
-            {
-                if (start == limit)
-                {
-                    return;
-                }
-                if (lastCC <= leadCC || leadCC == 0)
-                {
-                    if (trailCC <= 1)
-                    {
-                        reorderStart = str.Length + (limit - start);
-                    }
-                    else if (leadCC <= 1)
-                    {
-                        reorderStart = str.Length + 1;  // Ok if not a code point boundary.
-                    }
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    lastCC = trailCC;
-                }
-                else
-                {
-                    int c = Character.CodePointAt(s, start);
-                    start += Character.CharCount(c);
-                    Insert(c, leadCC);  // insert first code point
-                    while (start < limit)
-                    {
-                        c = Character.CodePointAt(s, start);
-                        start += Character.CharCount(c);
-                        if (start < limit)
-                        {
-                            // s must be in NFD, otherwise we need to use getCC().
-                            leadCC = GetCCFromYesOrMaybe(impl.GetNorm16(c));
-                        }
-                        else
-                        {
-                            leadCC = trailCC;
-                        }
-                        Append(c, leadCC);
-                    }
-                }
-            }
-
-            // s must be in NFD, otherwise change the implementation.
-            public void Append(StringBuilder s, int start, int limit,
-                int leadCC, int trailCC)
-            {
-                if (start == limit)
-                {
-                    return;
-                }
-                if (lastCC <= leadCC || leadCC == 0)
-                {
-                    if (trailCC <= 1)
-                    {
-                        reorderStart = str.Length + (limit - start);
-                    }
-                    else if (leadCC <= 1)
-                    {
-                        reorderStart = str.Length + 1;  // Ok if not a code point boundary.
-                    }
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    lastCC = trailCC;
-                }
-                else
-                {
-                    int c = Character.CodePointAt(s, start);
-                    start += Character.CharCount(c);
-                    Insert(c, leadCC);  // insert first code point
-                    while (start < limit)
-                    {
-                        c = Character.CodePointAt(s, start);
-                        start += Character.CharCount(c);
-                        if (start < limit)
-                        {
-                            // s must be in NFD, otherwise we need to use getCC().
-                            leadCC = GetCCFromYesOrMaybe(impl.GetNorm16(c));
-                        }
-                        else
-                        {
-                            leadCC = trailCC;
-                        }
-                        Append(c, leadCC);
-                    }
-                }
-            }
-
-            // s must be in NFD, otherwise change the implementation.
-            public void Append(char[] s, int start, int limit,
-                int leadCC, int trailCC)
-            {
-                if (start == limit)
-                {
-                    return;
-                }
-                if (lastCC <= leadCC || leadCC == 0)
-                {
-                    if (trailCC <= 1)
-                    {
-                        reorderStart = str.Length + (limit - start);
-                    }
-                    else if (leadCC <= 1)
-                    {
-                        reorderStart = str.Length + 1;  // Ok if not a code point boundary.
-                    }
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    lastCC = trailCC;
-                }
-                else
-                {
-                    int c = Character.CodePointAt(s, start);
-                    start += Character.CharCount(c);
-                    Insert(c, leadCC);  // insert first code point
-                    while (start < limit)
-                    {
-                        c = Character.CodePointAt(s, start);
-                        start += Character.CharCount(c);
-                        if (start < limit)
-                        {
-                            // s must be in NFD, otherwise we need to use getCC().
-                            leadCC = GetCCFromYesOrMaybe(impl.GetNorm16(c));
-                        }
-                        else
-                        {
-                            leadCC = trailCC;
-                        }
-                        Append(c, leadCC);
-                    }
-                }
-            }
-
-            // s must be in NFD, otherwise change the implementation.
-            internal void Append(ICharSequence s, int start, int limit,
-                int leadCC, int trailCC)
-            {
-                if (start == limit)
-                {
-                    return;
-                }
-                if (lastCC <= leadCC || leadCC == 0)
-                {
-                    if (trailCC <= 1)
-                    {
-                        reorderStart = str.Length + (limit - start);
-                    }
-                    else if (leadCC <= 1)
-                    {
-                        reorderStart = str.Length + 1;  // Ok if not a code point boundary.
-                    }
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    lastCC = trailCC;
-                }
-                else
-                {
-                    int c = Character.CodePointAt(s, start);
-                    start += Character.CharCount(c);
-                    Insert(c, leadCC);  // insert first code point
-                    while (start < limit)
-                    {
-                        c = Character.CodePointAt(s, start);
-                        start += Character.CharCount(c);
-                        if (start < limit)
-                        {
-                            // s must be in NFD, otherwise we need to use getCC().
-                            leadCC = GetCCFromYesOrMaybe(impl.GetNorm16(c));
-                        }
-                        else
-                        {
-                            leadCC = trailCC;
-                        }
-                        Append(c, leadCC);
-                    }
-                }
-            }
-
-            public ReorderingBuffer Append(string s)
-            {
-                if (s.Length != 0)
-                {
-                    str.Append(s);
-                    lastCC = 0;
-                    reorderStart = str.Length;
-                }
-                return this;
-            }
-
-            public ReorderingBuffer Append(StringBuilder s)
-            {
-                if (s.Length != 0)
-                {
-                    str.Append(s);
-                    lastCC = 0;
-                    reorderStart = str.Length;
-                }
-                return this;
-            }
-
-            public ReorderingBuffer Append(char[] s)
-            {
-                if (s.Length != 0)
-                {
-                    str.Append(s);
-                    lastCC = 0;
-                    reorderStart = str.Length;
-                }
-                return this;
-            }
-
-            internal ReorderingBuffer Append(ICharSequence s)
-            {
-                if (s.Length != 0)
-                {
-                    str.Append(s);
-                    lastCC = 0;
-                    reorderStart = str.Length;
-                }
-                return this;
-            }
-
-            public ReorderingBuffer Append(string s, int start, int limit)
-            {
-                if (start != limit)
-                {
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    lastCC = 0;
-                    reorderStart = str.Length;
-                }
-                return this;
-            }
-
-            public ReorderingBuffer Append(StringBuilder s, int start, int limit)
-            {
-                if (start != limit)
-                {
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    lastCC = 0;
-                    reorderStart = str.Length;
-                }
-                return this;
-            }
-
-            public ReorderingBuffer Append(char[] s, int start, int limit)
-            {
-                if (start != limit)
-                {
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    lastCC = 0;
-                    reorderStart = str.Length;
-                }
-                return this;
-            }
-
-            internal ReorderingBuffer Append(ICharSequence s, int start, int limit)
-            {
-                if (start != limit)
-                {
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    lastCC = 0;
-                    reorderStart = str.Length;
-                }
-                return this;
-            }
-
-            /// <summary>
-            /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
-            /// if they are different objects.
-            /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
-            /// Normally used after quick check loops find a non-empty sequence.
-            /// </summary>
-            public ReorderingBuffer FlushAndAppendZeroCC(string s, int start, int limit)
-            {
-                if (appIsStringBuilder)
-                {
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    reorderStart = str.Length;
-                }
-                else
-                {
-                    try
-                    {
-                        app.Append(str).Append(s, start, limit);
-                        str.Length = 0;
-                        reorderStart = 0;
-                    }
-                    catch (IOException e)
-                    {
-                        throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-                    }
-                }
-                lastCC = 0;
-                return this;
-            }
-
-            /// <summary>
-            /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
-            /// if they are different objects.
-            /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
-            /// Normally used after quick check loops find a non-empty sequence.
-            /// </summary>
-            public ReorderingBuffer FlushAndAppendZeroCC(StringBuilder s, int start, int limit)
-            {
-                if (appIsStringBuilder)
-                {
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    reorderStart = str.Length;
-                }
-                else
-                {
-                    try
-                    {
-                        app.Append(str).Append(s, start, limit);
-                        str.Length = 0;
-                        reorderStart = 0;
-                    }
-                    catch (IOException e)
-                    {
-                        throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-                    }
-                }
-                lastCC = 0;
-                return this;
-            }
-
-            /// <summary>
-            /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
-            /// if they are different objects.
-            /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
-            /// Normally used after quick check loops find a non-empty sequence.
-            /// </summary>
-            public ReorderingBuffer FlushAndAppendZeroCC(char[] s, int start, int limit)
-            {
-                if (appIsStringBuilder)
-                {
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    reorderStart = str.Length;
-                }
-                else
-                {
-                    try
-                    {
-                        app.Append(str).Append(s, start, limit);
-                        str.Length = 0;
-                        reorderStart = 0;
-                    }
-                    catch (IOException e)
-                    {
-                        throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-                    }
-                }
-                lastCC = 0;
-                return this;
-            }
-
-            /// <summary>
-            /// Flushes from the intermediate <see cref="System.Text.StringBuilder"/> to the <see cref="IAppendable"/>,
-            /// if they are different objects.
-            /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
-            /// Normally used after quick check loops find a non-empty sequence.
-            /// </summary>
-            internal ReorderingBuffer FlushAndAppendZeroCC(ICharSequence s, int start, int limit)
-            {
-                if (appIsStringBuilder)
-                {
-                    str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
-                    reorderStart = str.Length;
-                }
-                else
-                {
-                    try
-                    {
-                        app.Append(str).Append(s, start, limit);
-                        str.Length = 0;
-                        reorderStart = 0;
-                    }
-                    catch (IOException e)
-                    {
-                        throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-                    }
-                }
-                lastCC = 0;
-                return this;
-            }
-		}
-
-		public sealed partial class UTF16Plus
-        {
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            public static bool Equal(string s1, string s2)
-            {
-                if (s1 == s2)
-                {
-                    return true;
-                }
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            public static bool Equal(string s1, StringBuilder s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            public static bool Equal(string s1, char[] s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            internal static bool Equal(string s1, ICharSequence s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-		
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            public static bool Equal(StringBuilder s1, string s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            public static bool Equal(StringBuilder s1, StringBuilder s2)
-            {
-                if (s1 == s2)
-                {
-                    return true;
-                }
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            public static bool Equal(StringBuilder s1, char[] s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            internal static bool Equal(StringBuilder s1, ICharSequence s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-		
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            public static bool Equal(char[] s1, string s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            public static bool Equal(char[] s1, StringBuilder s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            public static bool Equal(char[] s1, char[] s2)
-            {
-                if (s1 == s2)
-                {
-                    return true;
-                }
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            internal static bool Equal(char[] s1, ICharSequence s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-		
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            internal static bool Equal(ICharSequence s1, string s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            internal static bool Equal(ICharSequence s1, StringBuilder s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            internal static bool Equal(ICharSequence s1, char[] s2)
-            {
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character sequence objects for binary equality.
-            /// </summary>
-            /// <param name="s1">s1 first sequence</param>
-            /// <param name="s2">s2 second sequence</param>
-            /// <returns>true if s1 contains the same text as s2.</returns>
-            internal static bool Equal(ICharSequence s1, ICharSequence s2)
-            {
-                if (s1 == s2)
-                {
-                    return true;
-                }
-                int length = s1.Length;
-                if (length != s2.Length)
-                {
-                    return false;
-                }
-                for (int i = 0; i < length; ++i)
-                {
-                    if (s1[i] != s2[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-		
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            public static bool Equal(string s1, int start1, int limit1,
-				string s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                if (s1 == s2 && start1 == start2)
-                {
-                    return true;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            public static bool Equal(string s1, int start1, int limit1,
-				StringBuilder s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            public static bool Equal(string s1, int start1, int limit1,
-				char[] s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            internal static bool Equal(string s1, int start1, int limit1,
-				ICharSequence s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-		
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            public static bool Equal(StringBuilder s1, int start1, int limit1,
-				string s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            public static bool Equal(StringBuilder s1, int start1, int limit1,
-				StringBuilder s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                if (s1 == s2 && start1 == start2)
-                {
-                    return true;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            public static bool Equal(StringBuilder s1, int start1, int limit1,
-				char[] s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            internal static bool Equal(StringBuilder s1, int start1, int limit1,
-				ICharSequence s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-		
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            public static bool Equal(char[] s1, int start1, int limit1,
-				string s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            public static bool Equal(char[] s1, int start1, int limit1,
-				StringBuilder s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            public static bool Equal(char[] s1, int start1, int limit1,
-				char[] s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                if (s1 == s2 && start1 == start2)
-                {
-                    return true;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            internal static bool Equal(char[] s1, int start1, int limit1,
-				ICharSequence s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-		
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            internal static bool Equal(ICharSequence s1, int start1, int limit1,
-				string s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            internal static bool Equal(ICharSequence s1, int start1, int limit1,
-				StringBuilder s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            internal static bool Equal(ICharSequence s1, int start1, int limit1,
-				char[] s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-	
-            /// <summary>
-            /// Compares two character subsequences for binary equality.
-            /// </summary>
-            /// <param name="s1">first sequence</param>
-            /// <param name="start1">start offset in first sequence</param>
-            /// <param name="limit1">limit offset in first sequence</param>
-            /// <param name="s2">second sequence</param>
-            /// <param name="start2">start offset in second sequence</param>
-            /// <param name="limit2">limit offset in second sequence</param>
-            /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-            internal static bool Equal(ICharSequence s1, int start1, int limit1,
-				ICharSequence s2, int start2, int limit2)
-            {
-                if ((limit1 - start1) != (limit2 - start2))
-                {
-                    return false;
-                }
-                if (s1 == s2 && start1 == start2)
-                {
-                    return true;
-                }
-                while (start1 < limit1)
-                {
-                    if (s1[start1++] != s2[start2++])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-			}
 
         // NFD without an NFD Normalizer2 instance.
         public StringBuilder Decompose(string s, StringBuilder dest)
@@ -3869,9 +3870,9 @@ namespace ICU4N.Impl
         }
 
         public void ComposeAndAppend(string s,
-			bool doCompose,
-			bool onlyContiguous,
-			ReorderingBuffer buffer)
+            bool doCompose,
+            bool onlyContiguous,
+            ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)
@@ -3901,9 +3902,9 @@ namespace ICU4N.Impl
         }
 
         public void ComposeAndAppend(StringBuilder s,
-			bool doCompose,
-			bool onlyContiguous,
-			ReorderingBuffer buffer)
+            bool doCompose,
+            bool onlyContiguous,
+            ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)
@@ -3933,9 +3934,9 @@ namespace ICU4N.Impl
         }
 
         public void ComposeAndAppend(char[] s,
-			bool doCompose,
-			bool onlyContiguous,
-			ReorderingBuffer buffer)
+            bool doCompose,
+            bool onlyContiguous,
+            ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)
@@ -3965,9 +3966,9 @@ namespace ICU4N.Impl
         }
 
         internal void ComposeAndAppend(ICharSequence s,
-			bool doCompose,
-			bool onlyContiguous,
-			ReorderingBuffer buffer)
+            bool doCompose,
+            bool onlyContiguous,
+            ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)
@@ -5323,5 +5324,5 @@ namespace ICU4N.Impl
             }
             return GetFCD16(Character.CodePointBefore(s, p));
         }
-	}
+    }
 }

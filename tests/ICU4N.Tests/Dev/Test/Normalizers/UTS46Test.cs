@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using UTF16Plus = ICU4N.Impl.Normalizer2Impl.UTF16Plus; // ICU4N TODO: De-nest?
 
 namespace ICU4N.Dev.Test.Normalizers
 {

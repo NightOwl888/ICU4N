@@ -179,7 +179,7 @@ namespace ICU4N.Impl
             public override StringBuilder Normalize(string src, StringBuilder dest)
             {
                 dest.Length = 0;
-                Normalize(src, new Normalizer2Impl.ReorderingBuffer(impl, dest, src.Length));
+                Normalize(src, new ReorderingBuffer(impl, dest, src.Length));
                 return dest;
             }
 
@@ -190,14 +190,14 @@ namespace ICU4N.Impl
                     throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
                 }
                 dest.Length = 0;
-                Normalize(src, new Normalizer2Impl.ReorderingBuffer(impl, dest, src.Length));
+                Normalize(src, new ReorderingBuffer(impl, dest, src.Length));
                 return dest;
             }
 
             public override StringBuilder Normalize(char[] src, StringBuilder dest)
             {
                 dest.Length = 0;
-                Normalize(src, new Normalizer2Impl.ReorderingBuffer(impl, dest, src.Length));
+                Normalize(src, new ReorderingBuffer(impl, dest, src.Length));
                 return dest;
             }
 
@@ -208,7 +208,7 @@ namespace ICU4N.Impl
                     throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
                 }
                 dest.Length = 0;
-                Normalize(src, new Normalizer2Impl.ReorderingBuffer(impl, dest, src.Length));
+                Normalize(src, new ReorderingBuffer(impl, dest, src.Length));
                 return dest;
             }
 
@@ -223,19 +223,19 @@ namespace ICU4N.Impl
                 {
                     throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
                 }
-                Normalizer2Impl.ReorderingBuffer buffer = new Normalizer2Impl.ReorderingBuffer(impl, dest, src.Length);
+                ReorderingBuffer buffer = new ReorderingBuffer(impl, dest, src.Length);
                 Normalize(src, buffer);
                 buffer.Flush();
                 return dest;
             }
 
-            protected abstract void Normalize(string src, Normalizer2Impl.ReorderingBuffer buffer);
+            protected abstract void Normalize(string src, ReorderingBuffer buffer);
 
-            protected abstract void Normalize(StringBuilder src, Normalizer2Impl.ReorderingBuffer buffer);
+            protected abstract void Normalize(StringBuilder src, ReorderingBuffer buffer);
 
-            protected abstract void Normalize(char[] src, Normalizer2Impl.ReorderingBuffer buffer);
+            protected abstract void Normalize(char[] src, ReorderingBuffer buffer);
 
-            internal abstract void Normalize(ICharSequence src, Normalizer2Impl.ReorderingBuffer buffer);
+            internal abstract void Normalize(ICharSequence src, ReorderingBuffer buffer);
 
             // normalize and append
 
@@ -284,7 +284,7 @@ namespace ICU4N.Impl
             {
                 NormalizeAndAppend(
                     second, doNormalize,
-                    new Normalizer2Impl.ReorderingBuffer(impl, first, first.Length + second.Length));
+                    new ReorderingBuffer(impl, first, first.Length + second.Length));
                 return first;
             }
 
@@ -297,7 +297,7 @@ namespace ICU4N.Impl
                 }
                 NormalizeAndAppend(
                     second, doNormalize,
-                    new Normalizer2Impl.ReorderingBuffer(impl, first, first.Length + second.Length));
+                    new ReorderingBuffer(impl, first, first.Length + second.Length));
                 return first;
             }
 
@@ -306,7 +306,7 @@ namespace ICU4N.Impl
             {
                 NormalizeAndAppend(
                     second, doNormalize,
-                    new Normalizer2Impl.ReorderingBuffer(impl, first, first.Length + second.Length));
+                    new ReorderingBuffer(impl, first, first.Length + second.Length));
                 return first;
             }
 
@@ -315,21 +315,21 @@ namespace ICU4N.Impl
             {
                 NormalizeAndAppend(
                     second, doNormalize,
-                    new Normalizer2Impl.ReorderingBuffer(impl, first, first.Length + second.Length));
+                    new ReorderingBuffer(impl, first, first.Length + second.Length));
                 return first;
             }
 
             protected abstract void NormalizeAndAppend(
-                string src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer);
+                string src, bool doNormalize, ReorderingBuffer buffer);
 
             protected abstract void NormalizeAndAppend(
-                StringBuilder src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer);
+                StringBuilder src, bool doNormalize, ReorderingBuffer buffer);
 
             protected abstract void NormalizeAndAppend(
-                char[] src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer);
+                char[] src, bool doNormalize, ReorderingBuffer buffer);
 
             internal abstract void NormalizeAndAppend(
-                ICharSequence src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer);
+                ICharSequence src, bool doNormalize, ReorderingBuffer buffer);
 
             public override string GetDecomposition(int c)
             {
@@ -406,45 +406,45 @@ namespace ICU4N.Impl
             {
             }
 
-            protected override void Normalize(string src, Normalizer2Impl.ReorderingBuffer buffer)
+            protected override void Normalize(string src, ReorderingBuffer buffer)
             {
                 impl.Decompose(src, 0, src.Length, buffer);
             }
 
-            protected override void Normalize(StringBuilder src, Normalizer2Impl.ReorderingBuffer buffer)
+            protected override void Normalize(StringBuilder src, ReorderingBuffer buffer)
             {
                 impl.Decompose(src, 0, src.Length, buffer);
             }
 
-            protected override void Normalize(char[] src, Normalizer2Impl.ReorderingBuffer buffer)
+            protected override void Normalize(char[] src, ReorderingBuffer buffer)
             {
                 impl.Decompose(src, 0, src.Length, buffer);
             }
 
-            internal override void Normalize(ICharSequence src, Normalizer2Impl.ReorderingBuffer buffer)
+            internal override void Normalize(ICharSequence src, ReorderingBuffer buffer)
             {
                 impl.Decompose(src, 0, src.Length, buffer);
             }
 
             protected override void NormalizeAndAppend(
-                string src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                string src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.DecomposeAndAppend(src, doNormalize, buffer);
             }
 
             protected override void NormalizeAndAppend(
-                StringBuilder src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                StringBuilder src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.DecomposeAndAppend(src, doNormalize, buffer);
             }
 
             protected override void NormalizeAndAppend(
-                char[] src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                char[] src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.DecomposeAndAppend(src, doNormalize, buffer);
             }
 
-            internal override void NormalizeAndAppend(ICharSequence src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+            internal override void NormalizeAndAppend(ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.DecomposeAndAppend(src, doNormalize, buffer);
             }
@@ -489,46 +489,46 @@ namespace ICU4N.Impl
                 onlyContiguous = fcc;
             }
 
-            protected override void Normalize(string src, Normalizer2Impl.ReorderingBuffer buffer)
+            protected override void Normalize(string src, ReorderingBuffer buffer)
             {
                 impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
             }
 
-            protected override void Normalize(StringBuilder src, Normalizer2Impl.ReorderingBuffer buffer)
+            protected override void Normalize(StringBuilder src, ReorderingBuffer buffer)
             {
                 impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
             }
 
-            protected override void Normalize(char[] src, Normalizer2Impl.ReorderingBuffer buffer)
+            protected override void Normalize(char[] src, ReorderingBuffer buffer)
             {
                 impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
             }
 
-            internal override void Normalize(ICharSequence src, Normalizer2Impl.ReorderingBuffer buffer)
+            internal override void Normalize(ICharSequence src, ReorderingBuffer buffer)
             {
                 impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
             }
 
             protected override void NormalizeAndAppend(
-                string src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                string src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
             }
 
             protected override void NormalizeAndAppend(
-                StringBuilder src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                StringBuilder src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
             }
 
             protected override void NormalizeAndAppend(
-                char[] src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                char[] src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
             }
 
             internal override void NormalizeAndAppend(
-                ICharSequence src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
             }
@@ -538,7 +538,7 @@ namespace ICU4N.Impl
                 // 5: small destCapacity for substring normalization
                 return impl.Compose(s, 0, s.Length,
                                     onlyContiguous, false,
-                                    new Normalizer2Impl.ReorderingBuffer(impl, new StringBuilder(), 5));
+                                    new ReorderingBuffer(impl, new StringBuilder(), 5));
             }
 
             public override bool IsNormalized(StringBuilder s)
@@ -546,7 +546,7 @@ namespace ICU4N.Impl
                 // 5: small destCapacity for substring normalization
                 return impl.Compose(s, 0, s.Length,
                                     onlyContiguous, false,
-                                    new Normalizer2Impl.ReorderingBuffer(impl, new StringBuilder(), 5));
+                                    new ReorderingBuffer(impl, new StringBuilder(), 5));
             }
 
             public override bool IsNormalized(char[] s)
@@ -554,7 +554,7 @@ namespace ICU4N.Impl
                 // 5: small destCapacity for substring normalization
                 return impl.Compose(s, 0, s.Length,
                                     onlyContiguous, false,
-                                    new Normalizer2Impl.ReorderingBuffer(impl, new StringBuilder(), 5));
+                                    new ReorderingBuffer(impl, new StringBuilder(), 5));
             }
 
             internal override bool IsNormalized(ICharSequence s)
@@ -562,7 +562,7 @@ namespace ICU4N.Impl
                 // 5: small destCapacity for substring normalization
                 return impl.Compose(s, 0, s.Length,
                                     onlyContiguous, false,
-                                    new Normalizer2Impl.ReorderingBuffer(impl, new StringBuilder(), 5));
+                                    new ReorderingBuffer(impl, new StringBuilder(), 5));
             }
 
             public override QuickCheckResult QuickCheck(string s)
@@ -680,46 +680,46 @@ namespace ICU4N.Impl
             {
             }
 
-            protected override void Normalize(string src, Normalizer2Impl.ReorderingBuffer buffer)
+            protected override void Normalize(string src, ReorderingBuffer buffer)
             {
                 impl.MakeFCD(src, 0, src.Length, buffer);
             }
 
-            protected override void Normalize(StringBuilder src, Normalizer2Impl.ReorderingBuffer buffer)
+            protected override void Normalize(StringBuilder src, ReorderingBuffer buffer)
             {
                 impl.MakeFCD(src, 0, src.Length, buffer);
             }
 
-            protected override void Normalize(char[] src, Normalizer2Impl.ReorderingBuffer buffer)
+            protected override void Normalize(char[] src, ReorderingBuffer buffer)
             {
                 impl.MakeFCD(src, 0, src.Length, buffer);
             }
 
-            internal override void Normalize(ICharSequence src, Normalizer2Impl.ReorderingBuffer buffer)
+            internal override void Normalize(ICharSequence src, ReorderingBuffer buffer)
             {
                 impl.MakeFCD(src, 0, src.Length, buffer);
             }
 
             protected override void NormalizeAndAppend(
-                string src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                string src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.MakeFCDAndAppend(src, doNormalize, buffer);
             }
 
             protected override void NormalizeAndAppend(
-                StringBuilder src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                StringBuilder src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.MakeFCDAndAppend(src, doNormalize, buffer);
             }
 
             protected override void NormalizeAndAppend(
-                char[] src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                char[] src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.MakeFCDAndAppend(src, doNormalize, buffer);
             }
 
             internal override void NormalizeAndAppend(
-                ICharSequence src, bool doNormalize, Normalizer2Impl.ReorderingBuffer buffer)
+                ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
             {
                 impl.MakeFCDAndAppend(src, doNormalize, buffer);
             }

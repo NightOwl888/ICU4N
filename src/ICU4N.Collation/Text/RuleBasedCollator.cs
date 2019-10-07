@@ -8,7 +8,6 @@ using ICU4N.Util;
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using ReorderingBuffer = ICU4N.Impl.Normalizer2Impl.ReorderingBuffer;
 
 namespace ICU4N.Text
 {

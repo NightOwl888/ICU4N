@@ -69,6 +69,291 @@ namespace ICU4N.Impl
     }
 
     /// <summary>
+    /// Writable buffer that takes care of canonical ordering.
+    /// Its <see cref="IAppendable"/> methods behave like the C++ implementation's
+    /// appendZeroCC() methods.
+    /// <para/>
+    /// If dest is a <see cref="System.Text.StringBuilder"/>, then the buffer writes directly to it.
+    /// Otherwise, the buffer maintains a <see cref="System.Text.StringBuilder"/> for intermediate text segments
+    /// until no further changes are necessary and whole segments are appended.
+    /// Append() methods that take combining-class values always write to the <see cref="System.Text.StringBuilder"/>.
+    /// Other Append() methods flush and append to the <see cref="IAppendable"/>.
+    /// </summary>
+    public sealed partial class ReorderingBuffer : IAppendable
+    {
+        public ReorderingBuffer(Normalizer2Impl ni, StringBuilder dest, int destCapacity)
+            : this(ni, dest.ToAppendable(), destCapacity)
+        {
+        }
+
+        internal ReorderingBuffer(Normalizer2Impl ni, IAppendable dest, int destCapacity)
+        {
+            impl = ni;
+            app = dest;
+            if (app is StringBuilderAppendable)
+            {
+                appIsStringBuilder = true;
+                str = ((StringBuilderAppendable)dest).StringBuilder;
+                // In Java, the constructor subsumes public void init(int destCapacity) {
+                str.EnsureCapacity(destCapacity);
+                reorderStart = 0;
+                if (str.Length == 0)
+                {
+                    lastCC = 0;
+                }
+                else
+                {
+                    SetIterator();
+                    lastCC = PreviousCC();
+                    // Set reorderStart after the last code point with cc<=1 if there is one.
+                    if (lastCC > 1)
+                    {
+                        while (PreviousCC() > 1) { }
+                    }
+                    reorderStart = codePointLimit;
+                }
+            }
+            else
+            {
+                appIsStringBuilder = false;
+                str = new StringBuilder();
+                reorderStart = 0;
+                lastCC = 0;
+            }
+        }
+
+        public bool IsEmpty { get { return str.Length == 0; } }
+        public int Length { get { return str.Length; } }
+        public int LastCC { get { return lastCC; } }
+
+        public StringBuilder StringBuilder { get { return str; } }
+
+        // ICU4N specific - Equals(ICharSequence s, int start, int limit) moved to Normalizer2ImplExtension.tt
+
+        public void Append(int c, int cc)
+        {
+            if (lastCC <= cc || cc == 0)
+            {
+                str.AppendCodePoint(c);
+                lastCC = cc;
+                if (cc <= 1)
+                {
+                    reorderStart = str.Length;
+                }
+            }
+            else
+            {
+                Insert(c, cc);
+            }
+        }
+
+        // ICU4N specific - Append(ICharSequence s, int start, int limit,
+        //    int leadCC, int trailCC)
+
+
+        // The following append() methods work like C++ appendZeroCC().
+        // They assume that the cc or trailCC of their input is 0.
+        // Most of them implement Appendable interface methods.
+        public ReorderingBuffer Append(char c)
+        {
+            str.Append(c);
+            lastCC = 0;
+            reorderStart = str.Length;
+            return this;
+        }
+        public void AppendZeroCC(int c)
+        {
+            str.AppendCodePoint(c);
+            lastCC = 0;
+            reorderStart = str.Length;
+        }
+
+        // ICU4N specific - Append(ICharSequence s) moved to Normalizer2ImplExtension.tt
+
+        // ICU4N specific - Append(ICharSequence s, int start, int limit)
+
+        /// <summary>
+        /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
+        /// if they are different objects.
+        /// Used after recomposition.
+        /// Must be called at the end when writing to a non-StringBuilderAppendable <see cref="IAppendable"/>.
+        /// </summary>
+        public void Flush()
+        {
+            if (appIsStringBuilder)
+            {
+                reorderStart = str.Length;
+            }
+            else
+            {
+                try
+                {
+                    app.Append(str);
+                    str.Length = 0;
+                    reorderStart = 0;
+                }
+                catch (IOException e)
+                {
+                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
+                }
+            }
+            lastCC = 0;
+        }
+
+        public void Remove()
+        {
+            str.Length = 0;
+            lastCC = 0;
+            reorderStart = 0;
+        }
+        public void RemoveSuffix(int suffixLength)
+        {
+            int oldLength = str.Length;
+            str.Delete(oldLength - suffixLength, oldLength);
+            lastCC = 0;
+            reorderStart = str.Length;
+        }
+
+        // ICU4N specific - FlushAndAppendZeroCC(ICharSequence s, int start, int limit)
+
+        /*
+         * TODO: Revisit whether it makes sense to track reorderStart.
+         * It is set to after the last known character with cc<=1,
+         * which stops previousCC() before it reads that character and looks up its cc.
+         * previousCC() is normally only called from insert().
+         * In other words, reorderStart speeds up the insertion of a combining mark
+         * into a multi-combining mark sequence where it does not belong at the end.
+         * This might not be worth the trouble.
+         * On the other hand, it's not a huge amount of trouble.
+         *
+         * We probably need it for UNORM_SIMPLE_APPEND.
+         */
+
+        // Inserts c somewhere before the last character.
+        // Requires 0<cc<lastCC which implies reorderStart<limit.
+        private void Insert(int c, int cc)
+        {
+            for (SetIterator(), SkipPrevious(); PreviousCC() > cc;) { }
+            // insert c at codePointLimit, after the character with prevCC<=cc
+            if (c <= 0xffff)
+            {
+                str.Insert(codePointLimit, (char)c);
+                if (cc <= 1)
+                {
+                    reorderStart = codePointLimit + 1;
+                }
+            }
+            else
+            {
+                str.Insert(codePointLimit, Character.ToChars(c));
+                if (cc <= 1)
+                {
+                    reorderStart = codePointLimit + 2;
+                }
+            }
+        }
+
+        private readonly Normalizer2Impl impl;
+        private readonly IAppendable app;
+        private readonly StringBuilder str;
+        private readonly bool appIsStringBuilder;
+        private int reorderStart;
+        private int lastCC;
+
+        // private backward iterator
+        private void SetIterator() { codePointStart = str.Length; }
+        private void SkipPrevious()
+        {  // Requires 0<codePointStart.
+            codePointLimit = codePointStart;
+            codePointStart = str.OffsetByCodePoints(codePointStart, -1);
+        }
+        private int PreviousCC()
+        {  // Returns 0 if there is no previous character.
+            codePointLimit = codePointStart;
+            if (reorderStart >= codePointStart)
+            {
+                return 0;
+            }
+            int c = str.CodePointBefore(codePointStart);
+            codePointStart -= Character.CharCount(c);
+            return impl.GetCCFromYesOrMaybeCP(c);
+        }
+
+        // ICU4N specific - implementing interface explicitly allows
+        // for us to have a concrete type above that returns itself (similar to
+        // how it was in Java).
+        #region IAppendable interface
+
+        IAppendable IAppendable.Append(char c)
+        {
+            return Append(c);
+        }
+
+        IAppendable IAppendable.Append(string csq)
+        {
+            return Append(csq);
+        }
+
+        IAppendable IAppendable.Append(string csq, int start, int end)
+        {
+            return Append(csq, start, end);
+        }
+
+        IAppendable IAppendable.Append(StringBuilder csq)
+        {
+            return Append(csq);
+        }
+
+        IAppendable IAppendable.Append(StringBuilder csq, int start, int end)
+        {
+            return Append(csq, start, end);
+        }
+
+        IAppendable IAppendable.Append(char[] csq)
+        {
+            return Append(csq);
+        }
+
+        IAppendable IAppendable.Append(char[] csq, int start, int end)
+        {
+            return Append(csq, start, end);
+        }
+
+        IAppendable IAppendable.Append(ICharSequence csq)
+        {
+            return Append(csq);
+        }
+
+        IAppendable IAppendable.Append(ICharSequence csq, int start, int end)
+        {
+            return Append(csq, start, end);
+        }
+
+        #endregion
+
+        private int codePointStart, codePointLimit;
+    }
+
+    // TODO: Propose as public API on the UTF16 class.
+    // TODO: Propose widening UTF16 methods that take char to take int.
+    // TODO: Propose widening UTF16 methods that take String to take CharSequence.
+    public sealed partial class UTF16Plus
+    {
+        /// <summary>
+        /// Assuming <paramref name="c"/> is a surrogate code point (UTF16.IsSurrogate(c)),
+        /// is it a lead surrogate?
+        /// </summary>
+        /// <param name="c">code unit or code point</param>
+        /// <returns>true or false</returns>
+        public static bool IsSurrogateLead(int c) { return (c & 0x400) == 0; }
+
+        // ICU4N specific -  Equal(ICharSequence s1, ICharSequence s2) moved to Normalizer2ImplExtension.tt
+
+        // ICU4N specific -  Equal(ICharSequence s1, int start1, int limit1,
+        //    ICharSequence s2, int start2, int limit2) moved to Normalizer2ImplExtension.tt
+    }
+
+    /// <summary>
     /// Low-level implementation of the Unicode Normalization Algorithm.
     /// For the data structure and details see the documentation at the end of
     /// C++ normalizer2impl.h and in the design doc at
@@ -78,291 +363,9 @@ namespace ICU4N.Impl
     {
         // ICU4N specific - de-nested Hangul class
         
-
-        /// <summary>
-        /// Writable buffer that takes care of canonical ordering.
-        /// Its <see cref="IAppendable"/> methods behave like the C++ implementation's
-        /// appendZeroCC() methods.
-        /// <para/>
-        /// If dest is a <see cref="System.Text.StringBuilder"/>, then the buffer writes directly to it.
-        /// Otherwise, the buffer maintains a <see cref="System.Text.StringBuilder"/> for intermediate text segments
-        /// until no further changes are necessary and whole segments are appended.
-        /// Append() methods that take combining-class values always write to the <see cref="System.Text.StringBuilder"/>.
-        /// Other Append() methods flush and append to the <see cref="IAppendable"/>.
-        /// </summary>
-        public sealed partial class ReorderingBuffer : IAppendable // ICU4N TODO: API - de-nest?
-        {
-            public ReorderingBuffer(Normalizer2Impl ni, StringBuilder dest, int destCapacity)
-                : this(ni, dest.ToAppendable(), destCapacity)
-            {
-            }
-
-            internal ReorderingBuffer(Normalizer2Impl ni, IAppendable dest, int destCapacity)
-            {
-                impl = ni;
-                app = dest;
-                if (app is StringBuilderAppendable)
-                {
-                    appIsStringBuilder = true;
-                    str = ((StringBuilderAppendable)dest).StringBuilder;
-                    // In Java, the constructor subsumes public void init(int destCapacity) {
-                    str.EnsureCapacity(destCapacity);
-                    reorderStart = 0;
-                    if (str.Length == 0)
-                    {
-                        lastCC = 0;
-                    }
-                    else
-                    {
-                        SetIterator();
-                        lastCC = PreviousCC();
-                        // Set reorderStart after the last code point with cc<=1 if there is one.
-                        if (lastCC > 1)
-                        {
-                            while (PreviousCC() > 1) { }
-                        }
-                        reorderStart = codePointLimit;
-                    }
-                }
-                else
-                {
-                    appIsStringBuilder = false;
-                    str = new StringBuilder();
-                    reorderStart = 0;
-                    lastCC = 0;
-                }
-            }
-
-            public bool IsEmpty { get { return str.Length == 0; } }
-            public int Length { get { return str.Length; } }
-            public int LastCC { get { return lastCC; } }
-
-            public StringBuilder StringBuilder { get { return str; } }
-
-            // ICU4N specific - Equals(ICharSequence s, int start, int limit) moved to Normalizer2ImplExtension.tt
-
-            public void Append(int c, int cc)
-            {
-                if (lastCC <= cc || cc == 0)
-                {
-                    str.AppendCodePoint(c);
-                    lastCC = cc;
-                    if (cc <= 1)
-                    {
-                        reorderStart = str.Length;
-                    }
-                }
-                else
-                {
-                    Insert(c, cc);
-                }
-            }
-
-            // ICU4N specific - Append(ICharSequence s, int start, int limit,
-            //    int leadCC, int trailCC)
-
-
-            // The following append() methods work like C++ appendZeroCC().
-            // They assume that the cc or trailCC of their input is 0.
-            // Most of them implement Appendable interface methods.
-            public ReorderingBuffer Append(char c)
-            {
-                str.Append(c);
-                lastCC = 0;
-                reorderStart = str.Length;
-                return this;
-            }
-            public void AppendZeroCC(int c)
-            {
-                str.AppendCodePoint(c);
-                lastCC = 0;
-                reorderStart = str.Length;
-            }
-
-            // ICU4N specific - Append(ICharSequence s) moved to Normalizer2ImplExtension.tt
-
-            // ICU4N specific - Append(ICharSequence s, int start, int limit)
-
-            /// <summary>
-            /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
-            /// if they are different objects.
-            /// Used after recomposition.
-            /// Must be called at the end when writing to a non-StringBuilderAppendable <see cref="IAppendable"/>.
-            /// </summary>
-            public void Flush()
-            {
-                if (appIsStringBuilder)
-                {
-                    reorderStart = str.Length;
-                }
-                else
-                {
-                    try
-                    {
-                        app.Append(str);
-                        str.Length = 0;
-                        reorderStart = 0;
-                    }
-                    catch (IOException e)
-                    {
-                        throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-                    }
-                }
-                lastCC = 0;
-            }
-
-            public void Remove()
-            {
-                str.Length = 0;
-                lastCC = 0;
-                reorderStart = 0;
-            }
-            public void RemoveSuffix(int suffixLength)
-            {
-                int oldLength = str.Length;
-                str.Delete(oldLength - suffixLength, oldLength);
-                lastCC = 0;
-                reorderStart = str.Length;
-            }
-
-            // ICU4N specific - FlushAndAppendZeroCC(ICharSequence s, int start, int limit)
-
-            /*
-             * TODO: Revisit whether it makes sense to track reorderStart.
-             * It is set to after the last known character with cc<=1,
-             * which stops previousCC() before it reads that character and looks up its cc.
-             * previousCC() is normally only called from insert().
-             * In other words, reorderStart speeds up the insertion of a combining mark
-             * into a multi-combining mark sequence where it does not belong at the end.
-             * This might not be worth the trouble.
-             * On the other hand, it's not a huge amount of trouble.
-             *
-             * We probably need it for UNORM_SIMPLE_APPEND.
-             */
-
-            // Inserts c somewhere before the last character.
-            // Requires 0<cc<lastCC which implies reorderStart<limit.
-            private void Insert(int c, int cc)
-            {
-                for (SetIterator(), SkipPrevious(); PreviousCC() > cc;) { }
-                // insert c at codePointLimit, after the character with prevCC<=cc
-                if (c <= 0xffff)
-                {
-                    str.Insert(codePointLimit, (char)c);
-                    if (cc <= 1)
-                    {
-                        reorderStart = codePointLimit + 1;
-                    }
-                }
-                else
-                {
-                    str.Insert(codePointLimit, Character.ToChars(c));
-                    if (cc <= 1)
-                    {
-                        reorderStart = codePointLimit + 2;
-                    }
-                }
-            }
-
-            private readonly Normalizer2Impl impl;
-            private readonly IAppendable app;
-            private readonly StringBuilder str;
-            private readonly bool appIsStringBuilder;
-            private int reorderStart;
-            private int lastCC;
-
-            // private backward iterator
-            private void SetIterator() { codePointStart = str.Length; }
-            private void SkipPrevious()
-            {  // Requires 0<codePointStart.
-                codePointLimit = codePointStart;
-                codePointStart = str.OffsetByCodePoints(codePointStart, -1);
-            }
-            private int PreviousCC()
-            {  // Returns 0 if there is no previous character.
-                codePointLimit = codePointStart;
-                if (reorderStart >= codePointStart)
-                {
-                    return 0;
-                }
-                int c = str.CodePointBefore(codePointStart);
-                codePointStart -= Character.CharCount(c);
-                return impl.GetCCFromYesOrMaybeCP(c);
-            }
-
-            // ICU4N specific - implementing interface explicitly allows
-            // for us to have a concrete type above that returns itself (similar to
-            // how it was in Java).
-            #region IAppendable interface
-
-            IAppendable IAppendable.Append(char c)
-            {
-                return Append(c);
-            }
-
-            IAppendable IAppendable.Append(string csq)
-            {
-                return Append(csq);
-            }
-
-            IAppendable IAppendable.Append(string csq, int start, int end)
-            {
-                return Append(csq, start, end);
-            }
-
-            IAppendable IAppendable.Append(StringBuilder csq)
-            {
-                return Append(csq);
-            }
-
-            IAppendable IAppendable.Append(StringBuilder csq, int start, int end)
-            {
-                return Append(csq, start, end);
-            }
-
-            IAppendable IAppendable.Append(char[] csq)
-            {
-                return Append(csq);
-            }
-
-            IAppendable IAppendable.Append(char[] csq, int start, int end)
-            {
-                return Append(csq, start, end);
-            }
-
-            IAppendable IAppendable.Append(ICharSequence csq)
-            {
-                return Append(csq);
-            }
-
-            IAppendable IAppendable.Append(ICharSequence csq, int start, int end)
-            {
-                return Append(csq, start, end);
-            }
-
-            #endregion
-
-            private int codePointStart, codePointLimit;
-        }
-
-        // TODO: Propose as public API on the UTF16 class.
-        // TODO: Propose widening UTF16 methods that take char to take int.
-        // TODO: Propose widening UTF16 methods that take String to take CharSequence.
-        public sealed partial class UTF16Plus // ICU4N TODO: API - de-nest?
-        {
-            /// <summary>
-            /// Assuming <paramref name="c"/> is a surrogate code point (UTF16.IsSurrogate(c)),
-            /// is it a lead surrogate?
-            /// </summary>
-            /// <param name="c">code unit or code point</param>
-            /// <returns>true or false</returns>
-            public static bool IsSurrogateLead(int c) { return (c & 0x400) == 0; }
-
-            // ICU4N specific -  Equal(ICharSequence s1, ICharSequence s2) moved to Normalizer2ImplExtension.tt
-
-            // ICU4N specific -  Equal(ICharSequence s1, int start1, int limit1,
-            //    ICharSequence s2, int start2, int limit2) moved to Normalizer2ImplExtension.tt
-        }
+        // ICU4N specific - de-nested ReorderingBuffer class
+        
+        // ICU4N specific - de-nested UTF16Plus class
 
         public Normalizer2Impl() { }
 
