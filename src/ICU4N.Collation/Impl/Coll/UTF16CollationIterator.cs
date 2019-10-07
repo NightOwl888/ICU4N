@@ -105,7 +105,7 @@ namespace ICU4N.Impl.Coll
         {
             if (pos == limit)
             {
-                return NO_CP_AND_CE32;
+                return NoCodePointAndCE32;
             }
             char c = seq[pos++];
             return MakeCodePointAndCE32Pair(c, trie.GetFromU16SingleLead(c));

@@ -189,7 +189,7 @@ namespace ICU4N.Impl.Coll
                     c = iter.Next();
                     if (c < 0)
                     {
-                        return NO_CP_AND_CE32;
+                        return NoCodePointAndCE32;
                     }
                     if (CollationFCD.HasTccc(c))
                     {

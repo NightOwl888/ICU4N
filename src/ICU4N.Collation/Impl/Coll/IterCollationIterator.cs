@@ -41,7 +41,7 @@ namespace ICU4N.Impl.Coll
             int c = iter.Next();
             if (c < 0)
             {
-                return NO_CP_AND_CE32;
+                return NoCodePointAndCE32;
             }
             return MakeCodePointAndCE32Pair(c, trie.GetFromU16SingleLead((char)c));
         }

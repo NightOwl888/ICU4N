@@ -463,14 +463,14 @@ namespace ICU4N.Impl.Coll
         protected virtual long HandleNextCE32()
         {
             int c = NextCodePoint();
-            if (c < 0) { return NO_CP_AND_CE32; }
+            if (c < 0) { return NoCodePointAndCE32; }
             return MakeCodePointAndCE32Pair(c, data.GetCE32(c));
         }
         protected virtual long MakeCodePointAndCE32Pair(int c, int ce32)
         {
             return ((long)c << 32) | (ce32 & 0xffffffffL);
         }
-        protected static readonly long NO_CP_AND_CE32 = (-1L << 32) | (Collation.FALLBACK_CE32 & 0xffffffffL);
+        protected const long NoCodePointAndCE32 = (-1L << 32) | (Collation.FALLBACK_CE32 & 0xffffffffL); // ICU4N specific - renamed from NO_CP_AND_CE32
 
         /// <summary>
         /// Called when <see cref="HandleNextCE32()"/> returns a LEAD_SURROGATE_TAG for a lead surrogate code unit.

@@ -204,7 +204,7 @@ namespace ICU4N.Impl.Coll
                 {
                     if (pos == limit)
                     {
-                        return NO_CP_AND_CE32;
+                        return NoCodePointAndCE32;
                     }
                     c = seq[pos++];
                     if (CollationFCD.HasTccc(c))
