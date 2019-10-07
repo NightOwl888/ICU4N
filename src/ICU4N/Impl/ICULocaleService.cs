@@ -397,19 +397,19 @@ namespace ICU4N.Impl
         /// </summary>
         public abstract class LocaleKeyFactory : IFactory // ICU4N TODO: API de-nest ?
         {
-            protected readonly string name;
-            protected readonly bool visible;
+            protected readonly string m_name;
+            protected readonly bool m_visible;
 
-            public static readonly bool VISIBLE = true; // ICU4N TODO: API - rename to match .NET Conventions
-            public static readonly bool INVISIBLE = false; // ICU4N TODO: API - rename to match .NET Conventions
+            public const bool Visible = true; // ICU4N TODO: API - rename to match .NET Conventions
+            public const bool Invisible = false; // ICU4N TODO: API - rename to match .NET Conventions
 
             /// <summary>
             /// Constructor used by subclasses.
             /// </summary>
             protected LocaleKeyFactory(bool visible)
             {
-                this.visible = visible;
-                this.name = null;
+                this.m_visible = visible;
+                this.m_name = null;
             }
 
             /// <summary>
@@ -417,8 +417,8 @@ namespace ICU4N.Impl
             /// </summary>
             protected LocaleKeyFactory(bool visible, string name)
             {
-                this.visible = visible;
-                this.name = name;
+                this.m_visible = visible;
+                this.m_name = name;
             }
 
             /// <summary>
@@ -463,7 +463,7 @@ namespace ICU4N.Impl
                 ICollection<string> cache = GetSupportedIDs();
                 foreach (string id in cache)
                 {
-                    if (visible)
+                    if (m_visible)
                     {
                         result[id] = this;
                     }
@@ -527,13 +527,13 @@ namespace ICU4N.Impl
             public override string ToString()
             {
                 StringBuilder buf = new StringBuilder(base.ToString());
-                if (name != null)
+                if (m_name != null)
                 {
                     buf.Append(", name: ");
-                    buf.Append(name);
+                    buf.Append(m_name);
                 }
                 buf.Append(", visible: ");
-                buf.Append(visible);
+                buf.Append(m_visible);
                 return buf.ToString();
             }
         }
@@ -591,7 +591,7 @@ namespace ICU4N.Impl
 
             public override void UpdateVisibleIDs(IDictionary<string, IFactory> result)
             {
-                if (visible)
+                if (m_visible)
                 {
                     result[id] = this;
                 }

@@ -33,7 +33,7 @@ namespace ICU4N.Text
             private NumberFormatFactory @delegate;
 
             internal NFFactory(NumberFormatFactory @delegate)
-            : base(@delegate.Visible ? VISIBLE : INVISIBLE)
+            : base(@delegate.Visible ? Visible : Invisible)
             {
 
                 this.@delegate = @delegate;

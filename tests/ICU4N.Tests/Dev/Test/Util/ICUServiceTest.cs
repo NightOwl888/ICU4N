@@ -652,7 +652,7 @@ namespace ICU4N.Dev.Test.Util
             protected readonly string factoryID;
 
             public TestLocaleKeyFactory(string[] ids, string factoryID)
-                : base(VISIBLE, factoryID)
+                : base(Visible, factoryID)
             {
                 this.ids = new HashSet<string>(ids).ToUnmodifiableSet();
                 this.factoryID = factoryID + ": ";
@@ -1193,7 +1193,7 @@ namespace ICU4N.Dev.Test.Util
         internal class LKFSubclass : LocaleKeyFactory
         {
             internal LKFSubclass(bool visible)
-                : base(visible ? VISIBLE : INVISIBLE)
+                : base(visible ? Visible : Invisible)
             {
             }
 
