@@ -82,14 +82,14 @@ namespace ICU4N.Impl
         /// <summary>
         /// Name used for debugging.
         /// </summary>
-        protected readonly string name; // ICU4N TODO: API - rename to m_name (conflict)
+        protected readonly string m_name;
 
         /// <summary>
         /// Constructor.
         /// </summary>
         public ICUService()
         {
-            name = "";
+            m_name = "";
         }
 
         private static readonly bool DEBUG = ICUDebug.Enabled("service");
@@ -98,7 +98,7 @@ namespace ICU4N.Impl
         /// </summary>
         public ICUService(string name)
         {
-            this.name = name;
+            this.m_name = name;
         }
 
         /// <summary>
@@ -412,7 +412,7 @@ namespace ICU4N.Impl
                 return HandleDefault(key, actualReturn);
             }
 
-            if (DEBUG) Console.Out.WriteLine("Service: " + name + " key: " + key.CanonicalID);
+            if (DEBUG) Console.Out.WriteLine("Service: " + m_name + " key: " + key.CanonicalID);
 
             CacheEntry result = null;
             if (key != null)
@@ -427,7 +427,7 @@ namespace ICU4N.Impl
                     IDictionary<string, CacheEntry> cache = this.cache; // copy so we don't need to sync on this
                     if (cache == null)
                     {
-                        if (DEBUG) Console.Out.WriteLine("Service " + name + " cache was empty");
+                        if (DEBUG) Console.Out.WriteLine("Service " + m_name + " cache was empty");
                         // synchronized since additions and queries on the cache must be atomic
                         // they can be interleaved, though
                         cache = new ConcurrentDictionary<string, CacheEntry>();
@@ -463,11 +463,11 @@ namespace ICU4N.Impl
                     do
                     {
                         currentDescriptor = key.GetCurrentDescriptor();
-                        if (DEBUG) Console.Out.WriteLine(name + "[" + NDebug++ + "] looking for: " + currentDescriptor);
+                        if (DEBUG) Console.Out.WriteLine(m_name + "[" + NDebug++ + "] looking for: " + currentDescriptor);
                         result = cache.Get(currentDescriptor);
                         if (result != null)
                         {
-                            if (DEBUG) Console.Out.WriteLine(name + " found with descriptor: " + currentDescriptor);
+                            if (DEBUG) Console.Out.WriteLine(m_name + " found with descriptor: " + currentDescriptor);
                             goto outer_break;
                         }
                         else
@@ -490,7 +490,7 @@ namespace ICU4N.Impl
                             if (service != null)
                             {
                                 result = new CacheEntry(currentDescriptor, service);
-                                if (DEBUG) Console.Out.WriteLine(name + " factory supported: " + currentDescriptor + ", caching");
+                                if (DEBUG) Console.Out.WriteLine(m_name + " factory supported: " + currentDescriptor + ", caching");
                                 goto outer_break;
                             }
                             else
@@ -523,7 +523,7 @@ namespace ICU4N.Impl
                             {
                                 foreach (string desc in cacheDescriptorList)
                                 {
-                                    if (DEBUG) Console.Out.WriteLine(name + " adding descriptor: '" + desc + "' for actual: '" + result.actualDescriptor + "'");
+                                    if (DEBUG) Console.Out.WriteLine(m_name + " adding descriptor: '" + desc + "' for actual: '" + result.actualDescriptor + "'");
 
                                     cache[desc] = result;
                                 }
@@ -548,7 +548,7 @@ namespace ICU4N.Impl
                             }
                         }
 
-                        if (DEBUG) Console.Out.WriteLine("found in service: " + name);
+                        if (DEBUG) Console.Out.WriteLine("found in service: " + m_name);
 
                         return result.service;
                     }
@@ -559,7 +559,7 @@ namespace ICU4N.Impl
                 }
             }
 
-            if (DEBUG) Console.Out.WriteLine("not found in service: " + name);
+            if (DEBUG) Console.Out.WriteLine("not found in service: " + m_name);
 
             return HandleDefault(key, actualReturn);
         }
@@ -1100,7 +1100,7 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual string Name
         {
-            get { return name; }
+            get { return m_name; }
         }
 
         /// <summary>
@@ -1111,7 +1111,7 @@ namespace ICU4N.Impl
         {
             // ICU4N TODO: Fix "base" implementation so it returns
             // the same string as ICUNotifier in icu4j
-            return base.ToString() + "{" + name + "}";
+            return base.ToString() + "{" + m_name + "}";
         }
     }
 }
