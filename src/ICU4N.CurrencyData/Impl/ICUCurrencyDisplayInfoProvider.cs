@@ -7,10 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Resources;
-using CurrencyDisplayInfo = ICU4N.Impl.CurrencyData.CurrencyDisplayInfo;
-using CurrencyFormatInfo = ICU4N.Impl.CurrencyData.CurrencyFormatInfo;
-using CurrencySpacingInfo = ICU4N.Impl.CurrencyData.CurrencySpacingInfo;
-using ICurrencyDisplayInfoProvider = ICU4N.Impl.CurrencyData.ICurrencyDisplayInfoProvider;
 
 namespace ICU4N.Impl
 {
@@ -129,8 +125,8 @@ namespace ICU4N.Impl
 
             internal class ParsingData
             {
-                internal IDictionary<string, String> symbolToIsoCode = new Dictionary<string, string>();
-                internal IDictionary<string, String> nameToIsoCode = new Dictionary<string, string>();
+                internal IDictionary<string, string> symbolToIsoCode = new Dictionary<string, string>();
+                internal IDictionary<string, string> nameToIsoCode = new Dictionary<string, string>();
             }
 
             ////////////////////////

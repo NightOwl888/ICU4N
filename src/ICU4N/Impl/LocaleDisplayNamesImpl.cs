@@ -10,7 +10,6 @@ using System.Globalization;
 using System.Linq;
 using System.Resources;
 using System.Text;
-using CurrencyDisplayInfo = ICU4N.Impl.CurrencyData.CurrencyDisplayInfo;
 
 namespace ICU4N.Impl
 {
