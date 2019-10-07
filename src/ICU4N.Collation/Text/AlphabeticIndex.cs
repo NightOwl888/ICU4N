@@ -339,7 +339,7 @@ namespace ICU4N.Text
         /// <param name="underflowLabel">See <see cref="AlphabeticIndex{T}"/> class description.</param>
         /// <returns>This, for chaining.</returns>
         /// <stable>ICU 4.8</stable>
-        public AlphabeticIndex<T> SetUnderflowLabel(string underflowLabel) // ICU4N TODO: API - make extension method ?
+        public AlphabeticIndex<T> SetUnderflowLabel(string underflowLabel)
         {
             this.underflowLabel = underflowLabel;
             buckets = null;
@@ -598,7 +598,9 @@ namespace ICU4N.Text
             UnicodeSet contractions = new UnicodeSet();
             try // ICU4N TODO: Try to remove this catch block and use Try.. version of method
             {
+#pragma warning disable 612, 618
                 collatorPrimaryOnly.InternalAddContractions(BASE[0], contractions);
+#pragma warning restore 612, 618
             }
             catch (Exception)
             {
