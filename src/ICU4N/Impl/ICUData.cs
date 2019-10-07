@@ -14,7 +14,7 @@ namespace ICU4N.Impl
     public sealed class ICUData
     {
         /// <summary>
-        /// The data path to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// The data path to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
         internal static readonly string ICU_DATA_PATH = "Impl/"; // ICU4N TODO: API - rename to follow .NET Conventions
 
@@ -38,7 +38,7 @@ namespace ICU4N.Impl
         public static readonly string ICU_BASE_NAME = ICU_DATA_PATH + ICU_BUNDLE; // ICU4N TODO: API - rename to follow .NET Conventions
 
         /// <summary>
-        /// The base name of collation data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// The base name of collation data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
         public static readonly string ICU_COLLATION_BASE_NAME = ICU_BASE_NAME + "/coll"; // ICU4N TODO: API - rename to follow .NET Conventions
 
@@ -48,17 +48,17 @@ namespace ICU4N.Impl
         public static readonly string ICU_BRKITR_NAME = "brkitr"; // ICU4N TODO: API - rename to follow .NET Conventions
 
         /// <summary>
-        /// The base name of rbbi data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// The base name of rbbi data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
         public static readonly string ICU_BRKITR_BASE_NAME = ICU_BASE_NAME + '/' + ICU_BRKITR_NAME; // ICU4N TODO: API - rename to follow .NET Conventions
 
         /// <summary>
-        /// The base name of rbnf data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// The base name of rbnf data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
         public static readonly string ICU_RBNF_BASE_NAME = ICU_BASE_NAME + "/rbnf"; // ICU4N TODO: API - rename to follow .NET Conventions
 
         /// <summary>
-        /// The base name of transliterator data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, ICUResourceBundle.OpenType)"/> API
+        /// The base name of transliterator data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
         public static readonly string ICU_TRANSLIT_BASE_NAME = ICU_BASE_NAME + "/translit"; // ICU4N TODO: API - rename to follow .NET Conventions
 

@@ -224,7 +224,7 @@ namespace ICU4N.Impl.Locale
             UResourceBundle keyTypeDataRes = UResourceBundle.GetBundleInstance(
                     ICUData.ICU_BASE_NAME,
                     "keyTypeData",
-                    ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+                    ICUResourceBundle.IcuDataAssembly);
 
             GetKeyInfo(keyTypeDataRes.Get("keyInfo"));
             GetTypeInfo(keyTypeDataRes.Get("typeInfo"));

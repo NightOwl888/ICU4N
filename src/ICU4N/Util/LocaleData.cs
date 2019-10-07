@@ -325,7 +325,7 @@ namespace ICU4N.Util
                 UResourceBundle rb = UResourceBundle.GetBundleInstance(
                         ICUData.ICU_BASE_NAME,
                         "supplementalData",
-                        ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+                        ICUResourceBundle.IcuDataAssembly);
                 UResourceBundle measurementData = rb.Get("measurementData");
                 UResourceBundle measDataBundle = null;
                 try
@@ -497,7 +497,7 @@ namespace ICU4N.Util
             if (gCLDRVersion == null)
             {
                 // from ZoneMeta.java
-                UResourceBundle supplementalDataBundle = UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "supplementalData", ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+                UResourceBundle supplementalDataBundle = UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "supplementalData", ICUResourceBundle.IcuDataAssembly);
                 UResourceBundle cldrVersionBundle = supplementalDataBundle.Get("cldrVersion");
                 gCLDRVersion = VersionInfo.GetInstance(cldrVersionBundle.GetString());
             }

@@ -266,7 +266,7 @@ namespace ICU4N.Impl
         {
             return ICUResourceBundle.GetBundleInstance(
                     ICUData.ICU_BASE_NAME, "plurals",
-                    ICUResourceBundle.ICU_DATA_CLASS_LOADER, true);
+                    ICUResourceBundle.IcuDataAssembly, true);
         }
 
         /// <summary>

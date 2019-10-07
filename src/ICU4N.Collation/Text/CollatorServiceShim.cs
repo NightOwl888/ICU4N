@@ -92,7 +92,7 @@ namespace ICU4N.Text
             if (service.IsDefault)
             {
                 result = ICUResourceBundle.GetAvailableLocales(ICUData.ICU_COLLATION_BASE_NAME,
-                        ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+                        ICUResourceBundle.IcuDataAssembly);
             }
             else
             {
@@ -107,7 +107,7 @@ namespace ICU4N.Text
             if (service.IsDefault)
             {
                 result = ICUResourceBundle.GetAvailableULocales(ICUData.ICU_COLLATION_BASE_NAME,
-                        ICUResourceBundle.ICU_DATA_CLASS_LOADER);
+                        ICUResourceBundle.IcuDataAssembly);
             }
             else
             {

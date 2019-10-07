@@ -4,7 +4,6 @@ using ICU4N.Util;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using OpenType = ICU4N.Impl.ICUResourceBundle.OpenType; // ICU4N TODO: API - de-nest ?
 
 namespace ICU4N.Impl
 {
@@ -302,7 +301,7 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
             {
                 ICUResourceBundle rb = ICUResourceBundle.GetBundleInstance(
-                        ICUData.ICU_BRKITR_BASE_NAME, loc, OpenType.LOCALE_ROOT);
+                        ICUData.ICU_BRKITR_BASE_NAME, loc, OpenType.LocaleRoot);
 
                 ICUResourceBundle breaks = rb.FindWithFallback("exceptions/SentenceBreak");
 

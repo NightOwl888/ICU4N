@@ -120,7 +120,7 @@ namespace ICU4N.Text
             RuleBasedBreakIterator iter = null;
             ICUResourceBundle rb = ICUResourceBundle.
                     GetBundleInstance(ICUData.ICU_BRKITR_BASE_NAME, locale,
-                            ICUResourceBundle.OpenType.LOCALE_ROOT);
+                            OpenType.LocaleRoot);
 
             //
             //  Get the binary rules.

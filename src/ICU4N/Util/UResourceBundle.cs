@@ -79,7 +79,7 @@ namespace ICU4N.Util
     {
         /// <summary>
         /// <icu/> Creates a resource bundle using the specified base name and locale.
-        /// <see cref="ICUResourceBundle.ICU_DATA_CLASS_LOADER"/> is used as the default root.
+        /// <see cref="ICUResourceBundle.IcuDataAssembly"/> is used as the default root.
         /// </summary>
         /// <param name="baseName">String containing the name of the data package.
         /// If null the default ICU package name is used.</param>
@@ -102,7 +102,7 @@ namespace ICU4N.Util
             if (baseName.EndsWith("/region", StringComparison.Ordinal) || baseName.Contains("/region/"))
                 return LocaleDisplayNamesImpl.RegionDataTables.impl.GetType().GetTypeInfo().Assembly;
 
-            return ICUResourceBundle.ICU_DATA_CLASS_LOADER;
+            return ICUResourceBundle.IcuDataAssembly;
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace ICU4N.Util
                 locale = ULocale.GetDefault();
             }
             return GetBundleInstance(ICUData.ICU_BASE_NAME, locale.GetBaseName(),
-                                     ICUResourceBundle.ICU_DATA_CLASS_LOADER, false);
+                                     ICUResourceBundle.IcuDataAssembly, false);
         }
 
         /// <summary>

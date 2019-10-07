@@ -158,7 +158,7 @@ namespace ICU4N.Impl
             public override string GetString(int index)
             {
                 int res = value.GetContainerResource(wholeBundle.reader, index);
-                if (res == RES_BOGUS)
+                if (res == ResBogus)
                 {
                     throw new IndexOutOfRangeException();
                 }
@@ -177,7 +177,7 @@ namespace ICU4N.Impl
                                                          UResourceBundle requested)
             {
                 int item = GetContainerResource(index);
-                if (item == RES_BOGUS)
+                if (item == ResBogus)
                 {
                     throw new IndexOutOfRangeException();
                 }

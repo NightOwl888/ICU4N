@@ -110,7 +110,7 @@ namespace ICU4N.Impl.Coll
                         // ICU4N specific - need to pass in this assembly
                         // name for the resources to be resolved here.
                         CollationData.ICU_DATA_CLASS_LOADER, 
-                        ICUResourceBundle.OpenType.LOCALE_ROOT);
+                        OpenType.LocaleRoot);
             }
             catch (MissingManifestResourceException)
             {

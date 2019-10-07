@@ -11,7 +11,6 @@ using CurrencyDisplayInfo = ICU4N.Impl.CurrencyData.CurrencyDisplayInfo;
 using CurrencyFormatInfo = ICU4N.Impl.CurrencyData.CurrencyFormatInfo;
 using CurrencySpacingInfo = ICU4N.Impl.CurrencyData.CurrencySpacingInfo;
 using ICurrencyDisplayInfoProvider = ICU4N.Impl.CurrencyData.ICurrencyDisplayInfoProvider;
-using OpenType = ICU4N.Impl.ICUResourceBundle.OpenType;
 
 namespace ICU4N.Impl
 {
@@ -37,14 +36,14 @@ namespace ICU4N.Impl
                 if (withFallback)
                 {
                     rb = ICUResourceBundle.GetBundleInstance(
-                            ICUData.ICU_CURR_BASE_NAME, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LOCALE_DEFAULT_ROOT);
+                            ICUData.ICU_CURR_BASE_NAME, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleDefaultRoot);
                 }
                 else
                 {
                     try
                     {
                         rb = ICUResourceBundle.GetBundleInstance(
-                                ICUData.ICU_CURR_BASE_NAME, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LOCALE_ONLY);
+                                ICUData.ICU_CURR_BASE_NAME, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleOnly);
                     }
                     catch (MissingManifestResourceException)
                     {

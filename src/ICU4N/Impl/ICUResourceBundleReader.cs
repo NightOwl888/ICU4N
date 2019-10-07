@@ -1142,13 +1142,13 @@ namespace ICU4N.Impl
             }
             internal virtual int GetContainerResource(ICUResourceBundleReader reader, int index)
             {
-                return ICUResourceBundle.RES_BOGUS;
+                return ICUResourceBundle.ResBogus;
             }
             protected virtual int GetContainer16Resource(ICUResourceBundleReader reader, int index)
             {
                 if (index < 0 || size <= index)
                 {
-                    return ICUResourceBundle.RES_BOGUS;
+                    return ICUResourceBundle.ResBogus;
                 }
                 int res16 = reader.b16BitUnits[itemsOffset + index];
                 if (res16 < reader.poolStringIndex16Limit)
@@ -1167,7 +1167,7 @@ namespace ICU4N.Impl
             {
                 if (index < 0 || size <= index)
                 {
-                    return ICUResourceBundle.RES_BOGUS;
+                    return ICUResourceBundle.ResBogus;
                 }
                 return reader.GetInt32(itemsOffset + 4 * index);
             }
