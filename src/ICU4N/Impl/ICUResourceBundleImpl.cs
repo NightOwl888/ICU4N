@@ -31,23 +31,23 @@ namespace ICU4N.Impl
         {
             switch (ICUResourceBundleReader.RES_GET_TYPE(_resource))
             {
-                case STRING:
-                case STRING_V2:
+                case UResourceType.String:
+                case UResourceType.StringV2:
                     return new ICUResourceBundleImpl.ResourceString(this, _key, _resource);
-                case BINARY:
+                case UResourceType.Binary:
                     return new ICUResourceBundleImpl.ResourceBinary(this, _key, _resource);
-                case ALIAS:
+                case UResourceType.Alias:
                     return GetAliasedResource(this, null, 0, _key, _resource, aliasesVisited, requested);
-                case INT32:
+                case UResourceType.Int32:
                     return new ICUResourceBundleImpl.ResourceInt(this, _key, _resource);
-                case INT32_VECTOR:
+                case UResourceType.Int32Vector:
                     return new ICUResourceBundleImpl.ResourceIntVector(this, _key, _resource);
-                case ARRAY:
-                case ARRAY16:
+                case UResourceType.Array:
+                case UResourceType.Array16:
                     return new ICUResourceBundleImpl.ResourceArray(this, _key, _resource);
-                case TABLE:
-                case TABLE16:
-                case TABLE32:
+                case UResourceType.Table:
+                case UResourceType.Table16:
+                case UResourceType.Table32:
                     return new ICUResourceBundleImpl.ResourceTable(this, _key, _resource);
                 default:
                     throw new InvalidOperationException("The resource type is unknown");
@@ -58,9 +58,9 @@ namespace ICU4N.Impl
 
         private sealed class ResourceBinary : ICUResourceBundleImpl
         {
-            public override int Type
+            public override UResourceType Type
             {
-                get { return BINARY; }
+                get { return UResourceType.Binary; }
             }
 
             public override ByteBuffer GetBinary()
@@ -79,9 +79,9 @@ namespace ICU4N.Impl
         }
         private sealed class ResourceInt : ICUResourceBundleImpl // ICU4N TODO: API - rename ResourceInt32
         {
-            public override int Type
+            public override UResourceType Type
             {
-                get { return INT32; }
+                get { return UResourceType.Int32; }
             }
 
             public override int GetInt32()
@@ -102,9 +102,9 @@ namespace ICU4N.Impl
         {
             private string value;
 
-            public override int Type
+            public override UResourceType Type
             {
-                get { return STRING; }
+                get { return UResourceType.String; }
             }
 
             public override string GetString()
@@ -129,9 +129,9 @@ namespace ICU4N.Impl
         }
         private sealed class ResourceIntVector : ICUResourceBundleImpl // ICU4N TODO: API Rename ResourceInt32Vector
         {
-            public override int Type
+            public override UResourceType Type
             {
-                get { return INT32_VECTOR; }
+                get { return UResourceType.Int32Vector; }
             }
 
             public override int[] GetInt32Vector()
@@ -195,9 +195,9 @@ namespace ICU4N.Impl
         }
         internal class ResourceArray : ResourceContainer
         {
-            public override int Type
+            public override UResourceType Type
             {
-                get { return ARRAY; }
+                get { return UResourceType.Array; }
             }
 
             protected override string[] HandleGetStringArray()
@@ -242,9 +242,9 @@ namespace ICU4N.Impl
         }
         internal class ResourceTable : ResourceContainer
         {
-            public override int Type
+            public override UResourceType Type
             {
-                get { return TABLE; }
+                get { return UResourceType.Table; }
             }
             protected virtual string GetKey(int index)
             {

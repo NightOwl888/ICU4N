@@ -375,9 +375,9 @@ namespace ICU4N.Impl
             get { return usesPoolBundle; }
         }
 
-        internal static int RES_GET_TYPE(int res)
+        internal static UResourceType RES_GET_TYPE(int res)
         {
-            return res.TripleShift(28);
+            return (UResourceType)res.TripleShift(28);
         }
         private static int RES_GET_OFFSET(int res)
         {
@@ -396,13 +396,13 @@ namespace ICU4N.Impl
         {
             return res & 0x0fffffff;
         }
-        internal static bool URES_IS_ARRAY(int type)
+        internal static bool URES_IS_ARRAY(UResourceType type)
         {
-            return type == UResourceBundle.ARRAY || type == ICUResourceBundle.ARRAY16;
+            return type == UResourceType.Array || type == UResourceType.Array16;
         }
-        internal static bool URES_IS_TABLE(int type)
+        internal static bool URES_IS_TABLE(UResourceType type)
         {
-            return type == UResourceBundle.TABLE || type == ICUResourceBundle.TABLE16 || type == ICUResourceBundle.TABLE32;
+            return type == UResourceType.Table || type == UResourceType.Table16 || type == UResourceType.Table32;
         }
 
         private static readonly byte[] emptyBytes = new byte[0];
@@ -590,7 +590,7 @@ namespace ICU4N.Impl
             // The cache requires a resource word with the proper type,
             // and with an offset that is local to this bundle so that the offset fits
             // within the maximum number of bits for which the cache was constructed.
-            Debug.Assert(RES_GET_TYPE(res) == ICUResourceBundle.STRING_V2);
+            Debug.Assert(RES_GET_TYPE(res) == UResourceType.StringV2);
             int offset = RES_GET_OFFSET(res);
             Debug.Assert(offset != 0);  // handled by the caller
             object value = resourceCache.Get(res);
@@ -663,7 +663,7 @@ namespace ICU4N.Impl
         {
             int offset = RES_GET_OFFSET(res);
             if (res != offset /* RES_GET_TYPE(res) != URES_STRING */ &&
-                    RES_GET_TYPE(res) != ICUResourceBundle.STRING_V2)
+                    RES_GET_TYPE(res) != UResourceType.StringV2)
             {
                 return null;
             }
@@ -709,7 +709,7 @@ namespace ICU4N.Impl
                 return GetInt32(offset) == 3 && bytes.GetChar(offset + 4) == 0x2205 &&
                         bytes.GetChar(offset + 6) == 0x2205 && bytes.GetChar(offset + 8) == 0x2205;
             }
-            else if (RES_GET_TYPE(res) == ICUResourceBundle.STRING_V2)
+            else if (RES_GET_TYPE(res) == UResourceType.StringV2)
             {
                 if (offset < poolStringIndexLimit)
                 {
@@ -749,7 +749,7 @@ namespace ICU4N.Impl
         {
             int offset = RES_GET_OFFSET(res);
             int length;
-            if (RES_GET_TYPE(res) == ICUResourceBundle.ALIAS)
+            if (RES_GET_TYPE(res) == UResourceType.Alias)
             {
                 if (offset == 0)
                 {
@@ -778,7 +778,7 @@ namespace ICU4N.Impl
         {
             int offset = RES_GET_OFFSET(res);
             int length;
-            if (RES_GET_TYPE(res) == UResourceBundle.BINARY)
+            if (RES_GET_TYPE(res) == UResourceType.Binary)
             {
                 if (offset == 0)
                 {
@@ -825,7 +825,7 @@ namespace ICU4N.Impl
         {
             int offset = RES_GET_OFFSET(res);
             int length;
-            if (RES_GET_TYPE(res) == UResourceBundle.BINARY)
+            if (RES_GET_TYPE(res) == UResourceType.Binary)
             {
                 if (offset == 0)
                 {
@@ -867,7 +867,7 @@ namespace ICU4N.Impl
         {
             int offset = RES_GET_OFFSET(res);
             int length;
-            if (RES_GET_TYPE(res) == UResourceBundle.INT32_VECTOR)
+            if (RES_GET_TYPE(res) == UResourceType.Int32Vector)
             {
                 if (offset == 0)
                 {
@@ -890,7 +890,7 @@ namespace ICU4N.Impl
 
         internal Array GetArray(int res)
         {
-            int type = RES_GET_TYPE(res);
+            UResourceType type = RES_GET_TYPE(res);
             if (!URES_IS_ARRAY(type))
             {
                 return null;
@@ -905,14 +905,14 @@ namespace ICU4N.Impl
             {
                 return (Array)value;
             }
-            Array array = (type == UResourceBundle.ARRAY) ?
+            Array array = (type == UResourceType.Array) ?
                     (Array)new Array32(this, offset) : new Array16(this, offset);
             return (Array)resourceCache.PutIfAbsent(res, array, 0);
         }
 
         internal Table GetTable(int res)
         {
-            int type = RES_GET_TYPE(res);
+            UResourceType type = RES_GET_TYPE(res);
             if (!URES_IS_TABLE(type))
             {
                 return null;
@@ -929,12 +929,12 @@ namespace ICU4N.Impl
             }
             Table table;
             int size;  // Use size = 0 to never use SoftReferences for Tables?
-            if (type == UResourceBundle.TABLE)
+            if (type == UResourceType.Table)
             {
                 table = new Table1632(this, offset);
                 size = table.Length * 2;
             }
-            else if (type == ICUResourceBundle.TABLE16)
+            else if (type == UResourceType.Table16)
             {
                 table = new Table16(this, offset);
                 size = table.Length * 2;
@@ -952,26 +952,26 @@ namespace ICU4N.Impl
         /// <summary>
         /// From C++ uresdata.c gPublicTypes[URES_LIMIT].
         /// </summary>
-        private static int[] PUBLIC_TYPES = {
-            UResourceBundle.STRING,
-            UResourceBundle.BINARY,
-            UResourceBundle.TABLE,
-            ICUResourceBundle.ALIAS,
+        private static UResourceType[] PUBLIC_TYPES = {
+            UResourceType.String,
+            UResourceType.Binary,
+            UResourceType.Table,
+            UResourceType.Alias,
 
-            UResourceBundle.TABLE,     /* URES_TABLE32 */
-            UResourceBundle.TABLE,     /* URES_TABLE16 */
-            UResourceBundle.STRING,    /* URES_STRING_V2 */
-            UResourceBundle.INT32,
+            UResourceType.Table,     /* URES_TABLE32 */
+            UResourceType.Table,     /* URES_TABLE16 */
+            UResourceType.String,    /* URES_STRING_V2 */
+            UResourceType.Int32,
 
-            UResourceBundle.ARRAY,
-            UResourceBundle.ARRAY,     /* URES_ARRAY16 */
-            UResourceBundle.NONE,
-            UResourceBundle.NONE,
+            UResourceType.Array,
+            UResourceType.Array,     /* URES_ARRAY16 */
+            UResourceType.None,
+            UResourceType.None,
 
-            UResourceBundle.NONE,
-            UResourceBundle.NONE,
-            UResourceBundle.INT32_VECTOR,
-            UResourceBundle.NONE
+            UResourceType.None,
+            UResourceType.None,
+            UResourceType.Int32Vector,
+            UResourceType.None
         };
 
         internal class ReaderValue : UResource.Value
@@ -979,9 +979,9 @@ namespace ICU4N.Impl
             internal ICUResourceBundleReader reader;
             internal int res;
 
-            public override int Type
+            public override UResourceType Type
             {
-                get { return PUBLIC_TYPES[RES_GET_TYPE(res)]; }
+                get { return PUBLIC_TYPES[(int)RES_GET_TYPE(res)]; }
             }
 
             public override string GetString()
@@ -1006,7 +1006,7 @@ namespace ICU4N.Impl
 
             public override int GetInt32()
             {
-                if (RES_GET_TYPE(res) != UResourceBundle.INT32)
+                if (RES_GET_TYPE(res) != UResourceType.Int32)
                 {
                     throw new UResourceTypeMismatchException("");
                 }
@@ -1015,7 +1015,7 @@ namespace ICU4N.Impl
 
             public override int GetUInt32()
             {
-                if (RES_GET_TYPE(res) != UResourceBundle.INT32)
+                if (RES_GET_TYPE(res) != UResourceType.Int32)
                 {
                     throw new UResourceTypeMismatchException("");
                 }
@@ -1161,7 +1161,7 @@ namespace ICU4N.Impl
                     // with a larger pool string index limit.
                     res16 = res16 - reader.poolStringIndex16Limit + reader.poolStringIndexLimit;
                 }
-                return (ICUResourceBundle.STRING_V2 << 28) | res16;
+                return ((int)UResourceType.StringV2 << 28) | res16;
             }
             protected virtual int GetContainer32Resource(ICUResourceBundleReader reader, int index)
             {
@@ -1544,11 +1544,11 @@ namespace ICU4N.Impl
                 // to share a start offset with each other,
                 // but offsets for 16-bit and "regular" resources overlap;
                 // use 2-bit value 0 for "regular" resources.
-                int type = RES_GET_TYPE(res);
+                UResourceType type = RES_GET_TYPE(res);
                 int miniType =
-                        (type == ICUResourceBundle.STRING_V2) ? 1 :
-                            (type == ICUResourceBundle.TABLE16) ? 3 :
-                                (type == ICUResourceBundle.ARRAY16) ? 2 : 0;
+                        (type == UResourceType.StringV2) ? 1 :
+                            (type == UResourceType.Table16) ? 3 :
+                                (type == UResourceType.Array16) ? 2 : 0;
                 return RES_GET_OFFSET(res) | (miniType << maxOffsetBits);
             }
 

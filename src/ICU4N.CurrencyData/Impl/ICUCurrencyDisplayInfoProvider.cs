@@ -470,7 +470,7 @@ namespace ICU4N.Impl
                     for (int i = 0; table.GetKeyAndValue(i, key, value); i++)
                     {
                         string isoCode = key.ToString();
-                        if (value.Type != UResourceBundle.ARRAY)
+                        if (value.Type != UResourceType.Array)
                         {
                             throw new ICUException("Unexpected data type in Currencies table for " + isoCode);
                         }
@@ -488,7 +488,7 @@ namespace ICU4N.Impl
                 {
                     Debug.Assert(formattingData != null);
                     string isoCode = key.ToString();
-                    if (value.Type != UResourceBundle.ARRAY)
+                    if (value.Type != UResourceType.Array)
                     {
                         throw new ICUException("Unexpected data type in Currencies table for " + isoCode);
                     }

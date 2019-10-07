@@ -338,7 +338,7 @@ namespace ICU4N.Impl
                     path);
             }
 
-            if (result.Type == STRING && result.GetString().Equals(NO_INHERITANCE_MARKER))
+            if (result.Type == UResourceType.String && result.GetString().Equals(NO_INHERITANCE_MARKER))
             {
                 throw new MissingManifestResourceException(string.Format("Encountered NO_INHERITANCE_MARKER, path: {0}, key: {1}", path, Key));
             }
@@ -1022,8 +1022,8 @@ namespace ICU4N.Impl
                     ICUResourceBundleReader.Container readerContainer;
                     if (res == RES_BOGUS)
                     {
-                        int type = @base.Type;
-                        if (type == TABLE || type == ARRAY)
+                        UResourceType type = @base.Type;
+                        if (type == UResourceType.Table || type == UResourceType.Array)
                         {
                             readerContainer = ((ICUResourceBundleImpl.ResourceContainer)@base).value;
                         }
@@ -1034,7 +1034,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        int type = ICUResourceBundleReader.RES_GET_TYPE(res);
+                        UResourceType type = ICUResourceBundleReader.RES_GET_TYPE(res);
                         if (ICUResourceBundleReader.URES_IS_TABLE(type))
                         {
                             readerContainer = reader.GetTable(res);
@@ -1057,7 +1057,7 @@ namespace ICU4N.Impl
                         break;
                     }
                     ICUResourceBundle sub;
-                    if (ICUResourceBundleReader.RES_GET_TYPE(res) == ALIAS)
+                    if (ICUResourceBundleReader.RES_GET_TYPE(res) == UResourceType.Alias)
                     {
                         @base.GetResPathKeys(keys, baseDepth);
                         sub = GetAliasedResource(@base, keys, depth, subKey, res, null, requested);
@@ -1574,43 +1574,14 @@ namespace ICU4N.Impl
         /// A resource word value that means "no resource".
         /// Note: 0xffffffff == -1
         /// <para/>
-        /// This has the same value as <see cref="UResourceBundle.NONE"/>, but they are semantically
+        /// This has the same value as <see cref="UResourceType.None"/>, but they are semantically
         /// different and should be used appropriately according to context:
         /// NONE means "no type".
         /// (The type of <see cref="RES_BOGUS"/> is RES_RESERVED=15 which was defined in ICU4C ures.h.)
         /// </summary>
         public static readonly int RES_BOGUS = unchecked((int)0xffffffff); // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
-        //blic static readonly int RES_MAX_OFFSET = 0x0fffffff;
-
-        /// <summary>
-        /// Resource type constant for aliases;
-        /// internally stores a string which identifies the actual resource
-        /// storing the data (can be in a different resource bundle).
-        /// Resolved internally before delivering the actual resource through the API.
-        /// </summary>
-        public const int ALIAS = 3; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
-
-        /// <summary>
-        /// Resource type constant for tables with 32-bit count, key offsets and values.
-        /// </summary>
-        public const int TABLE32 = 4; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
-
-        /// <summary>
-        /// Resource type constant for tables with 16-bit count, key offsets and values.
-        /// All values are <see cref="STRING_V2"/> strings.
-        /// </summary>
-        public const int TABLE16 = 5; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
-
-        /// <summary>
-        /// Resource type constant for 16-bit Unicode strings in formatVersion 2.
-        /// </summary>
-        public const int STRING_V2 = 6; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
-
-        /// <summary>
-        /// Resource type constant for arrays with 16-bit count and values.
-        /// All values are <see cref="STRING_V2"/> strings.
-        /// </summary>
-        public const int ARRAY16 = 9; // ICU4N TODO: API - determine usage and possibly make into Enum, and rename to follow .NET Conventions
+        
+        // ICU4N specific - moved constants to UResourceType enum
 
         /* Resource type 15 is not defined but effectively used by RES_BOGUS=0xffffffff. */
 

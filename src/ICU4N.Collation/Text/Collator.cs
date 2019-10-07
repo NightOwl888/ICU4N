@@ -1277,8 +1277,8 @@ namespace ICU4N.Text
                 UResource.ITable collations = value.GetTable();
                 for (int i = 0; collations.GetKeyAndValue(i, key, value); ++i)
                 {
-                    int type = value.Type;
-                    if (type == UResourceBundle.STRING)
+                    UResourceType type = value.Type;
+                    if (type == UResourceType.String)
                     {
                         if (!hasDefault && key.ContentEquals("default"))
                         {
@@ -1291,7 +1291,7 @@ namespace ICU4N.Text
                             }
                         }
                     }
-                    else if (type == UResourceBundle.TABLE && !key.StartsWith("private-"))
+                    else if (type == UResourceType.Table && !key.StartsWith("private-"))
                     {
                         string collkey = key.ToString();
                         if (!values.Contains(collkey))

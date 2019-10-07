@@ -314,9 +314,9 @@ namespace ICU4N.Impl
 
             /// <summary>
             /// Gets ICU resource type like <see cref="UResourceBundle.Type"/>
-            /// for example, <see cref="UResourceBundle.STRING"/>.
+            /// for example, <see cref="UResourceType.String"/>.
             /// </summary>
-            public abstract int Type { get; }
+            public abstract UResourceType Type { get; }
 
             /// <seealso cref="UResourceBundle.GetString()"/>
             /// <exception cref="UResourceTypeMismatchException">If this is not a string resource.</exception>
@@ -408,11 +408,11 @@ namespace ICU4N.Impl
             {
                 switch (Type)
                 {
-                    case UResourceBundle.STRING:
+                    case UResourceType.String:
                         return GetString();
-                    case UResourceBundle.INT32:
+                    case UResourceType.Int32:
                         return GetInt32().ToString(CultureInfo.InvariantCulture);
-                    case UResourceBundle.INT32_VECTOR:
+                    case UResourceType.Int32Vector:
                         int[] iv = GetInt32Vector();
                         StringBuilder sb = new StringBuilder("[");
                         sb.Append(iv.Length).Append("]{");
@@ -425,11 +425,11 @@ namespace ICU4N.Impl
                             }
                         }
                         return sb.Append('}').ToString();
-                    case UResourceBundle.BINARY:
+                    case UResourceType.Binary:
                         return "(binary blob)";
-                    case UResourceBundle.ARRAY:
+                    case UResourceType.Array:
                         return "(array)";
-                    case UResourceBundle.TABLE:
+                    case UResourceType.Table:
                         return "(table)";
                     default:  // should not occur
                         return "???";

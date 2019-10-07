@@ -134,8 +134,8 @@ namespace ICU4N.Dev.Test.Util
             UResourceBundle obj = bundle.Get("NumberElements").Get("latn").Get("patterns");
 
             int size = obj.Length;
-            int type = obj.Type;
-            if (type == UResourceBundle.TABLE)
+            UResourceType type = obj.Type;
+            if (type == UResourceType.Table)
             {
                 UResourceBundle sub;
                 for (int i = 0; i < size; i++)
@@ -155,7 +155,7 @@ namespace ICU4N.Dev.Test.Util
 
             size = obj.Length;
             type = obj.Type;
-            if (type == UResourceBundle.TABLE)
+            if (type == UResourceType.Table)
             {
                 UResourceBundle sub;
                 for (int i = 0; i < size; i++)
@@ -419,7 +419,7 @@ namespace ICU4N.Dev.Test.Util
                 return;
             }
 
-            if (bundle.Type != UResourceBundle.TABLE)
+            if (bundle.Type != UResourceType.Table)
             {
                 Errln("Could not get the correct type for bundle testtable32");
             }
@@ -440,11 +440,11 @@ namespace ICU4N.Dev.Test.Util
                 int parsedNumber = parseTable32Key(key);
                 switch (item.Type)
                 {
-                    case UResourceBundle.STRING:
+                    case UResourceType.String:
                         string value = item.GetString();
                         number = UTF16.CharAt(value, 0);
                         break;
-                    case UResourceBundle.INT32:
+                    case UResourceType.Int32:
                         number = item.GetInt32();
                         break;
                     default:
@@ -465,11 +465,11 @@ namespace ICU4N.Dev.Test.Util
                 UResourceBundle item = bundle.Get(arr[i].key);
                 switch (item.Type)
                 {
-                    case UResourceBundle.STRING:
+                    case UResourceType.String:
                         string value = item.GetString();
                         number = UTF16.CharAt(value, 0);
                         break;
-                    case UResourceBundle.INT32:
+                    case UResourceType.Int32:
                         number = item.GetInt32();
                         break;
                     default:
@@ -1324,7 +1324,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 Errln("getVersion() call should have returned null.");
             }
-            if (rb7.Type != UResourceBundle.NONE)
+            if (rb7.Type != UResourceType.None)
             {
                 Errln("getType() call should have returned NONE.");
             }

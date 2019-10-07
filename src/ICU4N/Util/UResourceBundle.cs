@@ -579,7 +579,7 @@ namespace ICU4N.Util
         public virtual string GetString(int index)
         {
             ICUResourceBundle temp = (ICUResourceBundle)Get(index);
-            if (temp.Type == STRING)
+            if (temp.Type == UResourceType.String)
             {
                 return temp.GetString();
             }
@@ -754,9 +754,9 @@ namespace ICU4N.Util
          * @return type of the given resource.
          * @stable ICU 3.8
          */
-        public virtual int Type // ICU4N TODO: API - make into an enum
+        public virtual UResourceType Type
         {
-            get { return NONE; }
+            get { return UResourceType.None; }
         }
 
         /// <summary>
@@ -802,50 +802,8 @@ namespace ICU4N.Util
             get { return null; }
         }
 
-        /**
-         * {@icu} Resource type constant for "no resource".
-         * @stable ICU 3.8
-         */
-        public const int NONE = -1; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
+        // ICU4N specific - moved constants to enum named UResourceType and de-nested
 
-        /**
-         * {@icu} Resource type constant for strings.
-         * @stable ICU 3.8
-         */
-        public const int STRING = 0; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
-
-        /**
-         * {@icu} Resource type constant for binary data.
-         * @stable ICU 3.8
-         */
-        public const int BINARY = 1; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
-
-        /**
-         * {@icu} Resource type constant for tables of key-value pairs.
-         * @stable ICU 3.8
-         */
-        public const int TABLE = 2; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
-
-        /**
-         * {@icu} Resource type constant for a single 28-bit integer, interpreted as
-         * signed or unsigned by the getInt() function.
-         * @see #getInt
-         * @stable ICU 3.8
-         */
-        public const int INT32 = 7; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
-
-        /**
-         * {@icu} Resource type constant for arrays of resources.
-         * @stable ICU 3.8
-         */
-        public const int ARRAY = 8; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
-
-        /**
-         * Resource type constant for vectors of 32-bit integers.
-         * @see #getIntVector
-         * @stable ICU 3.8
-         */
-        public const int INT32_VECTOR = 14; // ICU4N TODO: API - make into enum named UResourceType (returns from Type property)
 
         //====== protected members ==============
 
@@ -950,20 +908,20 @@ namespace ICU4N.Util
         // string or string array
         private object ResolveObject(string aKey, UResourceBundle requested)
         {
-            if (Type == STRING)
+            if (Type == UResourceType.String)
             {
                 return GetString();
             }
             UResourceBundle obj = HandleGet(aKey, null, requested);
             if (obj != null)
             {
-                if (obj.Type == STRING)
+                if (obj.Type == UResourceType.String)
                 {
                     return obj.GetString();
                 }
                 try
                 {
-                    if (obj.Type == ARRAY)
+                    if (obj.Type == UResourceType.Array)
                     {
                         return obj.HandleGetStringArray();
                     }
@@ -988,6 +946,88 @@ namespace ICU4N.Util
             get { return true; }
         }
     }
+
+    /// <summary>
+    /// Resource type constants
+    /// </summary>
+    // ICU4N: These constants were combined from UResourceBundle and ICUResourceBundle in ICU4J
+    public enum UResourceType
+    {
+        /// <summary>
+        /// <icu/> Resource type constant for "no resource".
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        None = -1,
+
+        /// <summary>
+        /// <icu/> Resource type constant for strings.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        String = 0,
+
+        /// <summary>
+        /// <icu/> Resource type constant for binary data.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        Binary = 1,
+
+        /// <summary>
+        /// <icu/> Resource type constant for tables of key-value pairs.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        Table = 2,
+
+        /// <summary>
+        /// Resource type constant for aliases;
+        /// internally stores a string which identifies the actual resource
+        /// storing the data (can be in a different resource bundle).
+        /// Resolved internally before delivering the actual resource through the API.
+        /// </summary>
+        Alias = 3,
+
+        /// <summary>
+        /// Resource type constant for tables with 32-bit count, key offsets and values.
+        /// </summary>
+        Table32 = 4,
+
+        /// <summary>
+        /// Resource type constant for tables with 16-bit count, key offsets and values.
+        /// All values are <see cref="UResourceType.StringV2"/> strings.
+        /// </summary>
+        Table16 = 5,
+
+        /// <summary>
+        /// Resource type constant for 16-bit Unicode strings in formatVersion 2.
+        /// </summary>
+        StringV2 = 6,
+
+        /// <summary>
+        /// Resource type constant for arrays with 16-bit count and values.
+        /// All values are <see cref="UResourceType.StringV2"/> strings.
+        /// </summary>
+        Array16 = 9,
+
+        /// <summary>
+        /// <icu/> Resource type constant for a single 28-bit integer, interpreted as
+        /// signed or unsigned by the <see cref="UResourceBundle.GetInt32()"/> function.
+        /// </summary>
+        /// <seealso cref="UResourceBundle.GetInt32()"/>
+        /// <stable>ICU 3.8</stable>
+        Int32 = 7,
+
+        /// <summary>
+        /// <icu/> Resource type constant for arrays of resources.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        Array = 8,
+
+        /// <summary>
+        /// Resource type constant for vectors of 32-bit integers.
+        /// </summary>
+        /// <stable>ICU 3.8</stable>
+        Int32Vector = 14
+    }
+
 
     // ICU4N: temporary stub until we work out how to implement ResourceBundle
     public abstract class ResourceBundle
