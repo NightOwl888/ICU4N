@@ -631,7 +631,7 @@ namespace ICU4N.Text
             dir_ = 0;
         }
 
-        private sealed class MaxExpSink : ContractionsAndExpansions.ICESink
+        private sealed class MaxExpSink : ICESink
         {
             internal MaxExpSink(IDictionary<int, int> h)
             {

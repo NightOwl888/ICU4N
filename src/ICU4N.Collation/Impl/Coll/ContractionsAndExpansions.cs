@@ -8,8 +8,17 @@ using System.Text;
 
 namespace ICU4N.Impl.Coll
 {
-    /// <since>2013feb09</since>
-    /// <author>Markus W. Scherer</author>
+    // ContractionsAndExpansions.cs, ported from collationsets.h/.cpp
+    //
+    // C++ version created on: 2013feb09
+    // created by: Markus W. Scherer
+
+    public interface ICESink
+    {
+        void HandleCE(long ce);
+        void HandleExpansion(IList<long> ces, int start, int length);
+    }
+
     public sealed class ContractionsAndExpansions
     {
         // C++: The following fields are @internal, only public for access by callback.
@@ -25,11 +34,7 @@ namespace ICU4N.Impl.Coll
         private string suffix;
         private long[] ces = new long[Collation.MAX_EXPANSION_LENGTH];
 
-        public interface ICESink
-        {
-            void HandleCE(long ce);
-            void HandleExpansion(IList<long> ces, int start, int length);
-        }
+        // ICU4N specific - de-nested ICESink interface
 
         public ContractionsAndExpansions(UnicodeSet con, UnicodeSet exp, ICESink s, bool prefixes)
         {
