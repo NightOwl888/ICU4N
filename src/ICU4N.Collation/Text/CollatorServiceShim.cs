@@ -4,7 +4,6 @@ using ICU4N.Util;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
-using CollatorFactory = ICU4N.Text.Collator.CollatorFactory;
 using IFactory = ICU4N.Impl.ICUService.IFactory;
 using LocaleKeyFactory = ICU4N.Impl.ICULocaleService.LocaleKeyFactory;
 

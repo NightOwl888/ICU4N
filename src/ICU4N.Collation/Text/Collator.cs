@@ -218,6 +218,117 @@ namespace ICU4N.Text
     }
 
     /// <summary>
+    /// A factory used with <see cref="Collator.RegisterFactory(CollatorFactory)"/> to register multiple collators and provide
+    /// display names for them.  If standard locale display names are sufficient,
+    /// Collator instances may be registered instead.
+    /// <para/>
+    /// <b>Note:</b> as of ICU4N 3.2, the default API for <see cref="CollatorFactory"/> uses
+    /// <see cref="ULocale"/> instead of <see cref="CultureInfo"/>.  Instead of overriding <see cref="CreateCollator(CultureInfo)"/>,
+    /// new implementations should override <see cref="CreateCollator(ULocale)"/>.  Note that
+    /// one of these two methods <b>MUST</b> be overridden or else an infinite
+    /// loop will occur.
+    /// </summary>
+    /// <stable>ICU 2.6</stable>
+    public abstract class CollatorFactory
+    {
+        /// <summary>
+        /// Return true if this factory will be visible.  Default is true.
+        /// If not visible, the locales supported by this factory will not
+        /// be listed by <see cref="Collator.GetAvailableLocales()"/>.
+        /// <para/>
+        /// true if this factory is visible.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
+        public virtual bool Visible
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Return an instance of the appropriate collator.  If the locale
+        /// is not supported, return null.
+        /// <para/>
+        /// <b>Note:</b> as of ICU4N 3.2, implementations should override
+        /// this method instead of <see cref="CreateCollator(CultureInfo)"/>.
+        /// </summary>
+        /// <param name="loc">the locale for which this collator is to be created.</param>
+        /// <returns>the newly created collator.</returns>
+        /// <stable>ICU 3.2</stable>
+        public virtual Collator CreateCollator(ULocale loc)
+        {
+            return CreateCollator(loc.ToLocale());
+        }
+
+        /// <summary>
+        /// Return an instance of the appropriate collator.  If the locale
+        /// is not supported, return null.
+        /// <para/>
+        /// <b>Note:</b> as of ICU4J 3.2, implementations should override
+        /// createCollator(ULocale) instead of this method, and inherit this
+        /// method's implementation.  This method is no longer abstract
+        /// and instead delegates to createCollator(ULocale).
+        /// </summary>
+        /// <param name="loc">the locale for which this collator is to be created.</param>
+        /// <returns>the newly created collator.</returns>
+        /// <stable>ICU 2.6</stable>
+        public virtual Collator CreateCollator(CultureInfo loc)
+        {
+            return CreateCollator(ULocale.ForLocale(loc));
+        }
+
+        /// <summary>
+        /// Return the name of the collator for the <paramref name="objectLocale"/>, localized for the <paramref name="displayLocale"/>.
+        /// If <paramref name="objectLocale"/> is not visible or not defined by the factory, return null.
+        /// </summary>
+        /// <param name="objectLocale">the locale identifying the collator</param>
+        /// <param name="displayLocale">the locale for which the display name of the collator should be localized</param>
+        /// <returns>the display name</returns>
+        /// <stable>ICU 2.6</stable>
+        public virtual string GetDisplayName(CultureInfo objectLocale, CultureInfo displayLocale)
+        {
+            return Collator.GetDisplayName(ULocale.ForLocale(objectLocale), ULocale.ForLocale(displayLocale));
+        }
+
+        /// <summary>
+        /// Return the name of the collator for the <paramref name="objectLocale"/>, localized for the <paramref name="displayLocale"/>.
+        /// If <paramref name="objectLocale"/> is not visible or not defined by the factory, return null.
+        /// </summary>
+        /// <param name="objectLocale">the locale identifying the collator</param>
+        /// <param name="displayLocale">the locale for which the display name of the collator should be localized</param>
+        /// <returns>the display name</returns>
+        /// <stable>ICU 3.2</stable>
+        public virtual string GetDisplayName(ULocale objectLocale, ULocale displayLocale)
+        {
+            if (Visible)
+            {
+                ICollection<string> supported = GetSupportedLocaleIDs();
+                string name = objectLocale.GetBaseName();
+                if (supported.Contains(name))
+                {
+                    return objectLocale.GetDisplayName(displayLocale);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Return an unmodifiable collection of the locale names directly
+        /// supported by this factory.
+        /// </summary>
+        /// <returns>the set of supported locale IDs.</returns>
+        /// <stable>ICU 2.6</stable>
+        public abstract ICollection<string> GetSupportedLocaleIDs(); // ICU4N TODO: API - see if it is possible to return IReadOnlyCollection<T> here
+
+        /// <summary>
+        /// Empty default constructor.
+        /// </summary>
+        /// <stable>ICU 2.6</stable>
+        protected CollatorFactory()
+        {
+        }
+    }
+
+    /// <summary>
     /// Collator performs locale-sensitive string comparison. A concrete
     /// subclass, <see cref="RuleBasedCollator"/>, allows customization of the collation
     /// ordering by the use of rule sets.
@@ -644,116 +755,7 @@ namespace ICU4N.Text
 
         // begin registry stuff
 
-        /// <summary>
-        /// A factory used with <see cref="RegisterFactory(CollatorFactory)"/> to register multiple collators and provide
-        /// display names for them.  If standard locale display names are sufficient,
-        /// Collator instances may be registered instead.
-        /// <para/>
-        /// <b>Note:</b> as of ICU4N 3.2, the default API for <see cref="CollatorFactory"/> uses
-        /// <see cref="ULocale"/> instead of <see cref="CultureInfo"/>.  Instead of overriding <see cref="CreateCollator(CultureInfo)"/>,
-        /// new implementations should override <see cref="CreateCollator(ULocale)"/>.  Note that
-        /// one of these two methods <b>MUST</b> be overridden or else an infinite
-        /// loop will occur.
-        /// </summary>
-        /// <stable>ICU 2.6</stable>
-        public abstract class CollatorFactory // ICU4N TODO: API - De-nest?
-        {
-            /// <summary>
-            /// Return true if this factory will be visible.  Default is true.
-            /// If not visible, the locales supported by this factory will not
-            /// be listed by <see cref="GetAvailableLocales"/>.
-            /// <para/>
-            /// true if this factory is visible.
-            /// </summary>
-            /// <stable>ICU 2.6</stable>
-            public virtual bool Visible
-            {
-                get { return true; }
-            }
-
-            /// <summary>
-            /// Return an instance of the appropriate collator.  If the locale
-            /// is not supported, return null.
-            /// <para/>
-            /// <b>Note:</b> as of ICU4N 3.2, implementations should override
-            /// this method instead of <see cref="CreateCollator(CultureInfo)"/>.
-            /// </summary>
-            /// <param name="loc">the locale for which this collator is to be created.</param>
-            /// <returns>the newly created collator.</returns>
-            /// <stable>ICU 3.2</stable>
-            public virtual Collator CreateCollator(ULocale loc)
-            {
-                return CreateCollator(loc.ToLocale());
-            }
-
-            /// <summary>
-            /// Return an instance of the appropriate collator.  If the locale
-            /// is not supported, return null.
-            /// <para/>
-            /// <b>Note:</b> as of ICU4J 3.2, implementations should override
-            /// createCollator(ULocale) instead of this method, and inherit this
-            /// method's implementation.  This method is no longer abstract
-            /// and instead delegates to createCollator(ULocale).
-            /// </summary>
-            /// <param name="loc">the locale for which this collator is to be created.</param>
-            /// <returns>the newly created collator.</returns>
-            /// <stable>ICU 2.6</stable>
-            public virtual Collator CreateCollator(CultureInfo loc)
-            {
-                return CreateCollator(ULocale.ForLocale(loc));
-            }
-
-            /// <summary>
-            /// Return the name of the collator for the <paramref name="objectLocale"/>, localized for the <paramref name="displayLocale"/>.
-            /// If <paramref name="objectLocale"/> is not visible or not defined by the factory, return null.
-            /// </summary>
-            /// <param name="objectLocale">the locale identifying the collator</param>
-            /// <param name="displayLocale">the locale for which the display name of the collator should be localized</param>
-            /// <returns>the display name</returns>
-            /// <stable>ICU 2.6</stable>
-            public virtual string GetDisplayName(CultureInfo objectLocale, CultureInfo displayLocale)
-            {
-                return Collator.GetDisplayName(ULocale.ForLocale(objectLocale), ULocale.ForLocale(displayLocale));
-            }
-
-            /// <summary>
-            /// Return the name of the collator for the <paramref name="objectLocale"/>, localized for the <paramref name="displayLocale"/>.
-            /// If <paramref name="objectLocale"/> is not visible or not defined by the factory, return null.
-            /// </summary>
-            /// <param name="objectLocale">the locale identifying the collator</param>
-            /// <param name="displayLocale">the locale for which the display name of the collator should be localized</param>
-            /// <returns>the display name</returns>
-            /// <stable>ICU 3.2</stable>
-            public virtual string GetDisplayName(ULocale objectLocale, ULocale displayLocale)
-            {
-                if (Visible)
-                {
-                    ICollection<string> supported = GetSupportedLocaleIDs();
-                    string name = objectLocale.GetBaseName();
-                    if (supported.Contains(name))
-                    {
-                        return objectLocale.GetDisplayName(displayLocale);
-                    }
-                }
-                return null;
-            }
-
-            /// <summary>
-            /// Return an unmodifiable collection of the locale names directly
-            /// supported by this factory.
-            /// </summary>
-            /// <returns>the set of supported locale IDs.</returns>
-            /// <stable>ICU 2.6</stable>
-            public abstract ICollection<string> GetSupportedLocaleIDs(); // ICU4N TODO: API - see if it is possible to return IReadOnlyCollection<T> here
-
-            /// <summary>
-            /// Empty default constructor.
-            /// </summary>
-            /// <stable>ICU 2.6</stable>
-            protected CollatorFactory()
-            {
-            }
-        }
+        // ICU4N specific - de-nested CollatorFactory
 
         internal abstract class ServiceShim
         {

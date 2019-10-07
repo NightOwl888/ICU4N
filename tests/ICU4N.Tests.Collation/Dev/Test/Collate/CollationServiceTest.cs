@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Resources;
-using CollatorFactory = ICU4N.Text.Collator.CollatorFactory; // ICU4N TODO: API - de-nest?
 
 namespace ICU4N.Dev.Test.Collate
 {
