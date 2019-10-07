@@ -202,7 +202,7 @@ namespace ICU4N.Dev.Test.Collate
             }
         }
 
-        private AlphabeticIndex<int>.Bucket Find(AlphabeticIndex<int> alphabeticIndex, string probe)
+        private Bucket<int> Find(AlphabeticIndex<int> alphabeticIndex, string probe)
         {
             foreach (var bucket in alphabeticIndex)
             {
@@ -307,7 +307,7 @@ namespace ICU4N.Dev.Test.Collate
                 {
                     AlphabeticIndex<string> alphabeticIndex = new AlphabeticIndex<string>(locale);
                     alphabeticIndex.AddRecord("hi", "HI");
-                    foreach (AlphabeticIndex<string>.Bucket bucket in alphabeticIndex)
+                    foreach (Bucket<string> bucket in alphabeticIndex)
                     {
                         BucketLabelType labelType = bucket.LabelType;
                     }
@@ -331,7 +331,7 @@ namespace ICU4N.Dev.Test.Collate
             assertEquals("inflow label", "--", index.InflowLabel);
             assertEquals("overflow label", "^^", index.OverflowLabel);
 
-            AlphabeticIndex<object>.ImmutableIndex ii = index.BuildImmutableIndex();
+            ImmutableIndex<object> ii = index.BuildImmutableIndex();
             assertEquals("0 -> underflow", "__", ii.GetBucket(ii.GetBucketIndex("0")).Label);
             assertEquals("Ω -> inflow", "--", ii.GetBucket(ii.GetBucketIndex("Ω")).Label);
             assertEquals("字 -> overflow", "^^", ii.GetBucket(ii.GetBucketIndex("字")).Label);
@@ -387,7 +387,7 @@ namespace ICU4N.Dev.Test.Collate
                             indexCharacters2.AddLabels((UnicodeSet)test[i]);
                         }
                     }
-                    List<AlphabeticIndex<double>.Bucket> buckets = new List<AlphabeticIndex<double>.Bucket>(alphabeticIndex);  //CollectionUtilities.addAll(alphabeticIndex.iterator(), new List<AlphabeticIndex<double>.Bucket>());
+                    List<Bucket<double>> buckets = new List<Bucket<double>>(alphabeticIndex);  //CollectionUtilities.addAll(alphabeticIndex.iterator(), new List<AlphabeticIndex<double>.Bucket>());
                     Logln(buckets.ToString());
                 }
                 assertEquals(BucketLabelType.Overflow + "\t" + printList, 1, counter.Get(BucketLabelType.Overflow));
@@ -420,7 +420,7 @@ namespace ICU4N.Dev.Test.Collate
             bool showAll = true;
 
             // Show index at top. We could skip or gray out empty buckets
-            foreach (AlphabeticIndex<int>.Bucket bucket in index)
+            foreach (Bucket<int> bucket in index)
             {
                 if (showAll || bucket.Count != 0)
                 {
@@ -548,7 +548,7 @@ namespace ICU4N.Dev.Test.Collate
             buffer.Append(label);
         }
 
-        private Counter<String> GetKeys(AlphabeticIndex<int>.Bucket entry)
+        private Counter<String> GetKeys(Bucket<int> entry)
         {
             Counter<String> keys = new Counter<String>();
             foreach (var x in entry)
@@ -703,7 +703,7 @@ namespace ICU4N.Dev.Test.Collate
                     // now compare
                     int index = 0;
                     bool gotError = false;
-                    foreach (AlphabeticIndex<double>.Bucket bucket in alphabeticIndex)
+                    foreach (Bucket<double> bucket in alphabeticIndex)
                     {
                         String bucketLabel = bucket.Label;
                         String myLabel = myBucketLabels[index];
@@ -1132,7 +1132,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestJapaneseKanji()
         {
             AlphabeticIndex<object> index = new AlphabeticIndex<object>(ULocale.JAPANESE);
-            AlphabeticIndex<object>.ImmutableIndex immIndex = index.BuildImmutableIndex();
+            ImmutableIndex<object> immIndex = index.BuildImmutableIndex();
             // There are no index characters for Kanji in the Japanese standard collator.
             // They should all go into the overflow bucket.
             int[] kanji = { 0x4E9C, 0x95C7, 0x4E00, 0x58F1 };
@@ -1165,7 +1165,7 @@ namespace ICU4N.Dev.Test.Collate
             AlphabeticIndex<object> index = new AlphabeticIndex<object>(new ULocale("zh-u-co-unihan"));
             index.SetMaxLabelCount(500);  // ICU 54 default is 99.
             assertEquals("getMaxLabelCount()", 500, index.MaxLabelCount);  // code coverage
-            AlphabeticIndex<object>.ImmutableIndex immIndex = index.BuildImmutableIndex();
+            ImmutableIndex<object> immIndex = index.BuildImmutableIndex();
             int bucketCount = immIndex.BucketCount;
             if (bucketCount < 216)
             {
@@ -1229,9 +1229,9 @@ namespace ICU4N.Dev.Test.Collate
             index.AddRecord("!", null);
             index.AddRecord("\u03B1", null); // GREEK SMALL LETTER ALPHA
             index.AddRecord("\uab70", null); // CHEROKEE SMALL LETTER A
-            AlphabeticIndex<string>.Bucket underflowBucket = null;
-            AlphabeticIndex<string>.Bucket overflowBucket = null;
-            AlphabeticIndex<string>.Bucket inflowBucket = null;
+            Bucket<string> underflowBucket = null;
+            Bucket<string> overflowBucket = null;
+            Bucket<string> inflowBucket = null;
             foreach (var bucket in index)
             {
                 switch (bucket.LabelType)

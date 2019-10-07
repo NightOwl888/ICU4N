@@ -90,15 +90,15 @@ namespace ICU4N.Text
     /// <b>... A-F G-N O-Z ...</b>
     /// </code>
     /// <h2>Client Support</h2>
-    /// Callers can also use the <see cref="AlphabeticIndex{T}.ImmutableIndex"/>, or the <see cref="AlphabeticIndex{T}"/> itself,
+    /// Callers can also use the <see cref="ImmutableIndex{T}"/>, or the <see cref="AlphabeticIndex{T}"/> itself,
     /// to support sorting on a client that doesn't support <see cref="AlphabeticIndex{T}"/> functionality.
     /// <para/>
-    /// The <see cref="ImmutableIndex"/> is both immutable and thread-safe.
+    /// The <see cref="ImmutableIndex{T}"/> is both immutable and thread-safe.
     /// The corresponding <see cref="AlphabeticIndex{T}"/> methods are not thread-safe because
     /// they "lazily" build the index buckets.
     /// <list type="bullet">
     ///     <item><description>
-    ///         <see cref="ImmutableIndex.GetBucket(int)"/> provides random access to all
+    ///         <see cref="ImmutableIndex{T}.GetBucket(int)"/> provides random access to all
     ///         buckets and their labels and label types.
     ///     </description></item>
     ///     <item><description>
@@ -127,7 +127,7 @@ namespace ICU4N.Text
     /// <typeparam name="T">Data type of bucket data.</typeparam>
     /// <author>Mark Davis</author>
     /// <stable>ICU 4.8</stable>
-    public sealed class AlphabeticIndex<T> : IEnumerable<AlphabeticIndex<T>.Bucket>
+    public sealed class AlphabeticIndex<T> : IEnumerable<Bucket<T>>
     {
         /// <summary>
         /// Prefix string for Chinese index buckets.
@@ -143,7 +143,7 @@ namespace ICU4N.Text
         private readonly RuleBasedCollator collatorPrimaryOnly;
         private RuleBasedCollator collatorExternal;
 
-        private class RecordComparer : IComparer<Record>
+        private class RecordComparer : IComparer<Record<T>>
         {
             private readonly RuleBasedCollator collatorOriginal;
 
@@ -152,21 +152,21 @@ namespace ICU4N.Text
                 this.collatorOriginal = collatorOriginal;
             }
 
-            public int Compare(Record o1, Record o2)
+            public int Compare(Record<T> o1, Record<T> o2)
             {
                 return collatorOriginal.Compare(o1.Name, o2.Name);
             }
         }
 
         // Comparer for records, so that the Record class can be static.
-        private readonly IComparer<Record> recordComparer;
+        private readonly IComparer<Record<T>> recordComparer;
 
 
         private readonly List<string> firstCharsInScripts;
 
         // We accumulate these as we build up the input parameters
         private readonly UnicodeSet initialLabels = new UnicodeSet();
-        private List<Record> inputList;
+        private List<Record<T>> inputList;
 
         // Lazy evaluated: null means that we have not built yet.
         private BucketList buckets;
@@ -175,80 +175,7 @@ namespace ICU4N.Text
         private string underflowLabel = "\u2026";
         private string inflowLabel = "\u2026";
 
-        /// <summary>
-        /// Immutable, thread-safe version of <see cref="AlphabeticIndex{T}"/>.
-        /// This class provides thread-safe methods for bucketing,
-        /// and random access to buckets and their properties,
-        /// but does not offer adding records to the index.
-        /// </summary>
-        /// <stable>ICU 51</stable>
-        public sealed class ImmutableIndex : IEnumerable<Bucket>
-        {
-            internal readonly BucketList buckets;
-            internal readonly Collator collatorPrimaryOnly;
-
-            internal ImmutableIndex(BucketList bucketList, Collator collatorPrimaryOnly)
-            {
-                this.buckets = bucketList;
-                this.collatorPrimaryOnly = collatorPrimaryOnly;
-            }
-
-            /// <summary>
-            /// Gets the number of index buckets and labels, including underflow/inflow/overflow.
-            /// </summary>
-            /// <stable>ICU 51</stable>
-            public int BucketCount
-            {
-                get { return buckets.BucketCount; }
-            }
-
-            /// <summary>
-            /// Finds the index bucket for the given name and returns the number of that bucket.
-            /// Use <see cref="GetBucket(int)"/> to get the bucket's properties.
-            /// </summary>
-            /// <param name="name">The string to be sorted into an index bucket.</param>
-            /// <returns>The bucket number for the name.</returns>
-            /// <stable>ICU 51</stable>
-            public int GetBucketIndex(string name) // ICU4N specific - changed name from ICharSequence to string
-            {
-                return buckets.GetBucketIndex(name, collatorPrimaryOnly);
-            }
-
-            /// <summary>
-            /// Returns the <paramref name="index"/>-th bucket. Returns null if the index is out of range.
-            /// </summary>
-            /// <param name="index">Bucket number.</param>
-            /// <returns>The <paramref name="index"/>-th bucket.</returns>
-            /// <stable>ICU 51</stable>
-            public Bucket GetBucket(int index)
-            {
-                if (0 <= index && index < buckets.BucketCount)
-                {
-                    return buckets.ImmutableVisibleList[index];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            /// <summary>
-            /// Returns an enumerator that iterates through the collection.
-            /// </summary>
-            /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-            /// <stable>ICU 51</stable>
-            public IEnumerator<Bucket> GetEnumerator()
-            {
-                return buckets.GetEnumerator();
-            }
-
-            #region .NET Compatibility
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-            #endregion
-        }
+        // ICU4N specific - de-nested ImmutableIndex
 
         /// <summary>
         /// Create the index object.
@@ -722,7 +649,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>An immutable index instance.</returns>
         /// <stable>ICU 51</stable>
-        public ImmutableIndex BuildImmutableIndex()
+        public ImmutableIndex<T> BuildImmutableIndex()
         {
             // The current AlphabeticIndex Java code never modifies the bucket list once built.
             // If it contains no records, we can use it.
@@ -741,7 +668,7 @@ namespace ICU4N.Text
                 }
                 immutableBucketList = buckets;
             }
-            return new ImmutableIndex(immutableBucketList, collatorPrimaryOnly);
+            return new ImmutableIndex<T>(immutableBucketList, collatorPrimaryOnly);
         }
 
         /// <summary>
@@ -803,9 +730,9 @@ namespace ICU4N.Text
             buckets = null; // invalidate old bucketlist
             if (inputList == null)
             {
-                inputList = new List<Record>();
+                inputList = new List<Record<T>>();
             }
-            inputList.Add(new Record(name, data));
+            inputList.Add(new Record<T>(name, data));
             return this;
         }
 
@@ -870,7 +797,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>Enumerator over buckets.</returns>
         /// <stable>ICU 4.8</stable>
-        public IEnumerator<Bucket> GetEnumerator()
+        public IEnumerator<Bucket<T>> GetEnumerator()
         {
             InitBuckets();
             return buckets.GetEnumerator();
@@ -908,10 +835,10 @@ namespace ICU4N.Text
             // However, if the user adds an item at a time and then gets the buckets, this isn't efficient, so
             // we need to improve it for that case.
 
-            IEnumerator<Bucket> bucketIterator = buckets.GetFullEnumerator();
+            IEnumerator<Bucket<T>> bucketIterator = buckets.GetFullEnumerator();
             bucketIterator.MoveNext();
-            Bucket currentBucket = bucketIterator.Current;
-            Bucket nextBucket;
+            Bucket<T> currentBucket = bucketIterator.Current;
+            Bucket<T> nextBucket;
             string upperBoundary;
             if (bucketIterator.MoveNext())
             {
@@ -923,7 +850,7 @@ namespace ICU4N.Text
                 nextBucket = null;
                 upperBoundary = null;
             }
-            foreach (Record r in inputList)
+            foreach (Record<T> r in inputList)
             {
                 // if the current bucket isn't the right one, find the one that is
                 // We have a special flag for the last bucket so that we don't look any further
@@ -943,14 +870,14 @@ namespace ICU4N.Text
                     }
                 }
                 // now put the record into the bucket.
-                Bucket bucket = currentBucket;
+                Bucket<T> bucket = currentBucket;
                 if (bucket.DisplayBucket != null)
                 {
                     bucket = bucket.DisplayBucket;
                 }
                 if (bucket.Records == null)
                 {
-                    bucket.Records = new List<Record>();
+                    bucket.Records = new List<Record<T>>();
                 }
                 bucket.Records.Add(r);
             }
@@ -981,171 +908,9 @@ namespace ICU4N.Text
             return binaryCmp.Compare(one, other) < 0;
         }
 
-        /// <summary>
-        /// A (name, data) pair, to be sorted by name into one of the index buckets.
-        /// The user data is not used by the index implementation.
-        /// </summary>
-        /// <stable>ICU 4.8</stable>
-        public class Record // ICU4N TODO: API Make struct ?
-        {
-            private readonly string name;
-            private readonly T data;
+        // ICU4N specific - de-nested Record<T>
 
-            internal Record(string name, T data) // ICU4N specific - changed name from ICharsequence to string
-            {
-                this.name = name;
-                this.data = data;
-            }
-
-            /// <summary>
-            /// Gets the name.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public virtual string Name
-            {
-                get { return name; }
-            }
-
-            /// <summary>
-            /// Gets the data.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public virtual T Data
-            {
-                get { return data; }
-            }
-
-            /// <summary>
-            /// Returns <c>name + "=" + data</c>.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public override string ToString()
-            {
-                return name + "=" + data;
-            }
-        }
-
-        /// <summary>
-        /// An index "bucket" with a label string and type.
-        /// It is referenced by <see cref="AlphabeticIndex{T}.GetBucketIndex(string)"/>
-        /// and <see cref="AlphabeticIndex{T}.ImmutableIndex.GetBucketIndex(string)"/>,
-        /// returned by <see cref="AlphabeticIndex{T}.ImmutableIndex.GetBucket(int)"/>,
-        /// and <see cref="AlphabeticIndex{T}.AddRecord(string, T)"/> adds a record
-        /// into a bucket according to the record's name.
-        /// </summary>
-        /// <stable>ICU 4.8</stable>
-        public class Bucket : IEnumerable<Record>
-        {
-            private readonly string label;
-            private readonly string lowerBoundary;
-            private readonly BucketLabelType labelType;
-            private Bucket displayBucket;
-            private int displayIndex;
-            private IList<Record> records;
-
-            // ICU4N specific - de-nested LabelType enum and renamed BucketLabelType
-
-            internal string LowerBoundary
-            {
-                get { return lowerBoundary; }
-            }
-
-            internal Bucket DisplayBucket
-            {
-                get { return displayBucket; }
-                set { displayBucket = value; }
-            }
-
-            internal int DisplayIndex
-            {
-                get { return displayIndex; }
-                set { displayIndex = value; }
-            }
-
-            internal IList<Record> Records
-            {
-                get { return records; }
-                set { records = value; }
-            }
-
-            /// <summary>
-            /// Set up the bucket.
-            /// </summary>
-            /// <param name="label">Label for the bucket.</param>
-            /// <param name="lowerBoundary"></param>
-            /// <param name="labelType">Is an underflow, overflow, or inflow bucket.</param>
-            /// <stable>ICU 4.8</stable>
-            internal Bucket(string label, string lowerBoundary, BucketLabelType labelType)
-            {
-                this.label = label;
-                this.lowerBoundary = lowerBoundary;
-                this.labelType = labelType;
-            }
-
-            /// <summary>
-            /// Gets the label for the bucket.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public virtual string Label
-            {
-                get { return label; }
-            }
-
-            /// <summary>
-            /// Is a normal, underflow, overflow, or inflow bucket?
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public BucketLabelType LabelType
-            {
-                get { return labelType; }
-            }
-
-            /// <summary>
-            /// Gets the number of records in the bucket.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public virtual int Count
-            {
-                get { return records == null ? 0 : records.Count; }
-            }
-
-            /// <summary>
-            /// Enumerator over the records in the bucket.
-            /// </summary>
-            /// <returns>An enumerator over the records in the bucket.</returns>
-            /// <stable>ICU 4.8</stable>
-            public virtual IEnumerator<Record> GetEnumerator()
-            {
-                if (records == null)
-                {
-                    return new List<Record>().GetEnumerator();
-                }
-                return records.GetEnumerator();
-            }
-
-            #region .NET Compatibility
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return GetEnumerator();
-            }
-            #endregion
-
-            /// <summary>
-            /// Returns a name with the <see cref="labelType"/>, <see cref="lowerBoundary"/>, and <see cref="label"/>.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public override string ToString()
-            {
-                return "{" +
-                "labelType=" + labelType
-                + ", " +
-                "lowerBoundary=" + lowerBoundary
-                + ", " +
-                "label=" + label
-                + "}"
-                ;
-            }
-        }
+        // ICU4N specific - de-nested Bucket<T>
 
         private BucketList CreateBucketList()
         {
@@ -1167,15 +932,15 @@ namespace ICU4N.Text
             bool hasInvisibleBuckets = false;
 
             // Helper arrays for Chinese Pinyin collation.
-            Bucket[] asciiBuckets = new Bucket[26];
-            Bucket[] pinyinBuckets = new Bucket[26];
+            Bucket<T>[] asciiBuckets = new Bucket<T>[26];
+            Bucket<T>[] pinyinBuckets = new Bucket<T>[26];
             bool hasPinyin = false;
 
-            List<Bucket> bucketList = new List<Bucket>
+            List<Bucket<T>> bucketList = new List<Bucket<T>>
             {
 
                 // underflow bucket
-                new Bucket(UnderflowLabel, "", BucketLabelType.Underflow)
+                new Bucket<T>(UnderflowLabel, "", BucketLabelType.Underflow)
             };
 
             // fix up the list, adding underflow, additions, overflow
@@ -1202,12 +967,12 @@ namespace ICU4N.Text
                     {
                         // We are skipping one or more scripts,
                         // and we are not just getting out of the underflow label.
-                        bucketList.Add(new Bucket(InflowLabel, inflowBoundary,
+                        bucketList.Add(new Bucket<T>(InflowLabel, inflowBoundary,
                                 BucketLabelType.Inflow));
                     }
                 }
                 // Add a bucket with the current label.
-                Bucket bucket = new Bucket(FixLabel(current), current, BucketLabelType.Normal);
+                Bucket<T> bucket = new Bucket<T>(FixLabel(current), current, BucketLabelType.Normal);
                 bucketList.Add(bucket);
                 // Remember ASCII and Pinyin buckets for Pinyin redirects.
                 char c;
@@ -1229,7 +994,7 @@ namespace ICU4N.Text
                     // "Æ" or "Sch" etc.
                     for (int i2 = bucketList.Count - 2; ; --i2)
                     {
-                        Bucket singleBucket = bucketList[i2];
+                        Bucket<T> singleBucket = bucketList[i2];
                         if (singleBucket.LabelType != BucketLabelType.Normal)
                         {
                             // There is no single-character bucket since the last
@@ -1243,7 +1008,7 @@ namespace ICU4N.Text
                             // to the previous single-character bucket.
                             // For example, after ... Q R S Sch we add Sch\uFFFF->S
                             // and after ... Q R S Sch Sch\uFFFF St we add St\uFFFF->S.
-                            bucket = new Bucket("", current + "\uFFFF", BucketLabelType.Normal);
+                            bucket = new Bucket<T>("", current + "\uFFFF", BucketLabelType.Normal);
                             bucket.DisplayBucket = singleBucket;
                             bucketList.Add(bucket);
                             hasInvisibleBuckets = true;
@@ -1258,12 +1023,12 @@ namespace ICU4N.Text
                 return new BucketList(bucketList, bucketList);
             }
             // overflow bucket
-            bucketList.Add(new Bucket(OverflowLabel, scriptUpperBoundary, BucketLabelType.Overflow)); // final
+            bucketList.Add(new Bucket<T>(OverflowLabel, scriptUpperBoundary, BucketLabelType.Overflow)); // final
 
             if (hasPinyin)
             {
                 // Redirect Pinyin buckets.
-                Bucket asciiBucket = null;
+                Bucket<T> asciiBucket = null;
                 for (int i3 = 0; i3 < 26; ++i3)
                 {
                     if (asciiBuckets[i3] != null)
@@ -1285,10 +1050,10 @@ namespace ICU4N.Text
             // Merge inflow buckets that are visually adjacent.
             // Iterate backwards: Merge inflow into overflow rather than the other way around.
             int i = bucketList.Count - 1;
-            Bucket nextBucket = bucketList[i];
+            Bucket<T> nextBucket = bucketList[i];
             while (--i > 0)
             {
-                Bucket bucket = bucketList[i];
+                Bucket<T> bucket = bucketList[i];
                 if (bucket.DisplayBucket != null)
                 {
                     continue;  // skip invisible buckets
@@ -1304,8 +1069,8 @@ namespace ICU4N.Text
                 nextBucket = bucket;
             }
 
-            List<Bucket> publicBucketList = new List<Bucket>();
-            foreach (Bucket bucket in bucketList)
+            List<Bucket<T>> publicBucketList = new List<Bucket<T>>();
+            foreach (Bucket<T> bucket in bucketList)
             {
                 if (bucket.DisplayBucket == null)
                 {
@@ -1315,22 +1080,22 @@ namespace ICU4N.Text
             return new BucketList(bucketList, publicBucketList);
         }
 
-        internal class BucketList : IEnumerable<Bucket>
+        internal class BucketList : IEnumerable<Bucket<T>>
         {
-            private readonly List<Bucket> bucketList;
-            private readonly IList<Bucket> immutableVisibleList;
+            private readonly List<Bucket<T>> bucketList;
+            private readonly IList<Bucket<T>> immutableVisibleList;
 
-            public IList<Bucket> ImmutableVisibleList
+            public IList<Bucket<T>> ImmutableVisibleList
             {
                 get { return immutableVisibleList; }
             }
 
-            internal BucketList(List<Bucket> bucketList, List<Bucket> publicBucketList)
+            internal BucketList(List<Bucket<T>> bucketList, List<Bucket<T>> publicBucketList)
             {
                 this.bucketList = bucketList;
 
                 int displayIndex = 0;
-                foreach (Bucket bucket in publicBucketList)
+                foreach (Bucket<T> bucket in publicBucketList)
                 {
                     bucket.DisplayIndex = displayIndex++;
                 }
@@ -1350,7 +1115,7 @@ namespace ICU4N.Text
                 while ((start + 1) < limit)
                 {
                     int i = (start + limit) / 2;
-                    Bucket bucket = bucketList[i];
+                    Bucket<T> bucket = bucketList[i];
                     int nameVsBucket = collatorPrimaryOnly.Compare(name, bucket.LowerBoundary);
                     if (nameVsBucket < 0)
                     {
@@ -1361,7 +1126,7 @@ namespace ICU4N.Text
                         start = i;
                     }
                 }
-                Bucket bucket2 = bucketList[start];
+                Bucket<T> bucket2 = bucketList[start];
                 if (bucket2.DisplayBucket != null)
                 {
                     bucket2 = bucket2.DisplayBucket;
@@ -1372,7 +1137,7 @@ namespace ICU4N.Text
             /// <summary>
             /// Private enumerator over all the buckets, visible and invisible
             /// </summary>
-            internal IEnumerator<Bucket> GetFullEnumerator()
+            internal IEnumerator<Bucket<T>> GetFullEnumerator()
             {
                 return bucketList.GetEnumerator();
             }
@@ -1380,7 +1145,7 @@ namespace ICU4N.Text
             /// <summary>
             /// Enumerator over just the visible buckets.
             /// </summary>
-            public virtual IEnumerator<Bucket> GetEnumerator()
+            public virtual IEnumerator<Bucket<T>> GetEnumerator()
             {
                 return immutableVisibleList.GetEnumerator(); // use immutable list to prevent remove().
             }
@@ -1458,6 +1223,247 @@ namespace ICU4N.Text
                 dest.Add(boundary);
             }
             return dest;
+        }
+    }
+
+    /// <summary>
+    /// Immutable, thread-safe version of <see cref="AlphabeticIndex{T}"/>.
+    /// This class provides thread-safe methods for bucketing,
+    /// and random access to buckets and their properties,
+    /// but does not offer adding records to the index.
+    /// </summary>
+    /// <stable>ICU 51</stable>
+    public sealed class ImmutableIndex<T> : IEnumerable<Bucket<T>>
+    {
+        internal readonly AlphabeticIndex<T>.BucketList buckets;
+        internal readonly Collator collatorPrimaryOnly;
+
+        internal ImmutableIndex(AlphabeticIndex<T>.BucketList bucketList, Collator collatorPrimaryOnly)
+        {
+            this.buckets = bucketList;
+            this.collatorPrimaryOnly = collatorPrimaryOnly;
+        }
+
+        /// <summary>
+        /// Gets the number of index buckets and labels, including underflow/inflow/overflow.
+        /// </summary>
+        /// <stable>ICU 51</stable>
+        public int BucketCount
+        {
+            get { return buckets.BucketCount; }
+        }
+
+        /// <summary>
+        /// Finds the index bucket for the given name and returns the number of that bucket.
+        /// Use <see cref="GetBucket(int)"/> to get the bucket's properties.
+        /// </summary>
+        /// <param name="name">The string to be sorted into an index bucket.</param>
+        /// <returns>The bucket number for the name.</returns>
+        /// <stable>ICU 51</stable>
+        public int GetBucketIndex(string name) // ICU4N specific - changed name from ICharSequence to string
+        {
+            return buckets.GetBucketIndex(name, collatorPrimaryOnly);
+        }
+
+        /// <summary>
+        /// Returns the <paramref name="index"/>-th bucket. Returns null if the index is out of range.
+        /// </summary>
+        /// <param name="index">Bucket number.</param>
+        /// <returns>The <paramref name="index"/>-th bucket.</returns>
+        /// <stable>ICU 51</stable>
+        public Bucket<T> GetBucket(int index)
+        {
+            if (0 <= index && index < buckets.BucketCount)
+            {
+                return buckets.ImmutableVisibleList[index];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        /// <stable>ICU 51</stable>
+        public IEnumerator<Bucket<T>> GetEnumerator()
+        {
+            return buckets.GetEnumerator();
+        }
+
+        #region .NET Compatibility
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// A (name, data) pair, to be sorted by name into one of the index buckets.
+    /// The user data is not used by the index implementation.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public class Record<T>
+    {
+        private readonly string name;
+        private readonly T data;
+
+        internal Record(string name, T data) // ICU4N specific - changed name from ICharsequence to string
+        {
+            this.name = name;
+            this.data = data;
+        }
+
+        /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public virtual string Name
+        {
+            get { return name; }
+        }
+
+        /// <summary>
+        /// Gets the data.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public virtual T Data
+        {
+            get { return data; }
+        }
+
+        /// <summary>
+        /// Returns <c>name + "=" + data</c>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public override string ToString()
+        {
+            return name + "=" + data;
+        }
+    }
+
+    /// <summary>
+    /// An index "bucket" with a label string and type.
+    /// It is referenced by <see cref="AlphabeticIndex{T}.GetBucketIndex(string)"/>
+    /// and <see cref="ImmutableIndex{T}.GetBucketIndex(string)"/>,
+    /// returned by <see cref="ImmutableIndex{T}.GetBucket(int)"/>,
+    /// and <see cref="AlphabeticIndex{T}.AddRecord(string, T)"/> adds a record
+    /// into a bucket according to the record's name.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public class Bucket<T> : IEnumerable<Record<T>>
+    {
+        private readonly string label;
+        private readonly string lowerBoundary;
+        private readonly BucketLabelType labelType;
+        private Bucket<T> displayBucket;
+        private int displayIndex;
+        private IList<Record<T>> records;
+
+        // ICU4N specific - de-nested LabelType enum and renamed BucketLabelType
+
+        internal string LowerBoundary
+        {
+            get { return lowerBoundary; }
+        }
+
+        internal Bucket<T> DisplayBucket
+        {
+            get { return displayBucket; }
+            set { displayBucket = value; }
+        }
+
+        internal int DisplayIndex
+        {
+            get { return displayIndex; }
+            set { displayIndex = value; }
+        }
+
+        internal IList<Record<T>> Records
+        {
+            get { return records; }
+            set { records = value; }
+        }
+
+        /// <summary>
+        /// Set up the bucket.
+        /// </summary>
+        /// <param name="label">Label for the bucket.</param>
+        /// <param name="lowerBoundary"></param>
+        /// <param name="labelType">Is an underflow, overflow, or inflow bucket.</param>
+        /// <stable>ICU 4.8</stable>
+        internal Bucket(string label, string lowerBoundary, BucketLabelType labelType)
+        {
+            this.label = label;
+            this.lowerBoundary = lowerBoundary;
+            this.labelType = labelType;
+        }
+
+        /// <summary>
+        /// Gets the label for the bucket.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public virtual string Label
+        {
+            get { return label; }
+        }
+
+        /// <summary>
+        /// Is a normal, underflow, overflow, or inflow bucket?
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public BucketLabelType LabelType
+        {
+            get { return labelType; }
+        }
+
+        /// <summary>
+        /// Gets the number of records in the bucket.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public virtual int Count
+        {
+            get { return records == null ? 0 : records.Count; }
+        }
+
+        /// <summary>
+        /// Enumerator over the records in the bucket.
+        /// </summary>
+        /// <returns>An enumerator over the records in the bucket.</returns>
+        /// <stable>ICU 4.8</stable>
+        public virtual IEnumerator<Record<T>> GetEnumerator()
+        {
+            if (records == null)
+            {
+                return new List<Record<T>>().GetEnumerator();
+            }
+            return records.GetEnumerator();
+        }
+
+        #region .NET Compatibility
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+        #endregion
+
+        /// <summary>
+        /// Returns a name with the <see cref="labelType"/>, <see cref="lowerBoundary"/>, and <see cref="label"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public override string ToString()
+        {
+            return "{" +
+            "labelType=" + labelType
+            + ", " +
+            "lowerBoundary=" + lowerBoundary
+            + ", " +
+            "label=" + label
+            + "}"
+            ;
         }
     }
 
