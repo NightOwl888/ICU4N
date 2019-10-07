@@ -613,6 +613,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="compiledPattern">Compiled form of a pattern string.</param>
         /// <param name="values"></param>
+        [CLSCompliant(false)]
         public static string FormatCompiledPattern(string compiledPattern, params char[][] values)
         {
             return FormatAndAppend(compiledPattern, new StringBuilder(), null, values).ToString();
@@ -641,7 +642,7 @@ namespace ICU4N.Impl
         /// <param name="values"></param>
         /// <returns>The compiled-pattern string.</returns>
         /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-		public static string FormatRawPattern(string pattern, int min, int max, params string[] values)
+        public static string FormatRawPattern(string pattern, int min, int max, params string[] values)
         {
             StringBuilder sb = new StringBuilder();
             string compiledPattern = CompileToStringMinMaxArguments(pattern, sb, min, max);
@@ -662,7 +663,7 @@ namespace ICU4N.Impl
         /// <param name="values"></param>
         /// <returns>The compiled-pattern string.</returns>
         /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-		public static string FormatRawPattern(string pattern, int min, int max, params StringBuilder[] values)
+        public static string FormatRawPattern(string pattern, int min, int max, params StringBuilder[] values)
         {
             StringBuilder sb = new StringBuilder();
             string compiledPattern = CompileToStringMinMaxArguments(pattern, sb, min, max);
@@ -683,8 +684,8 @@ namespace ICU4N.Impl
         /// <param name="values"></param>
         /// <returns>The compiled-pattern string.</returns>
         /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-		[CLSCompliant(false)]
-		public static string FormatRawPattern(string pattern, int min, int max, params char[][] values)
+        [CLSCompliant(false)]
+        public static string FormatRawPattern(string pattern, int min, int max, params char[][] values)
         {
             StringBuilder sb = new StringBuilder();
             string compiledPattern = CompileToStringMinMaxArguments(pattern, sb, min, max);
@@ -705,7 +706,7 @@ namespace ICU4N.Impl
         /// <param name="values"></param>
         /// <returns>The compiled-pattern string.</returns>
         /// <exception cref="ArgumentException">for bad argument syntax and too few or too many arguments.</exception>
-		internal static string FormatRawPattern(string pattern, int min, int max, params ICharSequence[] values)
+        internal static string FormatRawPattern(string pattern, int min, int max, params ICharSequence[] values)
         {
             StringBuilder sb = new StringBuilder();
             string compiledPattern = CompileToStringMinMaxArguments(pattern, sb, min, max);
@@ -789,7 +790,7 @@ namespace ICU4N.Impl
         /// Can be null if <see cref="GetArgumentLimit(string)"/>==0.
         /// </param>
         /// <returns></returns>
-		[CLSCompliant(false)]
+        [CLSCompliant(false)]
         public static StringBuilder FormatAndAppend(
             string compiledPattern, StringBuilder appendTo, int[] offsets, params char[][] values)
         {
@@ -849,7 +850,7 @@ namespace ICU4N.Impl
         /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
         /// </param>
         /// <returns><paramref name="result"/></returns>
-		public static StringBuilder FormatAndReplace(
+        public static StringBuilder FormatAndReplace(
             string compiledPattern, StringBuilder result, int[] offsets, params string[] values)
         {
             int valuesLength = values != null ? values.Length : 0;
@@ -903,7 +904,7 @@ namespace ICU4N.Impl
         /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
         /// </param>
         /// <returns><paramref name="result"/></returns>
-		public static StringBuilder FormatAndReplace(
+        public static StringBuilder FormatAndReplace(
             string compiledPattern, StringBuilder result, int[] offsets, params StringBuilder[] values)
         {
             int valuesLength = values != null ? values.Length : 0;
@@ -968,8 +969,8 @@ namespace ICU4N.Impl
         /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
         /// </param>
         /// <returns><paramref name="result"/></returns>
-		[CLSCompliant(false)]
-		public static StringBuilder FormatAndReplace(
+        [CLSCompliant(false)]
+        public static StringBuilder FormatAndReplace(
             string compiledPattern, StringBuilder result, int[] offsets, params char[][] values)
         {
             int valuesLength = values != null ? values.Length : 0;
@@ -1023,7 +1024,7 @@ namespace ICU4N.Impl
         /// values.Length must be at least <see cref="GetArgumentLimit(string)"/>.
         /// </param>
         /// <returns><paramref name="result"/></returns>
-		internal static StringBuilder FormatAndReplace(
+        internal static StringBuilder FormatAndReplace(
             string compiledPattern, StringBuilder result, int[] offsets, params ICharSequence[] values)
         {
             int valuesLength = values != null ? values.Length : 0;
@@ -1281,5 +1282,5 @@ namespace ICU4N.Impl
             return result;
         }
 
-	}
+    }
 }
