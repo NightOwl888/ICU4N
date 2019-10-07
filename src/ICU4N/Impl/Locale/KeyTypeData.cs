@@ -222,7 +222,7 @@ namespace ICU4N.Impl.Locale
         private static void InitFromResourceBundle()
         {
             UResourceBundle keyTypeDataRes = UResourceBundle.GetBundleInstance(
-                    ICUData.ICU_BASE_NAME,
+                    ICUData.IcuBaseName,
                     "keyTypeData",
                     ICUResourceBundle.IcuDataAssembly);
 

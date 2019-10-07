@@ -228,7 +228,7 @@ namespace ICU4N.Impl
                     capitalization == DisplayContext.CapitalizationForStandalone)
             {
                 capitalizationUsage = new bool[Enum.GetValues(typeof(CapitalizationContextUsage)).Length]; // initialized to all false
-                ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, locale);
+                ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, locale);
                 CapitalizationContextSink sink = new CapitalizationContextSink(this);
                 try
                 {

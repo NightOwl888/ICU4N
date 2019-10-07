@@ -1384,7 +1384,7 @@ namespace ICU4N.Text
             }
 
             ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle
-                .GetBundleInstance(ICUData.ICU_BASE_NAME, forLocale);
+                .GetBundleInstance(ICUData.IcuBaseName, forLocale);
 
             string result = rb.FindStringWithFallback(
                         "NumberElements/" + nsName + "/patterns/" + patternKey);

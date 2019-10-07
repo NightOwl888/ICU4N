@@ -627,7 +627,7 @@ namespace ICU4N.Impl
             /// Convenience constructor that uses the main ICU bundle name.
             /// </summary>
             public ICUResourceBundleFactory()
-                : this(ICUData.ICU_BASE_NAME)
+                : this(ICUData.IcuBaseName)
             {
             }
 

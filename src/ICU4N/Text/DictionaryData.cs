@@ -29,14 +29,14 @@ namespace ICU4N.Text
 
         public static DictionaryMatcher LoadDictionaryFor(string dictType)
         {
-            ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BRKITR_BASE_NAME); // com/ibm/icu/impl/data/icudt60b/brkitr
+            ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBreakIteratorBaseName); // com/ibm/icu/impl/data/icudt60b/brkitr
             string dictFileName = rb.GetStringWithFallback("dictionaries/" + dictType);
 
             // ICU4N TODO: Possibly rename the above and use this syntax instead...?
             //var rm = new ResourceManager(ICUData.ICU_BRKITR_BASE_NAME, typeof(DictionaryData).GetTypeInfo().Assembly);
             //string dictFileName = rm.GetString("dictionaries_" + dictType);
 
-            dictFileName = ICUData.ICU_BRKITR_NAME + '/' + dictFileName;
+            dictFileName = ICUData.IcuBreakIteratorName + '/' + dictFileName;
             ByteBuffer bytes = ICUBinary.GetRequiredData(dictFileName);
             ICUBinary.ReadHeader(bytes, DATA_FORMAT_ID, null);
             int[] indexes = new int[IX_COUNT];

@@ -91,7 +91,7 @@ namespace ICU4N.Text
             CultureInfo[] result;
             if (service.IsDefault)
             {
-                result = ICUResourceBundle.GetAvailableLocales(ICUData.ICU_COLLATION_BASE_NAME,
+                result = ICUResourceBundle.GetAvailableLocales(ICUData.IcuCollationBaseName,
                         ICUResourceBundle.IcuDataAssembly);
             }
             else
@@ -106,7 +106,7 @@ namespace ICU4N.Text
             ULocale[] result;
             if (service.IsDefault)
             {
-                result = ICUResourceBundle.GetAvailableULocales(ICUData.ICU_COLLATION_BASE_NAME,
+                result = ICUResourceBundle.GetAvailableULocales(ICUData.IcuCollationBaseName,
                         ICUResourceBundle.IcuDataAssembly);
             }
             else
@@ -127,7 +127,7 @@ namespace ICU4N.Text
             private class CollatorFactory : ICUResourceBundleFactory
             {
                 internal CollatorFactory()
-                    : base(ICUData.ICU_COLLATION_BASE_NAME)
+                    : base(ICUData.IcuCollationBaseName)
                 {
                 }
 

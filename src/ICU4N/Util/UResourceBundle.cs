@@ -164,7 +164,7 @@ namespace ICU4N.Util
             {
                 locale = ULocale.GetDefault();
             }
-            return GetBundleInstance(ICUData.ICU_BASE_NAME, locale.GetBaseName(),
+            return GetBundleInstance(ICUData.IcuBaseName, locale.GetBaseName(),
                                      ICUResourceBundle.IcuDataAssembly, false);
         }
 
@@ -180,7 +180,7 @@ namespace ICU4N.Util
         {
             if (baseName == null)
             {
-                baseName = ICUData.ICU_BASE_NAME;
+                baseName = ICUData.IcuBaseName;
             }
             ULocale uloc = ULocale.GetDefault();
             //return GetBundleInstance(baseName, uloc.GetBaseName(), ICUResourceBundle.ICU_DATA_CLASS_LOADER,
@@ -203,7 +203,7 @@ namespace ICU4N.Util
         {
             if (baseName == null)
             {
-                baseName = ICUData.ICU_BASE_NAME;
+                baseName = ICUData.IcuBaseName;
             }
             ULocale uloc = locale == null ? ULocale.GetDefault() : ULocale.ForLocale(locale);
 
@@ -227,7 +227,7 @@ namespace ICU4N.Util
         {
             if (baseName == null)
             {
-                baseName = ICUData.ICU_BASE_NAME;
+                baseName = ICUData.IcuBaseName;
             }
             if (locale == null)
             {
@@ -255,7 +255,7 @@ namespace ICU4N.Util
         {
             if (baseName == null)
             {
-                baseName = ICUData.ICU_BASE_NAME;
+                baseName = ICUData.IcuBaseName;
             }
             ULocale uloc = locale == null ? ULocale.GetDefault() : ULocale.ForLocale(locale);
             return GetBundleInstance(baseName, uloc.GetBaseName(), assembly, false);
@@ -281,7 +281,7 @@ namespace ICU4N.Util
         {
             if (baseName == null)
             {
-                baseName = ICUData.ICU_BASE_NAME;
+                baseName = ICUData.IcuBaseName;
             }
             if (locale == null)
             {

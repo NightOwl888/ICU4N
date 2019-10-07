@@ -174,7 +174,7 @@ namespace ICU4N.Text
             ICUResourceBundle rb;
             try
             {
-                rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, locale);
+                rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, locale);
                 rb = rb.GetWithFallback("NumberElements");
             }
             catch (MissingManifestResourceException)
@@ -254,7 +254,7 @@ namespace ICU4N.Text
             string description;
             try
             {
-                UResourceBundle numberingSystemsInfo = UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "numberingSystems");
+                UResourceBundle numberingSystemsInfo = UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "numberingSystems");
                 UResourceBundle nsCurrent = numberingSystemsInfo.Get("numberingSystems");
                 UResourceBundle nsTop = nsCurrent.Get(name);
 
@@ -283,7 +283,7 @@ namespace ICU4N.Text
         public static string[] GetAvailableNames()
         {
 
-            UResourceBundle numberingSystemsInfo = UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "numberingSystems");
+            UResourceBundle numberingSystemsInfo = UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "numberingSystems");
             UResourceBundle nsCurrent = numberingSystemsInfo.Get("numberingSystems");
             UResourceBundle temp;
 

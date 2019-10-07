@@ -301,7 +301,7 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
             {
                 ICUResourceBundle rb = ICUResourceBundle.GetBundleInstance(
-                        ICUData.ICU_BRKITR_BASE_NAME, loc, OpenType.LocaleRoot);
+                        ICUData.IcuBreakIteratorBaseName, loc, OpenType.LocaleRoot);
 
                 ICUResourceBundle breaks = rb.FindWithFallback("exceptions/SentenceBreak");
 

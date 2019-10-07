@@ -21,15 +21,15 @@ namespace ICU4N.Impl.Coll
     public sealed class CollationData
     {
         // ICU4N specific - We need to pass this assembly in order for its resources to load.
-        public static readonly Assembly ICU_DATA_CLASS_LOADER = typeof(CollationData).GetTypeInfo().Assembly;
+        public static readonly Assembly IcuDataAssembly = typeof(CollationData).GetTypeInfo().Assembly;
 
         // Note: The ucadata.icu loader could discover the reserved ranges by setting an array
         // parallel with the ranges, and resetting ranges that are indexed.
         // The reordering builder code could clone the resulting template array.
-        internal static readonly int REORDER_RESERVED_BEFORE_LATIN = ReorderCodes.First + 14;
-        internal static readonly int REORDER_RESERVED_AFTER_LATIN = ReorderCodes.First + 15;
+        internal const int REORDER_RESERVED_BEFORE_LATIN = ReorderCodes.First + 14;
+        internal const int REORDER_RESERVED_AFTER_LATIN = ReorderCodes.First + 15;
 
-        internal static readonly int MAX_NUM_SPECIAL_REORDER_CODES = 8;
+        internal const int MAX_NUM_SPECIAL_REORDER_CODES = 8;
 
         internal CollationData(Normalizer2Impl nfc)
         {
@@ -569,7 +569,7 @@ namespace ICU4N.Impl.Coll
         private static readonly int[] EMPTY_INT_ARRAY = new int[0];
 
         /// <seealso cref="jamoCE32s"/>
-        internal static readonly int JAMO_CE32S_LENGTH = 19 + 21 + 27;
+        internal const int JAMO_CE32S_LENGTH = 19 + 21 + 27;
 
         /// <summary>Main lookup trie.</summary>
         internal Trie2_32 trie;

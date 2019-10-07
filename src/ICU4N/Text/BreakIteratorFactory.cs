@@ -119,7 +119,7 @@ namespace ICU4N.Text
 
             RuleBasedBreakIterator iter = null;
             ICUResourceBundle rb = ICUResourceBundle.
-                    GetBundleInstance(ICUData.ICU_BRKITR_BASE_NAME, locale,
+                    GetBundleInstance(ICUData.IcuBreakIteratorBaseName, locale,
                             OpenType.LocaleRoot);
 
             //
@@ -140,7 +140,7 @@ namespace ICU4N.Text
             {
                 string typeKey = (typeKeyExt == null) ? KIND_NAMES[kind] : KIND_NAMES[kind] + typeKeyExt;
                 string brkfname = rb.GetStringWithFallback("boundaries/" + typeKey);
-                string rulesFileName = ICUData.ICU_BRKITR_NAME + '/' + brkfname;
+                string rulesFileName = ICUData.IcuBreakIteratorName + '/' + brkfname;
                 bytes = ICUBinary.GetData(rulesFileName);
             }
             catch (Exception e)

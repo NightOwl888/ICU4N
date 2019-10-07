@@ -64,7 +64,7 @@ namespace ICU4N.Impl.Coll
             {
                 e2 = new MissingManifestResourceException(
                         "IOException while reading CLDR root data, " +
-                        "type: CollationRoot, bundle: " + ICUData.ICU_BUNDLE + "/coll/ucadata.icu", e);
+                        "type: CollationRoot, bundle: " + ICUData.IcuBundle + "/coll/ucadata.icu", e);
             }
             catch (Exception e)
             {

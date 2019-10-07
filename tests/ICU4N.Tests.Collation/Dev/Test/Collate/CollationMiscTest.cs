@@ -30,7 +30,7 @@ namespace ICU4N.Dev.Test.Collate
 
         private static bool hasCollationElements(CultureInfo locale)
         {
-            ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_COLLATION_BASE_NAME, locale);
+            ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuCollationBaseName, locale);
             if (rb != null)
             {
                 try
@@ -1783,7 +1783,7 @@ namespace ICU4N.Dev.Test.Collate
                 CultureInfo l = locale[i];
                 try
                 {
-                    ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_COLLATION_BASE_NAME, l);
+                    ICUResourceBundle rb = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuCollationBaseName, l);
                     String collkey = rb.GetStringWithFallback("collations/default");
                     ICUResourceBundle elements = rb.GetWithFallback("collations/" + collkey);
                     if (elements == null)

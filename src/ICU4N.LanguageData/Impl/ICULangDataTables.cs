@@ -7,7 +7,7 @@ namespace ICU4N.Impl
     public class ICULangDataTables : LocaleDisplayNamesImpl.ICUDataTables
     {
         public ICULangDataTables()
-            : base(ICUData.ICU_LANG_BASE_NAME)
+            : base(ICUData.IcuLanguageBaseName)
         {
         }
     }

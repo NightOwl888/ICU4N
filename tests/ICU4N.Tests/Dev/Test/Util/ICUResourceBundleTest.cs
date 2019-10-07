@@ -124,7 +124,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void TestOpen()
         {
-            UResourceBundle bundle = UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "en_US_POSIX");
+            UResourceBundle bundle = UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "en_US_POSIX");
 
             if (bundle == null)
             {
@@ -176,7 +176,7 @@ namespace ICU4N.Dev.Test.Util
                 Errln("could not create the resource bundle");
             }
 
-            bundle = UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "zzz_ZZ_very_very_very_long_bogus_bundle");
+            bundle = UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "zzz_ZZ_very_very_very_long_bogus_bundle");
             if (!bundle.GetULocale().Equals(ULocale.GetDefault()))
             {
                 Errln("UResourceBundle did not load the default bundle when bundle was not found. Default: " + ULocale.GetDefault() +
@@ -692,7 +692,7 @@ namespace ICU4N.Dev.Test.Util
         public void TestAlias()
         {
             Logln("Testing %%ALIAS");
-            UResourceBundle rb = UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "iw_IL");
+            UResourceBundle rb = UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "iw_IL");
             UResourceBundle b = rb.Get("NumberElements");
             if (b != null)
             {
@@ -795,7 +795,7 @@ namespace ICU4N.Dev.Test.Util
             */
             ICUResourceBundle bundle = null;
 
-            bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "fr_FR");
+            bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "fr_FR");
             ICUResourceBundle b1 = bundle.GetWithFallback("calendar");
             string defaultCal = b1.GetStringWithFallback("default");
             if (!defaultCal.Equals("gregorian"))
@@ -898,7 +898,7 @@ namespace ICU4N.Dev.Test.Util
        };
 
             Logln("Testing functional equivalents for calendar...");
-            getFunctionalEquivalentTestCases(ICUData.ICU_BASE_NAME,
+            getFunctionalEquivalentTestCases(ICUData.IcuBaseName,
                                              typeof(Calendar).GetTypeInfo().Assembly,
                        CALENDAR_RESNAME, CALENDAR_KEYWORD, false, calCases);
 
@@ -906,7 +906,7 @@ namespace ICU4N.Dev.Test.Util
             try
             {
                 Assembly cl = typeof(BreakIterator).GetTypeInfo().Assembly;
-                ICUResourceBundle.GetFunctionalEquivalent(ICUData.ICU_BRKITR_BASE_NAME, cl, "calendar",
+                ICUResourceBundle.GetFunctionalEquivalent(ICUData.IcuBreakIteratorBaseName, cl, "calendar",
                               "calendar", new ULocale("ar_EG@calendar=islamic"), new bool[1], true);
                 Errln("Err: expected MissingManifestResourceException");
             }
@@ -950,7 +950,7 @@ namespace ICU4N.Dev.Test.Util
         {
             try
             {
-                UResourceBundle rb = UResourceBundle.GetBundleInstance(ICUData.ICU_REGION_BASE_NAME, "no_NO_NY");
+                UResourceBundle rb = UResourceBundle.GetBundleInstance(ICUData.IcuRegionBaseName, "no_NO_NY");
                 UResourceBundle sub = rb.Get("Countries");
                 string s1 = sub.GetString("NO");
                 if (s1.Equals("Noreg"))
@@ -972,7 +972,7 @@ namespace ICU4N.Dev.Test.Util
         {
             try
             {
-                ICUResourceBundle root = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "root");
+                ICUResourceBundle root = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "root");
                 ICUResourceBundle t = null;
                 // AmPmMarkers now exist in root/islamic calendar, so this test is rendered useless.
                 //          try{
@@ -1040,7 +1040,7 @@ namespace ICU4N.Dev.Test.Util
         public void TestCoverage()
         {
             UResourceBundle bundle;
-            bundle = UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME);
+            bundle = UResourceBundle.GetBundleInstance(ICUData.IcuBaseName);
             if (bundle == null)
             {
                 Errln("UResourceBundle.GetBundleInstance(String baseName) failed");
@@ -1152,7 +1152,7 @@ namespace ICU4N.Dev.Test.Util
             try
             {
                 ULocale loc = new ULocale("en_US");
-                ICUResourceBundle b = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, loc);
+                ICUResourceBundle b = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, loc);
                 ICUResourceBundle b1 = b.GetWithFallback("calendar/hebrew/monthNames/format/abbreviated");
                 if (b1 != null)
                 {

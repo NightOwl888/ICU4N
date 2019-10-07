@@ -513,7 +513,7 @@ namespace ICU4N.Impl
         /// </summary>
         public static ISet<string> GetFullLocaleNameSet()
         {
-            return GetFullLocaleNameSet(ICUData.ICU_BASE_NAME, IcuDataAssembly);
+            return GetFullLocaleNameSet(ICUData.IcuBaseName, IcuDataAssembly);
         }
 
         /// <summary>
@@ -534,7 +534,7 @@ namespace ICU4N.Impl
         /// <returns></returns>
         public static ISet<string> GetAvailableLocaleNameSet()
         {
-            return GetAvailableLocaleNameSet(ICUData.ICU_BASE_NAME, IcuDataAssembly);
+            return GetAvailableLocaleNameSet(ICUData.IcuBaseName, IcuDataAssembly);
         }
 
         /// <summary>
@@ -552,7 +552,7 @@ namespace ICU4N.Impl
         /// <returns>The list of available locales.</returns>
         public static ULocale[] GetAvailableULocales() // ICU4N TODO: API - rename GetAvaliableUCultureInfos ?
         {
-            return GetAvailableULocales(ICUData.ICU_BASE_NAME, IcuDataAssembly);
+            return GetAvailableULocales(ICUData.IcuBaseName, IcuDataAssembly);
         }
 
         /// <summary>
@@ -570,7 +570,7 @@ namespace ICU4N.Impl
         /// <returns>The list of available locales.</returns>
         public static CultureInfo[] GetAvailableLocales() // ICU4N TODO: API - rename GetAvaliableCultureInfos ?
         {
-            return GetAvailEntry(ICUData.ICU_BASE_NAME, IcuDataAssembly).GetLocaleList();
+            return GetAvailEntry(ICUData.IcuBaseName, IcuDataAssembly).GetLocaleList();
         }
 
         /// <summary>
@@ -688,7 +688,7 @@ namespace ICU4N.Impl
             string bn, Assembly root, ISet<string> names) // ICU4N TODO: API - rename AddBundleBaseNamesFromAssembly
         {
             // ICU4N: Convert to .NET style base name
-            string suffix = bn.Replace('/', '.').Replace('.' + ICUData.PACKAGE_NAME, "");
+            string suffix = bn.Replace('/', '.').Replace('.' + ICUData.PackageName, "");
             string baseName = root.GetManifestResourceBaseName(suffix);
             foreach (var s in root.GetManifestResourceNames()
                 .Where(name => name.StartsWith(baseName, StringComparison.Ordinal))
@@ -739,16 +739,16 @@ namespace ICU4N.Impl
             {
                 // scan available locale resources under the base url first
                 AddBundleBaseNamesFromClassLoader(bn, assembly, set);
-                if (baseName.StartsWith(ICUData.ICU_BASE_NAME, StringComparison.Ordinal))
+                if (baseName.StartsWith(ICUData.IcuBaseName, StringComparison.Ordinal))
                 {
                     string folder;
-                    if (baseName.Length == ICUData.ICU_BASE_NAME.Length)
+                    if (baseName.Length == ICUData.IcuBaseName.Length)
                     {
                         folder = "";
                     }
-                    else if (baseName[ICUData.ICU_BASE_NAME.Length] == '/')
+                    else if (baseName[ICUData.IcuBaseName.Length] == '/')
                     {
-                        folder = baseName.Substring(ICUData.ICU_BASE_NAME.Length + 1);
+                        folder = baseName.Substring(ICUData.IcuBaseName.Length + 1);
                     }
                     else
                     {
@@ -1252,7 +1252,7 @@ namespace ICU4N.Impl
         {
             if (baseName == null)
             {
-                baseName = ICUData.ICU_BASE_NAME;
+                baseName = ICUData.IcuBaseName;
             }
             localeID = ULocale.GetBaseName(localeID);
             ICUResourceBundle b;
@@ -1714,7 +1714,7 @@ namespace ICU4N.Impl
                 //there is a path included
                 if (bundleName.Equals(ICUDATA, StringComparison.Ordinal))
                 {
-                    bundleName = ICUData.ICU_BASE_NAME;
+                    bundleName = ICUData.IcuBaseName;
                     loaderToUse = IcuDataAssembly;
                 }
                 else if (bundleName.IndexOf(ICUDATA, StringComparison.Ordinal) > -1)
@@ -1722,7 +1722,7 @@ namespace ICU4N.Impl
                     int idx = bundleName.IndexOf(HYPHEN);
                     if (idx > -1)
                     {
-                        bundleName = ICUData.ICU_BASE_NAME + RES_PATH_SEP_STR + bundleName.Substring(idx + 1, bundleName.Length - (idx + 1)); // ICU4N: Corrected 2nd parameter
+                        bundleName = ICUData.IcuBaseName + RES_PATH_SEP_STR + bundleName.Substring(idx + 1, bundleName.Length - (idx + 1)); // ICU4N: Corrected 2nd parameter
                         loaderToUse = IcuDataAssembly;
                     }
                 }

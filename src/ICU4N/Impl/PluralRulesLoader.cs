@@ -265,7 +265,7 @@ namespace ICU4N.Impl
         public virtual UResourceBundle GetPluralBundle()
         {
             return ICUResourceBundle.GetBundleInstance(
-                    ICUData.ICU_BASE_NAME, "plurals",
+                    ICUData.IcuBaseName, "plurals",
                     ICUResourceBundle.IcuDataAssembly, true);
         }
 

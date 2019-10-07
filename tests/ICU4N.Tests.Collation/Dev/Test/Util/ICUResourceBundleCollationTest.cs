@@ -65,7 +65,7 @@ namespace ICU4N.Dev.Test.Util
                };
 
             Logln("Testing functional equivalents for collation...");
-            getFunctionalEquivalentTestCases(ICUData.ICU_COLLATION_BASE_NAME,
+            getFunctionalEquivalentTestCases(ICUData.IcuCollationBaseName,
                                              typeof(Collator).GetTypeInfo().Assembly,
                COLLATION_RESNAME, COLLATION_KEYWORD, true, collCases);
         }
@@ -88,7 +88,7 @@ namespace ICU4N.Dev.Test.Util
             String key = null;
             try
             {
-                bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_COLLATION_BASE_NAME, ULocale.Canonicalize("de__PHONEBOOK"));
+                bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuCollationBaseName, ULocale.Canonicalize("de__PHONEBOOK"));
 
                 if (!bundle.GetULocale().GetName().Equals("de"))
                 {
@@ -107,7 +107,7 @@ namespace ICU4N.Dev.Test.Util
             }
 
 
-            bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_COLLATION_BASE_NAME, "fr_FR");
+            bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuCollationBaseName, "fr_FR");
             key = bundle.GetStringWithFallback("collations/default");
             if (!key.Equals("standard"))
             {
@@ -123,7 +123,7 @@ namespace ICU4N.Dev.Test.Util
             int n;
 
             Logln("Testing getting collation values:");
-            kwVals = ICUResourceBundle.GetKeywordValues(ICUData.ICU_COLLATION_BASE_NAME, COLLATION_RESNAME, CollationData.ICU_DATA_CLASS_LOADER);
+            kwVals = ICUResourceBundle.GetKeywordValues(ICUData.IcuCollationBaseName, COLLATION_RESNAME, CollationData.IcuDataAssembly);
             for (n = 0; n < kwVals.Length; n++)
             {
                 Logln(n.ToString(CultureInfo.InvariantCulture) + ": " + kwVals[n]);
@@ -158,7 +158,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void TestOpen()
         {
-            UResourceBundle bundle = UResourceBundle.GetBundleInstance(ICUData.ICU_COLLATION_BASE_NAME, "en_US_POSIX");
+            UResourceBundle bundle = UResourceBundle.GetBundleInstance(ICUData.IcuCollationBaseName, "en_US_POSIX");
             if (bundle == null)
             {
                 Errln("could not load the stream");

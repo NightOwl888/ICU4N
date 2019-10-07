@@ -28,7 +28,7 @@ namespace ICU4N.Impl.Coll
                 {
                     UResourceBundle rootBundle = UResourceBundle.GetBundleInstance(
                         // ICU4N specific - passing in the current assembly to load resources from.
-                        ICUData.ICU_COLLATION_BASE_NAME, ULocale.ROOT, CollationData.ICU_DATA_CLASS_LOADER);
+                        ICUData.IcuCollationBaseName, ULocale.ROOT, CollationData.IcuDataAssembly);
                     rootRules = rootBundle.GetString("UCARules");
                 }
             }
@@ -75,7 +75,7 @@ namespace ICU4N.Impl.Coll
         internal static string LoadRules(ULocale locale, string collationType)
         {
             UResourceBundle bundle = UResourceBundle.GetBundleInstance(
-                    ICUData.ICU_COLLATION_BASE_NAME, locale);
+                    ICUData.IcuCollationBaseName, locale);
             UResourceBundle data = ((ICUResourceBundle)bundle).GetWithFallback(
                     "collations/" + ASCII.ToLower(collationType));
             string rules = data.GetString("Sequence");
@@ -106,10 +106,10 @@ namespace ICU4N.Impl.Coll
             try
             {
                 bundle = ICUResourceBundle.GetBundleInstance(
-                        ICUData.ICU_COLLATION_BASE_NAME, locale,
+                        ICUData.IcuCollationBaseName, locale,
                         // ICU4N specific - need to pass in this assembly
                         // name for the resources to be resolved here.
-                        CollationData.ICU_DATA_CLASS_LOADER, 
+                        CollationData.IcuDataAssembly, 
                         OpenType.LocaleRoot);
             }
             catch (MissingManifestResourceException)
@@ -255,7 +255,7 @@ namespace ICU4N.Impl.Coll
             {
                 // Opening a bundle for the actual locale should always succeed.
                 UResourceBundle actualBundle = UResourceBundle.GetBundleInstance(
-                        ICUData.ICU_COLLATION_BASE_NAME, actualLocale);
+                        ICUData.IcuCollationBaseName, actualLocale);
                 defT = ((ICUResourceBundle)actualBundle).FindStringWithFallback("collations/default");
                 if (defT != null)
                 {

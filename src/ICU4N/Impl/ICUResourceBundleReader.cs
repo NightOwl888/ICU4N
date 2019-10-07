@@ -175,9 +175,9 @@ namespace ICU4N.Impl
                 try
                 {
                     ByteBuffer inBytes;
-                    if (key.baseName != null && key.baseName.StartsWith(ICUData.ICU_BASE_NAME, StringComparison.Ordinal))
+                    if (key.baseName != null && key.baseName.StartsWith(ICUData.IcuBaseName, StringComparison.Ordinal))
                     {
-                        string itemPath = fullName.Substring(ICUData.ICU_BASE_NAME.Length + 1);
+                        string itemPath = fullName.Substring(ICUData.IcuBaseName.Length + 1);
                         inBytes = ICUBinary.GetData(assembly, fullName, itemPath);
                         if (inBytes == null)
                         {

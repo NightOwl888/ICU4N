@@ -16,7 +16,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// The data path to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        internal static readonly string ICU_DATA_PATH = "Impl/"; // ICU4N TODO: API - rename to follow .NET Conventions
+        internal static readonly string IcuDataPath = "Impl/";
 
         /// <summary>
         /// The ICU data package name.
@@ -24,49 +24,49 @@ namespace ICU4N.Impl
         /// of the package entry names.
         /// </summary>
 #pragma warning disable 612, 618
-        internal static readonly string PACKAGE_NAME = "icudt" + VersionInfo.IcuDataVersionPath; // ICU4N TODO: API - rename to follow .NET Conventions
+        internal static readonly string PackageName = "icudt" + VersionInfo.IcuDataVersionPath;
 #pragma warning restore 612, 618
         /// <summary>
         /// The data path to be used with <see cref="Assembly.GetManifestResourceStream(string)"/>.
         /// </summary>
-        public static readonly string ICU_BUNDLE = "Data/" + PACKAGE_NAME; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string IcuBundle = "Data/" + PackageName;
 
         /// <summary>
         /// The base name of ICU data to be used with <see cref="Assembly.GetManifestResourceStream(string)"/>,
         /// <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, bool)"/> etc.
         /// </summary>
-        public static readonly string ICU_BASE_NAME = ICU_DATA_PATH + ICU_BUNDLE; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string IcuBaseName = IcuDataPath + IcuBundle;
 
         /// <summary>
         /// The base name of collation data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        public static readonly string ICU_COLLATION_BASE_NAME = ICU_BASE_NAME + "/coll"; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string IcuCollationBaseName = IcuBaseName + "/coll";
 
         /// <summary>
         /// The base name of rbbi data to be used with <see cref="ICUBinary.GetData(Assembly, string, string, bool)"/> API
         /// </summary>
-        public static readonly string ICU_BRKITR_NAME = "brkitr"; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string IcuBreakIteratorName = "brkitr";
 
         /// <summary>
         /// The base name of rbbi data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        public static readonly string ICU_BRKITR_BASE_NAME = ICU_BASE_NAME + '/' + ICU_BRKITR_NAME; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string IcuBreakIteratorBaseName = IcuBaseName + '/' + IcuBreakIteratorName;
 
         /// <summary>
         /// The base name of rbnf data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        public static readonly string ICU_RBNF_BASE_NAME = ICU_BASE_NAME + "/rbnf"; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string IcuRuleBasedNumberFormatBaseName = IcuBaseName + "/rbnf";
 
         /// <summary>
         /// The base name of transliterator data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        public static readonly string ICU_TRANSLIT_BASE_NAME = ICU_BASE_NAME + "/translit"; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string IcuTransliteratorBaseName = IcuBaseName + "/translit";
 
-        public static readonly string ICU_LANG_BASE_NAME = ICU_BASE_NAME + "/lang"; // ICU4N TODO: API - rename to follow .NET Conventions
-        public static readonly string ICU_CURR_BASE_NAME = ICU_BASE_NAME + "/curr"; // ICU4N TODO: API - rename to follow .NET Conventions
-        public static readonly string ICU_REGION_BASE_NAME = ICU_BASE_NAME + "/region"; // ICU4N TODO: API - rename to follow .NET Conventions
-        public static readonly string ICU_ZONE_BASE_NAME = ICU_BASE_NAME + "/zone"; // ICU4N TODO: API - rename to follow .NET Conventions
-        public static readonly string ICU_UNIT_BASE_NAME = ICU_BASE_NAME + "/unit"; // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly string IcuLanguageBaseName = IcuBaseName + "/lang";
+        public static readonly string IcuCurrencyBaseName = IcuBaseName + "/curr";
+        public static readonly string IcuRegionBaseName = IcuBaseName + "/region";
+        public static readonly string IcuZoneBaseName = IcuBaseName + "/zone";
+        public static readonly string IcuUnitBaseName = IcuBaseName + "/unit";
 
         /// <summary>
         /// For testing (otherwise false): When reading a <see cref="Stream"/> from an <see cref="Assembly"/>
@@ -115,7 +115,7 @@ namespace ICU4N.Impl
         private static void CheckStreamForBinaryData(Stream input, string resourceName)
         {
             // ICU4N specific - only check the data if the stream is seekable
-            if (logBinaryDataFromInputStream && input != null && input.CanSeek && resourceName.IndexOf(PACKAGE_NAME, StringComparison.Ordinal) >= 0)
+            if (logBinaryDataFromInputStream && input != null && input.CanSeek && resourceName.IndexOf(PackageName, StringComparison.Ordinal) >= 0)
             {
                 try
                 {

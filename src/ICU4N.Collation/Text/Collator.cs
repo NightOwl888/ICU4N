@@ -1159,7 +1159,7 @@ namespace ICU4N.Text
             if (shim == null)
             {
                 return ICUResourceBundle.GetAvailableLocales(
-                    ICUData.ICU_COLLATION_BASE_NAME, CollationData.ICU_DATA_CLASS_LOADER /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
+                    ICUData.IcuCollationBaseName, CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
             }
             return shim.GetAvailableLocales();
         }
@@ -1179,7 +1179,7 @@ namespace ICU4N.Text
             if (shim == null)
             {
                 return ICUResourceBundle.GetAvailableULocales(
-                    ICUData.ICU_COLLATION_BASE_NAME, CollationData.ICU_DATA_CLASS_LOADER /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
+                    ICUData.IcuCollationBaseName, CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */);
             }
             return shim.GetAvailableULocales();
         }
@@ -1202,7 +1202,7 @@ namespace ICU4N.Text
         /// The resource bundle base name for this service.
         /// </summary>
         /// <since>ICU 3.0</since>
-        private static readonly string BASE = ICUData.ICU_COLLATION_BASE_NAME; // ICU4N TODO: API - Rename Base
+        private static readonly string BASE = ICUData.IcuCollationBaseName; // ICU4N TODO: API - Rename Base
 
         /// <summary>
         /// <icu/> Returns a list of all possible keywords that are relevant to
@@ -1230,7 +1230,7 @@ namespace ICU4N.Text
             {
                 throw new ArgumentException("Invalid keyword: " + keyword);
             }
-            return ICUResourceBundle.GetKeywordValues(BASE, RESOURCE, CollationData.ICU_DATA_CLASS_LOADER);
+            return ICUResourceBundle.GetKeywordValues(BASE, RESOURCE, CollationData.IcuDataAssembly);
         }
 
         /// <summary>
@@ -1261,7 +1261,7 @@ namespace ICU4N.Text
             // Read available collation values from collation bundles.
             ICUResourceBundle bundle = (ICUResourceBundle)
                     UResourceBundle.GetBundleInstance(
-                            ICUData.ICU_COLLATION_BASE_NAME, locale, CollationData.ICU_DATA_CLASS_LOADER);
+                            ICUData.IcuCollationBaseName, locale, CollationData.IcuDataAssembly);
             KeywordsSink sink = new KeywordsSink();
             bundle.GetAllItemsWithFallback("collations", sink);
             return sink.values.ToArray();
@@ -1331,7 +1331,7 @@ namespace ICU4N.Text
                                                             ULocale locID,
                                                             bool[] isAvailable)
         {
-            return ICUResourceBundle.GetFunctionalEquivalent(BASE, CollationData.ICU_DATA_CLASS_LOADER /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */, RESOURCE,
+            return ICUResourceBundle.GetFunctionalEquivalent(BASE, CollationData.IcuDataAssembly /* ICUResourceBundle.ICU_DATA_CLASS_LOADER */, RESOURCE,
                                                              keyword, locID, isAvailable, true);
         }
 

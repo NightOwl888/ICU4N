@@ -249,8 +249,8 @@ namespace ICU4N.Util
         public static LocaleData GetInstance(ULocale locale)
         {
             LocaleData ld = new LocaleData();
-            ld.bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, locale);
-            ld.langBundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.ICU_LANG_BASE_NAME, locale);
+            ld.bundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, locale);
+            ld.langBundle = (ICUResourceBundle)UResourceBundle.GetBundleInstance(ICUData.IcuLanguageBaseName, locale);
             ld.noSubstitute = false;
             return ld;
         }
@@ -323,7 +323,7 @@ namespace ICU4N.Util
             try
             {
                 UResourceBundle rb = UResourceBundle.GetBundleInstance(
-                        ICUData.ICU_BASE_NAME,
+                        ICUData.IcuBaseName,
                         "supplementalData",
                         ICUResourceBundle.IcuDataAssembly);
                 UResourceBundle measurementData = rb.Get("measurementData");
@@ -497,7 +497,7 @@ namespace ICU4N.Util
             if (gCLDRVersion == null)
             {
                 // from ZoneMeta.java
-                UResourceBundle supplementalDataBundle = UResourceBundle.GetBundleInstance(ICUData.ICU_BASE_NAME, "supplementalData", ICUResourceBundle.IcuDataAssembly);
+                UResourceBundle supplementalDataBundle = UResourceBundle.GetBundleInstance(ICUData.IcuBaseName, "supplementalData", ICUResourceBundle.IcuDataAssembly);
                 UResourceBundle cldrVersionBundle = supplementalDataBundle.Get("cldrVersion");
                 gCLDRVersion = VersionInfo.GetInstance(cldrVersionBundle.GetString());
             }

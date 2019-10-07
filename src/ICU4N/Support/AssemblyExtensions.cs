@@ -191,7 +191,7 @@ namespace ICU4N.Support
         /// </summary>
         public static string ConvertResourceName(string name)
         {
-            return name.Replace('/', '.').Replace("." + ICU4N.Impl.ICUData.PACKAGE_NAME, "");
+            return name.Replace('/', '.').Replace("." + ICU4N.Impl.ICUData.PackageName, "");
         }
 
         private static bool TryFindResource(string[] resourceNames, string prefix, string resourceName, string exactResourceName, out string result)

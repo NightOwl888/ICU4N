@@ -89,10 +89,10 @@ namespace ICU4N.Impl
             private static bool StartsWithPackageName(ByteBuffer bytes, int start)
             {
                 // Compare all but the trailing 'b' or 'l' which depends on the platform.
-                int length = ICUData.PACKAGE_NAME.Length - 1;
+                int length = ICUData.PackageName.Length - 1;
                 for (int i = 0; i < length; ++i)
                 {
-                    if (bytes.Get(start + i) != ICUData.PACKAGE_NAME[i])
+                    if (bytes.Get(start + i) != ICUData.PackageName[i])
                     {
                         return false;
                     }
@@ -153,7 +153,7 @@ namespace ICU4N.Impl
                     int mid = (start + limit).TripleShift(1);
                     int nameOffset = GetNameOffset(bytes, mid);
                     // Skip "icudt54b/".
-                    nameOffset += ICUData.PACKAGE_NAME.Length + 1;
+                    nameOffset += ICUData.PackageName.Length + 1;
                     int result = CompareKeys(key, bytes, nameOffset);
                     if (result < 0)
                     {
@@ -203,7 +203,7 @@ namespace ICU4N.Impl
             {
                 int offset = GetNameOffset(bytes, index);
                 // Skip "icudt54b/".
-                offset += ICUData.PACKAGE_NAME.Length + 1;
+                offset += ICUData.PackageName.Length + 1;
                 if (folder.Length != 0)
                 {
                     // Test name.startsWith(folder + '/').
@@ -572,7 +572,7 @@ namespace ICU4N.Impl
             }
             if (resourceName == null)
             {
-                resourceName = ICUData.ICU_BASE_NAME + '/' + itemPath;
+                resourceName = ICUData.IcuBaseName + '/' + itemPath;
             }
             ByteBuffer buffer = null;
             try
@@ -915,17 +915,17 @@ namespace ICU4N.Impl
         // private variables -------------------------------------------------
 
         // Magic numbers to authenticate the data file
-        private static readonly byte MAGIC1 = (byte)0xda;
-        private static readonly byte MAGIC2 = (byte)0x27;
+        private const byte MAGIC1 = (byte)0xda;
+        private const byte MAGIC2 = (byte)0x27;
 
         // File format authentication values
-        private static readonly byte CHAR_SET_ = 0;
-        private static readonly byte CHAR_SIZE_ = 2;
+        private const byte CHAR_SET_ = 0;
+        private const byte CHAR_SIZE_ = 2;
 
         // Error messages
-        private static readonly string MAGIC_NUMBER_AUTHENTICATION_FAILED_ =
+        private const string MAGIC_NUMBER_AUTHENTICATION_FAILED_ =
                                "ICU data file error: Not an ICU data file";
-        private static readonly string HEADER_AUTHENTICATION_FAILED_ =
+        private const string HEADER_AUTHENTICATION_FAILED_ =
             "ICU data file error: Header authentication failed, please check if you have a valid ICU data file";
 
     }

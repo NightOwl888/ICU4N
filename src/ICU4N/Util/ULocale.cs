@@ -2076,7 +2076,7 @@ namespace ICU4N.Util
          */
         public string GetCharacterOrientation()
         {
-            return ICUResourceTableAccess.GetTableString(ICUData.ICU_BASE_NAME, this,
+            return ICUResourceTableAccess.GetTableString(ICUData.IcuBaseName, this,
                     "layout", "characters", "characters");
         }
 
@@ -2089,7 +2089,7 @@ namespace ICU4N.Util
          */
         public string GetLineOrientation()
         {
-            return ICUResourceTableAccess.GetTableString(ICUData.ICU_BASE_NAME, this,
+            return ICUResourceTableAccess.GetTableString(ICUData.IcuBaseName, this,
                     "layout", "lines", "lines");
         }
 
@@ -3286,7 +3286,7 @@ namespace ICU4N.Util
         {
             UResourceBundle bundle =
                     UResourceBundle.GetBundleInstance(
-                            ICUData.ICU_BASE_NAME, "likelySubtags");
+                            ICUData.IcuBaseName, "likelySubtags");
             try
             {
                 return bundle.GetString(localeId);

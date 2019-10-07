@@ -36,14 +36,14 @@ namespace ICU4N.Impl
                 if (withFallback)
                 {
                     rb = ICUResourceBundle.GetBundleInstance(
-                            ICUData.ICU_CURR_BASE_NAME, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleDefaultRoot);
+                            ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleDefaultRoot);
                 }
                 else
                 {
                     try
                     {
                         rb = ICUResourceBundle.GetBundleInstance(
-                                ICUData.ICU_CURR_BASE_NAME, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleOnly);
+                                ICUData.IcuCurrencyBaseName, locale, typeof(ICUCurrencyDisplayInfoProvider).GetTypeInfo().Assembly, OpenType.LocaleOnly);
                     }
                     catch (MissingManifestResourceException)
                     {
