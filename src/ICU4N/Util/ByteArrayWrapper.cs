@@ -75,27 +75,29 @@ namespace ICU4N.Util
             source.Get(Bytes, 0, Length);
         }
 
-        /**
-         * Create from ByteBuffer
-         * @param byteBuffer
-        public ByteArrayWrapper(ByteArrayWrapper source) {
-            size = source.size;
-            bytes = new byte[size];
-            copyBytes(source.bytes, 0, bytes, 0, size);
-        }
-         */
+        // *
+        // * Create from ByteBuffer
+        // * @param byteBuffer
+        // * */
+        //public ByteArrayWrapper(ByteArrayWrapper source)
+        //{
+        //    Length = source.Length;
+        //    Bytes = new byte[Length];
+        //    CopyBytes(source.Bytes, 0, Bytes, 0, Length);
+        //}
 
-        /**
-         * create from byte buffer
-         * @param src
-         * @param start
-         * @param limit
-        public ByteArrayWrapper(byte[] src, int start, int limit) {
-            size = limit - start;
-            bytes = new byte[size];
-            copyBytes(src, start, bytes, 0, size);
-        }
-         */
+        // *
+        // * create from byte buffer
+        // * @param src
+        // * @param start
+        // * @param limit
+        // * */
+        //public ByteArrayWrapper(byte[] src, int start, int limit)
+        //{
+        //    Length = limit - start;
+        //    Bytes = new byte[Length];
+        //    CopyBytes(src, start, Bytes, 0, Length);
+        //}
 
         // public methods ----------------------------------------------------
 

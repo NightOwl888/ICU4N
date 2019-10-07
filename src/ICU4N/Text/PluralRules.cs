@@ -914,6 +914,9 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
+#if FEATURE_SERIALIZABLE
+        [Serializable]
+#endif
         public class FixedDecimalSamples
         {
             /// <internal/>
@@ -1745,7 +1748,7 @@ namespace ICU4N.Text
             // TODO - Findbugs: Class com.ibm.icu.text.PluralRules$Rule defines non-transient
             // non-serializable instance field integerSamples. See ticket#10494.
             //private static readonly long serialVersionUID = 1;
-            private readonly String keyword;
+            private readonly string keyword;
             private readonly IConstraint constraint;
 #pragma warning disable 612, 618
             private readonly FixedDecimalSamples integerSamples;
@@ -1822,7 +1825,7 @@ namespace ICU4N.Text
         {
             private bool hasExplicitBoundingInfo = false;
             //private static readonly long serialVersionUID = 1;
-            private readonly List<Rule> rules = new List<Rule>();
+            private readonly IList<Rule> rules = new List<Rule>();
 
             public RuleList AddRule(Rule nextRule)
             {

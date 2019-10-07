@@ -25,7 +25,7 @@ namespace ICU4N.Impl
     /// and the <see cref="Int32Trie"/>, hence to accommodate both types of data, the return
     /// result will be in terms of int (32 bit) values.
     /// <para/>
-    /// See <see cref="Text.UCharacterTypeIterator"/> for examples of use.
+    /// See <see cref="UChar.UCharacterTypeEnumerator"/> for examples of use.
     /// <para/>
     /// Notes for porting utrie_enum from icu4c to icu4j:
     /// <para/>

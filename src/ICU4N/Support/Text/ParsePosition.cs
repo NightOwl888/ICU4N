@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ICU4N.Support.Text
+﻿namespace ICU4N.Support.Text
 {
     /// <summary>
     /// Tracks the current position in a parsed string. In case of an error the error
@@ -13,29 +9,25 @@ namespace ICU4N.Support.Text
     {
         private int currentPosition, errorIndex = -1;
 
-        /**
-         * Constructs a new {@code ParsePosition} with the specified index.
-         * 
-         * @param index
-         *            the index to begin parsing.
-         */
+        /// <summary>
+        /// Constructs a new <see cref="ParsePosition"/> with the specified index.
+        /// </summary>
+        /// <param name="index">The index to begin parsing.</param>
         public ParsePosition(int index)
         {
             currentPosition = index;
         }
 
-        /**
-         * Compares the specified object to this {@code ParsePosition} and indicates
-         * if they are equal. In order to be equal, {@code object} must be an
-         * instance of {@code ParsePosition} and it must have the same index and
-         * error index.
-         * 
-         * @param object
-         *            the object to compare with this object.
-         * @return {@code true} if the specified object is equal to this
-         *         {@code ParsePosition}; {@code false} otherwise.
-         * @see #hashCode
-         */
+        /// <summary>
+        /// Compares the specified object to this <see cref="ParsePosition"/> and indicates
+        /// if they are equal. In order to be equal, <paramref name="obj"/> must be an
+        /// instance of <see cref="ParsePosition"/> and it must have the same index and
+        /// error index.
+        /// </summary>
+        /// <param name="obj">The object to compare with this object.</param>
+        /// <returns><c>true</c> if the specified object is equal to this
+        /// <see cref="ParsePosition"/>; <c>false</c> otherwise.</returns>
+        /// <seealso cref="GetHashCode()"/>
         public override bool Equals(object obj)
         {
             if (!(obj is ParsePosition))
@@ -47,22 +39,20 @@ namespace ICU4N.Support.Text
                     && errorIndex == pos.errorIndex;
         }
 
-        /**
-         * Returns the index at which the parse could not continue.
-         * 
-         * @return the index of the parse error or -1 if there is no error.
-         */
+        /// <summary>
+        /// Gets or sets the index at which the parse could not continue.
+        /// <para/>
+        /// Returns -1 if there is no error.
+        /// </summary>
         public int ErrorIndex
         {
             get { return errorIndex; }
             set { errorIndex = value; }
         }
 
-        /**
-         * Returns the current parse position.
-         * 
-         * @return the current position.
-         */
+        /// <summary>
+        /// Gets or sets the current parse position.
+        /// </summary>
         public int Index
         {
             get { return currentPosition; }
@@ -74,33 +64,32 @@ namespace ICU4N.Support.Text
             return currentPosition + errorIndex;
         }
 
-        ///**
-        // * Sets the index at which the parse could not continue.
-        // * 
-        // * @param index
-        // *            the index of the parse error.
-        // */
-        //public void setErrorIndex(int index)
-        //{
-        //    errorIndex = index;
-        //}
+        /////**
+        //// * Sets the index at which the parse could not continue.
+        //// * 
+        //// * @param index
+        //// *            the index of the parse error.
+        //// */
+        ////public void setErrorIndex(int index)
+        ////{
+        ////    errorIndex = index;
+        ////}
 
-        ///**
-        // * Sets the current parse position.
-        // * 
-        // * @param index
-        // *            the current parse position.
-        // */
-        //public void setIndex(int index)
-        //{
-        //    currentPosition = index;
-        //}
+        /////**
+        //// * Sets the current parse position.
+        //// * 
+        //// * @param index
+        //// *            the current parse position.
+        //// */
+        ////public void setIndex(int index)
+        ////{
+        ////    currentPosition = index;
+        ////}
 
-        /**
-         * Returns the string representation of this parse position.
-         * 
-         * @return the string representation of this parse position.
-         */
+        /// <summary>
+        /// Returns the string representation of this parse position.
+        /// </summary>
+        /// <returns>The string representation of this parse position.</returns>
         public override string ToString()
         {
             return GetType().AssemblyQualifiedName + "[index=" + currentPosition //$NON-NLS-1$

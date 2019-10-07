@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-/// <summary>
-/// Ported from icu4j/main/classes/core/src/com/ibm/icu/impl/StandardPlural.java
-/// </summary>
+//
+// Ported from icu4j/main/classes/core/src/com/ibm/icu/impl/StandardPlural.java
+//
 namespace ICU4N.Impl
 {
     /// <summary>

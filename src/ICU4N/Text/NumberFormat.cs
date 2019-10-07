@@ -1045,24 +1045,24 @@ namespace ICU4N.Text
             }
         }
 
-        ///**
-        // * Sets the minimum number of digits allowed in the fraction portion of a
-        // * number.  This must be &lt;= maximumFractionDigits.  If the
-        // * new value for minimumFractionDigits exceeds the current value
-        // * of maximumFractionDigits, then maximumFractionDigits will also be set to
-        // * the new value.
-        // * @param newValue the minimum number of fraction digits to be shown; if
-        // * less than zero, then zero is used.  Subclasses might enforce an
-        // * upper limit to this value appropriate to the numeric type being formatted.
-        // * @see #getMinimumFractionDigits
-        // * @stable ICU 2.0
-        // */
-        //public void setMinimumFractionDigits(int newValue)
-        //{
-        //    minimumFractionDigits = Math.max(0, newValue);
-        //    if (maximumFractionDigits < minimumFractionDigits)
-        //        maximumFractionDigits = minimumFractionDigits;
-        //}
+        /////**
+        //// * Sets the minimum number of digits allowed in the fraction portion of a
+        //// * number.  This must be &lt;= maximumFractionDigits.  If the
+        //// * new value for minimumFractionDigits exceeds the current value
+        //// * of maximumFractionDigits, then maximumFractionDigits will also be set to
+        //// * the new value.
+        //// * @param newValue the minimum number of fraction digits to be shown; if
+        //// * less than zero, then zero is used.  Subclasses might enforce an
+        //// * upper limit to this value appropriate to the numeric type being formatted.
+        //// * @see #getMinimumFractionDigits
+        //// * @stable ICU 2.0
+        //// */
+        ////public void setMinimumFractionDigits(int newValue)
+        ////{
+        ////    minimumFractionDigits = Math.max(0, newValue);
+        ////    if (maximumFractionDigits < minimumFractionDigits)
+        ////        maximumFractionDigits = minimumFractionDigits;
+        ////}
 
         // ICU4N TODO: Currency
         /////**

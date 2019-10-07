@@ -23,7 +23,7 @@ namespace ICU4N.Text
     public enum PatternOptions
     {
         /// <summary>
-        /// Bitmask for <see cref="LocaleData.GetExemplarSet(PatternOptions, int)"/> to retrieve the exemplar set as it is defined in the locale data.
+        /// Bitmask for <see cref="LocaleData.GetExemplarSet(PatternOptions, ExemplarSetType)"/> to retrieve the exemplar set as it is defined in the locale data.
         /// This has no effect if ORed together with other options.
         /// </summary>
         Default = 0,
