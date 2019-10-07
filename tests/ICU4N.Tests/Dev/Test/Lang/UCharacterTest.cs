@@ -3547,7 +3547,7 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             // Testing when "if(ch<NormalizerImpl.JAMO_L_BASE)" is true
-            for (int i = Hangul.JAMO_L_BASE - 5; i < Hangul.JAMO_L_BASE; i++)
+            for (int i = Hangul.JamoLBase - 5; i < Hangul.JamoLBase; i++)
             {
                 if (UChar.GetIntPropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
                 {
@@ -3558,7 +3558,7 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             // Testing when "else if((ch-=NormalizerImpl.HANGUL_BASE)<0)" is true
-            for (int i = Hangul.HANGUL_BASE - 5; i < Hangul.HANGUL_BASE; i++)
+            for (int i = Hangul.HangulBase - 5; i < Hangul.HangulBase; i++)
             {
                 if (UChar.GetIntPropertyValue(i, UProperty.Hangul_Syllable_Type) != 0)
                 {

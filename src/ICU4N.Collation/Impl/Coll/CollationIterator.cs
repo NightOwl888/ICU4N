@@ -658,11 +658,11 @@ namespace ICU4N.Impl.Coll
                     case Collation.HANGUL_TAG:
                         {
                             int[] jamoCE32s = d.jamoCE32s;
-                            c -= Hangul.HANGUL_BASE;
-                            int t = c % Hangul.JAMO_T_COUNT;
-                            c /= Hangul.JAMO_T_COUNT;
-                            int v = c % Hangul.JAMO_V_COUNT;
-                            c /= Hangul.JAMO_V_COUNT;
+                            c -= Hangul.HangulBase;
+                            int t = c % Hangul.JamoTCount;
+                            c /= Hangul.JamoTCount;
+                            int v = c % Hangul.JamoVCount;
+                            c /= Hangul.JamoVCount;
                             if ((ce32 & Collation.HANGUL_NO_SPECIAL_JAMO) != 0)
                             {
                                 // None of the Jamo CE32s are isSpecialCE32().

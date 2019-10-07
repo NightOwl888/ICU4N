@@ -25,18 +25,18 @@ namespace ICU4N.Impl
         {
             try
             {
-                c -= HANGUL_BASE;
-                int c2 = c % JAMO_T_COUNT;
-                c /= JAMO_T_COUNT;
-                buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
-                buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
+                c -= HangulBase;
+                int c2 = c % JamoTCount;
+                c /= JamoTCount;
+                buffer.Append((char)(JamoLBase + c / JamoVCount));
+                buffer.Append((char)(JamoVBase + c % JamoVCount));
                 if (c2 == 0)
                 {
                     return 2;
                 }
                 else
                 {
-                    buffer.Append((char)(JAMO_T_BASE + c2));
+                    buffer.Append((char)(JamoTBase + c2));
                     return 3;
                 }
             }
@@ -55,18 +55,18 @@ namespace ICU4N.Impl
         {
             try
             {
-                c -= HANGUL_BASE;
-                int c2 = c % JAMO_T_COUNT;
-                c /= JAMO_T_COUNT;
-                buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
-                buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
+                c -= HangulBase;
+                int c2 = c % JamoTCount;
+                c /= JamoTCount;
+                buffer.Append((char)(JamoLBase + c / JamoVCount));
+                buffer.Append((char)(JamoVBase + c % JamoVCount));
                 if (c2 == 0)
                 {
                     return 2;
                 }
                 else
                 {
-                    buffer.Append((char)(JAMO_T_BASE + c2));
+                    buffer.Append((char)(JamoTBase + c2));
                     return 3;
                 }
             }
@@ -86,18 +86,18 @@ namespace ICU4N.Impl
             try
             {
                 int orig = c;
-                c -= HANGUL_BASE;
-                int c2 = c % JAMO_T_COUNT;
+                c -= HangulBase;
+                int c2 = c % JamoTCount;
                 if (c2 == 0)
                 {
-                    c /= JAMO_T_COUNT;
-                    buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
-                    buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
+                    c /= JamoTCount;
+                    buffer.Append((char)(JamoLBase + c / JamoVCount));
+                    buffer.Append((char)(JamoVBase + c % JamoVCount));
                 }
                 else
                 {
                     buffer.Append((char)(orig - c2));  // LV syllable
-                    buffer.Append((char)(JAMO_T_BASE + c2));
+                    buffer.Append((char)(JamoTBase + c2));
                 }
             }
             catch (IOException e)
@@ -116,18 +116,18 @@ namespace ICU4N.Impl
             try
             {
                 int orig = c;
-                c -= HANGUL_BASE;
-                int c2 = c % JAMO_T_COUNT;
+                c -= HangulBase;
+                int c2 = c % JamoTCount;
                 if (c2 == 0)
                 {
-                    c /= JAMO_T_COUNT;
-                    buffer.Append((char)(JAMO_L_BASE + c / JAMO_V_COUNT));
-                    buffer.Append((char)(JAMO_V_BASE + c % JAMO_V_COUNT));
+                    c /= JamoTCount;
+                    buffer.Append((char)(JamoLBase + c / JamoVCount));
+                    buffer.Append((char)(JamoVBase + c % JamoVCount));
                 }
                 else
                 {
                     buffer.Append((char)(orig - c2));  // LV syllable
-                    buffer.Append((char)(JAMO_T_BASE + c2));
+                    buffer.Append((char)(JamoTBase + c2));
                 }
             }
             catch (IOException e)
@@ -2166,12 +2166,12 @@ namespace ICU4N.Impl
                 else if (IsJamoVT(norm16) && prevBoundary != prevSrc)
                 {
                     char prev = s[prevSrc - 1];
-                    if (c < Hangul.JAMO_T_BASE)
+                    if (c < Hangul.JamoTBase)
                     {
                         // The current character is a Jamo Vowel,
                         // compose with previous Jamo L and following Jamo T.
-                        char l = (char)(prev - Hangul.JAMO_L_BASE);
-                        if (l < Hangul.JAMO_L_COUNT)
+                        char l = (char)(prev - Hangul.JamoLBase);
+                        if (l < Hangul.JamoLCount)
                         {
                             if (!doCompose)
                             {
@@ -2179,8 +2179,8 @@ namespace ICU4N.Impl
                             }
                             int t;
                             if (src != limit &&
-                                    0 < (t = (s[src] - Hangul.JAMO_T_BASE)) &&
-                                    t < Hangul.JAMO_T_COUNT)
+                                    0 < (t = (s[src] - Hangul.JamoTBase)) &&
+                                    t < Hangul.JamoTCount)
                             {
                                 // The next character is a Jamo T.
                                 ++src;
@@ -2196,9 +2196,9 @@ namespace ICU4N.Impl
                             }
                             if (t >= 0)
                             {
-                                int syllable = Hangul.HANGUL_BASE +
-                                    (l * Hangul.JAMO_V_COUNT + (c - Hangul.JAMO_V_BASE)) *
-                                    Hangul.JAMO_T_COUNT + t;
+                                int syllable = Hangul.HangulBase +
+                                    (l * Hangul.JamoVCount + (c - Hangul.JamoVBase)) *
+                                    Hangul.JamoTCount + t;
                                 --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
@@ -2225,7 +2225,7 @@ namespace ICU4N.Impl
                         {
                             return false;
                         }
-                        int syllable = prev + c - Hangul.JAMO_T_BASE;
+                        int syllable = prev + c - Hangul.JamoTBase;
                         --prevSrc;  // Replace the Hangul LV as well.
                         if (prevBoundary != prevSrc)
                         {
@@ -2474,12 +2474,12 @@ namespace ICU4N.Impl
                 else if (IsJamoVT(norm16) && prevBoundary != prevSrc)
                 {
                     char prev = s[prevSrc - 1];
-                    if (c < Hangul.JAMO_T_BASE)
+                    if (c < Hangul.JamoTBase)
                     {
                         // The current character is a Jamo Vowel,
                         // compose with previous Jamo L and following Jamo T.
-                        char l = (char)(prev - Hangul.JAMO_L_BASE);
-                        if (l < Hangul.JAMO_L_COUNT)
+                        char l = (char)(prev - Hangul.JamoLBase);
+                        if (l < Hangul.JamoLCount)
                         {
                             if (!doCompose)
                             {
@@ -2487,8 +2487,8 @@ namespace ICU4N.Impl
                             }
                             int t;
                             if (src != limit &&
-                                    0 < (t = (s[src] - Hangul.JAMO_T_BASE)) &&
-                                    t < Hangul.JAMO_T_COUNT)
+                                    0 < (t = (s[src] - Hangul.JamoTBase)) &&
+                                    t < Hangul.JamoTCount)
                             {
                                 // The next character is a Jamo T.
                                 ++src;
@@ -2504,9 +2504,9 @@ namespace ICU4N.Impl
                             }
                             if (t >= 0)
                             {
-                                int syllable = Hangul.HANGUL_BASE +
-                                    (l * Hangul.JAMO_V_COUNT + (c - Hangul.JAMO_V_BASE)) *
-                                    Hangul.JAMO_T_COUNT + t;
+                                int syllable = Hangul.HangulBase +
+                                    (l * Hangul.JamoVCount + (c - Hangul.JamoVBase)) *
+                                    Hangul.JamoTCount + t;
                                 --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
@@ -2533,7 +2533,7 @@ namespace ICU4N.Impl
                         {
                             return false;
                         }
-                        int syllable = prev + c - Hangul.JAMO_T_BASE;
+                        int syllable = prev + c - Hangul.JamoTBase;
                         --prevSrc;  // Replace the Hangul LV as well.
                         if (prevBoundary != prevSrc)
                         {
@@ -2782,12 +2782,12 @@ namespace ICU4N.Impl
                 else if (IsJamoVT(norm16) && prevBoundary != prevSrc)
                 {
                     char prev = s[prevSrc - 1];
-                    if (c < Hangul.JAMO_T_BASE)
+                    if (c < Hangul.JamoTBase)
                     {
                         // The current character is a Jamo Vowel,
                         // compose with previous Jamo L and following Jamo T.
-                        char l = (char)(prev - Hangul.JAMO_L_BASE);
-                        if (l < Hangul.JAMO_L_COUNT)
+                        char l = (char)(prev - Hangul.JamoLBase);
+                        if (l < Hangul.JamoLCount)
                         {
                             if (!doCompose)
                             {
@@ -2795,8 +2795,8 @@ namespace ICU4N.Impl
                             }
                             int t;
                             if (src != limit &&
-                                    0 < (t = (s[src] - Hangul.JAMO_T_BASE)) &&
-                                    t < Hangul.JAMO_T_COUNT)
+                                    0 < (t = (s[src] - Hangul.JamoTBase)) &&
+                                    t < Hangul.JamoTCount)
                             {
                                 // The next character is a Jamo T.
                                 ++src;
@@ -2812,9 +2812,9 @@ namespace ICU4N.Impl
                             }
                             if (t >= 0)
                             {
-                                int syllable = Hangul.HANGUL_BASE +
-                                    (l * Hangul.JAMO_V_COUNT + (c - Hangul.JAMO_V_BASE)) *
-                                    Hangul.JAMO_T_COUNT + t;
+                                int syllable = Hangul.HangulBase +
+                                    (l * Hangul.JamoVCount + (c - Hangul.JamoVBase)) *
+                                    Hangul.JamoTCount + t;
                                 --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
@@ -2841,7 +2841,7 @@ namespace ICU4N.Impl
                         {
                             return false;
                         }
-                        int syllable = prev + c - Hangul.JAMO_T_BASE;
+                        int syllable = prev + c - Hangul.JamoTBase;
                         --prevSrc;  // Replace the Hangul LV as well.
                         if (prevBoundary != prevSrc)
                         {
@@ -3090,12 +3090,12 @@ namespace ICU4N.Impl
                 else if (IsJamoVT(norm16) && prevBoundary != prevSrc)
                 {
                     char prev = s[prevSrc - 1];
-                    if (c < Hangul.JAMO_T_BASE)
+                    if (c < Hangul.JamoTBase)
                     {
                         // The current character is a Jamo Vowel,
                         // compose with previous Jamo L and following Jamo T.
-                        char l = (char)(prev - Hangul.JAMO_L_BASE);
-                        if (l < Hangul.JAMO_L_COUNT)
+                        char l = (char)(prev - Hangul.JamoLBase);
+                        if (l < Hangul.JamoLCount)
                         {
                             if (!doCompose)
                             {
@@ -3103,8 +3103,8 @@ namespace ICU4N.Impl
                             }
                             int t;
                             if (src != limit &&
-                                    0 < (t = (s[src] - Hangul.JAMO_T_BASE)) &&
-                                    t < Hangul.JAMO_T_COUNT)
+                                    0 < (t = (s[src] - Hangul.JamoTBase)) &&
+                                    t < Hangul.JamoTCount)
                             {
                                 // The next character is a Jamo T.
                                 ++src;
@@ -3120,9 +3120,9 @@ namespace ICU4N.Impl
                             }
                             if (t >= 0)
                             {
-                                int syllable = Hangul.HANGUL_BASE +
-                                    (l * Hangul.JAMO_V_COUNT + (c - Hangul.JAMO_V_BASE)) *
-                                    Hangul.JAMO_T_COUNT + t;
+                                int syllable = Hangul.HangulBase +
+                                    (l * Hangul.JamoVCount + (c - Hangul.JamoVBase)) *
+                                    Hangul.JamoTCount + t;
                                 --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
@@ -3149,7 +3149,7 @@ namespace ICU4N.Impl
                         {
                             return false;
                         }
-                        int syllable = prev + c - Hangul.JAMO_T_BASE;
+                        int syllable = prev + c - Hangul.JamoTBase;
                         --prevSrc;  // Replace the Hangul LV as well.
                         if (prevBoundary != prevSrc)
                         {

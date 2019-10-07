@@ -73,7 +73,7 @@ namespace ICU4N.Impl.Coll
                 optimizeSet.Add(0xc0, 0xff);
                 // Hangul is decomposed on the fly during collation,
                 // and the tailoring data is always built with HANGUL_TAG specials.
-                optimizeSet.Remove(Hangul.HANGUL_BASE, Hangul.HANGUL_END);
+                optimizeSet.Remove(Hangul.HangulBase, Hangul.HangulEnd);
                 dataBuilder.Optimize(optimizeSet);
                 tailoring.EnsureOwnedData();
                 if (fastLatinEnabled) { dataBuilder.EnableFastLatin(); }
@@ -1252,7 +1252,7 @@ namespace ICU4N.Impl.Coll
         static CollationBuilder()
         {
             // Hangul is decomposed on the fly during collation.
-            COMPOSITES.Remove(Hangul.HANGUL_BASE, Hangul.HANGUL_END);
+            COMPOSITES.Remove(Hangul.HangulBase, Hangul.HangulEnd);
         }
 
         private void CloseOverComposites()

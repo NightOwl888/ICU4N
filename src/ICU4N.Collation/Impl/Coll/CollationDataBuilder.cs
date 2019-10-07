@@ -84,7 +84,7 @@ namespace ICU4N.Impl.Coll
             // Do this here, rather than in buildMappings(),
             // so that we see the HANGUL_TAG in various assertions.
             int hangulCE32 = Collation.MakeCE32FromTagAndIndex(Collation.HANGUL_TAG, 0);
-            trie.SetRange(Hangul.HANGUL_BASE, Hangul.HANGUL_END, hangulCE32, true);
+            trie.SetRange(Hangul.HangulBase, Hangul.HangulEnd, hangulCE32, true);
 
             // Copy the set contents but don't copy/clone the set as a whole because
             // that would copy the isFrozen state too.
@@ -1111,7 +1111,7 @@ namespace ICU4N.Impl.Coll
                 // we only set this flag if a whole block of 588 Hangul syllables starting with
                 // a common leading consonant (Jamo L) has this property.
                 bool isAnyJamoVTSpecial = false;
-                for (int i = Hangul.JAMO_L_COUNT; i < CollationData.JAMO_CE32S_LENGTH; ++i)
+                for (int i = Hangul.JamoLCount; i < CollationData.JAMO_CE32S_LENGTH; ++i)
                 {
                     if (Collation.IsSpecialCE32(jamoCE32s[i]))
                     {
@@ -1120,15 +1120,15 @@ namespace ICU4N.Impl.Coll
                     }
                 }
                 int hangulCE32 = Collation.MakeCE32FromTagAndIndex(Collation.HANGUL_TAG, 0);
-                int c = Hangul.HANGUL_BASE;
-                for (int i = 0; i < Hangul.JAMO_L_COUNT; ++i)
+                int c = Hangul.HangulBase;
+                for (int i = 0; i < Hangul.JamoLCount; ++i)
                 {  // iterate over the Jamo L
                     int ce32 = hangulCE32;
                     if (!isAnyJamoVTSpecial && !Collation.IsSpecialCE32(jamoCE32s[i]))
                     {
                         ce32 |= Collation.HANGUL_NO_SPECIAL_JAMO;
                     }
-                    int limit = c + Hangul.JAMO_VT_COUNT;
+                    int limit = c + Hangul.JamoVTCount;
                     trie.SetRange(c, limit - 1, ce32, true);
                     c = limit;
                 }
@@ -1137,11 +1137,11 @@ namespace ICU4N.Impl.Coll
             {
                 // Copy the Hangul CE32s from the base in blocks per Jamo L,
                 // assuming that HANGUL_NO_SPECIAL_JAMO is set or not set for whole blocks.
-                for (int c = Hangul.HANGUL_BASE; c < Hangul.HANGUL_LIMIT;)
+                for (int c = Hangul.HangulBase; c < Hangul.HangulLimit;)
                 {
                     int ce32 = base_.GetCE32(c);
                     Debug.Assert(Collation.HasCE32Tag(ce32, Collation.HANGUL_TAG));
-                    int limit = c + Hangul.JAMO_VT_COUNT;
+                    int limit = c + Hangul.JamoVTCount;
                     trie.SetRange(c, limit - 1, ce32, true);
                     c = limit;
                 }
@@ -1409,12 +1409,12 @@ namespace ICU4N.Impl.Coll
         private static int JamoCpFromIndex(int i)
         {
             // 0 <= i < CollationData.JAMO_CE32S_LENGTH = 19 + 21 + 27
-            if (i < Hangul.JAMO_L_COUNT) { return Hangul.JAMO_L_BASE + i; }
-            i -= Hangul.JAMO_L_COUNT;
-            if (i < Hangul.JAMO_V_COUNT) { return Hangul.JAMO_V_BASE + i; }
-            i -= Hangul.JAMO_V_COUNT;
+            if (i < Hangul.JamoLCount) { return Hangul.JamoLBase + i; }
+            i -= Hangul.JamoLCount;
+            if (i < Hangul.JamoVCount) { return Hangul.JamoVBase + i; }
+            i -= Hangul.JamoVCount;
             // i < 27
-            return Hangul.JAMO_T_BASE + 1 + i;
+            return Hangul.JamoTBase + 1 + i;
         }
 
         /// <summary>

@@ -11,56 +11,55 @@ namespace ICU4N.Impl
 {
     public sealed partial class Hangul
     {
-        // ICU4N TODO: API - rename constants to follow .NET Conventions ?
         /* Korean Hangul and Jamo constants */
-        public const int JAMO_L_BASE = 0x1100;     /* "lead" jamo */
-        public const int JAMO_L_END = 0x1112;
-        public const int JAMO_V_BASE = 0x1161;     /* "vowel" jamo */
-        public const int JAMO_V_END = 0x1175;
-        public const int JAMO_T_BASE = 0x11a7;     /* "trail" jamo */
-        public const int JAMO_T_END = 0x11c2;
+        public const int JamoLBase = 0x1100;     /* "lead" jamo */
+        public const int JamoLEnd = 0x1112;
+        public const int JamoVBase = 0x1161;     /* "vowel" jamo */
+        public const int JamoVEnd = 0x1175;
+        public const int JamoTBase = 0x11a7;     /* "trail" jamo */
+        public const int JamoTEnd = 0x11c2;
 
-        public const int HANGUL_BASE = 0xac00;
-        public const int HANGUL_END = 0xd7a3;
+        public const int HangulBase = 0xac00;
+        public const int HangulEnd = 0xd7a3;
 
-        public const int JAMO_L_COUNT = 19;
-        public const int JAMO_V_COUNT = 21;
-        public const int JAMO_T_COUNT = 28;
+        public const int JamoLCount = 19;
+        public const int JamoVCount = 21;
+        public const int JamoTCount = 28;
 
-        public const int JAMO_L_LIMIT = JAMO_L_BASE + JAMO_L_COUNT;
-        public const int JAMO_V_LIMIT = JAMO_V_BASE + JAMO_V_COUNT;
+        public const int JamoLLimit = JamoLBase + JamoLCount;
+        public const int JamoVLimit = JamoVBase + JamoVCount;
 
-        public const int JAMO_VT_COUNT = JAMO_V_COUNT * JAMO_T_COUNT;
+        public const int JamoVTCount = JamoVCount * JamoTCount;
 
-        public const int HANGUL_COUNT = JAMO_L_COUNT * JAMO_V_COUNT * JAMO_T_COUNT;
-        public const int HANGUL_LIMIT = HANGUL_BASE + HANGUL_COUNT;
+        public const int HangulCount = JamoLCount * JamoVCount * JamoTCount;
+        public const int HangulLimit = HangulBase + HangulCount;
 
         public static bool IsHangul(int c)
         {
-            return HANGUL_BASE <= c && c < HANGUL_LIMIT;
+            return HangulBase <= c && c < HangulLimit;
         }
         public static bool IsHangulLV(int c)
         {
-            c -= HANGUL_BASE;
-            return 0 <= c && c < HANGUL_COUNT && c % JAMO_T_COUNT == 0;
+            c -= HangulBase;
+            return 0 <= c && c < HangulCount && c % JamoTCount == 0;
         }
         public static bool IsJamoL(int c)
         {
-            return JAMO_L_BASE <= c && c < JAMO_L_LIMIT;
+            return JamoLBase <= c && c < JamoLLimit;
         }
         public static bool IsJamoV(int c)
         {
-            return JAMO_V_BASE <= c && c < JAMO_V_LIMIT;
+            return JamoVBase <= c && c < JamoVLimit;
         }
         public static bool IsJamoT(int c)
         {
-            int t = c - JAMO_T_BASE;
-            return 0 < t && t < JAMO_T_COUNT;  // not JAMO_T_BASE itself
+            int t = c - JamoTBase;
+            return 0 < t && t < JamoTCount;  // not JamoTBase itself
         }
         public static bool IsJamo(int c)
         {
-            return JAMO_L_BASE <= c && c <= JAMO_T_END &&
-                (c <= JAMO_L_END || (JAMO_V_BASE <= c && c <= JAMO_V_END) || JAMO_T_BASE < c);
+            return JamoLBase <= c && c <= JamoTEnd &&
+                (c <= JamoLEnd || (JamoVBase <= c && c <= JamoVEnd) || JamoTBase < c);
         }
 
         // ICU4N specific - Decompose(int c, IAppendable buffer) moved to Normalizer2ImplExtension.tt
@@ -509,12 +508,12 @@ namespace ICU4N.Impl
             }
 
             /* add Hangul LV syllables and LV+1 because of skippables */
-            for (int c = Hangul.HANGUL_BASE; c < Hangul.HANGUL_LIMIT; c += Hangul.JAMO_T_COUNT)
+            for (int c = Hangul.HangulBase; c < Hangul.HangulLimit; c += Hangul.JamoTCount)
             {
                 set.Add(c);
                 set.Add(c + 1);
             }
-            set.Add(Hangul.HANGUL_LIMIT); /* add Hangul+1 to continue with other properties */
+            set.Add(Hangul.HangulLimit); /* add Hangul+1 to continue with other properties */
         }
 
         public void AddCanonIterPropertyStarts(UnicodeSet set)
@@ -933,8 +932,8 @@ namespace ICU4N.Impl
                 int norm16 = GetNorm16(c);
                 if (norm16 == JAMO_L)
                 {
-                    int syllable = Hangul.HANGUL_BASE + (c - Hangul.JAMO_L_BASE) * Hangul.JAMO_VT_COUNT;
-                    set.Add(syllable, syllable + Hangul.JAMO_VT_COUNT - 1);
+                    int syllable = Hangul.HangulBase + (c - Hangul.JamoLBase) * Hangul.JamoVTCount;
+                    set.Add(syllable, syllable + Hangul.JamoVTCount - 1);
                 }
                 else
                 {
@@ -1466,19 +1465,19 @@ namespace ICU4N.Impl
                     if (IsJamoVT(norm16))
                     {
                         // c is a Jamo V/T, see if we can compose it with the previous character.
-                        if (c < Hangul.JAMO_T_BASE)
+                        if (c < Hangul.JamoTBase)
                         {
                             // c is a Jamo Vowel, compose with previous Jamo L and following Jamo T.
-                            char prev = (char)(sb[starter] - Hangul.JAMO_L_BASE);
-                            if (prev < Hangul.JAMO_L_COUNT)
+                            char prev = (char)(sb[starter] - Hangul.JamoLBase);
+                            if (prev < Hangul.JamoLCount)
                             {
                                 pRemove = p - 1;
                                 char syllable = (char)
-                                    (Hangul.HANGUL_BASE +
-                                     (prev * Hangul.JAMO_V_COUNT + (c - Hangul.JAMO_V_BASE)) *
-                                     Hangul.JAMO_T_COUNT);
+                                    (Hangul.HangulBase +
+                                     (prev * Hangul.JamoVCount + (c - Hangul.JamoVBase)) *
+                                     Hangul.JamoTCount);
                                 char t;
-                                if (p != sb.Length && (t = (char)(sb[p] - Hangul.JAMO_T_BASE)) < Hangul.JAMO_T_COUNT)
+                                if (p != sb.Length && (t = (char)(sb[p] - Hangul.JamoTBase)) < Hangul.JamoTCount)
                                 {
                                     ++p;
                                     syllable += t;  // The next character was a Jamo T.
@@ -1618,13 +1617,13 @@ namespace ICU4N.Impl
                 // a combines forward.
                 if (IsJamoL(norm16))
                 {
-                    b -= Hangul.JAMO_V_BASE;
-                    if (0 <= b && b < Hangul.JAMO_V_COUNT)
+                    b -= Hangul.JamoVBase;
+                    if (0 <= b && b < Hangul.JamoVCount)
                     {
                         return
-                            (Hangul.HANGUL_BASE +
-                             ((a - Hangul.JAMO_L_BASE) * Hangul.JAMO_V_COUNT + b) *
-                             Hangul.JAMO_T_COUNT);
+                            (Hangul.HangulBase +
+                             ((a - Hangul.JamoLBase) * Hangul.JamoVCount + b) *
+                             Hangul.JamoTCount);
                     }
                     else
                     {
@@ -1633,8 +1632,8 @@ namespace ICU4N.Impl
                 }
                 else if (IsHangulLV(norm16))
                 {
-                    b -= Hangul.JAMO_T_BASE;
-                    if (0 < b && b < Hangul.JAMO_T_COUNT)
+                    b -= Hangul.JamoTBase;
+                    if (0 < b && b < Hangul.JamoTCount)
                     {  // not b==0!
                         return a + b;
                     }
