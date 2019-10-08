@@ -15,7 +15,7 @@ namespace ICU4N.Dev.Test.Impl
             String text = "Hello, World";
 
             ICharSequence cs = text.ToCharSequence();
-            CharacterIterator csci = new CSCharacterIterator(cs);
+            CharacterIterator csci = new CharSequenceCharacterIterator(cs);
             CharacterIterator sci = new StringCharacterIterator(text);
 
             assertEquals("", sci.SetIndex(6), csci.SetIndex(6));

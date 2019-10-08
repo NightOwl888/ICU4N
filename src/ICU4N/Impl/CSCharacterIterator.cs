@@ -7,7 +7,7 @@ namespace ICU4N.Impl
     /// Implement the <see cref="CharacterIterator"/> abstract class on a <see cref="ICharSequence"/>.
     /// Intended for internal use by ICU only.
     /// </summary>
-    internal class CSCharacterIterator : CharacterIterator
+    internal class CharSequenceCharacterIterator : CharacterIterator
     {
         private int index;
         private ICharSequence seq;
@@ -16,7 +16,7 @@ namespace ICU4N.Impl
         /// Constructor.
         /// </summary>
         /// <param name="text">The <see cref="ICharSequence"/> to iterate over.</param>
-        public CSCharacterIterator(ICharSequence text)
+        public CharSequenceCharacterIterator(ICharSequence text)
         {
             if (text == null)
             {
@@ -150,7 +150,7 @@ namespace ICU4N.Impl
 #endif
         public override object Clone()
         {
-            CSCharacterIterator copy = new CSCharacterIterator(seq);
+            CharSequenceCharacterIterator copy = new CharSequenceCharacterIterator(seq);
             copy.SetIndex(index);
             return copy;
         }

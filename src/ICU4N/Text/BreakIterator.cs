@@ -636,7 +636,7 @@ namespace ICU4N.Text
         /// <draft>ICU 60</draft>
         internal virtual void SetText(ICharSequence newText)
         {
-            SetText(new CSCharacterIterator(newText));
+            SetText(new CharSequenceCharacterIterator(newText));
         }
 
         /// <summary>
