@@ -3241,7 +3241,7 @@ namespace ICU4N.Dev.Test.Normalizers
             assertFalse("fcd.isInert(ä)", fcd.IsInert('ä'));
 
             // This implementation method is unreachable via public API.
-            Norm2AllModes.FCDNormalizer2 impl = (Norm2AllModes.FCDNormalizer2)fcd;
+            FCDNormalizer2 impl = (FCDNormalizer2)fcd;
             assertEquals("fcd impl.getQuickCheck(space)", 1, impl.GetQuickCheck(' '));
             assertEquals("fcd impl.getQuickCheck(ä)", 0, impl.GetQuickCheck('ä'));
         }
@@ -3260,7 +3260,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestNoopNormalizer2()
         {
             // Use the internal class directly for coverage of methods that are not publicly reachable.
-            Normalizer2 noop = Norm2AllModes.NOOP_NORMALIZER2;
+            Normalizer2 noop = Norm2AllModes.NoopNormalizer2;
             assertEquals("noop.normalizeSecondAndAppend()", "ä\u0327",
                     noop.NormalizeSecondAndAppend(new StringBuilder("ä"), "\u0327").ToString());
             assertEquals("noop.getDecomposition()", null, noop.GetDecomposition('ä'));

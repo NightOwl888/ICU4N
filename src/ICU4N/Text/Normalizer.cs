@@ -456,7 +456,7 @@ namespace ICU4N.Text
             public NONEMode()
                 : base(NormalizerMode.None)
             { }
-            protected internal override Normalizer2 GetNormalizer2(int options) { return Norm2AllModes.NOOP_NORMALIZER2; }
+            protected internal override Normalizer2 GetNormalizer2(int options) { return Norm2AllModes.NoopNormalizer2; }
         }
         private sealed class NFDMode : Mode
         {
@@ -2251,7 +2251,7 @@ namespace ICU4N.Text
             int folded1Length = csp.ToFullFolding(c, folded, 0);
             if (folded1Length < 0)
             {
-                Normalizer2Impl nfkcImpl = ((Norm2AllModes.Normalizer2WithImpl)nfkc).impl;
+                Normalizer2Impl nfkcImpl = ((Normalizer2WithImpl)nfkc).impl;
                 if (nfkcImpl.GetCompQuickCheck(nfkcImpl.GetNorm16(c)) != 0)
                 {
                     return "";  // c does not change at all under CaseFolding+NFKC
