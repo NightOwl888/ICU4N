@@ -155,17 +155,17 @@ namespace ICU4N.Text
         /// <summary>
         /// Lead surrogate bitmask
         /// </summary>
-        private const int LeadSurrogateBitmask = unchecked((int)0xFFFFFC00); // ICU4N TODO: Change to uint
+        private const int LeadSurrogateBitmask = unchecked((int)0xFFFFFC00);
 
         /// <summary>
         /// Trail surrogate bitmask
         /// </summary>
-        private const int TrailSurrogateBitmask = unchecked((int)0xFFFFFC00); // ICU4N TODO: Change to uint
+        private const int TrailSurrogateBitmask = unchecked((int)0xFFFFFC00);
 
         /// <summary>
         /// Surrogate bitmask
         /// </summary>
-        private const int SurrogateBitmask = unchecked((int)0xFFFFF800); // ICU4N TODO: Change to uint
+        private const int SurrogateBitmask = unchecked((int)0xFFFFF800);
 
         /// <summary>
         /// Lead surrogate bits
@@ -527,7 +527,7 @@ namespace ICU4N.Text
         {
             if (char32 >= SupplementaryMinValue)
             {
-                return (char)(LEAD_SURROGATE_OFFSET_ + (char32 >> LEAD_SURROGATE_SHIFT_));
+                return (char)(LeadSurrogateOffset + (char32 >> LeadSurrogateShift));
             }
             return (char)0;
         }
@@ -544,7 +544,7 @@ namespace ICU4N.Text
         {
             if (char32 >= SupplementaryMinValue)
             {
-                return (char)(TrailSurrogateMinValue + (char32 & TRAIL_SURROGATE_MASK_));
+                return (char)(TrailSurrogateMinValue + (char32 & TrailSurrogateMask));
             }
             return (char)char32;
         }
@@ -2605,8 +2605,8 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    chars[w++] = (char)(LEAD_SURROGATE_OFFSET_ + (cp >> LEAD_SURROGATE_SHIFT_));
-                    chars[w++] = (char)(TrailSurrogateMinValue + (cp & TRAIL_SURROGATE_MASK_));
+                    chars[w++] = (char)(LeadSurrogateOffset + (cp >> LeadSurrogateShift));
+                    chars[w++] = (char)(TrailSurrogateMinValue + (cp & TrailSurrogateMask));
                 }
             }
             return new string(chars, 0, w);
@@ -2932,18 +2932,18 @@ namespace ICU4N.Text
         /// <summary>
         /// Shift value for lead surrogate to form a supplementary character.
         /// </summary>
-        private const int LEAD_SURROGATE_SHIFT_ = 10;
+        private const int LeadSurrogateShift = 10;
 
         /// <summary>
         /// Mask to retrieve the significant value from a trail surrogate.
         /// </summary>
-        private const int TRAIL_SURROGATE_MASK_ = 0x3FF;
+        private const int TrailSurrogateMask = 0x3FF;
 
         /// <summary>
         /// Value that all lead surrogate starts with
         /// </summary>
-        private const int LEAD_SURROGATE_OFFSET_ = LeadSurrogateMinValue
-                - (SupplementaryMinValue >> LEAD_SURROGATE_SHIFT_);
+        private const int LeadSurrogateOffset = LeadSurrogateMinValue
+                - (SupplementaryMinValue >> LeadSurrogateShift);
 
         // private methods ------------------------------------------------------
 

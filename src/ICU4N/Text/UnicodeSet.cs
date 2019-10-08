@@ -879,7 +879,7 @@ namespace ICU4N.Text
                 // Strings, if any, have length != 0, so we don't worry
                 // about them here.  If we ever allow zero-length strings
                 // we much check for them here.
-                if (Contains(UnicodeMatcher.ETHER))
+                if (Contains(UnicodeMatcher.Ether))
                 {
                     return incremental ? MatchDegree.PartialMatch : MatchDegree.Match;
                 }
@@ -2669,7 +2669,7 @@ namespace ICU4N.Text
                             AppendToPat(patBuf, curString, false);
                             patBuf.Append('}');
                             continue;
-                        case SymbolTable.SYMBOL_REF:
+                        case SymbolTable.SymbolReference:
                             //         symbols  nosymbols
                             // [a-$]   error    error (ambiguous)
                             // [a$]    anchor   anchor
@@ -2682,7 +2682,7 @@ namespace ICU4N.Text
                             bool anchor = (c == ']' && !literal);
                             if (symbols == null && !anchor)
                             {
-                                c = SymbolTable.SYMBOL_REF;
+                                c = SymbolTable.SymbolReference;
                                 chars.SetPos(backup);
                                 break; // literal '$'
                             }
@@ -2693,9 +2693,9 @@ namespace ICU4N.Text
                                     AddUnchecked(lastChar, lastChar);
                                     AppendToPat(patBuf, lastChar, false);
                                 }
-                                AddUnchecked(UnicodeMatcher.ETHER);
+                                AddUnchecked(UnicodeMatcher.Ether);
                                 usePat = true;
-                                patBuf.Append(SymbolTable.SYMBOL_REF).Append(']');
+                                patBuf.Append(SymbolTable.SymbolReference).Append(']');
                                 mode = MODE2_OUTBRACKET;
                                 continue;
                             }

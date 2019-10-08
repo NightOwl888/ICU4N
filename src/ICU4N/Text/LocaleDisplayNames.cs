@@ -27,27 +27,27 @@ namespace ICU4N.Text
             /// e.g. en_GB displays as 'English (United Kingdom)'.
             /// </summary>
             /// <stable>ICU 4.4</stable>
-            STANDARD_NAMES,
+            StandardNames,
 
             /// <summary>
             /// Use dialect names when generating a locale name,
             /// e.g. en_GB displays as 'British English'.
             /// </summary>
             /// <stable>ICU 4.4</stable>
-            DIALECT_NAMES
+            DialectNames
         }
 
         // factory methods
         /// <summary>
         /// Convenience overload of <see cref="GetInstance(ULocale, DialectHandling)"/> that specifies
-        /// <see cref="DialectHandling.STANDARD_NAMES"/> dialect handling.
+        /// <see cref="DialectHandling.StandardNames"/> dialect handling.
         /// </summary>
         /// <param name="locale">The display locale.</param>
         /// <returns>A <see cref="LocaleDisplayNames"/> instance.</returns>
         /// <stable>ICU 4.4</stable>
         public static LocaleDisplayNames GetInstance(ULocale locale)
         {
-            return GetInstance(locale, DialectHandling.STANDARD_NAMES);
+            return GetInstance(locale, DialectHandling.StandardNames);
         }
 
         /// <summary>
@@ -478,7 +478,7 @@ namespace ICU4N.Text
         private static readonly MethodInfo FACTORY_DIALECTHANDLING;
         private static readonly MethodInfo FACTORY_DISPLAYCONTEXT;
 
-        static LocaleDisplayNames()
+        static LocaleDisplayNames() // ICU4N TODO: Avoid static constructor
         {
             string implClassName = Impl.ICUConfig.Get("ICU4N.LocaleDisplayNames.impl", "ICU4N.Impl.LocaleDisplayNamesImpl, ICU4N");
 
@@ -523,7 +523,7 @@ namespace ICU4N.Text
 #pragma warning restore 612, 618
             {
                 this.locale = locale;
-                DisplayContext context = (dialectHandling == DialectHandling.DIALECT_NAMES) ?
+                DisplayContext context = (dialectHandling == DialectHandling.DialectNames) ?
                         DisplayContext.DialectNames : DisplayContext.StandardNames;
                 this.contexts = new DisplayContext[] { context };
             }
@@ -545,14 +545,14 @@ namespace ICU4N.Text
 
             public override DialectHandling GetDialectHandling()
             {
-                DialectHandling result = DialectHandling.STANDARD_NAMES;
+                DialectHandling result = DialectHandling.StandardNames;
                 foreach (DisplayContext context in contexts)
                 {
                     if (context.Type() == DisplayContextType.DialectHandling)
                     {
                         if (context.Value() == (int)DisplayContext.DialectNames)
                         {
-                            result = DialectHandling.DIALECT_NAMES;
+                            result = DialectHandling.DialectNames;
                             break;
                         }
                     }

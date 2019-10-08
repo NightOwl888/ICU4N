@@ -8,16 +8,16 @@ namespace ICU4N.Text
     {
         // Constants for KhmerBreakIterator
         // How many words in a row are "good enough"?
-        private static readonly byte KHMER_LOOKAHEAD = 3;
+        private const byte KHMER_LOOKAHEAD = 3;
         // Will not combine a non-word with a preceding dictionary word longer than this
-        private static readonly byte KHMER_ROOT_COMBINE_THRESHOLD = 3;
+        private const byte KHMER_ROOT_COMBINE_THRESHOLD = 3;
         // Will not combine a non-word that shares at least this much prefix with a
         // dictionary word with a preceding word
-        private static readonly byte KHMER_PREFIX_COMBINE_THRESHOLD = 3;
+        private const byte KHMER_PREFIX_COMBINE_THRESHOLD = 3;
         // Minimum word size
-        private static readonly byte KHMER_MIN_WORD = 2;
+        private const byte KHMER_MIN_WORD = 2;
         // Minimum number of characters for two words
-        private static readonly byte KHMER_MIN_WORD_SPAN = (byte)(KHMER_MIN_WORD * 2);
+        private const byte KHMER_MIN_WORD_SPAN = (byte)(KHMER_MIN_WORD * 2);
 
 
         private DictionaryMatcher fDictionary;
@@ -26,7 +26,7 @@ namespace ICU4N.Text
         private static UnicodeSet fBeginWordSet;
         private static UnicodeSet fMarkSet;
 
-        static KhmerBreakEngine()
+        static KhmerBreakEngine() // ICU4N TODO: Avoid static constructor
         {
             // Initialize UnicodeSets
             fKhmerWordSet = new UnicodeSet();
@@ -62,7 +62,7 @@ namespace ICU4N.Text
             fDictionary = DictionaryData.LoadDictionaryFor("Khmr");
         }
 
-        public override bool Equals(Object obj)
+        public override bool Equals(object obj)
         {
             // Normally is a singleton, but it's possible to have duplicates
             //   during initialization. All are equivalent.

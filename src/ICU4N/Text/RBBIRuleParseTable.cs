@@ -63,7 +63,7 @@ namespace ICU4N.Text
             internal short fPushState;
             internal bool fNextChar;
             internal string fStateName;
-            internal RBBIRuleTableElement(short a, int cc, int ns, int ps, bool nc, String sn)
+            internal RBBIRuleTableElement(short a, int cc, int ns, int ps, bool nc, string sn)
             {
                 fAction = a;
                 fCharClass = (short)cc;

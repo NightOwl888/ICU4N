@@ -7,20 +7,20 @@ namespace ICU4N.Text
     {
         // Constants for ThaiBreakIterator
         // How many words in a row are "good enough"?
-        private static readonly byte THAI_LOOKAHEAD = 3;
+        private const byte THAI_LOOKAHEAD = 3;
         // Will not combine a non-word with a preceding dictionary word longer than this
-        private static readonly byte THAI_ROOT_COMBINE_THRESHOLD = 3;
+        private const byte THAI_ROOT_COMBINE_THRESHOLD = 3;
         // Will not combine a non-word that shares at least this much prefix with a
         // dictionary word with a preceding word
-        private static readonly byte THAI_PREFIX_COMBINE_THRESHOLD = 3;
+        private const byte THAI_PREFIX_COMBINE_THRESHOLD = 3;
         // Ellision character
-        private static readonly char THAI_PAIYANNOI = (char)0x0E2F;
+        private const char THAI_PAIYANNOI = (char)0x0E2F;
         // Repeat character
-        private static readonly char THAI_MAIYAMOK = (char)0x0E46;
+        private const char THAI_MAIYAMOK = (char)0x0E46;
         // Minimum word size
-        private static readonly byte THAI_MIN_WORD = 2;
+        private const byte THAI_MIN_WORD = 2;
         // Minimum number of characters for two words
-        private static readonly byte THAI_MIN_WORD_SPAN = (byte)(THAI_MIN_WORD * 2);
+        private const byte THAI_MIN_WORD_SPAN = (byte)(THAI_MIN_WORD * 2);
 
         private DictionaryMatcher fDictionary;
         private static UnicodeSet fThaiWordSet;
@@ -29,7 +29,7 @@ namespace ICU4N.Text
         private static UnicodeSet fSuffixSet;
         private static UnicodeSet fMarkSet;
 
-        static ThaiBreakEngine()
+        static ThaiBreakEngine() // ICU4N TODO: Avoid static constructor
         {
             // Initialize UnicodeSets
             fThaiWordSet = new UnicodeSet();

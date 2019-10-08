@@ -6,26 +6,26 @@ namespace ICU4N.Text
 {
     internal static class DictionaryData
     {
-        public static readonly int TRIE_TYPE_BYTES = 0;
-        public static readonly int TRIE_TYPE_UCHARS = 1;
-        public static readonly int TRIE_TYPE_MASK = 7;
-        public static readonly int TRIE_HAS_VALUES = 8;
-        public static readonly int TRANSFORM_NONE = 0;
-        public static readonly int TRANSFORM_TYPE_OFFSET = 0x1000000;
-        public static readonly int TRANSFORM_TYPE_MASK = 0x7f000000;
-        public static readonly int TRANSFORM_OFFSET_MASK = 0x1fffff;
+        public const int TRIE_TYPE_BYTES = 0;
+        public const int TRIE_TYPE_UCHARS = 1;
+        public const int TRIE_TYPE_MASK = 7;
+        public const int TRIE_HAS_VALUES = 8;
+        public const int TRANSFORM_NONE = 0;
+        public const int TRANSFORM_TYPE_OFFSET = 0x1000000;
+        public const int TRANSFORM_TYPE_MASK = 0x7f000000;
+        public const int TRANSFORM_OFFSET_MASK = 0x1fffff;
 
-        public static readonly int IX_STRING_TRIE_OFFSET = 0;
-        public static readonly int IX_RESERVED1_OFFSET = 1;
-        public static readonly int IX_RESERVED2_OFFSET = 2;
-        public static readonly int IX_TOTAL_SIZE = 3;
-        public static readonly int IX_TRIE_TYPE = 4;
-        public static readonly int IX_TRANSFORM = 5;
-        public static readonly int IX_RESERVED6 = 6;
-        public static readonly int IX_RESERVED7 = 7;
-        public static readonly int IX_COUNT = 8;
+        public const int IX_STRING_TRIE_OFFSET = 0;
+        public const int IX_RESERVED1_OFFSET = 1;
+        public const int IX_RESERVED2_OFFSET = 2;
+        public const int IX_TOTAL_SIZE = 3;
+        public const int IX_TRIE_TYPE = 4;
+        public const int IX_TRANSFORM = 5;
+        public const int IX_RESERVED6 = 6;
+        public const int IX_RESERVED7 = 7;
+        public const int IX_COUNT = 8;
 
-        private static readonly int DATA_FORMAT_ID = 0x44696374;
+        private const int DATA_FORMAT_ID = 0x44696374;
 
         public static DictionaryMatcher LoadDictionaryFor(string dictType)
         {

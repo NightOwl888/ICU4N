@@ -134,7 +134,7 @@ namespace ICU4N.Impl
         }
 
         public LocaleDisplayNamesImpl(ULocale locale, DialectHandling dialectHandling)
-                    : this(locale, (dialectHandling == DialectHandling.STANDARD_NAMES) ? DisplayContext.StandardNames : DisplayContext.DialectNames,
+                    : this(locale, (dialectHandling == DialectHandling.StandardNames) ? DisplayContext.StandardNames : DisplayContext.DialectNames,
                     DisplayContext.CapitalizationNone)
         {
         }
@@ -144,7 +144,7 @@ namespace ICU4N.Impl
             : base()
 #pragma warning restore 612, 618
         {
-            DialectHandling dialectHandling = DialectHandling.STANDARD_NAMES;
+            DialectHandling dialectHandling = DialectHandling.StandardNames;
             DisplayContext capitalization = DisplayContext.CapitalizationNone;
             DisplayContext nameLength = DisplayContext.LengthFull;
             DisplayContext substituteHandling = DisplayContext.Substitute;
@@ -154,7 +154,7 @@ namespace ICU4N.Impl
                 {
                     case DisplayContextType.DialectHandling:
                         dialectHandling = (contextItem.Value() == DisplayContext.StandardNames.Value()) ?
-                                DialectHandling.STANDARD_NAMES : DialectHandling.DIALECT_NAMES;
+                                DialectHandling.StandardNames : DialectHandling.DialectNames;
                         break;
                     case DisplayContextType.Capitalization:
                         capitalization = contextItem;
@@ -264,7 +264,7 @@ namespace ICU4N.Impl
             switch (type)
             {
                 case DisplayContextType.DialectHandling:
-                    result = (dialectHandling == DialectHandling.STANDARD_NAMES) ? DisplayContext.StandardNames : DisplayContext.DialectNames;
+                    result = (dialectHandling == DialectHandling.StandardNames) ? DisplayContext.StandardNames : DisplayContext.DialectNames;
                     break;
                 case DisplayContextType.Capitalization:
                     result = capitalization;
@@ -346,7 +346,7 @@ namespace ICU4N.Impl
             bool hasVariant = variant.Length > 0;
 
             // always have a value for lang
-            if (dialectHandling == DialectHandling.DIALECT_NAMES)
+            if (dialectHandling == DialectHandling.DialectNames)
             {
                 do
                 { // loop construct is so we can break early out of search
@@ -866,7 +866,7 @@ namespace ICU4N.Impl
             }
             public LocaleDisplayNames Get(ULocale locale, params DisplayContext[] contexts)
             {
-                DialectHandling dialectHandlingIn = DialectHandling.STANDARD_NAMES;
+                DialectHandling dialectHandlingIn = DialectHandling.StandardNames;
                 DisplayContext capitalizationIn = DisplayContext.CapitalizationNone;
                 DisplayContext nameLengthIn = DisplayContext.LengthFull;
                 DisplayContext substituteHandling = DisplayContext.Substitute;
@@ -876,7 +876,7 @@ namespace ICU4N.Impl
                     {
                         case DisplayContextType.DialectHandling:
                             dialectHandlingIn = (contextItem.Value() == DisplayContext.StandardNames.Value()) ?
-                                    DialectHandling.STANDARD_NAMES : DialectHandling.DIALECT_NAMES;
+                                    DialectHandling.StandardNames : DialectHandling.DialectNames;
                             break;
                         case DisplayContextType.Capitalization:
                             capitalizationIn = contextItem;

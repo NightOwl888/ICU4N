@@ -621,7 +621,7 @@ namespace ICU4N.Text
     /// with its selection criterium.
     /// </summary>
     /// <stable>ICU 49</stable>
-    public class VariantNode : MessagePatternNode // ICU4N TODO: API - de-nest
+    public class VariantNode : MessagePatternNode
     {
         /// <summary>
         /// Gets the selector string.

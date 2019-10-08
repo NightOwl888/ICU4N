@@ -2063,7 +2063,7 @@ namespace ICU4N.Util
 
         private static string GetDisplayNameWithDialectInternal(ULocale locale, ULocale displayLocale)
         {
-            return LocaleDisplayNames.GetInstance(displayLocale, DialectHandling.DIALECT_NAMES)
+            return LocaleDisplayNames.GetInstance(displayLocale, DialectHandling.DialectNames)
                     .LocaleDisplayName(locale);
         }
 

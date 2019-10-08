@@ -11,23 +11,23 @@ namespace ICU4N.Text
     internal class RBBINode
     {
         //   enum NodeType {
-        internal static readonly int setRef = 0;
-        internal static readonly int uset = 1;
-        internal static readonly int varRef = 2;
-        internal static readonly int leafChar = 3;
-        internal static readonly int lookAhead = 4;
-        internal static readonly int tag = 5;
-        internal static readonly int endMark = 6;
-        internal static readonly int opStart = 7;
-        internal static readonly int opCat = 8;
-        internal static readonly int opOr = 9;
-        internal static readonly int opStar = 10;
-        internal static readonly int opPlus = 11;
-        internal static readonly int opQuestion = 12;
-        internal static readonly int opBreak = 13;
-        internal static readonly int opReverse = 14;
-        internal static readonly int opLParen = 15;
-        internal static readonly int nodeTypeLimit = 16;    //  For Assertion checking only.
+        internal const int setRef = 0;
+        internal const int uset = 1;
+        internal const int varRef = 2;
+        internal const int leafChar = 3;
+        internal const int lookAhead = 4;
+        internal const int tag = 5;
+        internal const int endMark = 6;
+        internal const int opStart = 7;
+        internal const int opCat = 8;
+        internal const int opOr = 9;
+        internal const int opStar = 10;
+        internal const int opPlus = 11;
+        internal const int opQuestion = 12;
+        internal const int opBreak = 13;
+        internal const int opReverse = 14;
+        internal const int opLParen = 15;
+        internal const int nodeTypeLimit = 16;    //  For Assertion checking only.
 
         internal static readonly string[] nodeTypeNames = {
             "setRef",
@@ -49,11 +49,11 @@ namespace ICU4N.Text
         };
 
         //    enum OpPrecedence {
-        internal static readonly int precZero = 0;
-        internal static readonly int precStart = 1;
-        internal static readonly int precLParen = 2;
-        internal static readonly int precOpOr = 3;
-        internal static readonly int precOpCat = 4;
+        internal const int precZero = 0;
+        internal const int precStart = 1;
+        internal const int precLParen = 2;
+        internal const int precOpOr = 3;
+        internal const int precOpCat = 4;
 
         internal int fType;   // enum NodeType
         internal RBBINode fParent;
@@ -302,7 +302,7 @@ namespace ICU4N.Text
         //        print. Print out a single node, for debugging.
         //
         //-------------------------------------------------------------------------
-        ///CLOVER:OFF
+        ////CLOVER:OFF
         internal static void PrintNode(RBBINode n)
         {
 
@@ -327,12 +327,12 @@ namespace ICU4N.Text
             }
             Console.Out.WriteLine("");
         }
-        //CLOVER:ON
+        ////CLOVER:ON
 
 
         // Print a String in a fixed field size.
         // Debugging function.
-        //CLOVER:OFF
+        ////CLOVER:OFF
         internal static void PrintString(String s, int minWidth)
         {
             for (int i = minWidth; i < 0; i++)
@@ -346,21 +346,21 @@ namespace ICU4N.Text
             }
             Console.Out.Write(s);
         }
-        //CLOVER:ON
+        ////CLOVER:ON
 
         //
         //  Print an int in a fixed size field.
         //  Debugging function.
         //
-        //CLOVER:OFF
+        ////CLOVER:OFF
         internal static void PrintInt32(int i, int minWidth)
         {
             string s = i.ToString(CultureInfo.InvariantCulture);
             PrintString(s, Math.Max(minWidth, s.Length + 1));
         }
-        //CLOVER:ON
+        ////CLOVER:ON
 
-        //CLOVER:OFF
+        ////CLOVER:OFF
         internal static void PrintHex(int i, int minWidth)
         {
             string s = Convert.ToString(i, 16); // ICU4N TODO: Check this conversion
@@ -369,7 +369,7 @@ namespace ICU4N.Text
             s = leadingZeroes + s;
             PrintString(s, minWidth);
         }
-        //CLOVER:ON
+        ////CLOVER:ON
 
 
         // -------------------------------------------------------------------------
@@ -377,7 +377,7 @@ namespace ICU4N.Text
         //        print. Print out the tree of nodes rooted at "this"
         //
         // -------------------------------------------------------------------------
-        //CLOVER:OFF
+        ////CLOVER:OFF
         internal virtual void PrintTree(bool printHeading)
         {
             if (printHeading)
@@ -401,6 +401,6 @@ namespace ICU4N.Text
                 }
             }
         }
-        //CLOVER:ON
+        ////CLOVER:ON
     }
 }

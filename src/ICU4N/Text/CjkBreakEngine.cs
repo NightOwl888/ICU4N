@@ -10,7 +10,7 @@ namespace ICU4N.Text
         private static readonly UnicodeSet fHanWordSet = new UnicodeSet();
         private static readonly UnicodeSet fKatakanaWordSet = new UnicodeSet();
         private static readonly UnicodeSet fHiraganaWordSet = new UnicodeSet();
-        static CjkBreakEngine()
+        static CjkBreakEngine() // ICU4N TODO: Avoid static constructor
         {
             fHangulWordSet.ApplyPattern("[\\uac00-\\ud7a3]");
             fHanWordSet.ApplyPattern("[:Han:]");

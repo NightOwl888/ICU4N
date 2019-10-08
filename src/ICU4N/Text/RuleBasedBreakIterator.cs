@@ -201,15 +201,15 @@ namespace ICU4N.Text
         }
 
 
-        private static readonly int START_STATE = 1;     // The state number of the starting state
-        private static readonly int STOP_STATE = 0;     // The state-transition value indicating "stop"
+        private const int START_STATE = 1;     // The state number of the starting state
+        private const int STOP_STATE = 0;     // The state-transition value indicating "stop"
 
         // RBBIRunMode - the state machine runs an extra iteration at the beginning and end
         //               of user text.  A variable with this enum type keeps track of where we
         //               are.  The state machine only fetches user text input while in RUN mode.
-        private static readonly int RBBI_START = 0;
-        private static readonly int RBBI_RUN = 1;
-        private static readonly int RBBI_END = 2;
+        private const int RBBI_START = 0;
+        private const int RBBI_RUN = 1;
+        private const int RBBI_END = 2;
 
         /// <summary>
         /// The character iterator through which this <see cref="BreakIterator"/> accesses the text.
@@ -263,7 +263,7 @@ namespace ICU4N.Text
         /// <summary>
         /// ICU debug argument name for RBBI
         /// </summary>
-        private static readonly string RBBI_DEBUG_ARG = "rbbi";
+        private const string RBBI_DEBUG_ARG = "rbbi";
 
         /// <summary>
         /// Debugging flag.  Trace operation of state machine when true.
@@ -297,7 +297,7 @@ namespace ICU4N.Text
         /// </summary>
         private static readonly IList<ILanguageBreakEngine> gAllBreakEngines;
 
-        static RuleBasedBreakIterator()
+        static RuleBasedBreakIterator() // ICU4N TODO: Avoid static constructor
         {
             gUnhandledBreakEngine = new UnhandledBreakEngine();
             gAllBreakEngines = new List<ILanguageBreakEngine>();

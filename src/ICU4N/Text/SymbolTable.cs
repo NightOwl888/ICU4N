@@ -25,9 +25,9 @@ namespace ICU4N.Text
     /// then lookupMatcher(0xE015) will return the <see cref="UnicodeSet"/> [a-z].
     /// <para/>
     /// Finally, a symbol table defines parsing behavior for symbolic
-    /// names.  All symbolic names start with the <see cref="SymbolTable.SYMBOL_REF"/> character.
+    /// names.  All symbolic names start with the <see cref="SymbolTable.SymbolReference"/> character.
     /// When a parser encounters this character, it calls <see cref="ParseReference(string, ParsePosition, int)"/>
-    /// with the position immediately following the <see cref="SymbolTable.SYMBOL_REF"/>.  The symbol
+    /// with the position immediately following the <see cref="SymbolTable.SymbolReference"/>.  The symbol
     /// table parses the name, if there is one, and returns it.
     /// </remarks>
     /// <stable>ICU 2.8</stable>
@@ -60,11 +60,11 @@ namespace ICU4N.Text
         /// found, return null and leave <paramref name="pos"/> unchanged.  That is, if the
         /// character at <paramref name="pos"/> cannot start a name, or if <paramref name="pos"/> is at or after
         /// text.Length, then return null.  This indicates an isolated
-        /// <see cref="SymbolTable.SYMBOL_REF"/> character.
+        /// <see cref="SymbolTable.SymbolReference"/> character.
         /// </summary>
         /// <param name="text">The text to parse for the name.</param>
         /// <param name="pos">Position on entry, the index of the first character to parse.
-        /// This is the character following the <see cref="SymbolTable.SYMBOL_REF"/> character.  On
+        /// This is the character following the <see cref="SymbolTable.SymbolReference"/> character.  On
         /// exit, the index after the last parsed character.  If the parse
         /// failed, pos is unchanged on exit.
         /// </param>
@@ -83,6 +83,6 @@ namespace ICU4N.Text
         /// The character preceding a symbol reference name.
         /// </summary>
         /// <stable>ICU 2.8</stable>
-        internal const char SYMBOL_REF = '$';
+        internal const char SymbolReference = '$';
     }
 }

@@ -137,7 +137,7 @@ namespace ICU4N.Impl
                 c = Current();
                 Advance(UTF16.GetCharCount(c));
 
-                if (c == SymbolTable.SYMBOL_REF && buf == null &&
+                if (c == SymbolTable.SymbolReference && buf == null &&
                     (options & RuleCharacterIteratorOptions.ParseVariables) != 0 && sym != null)
                 {
                     string name = sym.ParseReference(text, pos, text.Length);

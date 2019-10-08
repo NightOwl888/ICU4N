@@ -26,7 +26,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <draft>ICU4N 60</draft>
         // ICU4N specific - copy over the constants, since they are not automatically inherited
-        public static readonly int Done = UForwardCharacterIterator.Done;
+        public const int Done = UForwardCharacterIterator.Done;
 
         /// <summary>
         /// Protected default constructor for the subclasses.

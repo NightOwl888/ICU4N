@@ -248,7 +248,7 @@ namespace ICU4N.Text
         private readonly Normalizer2Impl nfcImpl;
         private string source;
         private bool done;
-        private String[][] pieces;
+        private string[][] pieces;
         private int[] current;
         // Note: C will need two more fields, since arrays there don't have lengths
         // int pieces_length;

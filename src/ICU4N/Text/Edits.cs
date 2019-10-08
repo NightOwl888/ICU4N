@@ -15,24 +15,24 @@ namespace ICU4N.Text
     public sealed class Edits
     {
         // 0000uuuuuuuuuuuu records u+1 unchanged text units.
-        private static readonly int MAX_UNCHANGED_LENGTH = 0x1000;
-        private static readonly int MAX_UNCHANGED = MAX_UNCHANGED_LENGTH - 1;
+        private const int MAX_UNCHANGED_LENGTH = 0x1000;
+        private const int MAX_UNCHANGED = MAX_UNCHANGED_LENGTH - 1;
 
         // 0mmmnnnccccccccc with m=1..6 records ccc+1 replacements of m:n text units.
-        private static readonly int MAX_SHORT_CHANGE_OLD_LENGTH = 6;
-        private static readonly int MAX_SHORT_CHANGE_NEW_LENGTH = 7;
-        private static readonly int SHORT_CHANGE_NUM_MASK = 0x1ff;
-        private static readonly int MAX_SHORT_CHANGE = 0x6fff;
+        private const int MAX_SHORT_CHANGE_OLD_LENGTH = 6;
+        private const int MAX_SHORT_CHANGE_NEW_LENGTH = 7;
+        private const int SHORT_CHANGE_NUM_MASK = 0x1ff;
+        private const int MAX_SHORT_CHANGE = 0x6fff;
 
         // 0111mmmmmmnnnnnn records a replacement of m text units with n.
         // m or n = 61: actual length follows in the next edits array unit.
         // m or n = 62..63: actual length follows in the next two edits array units.
         // Bit 30 of the actual length is in the head unit.
         // Trailing units have bit 15 set.
-        private static readonly int LENGTH_IN_1TRAIL = 61;
-        private static readonly int LENGTH_IN_2TRAIL = 62;
+        private const int LENGTH_IN_1TRAIL = 61;
+        private const int LENGTH_IN_2TRAIL = 62;
 
-        private static readonly int STACK_CAPACITY = 100;
+        private const int STACK_CAPACITY = 100;
         private char[] array;
         private int length;
         private int delta;

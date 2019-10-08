@@ -142,11 +142,11 @@ namespace ICU4N.Text
         // TODO Remove RulesList by moving its API and fields into PluralRules.
         /// <internal/>
         [Obsolete("This API is ICU internal only")]
-        public static readonly string CategorySeparator = ";  ";
+        public const string CategorySeparator = ";  ";
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public static readonly string KeywordRuleSeparator = ": ";
+        public const string KeywordRuleSeparator = ": ";
 
         //private static readonly long serialVersionUID = 1;
 

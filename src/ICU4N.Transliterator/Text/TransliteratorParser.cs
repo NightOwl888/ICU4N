@@ -676,7 +676,7 @@ namespace ICU4N.Text
                                 buf.Append(parser.GenerateStandInFor(r));
                             }
                             break;
-                        case SymbolTable.SYMBOL_REF:
+                        case SymbolTable.SymbolReference:
                             // Handle variable references and segment references "$1" .. "$9"
                             {
                                 // A variable reference must be followed immediately
@@ -795,7 +795,7 @@ namespace ICU4N.Text
                                             + postContext, e);
                                 }
                                 int min = 0;
-                                int max = Quantifier.MAX;
+                                int max = Quantifier.MaxCount;
                                 switch (c)
                                 {
                                     case ONE_OR_MORE:

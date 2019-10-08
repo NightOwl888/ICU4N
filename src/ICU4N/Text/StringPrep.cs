@@ -213,29 +213,29 @@ namespace ICU4N.Text
 
         private static readonly WeakReference<StringPrep>[] CACHE = new WeakReference<StringPrep>[(int)MAX_PROFILE + 1];
 
-        private static readonly int UNASSIGNED = 0x0000;
-        private static readonly int MAP = 0x0001;
-        private static readonly int PROHIBITED = 0x0002;
-        private static readonly int DELETE = 0x0003;
-        private static readonly int TYPE_LIMIT = 0x0004;
+        private const int UNASSIGNED = 0x0000;
+        private const int MAP = 0x0001;
+        private const int PROHIBITED = 0x0002;
+        private const int DELETE = 0x0003;
+        private const int TYPE_LIMIT = 0x0004;
 
-        private static readonly int NORMALIZATION_ON = 0x0001;
-        private static readonly int CHECK_BIDI_ON = 0x0002;
+        private const int NORMALIZATION_ON = 0x0001;
+        private const int CHECK_BIDI_ON = 0x0002;
 
-        private static readonly int TYPE_THRESHOLD = 0xFFF0;
-        private static readonly int MAX_INDEX_VALUE = 0x3FBF;   /*16139*/
-                                                                //private static final int MAX_INDEX_TOP_LENGTH = 0x0003;
+        private const int TYPE_THRESHOLD = 0xFFF0;
+        private const int MAX_INDEX_VALUE = 0x3FBF;   /*16139*/
+                                                      //private static final int MAX_INDEX_TOP_LENGTH = 0x0003;
 
         /* indexes[] value names */
-        //  private static readonly int INDEX_TRIE_SIZE                  =  0; /* number of bytes in normalization trie */
-        private static readonly int INDEX_MAPPING_DATA_SIZE = 1; /* The array that contains the mapping   */
-        private static readonly int NORM_CORRECTNS_LAST_UNI_VERSION = 2; /* The index of Unicode version of last entry in NormalizationCorrections.txt */
-        private static readonly int ONE_UCHAR_MAPPING_INDEX_START = 3; /* The starting index of 1 UChar mapping index in the mapping data array */
-        private static readonly int TWO_UCHARS_MAPPING_INDEX_START = 4; /* The starting index of 2 UChars mapping index in the mapping data array */
-        private static readonly int THREE_UCHARS_MAPPING_INDEX_START = 5;
-        private static readonly int FOUR_UCHARS_MAPPING_INDEX_START = 6;
-        private static readonly int OPTIONS = 7; /* Bit set of options to turn on in the profile */
-        private static readonly int INDEX_TOP = 16;                          /* changing this requires a new formatVersion */
+        //  private const int INDEX_TRIE_SIZE                  =  0; /* number of bytes in normalization trie */
+        private const int INDEX_MAPPING_DATA_SIZE = 1; /* The array that contains the mapping   */
+        private const int NORM_CORRECTNS_LAST_UNI_VERSION = 2; /* The index of Unicode version of last entry in NormalizationCorrections.txt */
+        private const int ONE_UCHAR_MAPPING_INDEX_START = 3; /* The starting index of 1 UChar mapping index in the mapping data array */
+        private const int TWO_UCHARS_MAPPING_INDEX_START = 4; /* The starting index of 2 UChars mapping index in the mapping data array */
+        private const int THREE_UCHARS_MAPPING_INDEX_START = 5;
+        private const int FOUR_UCHARS_MAPPING_INDEX_START = 6;
+        private const int OPTIONS = 7; /* Bit set of options to turn on in the profile */
+        private const int INDEX_TOP = 16;                          /* changing this requires a new formatVersion */
 
 
         // CharTrie implmentation for reading the trie data

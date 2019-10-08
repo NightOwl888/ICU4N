@@ -414,14 +414,14 @@ namespace ICU4N.Text
         /// At most one Unicode version can be selected at a time.
         /// </summary>
         [Obsolete("ICU 56 Use FilteredNormalizer2 instead.")]
-        internal static readonly int Unicode3_2 = (int)NormalizerUnicodeVersion.Unicode3_2; // ICU4N specific - changed from public to internal, as we have an enum to supply the value
+        internal const int Unicode3_2 = (int)NormalizerUnicodeVersion.Unicode3_2; // ICU4N specific - changed from public to internal, as we have an enum to supply the value
 
         /// <summary>
         /// Constant indicating that the end of the iteration has been reached.
         /// This is guaranteed to have the same value as <see cref="UCharacterIterator.Done"/>.
         /// </summary>
         [Obsolete("ICU 56")]
-        public static readonly int Done = UForwardCharacterIterator.Done;
+        public const int Done = UForwardCharacterIterator.Done;
 
         /// <summary>
         /// Constants for normalization modes.

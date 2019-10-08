@@ -8,14 +8,14 @@ namespace ICU4N.Text
     {
         // Constants for LaoBreakIterator
         // How many words in a row are "good enough"?
-        private static readonly byte LAO_LOOKAHEAD = 3;
+        private const byte LAO_LOOKAHEAD = 3;
         // Will not combine a non-word with a preceding dictionary word longer than this
-        private static readonly byte LAO_ROOT_COMBINE_THRESHOLD = 3;
+        private const byte LAO_ROOT_COMBINE_THRESHOLD = 3;
         // Will not combine a non-word that shares at least this much prefix with a
         // dictionary word with a preceding word
-        private static readonly byte LAO_PREFIX_COMBINE_THRESHOLD = 3;
+        private const byte LAO_PREFIX_COMBINE_THRESHOLD = 3;
         // Minimum word size
-        private static readonly byte LAO_MIN_WORD = 2;
+        private const byte LAO_MIN_WORD = 2;
 
         private DictionaryMatcher fDictionary;
         private static UnicodeSet fLaoWordSet;
@@ -23,7 +23,7 @@ namespace ICU4N.Text
         private static UnicodeSet fBeginWordSet;
         private static UnicodeSet fMarkSet;
 
-        static LaoBreakEngine()
+        static LaoBreakEngine() // ICU4N TODO: Avoid static constructor
         {
             // Initialize UnicodeSets
             fLaoWordSet = new UnicodeSet();

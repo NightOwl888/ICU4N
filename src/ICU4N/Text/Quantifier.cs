@@ -15,7 +15,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Maximum count a quantifier can have.
         /// </summary>
-        public const int MAX = int.MaxValue;
+        public const int MaxCount = int.MaxValue;
 
         public Quantifier(IUnicodeMatcher theMatcher,
                           int theMinCount, int theMaxCount)
@@ -87,20 +87,20 @@ namespace ICU4N.Text
                 {
                     return result.Append('?').ToString();
                 }
-                else if (maxCount == MAX)
+                else if (maxCount == MaxCount)
                 {
                     return result.Append('*').ToString();
                 }
                 // else fall through
             }
-            else if (minCount == 1 && maxCount == MAX)
+            else if (minCount == 1 && maxCount == MaxCount)
             {
                 return result.Append('+').ToString();
             }
             result.Append('{');
             result.Append(Utility.Hex(minCount, 1));
             result.Append(',');
-            if (maxCount != MAX)
+            if (maxCount != MaxCount)
             {
                 result.Append(Utility.Hex(maxCount, 1));
             }

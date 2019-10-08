@@ -1298,7 +1298,7 @@ namespace ICU4N.Dev.Test.Util
                     DisplayContext dialectHandling = ldn.GetContext(DisplayContextType.DialectHandling);
                     assertEquals("consistent dialect handling",
                             dialectHandling == DisplayContext.DialectNames,
-                            ldn.GetDialectHandling() == LocaleDisplayNames.DialectHandling.DIALECT_NAMES);
+                            ldn.GetDialectHandling() == LocaleDisplayNames.DialectHandling.DialectNames);
                     DisplayContext capitalization = ldn.GetContext(DisplayContextType.Capitalization);
                     DisplayContext nameLength = ldn.GetContext(DisplayContextType.DisplayLength);
                     DisplayContext substituteHandling = ldn.GetContext(DisplayContextType.SubstituteHandling);
@@ -1610,9 +1610,9 @@ namespace ICU4N.Dev.Test.Util
             // If the data changes (in particular, the keyTypePattern may change for Taiwan),
             // this test will break.
             LocaleDisplayNames dn = LocaleDisplayNames.GetInstance(ULocale.US,
-                    DialectHandling.DIALECT_NAMES);
+                    DialectHandling.DialectNames);
             LocaleDisplayNames tdn = LocaleDisplayNames.GetInstance(ULocale.TAIWAN,
-                    DialectHandling.DIALECT_NAMES);
+                    DialectHandling.DialectNames);
             String name = dn.LocaleDisplayName("de@collation=phonebook");
             String target = "German (Phonebook Sort Order)";
             assertEquals("collation", target, name);

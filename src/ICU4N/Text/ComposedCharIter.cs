@@ -57,7 +57,7 @@ namespace ICU4N.Text
         /// over which to iterate.
         /// </summary>
         [Obsolete("ICU 2.2")]
-        public static readonly char DONE = (char)Normalizer.Done;
+        public const char Done = unchecked((char)Normalizer.Done);
 
         /// <summary>
         /// Construct a new <see cref="ComposedCharIter"/>.  The iterator will return
@@ -112,7 +112,7 @@ namespace ICU4N.Text
         /// Repeated calls to <see cref="Next()"/> return all of the precomposed characters defined
         /// by Unicode, in ascending order.  After all precomposed characters have
         /// been returned, <see cref="HasNext()"/> will return <c>false</c> and further calls
-        /// to <see cref="Next()"/> will return <see cref="DONE"/>.
+        /// to <see cref="Next()"/> will return <see cref="Done"/>.
         /// </summary>
         /// <returns></returns>
         [Obsolete("ICU 2.2")]

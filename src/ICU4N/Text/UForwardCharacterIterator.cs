@@ -87,6 +87,6 @@
         /// Indicator that we have reached the ends of the UTF16 text.
         /// </summary>
         /// <stable>ICU 2.4</stable>
-        public static readonly int Done = -1;
+        public const int Done = -1;
     }
 }

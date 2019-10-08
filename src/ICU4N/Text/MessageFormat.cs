@@ -3179,7 +3179,7 @@ namespace ICU4N.Text
     /// from <see cref="MessageFormat.FormatToCharacterIterator(object)"/>.
     /// </summary>
     /// <stable>ICU 3.8</stable>
-    public class MessageFormatField : FormatField // ICU4N TODO: API - de-nest
+    public class MessageFormatField : FormatField
     {
 
         //private static readonly long serialVersionUID = 7510380454602616157L;

@@ -68,7 +68,7 @@ namespace ICU4N.Text
         /// <seealso cref="ToLower()"/>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public sealed partial class Lower : CaseMap
+        public sealed partial class Lower : CaseMap // ICU4N TODO: API - de-nest and rename LowerCaseMap
         {
             internal static readonly Lower DEFAULT = new Lower(0);
             private static readonly Lower OMIT_UNCHANGED = new Lower(CaseMapImpl.OMIT_UNCHANGED_TEXT);
@@ -101,7 +101,7 @@ namespace ICU4N.Text
         /// <seealso cref="ToUpper()"/>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public sealed partial class Upper : CaseMap
+        public sealed partial class Upper : CaseMap // ICU4N TODO: API - de-nest and rename UpperCaseMap
         {
             internal static readonly Upper DEFAULT = new Upper(0);
             private static readonly Upper OMIT_UNCHANGED = new Upper(CaseMapImpl.OMIT_UNCHANGED_TEXT);
@@ -134,7 +134,7 @@ namespace ICU4N.Text
         /// <seealso cref="ToTitle()"/>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public sealed partial class Title : CaseMap
+        public sealed partial class Title : CaseMap // ICU4N TODO: API - de-nest and rename TitleCaseMap
         {
             internal static readonly Title DEFAULT = new Title(0);
             private static readonly Title OMIT_UNCHANGED = new Title(CaseMapImpl.OMIT_UNCHANGED_TEXT);
@@ -273,7 +273,7 @@ namespace ICU4N.Text
         /// <seealso cref="ToFold()"/>
         /// <draft>ICU 59</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public sealed partial class Fold : CaseMap
+        public sealed partial class Fold : CaseMap // ICU4N TODO: API - de-nest and rename FoldCaseMap
         {
             internal static readonly Fold DEFAULT = new Fold(0);
             private static readonly Fold TURKIC = new Fold(UChar.FoldCaseExcludeSpecialI);

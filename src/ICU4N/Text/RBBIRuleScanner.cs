@@ -84,12 +84,12 @@ namespace ICU4N.Text
 
 
         // gRuleSet_rule_char_pattern is characters that may appear as literals in patterns without escaping or quoting.
-        static private string gRuleSet_rule_char_pattern = "[^[\\p{Z}\\u0020-\\u007f]-[\\p{L}]-[\\p{N}]]";
-        static private string gRuleSet_name_char_pattern = "[_\\p{L}\\p{N}]";
-        static private string gRuleSet_digit_char_pattern = "[0-9]";
-        static private string gRuleSet_name_start_char_pattern = "[_\\p{L}]";
-        static private string gRuleSet_white_space_pattern = "[\\p{Pattern_White_Space}]";
-        static private string kAny = "any";
+        private const string gRuleSet_rule_char_pattern = "[^[\\p{Z}\\u0020-\\u007f]-[\\p{L}]-[\\p{N}]]";
+        private const string gRuleSet_name_char_pattern = "[_\\p{L}\\p{N}]";
+        private const string gRuleSet_digit_char_pattern = "[0-9]";
+        private const string gRuleSet_name_start_char_pattern = "[_\\p{L}]";
+        private const string gRuleSet_white_space_pattern = "[\\p{Pattern_White_Space}]";
+        private const string kAny = "any";
 
 
 

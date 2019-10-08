@@ -25,10 +25,10 @@ namespace ICU4N.Text
         //  This array references the root of each of the trees.
         //
         internal RBBINode[] fTreeRoots = new RBBINode[4];
-        internal static readonly int fForwardTree = 0;  // Indexes into the above fTreeRoots array
-        internal static readonly int fReverseTree = 1;  //   for each of the trees.
-        internal static readonly int fSafeFwdTree = 2;  //   (in C, these are pointer variables and
-        internal static readonly int fSafeRevTree = 3;  //    there is no array.)
+        internal const int fForwardTree = 0;  // Indexes into the above fTreeRoots array
+        internal const int fReverseTree = 1;  //   for each of the trees.
+        internal const int fSafeFwdTree = 2;  //   (in C, these are pointer variables and
+        internal const int fSafeRevTree = 3;  //    there is no array.)
         internal int fDefaultTree = fForwardTree;      // For rules not qualified with a !
                                                        //   the tree to which they belong to.
 
@@ -71,53 +71,53 @@ namespace ICU4N.Text
                                                    //    creation of Java exceptions
                                                    //
         /// <summary>Start of codes indicating Break Iterator failures</summary>
-        internal static readonly int U_BRK_ERROR_START = 0x10200;
+        internal const int U_BRK_ERROR_START = 0x10200;
 
         /// <summary>An internal error (bug) was detected.</summary>
-        internal static readonly int U_BRK_INTERNAL_ERROR = 0x10201;
+        internal const int U_BRK_INTERNAL_ERROR = 0x10201;
 
         /// <summary>Hex digits expected as part of a escaped char in a rule.</summary>
-        internal static readonly int U_BRK_HEX_DIGITS_EXPECTED = 0x10202;
+        internal const int U_BRK_HEX_DIGITS_EXPECTED = 0x10202;
 
         /// <summary>Missing ';' at the end of a RBBI rule.</summary>
-        internal static readonly int U_BRK_SEMICOLON_EXPECTED = 0x10203;
+        internal const int U_BRK_SEMICOLON_EXPECTED = 0x10203;
 
         /// <summary>Syntax error in RBBI rule.</summary>
-        internal static readonly int U_BRK_RULE_SYNTAX = 0x10204;
+        internal const int U_BRK_RULE_SYNTAX = 0x10204;
 
         /// <summary>UnicodeSet witing an RBBI rule missing a closing ']'.</summary>
-        internal static readonly int U_BRK_UNCLOSED_SET = 0x10205;
+        internal const int U_BRK_UNCLOSED_SET = 0x10205;
 
         /// <summary>Syntax error in RBBI rule assignment statement.</summary>
-        internal static readonly int U_BRK_ASSIGN_ERROR = 0x10206;
+        internal const int U_BRK_ASSIGN_ERROR = 0x10206;
 
         /// <summary>RBBI rule $Variable redefined.</summary>
-        internal static readonly int U_BRK_VARIABLE_REDFINITION = 0x10207;
+        internal const int U_BRK_VARIABLE_REDFINITION = 0x10207;
 
         /// <summary>Mis-matched parentheses in an RBBI rule.</summary>
-        internal static readonly int U_BRK_MISMATCHED_PAREN = 0x10208;
+        internal const int U_BRK_MISMATCHED_PAREN = 0x10208;
 
         /// <summary>Missing closing quote in an RBBI rule.</summary>
-        internal static readonly int U_BRK_NEW_LINE_IN_QUOTED_STRING = 0x10209;
+        internal const int U_BRK_NEW_LINE_IN_QUOTED_STRING = 0x10209;
 
         /// <summary>Use of an undefined $Variable in an RBBI rule. </summary>
-        internal static readonly int U_BRK_UNDEFINED_VARIABLE = 0x1020a;
+        internal const int U_BRK_UNDEFINED_VARIABLE = 0x1020a;
 
         /// <summary>Initialization failure.  Probable missing ICU Data.</summary>
-        internal static readonly int U_BRK_INIT_ERROR = 0x1020b;
+        internal const int U_BRK_INIT_ERROR = 0x1020b;
 
         /// <summary>Rule contains an empty Unicode Set.</summary>
-        internal static readonly int U_BRK_RULE_EMPTY_SET = 0x1020c;
+        internal const int U_BRK_RULE_EMPTY_SET = 0x1020c;
 
         /// <summary>!!option in RBBI rules not recognized.</summary>
-        internal static readonly int U_BRK_UNRECOGNIZED_OPTION = 0x1020d;
+        internal const int U_BRK_UNRECOGNIZED_OPTION = 0x1020d;
 
         /// <summary>The {nnn} tag on a rule is mal formed</summary>
-        internal static readonly int U_BRK_MALFORMED_RULE_TAG = 0x1020e;
+        internal const int U_BRK_MALFORMED_RULE_TAG = 0x1020e;
 
-        internal static readonly int U_BRK_MALFORMED_SET = 0x1020f;
+        internal const int U_BRK_MALFORMED_SET = 0x1020f;
         /// <summary>This must always be the last value to indicate the limit for Break Iterator failures</summary>
-        internal static readonly int U_BRK_ERROR_LIMIT = 0x10210;
+        internal const int U_BRK_ERROR_LIMIT = 0x10210;
 
 
         //----------------------------------------------------------------------------------------

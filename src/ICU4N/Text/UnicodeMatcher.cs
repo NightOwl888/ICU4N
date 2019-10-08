@@ -101,12 +101,12 @@
     {
         /// <summary>
         /// The character at index i, where i &lt; contextStart || i &gt;= contextLimit,
-        /// is <see cref="ETHER"/>.  This allows explicit matching by rules and <see cref="UnicodeSet"/>s
+        /// is <see cref="Ether"/>.  This allows explicit matching by rules and <see cref="UnicodeSet"/>s
         /// of text outside the context.  In traditional terms, this allows anchoring
         /// at the start and/or end.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        internal const char ETHER = '\uFFFF';
+        internal const char Ether = '\uFFFF';
     }
 
     /// <summary>

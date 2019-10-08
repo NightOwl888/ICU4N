@@ -30,8 +30,8 @@ namespace ICU4N.Text
 
         private bool isBigEndian;
 
-        internal static readonly int DATA_FORMAT = 0x42726b20;     // "Brk "
-        internal static readonly int FORMAT_VERSION = 0x04000000;  // 4.0.0.0
+        internal const int DATA_FORMAT = 0x42726b20;     // "Brk "
+        internal const int FORMAT_VERSION = 0x04000000;  // 4.0.0.0
 
         private sealed class IsAcceptable : IAuthenticate
         {
@@ -47,50 +47,50 @@ namespace ICU4N.Text
         // Indexes to fields in the ICU4C style binary form of the RBBI Data Header
         //   Used by the rule compiler when flattening the data.
         //
-        internal readonly static int DH_SIZE = 24;
-        internal readonly static int DH_MAGIC = 0;
-        internal readonly static int DH_FORMATVERSION = 1;
-        internal readonly static int DH_LENGTH = 2;
-        internal readonly static int DH_CATCOUNT = 3;
-        internal readonly static int DH_FTABLE = 4;
-        internal readonly static int DH_FTABLELEN = 5;
-        internal readonly static int DH_RTABLE = 6;
-        internal readonly static int DH_RTABLELEN = 7;
-        internal readonly static int DH_SFTABLE = 8;
-        internal readonly static int DH_SFTABLELEN = 9;
-        internal readonly static int DH_SRTABLE = 10;
-        internal readonly static int DH_SRTABLELEN = 11;
-        internal readonly static int DH_TRIE = 12;
-        internal readonly static int DH_TRIELEN = 13;
-        internal readonly static int DH_RULESOURCE = 14;
-        internal readonly static int DH_RULESOURCELEN = 15;
-        internal readonly static int DH_STATUSTABLE = 16;
-        internal readonly static int DH_STATUSTABLELEN = 17;
+        internal const int DH_SIZE = 24;
+        internal const int DH_MAGIC = 0;
+        internal const int DH_FORMATVERSION = 1;
+        internal const int DH_LENGTH = 2;
+        internal const int DH_CATCOUNT = 3;
+        internal const int DH_FTABLE = 4;
+        internal const int DH_FTABLELEN = 5;
+        internal const int DH_RTABLE = 6;
+        internal const int DH_RTABLELEN = 7;
+        internal const int DH_SFTABLE = 8;
+        internal const int DH_SFTABLELEN = 9;
+        internal const int DH_SRTABLE = 10;
+        internal const int DH_SRTABLELEN = 11;
+        internal const int DH_TRIE = 12;
+        internal const int DH_TRIELEN = 13;
+        internal const int DH_RULESOURCE = 14;
+        internal const int DH_RULESOURCELEN = 15;
+        internal const int DH_STATUSTABLE = 16;
+        internal const int DH_STATUSTABLELEN = 17;
 
 
         // Index offsets to the fields in a state table row.
         //    Corresponds to struct RBBIStateTableRow in the C version.
         //
-        internal readonly static int ACCEPTING = 0;
-        internal readonly static int LOOKAHEAD = 1;
-        internal readonly static int TAGIDX = 2;
-        internal readonly static int RESERVED = 3;
-        internal readonly static int NEXTSTATES = 4;
+        internal const int ACCEPTING = 0;
+        internal const int LOOKAHEAD = 1;
+        internal const int TAGIDX = 2;
+        internal const int RESERVED = 3;
+        internal const int NEXTSTATES = 4;
 
         // Index offsets to header fields of a state table
         //     struct RBBIStateTable {...   in the C version.
         //
-        internal static readonly int NUMSTATES = 0;
-        internal static readonly int ROWLEN = 2;
-        internal static readonly int FLAGS = 4;
-        //ivate static readonly int RESERVED_2 = 6;
-        private static readonly int ROW_DATA = 8;
+        internal const int NUMSTATES = 0;
+        internal const int ROWLEN = 2;
+        internal const int FLAGS = 4;
+        //private const int RESERVED_2 = 6;
+        private const int ROW_DATA = 8;
 
         //  Bit selectors for the "FLAGS" field of the state table header
         //     enum RBBIStateTableFlags in the C version.
         //
-        internal readonly static int RBBI_LOOKAHEAD_HARD_BREAK = 1;
-        internal readonly static int RBBI_BOF_REQUIRED = 2;
+        internal const int RBBI_LOOKAHEAD_HARD_BREAK = 1;
+        internal const int RBBI_BOF_REQUIRED = 2;
 
         /**
          * Data Header.  A struct-like class with the fields from the RBBI data file header.
@@ -317,7 +317,7 @@ namespace ICU4N.Text
             return This;
         }
 
-        ///CLOVER:OFF
+        ////CLOVER:OFF
         //  Getters for fields from the state table header
         //
         private int GetStateTableNumStates(short[] table)
@@ -331,7 +331,7 @@ namespace ICU4N.Text
                 return (table[NUMSTATES + 1] << 16) | (table[NUMSTATES] & 0xffff);
             }
         }
-        ///CLOVER:ON
+        ////CLOVER:ON
 
         internal int GetStateTableFlags(short[] table)
         {
@@ -339,7 +339,7 @@ namespace ICU4N.Text
             return table[isBigEndian ? FLAGS + 1 : FLAGS];
         }
 
-        //CLOVER:OFF
+        ////CLOVER:OFF
         /// <summary>Debug function to display the break iterator data.</summary>
         internal void Dump(TextWriter output)
         {
@@ -377,9 +377,9 @@ namespace ICU4N.Text
             }
             return dest.ToString();
         }
-        //CLOVER:ON
+        ////CLOVER:ON
 
-        //CLOVER:OFF
+        ////CLOVER:OFF
         /// <summary>Fixed width int-to-string conversion.</summary>
         static public string Int32ToHexString(int n, int width)
         {
@@ -391,9 +391,9 @@ namespace ICU4N.Text
             }
             return dest.ToString();
         }
-        //CLOVER:ON
+        ////CLOVER:ON
 
-        //CLOVER:OFF
+        ////CLOVER:OFF
         /// <summary>Dump a state table.  (A full set of RBBI rules has 4 state tables.)</summary>
         private void DumpTable(TextWriter output, short[] table)
         {
@@ -423,9 +423,9 @@ namespace ICU4N.Text
                 output.WriteLine();
             }
         }
-        //CLOVER:ON
+        ////CLOVER:ON
 
-        //CLOVER:OFF
+        ////CLOVER:OFF
         /// <summary>
         /// Dump (for debug) a single row of an RBBI state table
         /// </summary>
@@ -459,9 +459,9 @@ namespace ICU4N.Text
 
             output.WriteLine(dest);
         }
-        ///CLOVER:ON
+        ////CLOVER:ON
 
-        ///CLOVER:OFF
+        ////CLOVER:OFF
         private void DumpCharCategories(TextWriter output)
         {
             int n = fHeader.fCatCount;
@@ -525,7 +525,7 @@ namespace ICU4N.Text
             }
             output.WriteLine();
         }
-        //CLOVER:ON
+        ///CLOVER:ON
 
         /*static RBBIDataWrapper get(String name) throws IOException {
             String  fullName = "data/" + name;

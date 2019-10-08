@@ -188,7 +188,7 @@ namespace ICU4N.Text
         /// </summary>
         private StringBuffer postContext = new StringBuffer();
 
-        private static readonly int PARSE_CONTEXT_LEN = 16;
+        private const int PARSE_CONTEXT_LEN = 16;
 
         private void SetPreContext(string str, int pos)
         {

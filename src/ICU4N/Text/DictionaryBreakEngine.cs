@@ -15,7 +15,7 @@ namespace ICU4N.Text
         {
             // List size, limited by the maximum number of words in the dictionary
             // that form a nested sequence.
-            private readonly static int POSSIBLE_WORD_LIST_MAX = 20;
+            private const int POSSIBLE_WORD_LIST_MAX = 20;
             //list of word candidate lengths, in increasing length order
             private int[] lengths;
             private int[] count;    // Count of candidates
