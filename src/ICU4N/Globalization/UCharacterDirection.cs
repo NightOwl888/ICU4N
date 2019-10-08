@@ -265,7 +265,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// One more than the highest normal <see cref="UCharacterDirection"/> value.
         /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-        /// with parameter <see cref="UProperty.BiDi_Class"/>.
+        /// with parameter <see cref="UProperty.Bidi_Class"/>.
         /// </summary>
         /// <stable>ICU 52</stable>
         [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]

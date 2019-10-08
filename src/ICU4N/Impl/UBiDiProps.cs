@@ -159,7 +159,7 @@ namespace ICU4N.Impl
             max = indexes[IX_MAX_VALUES];
             switch (which)
             {
-                case (int)UProperty.BiDi_Class:
+                case (int)UProperty.Bidi_Class:
                     return (max & CLASS_MASK);
                 case (int)UProperty.Joining_Group:
                     return (max & MAX_JG_MASK) >> MAX_JG_SHIFT;

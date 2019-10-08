@@ -61,7 +61,7 @@ namespace ICU4N.Globalization
         /// Format controls which have specific functions in the Bidi Algorithm.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        Bidi_Control = 2, // ICU4N TODO: API Rename BiDi
+        Bidi_Control = 2,
 
         /// <summary>
         /// Binary property Bidi_Mirrored.
@@ -73,7 +73,7 @@ namespace ICU4N.Globalization
         /// See Bidi Algorithm, UTR 9.
         /// </summary>
         /// <stable>ICU 2.6</stable>
-        Bidi_Mirrored = 3, // ICU4N TODO: API Rename BiDi
+        Bidi_Mirrored = 3,
 
         /// <summary>
         /// Binary property Dash.
@@ -612,13 +612,13 @@ namespace ICU4N.Globalization
         /// Same as <see cref="UChar.GetDirection(int)"/>, returns <see cref="UCharacterDirection"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
-        BiDi_Class = 0x1000,
+        Bidi_Class = 0x1000,
 
         /// <summary>
         ///  First constant for enumerated/integer Unicode properties.
         /// </summary>
         /// <stable>ICU 2.4</stable>
-        Int_Start = BiDi_Class,
+        Int_Start = Bidi_Class,
 
         /// <summary>
         /// Enumerated property Block.
@@ -785,7 +785,7 @@ namespace ICU4N.Globalization
         /// Returns <see cref="UChar.BidiPairedBracketType"/> values.
         /// </summary>
         /// <stable>ICU 52</stable>
-        Bidi_Paired_Bracket_Type = 0x1015, // ICU4N TODO: API Rename BiDi
+        Bidi_Paired_Bracket_Type = 0x1015,
 
         /// <summary>
         /// One more than the last constant for enumerated/integer Unicode properties.
@@ -854,7 +854,7 @@ namespace ICU4N.Globalization
         /// Corresponds to <see cref="UChar.GetMirror(int)"/>.
         /// </summary>
         /// <stable>ICU 2.4</stable>
-        Bidi_Mirroring_Glyph = 0x4001, // ICU4N TODO: API Rename BiDi
+        Bidi_Mirroring_Glyph = 0x4001,
 
         /// <summary>
         /// String property Case_Folding.
@@ -940,7 +940,7 @@ namespace ICU4N.Globalization
         /// Corresponds to <see cref="UChar.GetBidiPairedBracket(int)"/>.
         /// </summary>
         /// <stable>ICU 52</stable>
-        Bidi_Paired_Bracket = 0x400D, // ICU4N TODO: API Rename BiDi
+        Bidi_Paired_Bracket = 0x400D,
 
         /// <summary>
         /// One more than the last constant for string Unicode properties.

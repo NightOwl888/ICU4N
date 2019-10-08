@@ -459,7 +459,7 @@ namespace ICU4N.Impl
                         return GetType(c);
                     }, getMaxValue: (which) =>
                     {
-                        return UCharacterCategoryExtensions.CharCategoryCount - 1;
+                        return UUnicodeCategoryExtensions.CharCategoryCount - 1;
                     }),
                 new BiDiIntProperty(this, getValue: (c) =>
                     {  // JOINING_GROUP
@@ -498,7 +498,7 @@ namespace ICU4N.Impl
                     }, getMaxValue: (which) =>
                     {
 #pragma warning disable 612, 618
-                        return HangulSyllableType.COUNT - 1;
+                        return HangulSyllableType.Count - 1;
 #pragma warning restore 612, 618
                     }),
                 // max=1=YES -- these are never "maybe", only "no" or "yes"

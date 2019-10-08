@@ -1234,19 +1234,19 @@ namespace ICU4N.Impl
         /// <summary>
         /// Not a character type
         /// </summary>
-        private const int NON_CHARACTER_ = UCharacterCategoryExtensions.CharCategoryCount;
+        private const int NON_CHARACTER_ = UUnicodeCategoryExtensions.CharCategoryCount;
         /// <summary>
         /// Lead surrogate type
         /// </summary>
-        private const int LEAD_SURROGATE_ = UCharacterCategoryExtensions.CharCategoryCount + 1;
+        private const int LEAD_SURROGATE_ = UUnicodeCategoryExtensions.CharCategoryCount + 1;
         /// <summary>
         /// Trail surrogate type
         /// </summary>
-        private const int TRAIL_SURROGATE_ = UCharacterCategoryExtensions.CharCategoryCount + 2;
+        private const int TRAIL_SURROGATE_ = UUnicodeCategoryExtensions.CharCategoryCount + 2;
         /// <summary>
         /// Extended category count
         /// </summary>
-        private const int EXTENDED_CATEGORY_ = UCharacterCategoryExtensions.CharCategoryCount + 3;
+        private const int EXTENDED_CATEGORY_ = UUnicodeCategoryExtensions.CharCategoryCount + 3;
 
         // private constructor ------------------------------------------------
 

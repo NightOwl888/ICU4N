@@ -1832,7 +1832,7 @@ namespace ICU4N.Dev.Test.Lang
 
                                 if (UChar.GetDirection(c).ToInt32() != shouldBeDir
                                     || UChar.GetIntPropertyValue(c,
-                                                              UProperty.BiDi_Class)
+                                                              UProperty.Bidi_Class)
                                        != shouldBeDir)
                                 {
                                     Errln("error: getDirection(unassigned/PUA "
@@ -2099,25 +2099,25 @@ namespace ICU4N.Dev.Test.Lang
 
                 /* enum/integer type properties */
                 /* test default Bidi classes for unassigned code points */
-                new int[] { 0x0590, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x05cf, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x05ed, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x07f2, (int)UProperty.BiDi_Class, UCharacterDirection.DirNonSpacingMark.ToInt32() }, /* Nko, new in Unicode 5.0 */
-                new int[] { 0x07fe, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() }, /* unassigned R */
-                new int[] { 0x089f, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0xfb37, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0xfb42, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x10806, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x10909, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x10fe4, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x0590, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x05cf, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x05ed, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x07f2, (int)UProperty.Bidi_Class, UCharacterDirection.DirNonSpacingMark.ToInt32() }, /* Nko, new in Unicode 5.0 */
+                new int[] { 0x07fe, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() }, /* unassigned R */
+                new int[] { 0x089f, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0xfb37, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0xfb42, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x10806, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x10909, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x10fe4, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
 
-                new int[] { 0x061d, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0x063f, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0x070e, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0x0775, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0xfbc2, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0xfd90, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0xfefe, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x061d, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x063f, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x070e, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x0775, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0xfbc2, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0xfd90, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0xfefe, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
 
                 new int[] { 0x02AF, (int)UProperty.Block, UChar.UnicodeBlock.IPA_Extensions.ID },
                 new int[] { 0x0C4E, (int)UProperty.Block, UChar.UnicodeBlock.Telugu.ID },
@@ -2299,8 +2299,8 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { -1, 0x520, 0 }, /* version break for Unicode 5.2 */
 
                 /* unassigned code points in new default Bidi R blocks */
-                new int[] { 0x1ede4, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x1efe4, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x1ede4, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x1efe4, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
 
                 /* test some script codes >127 */
                 new int[] { 0xa6e6,  (int)UProperty.Script, UScript.Bamum },
@@ -2315,14 +2315,14 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { -1, 0x610, 0 }, /* version break for Unicode 6.1 */
 
                 /* unassigned code points in new/changed default Bidi AL blocks */
-                new int[] { 0x08ba, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0x1eee4, (int)UProperty.BiDi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x08ba, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x1eee4, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
 
                 new int[] { -1, 0x630, 0 }, /* version break for Unicode 6.3 */
 
                 /* unassigned code points in the currency symbols block now default to ET */
-                new int[] { 0x20C0, (int)UProperty.BiDi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
-                new int[] { 0x20CF, (int)UProperty.BiDi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
+                new int[] { 0x20C0, (int)UProperty.Bidi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
+                new int[] { 0x20CF, (int)UProperty.Bidi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
 
                 /* new property in Unicode 6.3 */
                 new int[] { 0x0027, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.None },
@@ -2359,7 +2359,7 @@ namespace ICU4N.Dev.Test.Lang
 
 
             if (UChar.GetIntPropertyMinValue(UProperty.Dash) != 0
-                || UChar.GetIntPropertyMinValue(UProperty.BiDi_Class) != 0
+                || UChar.GetIntPropertyMinValue(UProperty.Bidi_Class) != 0
                 || UChar.GetIntPropertyMinValue(UProperty.Block) != 0  /* j2478 */
                 || UChar.GetIntPropertyMinValue(UProperty.Script) != 0 /* JB#2410 */
                 || UChar.GetIntPropertyMinValue((UProperty)0x2345) != 0)
@@ -2380,7 +2380,7 @@ namespace ICU4N.Dev.Test.Lang
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BINARY_LIMIT-1) wrong\n");
             }
 
-            if (UChar.GetIntPropertyMaxValue(UProperty.BiDi_Class) != UCharacterDirection.CharDirectionCount.ToInt32() - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Bidi_Class) != UCharacterDirection.CharDirectionCount.ToInt32() - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS) wrong\n");
             }
@@ -2400,11 +2400,11 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.NUMERIC_TYPE) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.General_Category) != UCharacterCategoryExtensions.CharCategoryCount - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.General_Category) != UUnicodeCategoryExtensions.CharCategoryCount - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.GENERAL_CATEGORY) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Hangul_Syllable_Type) != UChar.HangulSyllableType.COUNT - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Hangul_Syllable_Type) != UChar.HangulSyllableType.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.HANGUL_SYLLABLE_TYPE) wrong\n");
             }
@@ -2429,7 +2429,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(0x2345) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Decomposition_Type) != (UChar.DecompositionType.COUNT - 1))
+            if (UChar.GetIntPropertyMaxValue(UProperty.Decomposition_Type) != (UChar.DecompositionType.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.DECOMPOSITION_TYPE) wrong\n");
             }

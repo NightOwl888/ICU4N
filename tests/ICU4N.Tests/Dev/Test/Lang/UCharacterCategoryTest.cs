@@ -62,7 +62,7 @@ namespace ICU4N.Dev.Test.Lang
                            "Punctuation, Final quote"};
 
             for (int i = UUnicodeCategory.OtherNotAssigned.ToInt32();
-                     i < UCharacterCategoryExtensions.CharCategoryCount; i++)
+                     i < UUnicodeCategoryExtensions.CharCategoryCount; i++)
             {
                 if (!((UUnicodeCategory)i).AsString().Equals(name[i]))
                 {

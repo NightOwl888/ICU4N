@@ -239,7 +239,7 @@
     /// <summary>
     /// Extension methods for <see cref="UUnicodeCategory"/>.
     /// </summary>
-    public static class UCharacterCategoryExtensions
+    public static class UUnicodeCategoryExtensions
     {
         /// <summary>
         /// Gets the name of the argument category.

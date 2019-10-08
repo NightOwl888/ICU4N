@@ -1635,16 +1635,16 @@ namespace ICU4N.Globalization
             // Bits 20.. 0: sample character
 
             // Bits 23..21: usage
-            private static readonly int UNKNOWN = 1 << 21;
-            private static readonly int EXCLUSION = 2 << 21;
-            private static readonly int LIMITED_USE = 3 << 21;
-            // vate static readonly int ASPIRATIONAL = 4 << 21; -- not used any more since Unicode 10
-            private static readonly int RECOMMENDED = 5 << 21;
+            private const int UNKNOWN = 1 << 21;
+            private const int EXCLUSION = 2 << 21;
+            private const int LIMITED_USE = 3 << 21;
+            // private const int ASPIRATIONAL = 4 << 21; -- not used any more since Unicode 10
+            private const int RECOMMENDED = 5 << 21;
 
             // Bits 31..24: Single-bit flags
-            internal static readonly int RTL = 1 << 24;
-            internal static readonly int LB_LETTERS = 1 << 25;
-            internal static readonly int CASED = 1 << 26;
+            internal const int RTL = 1 << 24;
+            internal const int LB_LETTERS = 1 << 25;
+            internal const int CASED = 1 << 26;
 
             private static readonly int[] SCRIPT_PROPS = {
                 // Begin copy-paste output from

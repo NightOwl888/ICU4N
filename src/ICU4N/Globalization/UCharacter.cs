@@ -2000,7 +2000,7 @@ namespace ICU4N
             /// with parameter <see cref="UProperty.Decomposition_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int COUNT = 18;
+            public const int Count = 18;
         }
 
         /// <summary>
@@ -2574,7 +2574,7 @@ namespace ICU4N
             /// with parameter <see cref="UProperty.Hangul_Syllable_Type"/>.
             /// </summary>
             [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int COUNT = 6;
+            public const int Count = 6;
         }
 
         /// <summary>
@@ -6033,7 +6033,7 @@ namespace ICU4N
         /// Examples for min/max values (for Unicode 3.2):
         /// <list type="bullet">
         ///     <item><description>
-        ///         <see cref="UProperty.BiDi_Class"/>:    0/18
+        ///         <see cref="UProperty.Bidi_Class"/>:    0/18
         ///         (<see cref="UCharacterDirection.LeftToRight"/>/<see cref="UCharacterDirection.BoundaryNeutral"/>)
         ///     </description></item>
         ///     <item><description>
