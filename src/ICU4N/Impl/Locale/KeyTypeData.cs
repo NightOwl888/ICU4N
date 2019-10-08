@@ -26,13 +26,15 @@ namespace ICU4N.Impl.Locale
         }
     }
 
+    public enum KeyTypeDataValueType
+    {
+        Single,
+        Multiple,
+        Incremental,
+        Any
+    }
     public class KeyTypeData
     {
-        public enum ValueType // ICU4N TODO: API de-nest and rename KeyTypeDataValueType
-        {
-            Single, Multiple, Incremental, Any // ICU4N TODO: API rename elements for .NET conventions
-        }
-
         internal abstract class SpecialTypeHandler
         {
             internal abstract bool IsWellFormed(string value); // doesn't test validity, just whether it is well formed.
@@ -92,7 +94,7 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-        internal enum SpecialType // ICU4N TODO: API - rename values for .NET conventions
+        internal enum SpecialType // ICU4N: These are exact values that are being parsed from resources, so we shouldn't rename them
         {
             CODEPOINTS,
             REORDER_CODE,
@@ -457,7 +459,7 @@ namespace ICU4N.Impl.Locale
         }
 
         internal static ISet<string> DEPRECATED_KEYS = new HashSet<string>(); // default for no resources
-        internal static IDictionary<string, ValueType> VALUE_TYPES = new Dictionary<string, ValueType>(); // default for no resources
+        internal static IDictionary<string, KeyTypeDataValueType> VALUE_TYPES = new Dictionary<string, KeyTypeDataValueType>(); // default for no resources
         internal static IDictionary<string, ISet<string>> DEPRECATED_KEY_TYPES = new Dictionary<string, ISet<string>>(); // default for no resources
 
         private enum KeyInfoType { deprecated, valueType }
@@ -481,7 +483,7 @@ namespace ICU4N.Impl.Locale
         private static void GetKeyInfo(UResourceBundle keyInfoRes)
         {
             ISet<string> _deprecatedKeys = new HashSet<string>();
-            IDictionary<string, ValueType> _valueTypes = new Dictionary<string, ValueType>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
+            IDictionary<string, KeyTypeDataValueType> _valueTypes = new Dictionary<string, KeyTypeDataValueType>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
             foreach (var keyInfoEntry in keyInfoRes)
             {
                 string key = keyInfoEntry.Key;
@@ -496,7 +498,7 @@ namespace ICU4N.Impl.Locale
                             _deprecatedKeys.Add(key2);
                             break;
                         case KeyInfoType.valueType:
-                            _valueTypes[key2] = (ValueType)Enum.Parse(typeof(ValueType), value2, true);
+                            _valueTypes[key2] = (KeyTypeDataValueType)Enum.Parse(typeof(KeyTypeDataValueType), value2, true);
                             break;
                     }
                 }
@@ -774,7 +776,7 @@ namespace ICU4N.Impl.Locale
             return deprecatedTypes.Contains(type);
         }
 
-        public static ValueType GetValueType(string key)
+        public static KeyTypeDataValueType GetValueType(string key)
         {
             return VALUE_TYPES.Get(key); // Defaults to ValueType.Single
         }
