@@ -60,9 +60,9 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience override for callers using locales.  This uses
         /// <see cref="CreateKey(string, int)"/> to create a key, calls 
-        /// <see cref="ICUService.GetKey(Key)"/>, and then
+        /// <see cref="ICUService.GetKey(ICUServiceKey)"/>, and then
         /// if <paramref name="actualReturn"/> is not null, returns the actualResult from
-        /// <see cref="ICUService.GetKey(Key)"/> (stripping any prefix) into a <see cref="ULocale"/>.
+        /// <see cref="ICUService.GetKey(ICUServiceKey)"/> (stripping any prefix) into a <see cref="ULocale"/>.
         /// </summary>
         /// <param name="locale"></param>
         /// <param name="kind"></param>
@@ -70,7 +70,7 @@ namespace ICU4N.Impl
         /// <returns></returns>
         public virtual object Get(ULocale locale, int kind, ULocale[] actualReturn)
         {
-            Key key = CreateKey(locale, kind);
+            ICUServiceKey key = CreateKey(locale, kind);
             if (actualReturn == null)
             {
                 return GetKey(key);
@@ -95,7 +95,7 @@ namespace ICU4N.Impl
         /// <see cref="RegisterObject(object, ULocale, int, bool)"/>
         /// passing <see cref="LocaleKey.KindAny"/> for the kind, and true for the visibility.
         /// </summary>
-        public virtual IFactory RegisterObject(object obj, ULocale locale)
+        public virtual IServiceFactory RegisterObject(object obj, ULocale locale)
         {
             return RegisterObject(obj, locale, LocaleKey.KindAny, true);
         }
@@ -105,7 +105,7 @@ namespace ICU4N.Impl
         /// <see cref="RegisterObject(object, ULocale, int, bool)"/>
         /// passing <see cref="LocaleKey.KindAny"/> for the kind.
         /// </summary>
-        public virtual IFactory RegisterObject(Object obj, ULocale locale, bool visible)
+        public virtual IServiceFactory RegisterObject(object obj, ULocale locale, bool visible)
         {
             return RegisterObject(obj, locale, LocaleKey.KindAny, visible);
         }
@@ -115,7 +115,7 @@ namespace ICU4N.Impl
         /// <see cref="RegisterObject(object, ULocale, int, bool)"/>
         /// passing true for the visibility.
         /// </summary>
-        public virtual IFactory RegisterObject(Object obj, ULocale locale, int kind)
+        public virtual IServiceFactory RegisterObject(object obj, ULocale locale, int kind)
         {
             return RegisterObject(obj, locale, kind, true);
         }
@@ -124,9 +124,9 @@ namespace ICU4N.Impl
         /// Convenience function for callers using locales.  This instantiates
         /// a <see cref="SimpleLocaleKeyFactory"/>, and registers the factory.
         /// </summary>
-        public virtual IFactory RegisterObject(Object obj, ULocale locale, int kind, bool visible)
+        public virtual IServiceFactory RegisterObject(object obj, ULocale locale, int kind, bool visible)
         {
-            IFactory factory = new SimpleLocaleKeyFactory(obj, locale, kind, visible);
+            IServiceFactory factory = new SimpleLocaleKeyFactory(obj, locale, kind, visible);
             return RegisterFactory(factory);
         }
 
@@ -194,24 +194,24 @@ namespace ICU4N.Impl
             return fallbackLocaleName;
         }
 
-        public override Key CreateKey(string id)
+        public override ICUServiceKey CreateKey(string id)
         {
             return LocaleKey.CreateWithCanonicalFallback(id, ValidateFallbackLocale());
         }
 
-        public virtual Key CreateKey(string id, int kind)
+        public virtual ICUServiceKey CreateKey(string id, int kind)
         {
             return LocaleKey.CreateWithCanonicalFallback(id, ValidateFallbackLocale(), kind);
         }
 
-        public virtual Key CreateKey(ULocale l, int kind)
+        public virtual ICUServiceKey CreateKey(ULocale l, int kind)
         {
             return LocaleKey.CreateWithCanonical(l, ValidateFallbackLocale(), kind);
         }
     }
 
     /// <summary>
-    /// A subclass of <see cref="ICUService.Key"/> that implements a locale fallback mechanism.
+    /// A subclass of <see cref="ICUServiceKey"/> that implements a locale fallback mechanism.
     /// </summary>
     /// <remarks>
     /// The first locale to search for is the locale provided by the
@@ -224,7 +224,7 @@ namespace ICU4N.Impl
     /// section before the first understore is in lower case, and the rest
     /// is in upper case, with no trailing underscores.
     /// </remarks>
-    public class LocaleKey : ICUService.Key
+    public class LocaleKey : ICUServiceKey
     {
         private int kind;
         private int varstart;
@@ -232,7 +232,7 @@ namespace ICU4N.Impl
         private string fallbackID;
         private string currentID;
 
-        public static readonly int KindAny = -1;
+        public const int KindAny = -1;
 
         /// <summary>
         /// Create a <see cref="LocaleKey"/> with canonical primary and fallback IDs.
@@ -441,7 +441,7 @@ namespace ICU4N.Impl
     /// A subclass of Factory that uses LocaleKeys.  If 'visible' the
     /// factory reports its IDs.
     /// </summary>
-    public abstract class LocaleKeyFactory : ICUService.IFactory
+    public abstract class LocaleKeyFactory : IServiceFactory
     {
         protected readonly string m_name;
         protected readonly bool m_visible;
@@ -468,11 +468,11 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Implement superclass abstract method.  This checks the <see cref="ICUService.Key.CurrentID"/>
+        /// Implement superclass abstract method.  This checks the <see cref="ICUServiceKey.CurrentID"/>
         /// against the supported IDs, and passes the canonicalLocale and
         /// <see cref="LocaleKey.Kind"/> to <see cref="HandleCreate(ULocale, int, ICUService)"/> (which subclasses must implement).
         /// </summary>
-        public virtual object Create(ICUService.Key key, ICUService service)
+        public virtual object Create(ICUServiceKey key, ICUService service)
         {
             if (HandlesKey(key))
             {
@@ -490,7 +490,7 @@ namespace ICU4N.Impl
             return null;
         }
 
-        protected virtual bool HandlesKey(ICUService.Key key)
+        protected virtual bool HandlesKey(ICUServiceKey key)
         {
             if (key != null)
             {
@@ -502,9 +502,9 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Implementation of <see cref="ICUService.IFactory"/> method.
+        /// Implementation of <see cref="IServiceFactory"/> method.
         /// </summary>
-        public virtual void UpdateVisibleIDs(IDictionary<string, ICUService.IFactory> result)
+        public virtual void UpdateVisibleIDs(IDictionary<string, IServiceFactory> result)
         {
             ICollection<string> cache = GetSupportedIDs();
             foreach (string id in cache)
@@ -539,8 +539,8 @@ namespace ICU4N.Impl
 
         //CLOVER:OFF
         /// <summary>
-        /// Utility method used by <see cref="Create(Key, ICUService)"/>.  Subclasses can
-        /// implement this instead of <see cref="Create(Key, ICUService)"/>.
+        /// Utility method used by <see cref="Create(ICUServiceKey, ICUService)"/>.  Subclasses can
+        /// implement this instead of <see cref="Create(ICUServiceKey, ICUService)"/>.
         /// </summary>
         protected virtual object HandleCreate(ULocale loc, int kind, ICUService service)
         {
@@ -610,7 +610,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns the service object if kind/locale match.  Service is not used.
         /// </summary>
-        public override object Create(ICUService.Key key, ICUService service)
+        public override object Create(ICUServiceKey key, ICUService service)
         {
             if (!(key is LocaleKey))
             {
@@ -635,7 +635,7 @@ namespace ICU4N.Impl
             return this.id.Equals(idToCheck);
         }
 
-        public override void UpdateVisibleIDs(IDictionary<string, ICUService.IFactory> result)
+        public override void UpdateVisibleIDs(IDictionary<string, IServiceFactory> result)
         {
             if (m_visible)
             {
@@ -698,7 +698,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Override of superclass method.
         /// </summary>
-        public override void UpdateVisibleIDs(IDictionary<string, ICUService.IFactory> result)
+        public override void UpdateVisibleIDs(IDictionary<string, IServiceFactory> result)
         {
             ISet<string> visibleIDs = ICUResourceBundle.GetAvailableLocaleNameSet(bundleName, Assembly); // only visible ids
             foreach (string id in visibleIDs)

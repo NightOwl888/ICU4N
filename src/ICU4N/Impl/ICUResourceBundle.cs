@@ -35,7 +35,7 @@ namespace ICU4N.Impl
         /// Fields for a whole bundle, rather than any specific resource in the bundle.
         /// Corresponds roughly to ICU4C/source/common/uresimp.h struct UResourceDataEntry.
         /// </summary>
-        protected internal sealed class WholeBundle // ICU4N TODO: API - de-nest ?
+        protected internal sealed class WholeBundle
         {
             internal WholeBundle(string baseName, string localeID, Assembly loader,
                 ICUResourceBundleReader reader)

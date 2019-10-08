@@ -39,7 +39,7 @@ namespace ICU4N.Text
                 this.@delegate = @delegate;
             }
 
-            public override object Create(ICUService.Key key, ICUService srvc)
+            public override object Create(ICUServiceKey key, ICUService srvc)
             {
                 if (!HandlesKey(key) || !(key is LocaleKey))
                 {
@@ -68,7 +68,7 @@ namespace ICU4N.Text
 
         internal override bool Unregister(object registryKey)
         {
-            return service.UnregisterFactory((ICUService.IFactory)registryKey);
+            return service.UnregisterFactory((IServiceFactory)registryKey);
         }
 
         internal override NumberFormat CreateInstance(ULocale desiredLocale, NumberFormatStyle choice)

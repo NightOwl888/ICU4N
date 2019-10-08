@@ -4,7 +4,6 @@ using ICU4N.Util;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
-using IFactory = ICU4N.Impl.ICUService.IFactory;
 
 namespace ICU4N.Text
 {
@@ -81,7 +80,7 @@ namespace ICU4N.Text
 
         internal override bool Unregister(object registryKey)
         {
-            return service.UnregisterFactory((IFactory)registryKey);
+            return service.UnregisterFactory((IServiceFactory)registryKey);
         }
 
         internal override CultureInfo[] GetAvailableLocales()
@@ -159,7 +158,7 @@ namespace ICU4N.Text
 
             ////CLOVER:OFF
             // The following method can not be reached by testing
-            protected override object HandleDefault(Key key, string[] actualIDReturn)
+            protected override object HandleDefault(ICUServiceKey key, string[] actualIDReturn)
             {
                 if (actualIDReturn != null)
                 {

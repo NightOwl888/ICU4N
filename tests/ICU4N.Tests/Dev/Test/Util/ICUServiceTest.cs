@@ -8,10 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
-using IFactory = ICU4N.Impl.ICUService.IFactory; // ICU4N TODO: API - de-nest ?
-using Key = ICU4N.Impl.ICUService.Key; // ICU4N TODO: API - de-nest ?
-using IServiceListener = ICU4N.Impl.ICUService.IServiceListener; // ICU4N TODO: API - de-nest ?
-using SimpleFactory = ICU4N.Impl.ICUService.SimpleFactory; // ICU4N TODO: API - de-nest ?
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Util
@@ -88,27 +84,27 @@ namespace ICU4N.Dev.Test.Util
             {
             }
 
-            public override Key CreateKey(string id)
+            public override ICUServiceKey CreateKey(string id)
             {
                 return LocaleKey.CreateWithCanonicalFallback(id, null); // no fallback locale
             }
         }
 
-        private class AnonymousFactory : IFactory
+        private class AnonymousFactory : IServiceFactory
         {
-            private readonly Func<ICUService.Key, ICUService, object> create;
+            private readonly Func<ICUServiceKey, ICUService, object> create;
             private readonly Func<string, ULocale, string> getDisplayName;
-            private readonly Action<IDictionary<string, IFactory>> updateVisibleIds;
+            private readonly Action<IDictionary<string, IServiceFactory>> updateVisibleIds;
 
-            public AnonymousFactory(Func<ICUService.Key, ICUService, object> create,
-                Func<string, ULocale, string> getDisplayName, Action<IDictionary<string, IFactory>> updateVisibleIds)
+            public AnonymousFactory(Func<ICUServiceKey, ICUService, object> create,
+                Func<string, ULocale, string> getDisplayName, Action<IDictionary<string, IServiceFactory>> updateVisibleIds)
             {
                 this.create = create;
                 this.getDisplayName = getDisplayName;
                 this.updateVisibleIds = updateVisibleIds;
             }
 
-            public object Create(ICUService.Key key, ICUService service)
+            public object Create(ICUServiceKey key, ICUService service)
             {
                 return create != null ? create(key, service) : new ULocale(key.CurrentID);
             }
@@ -118,7 +114,7 @@ namespace ICU4N.Dev.Test.Util
                 return getDisplayName != null ? getDisplayName(id, locale) : string.Empty;
             }
 
-            public void UpdateVisibleIDs(IDictionary<string, IFactory> result)
+            public void UpdateVisibleIDs(IDictionary<string, IServiceFactory> result)
             {
                 updateVisibleIds?.Invoke(result);
             }
@@ -171,7 +167,7 @@ namespace ICU4N.Dev.Test.Util
             confirmIdentical("3) en_US_BAR -> en_US", result, singleton0);
 
             // get a list of the factories, should be two
-            IList<ICUService.IFactory> factories = service.Factories();
+            IList<IServiceFactory> factories = service.Factories();
             confirmIdentical("4) factory size", factories.Count, 2);
 
             // register a new object with yet another locale
@@ -198,7 +194,7 @@ namespace ICU4N.Dev.Test.Util
 
             // remove new factory
             // should have fewer factories again
-            service.UnregisterFactory((IFactory)factories[0]);
+            service.UnregisterFactory((IServiceFactory)factories[0]);
             factories = service.Factories();
             confirmIdentical("11) factory size", factories.Count, 3);
 
@@ -257,7 +253,7 @@ namespace ICU4N.Dev.Test.Util
 
             {
                 // an anonymous factory than handles all ids
-                IFactory factory = new AnonymousFactory(null, null, null);
+                IServiceFactory factory = new AnonymousFactory(null, null, null);
                 service.RegisterFactory(factory);
 
                 // anonymous factory will still handle the id
@@ -922,7 +918,7 @@ namespace ICU4N.Dev.Test.Util
             }
         }
 
-        internal class WrapFactory : IFactory
+        internal class WrapFactory : IServiceFactory
         {
             private readonly string greetingID;
 
@@ -931,7 +927,7 @@ namespace ICU4N.Dev.Test.Util
                 this.greetingID = greetingID;
             }
 
-            public object Create(Key key, ICUService serviceArg)
+            public object Create(ICUServiceKey key, ICUService serviceArg)
             {
                 if (key.CurrentID.Equals(greetingID))
                 {
@@ -941,7 +937,7 @@ namespace ICU4N.Dev.Test.Util
                 return null;
             }
 
-            public void UpdateVisibleIDs(IDictionary<string, ICUService.IFactory> result)
+            public void UpdateVisibleIDs(IDictionary<string, IServiceFactory> result)
             {
                 result["greeting"] = this;
             }
@@ -974,7 +970,7 @@ namespace ICU4N.Dev.Test.Util
         public void TestCoverage()
         {
             // Key
-            Key key = new Key("foobar");
+            ICUServiceKey key = new ICUServiceKey("foobar");
             Logln("ID: " + key.ID);
             Logln("canonicalID: " + key.CanonicalID);
             Logln("currentID: " + key.CurrentID);
@@ -982,10 +978,10 @@ namespace ICU4N.Dev.Test.Util
 
             // SimpleFactory
             object obj = new object();
-            SimpleFactory sf = new SimpleFactory(obj, "object");
+            ICUSimpleFactory sf = new ICUSimpleFactory(obj, "object");
             try
             {
-                sf = new SimpleFactory(null, null);
+                sf = new ICUSimpleFactory(null, null);
                 Errln("didn't throw exception");
             }
             catch (ArgumentException e)
@@ -1104,13 +1100,13 @@ namespace ICU4N.Dev.Test.Util
             Logln("obj: " + lkf.Create(lkey, null));
             Logln(lkf.GetDisplayName("foo", null));
             Logln(lkf.GetDisplayName("bar", null));
-            lkf.UpdateVisibleIDs(new Dictionary<string, IFactory>());
+            lkf.UpdateVisibleIDs(new Dictionary<string, IServiceFactory>());
 
             LocaleKeyFactory invisibleLKF = new LKFSubclass(false);
             Logln("obj: " + invisibleLKF.Create(lkey, null));
             Logln(invisibleLKF.GetDisplayName("foo", null));
             Logln(invisibleLKF.GetDisplayName("bar", null));
-            invisibleLKF.UpdateVisibleIDs(new Dictionary<string, IFactory>());
+            invisibleLKF.UpdateVisibleIDs(new Dictionary<string, IServiceFactory>());
 
             // ResourceBundleFactory
             ICUResourceBundleFactory rbf = new ICUResourceBundleFactory();

@@ -11,8 +11,6 @@ using System.Linq;
 using System.Resources;
 using System.Text;
 using System.Threading;
-using IFactory = ICU4N.Impl.ICUService.IFactory; // ICU4N TODO: API - de-nest ?
-using SimpleFactory = ICU4N.Impl.ICUService.SimpleFactory; // ICU4N TODO: API - de-nest ?
 
 namespace ICU4N.Dev.Test.Util
 {
@@ -30,7 +28,7 @@ namespace ICU4N.Dev.Test.Util
             "", "", "", "GOLD", "SILVER", "BRONZE"
         };
 
-        private class TestFactory : SimpleFactory
+        private class TestFactory : ICUSimpleFactory
         {
             internal TestFactory(string id)
             : base(new ULocale(id), id, true)
@@ -231,7 +229,7 @@ namespace ICU4N.Dev.Test.Util
 
             protected override void Iterate()
             {
-                IFactory f = new TestFactory(GetCLV());
+                IServiceFactory f = new TestFactory(GetCLV());
                 service.RegisterFactory(f);
                 TestFmwk.Logln(f.ToString());
             }
@@ -240,7 +238,7 @@ namespace ICU4N.Dev.Test.Util
         internal class UnregisterFactoryThread : TestThread
         {
             private Random r;
-            IList<IFactory> factories;
+            IList<IServiceFactory> factories;
 
             internal UnregisterFactoryThread(string name, ICUService service, long delay)
 
@@ -261,7 +259,7 @@ namespace ICU4N.Dev.Test.Util
                 {
                     int n = r.Next(s);
                     //IFactory f = (IFactory)factories.RemoveAt(n);
-                    IFactory f = factories[n];
+                    IServiceFactory f = factories[n];
                     factories.Remove(f);
                     bool success = service.UnregisterFactory(f);
                     TestFmwk.Logln("factory: " + f + (success ? " succeeded." : " *** failed."));
@@ -271,10 +269,10 @@ namespace ICU4N.Dev.Test.Util
 
         internal class UnregisterFactoryListThread : TestThread
         {
-            internal IFactory[] factories;
+            internal IServiceFactory[] factories;
             internal int n;
 
-            internal UnregisterFactoryListThread(string name, ICUService service, long delay, IFactory[]
+            internal UnregisterFactoryListThread(string name, ICUService service, long delay, IServiceFactory[]
              factories)
                  : base("UNREG " + name, service, delay)
             {
@@ -286,7 +284,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 if (n < factories.Length)
                 {
-                    IFactory f = factories[n++];
+                    IServiceFactory f = factories[n++];
                     bool success = service.UnregisterFactory(f);
                     TestFmwk.Logln("factory: " + f + (success ? " succeeded." : " *** failed."));
                 }
@@ -398,14 +396,14 @@ namespace ICU4N.Dev.Test.Util
         }
 
         // return a collection of unique factories, might be fewer than requested
-        internal ICollection<IFactory> GetFactoryCollection(int requested)
+        internal ICollection<IServiceFactory> GetFactoryCollection(int requested)
         {
             var locales = new HashSet<string>();
             for (int i = 0; i < requested; ++i)
             {
                 locales.Add(GetCLV());
             }
-            var factories = new List<IFactory>(locales.Count);
+            var factories = new List<IServiceFactory>(locales.Count);
             var iter = locales.GetEnumerator();
             while (iter.MoveNext())
             {
@@ -414,13 +412,13 @@ namespace ICU4N.Dev.Test.Util
             return factories;
         }
 
-        internal void RegisterFactories(ICUService service, ICollection<IFactory> c)
+        internal void RegisterFactories(ICUService service, ICollection<IServiceFactory> c)
         {
             using (var iter = c.GetEnumerator())
             {
                 while (iter.MoveNext())
                 {
-                    service.RegisterFactory((IFactory)iter.Current);
+                    service.RegisterFactory((IServiceFactory)iter.Current);
                 }
             }
         }
@@ -507,7 +505,7 @@ namespace ICU4N.Dev.Test.Util
             var fc = GetFactoryCollection(50);
             RegisterFactories(service, fc);
 
-            IFactory[] factories = (IFactory[])fc.ToArray();
+            IServiceFactory[] factories = (IServiceFactory[])fc.ToArray();
             var comp = new AnonymousComparer<object>(compare: (lhs, rhs) =>
             {
                 return lhs.ToString().CompareToOrdinal(rhs.ToString());

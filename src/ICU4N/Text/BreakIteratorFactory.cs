@@ -6,7 +6,6 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Resources;
-using IFactory = ICU4N.Impl.ICUService.IFactory; // ICU4N TODO: de-nest ?
 
 namespace ICU4N.Text
 {
@@ -26,7 +25,7 @@ namespace ICU4N.Text
             {
                 return false;
             }
-            return service.UnregisterFactory((IFactory)key);
+            return service.UnregisterFactory((IServiceFactory)key);
         }
 
         public override CultureInfo[] GetAvailableCultures()
