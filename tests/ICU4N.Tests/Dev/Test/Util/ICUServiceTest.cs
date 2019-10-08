@@ -8,11 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
-using ICUResourceBundleFactory = ICU4N.Impl.ICULocaleService.ICUResourceBundleFactory; // ICU4N TODO: API - de-nest ?
 using IFactory = ICU4N.Impl.ICUService.IFactory; // ICU4N TODO: API - de-nest ?
 using Key = ICU4N.Impl.ICUService.Key; // ICU4N TODO: API - de-nest ?
-using LocaleKey = ICU4N.Impl.ICULocaleService.LocaleKey; // ICU4N TODO: API - de-nest ?
-using LocaleKeyFactory = ICU4N.Impl.ICULocaleService.LocaleKeyFactory; // ICU4N TODO: API - de-nest ?
 using IServiceListener = ICU4N.Impl.ICUService.IServiceListener; // ICU4N TODO: API - de-nest ?
 using SimpleFactory = ICU4N.Impl.ICUService.SimpleFactory; // ICU4N TODO: API - de-nest ?
 using StringBuffer = System.Text.StringBuilder;

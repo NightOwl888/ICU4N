@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Resources;
 using IFactory = ICU4N.Impl.ICUService.IFactory;
-using LocaleKeyFactory = ICU4N.Impl.ICULocaleService.LocaleKeyFactory;
 
 namespace ICU4N.Text
 {

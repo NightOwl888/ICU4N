@@ -6,7 +6,6 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Resources;
-using ICUResourceBundleFactory = ICU4N.Impl.ICULocaleService.ICUResourceBundleFactory; // ICU4N TODO: de-nest?
 using IFactory = ICU4N.Impl.ICUService.IFactory; // ICU4N TODO: de-nest ?
 
 namespace ICU4N.Text
