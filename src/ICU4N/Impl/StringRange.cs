@@ -35,7 +35,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static readonly IComparer<int[]> COMPARE_INT_ARRAYS = new Int32ArrayComparer(); // ICU4N TODO: API - rename to follow .NET Conventions
+        public static readonly IComparer<int[]> ComparInt32Arrays = new Int32ArrayComparer();
 
         /// <summary>
         /// Compact the set of strings.

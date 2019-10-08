@@ -31,7 +31,7 @@ namespace ICU4N.Impl
         /// Number of data values in a stage 2 (data array) block. 2, 4, 8, .., 
         /// 0x200
         /// </summary>
-        public static readonly int DATA_BLOCK_LENGTH = 1 << Trie.INDEX_STAGE_1_SHIFT_;
+        public const int DataBlockLength = 1 << Trie.IndexStage1Shift;
 
         // public class declaration ----------------------------------------
 
@@ -42,7 +42,7 @@ namespace ICU4N.Impl
         /// <see cref="Trie"/>, to surrogate offset information encapsulated within 
         /// the data.
         /// </summary>
-        public interface IDataManipulate
+        public interface IDataManipulate // ICU4N TODO: API - de-nest ?
         {
             /// <summary>
             /// Build-time trie callback function, used with serialize().
@@ -83,7 +83,7 @@ namespace ICU4N.Impl
                 return true;
             }
 
-            return m_index_[ch >> SHIFT_] == 0;
+            return m_index_[ch >> Shift] == 0;
         }
 
         // package private method -----------------------------------------------
@@ -110,17 +110,17 @@ namespace ICU4N.Impl
         /// <summary>
         /// Shift size for shifting right the input index. 1..9 
         /// </summary>
-        protected static readonly int SHIFT_ = Trie.INDEX_STAGE_1_SHIFT_;
+        protected const int Shift = Trie.IndexStage1Shift;
         /// <summary>
         /// Length of the index (stage 1) array before folding.
         /// Maximum number of Unicode code points (0x110000) shifted right by 
         /// SHIFT.
         /// </summary>
-        protected static readonly int MAX_INDEX_LENGTH_ = (0x110000 >> SHIFT_);
+        protected const int MaxIndexLength = (0x110000 >> Shift);
         /// <summary>
         /// Length of the BMP portion of the index (stage 1) array.
         /// </summary>
-        protected static readonly int BMP_INDEX_LENGTH_ = 0x10000 >> SHIFT_;
+        protected const int BMPIndexLength = 0x10000 >> Shift;
         /// <summary>
         /// Number of index (stage 1) entries per lead surrogate.
         /// Same as number of indexe entries for 1024 trail surrogates,
@@ -128,12 +128,12 @@ namespace ICU4N.Impl
         /// 10 - SHIFT == Number of bits of a trail surrogate that are used in 
         /// index table lookups.
         /// </summary>
-        protected static readonly int SURROGATE_BLOCK_COUNT_ = 1 << (10 - SHIFT_);
+        protected const int SurrogateBlockCount = 1 << (10 - Shift);
         /// <summary>
         /// Mask for getting the lower bits from the input index.
-        /// DATA_BLOCK_LENGTH - 1.
+        /// <see cref="DataBlockLength"/> - 1.
         /// </summary>
-        protected static readonly int MASK_ = Trie.INDEX_STAGE_3_MASK_;
+        protected const int Mask = Trie.IndexStage3Mask;
         /// <summary>
         /// Shift size for shifting left the index array values.
         /// Increases possible data size with 16-bit index values at the cost
@@ -141,45 +141,45 @@ namespace ICU4N.Impl
         /// This requires blocks of stage 2 data to be aligned by UTRIE_DATA_GRANULARITY.
         /// 0..UTRIE_SHIFT
         /// </summary>
-        protected static readonly int INDEX_SHIFT_ = Trie.INDEX_STAGE_2_SHIFT_;
+        protected const int IndexShift = Trie.IndexStage2Shift;
         /// <summary>
         /// Maximum length of the runtime data (stage 2) array.
-        /// Limited by 16-bit index values that are left-shifted by INDEX_SHIFT_.
+        /// Limited by 16-bit index values that are left-shifted by <see cref="IndexShift"/>.
         /// </summary>
-        protected static readonly int MAX_DATA_LENGTH_ = (0x10000 << INDEX_SHIFT_);
+        protected const int MaxDataLength = (0x10000 << IndexShift);
         /// <summary>
         /// Shifting to position the index value in options
         /// </summary>
-        protected static readonly int OPTIONS_INDEX_SHIFT_ = 4;
+        protected const int OptionsIndexShift = 4;
         /// <summary>
         /// If set, then the data (stage 2) array is 32 bits wide.
         /// </summary>
-        protected static readonly int OPTIONS_DATA_IS_32_BIT_ = 0x100;
+        protected const int OptionsDataIs32Bit = 0x100;
         /// <summary>
         /// If set, then Latin-1 data (for U+0000..U+00ff) is stored in the data 
-        /// (stage 2) array as a simple, linear array at data + DATA_BLOCK_LENGTH.
+        /// (stage 2) array as a simple, linear array at data + <see cref="DataBlockLength"/>.
         /// </summary>
-        protected static readonly int OPTIONS_LATIN1_IS_LINEAR_ = 0x200;
+        protected const int OptionsLatin1IsLinear = 0x200;
         /// <summary>
         /// The alignment size of a stage 2 data block. Also the granularity for 
         /// compaction. 
         /// </summary>
-        protected static readonly int DATA_GRANULARITY_ = 1 << INDEX_SHIFT_;
+        protected const int DataGranularity = 1 << IndexShift;
 
         // protected constructor ----------------------------------------------
 
         protected TrieBuilder()
         {
-            m_index_ = new int[MAX_INDEX_LENGTH_];
-            m_map_ = new int[MAX_BUILD_TIME_DATA_LENGTH_ >> SHIFT_];
+            m_index_ = new int[MaxIndexLength];
+            m_map_ = new int[MAX_BUILD_TIME_DATA_LENGTH_ >> Shift];
             m_isLatin1Linear_ = false;
             m_isCompacted_ = false;
-            m_indexLength_ = MAX_INDEX_LENGTH_;
+            m_indexLength_ = MaxIndexLength;
         }
 
         protected TrieBuilder(TrieBuilder table)
         {
-            m_index_ = new int[MAX_INDEX_LENGTH_];
+            m_index_ = new int[MaxIndexLength];
             m_indexLength_ = table.m_indexLength_;
             System.Array.Copy(table.m_index_, 0, m_index_, 0, m_indexLength_);
             m_dataCapacity_ = table.m_dataCapacity_;
@@ -224,7 +224,7 @@ namespace ICU4N.Impl
             // mark each block that _is_ used with 0
             for (int i = 0; i < m_indexLength_; ++i)
             {
-                m_map_[Math.Abs(m_index_[i]) >> SHIFT_] = 0;
+                m_map_[Math.Abs(m_index_[i]) >> Shift] = 0;
             }
 
             // never move the all-initial-value block 0
@@ -241,10 +241,10 @@ namespace ICU4N.Impl
         protected static int FindSameIndexBlock(int[] index, int indexLength,
                                                       int otherBlock)
         {
-            for (int block = BMP_INDEX_LENGTH_; block < indexLength;
-                 block += SURROGATE_BLOCK_COUNT_)
+            for (int block = BMPIndexLength; block < indexLength;
+                 block += SurrogateBlockCount)
             {
-                if (EqualInt32(index, block, otherBlock, SURROGATE_BLOCK_COUNT_))
+                if (EqualInt32(index, block, otherBlock, SurrogateBlockCount))
                 {
                     return block;
                 }
@@ -256,11 +256,11 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Maximum length of the build-time data (stage 2) array.
-        /// The maximum length is 0x110000 + DATA_BLOCK_LENGTH + 0x400.
+        /// The maximum length is 0x110000 + <see cref="DataBlockLength"/> + 0x400.
         /// (Number of Unicode code points + one all-initial-value block +
         /// possible duplicate entries for 1024 lead surrogates.)
         /// </summary>
-        private static readonly int MAX_BUILD_TIME_DATA_LENGTH_ =
-            0x110000 + DATA_BLOCK_LENGTH + 0x400;
+        private const int MAX_BUILD_TIME_DATA_LENGTH_ =
+            0x110000 + DataBlockLength + 0x400;
     }
 }

@@ -83,11 +83,11 @@ namespace ICU4N.Impl
 
             if (bestPosn >= 0)
             {
-                if (bestValue == Builder.MATCH)
+                if (bestValue == Builder.Match)
                 { // exact match!
                     return true; // Exception here.
                 }
-                else if (bestValue == Builder.PARTIAL && forwardsPartialTrie != null)
+                else if (bestValue == Builder.Partial && forwardsPartialTrie != null)
                 {
                     // make sure there's a forward trie
                     // We matched the "Ph." in "Ph.D." - now we need to run everything through the forwards trie
@@ -281,10 +281,10 @@ namespace ICU4N.Impl
             /// </summary>
             private HashSet<ICharSequence> filterSet = new HashSet<ICharSequence>();
 
-            internal static readonly int PARTIAL = (1 << 0); // < partial - need to run through forward trie
-            internal static readonly int MATCH = (1 << 1); // < exact match - skip this one.
-            internal static readonly int SuppressInReverse = (1 << 0);
-            internal static readonly int AddToForward = (1 << 1);
+            internal const int Partial = (1 << 0); // < partial - need to run through forward trie
+            internal const int Match = (1 << 1); // < exact match - skip this one.
+            internal const int SuppressInReverse = (1 << 0);
+            internal const int AddToForward = (1 << 1);
 
             public Builder(CultureInfo loc)
                 : this(ULocale.ForLocale(loc))
@@ -396,7 +396,7 @@ namespace ICU4N.Impl
                             StringBuilder prefix = new StringBuilder(thisStr.Substring(0, (nn + 1) - 0)); // ICU4N: Checked 2nd parameter
                                                                                                           // first one - add the prefix to the reverse table.
                             prefix.Reverse();
-                            builder.Add(prefix, PARTIAL);
+                            builder.Add(prefix, Partial);
                             revCount++;
                             partials[i] = SuppressInReverse | AddToForward;
                         }
@@ -409,7 +409,7 @@ namespace ICU4N.Impl
                     if (partials[i] == 0)
                     {
                         StringBuilder reversed = new StringBuilder(thisStr).Reverse();
-                        builder.Add(reversed, MATCH);
+                        builder.Add(reversed, Match);
                         revCount++;
                     }
                     else
@@ -419,7 +419,7 @@ namespace ICU4N.Impl
                         // forward,
                         // instead of "Ph.D." since we already know the "Ph." part is a match.
                         // would need the trie to be able to hold 0-length strings, though.
-                        builder2.Add(thisStr, MATCH); // forward
+                        builder2.Add(thisStr, Match); // forward
                         fwdCount++;
                     }
                 }

@@ -14,7 +14,7 @@ namespace ICU4N.Impl.Locale
         private string _region = "";
         private string _variant = "";
 
-        private static readonly CaseInsensitiveChar PRIVUSE_KEY = new CaseInsensitiveChar(LanguageTag.PRIVATEUSE[0]);
+        private static readonly CaseInsensitiveChar PRIVUSE_KEY = new CaseInsensitiveChar(LanguageTag.Private_Use[0]);
 
         private IDictionary<CaseInsensitiveChar, string> _extensions;
         private ISet<CaseInsensitiveString> _uattributes;
@@ -85,8 +85,8 @@ namespace ICU4N.Impl.Locale
             else
             {
                 // normalize separators to "_"
-                string var = variant.Replace(LanguageTag.SEP, BaseLocale.SEP);
-                int errIdx = CheckVariants(var, BaseLocale.SEP);
+                string var = variant.Replace(LanguageTag.Separator, BaseLocale.Separator);
+                int errIdx = CheckVariants(var, BaseLocale.Separator);
                 if (errIdx != -1)
                 {
                     throw new FormatException("Ill-formed variant: " + variant /*, errIdx*/);
@@ -145,9 +145,9 @@ namespace ICU4N.Impl.Locale
                 if (type.Length != 0)
                 {
                     // normalize separator to "-"
-                    string tp = type.Replace(BaseLocale.SEP, LanguageTag.SEP);
+                    string tp = type.Replace(BaseLocale.Separator, LanguageTag.Separator);
                     // validate
-                    StringTokenEnumerator itr = new StringTokenEnumerator(tp, LanguageTag.SEP);
+                    StringTokenEnumerator itr = new StringTokenEnumerator(tp, LanguageTag.Separator);
                     while (itr.MoveNext())
                     {
                         string s = itr.Current;
@@ -203,8 +203,8 @@ namespace ICU4N.Impl.Locale
             else
             {
                 // validate value
-                string val = value.Replace(BaseLocale.SEP, LanguageTag.SEP);
-                StringTokenEnumerator itr = new StringTokenEnumerator(val, LanguageTag.SEP);
+                string val = value.Replace(BaseLocale.Separator, LanguageTag.Separator);
+                StringTokenEnumerator itr = new StringTokenEnumerator(val, LanguageTag.Separator);
                 while (itr.MoveNext())
                 {
                     string s = itr.Current;
@@ -249,8 +249,8 @@ namespace ICU4N.Impl.Locale
                 ClearExtensions();
                 return this;
             }
-            subtags = subtags.Replace(BaseLocale.SEP, LanguageTag.SEP);
-            StringTokenEnumerator itr = new StringTokenEnumerator(subtags, LanguageTag.SEP);
+            subtags = subtags.Replace(BaseLocale.Separator, LanguageTag.Separator);
+            StringTokenEnumerator itr = new StringTokenEnumerator(subtags, LanguageTag.Separator);
 
             List<string> extensions = null;
             string privateuse = null;
@@ -277,7 +277,7 @@ namespace ICU4N.Impl.Locale
                         s = itr.Current;
                         if (LanguageTag.IsExtensionSubtag(s))
                         {
-                            sb.Append(LanguageTag.SEP).Append(s);
+                            sb.Append(LanguageTag.Separator).Append(s);
                             parsed = itr.CurrentEnd;
                         }
                         else
@@ -319,7 +319,7 @@ namespace ICU4N.Impl.Locale
                         {
                             break;
                         }
-                        sb.Append(LanguageTag.SEP).Append(s);
+                        sb.Append(LanguageTag.Separator).Append(s);
                         parsed = itr.CurrentEnd;
 
                         itr.MoveNext();
@@ -402,7 +402,7 @@ namespace ICU4N.Impl.Locale
             else
             {
                 string language = langtag.Language;
-                if (!language.Equals(LanguageTag.UNDETERMINED))
+                if (!language.Equals(LanguageTag.Undetermined))
                 {
                     _language = language;
                 }
@@ -416,7 +416,7 @@ namespace ICU4N.Impl.Locale
                 StringBuilder var = new StringBuilder(bcpVariants[0]);
                 for (int i = 1; i < bcpVariants.Count; i++)
                 {
-                    var.Append(BaseLocale.SEP).Append(bcpVariants[i]);
+                    var.Append(BaseLocale.Separator).Append(bcpVariants[i]);
                 }
                 _variant = var.ToString();
             }
@@ -484,7 +484,7 @@ namespace ICU4N.Impl.Locale
 
             if (variant.Length > 0)
             {
-                int errIdx = CheckVariants(variant, BaseLocale.SEP);
+                int errIdx = CheckVariants(variant, BaseLocale.Separator);
                 if (errIdx != -1)
                 {
                     throw new FormatException("Ill-formed variant: " + variant/*, errIdx*/);
@@ -580,7 +580,7 @@ namespace ICU4N.Impl.Locale
                 string privuse;
                 if (_extensions.TryGetValue(PRIVUSE_KEY, out privuse) && privuse != null)
                 {
-                    StringTokenEnumerator itr = new StringTokenEnumerator(privuse, LanguageTag.SEP);
+                    StringTokenEnumerator itr = new StringTokenEnumerator(privuse, LanguageTag.Separator);
                     bool sawPrefix = false;
                     int privVarStart = -1;
                     while (itr.MoveNext())
@@ -590,7 +590,7 @@ namespace ICU4N.Impl.Locale
                             privVarStart = itr.CurrentStart;
                             break;
                         }
-                        if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PRIVUSE_VARIANT_PREFIX))
+                        if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix))
                         {
                             sawPrefix = true;
                         }
@@ -600,9 +600,9 @@ namespace ICU4N.Impl.Locale
                         StringBuilder sb = new StringBuilder(variant);
                         if (sb.Length != 0)
                         {
-                            sb.Append(BaseLocale.SEP);
+                            sb.Append(BaseLocale.Separator);
                         }
-                        sb.Append(privuse.Substring(privVarStart).Replace(LanguageTag.SEP, BaseLocale.SEP));
+                        sb.Append(privuse.Substring(privVarStart).Replace(LanguageTag.Separator, BaseLocale.Separator));
                         variant = sb.ToString();
                     }
                 }
@@ -617,7 +617,7 @@ namespace ICU4N.Impl.Locale
                     && (_uattributes == null || _uattributes.Count == 0)
                     && (_ukeywords == null || _ukeywords.Count == 0))
             {
-                return LocaleExtensions.EMPTY_EXTENSIONS;
+                return LocaleExtensions.EmptyExtensions;
             }
 
             return new LocaleExtensions(_extensions, _uattributes, _ukeywords);
@@ -629,7 +629,7 @@ namespace ICU4N.Impl.Locale
         /// </summary>
         internal static string RemovePrivateuseVariant(string privuseVal)
         {
-            StringTokenEnumerator itr = new StringTokenEnumerator(privuseVal, LanguageTag.SEP);
+            StringTokenEnumerator itr = new StringTokenEnumerator(privuseVal, LanguageTag.Separator);
 
             // Note: privateuse value "abc-lvariant" is unchanged
             // because no subtags after "lvariant".
@@ -646,7 +646,7 @@ namespace ICU4N.Impl.Locale
                     sawPrivuseVar = true;
                     break;
                 }
-                if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PRIVUSE_VARIANT_PREFIX))
+                if (AsciiUtil.CaseIgnoreMatch(itr.Current, LanguageTag.PrivateUse_Variant_Prefix))
                 {
                     prefixStart = itr.CurrentStart;
                 }
@@ -695,7 +695,7 @@ namespace ICU4N.Impl.Locale
                 _ukeywords.Clear();
             }
 
-            StringTokenEnumerator itr = new StringTokenEnumerator(subtags, LanguageTag.SEP);
+            StringTokenEnumerator itr = new StringTokenEnumerator(subtags, LanguageTag.Separator);
 
             // parse attributes
             while (itr.MoveNext())

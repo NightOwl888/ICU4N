@@ -41,16 +41,16 @@ namespace ICU4N.Impl
     public sealed class IDNA2003
     {
         /* IDNA ACE Prefix is "xn--" */
-        private static char[] ACE_PREFIX = new char[] { (char)0x0078, (char)0x006E, (char)0x002d, (char)0x002d };
+        private static readonly char[] ACE_PREFIX = new char[] { (char)0x0078, (char)0x006E, (char)0x002d, (char)0x002d };
         //private static final int ACE_PREFIX_LENGTH      = ACE_PREFIX.Length;
 
-        private static readonly int MAX_LABEL_LENGTH = 63;
-        private static readonly int HYPHEN = 0x002D;
-        private static readonly int CAPITAL_A = 0x0041;
-        private static readonly int CAPITAL_Z = 0x005A;
-        private static readonly int LOWER_CASE_DELTA = 0x0020;
-        private static readonly int FULL_STOP = 0x002E;
-        private static readonly int MAX_DOMAIN_NAME_LENGTH = 255;
+        private const int MAX_LABEL_LENGTH = 63;
+        private const int HYPHEN = 0x002D;
+        private const int CAPITAL_A = 0x0041;
+        private const int CAPITAL_Z = 0x005A;
+        private const int LOWER_CASE_DELTA = 0x0020;
+        private const int FULL_STOP = 0x002E;
+        private const int MAX_DOMAIN_NAME_LENGTH = 255;
 
         // The NamePrep profile object
         private static readonly StringPrep namePrep = StringPrep.GetInstance(StringPrepProfile.Rfc3491NamePrep);

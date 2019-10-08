@@ -5517,7 +5517,7 @@ namespace ICU4N
                 // Extracts the general category ("character type") from the trie value.
                 public int Map(int value)
                 {
-                    return value & UCharacterProperty.TYPE_MASK;
+                    return value & UCharacterProperty.TypeMask;
                 }
             }
             private static readonly MaskType MASK_TYPE = new MaskType();

@@ -64,7 +64,7 @@ namespace ICU4N.Impl
             }
         }
         private static readonly IsAcceptable IS_ACCEPTABLE = new IsAcceptable();
-        private static readonly int DATA_FORMAT = 0x706E616D;  // "pnam"
+        private const int DATA_FORMAT = 0x706E616D;  // "pnam"
 
         private void Load(ByteBuffer bytes)
         {

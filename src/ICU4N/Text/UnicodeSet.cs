@@ -4220,7 +4220,7 @@ namespace ICU4N.Text
                 // Optimize contains() and span() and similar functions.
                 if (strings.Count > 0)
                 {
-                    stringSpan = new UnicodeSetStringSpan(this, new List<string>(strings), UnicodeSetStringSpan.ALL);
+                    stringSpan = new UnicodeSetStringSpan(this, new List<string>(strings), UnicodeSetStringSpan.All);
                 }
                 if (stringSpan == null || !stringSpan.NeedsStringSpanUTF16)
                 {

@@ -39,13 +39,13 @@ namespace ICU4N.Impl
         /// <summary>
         /// Parsing constants.
         /// </summary>
-        private static readonly char KEYWORD_SEPARATOR = '@';
-        private static readonly char HYPHEN = '-';
-        private static readonly char KEYWORD_ASSIGN = '=';
-        private static readonly char COMMA = ',';
-        private static readonly char ITEM_SEPARATOR = ';';
-        private static readonly char DOT = '.';
-        private static readonly char UNDERSCORE = '_';
+        private const char KEYWORD_SEPARATOR = '@';
+        private const char HYPHEN = '-';
+        private const char KEYWORD_ASSIGN = '=';
+        private const char COMMA = ',';
+        private const char ITEM_SEPARATOR = ';';
+        private const char DOT = '.';
+        private const char UNDERSCORE = '_';
 
         public LocaleIDParser(string localeID)
             : this(localeID, false)

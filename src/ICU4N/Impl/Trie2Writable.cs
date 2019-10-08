@@ -1150,16 +1150,16 @@ namespace ICU4N.Impl
         /// Maximum length of the runtime index array.
         /// Limited by its own 16-bit index values, and by uint16_t UTrie2Header.indexLength.
         /// (The actual maximum length is lower,
-        /// (0x110000>>UTRIE2_SHIFT_2)+UTRIE2_UTF8_2B_INDEX_2_LENGTH+UTRIE2_MAX_INDEX_1_LENGTH.)
+        /// (0x110000>><see cref="Trie2.UTRIE2_SHIFT_2"/>)+<see cref="Trie2.UTRIE2_UTF8_2B_INDEX_2_LENGTH"/>+<see cref="Trie2.UTRIE2_MAX_INDEX_1_LENGTH"/>.)
         /// </summary>  
-        private static readonly int UTRIE2_MAX_INDEX_LENGTH = 0xffff;
+        private const int UTRIE2_MAX_INDEX_LENGTH = 0xffff;
 
         /// <summary>
         /// Maximum length of the runtime data array.
         /// Limited by 16-bit index values that are left-shifted by <see cref="Trie2.UTRIE2_INDEX_SHIFT"/>,
         /// and by uint16_t UTrie2Header.shiftedDataLength.
         /// </summary>
-        private static readonly int UTRIE2_MAX_DATA_LENGTH = 0xffff << UTRIE2_INDEX_SHIFT;
+        private const int UTRIE2_MAX_DATA_LENGTH = 0xffff << UTRIE2_INDEX_SHIFT;
 
         /// <summary>Compact the data and then populate an optimized read-only Trie.</summary>
         private void Freeze(Trie2 dest, ValueWidth valueBits)
@@ -1328,26 +1328,26 @@ namespace ICU4N.Impl
 
 
         /// <summary>Start with allocation of 16k data entries.</summary>
-        private static readonly int UNEWTRIE2_INITIAL_DATA_LENGTH = 1 << 14;
+        private const int UNEWTRIE2_INITIAL_DATA_LENGTH = 1 << 14;
 
         /// <summary>Grow about 8x each time.</summary>
-        private static readonly int UNEWTRIE2_MEDIUM_DATA_LENGTH = 1 << 17;
+        private const int UNEWTRIE2_MEDIUM_DATA_LENGTH = 1 << 17;
 
         /// <summary>The null index-2 block, following the gap in the index-2 table.</summary>
-        private static readonly int UNEWTRIE2_INDEX_2_NULL_OFFSET = UNEWTRIE2_INDEX_GAP_OFFSET + UNEWTRIE2_INDEX_GAP_LENGTH;
+        private const int UNEWTRIE2_INDEX_2_NULL_OFFSET = UNEWTRIE2_INDEX_GAP_OFFSET + UNEWTRIE2_INDEX_GAP_LENGTH;
 
         /// <summary>The start of allocated index-2 blocks.</summary>
-        private static readonly int UNEWTRIE2_INDEX_2_START_OFFSET = UNEWTRIE2_INDEX_2_NULL_OFFSET + UTRIE2_INDEX_2_BLOCK_LENGTH;
+        private const int UNEWTRIE2_INDEX_2_START_OFFSET = UNEWTRIE2_INDEX_2_NULL_OFFSET + UTRIE2_INDEX_2_BLOCK_LENGTH;
 
         /// <summary>
         /// The null data block.
         /// Length 64=0x40 even if <see cref="Trie2.UTRIE2_DATA_BLOCK_LENGTH"/> is smaller,
         /// to work with 6-bit trail bytes from 2-byte UTF-8.
         /// </summary>
-        private static readonly int UNEWTRIE2_DATA_NULL_OFFSET = UTRIE2_DATA_START_OFFSET;
+        private const int UNEWTRIE2_DATA_NULL_OFFSET = UTRIE2_DATA_START_OFFSET;
 
         /// <summary>The start of allocated data blocks.</summary>
-        private static readonly int UNEWTRIE2_DATA_START_OFFSET = UNEWTRIE2_DATA_NULL_OFFSET + 0x40;
+        private const int UNEWTRIE2_DATA_START_OFFSET = UNEWTRIE2_DATA_NULL_OFFSET + 0x40;
 
         /// <summary>
         /// The start of data blocks for U+0800 and above.
@@ -1355,7 +1355,7 @@ namespace ICU4N.Impl
         /// From here on, compaction uses <see cref="Trie2.UTRIE2_DATA_BLOCK_LENGTH"/>.
         /// Data values for 0x780 code points beyond ASCII.
         /// </summary>
-        private static readonly int UNEWTRIE2_DATA_0800_OFFSET = UNEWTRIE2_DATA_START_OFFSET + 0x780;
+        private const int UNEWTRIE2_DATA_0800_OFFSET = UNEWTRIE2_DATA_START_OFFSET + 0x780;
 
         //
         // Private data members.  From struct UNewTrie2 in ICU4C

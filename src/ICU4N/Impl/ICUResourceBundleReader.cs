@@ -22,7 +22,7 @@ namespace ICU4N.Impl
         /// File format version that this class understands.
         /// "ResB"
         /// </summary>
-        private static readonly int DATA_FORMAT = 0x52657342;
+        private const int DATA_FORMAT = 0x52657342;
         private sealed class IsAcceptable : IAuthenticate
         {
             public bool IsDataVersionAcceptable(byte[] formatVersion)
@@ -46,21 +46,21 @@ namespace ICU4N.Impl
         /// formatVersion>=3:
         ///        bits 31..8 poolStringIndexLimit bits 23..0
         /// </summary>
-        private static readonly int URES_INDEX_LENGTH = 0;
+        private const int URES_INDEX_LENGTH = 0;
         /// <summary>
         /// [1] contains the top of the key strings,
         ///     same as the bottom of resources or UTF-16 strings, rounded up
         /// </summary>
-        private static readonly int URES_INDEX_KEYS_TOP = 1;
+        private const int URES_INDEX_KEYS_TOP = 1;
         ///// <summary>[2] contains the top of all resources</summary>
         //private static readonly int URES_INDEX_RESOURCES_TOP    = 2;
         /// <summary>
         /// [3] contains the top of the bundle,
         ///     in case it were ever different from [2]
         /// </summary>
-        private static readonly int URES_INDEX_BUNDLE_TOP = 3;
+        private const int URES_INDEX_BUNDLE_TOP = 3;
         /// <summary>[4] max. length of any table</summary>
-        private static readonly int URES_INDEX_MAX_TABLE_LENGTH = 4;
+        private const int URES_INDEX_MAX_TABLE_LENGTH = 4;
         /// <summary>
         /// [5] attributes bit set, see URES_ATT_* (new in formatVersion 1.2)
         /// <para/>
@@ -68,15 +68,15 @@ namespace ICU4N.Impl
         ///   bits 31..16 poolStringIndex16Limit
         ///   bits 15..12 poolStringIndexLimit bits 27..24
         /// </summary>
-        private static readonly int URES_INDEX_ATTRIBUTES = 5;
+        private const int URES_INDEX_ATTRIBUTES = 5;
         /// <summary>
         /// [6] top of the 16-bit units (UTF-16 string v2 UChars, URES_TABLE16, URES_ARRAY16),
         ///     rounded up (new in formatVersion 2.0, ICU 4.4)
         /// </summary>
-        private static readonly int URES_INDEX_16BIT_TOP = 6;
+        private const int URES_INDEX_16BIT_TOP = 6;
         /// <summary>[7] checksum of the pool bundle (new in formatVersion 2.0, ICU 4.4)</summary>
-        private static readonly int URES_INDEX_POOL_CHECKSUM = 7;
-        //private static readonly int URES_INDEX_TOP              = 8;
+        private const int URES_INDEX_POOL_CHECKSUM = 7;
+        //private const int URES_INDEX_TOP              = 8;
 
         /// <summary>
         /// Nofallback attribute, attribute bit 0 in indexes[URES_INDEX_ATTRIBUTES].
@@ -89,15 +89,15 @@ namespace ICU4N.Impl
         /// reliably. Dependency checking should ignore such bundles, and loading should
         /// use fallbacks.
         /// </summary>
-        private static readonly int URES_ATT_NO_FALLBACK = 1;
+        private const int URES_ATT_NO_FALLBACK = 1;
         /// <summary>
         /// Attributes for bundles that are, or use, a pool bundle.
         /// A pool bundle provides key strings that are shared among several other bundles
         /// to reduce their total size.
         /// New in formatVersion 2 (ICU 4.4).
         /// </summary>
-        private static readonly int URES_ATT_IS_POOL_BUNDLE = 2;
-        private static readonly int URES_ATT_USES_POOL_BUNDLE = 4;
+        private const int URES_ATT_IS_POOL_BUNDLE = 2;
+        private const int URES_ATT_USES_POOL_BUNDLE = 4;
 
         private static readonly CharBuffer EMPTY_16_BIT_UNITS = CharBuffer.Wrap(new char[] { '\0' });  // read-only
         /// <summary>
@@ -105,7 +105,7 @@ namespace ICU4N.Impl
         /// Smaller objects (which are not much larger than a <see cref="SoftReference{T}"/>)
         /// are stored directly, avoiding the overhead of the reference.
         /// </summary>
-        internal static readonly int LARGE_SIZE = 24;
+        internal const int LARGE_SIZE = 24;
 
         private static readonly bool DEBUG = false;
 

@@ -120,7 +120,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Size of the group information block in number of char
         /// </summary>
-        private static readonly int GROUP_INFO_SIZE_ = 3;
+        private const int GROUP_INFO_SIZE_ = 3;
 
         /// <summary>
         /// Index of the offset information
@@ -135,12 +135,12 @@ namespace ICU4N.Impl
         /// start code point size + end code point size + type size + variant size +
         /// size of data size
         /// </summary>
-        private static readonly int ALG_INFO_SIZE_ = 12;
+        private const int ALG_INFO_SIZE_ = 12;
 
         /// <summary>
         /// File format id that this class understands.
         /// </summary>
-        private static readonly int DATA_FORMAT_ID_ = 0x756E616D;
+        private const int DATA_FORMAT_ID_ = 0x756E616D;
 
         // private methods ---------------------------------------------------
 

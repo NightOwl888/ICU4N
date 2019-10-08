@@ -108,8 +108,8 @@ namespace ICU4N.Impl
             Trie othertrie = (Trie)other;
             return m_isLatin1Linear_ == othertrie.m_isLatin1Linear_
                    && m_options_ == othertrie.m_options_
-                   && m_dataLength_ == othertrie.m_dataLength_
-                   && Arrays.Equals(m_index_, othertrie.m_index_);
+                   && m_dataLength == othertrie.m_dataLength
+                   && Arrays.Equals(m_index, othertrie.m_index);
         }
 
         public override int GetHashCode()
@@ -129,14 +129,14 @@ namespace ICU4N.Impl
             {
                 // includes signature, option, dataoffset and datalength output
                 int result = (4 << 2);
-                result += (m_dataOffset_ << 1);
+                result += (m_dataOffset << 1);
                 if (IsCharTrie)
                 {
-                    result += (m_dataLength_ << 1);
+                    result += (m_dataLength << 1);
                 }
                 else if (IsInt32Trie)
                 {
-                    result += (m_dataLength_ << 2);
+                    result += (m_dataLength << 2);
                 }
                 return result;
             }
@@ -149,7 +149,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="bytes">Data of an ICU data file, containing the trie.</param>
         /// <param name="dataManipulate">Object containing the information to parse the trie data.</param>
-        protected Trie(ByteBuffer bytes, IDataManipulate dataManipulate)
+        protected Trie(ByteBuffer bytes, IDataManipulate dataManipulate) // ICU4N TODO: API Change to use byte[]
         {
             // Magic number to authenticate the data.
             int signature = bytes.GetInt32();
@@ -162,16 +162,16 @@ namespace ICU4N.Impl
 
             if (dataManipulate != null)
             {
-                m_dataManipulate_ = dataManipulate;
+                m_dataManipulate = dataManipulate;
             }
             else
             {
-                m_dataManipulate_ = new DefaultGetFoldingOffset();
+                m_dataManipulate = new DefaultGetFoldingOffset();
             }
             m_isLatin1Linear_ = (m_options_ &
-                                 HEADER_OPTIONS_LATIN1_IS_LINEAR_MASK_) != 0;
-            m_dataOffset_ = bytes.GetInt32();
-            m_dataLength_ = bytes.GetInt32();
+                                 HeaderOptionsLatin1IsLinearMask) != 0;
+            m_dataOffset = bytes.GetInt32();
+            m_dataLength = bytes.GetInt32();
             Unserialize(bytes);
         }
 
@@ -186,16 +186,16 @@ namespace ICU4N.Impl
             m_options_ = options;
             if (dataManipulate != null)
             {
-                m_dataManipulate_ = dataManipulate;
+                m_dataManipulate = dataManipulate;
             }
             else
             {
-                m_dataManipulate_ = new DefaultGetFoldingOffset();
+                m_dataManipulate = new DefaultGetFoldingOffset();
             }
             m_isLatin1Linear_ = (m_options_ &
-                                 HEADER_OPTIONS_LATIN1_IS_LINEAR_MASK_) != 0;
-            m_index_ = index;
-            m_dataOffset_ = m_index_.Length;
+                                 HeaderOptionsLatin1IsLinearMask) != 0;
+            m_index = index;
+            m_dataOffset = m_index.Length;
         }
 
 
@@ -205,70 +205,70 @@ namespace ICU4N.Impl
         /// Lead surrogate code points' index displacement in the index array.
         /// <code>
         /// 0x10000-0xd800=0x2800
-        /// 0x2800 >> INDEX_STAGE_1_SHIFT_
+        /// 0x2800 >> <see cref="IndexStage1Shift"/>
         /// </code>
         /// </summary>
-        protected internal static readonly int LEAD_INDEX_OFFSET_ = 0x2800 >> 5;
+        protected internal const int LeadIndexOffset = 0x2800 >> 5;
         /// <summary>
         /// Shift size for shifting right the input index. 1..9
         /// </summary>
-        protected internal static readonly int INDEX_STAGE_1_SHIFT_ = 5;
+        protected internal const int IndexStage1Shift = 5;
 
         /// <summary>
         /// Shift size for shifting left the index array values.
         /// Increases possible data size with 16-bit index values at the cost
         /// of compactability.
         /// This requires blocks of stage 2 data to be aligned by
-        /// DATA_GRANULARITY.
+        /// <see cref="TrieBuilder.DataGranularity"/>.
         /// <code>
-        /// 0..INDEX_STAGE_1_SHIFT
+        /// 0..<see cref="IndexStage1Shift"/>
         /// </code>
         /// </summary>
-        protected internal static readonly int INDEX_STAGE_2_SHIFT_ = 2;
+        protected internal const int IndexStage2Shift = 2;
         /// <summary>
         /// Number of data values in a stage 2 (data array) block.
         /// </summary>
-        protected internal static readonly int DATA_BLOCK_LENGTH = 1 << INDEX_STAGE_1_SHIFT_;
+        protected internal const int DataBlockLength = 1 << IndexStage1Shift;
         /// <summary>
         /// Mask for getting the lower bits from the input index.
-        /// <see cref="DATA_BLOCK_LENGTH"/> - 1.
+        /// <see cref="DataBlockLength"/> - 1.
         /// </summary>
-        protected internal static readonly int INDEX_STAGE_3_MASK_ = DATA_BLOCK_LENGTH - 1;
+        protected internal const int IndexStage3Mask = DataBlockLength - 1;
         /// <summary>Number of bits of a trail surrogate that are used in index table lookups.</summary>
-        protected internal static readonly int SURROGATE_BLOCK_BITS = 10 - INDEX_STAGE_1_SHIFT_;
+        protected internal const int SurrogateBlockBits = 10 - IndexStage1Shift;
         /// <summary>
         /// Number of index (stage 1) entries per lead surrogate.
         /// Same as number of index entries for 1024 trail surrogates,
-        /// ==0x400>><see cref="INDEX_STAGE_1_SHIFT_"/>
+        /// ==0x400>><see cref="IndexStage1Shift"/>
         /// </summary>
-        protected internal static readonly int SURROGATE_BLOCK_COUNT = (1 << SURROGATE_BLOCK_BITS);
+        protected internal const int SurrogateBlockCount = (1 << SurrogateBlockBits);
         /// <summary>Length of the BMP portion of the index (stage 1) array.</summary>
-        protected internal static readonly int BMP_INDEX_LENGTH = 0x10000 >> INDEX_STAGE_1_SHIFT_;
+        protected internal const int BMPIndexLength = 0x10000 >> IndexStage1Shift;
         /// <summary>
         /// Surrogate mask to use when shifting offset to retrieve supplementary
         /// values.
         /// </summary>
-        protected internal static readonly int SURROGATE_MASK_ = 0x3FF;
+        protected internal const int SurrogateMask = 0x3FF;
         /// <summary>
         /// Index or UTF16 characters
         /// </summary>
-        protected internal char[] m_index_;
+        protected internal char[] m_index;
         /// <summary>
         /// Internal TrieValue which handles the parsing of the data value.
         /// This class is to be implemented by the user.
         /// </summary>
-        protected internal IDataManipulate m_dataManipulate_;
+        protected internal IDataManipulate m_dataManipulate;
         /// <summary>
         /// Start index of the data portion of the trie. <see cref="CharTrie"/> combines
         /// index and data into a char array, so this is used to indicate the
         /// initial offset to the data portion.
         /// Note this index always points to the initial value.
         /// </summary>
-        protected internal int m_dataOffset_;
+        protected internal int m_dataOffset;
         /// <summary>
         /// Length of the data array
         /// </summary>
-        protected int m_dataLength_;
+        protected int m_dataLength;
 
         // protected methods -----------------------------------------------
 
@@ -308,9 +308,9 @@ namespace ICU4N.Impl
         // ICU4N TODO: no GetFoldingIndexOffset() method in project - need to work out what this was
         protected int GetRawOffset(int offset, char ch)
         {
-            return (m_index_[offset + (ch >> INDEX_STAGE_1_SHIFT_)]
-                    << INDEX_STAGE_2_SHIFT_)
-                    + (ch & INDEX_STAGE_3_MASK_);
+            return (m_index[offset + (ch >> IndexStage1Shift)]
+                    << IndexStage2Shift)
+                    + (ch & IndexStage3Mask);
         }
 
         /// <summary>
@@ -323,7 +323,7 @@ namespace ICU4N.Impl
         {
             return (ch >= UTF16.LeadSurrogateMinValue
                     && ch <= UTF16.LeadSurrogateMaxValue)
-                    ? GetRawOffset(LEAD_INDEX_OFFSET_, ch)
+                    ? GetRawOffset(LeadIndexOffset, ch)
                     : GetRawOffset(0, ch);
             // using a getRawOffset(ch) makes no diff
         }
@@ -372,7 +372,7 @@ namespace ICU4N.Impl
                 // look at the construction of supplementary characters
                 // trail forms the ends of it.
                 return GetSurrogateOffset(UTF16.GetLeadSurrogate(ch),
-                                          (char)(ch & SURROGATE_MASK_));
+                                          (char)(ch & SurrogateMask));
             }
             else
             {
@@ -391,7 +391,7 @@ namespace ICU4N.Impl
         /// <param name="bytes">Buffer containing trie data.</param>
         protected virtual void Unserialize(ByteBuffer bytes)
         {
-            m_index_ = ICUBinary.GetChars(bytes, m_dataOffset_, 0);
+            m_index = ICUBinary.GetChars(bytes, m_dataOffset, 0);
         }
 
         /// <summary>
@@ -399,7 +399,7 @@ namespace ICU4N.Impl
         /// </summary>
         protected bool IsInt32Trie
         {
-            get { return (m_options_ & HEADER_OPTIONS_DATA_IS_32_BIT_) != 0; }
+            get { return (m_options_ & HeaderOptionsDataIs32Bit) != 0; }
         }
 
         /// <summary>
@@ -407,7 +407,7 @@ namespace ICU4N.Impl
         /// </summary>
         protected bool IsCharTrie
         {
-            get { return (m_options_ & HEADER_OPTIONS_DATA_IS_32_BIT_) == 0; }
+            get { return (m_options_ & HeaderOptionsDataIs32Bit) == 0; }
         }
 
         // private data members --------------------------------------------
@@ -421,21 +421,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Size of <see cref="Trie"/> header in bytes
         /// </summary>
-        protected internal static readonly int HEADER_LENGTH_ = 4 * 4;
+        protected internal const int HeaderLength = 4 * 4;
         /// <summary>
         /// Latin 1 option mask
         /// </summary>
-        protected internal static readonly int HEADER_OPTIONS_LATIN1_IS_LINEAR_MASK_ = 0x200;
+        protected internal const int HeaderOptionsLatin1IsLinearMask = 0x200; // ICU4N TODO: API - make into [Flags] enum
         /// <summary>
         /// Constant number to authenticate the byte block
         /// </summary>
-        protected internal static readonly int HEADER_SIGNATURE_ = 0x54726965;
+        protected internal const int HeaderSignature = 0x54726965;
         /// <summary>
         /// Header option formatting
         /// </summary>
-        private static readonly int HEADER_OPTIONS_SHIFT_MASK_ = 0xF;
-        protected internal static readonly int HEADER_OPTIONS_INDEX_SHIFT_ = 4;
-        protected internal static readonly int HEADER_OPTIONS_DATA_IS_32_BIT_ = 0x100;
+        private const int HeaderOptionsShiftMask = 0xF;
+        protected internal const int HeaderOptionsIndexShift = 4; // ICU4N TODO: API - make into [Flags] enum
+        protected internal const int HeaderOptionsDataIs32Bit = 0x100; // ICU4N TODO: API - make into [Flags] enum
 
         /// <summary>
         /// Flag indicator for Latin quick access data block
@@ -448,10 +448,10 @@ namespace ICU4N.Impl
         /// <remarks>
         /// Options bit field:
         /// <list type="bullet">
-        ///     <item><description>9  1 = Latin-1 data is stored linearly at data + <see cref="DATA_BLOCK_LENGTH"/></description></item>
+        ///     <item><description>9  1 = Latin-1 data is stored linearly at data + <see cref="DataBlockLength"/></description></item>
         ///     <item><description>8  0 = 16-bit data, 1=32-bit data</description></item>
-        ///     <item><description>7..4  <see cref="INDEX_STAGE_1_SHIFT_"/>   // 0..<see cref="INDEX_STAGE_2_SHIFT_"/></description></item>
-        ///     <item><description>3..0  INDEX_STAGE_2_SHIFT   // 1..9</description></item>
+        ///     <item><description>7..4  <see cref="IndexStage1Shift"/>   // 0..<see cref="IndexStage2Shift"/></description></item>
+        ///     <item><description>3..0  <see cref="IndexStage2Shift"/>   // 1..9</description></item>
         /// </list>
         /// </remarks>
         private int m_options_;
@@ -469,16 +469,16 @@ namespace ICU4N.Impl
             // check the signature
             // Trie in big-endian US-ASCII (0x54726965).
             // Magic number to authenticate the data.
-            if (signature != HEADER_SIGNATURE_)
+            if (signature != HeaderSignature)
             {
                 return false;
             }
 
-            if ((m_options_ & HEADER_OPTIONS_SHIFT_MASK_) !=
-                                                        INDEX_STAGE_1_SHIFT_ ||
-                ((m_options_ >> HEADER_OPTIONS_INDEX_SHIFT_) &
-                                                    HEADER_OPTIONS_SHIFT_MASK_)
-                                                     != INDEX_STAGE_2_SHIFT_)
+            if ((m_options_ & HeaderOptionsShiftMask) !=
+                                                        IndexStage1Shift ||
+                ((m_options_ >> HeaderOptionsIndexShift) &
+                                                    HeaderOptionsShiftMask)
+                                                     != IndexStage2Shift)
             {
                 return false;
             }

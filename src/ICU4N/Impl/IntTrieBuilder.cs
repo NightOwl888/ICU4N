@@ -56,7 +56,7 @@ namespace ICU4N.Impl
                               bool latin1linear)
             : base()
         {
-            if (maxdatalength < DATA_BLOCK_LENGTH || (latin1linear
+            if (maxdatalength < DataBlockLength || (latin1linear
                                                       && maxdatalength < 1024))
             {
                 throw new ArgumentException(
@@ -73,7 +73,7 @@ namespace ICU4N.Impl
             }
 
             // preallocate and reset the first data block (block index 0)
-            int j = DATA_BLOCK_LENGTH;
+            int j = DataBlockLength;
 
             if (latin1linear)
             {
@@ -87,8 +87,8 @@ namespace ICU4N.Impl
                     // do this at least for trie->index[0] even if that block is 
                     // only partly used for Latin-1
                     m_index_[i++] = j;
-                    j += DATA_BLOCK_LENGTH;
-                } while (i < (256 >> SHIFT_));
+                    j += DataBlockLength;
+                } while (i < (256 >> Shift));
             }
 
             m_dataLength_ = j;
@@ -175,8 +175,8 @@ namespace ICU4N.Impl
                 return 0;
             }
 
-            int block = m_index_[ch >> SHIFT_];
-            return m_data_[Math.Abs(block) + (ch & MASK_)];
+            int block = m_index_[ch >> Shift];
+            return m_data_[Math.Abs(block) + (ch & Mask)];
         }
 
         /// <summary>
@@ -198,12 +198,12 @@ namespace ICU4N.Impl
                 return 0;
             }
 
-            int block = m_index_[ch >> SHIFT_];
+            int block = m_index_[ch >> Shift];
             if (inBlockZero != null)
             {
                 inBlockZero[0] = (block == 0);
             }
-            return m_data_[Math.Abs(block) + (ch & MASK_)];
+            return m_data_[Math.Abs(block) + (ch & Mask)];
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            m_data_[block + (ch & MASK_)] = value;
+            m_data_[block + (ch & Mask)] = value;
             return true;
         }
 
@@ -257,7 +257,7 @@ namespace ICU4N.Impl
                 m_isCompacted_ = true;
             }
             // is dataLength within limits? 
-            if (m_dataLength_ >= MAX_DATA_LENGTH_)
+            if (m_dataLength_ >= MaxDataLength)
             {
                 throw new IndexOutOfRangeException("Data length too small");
             }
@@ -268,16 +268,16 @@ namespace ICU4N.Impl
             // write 16-bit index values shifted right by INDEX_SHIFT_ 
             for (int i = 0; i < m_indexLength_; i++)
             {
-                index[i] = (char)(m_index_[i].TripleShift(INDEX_SHIFT_));
+                index[i] = (char)(m_index_[i].TripleShift(IndexShift));
             }
             // write 32-bit data values
             System.Array.Copy(m_data_, 0, data, 0, m_dataLength_);
 
-            int options = SHIFT_ | (INDEX_SHIFT_ << OPTIONS_INDEX_SHIFT_);
-            options |= OPTIONS_DATA_IS_32_BIT_;
+            int options = Shift | (IndexShift << OptionsIndexShift);
+            options |= OptionsDataIs32Bit;
             if (m_isLatin1Linear_)
             {
-                options |= OPTIONS_LATIN1_IS_LINEAR_;
+                options |= OptionsLatin1IsLinear;
             }
             return new Int32Trie(index, data, m_initialValue_, options,
                                triedatamanipulate);
@@ -331,7 +331,7 @@ namespace ICU4N.Impl
             {
                 length = m_dataLength_;
             }
-            if (length >= MAX_DATA_LENGTH_)
+            if (length >= MaxDataLength)
             {
                 throw new IndexOutOfRangeException("Data length too small");
             }
@@ -341,7 +341,7 @@ namespace ICU4N.Impl
             //      int32_t   options  (a bit field)
             //      int32_t   indexLength
             //      int32_t   dataLength
-            length = Trie.HEADER_LENGTH_ + 2 * m_indexLength_;
+            length = Trie.HeaderLength + 2 * m_indexLength_;
             if (reduceTo16Bits)
             {
                 length += 2 * m_dataLength_;
@@ -358,16 +358,16 @@ namespace ICU4N.Impl
             }
 
             DataOutputStream dos = new DataOutputStream(os);
-            dos.WriteInt32(Trie.HEADER_SIGNATURE_);
+            dos.WriteInt32(Trie.HeaderSignature);
 
-            int options = Trie.INDEX_STAGE_1_SHIFT_ | (Trie.INDEX_STAGE_2_SHIFT_ << Trie.HEADER_OPTIONS_INDEX_SHIFT_);
+            int options = Trie.IndexStage1Shift | (Trie.IndexStage2Shift << Trie.HeaderOptionsIndexShift);
             if (!reduceTo16Bits)
             {
-                options |= Trie.HEADER_OPTIONS_DATA_IS_32_BIT_;
+                options |= Trie.HeaderOptionsDataIs32Bit;
             }
             if (m_isLatin1Linear_)
             {
-                options |= Trie.HEADER_OPTIONS_LATIN1_IS_LINEAR_MASK_;
+                options |= Trie.HeaderOptionsLatin1IsLinearMask;
             }
             dos.WriteInt32(options);
 
@@ -380,7 +380,7 @@ namespace ICU4N.Impl
                 /* write 16-bit index values shifted right by UTRIE_INDEX_SHIFT, after adding indexLength */
                 for (int i = 0; i < m_indexLength_; i++)
                 {
-                    int v = (m_index_[i] + m_indexLength_).TripleShift(Trie.INDEX_STAGE_2_SHIFT_);
+                    int v = (m_index_[i] + m_indexLength_).TripleShift(Trie.IndexStage2Shift);
                     dos.WriteChar(v);
                 }
 
@@ -396,7 +396,7 @@ namespace ICU4N.Impl
                 /* write 16-bit index values shifted right by UTRIE_INDEX_SHIFT */
                 for (int i = 0; i < m_indexLength_; i++)
                 {
-                    int v = (m_index_[i]).TripleShift(Trie.INDEX_STAGE_2_SHIFT_);
+                    int v = (m_index_[i]).TripleShift(Trie.IndexStage2Shift);
                     dos.WriteChar(v);
                 }
 
@@ -441,7 +441,7 @@ namespace ICU4N.Impl
                 return true; // nothing to do
             }
 
-            if ((start & MASK_) != 0)
+            if ((start & Mask) != 0)
             {
                 // set partial block at [start..following block boundary[
                 int block = GetDataBlock(start);
@@ -450,26 +450,26 @@ namespace ICU4N.Impl
                     return false;
                 }
 
-                int nextStart = (start + DATA_BLOCK_LENGTH) & ~MASK_;
+                int nextStart = (start + DataBlockLength) & ~Mask;
                 if (nextStart <= limit)
                 {
-                    FillBlock(block, start & MASK_, DATA_BLOCK_LENGTH,
+                    FillBlock(block, start & Mask, DataBlockLength,
                               value, overwrite);
                     start = nextStart;
                 }
                 else
                 {
-                    FillBlock(block, start & MASK_, limit & MASK_,
+                    FillBlock(block, start & Mask, limit & Mask,
                               value, overwrite);
                     return true;
                 }
             }
 
             // number of positions in the last, partial block
-            int rest = limit & MASK_;
+            int rest = limit & Mask;
 
             // round down limit to a block boundary 
-            limit &= ~MASK_;
+            limit &= ~Mask;
 
             // iterate over all-value blocks 
             int repeatBlock = 0;
@@ -484,11 +484,11 @@ namespace ICU4N.Impl
             while (start < limit)
             {
                 // get index value 
-                int block = m_index_[start >> SHIFT_];
+                int block = m_index_[start >> Shift];
                 if (block > 0)
                 {
                     // already allocated, fill in value
-                    FillBlock(block, 0, DATA_BLOCK_LENGTH, value, overwrite);
+                    FillBlock(block, 0, DataBlockLength, value, overwrite);
                 }
                 else if (m_data_[-block] != value && (block == 0 || overwrite))
                 {
@@ -496,7 +496,7 @@ namespace ICU4N.Impl
                     // block 
                     if (repeatBlock >= 0)
                     {
-                        m_index_[start >> SHIFT_] = -repeatBlock;
+                        m_index_[start >> Shift] = -repeatBlock;
                     }
                     else
                     {
@@ -509,12 +509,12 @@ namespace ICU4N.Impl
 
                         // set the negative block number to indicate that it is a 
                         // repeat block
-                        m_index_[start >> SHIFT_] = -repeatBlock;
-                        FillBlock(repeatBlock, 0, DATA_BLOCK_LENGTH, value, true);
+                        m_index_[start >> Shift] = -repeatBlock;
+                        FillBlock(repeatBlock, 0, DataBlockLength, value, true);
                     }
                 }
 
-                start += DATA_BLOCK_LENGTH;
+                start += DataBlockLength;
             }
 
             if (rest > 0)
@@ -545,7 +545,7 @@ namespace ICU4N.Impl
         private int AllocDataBlock()
         {
             int newBlock = m_dataLength_;
-            int newTop = newBlock + DATA_BLOCK_LENGTH;
+            int newTop = newBlock + DataBlockLength;
             if (newTop > m_dataCapacity_)
             {
                 // out of memory in the data array
@@ -562,7 +562,7 @@ namespace ICU4N.Impl
         /// <returns>-1 if no new data block available (out of memory in data array).</returns>
         private int GetDataBlock(int ch)
         {
-            ch >>= SHIFT_;
+            ch >>= Shift;
             int indexValue = m_index_[ch];
             if (indexValue > 0)
             {
@@ -580,7 +580,7 @@ namespace ICU4N.Impl
 
             // copy-on-write for a block from a setRange()
             System.Array.Copy(m_data_, Math.Abs(indexValue), m_data_, newBlock,
-                             DATA_BLOCK_LENGTH << 2);
+                             DataBlockLength << 2);
             return newBlock;
         }
 
@@ -612,13 +612,13 @@ namespace ICU4N.Impl
 
             // if Latin-1 is preallocated and linear, then do not compact Latin-1 
             // data
-            int overlapStart = DATA_BLOCK_LENGTH;
-            if (m_isLatin1Linear_ && SHIFT_ <= 8)
+            int overlapStart = DataBlockLength;
+            if (m_isLatin1Linear_ && Shift <= 8)
             {
                 overlapStart += 256;
             }
 
-            int newStart = DATA_BLOCK_LENGTH;
+            int newStart = DataBlockLength;
             int i;
             for (int start = newStart; start < m_dataLength_;)
             {
@@ -626,10 +626,10 @@ namespace ICU4N.Impl
                 // newStart: index where the current block is to be moved
                 //           (right after current end of already-compacted data)
                 // skip blocks that are not used 
-                if (m_map_[start.TripleShift(SHIFT_)] < 0)
+                if (m_map_[start.TripleShift(Shift)] < 0)
                 {
                     // advance start to the next block 
-                    start += DATA_BLOCK_LENGTH;
+                    start += DataBlockLength;
                     // leave newStart with the previous block!
                     continue;
                 }
@@ -637,14 +637,14 @@ namespace ICU4N.Impl
                 if (start >= overlapStart)
                 {
                     i = FindSameDataBlock(m_data_, newStart, start,
-                                              overlap ? DATA_GRANULARITY_ : DATA_BLOCK_LENGTH);
+                                              overlap ? DataGranularity : DataBlockLength);
                     if (i >= 0)
                     {
                         // found an identical block, set the other block's index 
                         // value for the current block
-                        m_map_[start.TripleShift(SHIFT_)] = i;
+                        m_map_[start.TripleShift(Shift)] = i;
                         // advance start to the next block
-                        start += DATA_BLOCK_LENGTH;
+                        start += DataBlockLength;
                         // leave newStart with the previous block!
                         continue;
                     }
@@ -654,9 +654,9 @@ namespace ICU4N.Impl
                 if (overlap && start >= overlapStart)
                 {
                     /* look for maximum overlap (modulo granularity) with the previous, adjacent block */
-                    for (i = DATA_BLOCK_LENGTH - DATA_GRANULARITY_;
+                    for (i = DataBlockLength - DataGranularity;
                         i > 0 && !EqualInt32(m_data_, newStart - i, start, i);
-                        i -= DATA_GRANULARITY_) { }
+                        i -= DataGranularity) { }
                 }
                 else
                 {
@@ -665,10 +665,10 @@ namespace ICU4N.Impl
                 if (i > 0)
                 {
                     // some overlap
-                    m_map_[start.TripleShift(SHIFT_)] = newStart - i;
+                    m_map_[start.TripleShift(Shift)] = newStart - i;
                     // move the non-overlapping indexes to their new positions
                     start += i;
-                    for (i = DATA_BLOCK_LENGTH - i; i > 0; --i)
+                    for (i = DataBlockLength - i; i > 0; --i)
                     {
                         m_data_[newStart++] = m_data_[start++];
                     }
@@ -676,23 +676,23 @@ namespace ICU4N.Impl
                 else if (newStart < start)
                 {
                     // no overlap, just move the indexes to their new positions
-                    m_map_[start.TripleShift(SHIFT_)] = newStart;
-                    for (i = DATA_BLOCK_LENGTH; i > 0; --i)
+                    m_map_[start.TripleShift(Shift)] = newStart;
+                    for (i = DataBlockLength; i > 0; --i)
                     {
                         m_data_[newStart++] = m_data_[start++];
                     }
                 }
                 else
                 { // no overlap && newStart==start
-                    m_map_[start.TripleShift(SHIFT_)] = start;
-                    newStart += DATA_BLOCK_LENGTH;
+                    m_map_[start.TripleShift(Shift)] = start;
+                    newStart += DataBlockLength;
                     start = newStart;
                 }
             }
             // now adjust the index (stage 1) table
             for (i = 0; i < m_indexLength_; ++i)
             {
-                m_index_[i] = m_map_[Math.Abs(m_index_[i]).TripleShift(SHIFT_)];
+                m_index_[i] = m_map_[Math.Abs(m_index_[i]).TripleShift(Shift)];
             }
             m_dataLength_ = newStart;
         }
@@ -708,11 +708,11 @@ namespace ICU4N.Impl
                                                    int otherBlock, int step)
         {
             // ensure that we do not even partially get past dataLength
-            dataLength -= DATA_BLOCK_LENGTH;
+            dataLength -= DataBlockLength;
 
             for (int block = 0; block <= dataLength; block += step)
             {
-                if (EqualInt32(data, block, otherBlock, DATA_BLOCK_LENGTH))
+                if (EqualInt32(data, block, otherBlock, DataBlockLength))
                 {
                     return block;
                 }
@@ -733,11 +733,11 @@ namespace ICU4N.Impl
         /// <param name="manipulate">Fold implementation.</param>
         private void Fold(IDataManipulate manipulate)
         {
-            int[] leadIndexes = new int[SURROGATE_BLOCK_COUNT_];
+            int[] leadIndexes = new int[SurrogateBlockCount];
             int[] index = m_index_;
             // copy the lead surrogate indexes into a temporary array
-            System.Array.Copy(index, 0xd800 >> SHIFT_, leadIndexes, 0,
-                             SURROGATE_BLOCK_COUNT_);
+            System.Array.Copy(index, 0xd800 >> Shift, leadIndexes, 0,
+                             SurrogateBlockCount);
 
             // set all values for lead surrogate code *units* to leadUnitValue
             // so that by default runtime lookups will find no data for associated
@@ -761,11 +761,11 @@ namespace ICU4N.Impl
                     // data table overflow
                     throw new InvalidOperationException("Internal error: Out of memory space");
                 }
-                FillBlock(block, 0, DATA_BLOCK_LENGTH, m_leadUnitValue_, true);
+                FillBlock(block, 0, DataBlockLength, m_leadUnitValue_, true);
                 // negative block number to indicate that it is a repeat block
                 block = -block;
             }
-            for (int c = (0xd800 >> SHIFT_); c < (0xdc00 >> SHIFT_); ++c)
+            for (int c = (0xd800 >> Shift); c < (0xdc00 >> Shift); ++c)
             {
                 m_index_[c] = block;
             }
@@ -777,23 +777,23 @@ namespace ICU4N.Impl
             // no-op).
             // Later all folded index blocks are moved up one to insert the copied
             // lead surrogate indexes.
-            int indexLength = BMP_INDEX_LENGTH_;
+            int indexLength = BMPIndexLength;
             // search for any index (stage 1) entries for supplementary code points 
             for (int c = 0x10000; c < 0x110000;)
             {
-                if (index[c >> SHIFT_] != 0)
+                if (index[c >> Shift] != 0)
                 {
                     // there is data, treat the full block for a lead surrogate
                     c &= ~0x3ff;
                     // is there an identical index block?
-                    block = FindSameIndexBlock(index, indexLength, c >> SHIFT_);
+                    block = FindSameIndexBlock(index, indexLength, c >> Shift);
 
                     // get a folded value for [c..c+0x400[ and,
                     // if different from the value for the lead surrogate code 
                     // point, set it for the lead surrogate code unit
 
                     int value = manipulate.GetFoldedValue(c,
-                                                          block + SURROGATE_BLOCK_COUNT_);
+                                                          block + SurrogateBlockCount);
                     if (value != GetValue(UTF16.GetLeadSurrogate(c)))
                     {
                         if (!SetValue(UTF16.GetLeadSurrogate(c), value))
@@ -807,16 +807,16 @@ namespace ICU4N.Impl
                         {
                             // move the actual index (stage 1) entries from the 
                             // supplementary position to the new one
-                            System.Array.Copy(index, c >> SHIFT_, index, indexLength,
-                                     SURROGATE_BLOCK_COUNT_);
-                            indexLength += SURROGATE_BLOCK_COUNT_;
+                            System.Array.Copy(index, c >> Shift, index, indexLength,
+                                     SurrogateBlockCount);
+                            indexLength += SurrogateBlockCount;
                         }
                     }
                     c += 0x400;
                 }
                 else
                 {
-                    c += DATA_BLOCK_LENGTH;
+                    c += DataBlockLength;
                 }
             }
 
@@ -828,18 +828,18 @@ namespace ICU4N.Impl
             // In fact, it can only ever become n==1024 with completely unfoldable 
             // data and the additional block of duplicated values for lead 
             // surrogates.
-            if (indexLength >= MAX_INDEX_LENGTH_)
+            if (indexLength >= MaxIndexLength)
             {
                 throw new IndexOutOfRangeException("Index table overflow");
             }
             // make space for the lead surrogate index block and insert it between 
             // the BMP indexes and the folded ones
-            System.Array.Copy(index, BMP_INDEX_LENGTH_, index,
-                     BMP_INDEX_LENGTH_ + SURROGATE_BLOCK_COUNT_,
-                     indexLength - BMP_INDEX_LENGTH_);
-            System.Array.Copy(leadIndexes, 0, index, BMP_INDEX_LENGTH_,
-                             SURROGATE_BLOCK_COUNT_);
-            indexLength += SURROGATE_BLOCK_COUNT_;
+            System.Array.Copy(index, BMPIndexLength, index,
+                     BMPIndexLength + SurrogateBlockCount,
+                     indexLength - BMPIndexLength);
+            System.Array.Copy(leadIndexes, 0, index, BMPIndexLength,
+                             SurrogateBlockCount);
+            indexLength += SurrogateBlockCount;
             m_indexLength_ = indexLength;
         }
 

@@ -28,7 +28,7 @@
 
         public virtual string GetID() // ICU4N TODO: Make property ?
         {
-            return key + LanguageTag.SEP + m_value;
+            return key + LanguageTag.Separator + m_value;
         }
 
         public override string ToString()

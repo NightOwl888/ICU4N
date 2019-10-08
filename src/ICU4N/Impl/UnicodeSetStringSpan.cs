@@ -18,27 +18,27 @@ namespace ICU4N.Impl
          * Which span() variant will be used? The object is either built for one variant and used once,
          * or built for all and may be used many times.
          */
-        public static readonly int WITH_COUNT = 0x40;  // spanAndCount() may be called
-        public static readonly int FWD = 0x20;
-        public static readonly int BACK = 0x10;
-        // public static final int UTF16      = 8;
-        public static readonly int CONTAINED = 2;
-        public static readonly int NOT_CONTAINED = 1;
+        public const int WithCount = 0x40;  // spanAndCount() may be called
+        public const int Forward = 0x20;
+        public const int Backward = 0x10;
+        // public const int Utf16      = 8;
+        public const int Contained = 2;
+        public const int NotContained = 1;
 
-        public static readonly int ALL = 0x7f;
+        public const int All = 0x7f;
 
-        public static readonly int FWD_UTF16_CONTAINED = FWD | /* UTF16 | */    CONTAINED;
-        public static readonly int FWD_UTF16_NOT_CONTAINED = FWD | /* UTF16 | */NOT_CONTAINED;
-        public static readonly int BACK_UTF16_CONTAINED = BACK | /* UTF16 | */    CONTAINED;
-        public static readonly int BACK_UTF16_NOT_CONTAINED = BACK | /* UTF16 | */NOT_CONTAINED;
+        public const int ForwardUtf16Contained = Forward | /* Utf16 | */    Contained;
+        public const int ForwardUtf16NotContained = Forward | /* Utf16 | */NotContained;
+        public const int BackwardUtf16Contained = Backward | /* Utf16 | */    Contained;
+        public const int BackwardUtf16NotContained = Backward | /* Utf16 | */NotContained;
 
         /**
-         * Special spanLength short values. (since Java has not unsigned byte type)
+         * Special spanLength short values. (since .NET has unsigned byte type, we don't need to use short like in Java)
          * All code points in the string are contained in the parent set.
          */
-        internal static readonly short ALL_CP_CONTAINED = 0xff; // ICU4N TODO: API - change to byte ?
+        internal const byte ALL_CP_CONTAINED = 0xff;
         /// <summary>The spanLength is >=0xfe.</summary>
-        internal static readonly short LONG_SPAN = (short)(ALL_CP_CONTAINED - 1); // ICU4N TODO: API - change to byte ?
+        internal const byte LONG_SPAN = (ALL_CP_CONTAINED - 1);
 
         /// <summary>Set for <see cref="Span(string, int, SpanCondition)"/>. Same as parent but without strings.</summary>
         private UnicodeSet spanSet;
@@ -81,9 +81,9 @@ namespace ICU4N.Impl
             // (We do not want to create multiple Iterator objects in each span().)
             // See ICU ticket #7454.
             strings = setStrings;
-            all = (which == ALL);
+            all = (which == All);
             spanSet.RetainAll(set);
-            if (0 != (which & NOT_CONTAINED))
+            if (0 != (which & NotContained))
             {
                 // Default to the same sets.
                 // addToSpanNotSet() will create a separate set if necessary.
@@ -118,7 +118,7 @@ namespace ICU4N.Impl
                 }
             }
             this.maxLength16 = maxLength16;
-            if (!someRelevant && (which & WITH_COUNT) == 0)
+            if (!someRelevant && (which & WithCount) == 0)
             {
                 return;
             }
@@ -167,13 +167,13 @@ namespace ICU4N.Impl
                 { // Relevant string.
                     if (true /* 0 != (which & UTF16) */)
                     {
-                        if (0 != (which & CONTAINED))
+                        if (0 != (which & Contained))
                         {
-                            if (0 != (which & FWD))
+                            if (0 != (which & Forward))
                             {
                                 spanLengths[i] = MakeSpanLengthByte(spanLength);
                             }
-                            if (0 != (which & BACK))
+                            if (0 != (which & Backward))
                             {
                                 spanLength = length16
                                         - spanSet.SpanBack(str, length16, SpanCondition.Contained);
@@ -186,17 +186,17 @@ namespace ICU4N.Impl
                                                                                          // flag.
                         }
                     }
-                    if (0 != (which & NOT_CONTAINED))
+                    if (0 != (which & NotContained))
                     {
                         // Add string start and end code points to the spanNotSet so that
                         // a span(while not contained) stops before any string.
                         int c;
-                        if (0 != (which & FWD))
+                        if (0 != (which & Forward))
                         {
                             c = str.CodePointAt(0);
                             AddToSpanNotSet(c);
                         }
-                        if (0 != (which & BACK))
+                        if (0 != (which & Backward))
                         {
                             c = str.CodePointBefore(length16);
                             AddToSpanNotSet(c);
@@ -226,7 +226,7 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Constructs a copy of an existing UnicodeSetStringSpan.
-        /// Assumes which==<see cref="ALL"/> for a frozen set.
+        /// Assumes which==<see cref="All"/> for a frozen set.
         /// </summary>
         public UnicodeSetStringSpan(UnicodeSetStringSpan otherStringSpan,
                 IList<string> newParentSetStrings)
@@ -404,10 +404,10 @@ namespace ICU4N.Impl
 
 
 
-        internal static short MakeSpanLengthByte(int spanLength)
+        internal static byte MakeSpanLengthByte(int spanLength) // ICU4N specific - changed return type to byte (since we have unsigned byte in .NET)
         {
             // 0xfe==UnicodeSetStringSpan::LONG_SPAN
-            return spanLength < LONG_SPAN ? (short)spanLength : LONG_SPAN;
+            return spanLength < LONG_SPAN ? (byte)spanLength : LONG_SPAN;
         }
 
         // ICU4N specific - Matches16(ICharSequence s, int start, string t, int length) moved to UnicodeSetStringSpanExtension.tt

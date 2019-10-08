@@ -68,7 +68,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Loader for bundle instances, for caching.
         /// </summary>
-        private abstract class Loader// ICU4N TODO: API - de-nest ?
+        private abstract class Loader
         {
             internal abstract ICUResourceBundle Load();
         }

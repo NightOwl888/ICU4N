@@ -199,7 +199,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) >= UPPER)
+                if (GetTypeFromProps(props) >= Upper)
                 {
                     c += GetDelta(props);
                 }
@@ -221,7 +221,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) == LOWER)
+                if (GetTypeFromProps(props) == Lower)
                 {
                     c += GetDelta(props);
                 }
@@ -243,7 +243,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) == LOWER)
+                if (GetTypeFromProps(props) == Lower)
                 {
                     c += GetDelta(props);
                 }
@@ -317,7 +317,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) != NONE)
+                if (GetTypeFromProps(props) != None)
                 {
                     /* add the one simple case mapping, no matter what type it is */
                     int delta = GetDelta(props);
@@ -524,7 +524,7 @@ namespace ICU4N.Impl
             return false; /* string not found */
         }
 
-        /// <returns><see cref="NONE"/>, <see cref="LOWER"/>, <see cref="UPPER"/>, <see cref="TITLE"/></returns>
+        /// <returns><see cref="None"/>, <see cref="Lower"/>, <see cref="Upper"/>, <see cref="Title"/></returns>
         public int GetType(int c)
         {
             return GetTypeFromProps(trie.Get(c));
@@ -777,7 +777,7 @@ namespace ICU4N.Impl
                 {
                     /* case-ignorable, continue with the loop */
                 }
-                else if (type != NONE)
+                else if (type != None)
                 {
                     return true; /* followed by cased letter */
                 }
@@ -1018,7 +1018,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) >= UPPER)
+                if (GetTypeFromProps(props) >= Upper)
                 {
                     c += GetDelta(props);
                 }
@@ -1100,15 +1100,15 @@ namespace ICU4N.Impl
             switch (which)
             {
                 case UProperty.Lowercase:
-                    return LOWER == GetType(c);
+                    return Lower == GetType(c);
                 case UProperty.Uppercase:
-                    return UPPER == GetType(c);
+                    return Upper == GetType(c);
                 case UProperty.Soft_Dotted:
                     return IsSoftDotted(c);
                 case UProperty.Case_Sensitive:
                     return IsCaseSensitive(c);
                 case UProperty.Cased:
-                    return NONE != GetType(c);
+                    return None != GetType(c);
                 case UProperty.Case_Ignorable:
                     return (GetTypeOrIgnorable(c) >> 2) != 0;
                 /*
@@ -1146,42 +1146,42 @@ namespace ICU4N.Impl
 
         // data members -------------------------------------------------------- ***
         private int[] indexes;
-        private String exceptions;
+        private string exceptions;
         private char[] unfold;
 
         private Trie2_16 trie;
 
         // data format constants ----------------------------------------------- ***
-        private static readonly String DATA_NAME = "ucase";
-        private static readonly String DATA_TYPE = "icu";
-        private static readonly String DATA_FILE_NAME = DATA_NAME + "." + DATA_TYPE;
+        private const string DATA_NAME = "ucase";
+        private const string DATA_TYPE = "icu";
+        private const string DATA_FILE_NAME = DATA_NAME + "." + DATA_TYPE;
 
         /// <summary>format "cAsE"</summary>
-        private static readonly int FMT = 0x63415345;
+        private const int FMT = 0x63415345;
 
         /* indexes into indexes[] */
-        //private static readonly int IX_INDEX_TOP=0;
-        //private static readonly int IX_LENGTH=1;
-        private static readonly int IX_TRIE_SIZE = 2;
-        private static readonly int IX_EXC_LENGTH = 3;
-        private static readonly int IX_UNFOLD_LENGTH = 4;
+        //private const int IX_INDEX_TOP=0;
+        //private const int IX_LENGTH=1;
+        private const int IX_TRIE_SIZE = 2;
+        private const int IX_EXC_LENGTH = 3;
+        private const int IX_UNFOLD_LENGTH = 4;
 
-        //private static readonly int IX_MAX_FULL_LENGTH=15;
-        private static readonly int IX_TOP = 16;
+        //private const int IX_MAX_FULL_LENGTH=15;
+        private const int IX_TOP = 16;
 
         // definitions for 16-bit case properties word ------------------------- ***
 
         /* 2-bit constants for types of cased characters */
-        public static readonly int TYPE_MASK = 3;
-        public static readonly int NONE = 0; // ICU4N TODO: Make into [Flags] enum ?
-        public static readonly int LOWER = 1;
-        public static readonly int UPPER = 2;
-        public static readonly int TITLE = 3;
+        public const int TypeMask = 3;
+        public const int None = 0; // ICU4N TODO: API Make into enum ?
+        public const int Lower = 1;
+        public const int Upper = 2;
+        public const int Title = 3;
 
-        /// <returns><see cref="NONE"/>, <see cref="LOWER"/>, <see cref="UPPER"/>, <see cref="TITLE"/></returns>
+        /// <returns><see cref="None"/>, <see cref="Lower"/>, <see cref="Upper"/>, <see cref="Title"/></returns>
         private static int GetTypeFromProps(int props)
         {
-            return props & TYPE_MASK;
+            return props & TypeMask;
         }
 
         /// <summary>
@@ -1192,22 +1192,22 @@ namespace ICU4N.Impl
             return props & 7;
         }
 
-        internal static readonly int IGNORABLE = 4;
-        private static readonly int SENSITIVE = 8;
-        private static readonly int EXCEPTION = 0x10;
+        internal const int IGNORABLE = 4;
+        private const int SENSITIVE = 8;
+        private const int EXCEPTION = 0x10;
 
         // ICU4N TODO: API - make into [Flags] enum ?
-        private static readonly int DOT_MASK = 0x60;
-        //private static readonly int NO_DOT=        0;      /* normal characters with cc=0 */
-        private static readonly int SOFT_DOTTED = 0x20;   /* soft-dotted characters with cc=0 */
-        private static readonly int ABOVE = 0x40;   /* "above" accents with cc=230 */
-        private static readonly int OTHER_ACCENT = 0x60;   /* other accent character (0<cc!=230) */
+        private const int DOT_MASK = 0x60;
+        //private const int NO_DOT=        0;      /* normal characters with cc=0 */
+        private const int SOFT_DOTTED = 0x20;   /* soft-dotted characters with cc=0 */
+        private const int ABOVE = 0x40;   /* "above" accents with cc=230 */
+        private const int OTHER_ACCENT = 0x60;   /* other accent character (0<cc!=230) */
 
         /* no exception: bits 15..7 are a 9-bit signed case mapping delta */
-        private static readonly int DELTA_SHIFT = 7;
-        //private static readonly int DELTA_MASK=    0xff80;
-        //private static readonly int MAX_DELTA=     0xff;
-        //private static readonly int MIN_DELTA=     (-MAX_DELTA-1);
+        private const int DELTA_SHIFT = 7;
+        //private const int DELTA_MASK=    0xff80;
+        //private const int MAX_DELTA=     0xff;
+        //private const int MIN_DELTA=     (-MAX_DELTA-1);
 
         private static int GetDelta(int props)
         {
@@ -1215,74 +1215,68 @@ namespace ICU4N.Impl
         }
 
         /// <summary>exception: bits 15..5 are an unsigned 11-bit index into the exceptions array</summary>
-        private static readonly int EXC_SHIFT = 5;
-        //private static readonly int EXC_MASK=      0xffe0;
-        //private static readonly int MAX_EXCEPTIONS=((EXC_MASK>>EXC_SHIFT)+1);
+        private const int EXC_SHIFT = 5;
+        //private const int EXC_MASK=      0xffe0;
+        //private const int MAX_EXCEPTIONS=((EXC_MASK>>EXC_SHIFT)+1);
 
         /* definitions for 16-bit main exceptions word ------------------------------ */
 
         /// <summary>first 8 bits indicate values in optional slots</summary>
-        private static readonly int EXC_LOWER = 0;
-        private static readonly int EXC_FOLD = 1;
-        private static readonly int EXC_UPPER = 2;
-        private static readonly int EXC_TITLE = 3;
-        //private static readonly int EXC_4=4;           /* reserved */
-        //private static readonly int EXC_5=5;           /* reserved */
-        private static readonly int EXC_CLOSURE = 6;
-        private static readonly int EXC_FULL_MAPPINGS = 7;
-        //private static readonly int EXC_ALL_SLOTS=8;   /* one past the last slot */
+        private const int EXC_LOWER = 0;
+        private const int EXC_FOLD = 1;
+        private const int EXC_UPPER = 2;
+        private const int EXC_TITLE = 3;
+        //private const int EXC_4=4;           /* reserved */
+        //private const int EXC_5=5;           /* reserved */
+        private const int EXC_CLOSURE = 6;
+        private const int EXC_FULL_MAPPINGS = 7;
+        //private const int EXC_ALL_SLOTS=8;   /* one past the last slot */
 
         /// <summary>each slot is 2 uint16_t instead of 1</summary>
-        private static readonly int EXC_DOUBLE_SLOTS = 0x100;
+        private const int EXC_DOUBLE_SLOTS = 0x100;
 
         /* reserved: exception bits 11..9 */
 
         /// <summary>EXC_DOT_MASK=<see cref="DOT_MASK"/>&lt;&lt;<see cref="EXC_DOT_SHIFT"/></summary>
-        private static readonly int EXC_DOT_SHIFT = 7;
+        private const int EXC_DOT_SHIFT = 7;
 
         /* normally stored in the main word, but pushed out for larger exception indexes */
-        //private static readonly int EXC_DOT_MASK=              0x3000;
-        //private static readonly int EXC_NO_DOT=                0;
-        //private static readonly int EXC_SOFT_DOTTED=           0x1000;
-        //private static readonly int EXC_ABOVE=                 0x2000; /* "above" accents with cc=230 */
-        //private static readonly int EXC_OTHER_ACCENT=          0x3000; /* other character (0<cc!=230) */
+        //private const int EXC_DOT_MASK=              0x3000;
+        //private const int EXC_NO_DOT=                0;
+        //private const int EXC_SOFT_DOTTED=           0x1000;
+        //private const int EXC_ABOVE=                 0x2000; /* "above" accents with cc=230 */
+        //private const int EXC_OTHER_ACCENT=          0x3000; /* other character (0<cc!=230) */
 
         /* complex/conditional mappings */
-        private static readonly int EXC_CONDITIONAL_SPECIAL = 0x4000;
-        private static readonly int EXC_CONDITIONAL_FOLD = 0x8000;
+        private const int EXC_CONDITIONAL_SPECIAL = 0x4000;
+        private const int EXC_CONDITIONAL_FOLD = 0x8000;
 
         /* definitions for lengths word for full case mappings */
-        private static readonly int FULL_LOWER = 0xf;
-        //private static readonly int FULL_FOLDING=  0xf0;
-        //private static readonly int FULL_UPPER=    0xf00;
-        //private static readonly int FULL_TITLE=    0xf000;
+        private const int FULL_LOWER = 0xf;
+        //private const int FULL_FOLDING=  0xf0;
+        //private const int FULL_UPPER=    0xf00;
+        //private const int FULL_TITLE=    0xf000;
 
         /* maximum lengths */
-        //private static readonly int FULL_MAPPINGS_MAX_LENGTH=4*0xf;
-        private static readonly int CLOSURE_MAX_LENGTH = 0xf;
+        //private const int FULL_MAPPINGS_MAX_LENGTH=4*0xf;
+        private const int CLOSURE_MAX_LENGTH = 0xf;
 
         /* constants for reverse case folding ("unfold") data */
-        private static readonly int UNFOLD_ROWS = 0;
-        private static readonly int UNFOLD_ROW_WIDTH = 1;
-        private static readonly int UNFOLD_STRING_WIDTH = 2;
-
-        private static readonly UCaseProps instance;
+        private const int UNFOLD_ROWS = 0;
+        private const int UNFOLD_ROW_WIDTH = 1;
+        private const int UNFOLD_STRING_WIDTH = 2;
 
         /// <summary>
         /// Public singleton instance.
         /// </summary>
-        public static UCaseProps Instance
-        {
-            get { return instance; }
-        }
+        public static UCaseProps Instance { get; private set; } = LoadSingletonInstance();
 
-        // This static initializer block must be placed after
-        // other static member initialization
-        static UCaseProps()
+        // ICU4N: Avoid static constructors
+        private static UCaseProps LoadSingletonInstance()
         {
             try
             {
-                instance = new UCaseProps();
+                return new UCaseProps();
             }
             catch (IOException e)
             {

@@ -1431,22 +1431,22 @@ namespace ICU4N.Globalization
         {
             if (codepoint >= UChar.MinValue & codepoint <= UChar.MaxValue)
             {
-                int scriptX = UCharacterProperty.Instance.GetAdditional(codepoint, 0) & UCharacterProperty.SCRIPT_X_MASK;
-                if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)
+                int scriptX = UCharacterProperty.Instance.GetAdditional(codepoint, 0) & UCharacterProperty.ScriptXMask;
+                if (scriptX < UCharacterProperty.ScriptXWithCommon)
                 {
                     return scriptX;
                 }
-                else if (scriptX < UCharacterProperty.SCRIPT_X_WITH_INHERITED)
+                else if (scriptX < UCharacterProperty.ScriptXWithInherited)
                 {
                     return UScript.Common;
                 }
-                else if (scriptX < UCharacterProperty.SCRIPT_X_WITH_OTHER)
+                else if (scriptX < UCharacterProperty.ScriptXWithOther)
                 {
                     return UScript.Inherited;
                 }
                 else
                 {
-                    return UCharacterProperty.Instance.m_scriptExtensions_[scriptX & UCharacterProperty.SCRIPT_MASK_];
+                    return UCharacterProperty.Instance.m_scriptExtensions_[scriptX & UCharacterProperty.ScriptMask];
                 }
             }
             else
@@ -1469,15 +1469,15 @@ namespace ICU4N.Globalization
         /// <stable>ICU 49</stable>
         public static bool HasScript(int c, int sc)
         {
-            int scriptX = UCharacterProperty.Instance.GetAdditional(c, 0) & UCharacterProperty.SCRIPT_X_MASK;
-            if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)
+            int scriptX = UCharacterProperty.Instance.GetAdditional(c, 0) & UCharacterProperty.ScriptXMask;
+            if (scriptX < UCharacterProperty.ScriptXWithCommon)
             {
                 return sc == scriptX;
             }
 
             char[] scriptExtensions = UCharacterProperty.Instance.m_scriptExtensions_;
-            int scx = scriptX & UCharacterProperty.SCRIPT_MASK_;  // index into scriptExtensions
-            if (scriptX >= UCharacterProperty.SCRIPT_X_WITH_OTHER)
+            int scx = scriptX & UCharacterProperty.ScriptMask;  // index into scriptExtensions
+            if (scriptX >= UCharacterProperty.ScriptXWithOther)
             {
                 scx = scriptExtensions[scx + 1];
             }
@@ -1530,16 +1530,16 @@ namespace ICU4N.Globalization
         public static int GetScriptExtensions(int c, BitSet set) // ICU4N TODO: API - can we put these in BitArray?
         {
             set.Clear();
-            int scriptX = UCharacterProperty.Instance.GetAdditional(c, 0) & UCharacterProperty.SCRIPT_X_MASK;
-            if (scriptX < UCharacterProperty.SCRIPT_X_WITH_COMMON)
+            int scriptX = UCharacterProperty.Instance.GetAdditional(c, 0) & UCharacterProperty.ScriptXMask;
+            if (scriptX < UCharacterProperty.ScriptXWithCommon)
             {
                 set.Set(scriptX);
                 return scriptX;
             }
 
             char[] scriptExtensions = UCharacterProperty.Instance.m_scriptExtensions_;
-            int scx = scriptX & UCharacterProperty.SCRIPT_MASK_;  // index into scriptExtensions
-            if (scriptX >= UCharacterProperty.SCRIPT_X_WITH_OTHER)
+            int scx = scriptX & UCharacterProperty.ScriptMask;  // index into scriptExtensions
+            if (scriptX >= UCharacterProperty.ScriptXWithOther)
             {
                 scx = scriptExtensions[scx + 1];
             }

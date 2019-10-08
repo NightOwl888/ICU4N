@@ -50,7 +50,7 @@ namespace ICU4N.Impl
         /// <param name="leadUnitValue">The value for lead surrogate code _units_ that do not have associated supplementary data.</param>
         /// <param name="dataManipulate">Object which provides methods to parse the char data.</param>
         public CharTrie(int initialValue, int leadUnitValue, IDataManipulate dataManipulate)
-                : base(new char[BMP_INDEX_LENGTH + SURROGATE_BLOCK_COUNT], HEADER_OPTIONS_LATIN1_IS_LINEAR_MASK_, dataManipulate)
+                : base(new char[BMPIndexLength + SurrogateBlockCount], HeaderOptionsLatin1IsLinearMask, dataManipulate)
         {
             int dataLength, latin1Length, i, limit;
             char block;
@@ -58,13 +58,13 @@ namespace ICU4N.Impl
             /* calculate the actual size of the dummy trie data */
 
             /* max(Latin-1, block 0) */
-            dataLength = latin1Length = INDEX_STAGE_1_SHIFT_ <= 8 ? 256 : DATA_BLOCK_LENGTH;
+            dataLength = latin1Length = IndexStage1Shift <= 8 ? 256 : DataBlockLength;
             if (leadUnitValue != initialValue)
             {
-                dataLength += DATA_BLOCK_LENGTH;
+                dataLength += DataBlockLength;
             }
             m_data_ = new char[dataLength];
-            m_dataLength_ = dataLength;
+            m_dataLength = dataLength;
 
             m_initialValue_ = (char)initialValue;
 
@@ -81,16 +81,16 @@ namespace ICU4N.Impl
             if (leadUnitValue != initialValue)
             {
                 /* indexes for lead surrogate code units to the block after Latin-1 */
-                block = (char)(latin1Length >> INDEX_STAGE_2_SHIFT_);
-                i = 0xd800 >> INDEX_STAGE_1_SHIFT_;
-                limit = 0xdc00 >> INDEX_STAGE_1_SHIFT_;
+                block = (char)(latin1Length >> IndexStage2Shift);
+                i = 0xd800 >> IndexStage1Shift;
+                limit = 0xdc00 >> IndexStage1Shift;
                 for (; i < limit; ++i)
                 {
-                    m_index_[i] = block;
+                    m_index[i] = block;
                 }
 
                 /* data for lead surrogate code units */
-                limit = latin1Length + DATA_BLOCK_LENGTH;
+                limit = latin1Length + DataBlockLength;
                 for (i = latin1Length; i < limit; ++i)
                 {
                     m_data_[i] = (char)leadUnitValue;
@@ -116,8 +116,8 @@ namespace ICU4N.Impl
             if (0 <= ch && ch < UTF16.LeadSurrogateMinValue)
             {
                 // copy of getRawOffset()
-                offset = (m_index_[ch >> INDEX_STAGE_1_SHIFT_] << INDEX_STAGE_2_SHIFT_)
-                        + (ch & INDEX_STAGE_3_MASK_);
+                offset = (m_index[ch >> IndexStage1Shift] << IndexStage2Shift)
+                        + (ch & IndexStage3Mask);
                 return m_data_[offset];
             }
 
@@ -181,16 +181,16 @@ namespace ICU4N.Impl
         /// <returns>Trie data value associated with the trail character.</returns>
         public char GetTrailValue(int leadvalue, char trail)
         {
-            if (m_dataManipulate_ == null)
+            if (m_dataManipulate == null)
             {
                 throw new ArgumentNullException(
                                  "The field DataManipulate in this Trie is null");
             }
-            int offset = m_dataManipulate_.GetFoldingOffset(leadvalue);
+            int offset = m_dataManipulate.GetFoldingOffset(leadvalue);
             if (offset > 0)
             {
                 return m_data_[GetRawOffset(offset,
-                                            (char)(trail & SURROGATE_MASK_))];
+                                            (char)(trail & SurrogateMask))];
             }
             return m_initialValue_;
         }
@@ -204,7 +204,7 @@ namespace ICU4N.Impl
         /// <returns>Value associated with latin character.</returns>
         public char GetLatin1LinearValue(char ch)
         {
-            return m_data_[INDEX_STAGE_3_MASK_ + 1 + m_dataOffset_ + ch];
+            return m_data_[IndexStage3Mask + 1 + m_dataOffset + ch];
         }
 
         /// <summary>
@@ -240,10 +240,10 @@ namespace ICU4N.Impl
         /// <param name="bytes">Buffer containing trie data.</param>
         protected override sealed void Unserialize(ByteBuffer bytes) // ICU4N TODO: API - make internal and add overload that accepts byte[]
         {
-            int indexDataLength = m_dataOffset_ + m_dataLength_;
-            m_index_ = ICUBinary.GetChars(bytes, indexDataLength, 0);
-            m_data_ = m_index_;
-            m_initialValue_ = m_data_[m_dataOffset_];
+            int indexDataLength = m_dataOffset + m_dataLength;
+            m_index = ICUBinary.GetChars(bytes, indexDataLength, 0);
+            m_data_ = m_index;
+            m_initialValue_ = m_data_[m_dataOffset];
         }
 
         /// <summary>
@@ -254,19 +254,19 @@ namespace ICU4N.Impl
         /// <returns>Offset to data.</returns>
         protected override sealed int GetSurrogateOffset(char lead, char trail)
         {
-            if (m_dataManipulate_ == null)
+            if (m_dataManipulate == null)
             {
                 throw new ArgumentNullException(
                                  "The field DataManipulate in this Trie is null");
             }
 
             // get fold position for the next trail surrogate
-            int offset = m_dataManipulate_.GetFoldingOffset(GetLeadValue(lead));
+            int offset = m_dataManipulate.GetFoldingOffset(GetLeadValue(lead));
 
             // get the real data from the folded lead/trail units
             if (offset > 0)
             {
-                return GetRawOffset(offset, (char)(trail & SURROGATE_MASK_));
+                return GetRawOffset(offset, (char)(trail & SurrogateMask));
             }
 
             // return -1 if there is an error, in this case we return the default

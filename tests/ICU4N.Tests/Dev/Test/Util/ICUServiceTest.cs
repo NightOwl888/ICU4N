@@ -814,7 +814,7 @@ namespace ICU4N.Dev.Test.Util
             target = service.Get(de_US);
             confirmEqual("test de_US 2", "german", target);
 
-            target = service.Get(de_US, LocaleKey.KIND_ANY);
+            target = service.Get(de_US, LocaleKey.KindAny);
             confirmEqual("test de_US 3", "german", target);
 
             target = service.Get(de_US, 1234);
@@ -826,7 +826,7 @@ namespace ICU4N.Dev.Test.Util
             confirmEqual("test de_US 6", actualReturn[0], de);
 
             actualReturn[0] = null;
-            target = service.Get(de_US, LocaleKey.KIND_ANY, actualReturn);
+            target = service.Get(de_US, LocaleKey.KindAny, actualReturn);
             confirmEqual("test de_US 7", actualReturn[0], de);
 
             actualReturn[0] = null;

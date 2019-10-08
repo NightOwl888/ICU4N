@@ -79,7 +79,7 @@ namespace ICU4N.Dev.Test.Util
                     int value = m_builder_.GetValue(start);
                     if (m_builder_.IsInZeroBlock(start))
                     {
-                        start += TrieBuilder.DATA_BLOCK_LENGTH;
+                        start += TrieBuilder.DataBlockLength;
                     }
                     else
                     {

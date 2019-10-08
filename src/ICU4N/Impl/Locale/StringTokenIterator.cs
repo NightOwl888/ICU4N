@@ -3,7 +3,7 @@
 namespace ICU4N.Impl.Locale
 {
     /// <summary>
-    /// NOTE: This is equivalent to StringTokenEnumerator in ICU4J
+    /// NOTE: This is equivalent to StringTokenIterator in ICU4J
     /// </summary>
     public class StringTokenEnumerator
     {

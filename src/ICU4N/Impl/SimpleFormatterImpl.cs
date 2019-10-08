@@ -27,21 +27,21 @@ namespace ICU4N.Impl
         /// This is currently the only unused char value in compiled patterns,
         /// except it is the maximum value of the first unit (max arg +1).
         /// </summary>
-        private static readonly int ARG_NUM_LIMIT = 0x100;
-        private static readonly char LEN1_CHAR = (char)(ARG_NUM_LIMIT + 1);
-        private static readonly char LEN2_CHAR = (char)(ARG_NUM_LIMIT + 2);
-        private static readonly char LEN3_CHAR = (char)(ARG_NUM_LIMIT + 3);
+        private const int ARG_NUM_LIMIT = 0x100;
+        private const char LEN1_CHAR = (char)(ARG_NUM_LIMIT + 1);
+        private const char LEN2_CHAR = (char)(ARG_NUM_LIMIT + 2);
+        private const char LEN3_CHAR = (char)(ARG_NUM_LIMIT + 3);
 
         /// <summary>
         /// Initial and maximum char/UChar value set for a text segment.
         /// Segment length char values are from ARG_NUM_LIMIT+1 to this value here.
         /// Normally 0xffff, but can be as small as ARG_NUM_LIMIT+1 for testing.
         /// </summary>
-        private static readonly char SEGMENT_LENGTH_ARGUMENT_CHAR = (char)0xffff;
+        private const char SEGMENT_LENGTH_ARGUMENT_CHAR = (char)0xffff;
         /// <summary>
         /// Maximum length of a text segment. Longer segments are split into shorter ones.
         /// </summary>
-        private static readonly int MAX_SEGMENT_LENGTH = SEGMENT_LENGTH_ARGUMENT_CHAR - ARG_NUM_LIMIT;
+        private const int MAX_SEGMENT_LENGTH = SEGMENT_LENGTH_ARGUMENT_CHAR - ARG_NUM_LIMIT;
 
         /// <summary>
         /// "Intern" some common patterns.

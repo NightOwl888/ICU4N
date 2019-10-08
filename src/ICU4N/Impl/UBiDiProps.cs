@@ -286,47 +286,47 @@ namespace ICU4N.Impl
         private Trie2_16 trie;
 
         // data format constants ----------------------------------------------- ***
-        private static readonly string DATA_NAME = "ubidi";
-        private static readonly string DATA_TYPE = "icu";
-        private static readonly string DATA_FILE_NAME = DATA_NAME + "." + DATA_TYPE;
+        private const string DATA_NAME = "ubidi";
+        private const string DATA_TYPE = "icu";
+        private const string DATA_FILE_NAME = DATA_NAME + "." + DATA_TYPE;
 
         /* format "BiDi" */
-        private static readonly int FMT = 0x42694469;
+        private const int FMT = 0x42694469;
 
         /* indexes into indexes[] */
-        //private static final int IX_INDEX_TOP=0;
-        //private static final int IX_LENGTH=1;
-        private static readonly int IX_TRIE_SIZE = 2;
-        private static readonly int IX_MIRROR_LENGTH = 3;
+        //private const int IX_INDEX_TOP=0;
+        //private const int IX_LENGTH=1;
+        private const int IX_TRIE_SIZE = 2;
+        private const int IX_MIRROR_LENGTH = 3;
 
-        private static readonly int IX_JG_START = 4;
-        private static readonly int IX_JG_LIMIT = 5;
-        private static readonly int IX_JG_START2 = 6;  /* new in format version 2.2, ICU 54 */
-        private static readonly int IX_JG_LIMIT2 = 7;
+        private const int IX_JG_START = 4;
+        private const int IX_JG_LIMIT = 5;
+        private const int IX_JG_START2 = 6;  /* new in format version 2.2, ICU 54 */
+        private const int IX_JG_LIMIT2 = 7;
 
-        private static readonly int IX_MAX_VALUES = 15;
-        private static readonly int IX_TOP = 16;
+        private const int IX_MAX_VALUES = 15;
+        private const int IX_TOP = 16;
 
         // definitions for 16-bit bidi/shaping properties word ----------------- ***
 
         /* CLASS_SHIFT=0, */     /* bidi class: 5 bits (4..0) */
-        private static readonly int JT_SHIFT = 5;           /* joining type: 3 bits (7..5) */
+        private const int JT_SHIFT = 5;           /* joining type: 3 bits (7..5) */
 
-        private static readonly int BPT_SHIFT = 8;          /* Bidi_Paired_Bracket_Type(bpt): 2 bits (9..8) */
+        private const int BPT_SHIFT = 8;          /* Bidi_Paired_Bracket_Type(bpt): 2 bits (9..8) */
 
-        private static readonly int JOIN_CONTROL_SHIFT = 10;
-        private static readonly int BIDI_CONTROL_SHIFT = 11;
+        private const int JOIN_CONTROL_SHIFT = 10;
+        private const int BIDI_CONTROL_SHIFT = 11;
 
-        private static readonly int IS_MIRRORED_SHIFT = 12;         /* 'is mirrored' */
-        private static readonly int MIRROR_DELTA_SHIFT = 13;        /* bidi mirroring delta: 3 bits (15..13) */
+        private const int IS_MIRRORED_SHIFT = 12;         /* 'is mirrored' */
+        private const int MIRROR_DELTA_SHIFT = 13;        /* bidi mirroring delta: 3 bits (15..13) */
 
-        private static readonly int MAX_JG_SHIFT = 16;              /* max JG value in indexes[MAX_VALUES_INDEX] bits 23..16 */
+        private const int MAX_JG_SHIFT = 16;              /* max JG value in indexes[MAX_VALUES_INDEX] bits 23..16 */
 
-        private static readonly int CLASS_MASK = 0x0000001f;
-        private static readonly int JT_MASK = 0x000000e0;
-        private static readonly int BPT_MASK = 0x00000300;
+        private const int CLASS_MASK = 0x0000001f;
+        private const int JT_MASK = 0x000000e0;
+        private const int BPT_MASK = 0x00000300;
 
-        private static readonly int MAX_JG_MASK = 0x00ff0000;
+        private const int MAX_JG_MASK = 0x00ff0000;
 
         private static int GetClassFromProps(int props)
         {
@@ -341,15 +341,15 @@ namespace ICU4N.Impl
             return (short)props >> MIRROR_DELTA_SHIFT;
         }
 
-        private static readonly int ESC_MIRROR_DELTA = -4;
-        //private static readonly int MIN_MIRROR_DELTA=-3;
-        //private static readonly int MAX_MIRROR_DELTA=3;
+        private const int ESC_MIRROR_DELTA = -4;
+        //private const int MIN_MIRROR_DELTA=-3;
+        //private const int MAX_MIRROR_DELTA=3;
 
         // definitions for 32-bit mirror table entry --------------------------- ***
 
         /* the source Unicode code point takes 21 bits (20..0) */
-        private static readonly int MIRROR_INDEX_SHIFT = 21;
-        //private static final int MAX_MIRROR_INDEX=0x7ff;
+        private const int MIRROR_INDEX_SHIFT = 21;
+        //private const int MAX_MIRROR_INDEX=0x7ff;
 
         private static int GetMirrorCodePoint(int m)
         {

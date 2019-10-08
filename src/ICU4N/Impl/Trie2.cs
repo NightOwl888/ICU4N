@@ -537,7 +537,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Struct-like class for holding the results returned by a UTrie2 <see cref="ICharSequence"/> iterator.
+        /// Struct-like class for holding the results returned by a UTrie2  <see cref="CharSequenceEnumerator"/>.
         /// The iteration walks over a <see cref="ICharSequence"/>, and for each Unicode code point therein
         /// returns the character and its associated <see cref="Trie2"/> value.
         /// </summary>
@@ -825,41 +825,41 @@ namespace ICU4N.Impl
         /// These are needed for the runtime macros but users can treat these as
         /// implementation details and skip to the actual public API further below.
         /// </summary>
-        internal static readonly int UTRIE2_OPTIONS_VALUE_BITS_MASK = 0x000f;
+        internal const int UTRIE2_OPTIONS_VALUE_BITS_MASK = 0x000f;
 
 
         /// <summary>Shift size for getting the index-1 table offset.</summary>
-        internal static readonly int UTRIE2_SHIFT_1 = 6 + 5;
+        internal const int UTRIE2_SHIFT_1 = 6 + 5;
 
         /// <summary>Shift size for getting the index-2 table offset.</summary>
-        internal static readonly int UTRIE2_SHIFT_2 = 5;
+        internal const int UTRIE2_SHIFT_2 = 5;
 
         /// <summary>
         /// Difference between the two shift sizes,
         /// for getting an index-1 offset from an index-2 offset. 6=11-5
         /// </summary>
-        internal static readonly int UTRIE2_SHIFT_1_2 = UTRIE2_SHIFT_1 - UTRIE2_SHIFT_2;
+        internal const int UTRIE2_SHIFT_1_2 = UTRIE2_SHIFT_1 - UTRIE2_SHIFT_2;
 
         /// <summary>
         /// Number of index-1 entries for the BMP. 32=0x20
         /// This part of the index-1 table is omitted from the serialized form.
         /// </summary>
-        internal static readonly int UTRIE2_OMITTED_BMP_INDEX_1_LENGTH = 0x10000 >> UTRIE2_SHIFT_1;
+        internal const int UTRIE2_OMITTED_BMP_INDEX_1_LENGTH = 0x10000 >> UTRIE2_SHIFT_1;
 
         /// <summary>Number of code points per index-1 table entry. 2048=0x800</summary>
-        internal static readonly int UTRIE2_CP_PER_INDEX_1_ENTRY = 1 << UTRIE2_SHIFT_1;
+        internal const int UTRIE2_CP_PER_INDEX_1_ENTRY = 1 << UTRIE2_SHIFT_1;
 
         /// <summary>Number of entries in an index-2 block. 64=0x40</summary>
-        internal static readonly int UTRIE2_INDEX_2_BLOCK_LENGTH = 1 << UTRIE2_SHIFT_1_2;
+        internal const int UTRIE2_INDEX_2_BLOCK_LENGTH = 1 << UTRIE2_SHIFT_1_2;
 
         /// <summary>Mask for getting the lower bits for the in-index-2-block offset.</summary>
-        internal static readonly int UTRIE2_INDEX_2_MASK = UTRIE2_INDEX_2_BLOCK_LENGTH - 1;
+        internal const int UTRIE2_INDEX_2_MASK = UTRIE2_INDEX_2_BLOCK_LENGTH - 1;
 
         /// <summary>Number of entries in a data block. 32=0x20</summary>
-        internal static readonly int UTRIE2_DATA_BLOCK_LENGTH = 1 << UTRIE2_SHIFT_2;
+        internal const int UTRIE2_DATA_BLOCK_LENGTH = 1 << UTRIE2_SHIFT_2;
 
         /// <summary>Mask for getting the lower bits for the in-data-block offset.</summary>
-        internal static readonly int UTRIE2_DATA_MASK = UTRIE2_DATA_BLOCK_LENGTH - 1;
+        internal const int UTRIE2_DATA_MASK = UTRIE2_DATA_BLOCK_LENGTH - 1;
 
         /// <summary>
         /// Shift size for shifting left the index array values.
@@ -867,10 +867,10 @@ namespace ICU4N.Impl
         /// of compactability.
         /// This requires data blocks to be aligned by <see cref="UTRIE2_DATA_GRANULARITY"/>.
         /// </summary>
-        internal static readonly int UTRIE2_INDEX_SHIFT = 2;
+        internal const int UTRIE2_INDEX_SHIFT = 2;
 
         /// <summary>The alignment size of a data block. Also the granularity for compaction.</summary>
-        internal static readonly int UTRIE2_DATA_GRANULARITY = 1 << UTRIE2_INDEX_SHIFT;
+        internal const int UTRIE2_DATA_GRANULARITY = 1 << UTRIE2_INDEX_SHIFT;
 
         /* Fixed layout of the first part of the index array. ------------------- */
 
@@ -878,7 +878,7 @@ namespace ICU4N.Impl
         /// The BMP part of the index-2 table is fixed and linear and starts at offset 0.
         /// Length=2048=0x800=0x10000>><see cref="UTRIE2_SHIFT_2"/>.
         /// </summary>
-        internal static readonly int UTRIE2_INDEX_2_OFFSET = 0;
+        internal const int UTRIE2_INDEX_2_OFFSET = 0;
 
         /// <summary>
         /// The part of the index-2 table for U+D800..U+DBFF stores values for
@@ -886,18 +886,18 @@ namespace ICU4N.Impl
         /// Values for lead surrogate code _points_ are indexed with this portion of the table.
         /// Length=32=0x20=0x400>><see cref="UTRIE2_SHIFT_2"/>. (There are 1024=0x400 lead surrogates.)
         /// </summary>
-        internal static readonly int UTRIE2_LSCP_INDEX_2_OFFSET = 0x10000 >> UTRIE2_SHIFT_2;
-        internal static readonly int UTRIE2_LSCP_INDEX_2_LENGTH = 0x400 >> UTRIE2_SHIFT_2;
+        internal const int UTRIE2_LSCP_INDEX_2_OFFSET = 0x10000 >> UTRIE2_SHIFT_2;
+        internal const int UTRIE2_LSCP_INDEX_2_LENGTH = 0x400 >> UTRIE2_SHIFT_2;
 
         /// <summary>Count the lengths of both BMP pieces. 2080=0x820</summary>
-        internal static readonly int UTRIE2_INDEX_2_BMP_LENGTH = UTRIE2_LSCP_INDEX_2_OFFSET + UTRIE2_LSCP_INDEX_2_LENGTH;
+        internal const int UTRIE2_INDEX_2_BMP_LENGTH = UTRIE2_LSCP_INDEX_2_OFFSET + UTRIE2_LSCP_INDEX_2_LENGTH;
 
         /// <summary>
         /// The 2-byte UTF-8 version of the index-2 table follows at offset 2080=0x820.
         /// Length 32=0x20 for lead bytes C0..DF, regardless of <see cref="UTRIE2_SHIFT_2"/>.
         /// </summary>
-        internal static readonly int UTRIE2_UTF8_2B_INDEX_2_OFFSET = UTRIE2_INDEX_2_BMP_LENGTH;
-        internal static readonly int UTRIE2_UTF8_2B_INDEX_2_LENGTH = 0x800 >> 6;  /* U+0800 is the first code point after 2-byte UTF-8 */
+        internal const int UTRIE2_UTF8_2B_INDEX_2_OFFSET = UTRIE2_INDEX_2_BMP_LENGTH;
+        internal const int UTRIE2_UTF8_2B_INDEX_2_LENGTH = 0x800 >> 6;  /* U+0800 is the first code point after 2-byte UTF-8 */
 
         /// <summary>
         /// The index-1 table, only used for supplementary code points, at offset 2112=0x840.
@@ -912,8 +912,8 @@ namespace ICU4N.Impl
         /// Both the index-1 table and the following part of the index-2 table
         /// are omitted completely if there is only BMP data.
         /// </summary>
-        internal static readonly int UTRIE2_INDEX_1_OFFSET = UTRIE2_UTF8_2B_INDEX_2_OFFSET + UTRIE2_UTF8_2B_INDEX_2_LENGTH;
-        internal static readonly int UTRIE2_MAX_INDEX_1_LENGTH = 0x100000 >> UTRIE2_SHIFT_1;
+        internal const int UTRIE2_INDEX_1_OFFSET = UTRIE2_UTF8_2B_INDEX_2_OFFSET + UTRIE2_UTF8_2B_INDEX_2_LENGTH;
+        internal const int UTRIE2_MAX_INDEX_1_LENGTH = 0x100000 >> UTRIE2_SHIFT_1;
 
         /*
          * Fixed layout of the first part of the data array. -----------------------
@@ -925,10 +925,10 @@ namespace ICU4N.Impl
         /// Used with linear access for single bytes 0..0xbf for simple error handling.
         /// Length 64=0x40, not <see cref="UTRIE2_DATA_BLOCK_LENGTH"/>.
         /// </summary>
-        internal static readonly int UTRIE2_BAD_UTF8_DATA_OFFSET = 0x80;
+        internal const int UTRIE2_BAD_UTF8_DATA_OFFSET = 0x80;
 
         /// <summary>The start of non-linear-ASCII data blocks, at offset 192=0xc0.</summary>
-        internal static readonly int UTRIE2_DATA_START_OFFSET = 0xc0;
+        internal const int UTRIE2_DATA_START_OFFSET = 0xc0;
 
         /* Building a Trie2 ---------------------------------------------------------- */
 
@@ -943,8 +943,8 @@ namespace ICU4N.Impl
         /// and the supplementary index-1 table.
         /// Round up to <see cref="UTRIE2_INDEX_2_BLOCK_LENGTH"/> for proper compacting.
         /// </summary>
-        internal static readonly int UNEWTRIE2_INDEX_GAP_OFFSET = UTRIE2_INDEX_2_BMP_LENGTH;
-        internal static readonly int UNEWTRIE2_INDEX_GAP_LENGTH =
+        internal const int UNEWTRIE2_INDEX_GAP_OFFSET = UTRIE2_INDEX_2_BMP_LENGTH;
+        internal const int UNEWTRIE2_INDEX_GAP_LENGTH =
             ((UTRIE2_UTF8_2B_INDEX_2_LENGTH + UTRIE2_MAX_INDEX_1_LENGTH) + UTRIE2_INDEX_2_MASK) &
             ~UTRIE2_INDEX_2_MASK;
 
@@ -955,20 +955,20 @@ namespace ICU4N.Impl
         /// plus the build-time index gap,
         /// plus the null index-2 block.
         /// </summary>
-        internal static readonly int UNEWTRIE2_MAX_INDEX_2_LENGTH =
+        internal const int UNEWTRIE2_MAX_INDEX_2_LENGTH =
             (0x110000 >> UTRIE2_SHIFT_2) +
             UTRIE2_LSCP_INDEX_2_LENGTH +
             UNEWTRIE2_INDEX_GAP_LENGTH +
             UTRIE2_INDEX_2_BLOCK_LENGTH;
 
-        internal static readonly int UNEWTRIE2_INDEX_1_LENGTH = 0x110000 >> UTRIE2_SHIFT_1;
+        internal const int UNEWTRIE2_INDEX_1_LENGTH = 0x110000 >> UTRIE2_SHIFT_1;
 
         /// <summary>
         /// Maximum length of the build-time data array.
         /// One entry per 0x110000 code points, plus the illegal-UTF-8 block and the null block,
         /// plus values for the 0x400 surrogate code units.
         /// </summary>
-        internal static readonly int UNEWTRIE2_MAX_DATA_LENGTH = (0x110000 + 0x40 + 0x40 + 0x400);
+        internal const int UNEWTRIE2_MAX_DATA_LENGTH = (0x110000 + 0x40 + 0x40 + 0x400);
 
         /// <summary>
         /// Implementation class for an enumerator over a <see cref="Trie2"/>.

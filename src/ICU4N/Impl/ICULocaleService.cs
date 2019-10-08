@@ -31,12 +31,12 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Convenience override for callers using locales.  This calls
-        /// <see cref="Get(ULocale, int, ULocale[])"/> with <see cref="LocaleKey.KIND_ANY"/>
+        /// <see cref="Get(ULocale, int, ULocale[])"/> with <see cref="LocaleKey.KindAny"/>
         /// for kind and null for actualReturn.
         /// </summary>
         public virtual object Get(ULocale locale) // ICU4N TODO: API - Use indexer?
         {
-            return Get(locale, LocaleKey.KIND_ANY, null);
+            return Get(locale, LocaleKey.KindAny, null);
         }
 
         /// <summary>
@@ -50,11 +50,11 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Convenience override for callers using locales.  This calls
-        /// <see cref="Get(ULocale, int, ULocale[])"/> with <see cref="LocaleKey.KIND_ANY"/> for kind.
+        /// <see cref="Get(ULocale, int, ULocale[])"/> with <see cref="LocaleKey.KindAny"/> for kind.
         /// </summary>
         public virtual object Get(ULocale locale, ULocale[] actualReturn)
         {
-            return Get(locale, LocaleKey.KIND_ANY, actualReturn);
+            return Get(locale, LocaleKey.KindAny, actualReturn);
         }
 
         /// <summary>
@@ -93,21 +93,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience override for callers using locales.  This calls
         /// <see cref="RegisterObject(object, ULocale, int, bool)"/>
-        /// passing <see cref="LocaleKey.KIND_ANY"/> for the kind, and true for the visibility.
+        /// passing <see cref="LocaleKey.KindAny"/> for the kind, and true for the visibility.
         /// </summary>
         public virtual IFactory RegisterObject(object obj, ULocale locale)
         {
-            return RegisterObject(obj, locale, LocaleKey.KIND_ANY, true);
+            return RegisterObject(obj, locale, LocaleKey.KindAny, true);
         }
 
         /// <summary>
         /// Convenience override for callers using locales.  This calls
         /// <see cref="RegisterObject(object, ULocale, int, bool)"/>
-        /// passing <see cref="LocaleKey.KIND_ANY"/> for the kind.
+        /// passing <see cref="LocaleKey.KindAny"/> for the kind.
         /// </summary>
         public virtual IFactory RegisterObject(Object obj, ULocale locale, bool visible)
         {
-            return RegisterObject(obj, locale, LocaleKey.KIND_ANY, visible);
+            return RegisterObject(obj, locale, LocaleKey.KindAny, visible);
         }
 
         /// <summary>
@@ -186,14 +186,14 @@ namespace ICU4N.Impl
             private string fallbackID;
             private string currentID;
 
-            public static readonly int KIND_ANY = -1; // ICU4N TODO: API rename to follow .NET Conventions
+            public static readonly int KindAny = -1;
 
             /// <summary>
             /// Create a <see cref="LocaleKey"/> with canonical primary and fallback IDs.
             /// </summary>
             public static LocaleKey CreateWithCanonicalFallback(string primaryID, string canonicalFallbackID)
             {
-                return CreateWithCanonicalFallback(primaryID, canonicalFallbackID, KIND_ANY);
+                return CreateWithCanonicalFallback(primaryID, canonicalFallbackID, KindAny);
             }
 
             /// <summary>
@@ -265,11 +265,11 @@ namespace ICU4N.Impl
             }
 
             /// <summary>
-            /// Return the prefix associated with the kind, or null if the kind is <see cref="KIND_ANY"/>.
+            /// Return the prefix associated with the kind, or null if the kind is <see cref="KindAny"/>.
             /// </summary>
             public virtual string Prefix
             {
-                get { return kind == KIND_ANY ? null : Kind.ToString(CultureInfo.InvariantCulture); }
+                get { return kind == KindAny ? null : Kind.ToString(CultureInfo.InvariantCulture); }
             }
 
             /// <summary>
@@ -306,7 +306,7 @@ namespace ICU4N.Impl
                 if (result != null)
                 {
                     StringBuilder buf = new StringBuilder(); // default capacity 16 is usually good enough
-                    if (kind != KIND_ANY)
+                    if (kind != KindAny)
                     {
                         buf.Append(Prefix);
                     }
@@ -572,7 +572,7 @@ namespace ICU4N.Impl
                 }
 
                 LocaleKey lkey = (LocaleKey)key;
-                if (kind != LocaleKey.KIND_ANY && kind != lkey.Kind)
+                if (kind != LocaleKey.KindAny && kind != lkey.Kind)
                 {
                     return null;
                 }

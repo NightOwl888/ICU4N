@@ -1079,7 +1079,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
+                                        UCaseProps.None == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1214,7 +1214,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
+                                        UCaseProps.None == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1349,7 +1349,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
+                                        UCaseProps.None == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1484,7 +1484,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
+                                        UCaseProps.None == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1619,7 +1619,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
+                                        UCaseProps.None == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1754,7 +1754,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
+                                        UCaseProps.None == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -1889,7 +1889,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
+                                        UCaseProps.None == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -2024,7 +2024,7 @@ namespace ICU4N.Impl
                             // or else stop with titleStart==titleLimit==index.
                             bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
                             while ((toCased ?
-                                        UCaseProps.NONE == UCaseProps.Instance.GetType(c) :
+                                        UCaseProps.None == UCaseProps.Instance.GetType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
                                     (c = iter.NextCaseMapCP()) >= 0) { }
                             // If c<0 then we have only uncased characters in [prev..index[
@@ -2408,7 +2408,7 @@ namespace ICU4N.Impl
                         // Case-ignorable, continue with the loop.
                         i += Character.CharCount(c);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         return true;  // Followed by cased letter.
                     }
@@ -2431,7 +2431,7 @@ namespace ICU4N.Impl
                         // Case-ignorable, continue with the loop.
                         i += Character.CharCount(c);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         return true;  // Followed by cased letter.
                     }
@@ -2454,7 +2454,7 @@ namespace ICU4N.Impl
                         // Case-ignorable, continue with the loop.
                         i += Character.CharCount(c);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         return true;  // Followed by cased letter.
                     }
@@ -2477,7 +2477,7 @@ namespace ICU4N.Impl
                         // Case-ignorable, continue with the loop.
                         i += Character.CharCount(c);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         return true;  // Followed by cased letter.
                     }
@@ -2515,7 +2515,7 @@ namespace ICU4N.Impl
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         // c is cased
                         nextState |= AFTER_CASED;
@@ -2691,7 +2691,7 @@ namespace ICU4N.Impl
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         // c is cased
                         nextState |= AFTER_CASED;
@@ -2867,7 +2867,7 @@ namespace ICU4N.Impl
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         // c is cased
                         nextState |= AFTER_CASED;
@@ -3043,7 +3043,7 @@ namespace ICU4N.Impl
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         // c is cased
                         nextState |= AFTER_CASED;
@@ -3219,7 +3219,7 @@ namespace ICU4N.Impl
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         // c is cased
                         nextState |= AFTER_CASED;
@@ -3395,7 +3395,7 @@ namespace ICU4N.Impl
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         // c is cased
                         nextState |= AFTER_CASED;
@@ -3571,7 +3571,7 @@ namespace ICU4N.Impl
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         // c is cased
                         nextState |= AFTER_CASED;
@@ -3747,7 +3747,7 @@ namespace ICU4N.Impl
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
                     }
-                    else if (type != UCaseProps.NONE)
+                    else if (type != UCaseProps.None)
                     {
                         // c is cased
                         nextState |= AFTER_CASED;

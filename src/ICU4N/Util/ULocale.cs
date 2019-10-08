@@ -3615,7 +3615,7 @@ namespace ICU4N.Util
                     InternalLocaleBuilder ilocbld = new InternalLocaleBuilder();
                     try
                     {
-                        ilocbld.SetLocale(BaseLocale.ROOT, exts);
+                        ilocbld.SetLocale(BaseLocale.Root, exts);
                         ilocbld.SetUnicodeLocaleKeyword("va", "posix");
                         exts = ilocbld.GetLocaleExtensions();
                     }
@@ -3639,28 +3639,28 @@ namespace ICU4N.Util
             subtag = tag.Script;
             if (subtag.Length > 0)
             {
-                buf.Append(LanguageTag.SEP);
+                buf.Append(LanguageTag.Separator);
                 buf.Append(LanguageTag.CanonicalizeScript(subtag));
             }
 
             subtag = tag.Region;
             if (subtag.Length > 0)
             {
-                buf.Append(LanguageTag.SEP);
+                buf.Append(LanguageTag.Separator);
                 buf.Append(LanguageTag.CanonicalizeRegion(subtag));
             }
 
             IList<string> subtags = tag.Variants;
             foreach (string s in subtags)
             {
-                buf.Append(LanguageTag.SEP);
+                buf.Append(LanguageTag.Separator);
                 buf.Append(LanguageTag.CanonicalizeVariant(s));
             }
 
             subtags = tag.Extensions;
             foreach (string s in subtags)
             {
-                buf.Append(LanguageTag.SEP);
+                buf.Append(LanguageTag.Separator);
                 buf.Append(LanguageTag.CanonicalizeExtension(s));
             }
 
@@ -3669,9 +3669,9 @@ namespace ICU4N.Util
             {
                 if (buf.Length > 0)
                 {
-                    buf.Append(LanguageTag.SEP);
+                    buf.Append(LanguageTag.Separator);
                 }
-                buf.Append(LanguageTag.PRIVATEUSE).Append(LanguageTag.SEP);
+                buf.Append(LanguageTag.Private_Use).Append(LanguageTag.Separator);
                 buf.Append(LanguageTag.CanonicalizePrivateuse(subtag));
             }
 
@@ -4455,7 +4455,7 @@ namespace ICU4N.Util
                 var kwitr = GetKeywords();
                 if (kwitr == null)
                 {
-                    extensions = LocaleExtensions.EMPTY_EXTENSIONS;
+                    extensions = LocaleExtensions.EmptyExtensions;
                 }
                 else
                 {
@@ -4506,7 +4506,7 @@ namespace ICU4N.Util
                             try
                             {
                                 intbld.SetExtension(key[0], GetKeywordValue(key).Replace("_",
-                                        LanguageTag.SEP));
+                                        LanguageTag.Separator));
                             }
                             catch (FormatException) // ICU4N TODO: Make a TrySet version so we don't have an expensive try catch
                             {

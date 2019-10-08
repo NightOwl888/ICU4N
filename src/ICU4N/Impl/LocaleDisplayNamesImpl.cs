@@ -37,14 +37,14 @@ namespace ICU4N.Impl
         /// <summary>
         /// Capitalization context usage types for locale display names
         /// </summary>
-        private enum CapitalizationContextUsage // ICU4N TODO: API - change case to follow .NET Conventions ?
+        private enum CapitalizationContextUsage
         {
-            LANGUAGE,
-            SCRIPT,
-            TERRITORY,
-            VARIANT,
-            KEY,
-            KEYVALUE
+            Language,
+            Script,
+            Territory,
+            Variant,
+            Key,
+            KeyValue
         }
 
         /// <summary>
@@ -60,12 +60,12 @@ namespace ICU4N.Impl
         {
             contextUsageTypeMap = new Dictionary<string, CapitalizationContextUsage>
             {
-                {"languages", CapitalizationContextUsage.LANGUAGE},
-                {"script",    CapitalizationContextUsage.SCRIPT},
-                {"territory", CapitalizationContextUsage.TERRITORY},
-                {"variant",   CapitalizationContextUsage.VARIANT},
-                {"key",       CapitalizationContextUsage.KEY},
-                {"keyValue",  CapitalizationContextUsage.KEYVALUE},
+                {"languages", CapitalizationContextUsage.Language},
+                {"script",    CapitalizationContextUsage.Script},
+                {"territory", CapitalizationContextUsage.Territory},
+                {"variant",   CapitalizationContextUsage.Variant},
+                {"key",       CapitalizationContextUsage.Key},
+                {"keyValue",  CapitalizationContextUsage.KeyValue},
             };
         }
         /// <summary>
@@ -472,7 +472,7 @@ namespace ICU4N.Impl
                         format, resultName, resultRemainder);
             }
 
-            return AdjustForUsageAndContext(CapitalizationContextUsage.LANGUAGE, resultName);
+            return AdjustForUsageAndContext(CapitalizationContextUsage.Language, resultName);
         }
 
         private string LocaleIdName(string localeId)
@@ -500,10 +500,10 @@ namespace ICU4N.Impl
                 string langName = langData.Get("Languages%short", lang);
                 if (langName != null && !langName.Equals(lang))
                 {
-                    return AdjustForUsageAndContext(CapitalizationContextUsage.LANGUAGE, langName);
+                    return AdjustForUsageAndContext(CapitalizationContextUsage.Language, langName);
                 }
             }
-            return AdjustForUsageAndContext(CapitalizationContextUsage.LANGUAGE, langData.Get("Languages", lang));
+            return AdjustForUsageAndContext(CapitalizationContextUsage.Language, langData.Get("Languages", lang));
         }
 
         public override string ScriptDisplayName(string script)
@@ -516,12 +516,12 @@ namespace ICU4N.Impl
                     str = langData.Get("Scripts%short", script);
                     if (str != null && !str.Equals(script))
                     {
-                        return AdjustForUsageAndContext(CapitalizationContextUsage.SCRIPT, str);
+                        return AdjustForUsageAndContext(CapitalizationContextUsage.Script, str);
                     }
                 }
                 str = langData.Get("Scripts", script);
             }
-            return AdjustForUsageAndContext(CapitalizationContextUsage.SCRIPT, str);
+            return AdjustForUsageAndContext(CapitalizationContextUsage.Script, str);
         }
 
         private string ScriptDisplayNameInContext(string script, bool skipAdjust)
@@ -531,11 +531,11 @@ namespace ICU4N.Impl
                 string scriptName2 = langData.Get("Scripts%short", script);
                 if (scriptName2 != null && !scriptName2.Equals(script))
                 {
-                    return skipAdjust ? scriptName2 : AdjustForUsageAndContext(CapitalizationContextUsage.SCRIPT, scriptName2);
+                    return skipAdjust ? scriptName2 : AdjustForUsageAndContext(CapitalizationContextUsage.Script, scriptName2);
                 }
             }
             string scriptName = langData.Get("Scripts", script);
-            return skipAdjust ? scriptName : AdjustForUsageAndContext(CapitalizationContextUsage.SCRIPT, scriptName);
+            return skipAdjust ? scriptName : AdjustForUsageAndContext(CapitalizationContextUsage.Script, scriptName);
         }
 
 #pragma warning disable 672
@@ -557,11 +557,11 @@ namespace ICU4N.Impl
                 string regionName2 = regionData.Get("Countries%short", region);
                 if (regionName2 != null && !regionName2.Equals(region))
                 {
-                    return skipAdjust ? regionName2 : AdjustForUsageAndContext(CapitalizationContextUsage.TERRITORY, regionName2);
+                    return skipAdjust ? regionName2 : AdjustForUsageAndContext(CapitalizationContextUsage.Territory, regionName2);
                 }
             }
             string regionName = regionData.Get("Countries", region);
-            return skipAdjust ? regionName : AdjustForUsageAndContext(CapitalizationContextUsage.TERRITORY, regionName);
+            return skipAdjust ? regionName : AdjustForUsageAndContext(CapitalizationContextUsage.Territory, regionName);
         }
 
         public override string RegionDisplayName(string region)
@@ -573,7 +573,7 @@ namespace ICU4N.Impl
         {
             // don't have a resource for short variant names
             string variantName = langData.Get("Variants", variant);
-            return skipAdjust ? variantName : AdjustForUsageAndContext(CapitalizationContextUsage.VARIANT, variantName);
+            return skipAdjust ? variantName : AdjustForUsageAndContext(CapitalizationContextUsage.Variant, variantName);
         }
 
         public override string VariantDisplayName(string variant)
@@ -585,7 +585,7 @@ namespace ICU4N.Impl
         {
             // don't have a resource for short key names
             string keyName = langData.Get("Keys", key);
-            return skipAdjust ? keyName : AdjustForUsageAndContext(CapitalizationContextUsage.KEY, keyName);
+            return skipAdjust ? keyName : AdjustForUsageAndContext(CapitalizationContextUsage.Key, keyName);
         }
 
         public override string KeyDisplayName(string key)
@@ -621,7 +621,7 @@ namespace ICU4N.Impl
                 }
             }
 
-            return skipAdjust ? keyValueName : AdjustForUsageAndContext(CapitalizationContextUsage.KEYVALUE, keyValueName);
+            return skipAdjust ? keyValueName : AdjustForUsageAndContext(CapitalizationContextUsage.KeyValue, keyValueName);
         }
 
         public override string KeyValueDisplayName(string key, string value)
@@ -811,17 +811,17 @@ namespace ICU4N.Impl
             internal static readonly DataTables impl = DataTables.Load("ICU4N.Impl.ICURegionDataTables, ICU4N.RegionData");
         }
 
-        public enum DataTableType // ICU4N TODO: API - de-nest and change case to follow .NET Conventions
+        public enum DataTableType
         {
-            LANG, REGION
+            Language, Region
         }
 
         public static bool HaveData(DataTableType type)
         {
             switch (type)
             {
-                case DataTableType.LANG: return LangDataTables.impl is ICUDataTables;
-                case DataTableType.REGION: return RegionDataTables.impl is ICUDataTables;
+                case DataTableType.Language: return LangDataTables.impl is ICUDataTables;
+                case DataTableType.Region: return RegionDataTables.impl is ICUDataTables;
                 default:
                     throw new ArgumentException("unknown type: " + type);
             }

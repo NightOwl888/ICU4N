@@ -11,30 +11,30 @@ namespace ICU4N.Impl.Locale
     public class LocaleExtensions
     {
         private IDictionary<char, Extension> _map;
-        private String _id;
+        private string _id;
 
-        private static readonly IDictionary<char, Extension> EMPTY_MAP =
+        private static readonly IDictionary<char, Extension> EmptyMap =
             new SortedDictionary<char, Extension>().ToUnmodifiableDictionary();
 
-        public static readonly LocaleExtensions EMPTY_EXTENSIONS; // ICU4N TODO: Rename to follow .NET Conventions
-        public static readonly LocaleExtensions CALENDAR_JAPANESE;
-        public static readonly LocaleExtensions NUMBER_THAI;
+        public static readonly LocaleExtensions EmptyExtensions;
+        public static readonly LocaleExtensions CalendarJapanese;
+        public static readonly LocaleExtensions NumberThai;
 
-        static LocaleExtensions()
+        static LocaleExtensions() // ICU4N TODO: Avoid static constructor (create separate load method for each static variable)
         {
-            EMPTY_EXTENSIONS = new LocaleExtensions();
-            EMPTY_EXTENSIONS._id = "";
-            EMPTY_EXTENSIONS._map = EMPTY_MAP;
+            EmptyExtensions = new LocaleExtensions();
+            EmptyExtensions._id = "";
+            EmptyExtensions._map = EmptyMap;
 
-            CALENDAR_JAPANESE = new LocaleExtensions();
-            CALENDAR_JAPANESE._id = "u-ca-japanese";
-            CALENDAR_JAPANESE._map = new SortedDictionary<char, Extension>();
-            CALENDAR_JAPANESE._map[UnicodeLocaleExtension.SINGLETON] = UnicodeLocaleExtension.CA_JAPANESE;
+            CalendarJapanese = new LocaleExtensions();
+            CalendarJapanese._id = "u-ca-japanese";
+            CalendarJapanese._map = new SortedDictionary<char, Extension>();
+            CalendarJapanese._map[UnicodeLocaleExtension.Singleton] = UnicodeLocaleExtension.CalendarJapanese;
 
-            NUMBER_THAI = new LocaleExtensions();
-            NUMBER_THAI._id = "u-nu-thai";
-            NUMBER_THAI._map = new SortedDictionary<char, Extension>();
-            NUMBER_THAI._map[UnicodeLocaleExtension.SINGLETON] = UnicodeLocaleExtension.NU_THAI;
+            NumberThai = new LocaleExtensions();
+            NumberThai._id = "u-nu-thai";
+            NumberThai._map = new SortedDictionary<char, Extension>();
+            NumberThai._map[UnicodeLocaleExtension.Singleton] = UnicodeLocaleExtension.NumberThai;
         }
 
         private LocaleExtensions()
@@ -53,7 +53,7 @@ namespace ICU4N.Impl.Locale
 
             if (!hasExtension && !hasUAttributes && !hasUKeywords)
             {
-                _map = EMPTY_MAP;
+                _map = EmptyMap;
                 _id = "";
                 return;
             }
@@ -108,13 +108,13 @@ namespace ICU4N.Impl.Locale
                 }
 
                 UnicodeLocaleExtension ule = new UnicodeLocaleExtension(uaset, ukmap);
-                _map[UnicodeLocaleExtension.SINGLETON] = ule;
+                _map[UnicodeLocaleExtension.Singleton] = ule;
             }
 
             if (_map.Count == 0)
             {
                 // this could happen when only privuateuse with special variant
-                _map = EMPTY_MAP;
+                _map = EmptyMap;
                 _id = "";
             }
             else
@@ -148,7 +148,7 @@ namespace ICU4N.Impl.Locale
         public virtual ISet<string> GetUnicodeLocaleAttributes()
         {
             Extension ext;
-            if (!_map.TryGetValue(UnicodeLocaleExtension.SINGLETON, out ext) || ext == null)
+            if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out ext) || ext == null)
             {
                 return new HashSet<string>();
             }
@@ -159,7 +159,7 @@ namespace ICU4N.Impl.Locale
         public virtual ICollection<string> GetUnicodeLocaleKeys()
         {
             Extension ext;
-            if (!_map.TryGetValue(UnicodeLocaleExtension.SINGLETON, out ext) || ext == null)
+            if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out ext) || ext == null)
             {
                 return new HashSet<string>();
             }
@@ -170,7 +170,7 @@ namespace ICU4N.Impl.Locale
         public virtual string GetUnicodeLocaleType(string unicodeLocaleKey)
         {
             Extension ext;
-            if (!_map.TryGetValue(UnicodeLocaleExtension.SINGLETON, out ext) || ext == null)
+            if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out ext) || ext == null)
             {
                 return null;
             }
@@ -209,7 +209,7 @@ namespace ICU4N.Impl.Locale
                 {
                     if (buf.Length > 0)
                     {
-                        buf.Append(LanguageTag.SEP);
+                        buf.Append(LanguageTag.Separator);
                     }
                     buf.Append(extension);
                 }
@@ -218,7 +218,7 @@ namespace ICU4N.Impl.Locale
             {
                 if (buf.Length > 0)
                 {
-                    buf.Append(LanguageTag.SEP);
+                    buf.Append(LanguageTag.Separator);
                 }
                 buf.Append(privuse);
             }

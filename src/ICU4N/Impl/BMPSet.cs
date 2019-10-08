@@ -15,7 +15,7 @@ namespace ICU4N.Impl
     /// </summary>
     public sealed partial class BMPSet
     {
-        public static int U16_SURROGATE_OFFSET = ((0xd800 << 10) + 0xdc00 - 0x10000); // ICU4N TODO: API - rename to follow .NET Coventions
+        public const int U16SurrogateOffset = ((0xd800 << 10) + 0xdc00 - 0x10000);
 
         /// <summary>
         /// One bool ('true' or 'false') per Latin-1 character.

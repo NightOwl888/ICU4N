@@ -197,7 +197,7 @@ namespace ICU4N.Impl.Locale
             return b;
         }
 
-        public class CaseInsensitiveKey
+        public class CaseInsensitiveKey // ICU4N TODO: API - de-nest
         {
             private string _key;
             private int _hash;

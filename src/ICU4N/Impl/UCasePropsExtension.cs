@@ -40,7 +40,7 @@ namespace ICU4N.Impl
             props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) >= UPPER)
+                if (GetTypeFromProps(props) >= Upper)
                 {
                     result = c + GetDelta(props);
                 }
@@ -241,7 +241,7 @@ namespace ICU4N.Impl
             props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) >= UPPER)
+                if (GetTypeFromProps(props) >= Upper)
                 {
                     result = c + GetDelta(props);
                 }
@@ -432,7 +432,7 @@ namespace ICU4N.Impl
             props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) == LOWER)
+                if (GetTypeFromProps(props) == Lower)
                 {
                     result = c + GetDelta(props);
                 }
@@ -555,7 +555,7 @@ namespace ICU4N.Impl
             props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) == LOWER)
+                if (GetTypeFromProps(props) == Lower)
                 {
                     result = c + GetDelta(props);
                 }
@@ -717,7 +717,7 @@ namespace ICU4N.Impl
             props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) >= UPPER)
+                if (GetTypeFromProps(props) >= Upper)
                 {
                     result = c + GetDelta(props);
                 }
@@ -839,7 +839,7 @@ namespace ICU4N.Impl
             props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) >= UPPER)
+                if (GetTypeFromProps(props) >= Upper)
                 {
                     result = c + GetDelta(props);
                 }

@@ -186,8 +186,8 @@ namespace ICU4N.Impl
             m_currentCodepoint_ = 0;
             m_nextCodepoint_ = 0;
             m_nextIndex_ = 0;
-            m_nextBlock_ = m_trie_.m_index_[0] << Trie.INDEX_STAGE_2_SHIFT_;
-            if (m_nextBlock_ == m_trie_.m_dataOffset_)
+            m_nextBlock_ = m_trie_.m_index[0] << Trie.IndexStage2Shift;
+            if (m_nextBlock_ == m_trie_.m_dataOffset)
             {
                 m_nextValue_ = m_initialValue_;
             }
@@ -271,7 +271,7 @@ namespace ICU4N.Impl
                 else if (m_nextCodepoint_ == TRAIL_SURROGATE_MIN_VALUE_)
                 {
                     // go back to regular BMP code points
-                    m_nextIndex_ = m_nextCodepoint_ >> Trie.INDEX_STAGE_1_SHIFT_;
+                    m_nextIndex_ = m_nextCodepoint_ >> Trie.IndexStage1Shift;
                 }
                 else
                 {
@@ -343,9 +343,9 @@ namespace ICU4N.Impl
             {
                 // lead surrogate access
                 int leadBlock =
-                       m_trie_.m_index_[nextLead >> Trie.INDEX_STAGE_1_SHIFT_] <<
-                                                       Trie.INDEX_STAGE_2_SHIFT_;
-                if (leadBlock == m_trie_.m_dataOffset_)
+                       m_trie_.m_index[nextLead >> Trie.IndexStage1Shift] <<
+                                                       Trie.IndexStage2Shift;
+                if (leadBlock == m_trie_.m_dataOffset)
                 {
                     // no entries for a whole block of lead surrogates
                     if (currentValue != m_initialValue_)
@@ -368,22 +368,22 @@ namespace ICU4N.Impl
                     m_nextCodepoint_ = Character.ToCodePoint((char)nextLead, (char)UTF16.TrailSurrogateMinValue);
                     continue;
                 }
-                if (m_trie_.m_dataManipulate_ == null)
+                if (m_trie_.m_dataManipulate == null)
                 {
                     throw new InvalidOperationException(
                                 "The field DataManipulate in this Trie is null"); // ICU4N: This was originally NullPointerException
                 }
                 // enumerate trail surrogates for this lead surrogate
-                m_nextIndex_ = m_trie_.m_dataManipulate_.GetFoldingOffset(
+                m_nextIndex_ = m_trie_.m_dataManipulate.GetFoldingOffset(
                                    m_trie_[leadBlock +
-                                       (nextLead & Trie.INDEX_STAGE_3_MASK_)]);
+                                       (nextLead & Trie.IndexStage3Mask)]);
                 if (m_nextIndex_ <= 0)
                 {
                     // no data for this lead surrogate
                     if (currentValue != m_initialValue_)
                     {
                         m_nextValue_ = m_initialValue_;
-                        m_nextBlock_ = m_trie_.m_dataOffset_;
+                        m_nextBlock_ = m_trie_.m_dataOffset;
                         m_nextBlockIndex_ = 0;
                         SetResult(element, m_currentCodepoint_, m_nextCodepoint_,
                                   currentValue);
@@ -453,8 +453,8 @@ namespace ICU4N.Impl
         private bool CheckBlock(int currentValue)
         {
             int currentBlock = m_nextBlock_;
-            m_nextBlock_ = m_trie_.m_index_[m_nextIndex_] <<
-                                                      Trie.INDEX_STAGE_2_SHIFT_;
+            m_nextBlock_ = m_trie_.m_index[m_nextIndex_] <<
+                                                      Trie.IndexStage2Shift;
             if (m_nextBlock_ == currentBlock &&
                 (m_nextCodepoint_ - m_currentCodepoint_) >= DATA_BLOCK_LENGTH_)
             {
@@ -462,7 +462,7 @@ namespace ICU4N.Impl
                 // currentValue
                 m_nextCodepoint_ += DATA_BLOCK_LENGTH_;
             }
-            else if (m_nextBlock_ == m_trie_.m_dataOffset_)
+            else if (m_nextBlock_ == m_trie_.m_dataOffset)
             {
                 // this is the all-initial-value block
                 if (currentValue != m_initialValue_)
@@ -529,16 +529,16 @@ namespace ICU4N.Impl
                 m_nextCodepoint_ += TRAIL_SURROGATE_COUNT_ - 1;
                 int nextLead = UTF16.GetLeadSurrogate(m_nextCodepoint_);
                 int leadBlock =
-                       m_trie_.m_index_[nextLead >> Trie.INDEX_STAGE_1_SHIFT_] <<
-                                                       Trie.INDEX_STAGE_2_SHIFT_;
-                if (m_trie_.m_dataManipulate_ == null)
+                       m_trie_.m_index[nextLead >> Trie.IndexStage1Shift] <<
+                                                       Trie.IndexStage2Shift;
+                if (m_trie_.m_dataManipulate == null)
                 {
                     throw new InvalidOperationException(
                                 "The field DataManipulate in this Trie is null"); // ICU4N: This was originally NullPointerException
                 }
-                m_nextIndex_ = m_trie_.m_dataManipulate_.GetFoldingOffset(
+                m_nextIndex_ = m_trie_.m_dataManipulate.GetFoldingOffset(
                                    m_trie_[leadBlock +
-                                       (nextLead & Trie.INDEX_STAGE_3_MASK_)]);
+                                       (nextLead & Trie.IndexStage3Mask)]);
                 m_nextIndex_--;
                 m_nextBlockIndex_ = DATA_BLOCK_LENGTH_;
                 return true;
@@ -551,24 +551,24 @@ namespace ICU4N.Impl
         /// <summary>
         /// Size of the stage 1 BMP indexes
         /// </summary>
-        private static readonly int BMP_INDEX_LENGTH_ =
-                                            0x10000 >> Trie.INDEX_STAGE_1_SHIFT_;
+        private const int BMP_INDEX_LENGTH_ =
+                                            0x10000 >> Trie.IndexStage1Shift;
         /// <summary>
         /// Lead surrogate minimum value
         /// </summary>
-        private static readonly int LEAD_SURROGATE_MIN_VALUE_ = 0xD800;
+        private const int LEAD_SURROGATE_MIN_VALUE_ = 0xD800;
         /// <summary>
         /// Trail surrogate minimum value
         /// </summary>
-        private static readonly int TRAIL_SURROGATE_MIN_VALUE_ = 0xDC00;
+        private const int TRAIL_SURROGATE_MIN_VALUE_ = 0xDC00;
         ///// <summary>
         ///// Trail surrogate maximum value
         ///// </summary>
-        //private static final int TRAIL_SURROGATE_MAX_VALUE_ = 0xDFFF;
+        //private const int TRAIL_SURROGATE_MAX_VALUE_ = 0xDFFF;
         /// <summary>
         /// Number of trail surrogate
         /// </summary>
-        private static readonly int TRAIL_SURROGATE_COUNT_ = 0x400;
+        private const int TRAIL_SURROGATE_COUNT_ = 0x400;
 
         /// <summary>
         /// Number of stage 1 indexes for supplementary calculations that maps to
@@ -577,17 +577,17 @@ namespace ICU4N.Impl
         /// 10 for significant number of bits for trail surrogates, 5 for what we
         /// discard during shifting.
         /// </summary>
-        private static readonly int TRAIL_SURROGATE_INDEX_BLOCK_LENGTH_ =
-                                        1 << (10 - Trie.INDEX_STAGE_1_SHIFT_);
+        private const int TRAIL_SURROGATE_INDEX_BLOCK_LENGTH_ =
+                                        1 << (10 - Trie.IndexStage1Shift);
         /// <summary>
         /// Number of data values in a stage 2 (data array) block.
         /// </summary>
-        private static readonly int DATA_BLOCK_LENGTH_ =
-                                                  1 << Trie.INDEX_STAGE_1_SHIFT_;
+        private const int DATA_BLOCK_LENGTH_ =
+                                                  1 << Trie.IndexStage1Shift;
         //    /**
         //    * Number of codepoints in a stage 2 block
         //    */
-        //    private static final int DATA_BLOCK_SUPPLEMENTARY_LENGTH_ =
+        //    private const int DATA_BLOCK_SUPPLEMENTARY_LENGTH_ =
         //                                                     DATA_BLOCK_LENGTH_ << 10;
         /// <summary>
         /// Trie instance

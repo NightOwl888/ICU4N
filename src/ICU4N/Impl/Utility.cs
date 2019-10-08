@@ -13,9 +13,9 @@ namespace ICU4N.Impl
 {
     public static partial class Utility // ICU4N specific - made class static because there are no instance members
     {
-        private static readonly char APOSTROPHE = '\'';
-        private static readonly char BACKSLASH = '\\';
-        private static readonly int MAGIC_UNSIGNED = unchecked((int)0x80000000);
+        private const char APOSTROPHE = '\'';
+        private const char BACKSLASH = '\\';
+        private const int MAGIC_UNSIGNED = unchecked((int)0x80000000);
 
         /// <summary>
         /// Convenience utility to compare two <see cref="T:object[]"/>s.
@@ -252,13 +252,13 @@ namespace ICU4N.Impl
         /// The <see cref="ESCAPE"/> character is used during run-length encoding.  It signals
         /// a run of identical chars.
         /// </summary>
-        private static readonly char ESCAPE = '\uA5A5';
+        private const char ESCAPE = '\uA5A5';
 
         /// <summary>
         /// The <see cref="ESCAPE_BYTE"/> character is used during run-length encoding.  It signals
         /// a run of identical bytes.
         /// </summary>
-        internal static readonly byte ESCAPE_BYTE = (byte)0xA5;
+        internal const byte ESCAPE_BYTE = (byte)0xA5;
 
         /// <summary>
         /// Construct a string representing an <see cref="int"/> array.  Use run-length encoding.

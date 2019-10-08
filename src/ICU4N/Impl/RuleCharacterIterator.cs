@@ -80,7 +80,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Value returned when there are no more characters to iterate.
         /// </summary>
-        public const int DONE = -1;
+        public const int Done = -1;
 
         // ICU4N specific - PARSE_VARIABLES, PARSE_ESCAPES, and SKIP_WHITESPACE
         // moved to [Flags] enum RuleCharacterIteratorOptions
@@ -118,7 +118,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns the next character using the given options, or <see cref="DONE"/> if there
+        /// Returns the next character using the given options, or <see cref="Done"/> if there
         /// are no more characters, and advance the position to the next
         /// character.
         /// </summary>
@@ -126,10 +126,10 @@ namespace ICU4N.Impl
         /// together: <see cref="RuleCharacterIteratorOptions.ParseVariables"/>, 
         /// <see cref="RuleCharacterIteratorOptions.ParseEscapes"/>, 
         /// <see cref="RuleCharacterIteratorOptions.SkipWhitespace"/>.</param>
-        /// <returns>The current 32-bit code point, or <see cref="DONE"/>.</returns>
+        /// <returns>The current 32-bit code point, or <see cref="Done"/>.</returns>
         public virtual int Next(RuleCharacterIteratorOptions options)
         {
-            int c = DONE;
+            int c = Done;
             isEscaped = false;
 
             for (; ; )
@@ -364,7 +364,7 @@ namespace ICU4N.Impl
             else
             {
                 int i = pos.Index;
-                return (i < text.Length) ? UTF16.CharAt(text, i) : DONE;
+                return (i < text.Length) ? UTF16.CharAt(text, i) : Done;
             }
         }
 

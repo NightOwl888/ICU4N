@@ -261,9 +261,9 @@ namespace ICU4N.Globalization
         /// Group use
         /// </summary>
         private static char[] GROUP_OFFSETS_ =
-                                    new char[UCharacterName.LINES_PER_GROUP_ + 1];
+                                    new char[UCharacterName.LinesPerGroup + 1];
         private static char[] GROUP_LENGTHS_ =
-                                    new char[UCharacterName.LINES_PER_GROUP_ + 1];
+                                    new char[UCharacterName.LinesPerGroup + 1];
 
         /// <summary>
         /// Current enumerator element

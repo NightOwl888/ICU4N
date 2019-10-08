@@ -65,7 +65,7 @@ namespace ICU4N.Impl
         * see store.c of gennorm for more information and values
         */
         //* dataFormat="SPRP" 0x53, 0x50, 0x52, 0x50  */
-        private static readonly int DATA_FORMAT_ID = 0x53505250;
+        private const int DATA_FORMAT_ID = 0x53505250;
         private static readonly byte[] DATA_FORMAT_VERSION = {(byte)0x3, (byte)0x2,
                                                         (byte)0x5, (byte)0x2};
     }

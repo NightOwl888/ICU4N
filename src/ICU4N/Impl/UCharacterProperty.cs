@@ -63,19 +63,19 @@ namespace ICU4N.Impl
         /// <summary>
         /// Latin capital letter i with dot above
         /// </summary>
-        public const char LATIN_CAPITAL_LETTER_I_WITH_DOT_ABOVE_ = (char)0x130;
+        public const char Latin_Capital_Letter_I_With_Dot_Above = (char)0x130;
         /// <summary>
         /// Latin small letter i with dot above
         /// </summary>
-        public const char LATIN_SMALL_LETTER_DOTLESS_I_ = (char)0x131;
+        public const char Latin_Small_Letter_Dotless_I = (char)0x131;
         /// <summary>
         /// Latin lowercase i
         /// </summary>
-        public const char LATIN_SMALL_LETTER_I_ = (char)0x69;
+        public const char Latin_Small_Letter_I = (char)0x69;
         /// <summary>
         /// Character type mask
         /// </summary>
-        public const int TYPE_MASK = 0x1F;
+        public const int TypeMask = 0x1F;
 
         // uprops.h enum UPropertySource --------------------------------------- ***
 
@@ -137,12 +137,12 @@ namespace ICU4N.Impl
             return m_additionalVectors_[m_additionalTrie_.Get(codepoint) + column];
         }
 
-        internal static readonly int MY_MASK = UCharacterProperty.TYPE_MASK
-            & ((1 << UUnicodeCategory.UppercaseLetter.ToInt32()) |
-                (1 << UUnicodeCategory.LowercaseLetter.ToInt32()) |
-                (1 << UUnicodeCategory.TitlecaseLetter.ToInt32()) |
-                (1 << UUnicodeCategory.ModifierLetter.ToInt32()) |
-                (1 << UUnicodeCategory.OtherLetter.ToInt32()));
+        internal const int MY_MASK = UCharacterProperty.TypeMask
+            & ((1 << (int)UUnicodeCategory.UppercaseLetter) |
+                (1 << (int)UUnicodeCategory.LowercaseLetter) |
+                (1 << (int)UUnicodeCategory.TitlecaseLetter) |
+                (1 << (int)UUnicodeCategory.ModifierLetter) |
+                (1 << (int)UUnicodeCategory.OtherLetter));
 
         /// <summary>
         /// Get the "age" of the code point.
@@ -479,7 +479,7 @@ namespace ICU4N.Impl
                         return NumericType.Count - 1;
 #pragma warning restore 612, 618
                     }),
-                new AnonymousIntProperty(this, 0, SCRIPT_MASK_, 0, getValue: (c) =>
+                new AnonymousIntProperty(this, 0, ScriptMask, 0, getValue: (c) =>
                     {
                         return (int)UScript.GetScript(c);
                     }, getMaxValue: null),
@@ -549,7 +549,7 @@ namespace ICU4N.Impl
 
         public int GetType(int c) // ICU4N TODO: API - Return UCharacterCategory type
         {
-            return GetProperty(c) & TYPE_MASK;
+            return GetProperty(c) & TypeMask;
         }
 
         /// <summary>
@@ -1202,29 +1202,29 @@ namespace ICU4N.Impl
         /// <summary>
         /// Default name of the datafile
         /// </summary>
-        private static readonly string DATA_FILE_NAME_ = "uprops.icu";
+        private const string DATA_FILE_NAME_ = "uprops.icu";
 
         // property data constants -------------------------------------------------
 
         /// <summary>
         /// Numeric types and values in the main properties words.
         /// </summary>
-        private static readonly int NUMERIC_TYPE_VALUE_SHIFT_ = 6;
+        private const int NUMERIC_TYPE_VALUE_SHIFT_ = 6;
         private static int GetNumericTypeValue(int props)
         {
             return props >> NUMERIC_TYPE_VALUE_SHIFT_;
         }
         /* constants for the storage form of numeric types and values */
         /// <summary> No numeric value.</summary>
-        private static readonly int NTV_NONE_ = 0;
+        private const int NTV_NONE_ = 0;
         /// <summary>Decimal digits: nv=0..9</summary>
-        private static readonly int NTV_DECIMAL_START_ = 1;
+        private const int NTV_DECIMAL_START_ = 1;
         /// <summary>Other digits: nv=0..9</summary>
-        private static readonly int NTV_DIGIT_START_ = 11;
+        private const int NTV_DIGIT_START_ = 11;
         /// <summary>Small integers: nv=0..154</summary>
-        private static readonly int NTV_NUMERIC_START_ = 21;
+        private const int NTV_NUMERIC_START_ = 21;
         /// <summary>Fractions: ((ntv>>4)-12) / ((ntv&amp;0xf)+1) = -1..17 / 1..16</summary>
-        private static readonly int NTV_FRACTION_START_ = 0xb0;
+        private const int NTV_FRACTION_START_ = 0xb0;
 
         /// <summary>
         /// Large integers:
@@ -1233,14 +1233,14 @@ namespace ICU4N.Impl
         /// (only one significant decimal digit)
         /// </code>
         /// </summary>
-        private static readonly int NTV_LARGE_START_ = 0x1e0;
+        private const int NTV_LARGE_START_ = 0x1e0;
         /// <summary>
         /// Sexagesimal numbers:
         /// <code>
         /// ((ntv>>2)-0xbf) * 60^((ntv&amp;3)+1) = (1..9)*(60^1..60^4)
         /// </code>
         /// </summary>
-        private static readonly int NTV_BASE60_START_ = 0x300;
+        private const int NTV_BASE60_START_ = 0x300;
         /// <summary>
         /// Fraction-20 values:
         /// <code>
@@ -1249,9 +1249,9 @@ namespace ICU4N.Impl
         /// denominator: den = 20&lt;&lt;(frac20>>2)
         /// </code>
         /// </summary>
-        private static readonly int NTV_FRACTION20_START_ = NTV_BASE60_START_ + 36;  // 0x300+9*4=0x324
+        private const int NTV_FRACTION20_START_ = NTV_BASE60_START_ + 36;  // 0x300+9*4=0x324
                                                                                      /** No numeric value (yet). */
-        private static readonly int NTV_RESERVED_START_ = NTV_FRACTION20_START_ + 24;  // 0x324+6*4=0x34c
+        private const int NTV_RESERVED_START_ = NTV_FRACTION20_START_ + 24;  // 0x324+6*4=0x34c
 
         private static int NtvGetType(int ntv)
         {
@@ -1280,38 +1280,38 @@ namespace ICU4N.Impl
         /// <summary>
         /// Script_Extensions: mask includes Script
         /// </summary>
-        public static readonly int SCRIPT_X_MASK = 0x00c000ff;
-        //private static final int SCRIPT_X_SHIFT = 22;
+        public const int ScriptXMask = 0x00c000ff;
+        //private const int SCRIPT_X_SHIFT = 22;
         /// <summary>
         /// Integer properties mask and shift values for East Asian cell width.
         /// Equivalent to icu4c UPROPS_EA_MASK
         /// </summary>
-        private static readonly int EAST_ASIAN_MASK_ = 0x000e0000;
+        private const int EAST_ASIAN_MASK_ = 0x000e0000;
         /// <summary>
         /// Integer properties mask and shift values for East Asian cell width.
         /// Equivalent to icu4c UPROPS_EA_SHIFT
         /// </summary>
-        private static readonly int EAST_ASIAN_SHIFT_ = 17;
+        private const int EAST_ASIAN_SHIFT_ = 17;
         /// <summary>
         /// Integer properties mask and shift values for blocks.
         /// Equivalent to icu4c UPROPS_BLOCK_MASK
         /// </summary>
-        private static readonly int BLOCK_MASK_ = 0x0001ff00;
+        private const int BLOCK_MASK_ = 0x0001ff00;
         /// <summary>
         /// Integer properties mask and shift values for blocks.
         /// Equivalent to icu4c UPROPS_BLOCK_SHIFT
         /// </summary>
-        private static readonly int BLOCK_SHIFT_ = 8;
+        private const int BLOCK_SHIFT_ = 8;
         /// <summary>
         /// Integer properties mask and shift values for scripts.
         /// Equivalent to icu4c UPROPS_SHIFT_MASK
         /// </summary>
-        public static readonly int SCRIPT_MASK_ = 0x000000ff; // ICU4N TODO: API - rename according to .NET conventions
+        public const int ScriptMask = 0x000000ff;
 
-        /* SCRIPT_X_WITH_COMMON must be the lowest value that involves Script_Extensions. */
-        public static readonly int SCRIPT_X_WITH_COMMON = 0x400000; // ICU4N TODO: API - rename according to .NET conventions
-        public static readonly int SCRIPT_X_WITH_INHERITED = 0x800000; // ICU4N TODO: API - rename according to .NET conventions
-        public static readonly int SCRIPT_X_WITH_OTHER = 0xc00000; // ICU4N TODO: API - rename according to .NET conventions
+        /* ScriptXWithCommon must be the lowest value that involves Script_Extensions. */
+        public const int ScriptXWithCommon = 0x400000;
+        public const int ScriptXWithInherited = 0x800000;
+        public const int ScriptXWithOther = 0xc00000;
 
         /**
          * Additional properties used in internal trie data
@@ -1327,38 +1327,38 @@ namespace ICU4N.Impl
          *
          * ICU 2.6/uprops format version 3.2 stores full properties instead of "Other_".
          */
-        private static readonly int WHITE_SPACE_PROPERTY_ = 0;
-        private static readonly int DASH_PROPERTY_ = 1;
-        private static readonly int HYPHEN_PROPERTY_ = 2;
-        private static readonly int QUOTATION_MARK_PROPERTY_ = 3;
-        private static readonly int TERMINAL_PUNCTUATION_PROPERTY_ = 4;
-        private static readonly int MATH_PROPERTY_ = 5;
-        private static readonly int HEX_DIGIT_PROPERTY_ = 6;
-        private static readonly int ASCII_HEX_DIGIT_PROPERTY_ = 7;
-        private static readonly int ALPHABETIC_PROPERTY_ = 8;
-        private static readonly int IDEOGRAPHIC_PROPERTY_ = 9;
-        private static readonly int DIACRITIC_PROPERTY_ = 10;
-        private static readonly int EXTENDER_PROPERTY_ = 11;
-        private static readonly int NONCHARACTER_CODE_POINT_PROPERTY_ = 12;
-        private static readonly int GRAPHEME_EXTEND_PROPERTY_ = 13;
-        private static readonly int GRAPHEME_LINK_PROPERTY_ = 14;
-        private static readonly int IDS_BINARY_OPERATOR_PROPERTY_ = 15;
-        private static readonly int IDS_TRINARY_OPERATOR_PROPERTY_ = 16;
-        private static readonly int RADICAL_PROPERTY_ = 17;
-        private static readonly int UNIFIED_IDEOGRAPH_PROPERTY_ = 18;
-        private static readonly int DEFAULT_IGNORABLE_CODE_POINT_PROPERTY_ = 19;
-        private static readonly int DEPRECATED_PROPERTY_ = 20;
-        private static readonly int LOGICAL_ORDER_EXCEPTION_PROPERTY_ = 21;
-        private static readonly int XID_START_PROPERTY_ = 22;
-        private static readonly int XID_CONTINUE_PROPERTY_ = 23;
-        private static readonly int ID_START_PROPERTY_ = 24;
-        private static readonly int ID_CONTINUE_PROPERTY_ = 25;
-        private static readonly int GRAPHEME_BASE_PROPERTY_ = 26;
-        private static readonly int S_TERM_PROPERTY_ = 27;
-        private static readonly int VARIATION_SELECTOR_PROPERTY_ = 28;
-        private static readonly int PATTERN_SYNTAX = 29;                   /* new in ICU 3.4 and Unicode 4.1 */
-        private static readonly int PATTERN_WHITE_SPACE = 30;
-        private static readonly int PREPENDED_CONCATENATION_MARK = 31;     // new in ICU 60 and Unicode 10
+        private const int WHITE_SPACE_PROPERTY_ = 0;
+        private const int DASH_PROPERTY_ = 1;
+        private const int HYPHEN_PROPERTY_ = 2;
+        private const int QUOTATION_MARK_PROPERTY_ = 3;
+        private const int TERMINAL_PUNCTUATION_PROPERTY_ = 4;
+        private const int MATH_PROPERTY_ = 5;
+        private const int HEX_DIGIT_PROPERTY_ = 6;
+        private const int ASCII_HEX_DIGIT_PROPERTY_ = 7;
+        private const int ALPHABETIC_PROPERTY_ = 8;
+        private const int IDEOGRAPHIC_PROPERTY_ = 9;
+        private const int DIACRITIC_PROPERTY_ = 10;
+        private const int EXTENDER_PROPERTY_ = 11;
+        private const int NONCHARACTER_CODE_POINT_PROPERTY_ = 12;
+        private const int GRAPHEME_EXTEND_PROPERTY_ = 13;
+        private const int GRAPHEME_LINK_PROPERTY_ = 14;
+        private const int IDS_BINARY_OPERATOR_PROPERTY_ = 15;
+        private const int IDS_TRINARY_OPERATOR_PROPERTY_ = 16;
+        private const int RADICAL_PROPERTY_ = 17;
+        private const int UNIFIED_IDEOGRAPH_PROPERTY_ = 18;
+        private const int DEFAULT_IGNORABLE_CODE_POINT_PROPERTY_ = 19;
+        private const int DEPRECATED_PROPERTY_ = 20;
+        private const int LOGICAL_ORDER_EXCEPTION_PROPERTY_ = 21;
+        private const int XID_START_PROPERTY_ = 22;
+        private const int XID_CONTINUE_PROPERTY_ = 23;
+        private const int ID_START_PROPERTY_ = 24;
+        private const int ID_CONTINUE_PROPERTY_ = 25;
+        private const int GRAPHEME_BASE_PROPERTY_ = 26;
+        private const int S_TERM_PROPERTY_ = 27;
+        private const int VARIATION_SELECTOR_PROPERTY_ = 28;
+        private const int PATTERN_SYNTAX = 29;                   /* new in ICU 3.4 and Unicode 4.1 */
+        private const int PATTERN_WHITE_SPACE = 30;
+        private const int PREPENDED_CONCATENATION_MARK = 31;     // new in ICU 60 and Unicode 10
 
         /*
          * Properties in vector word 2
@@ -1371,42 +1371,42 @@ namespace ICU4N.Impl
          *  9.. 5   Grapheme Cluster Break
          *  4.. 0   Decomposition Type
          */
-        private static readonly int PROPS_2_EMOJI_COMPONENT = 27;
-        private static readonly int PROPS_2_EMOJI = 28;
-        private static readonly int PROPS_2_EMOJI_PRESENTATION = 29;
-        private static readonly int PROPS_2_EMOJI_MODIFIER = 30;
-        private static readonly int PROPS_2_EMOJI_MODIFIER_BASE = 31;
+        private const int PROPS_2_EMOJI_COMPONENT = 27;
+        private const int PROPS_2_EMOJI = 28;
+        private const int PROPS_2_EMOJI_PRESENTATION = 29;
+        private const int PROPS_2_EMOJI_MODIFIER = 30;
+        private const int PROPS_2_EMOJI_MODIFIER_BASE = 31;
 
-        private static readonly int LB_MASK = 0x03f00000;
-        private static readonly int LB_SHIFT = 20;
+        private const int LB_MASK = 0x03f00000;
+        private const int LB_SHIFT = 20;
 
-        private static readonly int SB_MASK = 0x000f8000;
-        private static readonly int SB_SHIFT = 15;
+        private const int SB_MASK = 0x000f8000;
+        private const int SB_SHIFT = 15;
 
-        private static readonly int WB_MASK = 0x00007c00;
-        private static readonly int WB_SHIFT = 10;
+        private const int WB_MASK = 0x00007c00;
+        private const int WB_SHIFT = 10;
 
-        private static readonly int GCB_MASK = 0x000003e0;
-        private static readonly int GCB_SHIFT = 5;
+        private const int GCB_MASK = 0x000003e0;
+        private const int GCB_SHIFT = 5;
 
         /// <summary>
         /// Integer properties mask for decomposition type.
         /// Equivalent to icu4c UPROPS_DT_MASK.
         /// </summary>
-        private static readonly int DECOMPOSITION_TYPE_MASK_ = 0x0000001f;
+        private const int DECOMPOSITION_TYPE_MASK_ = 0x0000001f;
 
         /// <summary>
         /// First nibble shift
         /// </summary>
-        private static readonly int FIRST_NIBBLE_SHIFT_ = 0x4;
+        private const int FIRST_NIBBLE_SHIFT_ = 0x4;
         /// <summary>
         /// Second nibble mask
         /// </summary>
-        private static readonly int LAST_NIBBLE_MASK_ = 0xF;
+        private const int LAST_NIBBLE_MASK_ = 0xF;
         /// <summary>
         /// Age value shift
         /// </summary>
-        private static readonly int AGE_SHIFT_ = 24;
+        private const int AGE_SHIFT_ = 24;
 
 
         // private constructors --------------------------------------------------
@@ -1501,7 +1501,7 @@ namespace ICU4N.Impl
                 return version[0] == 7;
             }
         }
-        private static readonly int DATA_FORMAT = 0x5550726F;  // "UPro"
+        private const int DATA_FORMAT = 0x5550726F;  // "UPro"
 
         // private methods -------------------------------------------------------
 
@@ -1518,36 +1518,36 @@ namespace ICU4N.Impl
 
         // property starts for UnicodeSet -------------------------------------- ***
 
-        private static readonly int TAB = 0x0009;
-        //private static readonly int LF      = 0x000a;
-        //private static readonly int FF      = 0x000c;
-        private static readonly int CR = 0x000d;
-        private static readonly int U_A = 0x0041;
-        private static readonly int U_F = 0x0046;
-        private static readonly int U_Z = 0x005a;
-        private static readonly int U_a = 0x0061;
-        private static readonly int U_f = 0x0066;
-        private static readonly int U_z = 0x007a;
-        private static readonly int DEL = 0x007f;
-        private static readonly int NL = 0x0085;
-        private static readonly int NBSP = 0x00a0;
-        private static readonly int CGJ = 0x034f;
-        private static readonly int FIGURESP = 0x2007;
-        private static readonly int HAIRSP = 0x200a;
-        //private static readonly int ZWNJ    = 0x200c;
-        //private static readonly int ZWJ     = 0x200d;
-        private static readonly int RLM = 0x200f;
-        private static readonly int NNBSP = 0x202f;
-        private static readonly int WJ = 0x2060;
-        private static readonly int INHSWAP = 0x206a;
-        private static readonly int NOMDIG = 0x206f;
-        private static readonly int U_FW_A = 0xff21;
-        private static readonly int U_FW_F = 0xff26;
-        private static readonly int U_FW_Z = 0xff3a;
-        private static readonly int U_FW_a = 0xff41;
-        private static readonly int U_FW_f = 0xff46;
-        private static readonly int U_FW_z = 0xff5a;
-        private static readonly int ZWNBSP = 0xfeff;
+        private const int TAB = 0x0009;
+        //private const int LF      = 0x000a;
+        //private const int FF      = 0x000c;
+        private const int CR = 0x000d;
+        private const int U_A = 0x0041;
+        private const int U_F = 0x0046;
+        private const int U_Z = 0x005a;
+        private const int U_a = 0x0061;
+        private const int U_f = 0x0066;
+        private const int U_z = 0x007a;
+        private const int DEL = 0x007f;
+        private const int NL = 0x0085;
+        private const int NBSP = 0x00a0;
+        private const int CGJ = 0x034f;
+        private const int FIGURESP = 0x2007;
+        private const int HAIRSP = 0x200a;
+        //private const int ZWNJ    = 0x200c;
+        //private const int ZWJ     = 0x200d;
+        private const int RLM = 0x200f;
+        private const int NNBSP = 0x202f;
+        private const int WJ = 0x2060;
+        private const int INHSWAP = 0x206a;
+        private const int NOMDIG = 0x206f;
+        private const int U_FW_A = 0xff21;
+        private const int U_FW_F = 0xff26;
+        private const int U_FW_Z = 0xff3a;
+        private const int U_FW_a = 0xff41;
+        private const int U_FW_f = 0xff46;
+        private const int U_FW_z = 0xff5a;
+        private const int ZWNBSP = 0xfeff;
 
         public UnicodeSet AddPropertyStarts(UnicodeSet set)
         {

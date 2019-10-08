@@ -54,7 +54,7 @@ namespace ICU4N.Impl
         /// Number of lines per group
         /// 1 &lt;&lt; GROUP_SHIFT_
         /// </summary>
-        public static readonly int LINES_PER_GROUP_ = 1 << 5;
+        public const int LinesPerGroup = 1 << 5;
         /// <summary>
         /// Maximum number of groups.
         /// </summary>
@@ -203,7 +203,7 @@ namespace ICU4N.Impl
 
             // all 32 lengths must be read to get the offset of the first group
             // string
-            for (int i = 0; i < LINES_PER_GROUP_; stringoffset++)
+            for (int i = 0; i < LinesPerGroup; stringoffset++)
             {
                 b = m_groupstring_[stringoffset];
                 shift = 4;
@@ -227,7 +227,7 @@ namespace ICU4N.Impl
                             lengths[i] = (char)n;
                         }
 
-                        if (i < LINES_PER_GROUP_)
+                        if (i < LinesPerGroup)
                         {
                             offsets[i + 1] = (char)(offsets[i] + lengths[i]);
                         }
@@ -467,7 +467,7 @@ namespace ICU4N.Impl
         /// <returns>Limit codepoint of the group.</returns>
         public static int GetGroupLimit(int msb)
         {
-            return (msb << GROUP_SHIFT_) + LINES_PER_GROUP_;
+            return (msb << GROUP_SHIFT_) + LinesPerGroup;
         }
 
         /// <summary>
@@ -1124,37 +1124,37 @@ namespace ICU4N.Impl
         //
         // Group use.  Note - access must be synchronized.
         //
-        private char[] m_groupoffsets_ = new char[LINES_PER_GROUP_ + 1];
-        private char[] m_grouplengths_ = new char[LINES_PER_GROUP_ + 1];
+        private char[] m_groupoffsets_ = new char[LinesPerGroup + 1];
+        private char[] m_grouplengths_ = new char[LinesPerGroup + 1];
 
         /// <summary>
         /// Default name of the name datafile
         /// </summary>
-        private static readonly string FILE_NAME_ = "unames.icu";
+        private const string FILE_NAME_ = "unames.icu";
         /// <summary>
         /// Shift count to retrieve group information
         /// </summary>
-        private static readonly int GROUP_SHIFT_ = 5;
+        private const int GROUP_SHIFT_ = 5;
         /// <summary>
         /// Mask to retrieve the offset for a particular character within a group
         /// </summary>
-        private static readonly int GROUP_MASK_ = LINES_PER_GROUP_ - 1;
+        private const int GROUP_MASK_ = LinesPerGroup - 1;
 
         /// <summary>
         /// Position of offsethigh in group information array
         /// </summary>
-        private static readonly int OFFSET_HIGH_OFFSET_ = 1;
+        private const int OFFSET_HIGH_OFFSET_ = 1;
 
         /// <summary>
         /// Position of offsetlow in group information array
         /// </summary>
-        private static readonly int OFFSET_LOW_OFFSET_ = 2;
+        private const int OFFSET_LOW_OFFSET_ = 2;
 
         /// <summary>
         /// Double nibble indicator, any nibble > this number has to be combined
         /// with its following nibble
         /// </summary>
-        private static readonly int SINGLE_NIBBLE_MAX_ = 11;
+        private const int SINGLE_NIBBLE_MAX_ = 11;
 
         /*
          * Maximum length of character names (regular & 1.0).
@@ -1230,27 +1230,23 @@ namespace ICU4N.Impl
         /// <summary>
         /// Unknown type name
         /// </summary>
-        private static readonly string UNKNOWN_TYPE_NAME_ = "unknown";
+        private const string UNKNOWN_TYPE_NAME_ = "unknown";
         /// <summary>
         /// Not a character type
         /// </summary>
-        private static readonly int NON_CHARACTER_
-                                        = UCharacterCategoryExtensions.CharCategoryCount;
+        private const int NON_CHARACTER_ = UCharacterCategoryExtensions.CharCategoryCount;
         /// <summary>
         /// Lead surrogate type
         /// </summary>
-        private static readonly int LEAD_SURROGATE_
-                                      = UCharacterCategoryExtensions.CharCategoryCount + 1;
+        private const int LEAD_SURROGATE_ = UCharacterCategoryExtensions.CharCategoryCount + 1;
         /// <summary>
         /// Trail surrogate type
         /// </summary>
-        private static readonly int TRAIL_SURROGATE_
-                                      = UCharacterCategoryExtensions.CharCategoryCount + 2;
+        private const int TRAIL_SURROGATE_ = UCharacterCategoryExtensions.CharCategoryCount + 2;
         /// <summary>
         /// Extended category count
         /// </summary>
-        static readonly int EXTENDED_CATEGORY_
-                                      = UCharacterCategoryExtensions.CharCategoryCount + 3;
+        private const int EXTENDED_CATEGORY_ = UCharacterCategoryExtensions.CharCategoryCount + 3;
 
         // private constructor ------------------------------------------------
 
@@ -1348,7 +1344,7 @@ namespace ICU4N.Impl
             int nindex;
             int count;
 
-            for (int result = 0; result <= LINES_PER_GROUP_; result++)
+            for (int result = 0; result <= LinesPerGroup; result++)
             {
                 nindex = 0;
                 len = length[result];
@@ -1686,8 +1682,8 @@ namespace ICU4N.Impl
         private void AddGroupName(int maxlength)
         {
             int maxisolength = 0;
-            char[] offsets = new char[LINES_PER_GROUP_ + 2];
-            char[] lengths = new char[LINES_PER_GROUP_ + 2];
+            char[] offsets = new char[LinesPerGroup + 2];
+            char[] lengths = new char[LinesPerGroup + 2];
             byte[] tokenlengths = new byte[m_tokentable_.Length];
 
             // enumerate all groups
@@ -1698,7 +1694,7 @@ namespace ICU4N.Impl
                 // enumerate all lines in each group
                 // for (int linenumber = LINES_PER_GROUP_ - 1; linenumber >= 0;
                 //    linenumber --) {
-                for (int linenumber = 0; linenumber < LINES_PER_GROUP_;
+                for (int linenumber = 0; linenumber < LinesPerGroup;
                     linenumber++)
                 {
                     int lineoffset = offset + offsets[linenumber];
