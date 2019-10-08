@@ -88,8 +88,8 @@ namespace ICU4N.Impl
             /* add the start code point of each same-value range of the trie */
             using (var trieIterator = trie.GetEnumerator())
             {
-                Trie2.Range range;
-                while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                Trie2Range range;
+                while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     set.Add(range.StartCodePoint);
                 }

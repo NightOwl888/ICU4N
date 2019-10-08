@@ -487,8 +487,8 @@ namespace ICU4N.Impl
         {
             using (var trieIterator = normTrie.GetEnumerator())
             {
-                Trie2.Range range;
-                while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                Trie2Range range;
+                while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     EnumLcccRange(range.StartCodePoint, range.EndCodePoint, range.Value, set);
                 }
@@ -500,8 +500,8 @@ namespace ICU4N.Impl
             /* add the start code point of each same-value range of each trie */
             using (var trieIterator = normTrie.GetEnumerator())
             {
-                Trie2.Range range;
-                while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                Trie2Range range;
+                while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     EnumNorm16PropertyStartsRange(range.StartCodePoint, range.EndCodePoint, range.Value, set);
                 }
@@ -523,8 +523,8 @@ namespace ICU4N.Impl
             // currently only used for the SEGMENT_STARTER property
             using (var trieIterator = canonIterData.GetEnumerator(segmentStarterMapper))
             {
-                Trie2.Range range;
-                while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                Trie2Range range;
+                while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     /* add the start code point to the USet */
                     set.Add(range.StartCodePoint);
@@ -571,8 +571,8 @@ namespace ICU4N.Impl
                     canonStartSets = new List<UnicodeSet>();
                     using (var trieIterator = normTrie.GetEnumerator())
                     {
-                        Trie2.Range range;
-                        while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                        Trie2Range range;
+                        while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                         {
                             int norm16 = range.Value;
                             if (IsInert(norm16) || (minYesNo <= norm16 && norm16 < minNoNo))

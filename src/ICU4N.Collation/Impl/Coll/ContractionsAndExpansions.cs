@@ -51,10 +51,10 @@ namespace ICU4N.Impl.Coll
                 checkTailored = -1;
             }
             data = d;
-            using (IEnumerator<Trie2.Range> trieIterator = data.trie.GetEnumerator())
+            using (IEnumerator<Trie2Range> trieIterator = data.trie.GetEnumerator())
             {
-                Trie2.Range range;
-                while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                Trie2Range range;
+                while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     EnumCnERange(range.StartCodePoint, range.EndCodePoint, range.Value, this);
                 }
@@ -66,10 +66,10 @@ namespace ICU4N.Impl.Coll
                 tailored.Freeze();
                 checkTailored = 1;
                 data = d.Base;
-            using (IEnumerator<Trie2.Range> trieIterator = data.trie.GetEnumerator())
+            using (IEnumerator<Trie2Range> trieIterator = data.trie.GetEnumerator())
             {
-                Trie2.Range range;
-                while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                Trie2Range range;
+                while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     EnumCnERange(range.StartCodePoint, range.EndCodePoint, range.Value, this);
                 }

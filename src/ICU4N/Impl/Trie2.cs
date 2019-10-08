@@ -45,7 +45,7 @@ namespace ICU4N.Impl
     /// <para/>
     /// This is the second common version of a Unicode trie (hence the name Trie2).
     /// </summary>
-    public abstract class Trie2 : IEnumerable<Trie2.Range>
+    public abstract class Trie2 : IEnumerable<Trie2Range>
     {
         /// <summary>
         /// Create a <see cref="Trie2"/> from its serialized form.  Inverse of utrie2_serialize().
@@ -324,11 +324,11 @@ namespace ICU4N.Impl
                 return false;
             }
             Trie2 OtherTrie = (Trie2)other;
-            Range rangeFromOther;
+            Trie2Range rangeFromOther;
 
             using (var otherIter = OtherTrie.GetEnumerator())
             {
-                foreach (Trie2.Range rangeFromThis in this)
+                foreach (Trie2Range rangeFromThis in this)
                 {
                     if (otherIter.MoveNext() == false)
                     {
@@ -361,7 +361,7 @@ namespace ICU4N.Impl
             if (fHash == 0)
             {
                 int hash = InitHash();
-                foreach (Range r in this)
+                foreach (Trie2Range r in this)
                 {
                     hash = HashInt(hash, r.GetHashCode());
                 }
@@ -374,47 +374,7 @@ namespace ICU4N.Impl
             return fHash;
         }
 
-        /// <summary>
-        /// When iterating over the contents of a <see cref="Trie2"/>, Elements of this type are produced.
-        /// The iterator will return one item for each contiguous range of codepoints  having the same value.
-        /// </summary>
-        /// <remarks>
-        /// When iterating, the same <see cref="Range"/> object will be reused and returned for each range.
-        /// If you need to retain complete iteration results, clone each returned <see cref="Range"/>,
-        /// or save the range in some other way, before advancing to the next iteration step.
-        /// </remarks>
-        public class Range // ICU4N TODO: API De-nest ?
-        {
-            public int StartCodePoint { get; set; }
-            public int EndCodePoint { get; set; }    // Inclusive.
-            public int Value { get; set; }
-            public bool LeadSurrogate { get; set; }
-
-
-            public override bool Equals(object other)
-            {
-                if (other == null || !(other.GetType().Equals(GetType())))
-                {
-                    return false;
-                }
-                Range tother = (Range)other;
-                return this.StartCodePoint == tother.StartCodePoint &&
-                       this.EndCodePoint == tother.EndCodePoint &&
-                       this.Value == tother.Value &&
-                       this.LeadSurrogate == tother.LeadSurrogate;
-            }
-
-
-            public override int GetHashCode()
-            {
-                int h = InitHash();
-                h = HashUChar32(h, StartCodePoint);
-                h = HashUChar32(h, EndCodePoint);
-                h = HashInt(h, Value);
-                h = HashByte(h, LeadSurrogate ? 1 : 0);
-                return h;
-            }
-        }
+        // ICU4N: De-nested Range and renamed Trie2Range
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -429,7 +389,7 @@ namespace ICU4N.Impl
         /// Note that this method was named iterator() in ICU4J.
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerator<Trie2.Range> GetEnumerator()
+        public virtual IEnumerator<Trie2Range> GetEnumerator()
         {
             return GetEnumerator(defaultValueMapper);
         }
@@ -454,9 +414,9 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="mapper">Provides a function to remap values obtained from the <see cref="Trie2"/>.</param>
         /// <returns>An enumerator.</returns>
-        public virtual IEnumerator<Range> GetEnumerator(IValueMapper mapper)
+        public virtual IEnumerator<Trie2Range> GetEnumerator(IValueMapper mapper)
         {
-            return new Trie2Iterator(this, mapper);
+            return new Trie2Enumerator(this, mapper);
         }
 
         /// <summary>
@@ -476,9 +436,9 @@ namespace ICU4N.Impl
         /// <para/>
         /// Except for the limited code point range, this functions just like <see cref="Trie2.GetEnumerator()"/>.
         /// </remarks>
-        public virtual IEnumerator<Range> GetEnumeratorForLeadSurrogate(char lead, IValueMapper mapper)
+        public virtual IEnumerator<Trie2Range> GetEnumeratorForLeadSurrogate(char lead, IValueMapper mapper)
         {
-            return new Trie2Iterator(this, lead, mapper);
+            return new Trie2Enumerator(this, lead, mapper);
         }
 
         /// <summary>
@@ -498,9 +458,9 @@ namespace ICU4N.Impl
         /// <para/>
         /// Except for the limited code point range, this functions just like <see cref="Trie2.GetEnumerator()"/>.
         /// </remarks>
-        public virtual IEnumerator<Range> GetEnumeratorForLeadSurrogate(char lead)
+        public virtual IEnumerator<Trie2Range> GetEnumeratorForLeadSurrogate(char lead)
         {
-            return new Trie2Iterator(this, lead, defaultValueMapper);
+            return new Trie2Enumerator(this, lead, defaultValueMapper);
         }
 
         // ICU4N specific - de-nested IValueMapper
@@ -536,19 +496,18 @@ namespace ICU4N.Impl
             return bytesWritten;
         }
 
+        // ICU4N: De-nested CharSequenceValues and renamed Trie2CharSequenceValues
+
         /// <summary>
-        /// Struct-like class for holding the results returned by a UTrie2  <see cref="CharSequenceEnumerator"/>.
-        /// The iteration walks over a <see cref="ICharSequence"/>, and for each Unicode code point therein
-        /// returns the character and its associated <see cref="Trie2"/> value.
+        /// Create an enumerator that will produce the values from the <see cref="Trie2"/> for
+        /// the sequence of code points in an input text.
         /// </summary>
-        public class CharSequenceValues // ICU4N TODO: API De-nest ?
+        /// <param name="text">A text string to be iterated over.</param>
+        /// <param name="index">The starting iteration position within the input text.</param>
+        /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
+        public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(string text, int index) // ICU4N specific
         {
-            /// <summary>String index of the current code point.</summary>
-            public int Index { get; set; }
-            /// <summary>The code point at index.</summary>
-            public int CodePoint { get; set; }
-            /// <summary>The <see cref="Trie2"/> value for the current code point.</summary>
-            public int Value { get; set; }
+            return new Trie2CharSequenceEnumerator(this, text.ToCharSequence(), index);
         }
 
         /// <summary>
@@ -557,22 +516,10 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="text">A text string to be iterated over.</param>
         /// <param name="index">The starting iteration position within the input text.</param>
-        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
-        public virtual CharSequenceEnumerator GetCharSequenceEnumerator(string text, int index) // ICU4N specific
+        /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
+        public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(StringBuilder text, int index) // ICU4N specific
         {
-            return new CharSequenceEnumerator(this, text.ToCharSequence(), index);
-        }
-
-        /// <summary>
-        /// Create an enumerator that will produce the values from the <see cref="Trie2"/> for
-        /// the sequence of code points in an input text.
-        /// </summary>
-        /// <param name="text">A text string to be iterated over.</param>
-        /// <param name="index">The starting iteration position within the input text.</param>
-        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
-        public virtual CharSequenceEnumerator GetCharSequenceEnumerator(StringBuilder text, int index) // ICU4N specific
-        {
-            return new CharSequenceEnumerator(this, text.ToCharSequence(), index);
+            return new Trie2CharSequenceEnumerator(this, text.ToCharSequence(), index);
         }
 
         /// <summary>
@@ -581,10 +528,10 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="text">A text string to be iterated over.</param>
         /// <param name="index">The starting iteration position within the input text.</param>
-        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
-        public virtual CharSequenceEnumerator GetCharSequenceEnumerator(char[] text, int index) // ICU4N specific
+        /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
+        public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(char[] text, int index) // ICU4N specific
         {
-            return new CharSequenceEnumerator(this, text.ToCharSequence(), index);
+            return new Trie2CharSequenceEnumerator(this, text.ToCharSequence(), index);
         }
 
         /// <summary>
@@ -593,145 +540,13 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="text">A text string to be iterated over.</param>
         /// <param name="index">The starting iteration position within the input text.</param>
-        /// <returns>The <see cref="CharSequenceEnumerator"/>.</returns>
-        internal virtual CharSequenceEnumerator GetCharSequenceEnumerator(ICharSequence text, int index)
+        /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
+        internal virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(ICharSequence text, int index)
         {
-            return new CharSequenceEnumerator(this, text, index);
+            return new Trie2CharSequenceEnumerator(this, text, index);
         }
 
-        // TODO:  Survey usage of the equivalent of CharSequenceIterator in ICU4C
-        //        and if there is none, remove it from here.
-        //        Don't waste time testing and maintaining unused code.
-
-        /// <summary>
-        /// An enumerator that operates over an input <see cref="ICharSequence"/>, and for each Unicode code point
-        /// in the input returns the associated value from the <see cref="Trie2"/>.
-        /// </summary>
-        /// <remarks>
-        /// This iterator can move forwards or backwards, and can be reset to an arbitrary index.
-        /// <para/>
-        /// Note that <see cref="Trie2_16"/> and <see cref="Trie2_32"/> subclass <see cref="Trie2.CharSequenceEnumerator"/>.  This is done
-        /// only for performance reasons.  It does require that any changes made here be propagated
-        /// into the corresponding code in the subclasses.
-        /// </remarks>
-        public class CharSequenceEnumerator : IEnumerator<CharSequenceValues> // ICU4N TODO: De-nest ?
-        {
-            /// <summary>
-            /// Internal constructor.
-            /// </summary>
-            internal CharSequenceEnumerator(Trie2 outerInstance, ICharSequence t, int index)
-            {
-                this.outerInstance = outerInstance;
-                text = t;
-                textLength = text.Length;
-                Set(index);
-            }
-            private readonly Trie2 outerInstance;
-
-            private ICharSequence text;
-            private int textLength;
-            private int index;
-            private Trie2.CharSequenceValues fResults = new Trie2.CharSequenceValues();
-
-
-            public virtual void Set(int i)
-            {
-                if (i < 0 || i > textLength)
-                {
-                    throw new IndexOutOfRangeException();
-                }
-                index = i;
-            }
-
-
-            protected virtual bool HasNext
-            {
-                get { return index < textLength; }
-            }
-
-
-            protected virtual bool HasPrevious
-            {
-                get { return index > 0; }
-            }
-
-            public CharSequenceValues Current
-            {
-                get { return fResults; }
-            }
-
-            object IEnumerator.Current
-            {
-                get { return fResults; }
-            }
-
-            protected virtual Trie2.CharSequenceValues Next()
-            {
-                int c = Character.CodePointAt(text, index);
-                int val = outerInstance.Get(c);
-
-                fResults.Index = index;
-                fResults.CodePoint = c;
-                fResults.Value = val;
-                index++;
-                if (c >= 0x10000)
-                {
-                    index++;
-                }
-                return fResults;
-            }
-
-
-            protected virtual Trie2.CharSequenceValues Previous()
-            {
-                int c = Character.CodePointBefore(text, index);
-                int val = outerInstance.Get(c);
-                index--;
-                if (c >= 0x10000)
-                {
-                    index--;
-                }
-                fResults.Index = index;
-                fResults.CodePoint = c;
-                fResults.Value = val;
-                return fResults;
-            }
-
-            public virtual bool MoveNext()
-            {
-                if (!HasNext)
-                    return false;
-                Next();
-                return true;
-            }
-
-            public virtual bool MovePrevious()
-            {
-                if (!HasPrevious)
-                    return false;
-                Previous();
-                return true;
-            }
-
-            public virtual void Reset()
-            {
-                throw new NotSupportedException();
-            }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-            {
-                // Nothing to do
-            }
-
-            // ICU4N specific - Remove not supported by the interface
-        }
-
+        // ICU4N: De-nested CharSequenceEnumerator and renamed Trie2CharSequenceEnumerator
 
         //--------------------------------------------------------------------------------
         //
@@ -970,217 +785,7 @@ namespace ICU4N.Impl
         /// </summary>
         internal const int UNEWTRIE2_MAX_DATA_LENGTH = (0x110000 + 0x40 + 0x40 + 0x400);
 
-        /// <summary>
-        /// Implementation class for an enumerator over a <see cref="Trie2"/>.
-        /// <para/>
-        /// Iteration over a <see cref="Trie2"/> first returns all of the ranges that are indexed by code points,
-        /// then returns the special alternate values for the lead surrogates.
-        /// </summary>
-        /// <internal/>
-        public class Trie2Iterator : IEnumerator<Range> // ICU4N TODO: API - de-nest ? Rename Trie2Enumerator
-        {
-            private readonly Trie2 outerInstance;
-            private Range current = null;
-
-            // The normal constructor that configures the iterator to cover the complete
-            //   contents of the Trie2
-            internal Trie2Iterator(Trie2 outerInstance, IValueMapper vm)
-            {
-                this.outerInstance = outerInstance;
-                mapper = vm;
-                nextStart = 0;
-                limitCP = 0x110000;
-                doLeadSurrogates = true;
-            }
-
-            // An alternate constructor that configures the iterator to cover only the
-            //   code points corresponding to a particular Lead Surrogate value.
-            internal Trie2Iterator(Trie2 outerInstance, char leadSurrogate, IValueMapper vm)
-            {
-                if (leadSurrogate < 0xd800 || leadSurrogate > 0xdbff)
-                {
-                    throw new ArgumentException("Bad lead surrogate value.");
-                }
-                this.outerInstance = outerInstance;
-                mapper = vm;
-                nextStart = (leadSurrogate - 0xd7c0) << 10;
-                limitCP = nextStart + 0x400;
-                doLeadSurrogates = false;   // Do not iterate over lead the special lead surrogate
-                                            //   values after completing iteration over code points.
-            }
-
-            /// <summary>
-            /// The main Next() function for <see cref="Trie2"/> iterators
-            /// </summary>
-            private Range Next()
-            {
-                //if (!hasNext())
-                //{
-                //    throw new NoSuchElementException();
-                //}
-                if (nextStart >= limitCP)
-                {
-                    // Switch over from iterating normal code point values to
-                    //   doing the alternate lead-surrogate values.
-                    doingCodePoints = false;
-                    nextStart = 0xd800;
-                }
-                int endOfRange = 0;
-                int val = 0;
-                int mappedVal = 0;
-
-                if (doingCodePoints)
-                {
-                    // Iteration over code point values.
-                    val = outerInstance.Get(nextStart);
-                    mappedVal = mapper.Map(val);
-                    endOfRange = outerInstance.RangeEnd(nextStart, limitCP, val);
-                    // Loop once for each range in the Trie2 with the same raw (unmapped) value.
-                    // Loop continues so long as the mapped values are the same.
-                    for (; ; )
-                    {
-                        if (endOfRange >= limitCP - 1)
-                        {
-                            break;
-                        }
-                        val = outerInstance.Get(endOfRange + 1);
-                        if (mapper.Map(val) != mappedVal)
-                        {
-                            break;
-                        }
-                        endOfRange = outerInstance.RangeEnd(endOfRange + 1, limitCP, val);
-                    }
-                }
-                else
-                {
-                    // Iteration over the alternate lead surrogate values.
-                    val = outerInstance.GetFromU16SingleLead((char)nextStart);
-                    mappedVal = mapper.Map(val);
-                    endOfRange = RangeEndLS((char)nextStart);
-                    // Loop once for each range in the Trie2 with the same raw (unmapped) value.
-                    // Loop continues so long as the mapped values are the same.
-                    for (; ; )
-                    {
-                        if (endOfRange >= 0xdbff)
-                        {
-                            break;
-                        }
-                        val = outerInstance.GetFromU16SingleLead((char)(endOfRange + 1));
-                        if (mapper.Map(val) != mappedVal)
-                        {
-                            break;
-                        }
-                        endOfRange = RangeEndLS((char)(endOfRange + 1));
-                    }
-                }
-                returnValue.StartCodePoint = nextStart;
-                returnValue.EndCodePoint = endOfRange;
-                returnValue.Value = mappedVal;
-                returnValue.LeadSurrogate = !doingCodePoints;
-                nextStart = endOfRange + 1;
-                return returnValue;
-            }
-
-            private bool HasNext
-            {
-                get { return doingCodePoints && (doLeadSurrogates || nextStart < limitCP) || nextStart < 0xdc00; }
-            }
-
-            public virtual Range Current
-            {
-                get { return current; }
-            }
-
-            object IEnumerator.Current
-            {
-                get { return this.Current; }
-            }
-
-            public virtual bool MoveNext()
-            {
-                if (!HasNext)
-                    return false;
-                current = Next();
-                return true;
-            }
-
-            public virtual void Reset()
-            {
-                throw new NotSupportedException();
-            }
-
-            public void Dispose()
-            {
-                Dispose(true);
-                GC.SuppressFinalize(this);
-            }
-
-            protected virtual void Dispose(bool disposing)
-            {
-                // Nothing to do
-            }
-
-            // ICU4N specific - Remove() not supported in .NET
-
-            /// <summary>
-            /// Find the last lead surrogate in a contiguous range  with the
-            /// same <see cref="Trie2"/> value as the input character.
-            /// </summary>
-            /// <remarks>
-            /// Use the alternate Lead Surrogate values from the Trie2,
-            /// not the code-point values.
-            /// <para/>
-            /// Note: <see cref="Trie2_16"/> and <see cref="Trie2_32"/> override this implementation with optimized versions,
-            ///       meaning that the implementation here is only being used with
-            ///       <see cref="Trie2Writable"/>.  The code here is logically correct with any type
-            ///       of <see cref="Trie2"/>, however.      
-            /// </remarks>
-            /// <param name="startingLS">The character to begin with.</param>
-            /// <returns>The last contiguous character with the same value.</returns>
-            private int RangeEndLS(char startingLS)
-            {
-                if (startingLS >= 0xdbff)
-                {
-                    return 0xdbff;
-                }
-
-                int c;
-                int val = outerInstance.GetFromU16SingleLead(startingLS);
-                for (c = startingLS + 1; c <= 0x0dbff; c++)
-                {
-                    if (outerInstance.GetFromU16SingleLead((char)c) != val)
-                    {
-                        break;
-                    }
-                }
-                return c - 1;
-            }
-
-            //
-            //   Iteration State Variables
-            //
-            private IValueMapper mapper;
-            private Range returnValue = new Range();
-            /// <summary>The starting code point for the next range to be returned.</summary>
-            private int nextStart;
-            /// <summary>
-            /// The upper limit for the last normal range to be returned.  Normally 0x110000, but
-            /// may be lower when iterating over the code points for a single lead surrogate.
-            /// </summary>
-            private int limitCP;
-
-            /// <summary>
-            /// True while iterating over the the <see cref="Trie2"/> values for code points.
-            /// False while iterating over the alternate values for lead surrogates.
-            /// </summary>
-            private bool doingCodePoints = true;
- 
-            /// <summary>
-            /// True if the iterator should iterate the special values for lead surrogates in
-            /// addition to the normal values for code points.
-            /// </summary>
-            private bool doLeadSurrogates = true;
-        }
+        // ICU4N: De-nested Trie2Enumerator
 
         /// <summary>
         /// Find the last character in a contiguous range of characters with the
@@ -1213,19 +818,19 @@ namespace ICU4N.Impl
         //
         //  Hashing implementation functions.  FNV hash.  Respected public domain algorithm.
         //
-        private static int InitHash()
+        internal static int InitHash()
         {
             return unchecked((int)0x811c9DC5);  // unsigned 2166136261
         }
 
-        private static int HashByte(int h, int b)
+        internal static int HashByte(int h, int b)
         {
             h = h * 16777619;
             h = h ^ b;
             return h;
         }
 
-        private static int HashUChar32(int h, int c)
+        internal static int HashUChar32(int h, int c)
         {
             h = Trie2.HashByte(h, c & 255);
             h = Trie2.HashByte(h, (c >> 8) & 255);
@@ -1233,7 +838,7 @@ namespace ICU4N.Impl
             return h;
         }
 
-        private static int HashInt(int h, int i)
+        internal static int HashInt(int h, int i)
         {
             h = Trie2.HashByte(h, i & 255);
             h = Trie2.HashByte(h, (i >> 8) & 255);
@@ -1241,5 +846,404 @@ namespace ICU4N.Impl
             h = Trie2.HashByte(h, (i >> 24) & 255);
             return h;
         }
+    }
+
+    /// <summary>
+    /// When iterating over the contents of a <see cref="Trie2"/>, Elements of this type are produced.
+    /// The iterator will return one item for each contiguous range of codepoints  having the same value.
+    /// </summary>
+    /// <remarks>
+    /// When iterating, the same <see cref="Trie2Range"/> object will be reused and returned for each range.
+    /// If you need to retain complete iteration results, clone each returned <see cref="Trie2Range"/>,
+    /// or save the range in some other way, before advancing to the next iteration step.
+    /// </remarks>
+    public class Trie2Range
+    {
+        public int StartCodePoint { get; set; }
+        public int EndCodePoint { get; set; }    // Inclusive.
+        public int Value { get; set; }
+        public bool IsLeadSurrogate { get; set; }
+
+
+        public override bool Equals(object other)
+        {
+            if (other == null || !(other.GetType().Equals(GetType())))
+            {
+                return false;
+            }
+            Trie2Range tother = (Trie2Range)other;
+            return this.StartCodePoint == tother.StartCodePoint &&
+                   this.EndCodePoint == tother.EndCodePoint &&
+                   this.Value == tother.Value &&
+                   this.IsLeadSurrogate == tother.IsLeadSurrogate;
+        }
+
+
+        public override int GetHashCode()
+        {
+            int h = Trie2.InitHash();
+            h = Trie2.HashUChar32(h, StartCodePoint);
+            h = Trie2.HashUChar32(h, EndCodePoint);
+            h = Trie2.HashInt(h, Value);
+            h = Trie2.HashByte(h, IsLeadSurrogate ? 1 : 0);
+            return h;
+        }
+    }
+
+    /// <summary>
+    /// Struct-like class for holding the results returned by a UTrie2  <see cref="Trie2CharSequenceEnumerator"/>.
+    /// The iteration walks over a <see cref="ICharSequence"/>, and for each Unicode code point therein
+    /// returns the character and its associated <see cref="Trie2"/> value.
+    /// </summary>
+    public class Trie2CharSequenceValues
+    {
+        /// <summary>String index of the current code point.</summary>
+        public int Index { get; set; }
+        /// <summary>The code point at index.</summary>
+        public int CodePoint { get; set; }
+        /// <summary>The <see cref="Trie2"/> value for the current code point.</summary>
+        public int Value { get; set; }
+    }
+
+    // TODO:  Survey usage of the equivalent of CharSequenceIterator in ICU4C
+    //        and if there is none, remove it from here.
+    //        Don't waste time testing and maintaining unused code.
+
+    /// <summary>
+    /// An enumerator that operates over an input <see cref="ICharSequence"/>, and for each Unicode code point
+    /// in the input returns the associated value from the <see cref="Trie2"/>.
+    /// </summary>
+    /// <remarks>
+    /// This iterator can move forwards or backwards, and can be reset to an arbitrary index.
+    /// <para/>
+    /// Note that <see cref="Trie2_16"/> and <see cref="Trie2_32"/> subclass <see cref="Trie2CharSequenceEnumerator"/>.  This is done
+    /// only for performance reasons.  It does require that any changes made here be propagated
+    /// into the corresponding code in the subclasses.
+    /// </remarks>
+    public class Trie2CharSequenceEnumerator : IEnumerator<Trie2CharSequenceValues>
+    {
+        /// <summary>
+        /// Internal constructor.
+        /// </summary>
+        internal Trie2CharSequenceEnumerator(Trie2 trie2, ICharSequence t, int index)
+        {
+            this.trie2 = trie2;
+            text = t;
+            textLength = text.Length;
+            Set(index);
+        }
+        private readonly Trie2 trie2;
+
+        private ICharSequence text;
+        private int textLength;
+        private int index;
+        private Trie2CharSequenceValues fResults = new Trie2CharSequenceValues();
+
+        public virtual void Set(int i)
+        {
+            if (i < 0 || i > textLength)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            index = i;
+        }
+
+        protected virtual bool HasNext
+        {
+            get { return index < textLength; }
+        }
+
+        protected virtual bool HasPrevious
+        {
+            get { return index > 0; }
+        }
+
+        public Trie2CharSequenceValues Current
+        {
+            get { return fResults; }
+        }
+
+        object IEnumerator.Current
+        {
+            get { return fResults; }
+        }
+
+        protected virtual Trie2CharSequenceValues Next()
+        {
+            int c = Character.CodePointAt(text, index);
+            int val = trie2.Get(c);
+
+            fResults.Index = index;
+            fResults.CodePoint = c;
+            fResults.Value = val;
+            index++;
+            if (c >= 0x10000)
+            {
+                index++;
+            }
+            return fResults;
+        }
+
+
+        protected virtual Trie2CharSequenceValues Previous()
+        {
+            int c = Character.CodePointBefore(text, index);
+            int val = trie2.Get(c);
+            index--;
+            if (c >= 0x10000)
+            {
+                index--;
+            }
+            fResults.Index = index;
+            fResults.CodePoint = c;
+            fResults.Value = val;
+            return fResults;
+        }
+
+        public virtual bool MoveNext()
+        {
+            if (!HasNext)
+                return false;
+            Next();
+            return true;
+        }
+
+        public virtual bool MovePrevious()
+        {
+            if (!HasPrevious)
+                return false;
+            Previous();
+            return true;
+        }
+
+        public virtual void Reset()
+        {
+            throw new NotSupportedException();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // Nothing to do
+        }
+
+        // ICU4N specific - Remove not supported by the interface
+    }
+
+    /// <summary>
+    /// Implementation class for an enumerator over a <see cref="Trie2"/>.
+    /// <para/>
+    /// Iteration over a <see cref="Trie2"/> first returns all of the ranges that are indexed by code points,
+    /// then returns the special alternate values for the lead surrogates.
+    /// </summary>
+    /// <internal/>
+    public class Trie2Enumerator : IEnumerator<Trie2Range>
+    {
+        private readonly Trie2 trie2;
+        private Trie2Range current = null;
+
+        // The normal constructor that configures the iterator to cover the complete
+        //   contents of the Trie2
+        internal Trie2Enumerator(Trie2 trie2, IValueMapper vm)
+        {
+            this.trie2 = trie2;
+            mapper = vm;
+            nextStart = 0;
+            limitCP = 0x110000;
+            doLeadSurrogates = true;
+        }
+
+        // An alternate constructor that configures the iterator to cover only the
+        //   code points corresponding to a particular Lead Surrogate value.
+        internal Trie2Enumerator(Trie2 trie2, char leadSurrogate, IValueMapper vm)
+        {
+            if (leadSurrogate < 0xd800 || leadSurrogate > 0xdbff)
+            {
+                throw new ArgumentException("Bad lead surrogate value.");
+            }
+            this.trie2 = trie2;
+            mapper = vm;
+            nextStart = (leadSurrogate - 0xd7c0) << 10;
+            limitCP = nextStart + 0x400;
+            doLeadSurrogates = false;   // Do not iterate over lead the special lead surrogate
+                                        //   values after completing iteration over code points.
+        }
+
+        /// <summary>
+        /// The main Next() function for <see cref="Trie2"/> iterators
+        /// </summary>
+        private Trie2Range Next()
+        {
+            //if (!hasNext())
+            //{
+            //    throw new NoSuchElementException();
+            //}
+            if (nextStart >= limitCP)
+            {
+                // Switch over from iterating normal code point values to
+                //   doing the alternate lead-surrogate values.
+                doingCodePoints = false;
+                nextStart = 0xd800;
+            }
+            int endOfRange = 0;
+            int val = 0;
+            int mappedVal = 0;
+
+            if (doingCodePoints)
+            {
+                // Iteration over code point values.
+                val = trie2.Get(nextStart);
+                mappedVal = mapper.Map(val);
+                endOfRange = trie2.RangeEnd(nextStart, limitCP, val);
+                // Loop once for each range in the Trie2 with the same raw (unmapped) value.
+                // Loop continues so long as the mapped values are the same.
+                for (; ; )
+                {
+                    if (endOfRange >= limitCP - 1)
+                    {
+                        break;
+                    }
+                    val = trie2.Get(endOfRange + 1);
+                    if (mapper.Map(val) != mappedVal)
+                    {
+                        break;
+                    }
+                    endOfRange = trie2.RangeEnd(endOfRange + 1, limitCP, val);
+                }
+            }
+            else
+            {
+                // Iteration over the alternate lead surrogate values.
+                val = trie2.GetFromU16SingleLead((char)nextStart);
+                mappedVal = mapper.Map(val);
+                endOfRange = RangeEndLS((char)nextStart);
+                // Loop once for each range in the Trie2 with the same raw (unmapped) value.
+                // Loop continues so long as the mapped values are the same.
+                for (; ; )
+                {
+                    if (endOfRange >= 0xdbff)
+                    {
+                        break;
+                    }
+                    val = trie2.GetFromU16SingleLead((char)(endOfRange + 1));
+                    if (mapper.Map(val) != mappedVal)
+                    {
+                        break;
+                    }
+                    endOfRange = RangeEndLS((char)(endOfRange + 1));
+                }
+            }
+            returnValue.StartCodePoint = nextStart;
+            returnValue.EndCodePoint = endOfRange;
+            returnValue.Value = mappedVal;
+            returnValue.IsLeadSurrogate = !doingCodePoints;
+            nextStart = endOfRange + 1;
+            return returnValue;
+        }
+
+        private bool HasNext
+        {
+            get { return doingCodePoints && (doLeadSurrogates || nextStart < limitCP) || nextStart < 0xdc00; }
+        }
+
+        public virtual Trie2Range Current
+        {
+            get { return current; }
+        }
+
+        object IEnumerator.Current
+        {
+            get { return this.Current; }
+        }
+
+        public virtual bool MoveNext()
+        {
+            if (!HasNext)
+                return false;
+            current = Next();
+            return true;
+        }
+
+        public virtual void Reset()
+        {
+            throw new NotSupportedException();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // Nothing to do
+        }
+
+        // ICU4N specific - Remove() not supported in .NET
+
+        /// <summary>
+        /// Find the last lead surrogate in a contiguous range  with the
+        /// same <see cref="Trie2"/> value as the input character.
+        /// </summary>
+        /// <remarks>
+        /// Use the alternate Lead Surrogate values from the Trie2,
+        /// not the code-point values.
+        /// <para/>
+        /// Note: <see cref="Trie2_16"/> and <see cref="Trie2_32"/> override this implementation with optimized versions,
+        ///       meaning that the implementation here is only being used with
+        ///       <see cref="Trie2Writable"/>.  The code here is logically correct with any type
+        ///       of <see cref="Trie2"/>, however.      
+        /// </remarks>
+        /// <param name="startingLS">The character to begin with.</param>
+        /// <returns>The last contiguous character with the same value.</returns>
+        private int RangeEndLS(char startingLS)
+        {
+            if (startingLS >= 0xdbff)
+            {
+                return 0xdbff;
+            }
+
+            int c;
+            int val = trie2.GetFromU16SingleLead(startingLS);
+            for (c = startingLS + 1; c <= 0x0dbff; c++)
+            {
+                if (trie2.GetFromU16SingleLead((char)c) != val)
+                {
+                    break;
+                }
+            }
+            return c - 1;
+        }
+
+        //
+        //   Iteration State Variables
+        //
+        private IValueMapper mapper;
+        private Trie2Range returnValue = new Trie2Range();
+        /// <summary>The starting code point for the next range to be returned.</summary>
+        private int nextStart;
+        /// <summary>
+        /// The upper limit for the last normal range to be returned.  Normally 0x110000, but
+        /// may be lower when iterating over the code points for a single lead surrogate.
+        /// </summary>
+        private int limitCP;
+
+        /// <summary>
+        /// True while iterating over the the <see cref="Trie2"/> values for code points.
+        /// False while iterating over the alternate values for lead surrogates.
+        /// </summary>
+        private bool doingCodePoints = true;
+
+        /// <summary>
+        /// True if the iterator should iterate the special values for lead surrogates in
+        /// addition to the normal values for code points.
+        /// </summary>
+        private bool doLeadSurrogates = true;
     }
 }

@@ -1554,8 +1554,8 @@ namespace ICU4N.Impl
             /* add the start code point of each same-value range of the main trie */
             using (var trieIterator = m_trie_.GetEnumerator())
             {
-                Trie2.Range range;
-                while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                Trie2Range range;
+                while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     set.Add(range.StartCodePoint);
                 }
@@ -1653,8 +1653,8 @@ namespace ICU4N.Impl
                 /* if m_additionalColumnsCount_==0 then the properties vectors trie may not be there at all */
                 using (var trieIterator = m_additionalTrie_.GetEnumerator())
                 {
-                    Trie2.Range range;
-                    while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                    Trie2Range range;
+                    while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                     {
                         set.Add(range.StartCodePoint);
                     }
@@ -1664,7 +1664,7 @@ namespace ICU4N.Impl
 
         // This static initializer block must be placed after
         // other static member initialization
-        static UCharacterProperty()
+        static UCharacterProperty() // ICU4N TODO: Avoid static constructor
         {
             try
             {

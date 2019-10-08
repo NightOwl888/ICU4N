@@ -288,10 +288,10 @@ namespace ICU4N.Impl.Coll
                 throw new InvalidOperationException("attempt to CopyFrom() after Build()");
             }
             CopyHelper helper = new CopyHelper(src, this, modifier);
-            using (IEnumerator<Trie2.Range> trieIterator = src.trie.GetEnumerator())
+            using (IEnumerator<Trie2Range> trieIterator = src.trie.GetEnumerator())
             {
-                Trie2.Range range;
-                while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                Trie2Range range;
+                while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     EnumRangeForCopy(range.StartCodePoint, range.EndCodePoint, range.Value, helper);
                 }
@@ -1051,10 +1051,10 @@ namespace ICU4N.Impl.Coll
             {
                 int leadValue = -1;
                 // utrie2_enumForLeadSurrogate(trie, lead, null, , &value);
-                IEnumerator<Trie2.Range> trieIterator = trie.GetEnumeratorForLeadSurrogate(lead);
+                IEnumerator<Trie2Range> trieIterator = trie.GetEnumeratorForLeadSurrogate(lead);
                 while (trieIterator.MoveNext())
                 {
-                    Trie2.Range range = trieIterator.Current;
+                    Trie2Range range = trieIterator.Current;
                     // The rest of this loop is equivalent to C++ enumRangeLeadValue().
                     int value = range.Value;
                     if (value == Collation.UNASSIGNED_CE32)

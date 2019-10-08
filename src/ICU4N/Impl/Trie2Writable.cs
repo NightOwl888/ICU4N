@@ -148,7 +148,7 @@ namespace ICU4N.Impl
         {
             Init(source.initialValue, source.errorValue);
 
-            foreach (Range r in source)
+            foreach (Trie2Range r in source)
             {
                 SetRange(r, true);
             }
@@ -576,7 +576,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Set the values from a <see cref="Trie2.Range"/>.
+        /// Set the values from a <see cref="Trie2Range"/>.
         /// </summary>
         /// <remarks>
         /// All code points within the range will get the value if
@@ -591,10 +591,10 @@ namespace ICU4N.Impl
         /// <param name="range">Contains the range of code points and the value to be set.</param>
         /// <param name="overwrite">Flag for whether old non-initial values are to be overwritten.</param>
         /// <returns>This.</returns>
-        public virtual Trie2Writable SetRange(Trie2.Range range, bool overwrite)
+        public virtual Trie2Writable SetRange(Trie2Range range, bool overwrite)
         {
             fHash = 0;
-            if (range.LeadSurrogate)
+            if (range.IsLeadSurrogate)
             {
                 for (int c = range.StartCodePoint; c <= range.EndCodePoint; c++)
                 {

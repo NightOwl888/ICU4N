@@ -44,10 +44,10 @@ namespace ICU4N.Impl.Coll
             baseData = d.Base;
             Debug.Assert(baseData != null);
             // utrie2_enum(data->trie, NULL, enumTailoredRange, this);
-            using (IEnumerator<Trie2.Range> trieIterator = data.trie.GetEnumerator())
+            using (IEnumerator<Trie2Range> trieIterator = data.trie.GetEnumerator())
             {
-                Trie2.Range range;
-                while (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                Trie2Range range;
+                while (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     EnumTailoredRange(range.StartCodePoint, range.EndCodePoint, range.Value, this);
                 }

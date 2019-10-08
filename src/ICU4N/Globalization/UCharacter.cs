@@ -5486,7 +5486,7 @@ namespace ICU4N
             // implements IRangeValueEnumerator
             public bool MoveNext()
             {
-                if (trieIterator.MoveNext() && !(range = trieIterator.Current).LeadSurrogate)
+                if (trieIterator.MoveNext() && !(range = trieIterator.Current).IsLeadSurrogate)
                 {
                     current = new RangeValueEnumeratorElement
                     {
@@ -5509,8 +5509,8 @@ namespace ICU4N
                     trieIterator.Dispose();
             }
 
-            private IEnumerator<Trie2.Range> trieIterator;
-            private Trie2.Range range;
+            private IEnumerator<Trie2Range> trieIterator;
+            private Trie2Range range;
 
             private sealed class MaskType : IValueMapper
             {

@@ -89,26 +89,26 @@ namespace ICU4N.Dev.Test.Util
             //
             {
                 Trie2Writable trie = new Trie2Writable(17, 0);
-                IEnumerator<Trie2.Range> it;
+                IEnumerator<Trie2Range> it;
                 using (it = trie.GetEnumerator())
                 {
                     it.MoveNext();
-                    Trie2.Range r = it.Current;
+                    Trie2Range r = it.Current;
                     assertEquals("", 0, r.StartCodePoint);
                     assertEquals("", 0x10ffff, r.EndCodePoint);
                     assertEquals("", 17, r.Value);
-                    assertEquals("", false, r.LeadSurrogate);
+                    assertEquals("", false, r.IsLeadSurrogate);
 
                     it.MoveNext();
                     r = it.Current;
                     assertEquals("", 0xd800, r.StartCodePoint);
                     assertEquals("", 0xdbff, r.EndCodePoint);
                     assertEquals("", 17, r.Value);
-                    assertEquals("", true, r.LeadSurrogate);
+                    assertEquals("", true, r.IsLeadSurrogate);
 
 
                     int i = 0;
-                    foreach (Trie2.Range rr in trie)
+                    foreach (Trie2Range rr in trie)
                     {
                         switch (i)
                         {
@@ -116,13 +116,13 @@ namespace ICU4N.Dev.Test.Util
                                 assertEquals("", 0, rr.StartCodePoint);
                                 assertEquals("", 0x10ffff, rr.EndCodePoint);
                                 assertEquals("", 17, rr.Value);
-                                assertEquals("", false, rr.LeadSurrogate);
+                                assertEquals("", false, rr.IsLeadSurrogate);
                                 break;
                             case 1:
                                 assertEquals("", 0xd800, rr.StartCodePoint);
                                 assertEquals("", 0xdbff, rr.EndCodePoint);
                                 assertEquals("", 17, rr.Value);
-                                assertEquals("", true, rr.LeadSurrogate);
+                                assertEquals("", true, rr.IsLeadSurrogate);
                                 break;
                             default:
                                 Errln(where() + " Unexpected iteration result");
@@ -148,14 +148,14 @@ namespace ICU4N.Dev.Test.Util
                     return v;
                 });
 
-                using (IEnumerator<Trie2.Range> it2 = trie.GetEnumerator(vm))
+                using (IEnumerator<Trie2Range> it2 = trie.GetEnumerator(vm))
                 {
                     it2.MoveNext();
-                    Trie2.Range r = it2.Current;
+                    Trie2Range r = it2.Current;
                     assertEquals("", 0, r.StartCodePoint);
                     assertEquals("", 0x10ffff, r.EndCodePoint);
                     assertEquals("", 42, r.Value);
-                    assertEquals("", false, r.LeadSurrogate);
+                    assertEquals("", false, r.IsLeadSurrogate);
                 }
             }
 
@@ -166,28 +166,28 @@ namespace ICU4N.Dev.Test.Util
             {
                 Trie2Writable trie = new Trie2Writable(0xdefa17, 0);
                 trie.Set(0x2f810, 10);
-                using (IEnumerator<Trie2.Range> it = trie.GetEnumeratorForLeadSurrogate((char)0xd87e))
+                using (IEnumerator<Trie2Range> it = trie.GetEnumeratorForLeadSurrogate((char)0xd87e))
                 {
                     it.MoveNext();
-                    Trie2.Range r = it.Current;
+                    Trie2Range r = it.Current;
                     assertEquals("", 0x2f800, r.StartCodePoint);
                     assertEquals("", 0x2f80f, r.EndCodePoint);
                     assertEquals("", 0xdefa17, r.Value);
-                    assertEquals("", false, r.LeadSurrogate);
+                    assertEquals("", false, r.IsLeadSurrogate);
 
                     it.MoveNext();
                     r = it.Current;
                     assertEquals("", 0x2f810, r.StartCodePoint);
                     assertEquals("", 0x2f810, r.EndCodePoint);
                     assertEquals("", 10, r.Value);
-                    assertEquals("", false, r.LeadSurrogate);
+                    assertEquals("", false, r.IsLeadSurrogate);
 
                     it.MoveNext();
                     r = it.Current;
                     assertEquals("", 0x2f811, r.StartCodePoint);
                     assertEquals("", 0x2fbff, r.EndCodePoint);
                     assertEquals("", 0xdefa17, r.Value);
-                    assertEquals("", false, r.LeadSurrogate);
+                    assertEquals("", false, r.IsLeadSurrogate);
 
                     assertFalse("", it.MoveNext());
                 }
@@ -210,14 +210,14 @@ namespace ICU4N.Dev.Test.Util
                 });
 
 
-                using (IEnumerator<Trie2.Range> it = trie.GetEnumeratorForLeadSurrogate((char)0xd87e, m))
+                using (IEnumerator<Trie2Range> it = trie.GetEnumeratorForLeadSurrogate((char)0xd87e, m))
                 {
                     it.MoveNext();
-                    Trie2.Range r = it.Current;
+                    Trie2Range r = it.Current;
                     assertEquals("", 0x2f800, r.StartCodePoint);
                     assertEquals("", 0x2fbff, r.EndCodePoint);
                     assertEquals("", 0xdefa17, r.Value);
-                    assertEquals("", false, r.LeadSurrogate);
+                    assertEquals("", false, r.IsLeadSurrogate);
 
                     assertFalse("", it.MoveNext());
                 }
@@ -298,11 +298,11 @@ namespace ICU4N.Dev.Test.Util
             // setRange from a Trie2.Range
             //    (Ranges are more commonly created by iterating over a Trie2,
             //     but create one by hand here)
-            Trie2.Range r = new Trie2.Range();
+            Trie2Range r = new Trie2Range();
             r.StartCodePoint = 50;
             r.EndCodePoint = 52;
             r.Value = 0x12345678;
-            r.LeadSurrogate = false;
+            r.IsLeadSurrogate = false;
             t1w = new Trie2Writable(0, 0xbad);
             t1w.SetRange(r, true);
             assertEquals(null, 0, t1w.Get(49));
@@ -401,11 +401,11 @@ namespace ICU4N.Dev.Test.Util
             tw.Set(' ', 'S');
             tw.Set(0x10001, 'X');
 
-            using (Trie2.CharSequenceEnumerator it = tw.GetCharSequenceEnumerator(text, 0))
+            using (Trie2CharSequenceEnumerator it = tw.GetCharSequenceEnumerator(text, 0))
             {
 
                 // Check forwards iteration.
-                Trie2.CharSequenceValues ir;
+                Trie2CharSequenceValues ir;
                 int i;
                 for (i = 0; it.MoveNext(); i++)
                 {
@@ -743,11 +743,11 @@ namespace ICU4N.Dev.Test.Util
             }
 
             // Check that Trie enumeration produces the same contents as simple get()
-            foreach (Trie2.Range range in trie)
+            foreach (Trie2Range range in trie)
             {
                 for (int cp = range.StartCodePoint; cp <= range.EndCodePoint; cp++)
                 {
-                    if (range.LeadSurrogate)
+                    if (range.IsLeadSurrogate)
                     {
                         assertTrue(testName, cp >= (char)0xd800 && cp < (char)0xdc00);
                         assertEquals(testName, range.Value, trie.GetFromU16SingleLead((char)cp));
