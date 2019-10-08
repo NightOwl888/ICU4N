@@ -11,239 +11,236 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
-    public sealed partial class UResource
+    public sealed partial class ResourceKey
     {
-        public sealed partial class Key
-		{
 
-            private bool RegionMatches(int start, string cs, int n)
+        private bool RegionMatches(int start, string cs, int n)
+        {
+            for (int i = 0; i < n; ++i)
             {
-                for (int i = 0; i < n; ++i)
-                {
-                    if (bytes[offset + start + i] != cs[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            private bool RegionMatches(int start, StringBuilder cs, int n)
-            {
-                for (int i = 0; i < n; ++i)
-                {
-                    if (bytes[offset + start + i] != cs[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            private bool RegionMatches(int start, char[] cs, int n)
-            {
-                for (int i = 0; i < n; ++i)
-                {
-                    if (bytes[offset + start + i] != cs[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            private bool RegionMatches(int start, ICharSequence cs, int n)
-            {
-                for (int i = 0; i < n; ++i)
-                {
-                    if (bytes[offset + start + i] != cs[i])
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-
-            public bool ContentEquals(string cs)
-            {
-                if (cs == null)
+                if (bytes[offset + start + i] != cs[i])
                 {
                     return false;
                 }
-                return (cs.Length == length && RegionMatches(0, cs, length));
             }
+            return true;
+        }
 
-            public bool ContentEquals(StringBuilder cs)
+        private bool RegionMatches(int start, StringBuilder cs, int n)
+        {
+            for (int i = 0; i < n; ++i)
             {
-                if (cs == null)
+                if (bytes[offset + start + i] != cs[i])
                 {
                     return false;
                 }
-                return (cs.Length == length && RegionMatches(0, cs, length));
             }
+            return true;
+        }
 
-            public bool ContentEquals(char[] cs)
+        private bool RegionMatches(int start, char[] cs, int n)
+        {
+            for (int i = 0; i < n; ++i)
             {
-                if (cs == null)
+                if (bytes[offset + start + i] != cs[i])
                 {
                     return false;
                 }
-                return (cs.Length == length && RegionMatches(0, cs, length));
             }
+            return true;
+        }
 
-            public bool ContentEquals(ICharSequence cs)
+        private bool RegionMatches(int start, ICharSequence cs, int n)
+        {
+            for (int i = 0; i < n; ++i)
             {
-                if (cs == null)
+                if (bytes[offset + start + i] != cs[i])
                 {
                     return false;
                 }
-                if (this == cs)
+            }
+            return true;
+        }
+
+        public bool ContentEquals(string cs)
+        {
+            if (cs == null)
+            {
+                return false;
+            }
+            return (cs.Length == length && RegionMatches(0, cs, length));
+        }
+
+        public bool ContentEquals(StringBuilder cs)
+        {
+            if (cs == null)
+            {
+                return false;
+            }
+            return (cs.Length == length && RegionMatches(0, cs, length));
+        }
+
+        public bool ContentEquals(char[] cs)
+        {
+            if (cs == null)
+            {
+                return false;
+            }
+            return (cs.Length == length && RegionMatches(0, cs, length));
+        }
+
+        public bool ContentEquals(ICharSequence cs)
+        {
+            if (cs == null)
+            {
+                return false;
+            }
+            if (this == cs)
+            {
+                return true;
+            }
+            return (cs.Length == length && RegionMatches(0, cs, length));
+        }
+
+        public bool StartsWith(string cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(0, cs, csLength);
+        }
+
+        public bool StartsWith(StringBuilder cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(0, cs, csLength);
+        }
+
+        public bool StartsWith(char[] cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(0, cs, csLength);
+        }
+
+        public bool StartsWith(ICharSequence cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(0, cs, csLength);
+        }
+
+        public bool EndsWith(string cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(length - csLength, cs, csLength);
+        }
+
+        public bool EndsWith(StringBuilder cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(length - csLength, cs, csLength);
+        }
+
+        public bool EndsWith(char[] cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(length - csLength, cs, csLength);
+        }
+
+        public bool EndsWith(ICharSequence cs)
+        {
+            int csLength = cs.Length;
+            return csLength <= length && RegionMatches(length - csLength, cs, csLength);
+        }
+
+        /// <returns>true if the substring of this key starting from the offset
+        /// contains the same characters as the other sequence.</returns>
+        public bool RegionMatches(int start, string cs)
+        {
+            int csLength = cs.Length;
+            return csLength == (length - start) && RegionMatches(start, cs, csLength);
+        }
+
+        /// <returns>true if the substring of this key starting from the offset
+        /// contains the same characters as the other sequence.</returns>
+        public bool RegionMatches(int start, StringBuilder cs)
+        {
+            int csLength = cs.Length;
+            return csLength == (length - start) && RegionMatches(start, cs, csLength);
+        }
+
+        /// <returns>true if the substring of this key starting from the offset
+        /// contains the same characters as the other sequence.</returns>
+        public bool RegionMatches(int start, char[] cs)
+        {
+            int csLength = cs.Length;
+            return csLength == (length - start) && RegionMatches(start, cs, csLength);
+        }
+
+        /// <returns>true if the substring of this key starting from the offset
+        /// contains the same characters as the other sequence.</returns>
+        public bool RegionMatches(int start, ICharSequence cs)
+        {
+            int csLength = cs.Length;
+            return csLength == (length - start) && RegionMatches(start, cs, csLength);
+        }
+
+        public int CompareTo(string cs)
+        {
+            int csLength = cs.Length;
+            int minLength = length <= csLength ? length : csLength;
+            for (int i = 0; i < minLength; ++i)
+            {
+                int diff = this[i] - cs[i];
+                if (diff != 0)
                 {
-                    return true;
+                    return diff;
                 }
-                return (cs.Length == length && RegionMatches(0, cs, length));
             }
+            return length - csLength;
+        }
 
-            public bool StartsWith(string cs)
+        public int CompareTo(StringBuilder cs)
+        {
+            int csLength = cs.Length;
+            int minLength = length <= csLength ? length : csLength;
+            for (int i = 0; i < minLength; ++i)
             {
-                int csLength = cs.Length;
-                return csLength <= length && RegionMatches(0, cs, csLength);
-            }
-
-            public bool StartsWith(StringBuilder cs)
-            {
-                int csLength = cs.Length;
-                return csLength <= length && RegionMatches(0, cs, csLength);
-            }
-
-            public bool StartsWith(char[] cs)
-            {
-                int csLength = cs.Length;
-                return csLength <= length && RegionMatches(0, cs, csLength);
-            }
-
-            public bool StartsWith(ICharSequence cs)
-            {
-                int csLength = cs.Length;
-                return csLength <= length && RegionMatches(0, cs, csLength);
-            }
-
-            public bool EndsWith(string cs)
-            {
-                int csLength = cs.Length;
-                return csLength <= length && RegionMatches(length - csLength, cs, csLength);
-            }
-
-            public bool EndsWith(StringBuilder cs)
-            {
-                int csLength = cs.Length;
-                return csLength <= length && RegionMatches(length - csLength, cs, csLength);
-            }
-
-            public bool EndsWith(char[] cs)
-            {
-                int csLength = cs.Length;
-                return csLength <= length && RegionMatches(length - csLength, cs, csLength);
-            }
-
-            public bool EndsWith(ICharSequence cs)
-            {
-                int csLength = cs.Length;
-                return csLength <= length && RegionMatches(length - csLength, cs, csLength);
-            }
-
-            /// <returns>true if the substring of this key starting from the offset
-            /// contains the same characters as the other sequence.</returns>
-            public bool RegionMatches(int start, string cs)
-            {
-                int csLength = cs.Length;
-                return csLength == (length - start) && RegionMatches(start, cs, csLength);
-            }
-
-            /// <returns>true if the substring of this key starting from the offset
-            /// contains the same characters as the other sequence.</returns>
-            public bool RegionMatches(int start, StringBuilder cs)
-            {
-                int csLength = cs.Length;
-                return csLength == (length - start) && RegionMatches(start, cs, csLength);
-            }
-
-            /// <returns>true if the substring of this key starting from the offset
-            /// contains the same characters as the other sequence.</returns>
-            public bool RegionMatches(int start, char[] cs)
-            {
-                int csLength = cs.Length;
-                return csLength == (length - start) && RegionMatches(start, cs, csLength);
-            }
-
-            /// <returns>true if the substring of this key starting from the offset
-            /// contains the same characters as the other sequence.</returns>
-            public bool RegionMatches(int start, ICharSequence cs)
-            {
-                int csLength = cs.Length;
-                return csLength == (length - start) && RegionMatches(start, cs, csLength);
-            }
-
-            public int CompareTo(string cs)
-            {
-                int csLength = cs.Length;
-                int minLength = length <= csLength ? length : csLength;
-                for (int i = 0; i < minLength; ++i)
+                int diff = this[i] - cs[i];
+                if (diff != 0)
                 {
-                    int diff = this[i] - cs[i];
-                    if (diff != 0)
-                    {
-                        return diff;
-                    }
+                    return diff;
                 }
-                return length - csLength;
             }
+            return length - csLength;
+        }
 
-            public int CompareTo(StringBuilder cs)
+        public int CompareTo(char[] cs)
+        {
+            int csLength = cs.Length;
+            int minLength = length <= csLength ? length : csLength;
+            for (int i = 0; i < minLength; ++i)
             {
-                int csLength = cs.Length;
-                int minLength = length <= csLength ? length : csLength;
-                for (int i = 0; i < minLength; ++i)
+                int diff = this[i] - cs[i];
+                if (diff != 0)
                 {
-                    int diff = this[i] - cs[i];
-                    if (diff != 0)
-                    {
-                        return diff;
-                    }
+                    return diff;
                 }
-                return length - csLength;
             }
+            return length - csLength;
+        }
 
-            public int CompareTo(char[] cs)
+        public int CompareTo(ICharSequence cs)
+        {
+            int csLength = cs.Length;
+            int minLength = length <= csLength ? length : csLength;
+            for (int i = 0; i < minLength; ++i)
             {
-                int csLength = cs.Length;
-                int minLength = length <= csLength ? length : csLength;
-                for (int i = 0; i < minLength; ++i)
+                int diff = this[i] - cs[i];
+                if (diff != 0)
                 {
-                    int diff = this[i] - cs[i];
-                    if (diff != 0)
-                    {
-                        return diff;
-                    }
+                    return diff;
                 }
-                return length - csLength;
             }
+            return length - csLength;
+        }
 
-            public int CompareTo(ICharSequence cs)
-            {
-                int csLength = cs.Length;
-                int minLength = length <= csLength ? length : csLength;
-                for (int i = 0; i < minLength; ++i)
-                {
-                    int diff = this[i] - cs[i];
-                    if (diff != 0)
-                    {
-                        return diff;
-                    }
-                }
-                return length - csLength;
-            }
-
-		}
-	}
+    }
 }

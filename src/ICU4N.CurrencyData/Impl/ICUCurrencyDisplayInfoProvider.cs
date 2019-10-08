@@ -350,7 +350,7 @@ namespace ICU4N.Impl
             /// END DATA FRONTEND -- START DATA SINK ///
             ////////////////////////////////////////////
 
-            private sealed class CurrencySink : UResource.Sink
+            private sealed class CurrencySink : ResourceSink
             {
                 internal readonly bool noRoot;
                 internal readonly EntrypointTable entrypointTable;
@@ -386,7 +386,7 @@ namespace ICU4N.Impl
                 /// The entrypoint method delegates to helper methods for each of the types of tables
                 /// found in the currency data.
                 /// </summary>
-                public override void Put(UResource.Key key, UResource.Value value, bool isRoot)
+                public override void Put(ResourceKey key, ResourceValue value, bool isRoot)
                 {
                     if (noRoot && isRoot)
                     {
@@ -417,9 +417,9 @@ namespace ICU4N.Impl
                     }
                 }
 
-                private void ConsumeTopTable(UResource.Key key, UResource.Value value)
+                private void ConsumeTopTable(ResourceKey key, ResourceValue value)
                 {
-                    UResource.ITable table = value.GetTable();
+                    IResourceTable table = value.GetTable();
                     for (int i = 0; table.GetKeyAndValue(i, key, value); i++)
                     {
                         if (key.ContentEquals("Currencies"))
@@ -457,11 +457,11 @@ namespace ICU4N.Impl
                 ///      ...
                 ///  }
                 /// </summary>
-                internal void ConsumeCurrenciesTable(UResource.Key key, UResource.Value value)
+                internal void ConsumeCurrenciesTable(ResourceKey key, ResourceValue value)
                 {
                     // The full Currencies table is consumed for parsing only.
                     Debug.Assert(parsingData != null);
-                    UResource.ITable table = value.GetTable();
+                    IResourceTable table = value.GetTable();
                     for (int i = 0; table.GetKeyAndValue(i, key, value); i++)
                     {
                         string isoCode = key.ToString();
@@ -469,7 +469,7 @@ namespace ICU4N.Impl
                         {
                             throw new ICUException("Unexpected data type in Currencies table for " + isoCode);
                         }
-                        UResource.IArray array = value.GetArray();
+                        IResourceArray array = value.GetArray();
 
                         parsingData.symbolToIsoCode[isoCode] = isoCode; // Add the ISO code itself as a symbol
                         array.GetValue(0, value);
@@ -479,7 +479,7 @@ namespace ICU4N.Impl
                     }
                 }
 
-                internal void ConsumeCurrenciesEntry(UResource.Key key, UResource.Value value)
+                internal void ConsumeCurrenciesEntry(ResourceKey key, ResourceValue value)
                 {
                     Debug.Assert(formattingData != null);
                     string isoCode = key.ToString();
@@ -487,7 +487,7 @@ namespace ICU4N.Impl
                     {
                         throw new ICUException("Unexpected data type in Currencies table for " + isoCode);
                     }
-                    UResource.IArray array = value.GetArray();
+                    IResourceArray array = value.GetArray();
 
                     if (formattingData.symbol == null)
                     {
@@ -505,7 +505,7 @@ namespace ICU4N.Impl
                     if (array.Length > 2 && formattingData.formatInfo == null)
                     {
                         array.GetValue(2, value);
-                        UResource.IArray formatArray = value.GetArray();
+                        IResourceArray formatArray = value.GetArray();
                         formatArray.GetValue(0, value);
                         string formatPattern = value.GetString();
                         formatArray.GetValue(1, value);
@@ -524,7 +524,7 @@ namespace ICU4N.Impl
                 ///      ...
                 ///  }
                 /// </summary>
-                internal void ConsumeCurrenciesNarrowEntry(UResource.Key key, UResource.Value value)
+                internal void ConsumeCurrenciesNarrowEntry(ResourceKey key, ResourceValue value)
                 {
                     Debug.Assert(narrowSymbol != null);
                     // No extra structure to traverse.
@@ -539,11 +539,11 @@ namespace ICU4N.Impl
                 ///      TRY{"TL"}
                 ///  }
                 /// </summary>
-                internal void ConsumeCurrenciesVariantTable(UResource.Key key, UResource.Value value)
+                internal void ConsumeCurrenciesVariantTable(ResourceKey key, ResourceValue value)
                 {
                     // Note: This data is used for parsing but not formatting.
                     Debug.Assert(parsingData != null);
-                    UResource.ITable table = value.GetTable();
+                    IResourceTable table = value.GetTable();
                     for (int i = 0; table.GetKeyAndValue(i, key, value); i++)
                     {
                         string isoCode = key.ToString();
@@ -560,15 +560,15 @@ namespace ICU4N.Impl
                 ///      ...
                 ///  }
                 /// </summary>
-                internal void ConsumeCurrencyPluralsTable(UResource.Key key, UResource.Value value)
+                internal void ConsumeCurrencyPluralsTable(ResourceKey key, ResourceValue value)
                 {
                     // The full CurrencyPlurals table is consumed for parsing only.
                     Debug.Assert(parsingData != null);
-                    UResource.ITable table = value.GetTable();
+                    IResourceTable table = value.GetTable();
                     for (int i = 0; table.GetKeyAndValue(i, key, value); i++)
                     {
                         string isoCode = key.ToString();
-                        UResource.ITable pluralsTable = value.GetTable();
+                        IResourceTable pluralsTable = value.GetTable();
                         for (int j = 0; pluralsTable.GetKeyAndValue(j, key, value); j++)
                         {
                             StandardPlural? plural = StandardPluralUtil.OrNullFromString(key.ToString());
@@ -582,10 +582,10 @@ namespace ICU4N.Impl
                     }
                 }
 
-                internal void ConsumeCurrencyPluralsEntry(UResource.Key key, UResource.Value value)
+                internal void ConsumeCurrencyPluralsEntry(ResourceKey key, ResourceValue value)
                 {
                     Debug.Assert(pluralsData != null);
-                    UResource.ITable pluralsTable = value.GetTable();
+                    IResourceTable pluralsTable = value.GetTable();
                     for (int j = 0; pluralsTable.GetKeyAndValue(j, key, value); j++)
                     {
                         StandardPlural? plural = StandardPluralUtil.OrNullFromString(key.ToString());
@@ -615,10 +615,10 @@ namespace ICU4N.Impl
                 ///      }
                 ///  }
                 /// </summary>
-                internal void ConsumeCurrencySpacingTable(UResource.Key key, UResource.Value value)
+                internal void ConsumeCurrencySpacingTable(ResourceKey key, ResourceValue value)
                 {
                     Debug.Assert(spacingInfo != null);
-                    UResource.ITable spacingTypesTable = value.GetTable();
+                    IResourceTable spacingTypesTable = value.GetTable();
                     for (int i = 0; spacingTypesTable.GetKeyAndValue(i, key, value); ++i)
                     {
                         CurrencySpacingInfo.SpacingType type;
@@ -637,7 +637,7 @@ namespace ICU4N.Impl
                             continue;
                         }
 
-                        UResource.ITable patternsTable = value.GetTable();
+                        IResourceTable patternsTable = value.GetTable();
                         for (int j = 0; patternsTable.GetKeyAndValue(j, key, value); ++j)
                         {
                             CurrencySpacingInfo.SpacingPattern pattern;
@@ -669,10 +669,10 @@ namespace ICU4N.Impl
                 ///      ...
                 ///  }
                 /// </summary>
-                internal void ConsumeCurrencyUnitPatternsTable(UResource.Key key, UResource.Value value)
+                internal void ConsumeCurrencyUnitPatternsTable(ResourceKey key, ResourceValue value)
                 {
                     Debug.Assert(unitPatterns != null);
-                    UResource.ITable table = value.GetTable();
+                    IResourceTable table = value.GetTable();
                     for (int i = 0; table.GetKeyAndValue(i, key, value); i++)
                     {
                         String pluralKeyword = key.ToString();

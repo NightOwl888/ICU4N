@@ -98,7 +98,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private sealed class CapitalizationContextSink : UResource.Sink
+        private sealed class CapitalizationContextSink : ResourceSink
         {
             private readonly LocaleDisplayNamesImpl outerInstance;
             internal bool hasCapitalizationUsage = false;
@@ -108,9 +108,9 @@ namespace ICU4N.Impl
                 this.outerInstance = outerInstance;
             }
 
-            public override void Put(UResource.Key key, UResource.Value value, bool noFallback)
+            public override void Put(ResourceKey key, ResourceValue value, bool noFallback)
             {
-                UResource.ITable contextsTable = value.GetTable();
+                IResourceTable contextsTable = value.GetTable();
                 for (int i = 0; contextsTable.GetKeyAndValue(i, key, value); ++i)
                 {
                     CapitalizationContextUsage usage;

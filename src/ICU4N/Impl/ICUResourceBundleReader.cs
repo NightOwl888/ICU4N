@@ -537,7 +537,7 @@ namespace ICU4N.Impl
                 return MakeKeyStringFromBytes(poolBundleReader.keyBytes, keyOffset & 0x7fffffff);
             }
         }
-        private void SetKeyFromKey16(int keyOffset, UResource.Key key)
+        private void SetKeyFromKey16(int keyOffset, ResourceKey key)
         {
             if (keyOffset < localKeyLimit)
             {
@@ -548,7 +548,7 @@ namespace ICU4N.Impl
                 key.SetBytes(poolBundleReader.keyBytes, keyOffset - localKeyLimit);
             }
         }
-        private void SetKeyFromKey32(int keyOffset, UResource.Key key)
+        private void SetKeyFromKey32(int keyOffset, ResourceKey key)
         {
             if (keyOffset >= 0)
             {
@@ -974,7 +974,7 @@ namespace ICU4N.Impl
             UResourceType.None
         };
 
-        internal class ReaderValue : UResource.Value
+        internal class ReaderValue : ResourceValue
         {
             internal ICUResourceBundleReader reader;
             internal int res;
@@ -1042,7 +1042,7 @@ namespace ICU4N.Impl
                 return bb;
             }
 
-            public override UResource.IArray GetArray()
+            public override IResourceArray GetArray()
             {
                 var array = reader.GetArray(res);
                 if (array == null)
@@ -1052,7 +1052,7 @@ namespace ICU4N.Impl
                 return array;
             }
 
-            public override UResource.ITable GetTable()
+            public override IResourceTable GetTable()
             {
                 Table table = reader.GetTable(res);
                 if (table == null)
@@ -1179,11 +1179,11 @@ namespace ICU4N.Impl
             {
             }
         }
-        internal class Array : Container, UResource.IArray
+        internal class Array : Container, IResourceArray
         {
             internal Array() { }
 
-            public virtual bool GetValue(int i, UResource.Value value)
+            public virtual bool GetValue(int i, ResourceValue value)
             {
                 if (0 <= i && i < size)
                 {
@@ -1219,7 +1219,7 @@ namespace ICU4N.Impl
                 itemsOffset = offset + 1;
             }
         }
-        internal class Table : Container, UResource.ITable
+        internal class Table : Container, IResourceTable
         {
             protected char[] keyOffsets;
             protected int[] key32Offsets;
@@ -1279,7 +1279,7 @@ namespace ICU4N.Impl
                 return GetContainerResource(reader, FindTableItem(reader, resKey));
             }
 
-            public virtual bool GetKeyAndValue(int i, UResource.Key key, UResource.Value value)
+            public virtual bool GetKeyAndValue(int i, ResourceKey key, ResourceValue value)
             {
                 if (0 <= i && i < size)
                 {

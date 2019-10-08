@@ -1267,14 +1267,14 @@ namespace ICU4N.Text
             return sink.values.ToArray();
         }
 
-        private sealed class KeywordsSink : UResource.Sink
+        private sealed class KeywordsSink : ResourceSink
         {
             internal LinkedList<string> values = new LinkedList<string>();
             internal bool hasDefault = false;
 
-            public override void Put(UResource.Key key, UResource.Value value, bool noFallback)
+            public override void Put(ResourceKey key, ResourceValue value, bool noFallback)
             {
-                UResource.ITable collations = value.GetTable();
+                IResourceTable collations = value.GetTable();
                 for (int i = 0; collations.GetKeyAndValue(i, key, value); ++i)
                 {
                     UResourceType type = value.Type;

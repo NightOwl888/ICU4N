@@ -411,7 +411,7 @@ namespace ICU4N.Impl
             return result;
         }
 
-        public virtual void GetAllItemsWithFallbackNoFail(string path, UResource.Sink sink) // ICU4N TODO: API Change to TryGetAllItemsWithFallback (swap impl with below)
+        public virtual void GetAllItemsWithFallbackNoFail(string path, ResourceSink sink) // ICU4N TODO: API Change to TryGetAllItemsWithFallback (swap impl with below)
         {
             try
             {
@@ -423,7 +423,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public virtual void GetAllItemsWithFallback(string path, UResource.Sink sink)
+        public virtual void GetAllItemsWithFallback(string path, ResourceSink sink)
         {
             // Collect existing and parsed key objects into an array of keys,
             // rather than assembling and parsing paths.
@@ -447,13 +447,13 @@ namespace ICU4N.Impl
                         + this.GetType().FullName + ", key " + Type + ", path " + path);
                 }
             }
-            UResource.Key key = new UResource.Key();
+            ResourceKey key = new ResourceKey();
             ReaderValue readerValue = new ReaderValue();
             rb.GetAllItemsWithFallback(key, readerValue, sink);
         }
 
         private void GetAllItemsWithFallback(
-            UResource.Key key, ReaderValue readerValue, UResource.Sink sink)
+            ResourceKey key, ReaderValue readerValue, ResourceSink sink)
         {
             // We recursively enumerate child-first,
             // only storing parent items in the absence of child items.
