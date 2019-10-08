@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Support.IO
 {
@@ -12,34 +10,21 @@ namespace ICU4N.Support.IO
         /// <summary>
         /// This constant represents big endian.
         /// </summary>
-        public static readonly ByteOrder BIG_ENDIAN = new ByteOrder("BIG_ENDIAN"); //$NON-NLS-1$
+        public static readonly ByteOrder BigEndian = new ByteOrder(nameof(BigEndian)); //$NON-NLS-1$
 
         /// <summary>
         /// This constant represents little endian.
         /// </summary>
-        public static readonly ByteOrder LITTLE_ENDIAN = new ByteOrder("LITTLE_ENDIAN"); //$NON-NLS-1$
-
-        private static readonly ByteOrder NATIVE_ORDER;
-
-        static ByteOrder()
-        {
-            // Read endianness from the current system.
-            if (BitConverter.IsLittleEndian)
-            {
-                NATIVE_ORDER = LITTLE_ENDIAN;
-            }
-            else
-            {
-                NATIVE_ORDER = BIG_ENDIAN;
-            }
-        }
+        public static readonly ByteOrder LittleEndian = new ByteOrder(nameof(LittleEndian)); //$NON-NLS-1$
 
         /// <summary>
         /// Returns the current platform byte order.
         /// </summary>
-        public static ByteOrder NativeOrder
+        public static ByteOrder NativeOrder { get; private set; } = LoadNativeByteOrder();
+        private static ByteOrder LoadNativeByteOrder()
         {
-            get { return NATIVE_ORDER; }
+            // Read endianness from the current system.
+            return BitConverter.IsLittleEndian ? LittleEndian : BigEndian;
         }
 
         private readonly string name;
@@ -53,8 +38,8 @@ namespace ICU4N.Support.IO
         /// Returns a string that describes this object.
         /// </summary>
         /// <returns>
-        /// "BIG_ENDIAN" for <see cref="ByteOrder.BIG_ENDIAN"/> objects,
-        /// "LITTLE_ENDIAN" for <see cref="ByteOrder.LITTLE_ENDIAN"/> objects.
+        /// "BigEndian" for <see cref="ByteOrder.BigEndian"/> objects,
+        /// "LittleEndian" for <see cref="ByteOrder.LittleEndian"/> objects.
         /// </returns>
         public override string ToString()
         {

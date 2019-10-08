@@ -5,7 +5,7 @@ using System.Text;
 namespace ICU4N.Support.IO
 {
     /// <summary>
-    /// Equivalent to Java's DataOutut interface
+    /// Equivalent to Java's DataOutput interface
     /// </summary>
     public interface IDataOutput
     {

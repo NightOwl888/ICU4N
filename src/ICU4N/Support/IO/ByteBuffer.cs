@@ -91,7 +91,7 @@ namespace ICU4N.Support.IO
         }
 
         /// <summary>
-        /// The byte order of this buffer, default is <see cref="ByteOrder.BIG_ENDIAN"/>.
+        /// The byte order of this buffer, default is <see cref="ByteOrder.BigEndian"/>.
         /// </summary>
         internal Endianness order = Endianness.BigEndian;
 
@@ -564,14 +564,14 @@ namespace ICU4N.Support.IO
         /// other primitive types.
         /// <para/>
         /// The default byte order of byte buffer is always
-        /// <see cref="ByteOrder.BIG_ENDIAN"/>.
+        /// <see cref="ByteOrder.BigEndian"/>.
         /// </summary>
         public ByteOrder Order
         {
             get
             {
-                return order == Endianness.BigEndian ? ByteOrder.BIG_ENDIAN
-                        : ByteOrder.LITTLE_ENDIAN;
+                return order == Endianness.BigEndian ? ByteOrder.BigEndian
+                        : ByteOrder.LittleEndian;
             }
             set
             {
@@ -586,7 +586,7 @@ namespace ICU4N.Support.IO
         /// <returns>this buffer.</returns>
         public ByteBuffer SetOrder(ByteOrder byteOrder)
         {
-            order = byteOrder == ByteOrder.BIG_ENDIAN ? Endianness.BigEndian
+            order = byteOrder == ByteOrder.BigEndian ? Endianness.BigEndian
                 : Endianness.LittleEndian;
             return this;
         }

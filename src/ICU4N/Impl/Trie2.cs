@@ -122,8 +122,8 @@ namespace ICU4N.Impl
                         break;
                     case 0x32697254:
                         // Temporarily reverse the byte order.
-                        bool isBigEndian = outerByteOrder == ByteOrder.BIG_ENDIAN;
-                        bytes.Order = isBigEndian ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;
+                        bool isBigEndian = outerByteOrder == ByteOrder.BigEndian;
+                        bytes.Order = isBigEndian ? ByteOrder.LittleEndian : ByteOrder.BigEndian;
                         header.signature = 0x54726932;
                         break;
                     default:

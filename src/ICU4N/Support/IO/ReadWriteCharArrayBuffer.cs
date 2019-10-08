@@ -49,7 +49,7 @@ namespace ICU4N.Support.IO
                     Remaining);
             position = limit - position;
             limit = capacity;
-            mark = UNSET_MARK;
+            mark = UnsetMark;
             return this;
         }
 

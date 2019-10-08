@@ -154,7 +154,7 @@ namespace ICU4N.Text
             RBBIDataWrapper This = new RBBIDataWrapper();
 
             ICUBinary.ReadHeader(bytes, DATA_FORMAT, IS_ACCEPTABLE);
-            This.isBigEndian = bytes.Order == ByteOrder.BIG_ENDIAN;
+            This.isBigEndian = bytes.Order == ByteOrder.BigEndian;
 
             // Read in the RBBI data header...
             This.fHeader = new RBBIDataHeader();

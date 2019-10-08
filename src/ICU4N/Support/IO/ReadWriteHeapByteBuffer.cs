@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Support.IO
 {
@@ -51,7 +49,7 @@ namespace ICU4N.Support.IO
                     Remaining);
             position = limit - position;
             limit = capacity;
-            mark = UNSET_MARK;
+            mark = UnsetMark;
             return this;
         }
 

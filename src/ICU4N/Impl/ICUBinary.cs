@@ -693,7 +693,7 @@ namespace ICU4N.Impl
             {
                 throw new IOException(HEADER_AUTHENTICATION_FAILED_);
             }
-            bytes.Order = isBigEndian != 0 ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN;
+            bytes.Order = isBigEndian != 0 ? ByteOrder.BigEndian : ByteOrder.LittleEndian;
 
             int headerSize = bytes.GetChar(0);
             int sizeofUDataInfo = bytes.GetChar(4);

@@ -2613,27 +2613,27 @@ namespace ICU4N
 
         /// <summary>
         /// The lowest Unicode code point value, constant 0.
-        /// Same as <see cref="Character.MIN_CODE_POINT"/>, same integer value as <see cref="Char.MinValue"/>.
+        /// Same as <see cref="Character.MinCodePoint"/>, same integer value as <see cref="Char.MinValue"/>.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int MinValue = Character.MIN_CODE_POINT; // ICU4N TODO: Change to Char.MinValue
+        public const int MinValue = Character.MinCodePoint; // ICU4N TODO: Change to Char.MinValue
 
         /// <summary>
         /// The highest Unicode code point value (scalar value), constant U+10FFFF (uses 21 bits).
-        /// Same integer value as <see cref="Character.MAX_CODE_POINT"/>.
+        /// Same integer value as <see cref="Character.MaxCodePoint"/>.
         /// <para/>
         /// Up-to-date Unicode implementation of <see cref="Char.MaxValue"/>
         /// which is still a char with the value U+FFFF.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int MaxValue = Character.MAX_CODE_POINT; // ICU4N TODO: Change to Char.MaxValue (and check documentation to ensure it is right)
+        public const int MaxValue = Character.MaxCodePoint; // ICU4N TODO: Change to Char.MaxValue (and check documentation to ensure it is right)
 
         /// <summary>
         /// The minimum value for Supplementary code points, constant U+10000.
-        /// Same as <see cref="Character.MIN_SUPPLEMENTARY_CODE_POINT"/>.
+        /// Same as <see cref="Character.MinSupplementaryCodePoint"/>.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int SupplementaryMinValue = Character.MIN_SUPPLEMENTARY_CODE_POINT;
+        public const int SupplementaryMinValue = Character.MinSupplementaryCodePoint;
 
         /// <summary>
         /// Unicode value used when translating into Unicode encoding form and there
@@ -2651,16 +2651,16 @@ namespace ICU4N
         public const double NoNumericValue = -123456789;
 
         /// <summary>
-        /// Compatibility constant for <see cref="Character.MIN_RADIX"/>.
+        /// Compatibility constant for <see cref="Character.MinRadix"/>.
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public const int MinRadix = Character.MIN_RADIX;
+        public const int MinRadix = Character.MinRadix;
 
         /// <summary>
-        /// Compatibility constant for <see cref="Character.MAX_RADIX"/>.
+        /// Compatibility constant for <see cref="Character.MaxRadix"/>.
         /// </summary>
         /// <stable>ICU 3.4</stable>
-        public const int MaxRadix = Character.MAX_RADIX;
+        public const int MaxRadix = Character.MaxRadix;
 
         /// <summary>
         /// Do not lowercase non-initial parts of words when titlecasing.
@@ -4344,11 +4344,11 @@ namespace ICU4N
             {
                 return false;
             }
-            if (ch < Character.MIN_SURROGATE)
+            if (ch < Character.MinSurrogate)
             {
                 return true;
             }
-            if (ch <= Character.MAX_SURROGATE)
+            if (ch <= Character.MaxSurrogate)
             {
                 return false;
             }
@@ -6072,58 +6072,58 @@ namespace ICU4N
         // JDK 1.5 API coverage
 
         /// <summary>
-        /// Constant U+D800, same as <see cref="Character.MIN_HIGH_SURROGATE"/>.
+        /// Constant U+D800, same as <see cref="Character.MinHighSurrogate"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const char MinHighSurrogate = Character.MIN_HIGH_SURROGATE;
+        public const char MinHighSurrogate = Character.MinHighSurrogate;
 
         /// <summary>
-        /// Constant U+DBFF, same as <see cref="Character.MAX_HIGH_SURROGATE"/>.
+        /// Constant U+DBFF, same as <see cref="Character.MaxHighSurrogate"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const char MaxHighSurrogate = Character.MAX_HIGH_SURROGATE;
+        public const char MaxHighSurrogate = Character.MaxHighSurrogate;
 
         /// <summary>
-        /// Constant U+DC00, same as <see cref="Character.MIN_LOW_SURROGATE"/>.
+        /// Constant U+DC00, same as <see cref="Character.MinLowSurrogate"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const char MinLowSurrogate = Character.MIN_LOW_SURROGATE;
+        public const char MinLowSurrogate = Character.MinLowSurrogate;
 
         /// <summary>
-        /// Constant U+DFFF, same as <see cref="Character.MAX_LOW_SURROGATE"/>.
+        /// Constant U+DFFF, same as <see cref="Character.MaxLowSurrogate"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const char MaxLowSurrogate = Character.MAX_LOW_SURROGATE;
+        public const char MaxLowSurrogate = Character.MaxLowSurrogate;
 
         /// <summary>
-        /// Constant U+D800, same as <see cref="Character.MIN_SURROGATE"/>.
+        /// Constant U+D800, same as <see cref="Character.MinSurrogate"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const char MinSurrogate = Character.MIN_SURROGATE;
+        public const char MinSurrogate = Character.MinSurrogate;
 
         /// <summary>
-        /// Constant U+DFFF, same as <see cref="Character.MAX_SURROGATE"/>.
+        /// Constant U+DFFF, same as <see cref="Character.MaxSurrogate"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const char MaxSurrogate = Character.MAX_SURROGATE;
+        public const char MaxSurrogate = Character.MaxSurrogate;
 
         /// <summary>
-        /// Constant U+10000, same as <see cref="Character.MIN_SUPPLEMENTARY_CODE_POINT"/>.
+        /// Constant U+10000, same as <see cref="Character.MinSupplementaryCodePoint"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const int MinSupplementaryCodePoint = Character.MIN_SUPPLEMENTARY_CODE_POINT;
+        public const int MinSupplementaryCodePoint = Character.MinSupplementaryCodePoint;
 
         /// <summary>
-        /// Constant U+10FFFF, same as <see cref="Character.MAX_CODE_POINT"/>.
+        /// Constant U+10FFFF, same as <see cref="Character.MaxCodePoint"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const int MaxCodePoint = Character.MAX_CODE_POINT;
+        public const int MaxCodePoint = Character.MaxCodePoint;
 
         /// <summary>
-        /// Constant U+0000, same as <see cref="Character.MIN_CODE_POINT"/>.
+        /// Constant U+0000, same as <see cref="Character.MinCodePoint"/>.
         /// </summary>
         /// <stable>ICU 3.0</stable>
-        public const int MinCodePoint = Character.MIN_CODE_POINT;
+        public const int MinCodePoint = Character.MinCodePoint;
 
         /// <summary>
         /// Equivalent to <see cref="Character.IsValidCodePoint(int)"/>.

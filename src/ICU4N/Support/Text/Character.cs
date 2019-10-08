@@ -11,22 +11,22 @@ namespace ICU4N.Support.Text
         private const char charZero = '0';
         private const char charA = 'a';
 
-        public const int MAX_RADIX = 36;
-        public const int MIN_RADIX = 2;
+        public const int MaxRadix = 36;
+        public const int MinRadix = 2;
 
-        public const int MAX_CODE_POINT = 0x10FFFF;
-        public const int MIN_CODE_POINT = 0x000000;
+        public const int MaxCodePoint = 0x10FFFF;
+        public const int MinCodePoint = 0x000000;
 
-        public const char MAX_SURROGATE = '\uDFFF';
-        public const char MIN_SURROGATE = '\uD800';
+        public const char MaxSurrogate = '\uDFFF';
+        public const char MinSurrogate = '\uD800';
 
-        public const char MIN_LOW_SURROGATE = '\uDC00';
-        public const char MAX_LOW_SURROGATE = '\uDFFF';
+        public const char MinLowSurrogate = '\uDC00';
+        public const char MaxLowSurrogate = '\uDFFF';
 
-        public const char MIN_HIGH_SURROGATE = '\uD800';
-        public const char MAX_HIGH_SURROGATE = '\uDBFF';
+        public const char MinHighSurrogate = '\uD800';
+        public const char MaxHighSurrogate = '\uDBFF';
 
-        public const int MIN_SUPPLEMENTARY_CODE_POINT = 0x010000;
+        public const int MinSupplementaryCodePoint = 0x010000;
 
         private static readonly string digitKeys = "0Aa\u0660\u06f0\u0966\u09e6\u0a66\u0ae6\u0b66\u0be7\u0c66\u0ce6\u0d66\u0e50\u0ed0\u0f20\u1040\u1369\u17e0\u1810\uff10\uff21\uff41";
 
@@ -36,18 +36,18 @@ namespace ICU4N.Support.Text
         /// <summary>
         /// Convenience method to determine the value of the specified character
         /// <paramref name="c"/> in the supplied radix. The value of <paramref name="radix"/> must be
-        /// between <see cref="MIN_RADIX"/> and <see cref="MAX_RADIX"/>.
+        /// between <see cref="MinRadix"/> and <see cref="MaxRadix"/>.
         /// </summary>
         /// <param name="c">The character to determine the value of.</param>
         /// <param name="radix">The radix.</param>
         /// <returns>
         /// The value of <paramref name="c"/> in <paramref name="radix"/> if <paramref name="radix"/> lies
-        /// between <see cref="MIN_RADIX"/> and <see cref="MAX_RADIX"/>; -1 otherwise.
+        /// between <see cref="MinRadix"/> and <see cref="MaxRadix"/>; -1 otherwise.
         /// </returns>
         public static int Digit(char c, int radix)
         {
             int result = -1;
-            if (radix >= MIN_RADIX && radix <= MAX_RADIX)
+            if (radix >= MinRadix && radix <= MaxRadix)
             {
                 if (c < 128)
                 {
@@ -114,9 +114,9 @@ namespace ICU4N.Support.Text
         {
             // if radix or digit is out of range,
             // return the null character.
-            if (radix < Character.MIN_RADIX)
+            if (radix < Character.MinRadix)
                 return charNull;
-            if (radix > Character.MAX_RADIX)
+            if (radix > Character.MaxRadix)
                 return charNull;
             if (digit < 0)
                 return charNull;
@@ -196,12 +196,12 @@ namespace ICU4N.Support.Text
 
         public static bool IsValidCodePoint(int codePoint)
         {
-            return (MIN_CODE_POINT <= codePoint && MAX_CODE_POINT >= codePoint);
+            return (MinCodePoint <= codePoint && MaxCodePoint >= codePoint);
         }
 
         public static bool IsSupplementaryCodePoint(int codePoint)
         {
-            return (MIN_SUPPLEMENTARY_CODE_POINT <= codePoint && MAX_CODE_POINT >= codePoint);
+            return (MinSupplementaryCodePoint <= codePoint && MaxCodePoint >= codePoint);
         }
 
 
@@ -211,9 +211,9 @@ namespace ICU4N.Support.Text
             // return ((high - MIN_HIGH_SURROGATE) << 10)
             //         + (low - MIN_LOW_SURROGATE)
             //         + MIN_SUPPLEMENTARY_CODE_POINT;
-            return ((high << 10) + low) + (MIN_SUPPLEMENTARY_CODE_POINT
-                                           - (MIN_HIGH_SURROGATE << 10)
-                                           - MIN_LOW_SURROGATE);
+            return ((high << 10) + low) + (MinSupplementaryCodePoint
+                                           - (MinHighSurrogate << 10)
+                                           - MinLowSurrogate);
         }
 
         //public static int ToLower(int codePoint)
@@ -238,7 +238,7 @@ namespace ICU4N.Support.Text
         {
             // A given codepoint can be represented in .NET either by 1 char (up to UTF16),
             // or by if it's a UTF32 codepoint, in which case the current char will be a surrogate
-            return codePoint >= MIN_SUPPLEMENTARY_CODE_POINT ? 2 : 1;
+            return codePoint >= MinSupplementaryCodePoint ? 2 : 1;
         }
 
         /// <summary>
@@ -413,9 +413,9 @@ namespace ICU4N.Support.Text
 
         public static int CodePointAt(char high, char low)
         {
-            return ((high << 10) + low) + (MIN_SUPPLEMENTARY_CODE_POINT
-                                       - (MIN_HIGH_SURROGATE << 10)
-                                       - MIN_LOW_SURROGATE);
+            return ((high << 10) + low) + (MinSupplementaryCodePoint
+                                       - (MinHighSurrogate << 10)
+                                       - MinLowSurrogate);
         }
 
         public static int CodePointAt(string seq, int index)
@@ -770,8 +770,8 @@ namespace ICU4N.Support.Text
                 int i;
                 for (i = codePointOffset; x > start && i < 0; i++)
                 {
-                    if (Char.IsLowSurrogate(a[--x]) && x > start &&
-                        Char.IsHighSurrogate(a[x - 1]))
+                    if (char.IsLowSurrogate(a[--x]) && x > start &&
+                        char.IsHighSurrogate(a[x - 1]))
                     {
                         x--;
                     }
@@ -800,8 +800,8 @@ namespace ICU4N.Support.Text
         /// method should be used first to be safe for surrogate pairs. However, if the value falls between
         /// 0x00d800 and 0x00dfff, that method throws an exception. So this is a wrapper that converts the
         /// codepoint to a char in those cases.
-        /// 
-        /// This mimics the behavior of the Java Character.GetUnicodeCategory class, but returns the .NET UnicodeCategory
+        /// <para/>
+        /// This mimics the behavior of the Java Character.GetType() method, but returns the .NET <see cref="UnicodeCategory"/>
         /// enumeration for easy consumption.
         /// </summary>
         /// <param name="codePoint"></param>

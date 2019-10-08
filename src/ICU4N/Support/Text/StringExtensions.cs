@@ -166,7 +166,7 @@ namespace ICU4N.Support.Text
                 return -1;
             }
 
-            if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT)
+            if (ch < Character.MinSupplementaryCodePoint)
             {
                 // handle most cases here (ch is a BMP code point or a
                 // negative value (invalid code point))

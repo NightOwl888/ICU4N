@@ -38,8 +38,8 @@ namespace ICU4N.Support.Text
                 char temp2 = text[n - j];
                 if (!hasSurrogate)
                 {
-                    hasSurrogate = (temp >= Character.MIN_SURROGATE && temp <= Character.MAX_SURROGATE)
-                        || (temp2 >= Character.MIN_SURROGATE && temp2 <= Character.MAX_SURROGATE);
+                    hasSurrogate = (temp >= Character.MinSurrogate && temp <= Character.MaxSurrogate)
+                        || (temp2 >= Character.MinSurrogate && temp2 <= Character.MaxSurrogate);
                 }
                 text[j] = temp2;
                 text[n - j] = temp;

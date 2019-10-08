@@ -28,7 +28,7 @@ namespace ICU4N.Impl
             else
             {
                 a.Append((char)(0xd7c0 + (c >> 10)));
-                a.Append((char)(Character.MIN_LOW_SURROGATE + (c & 0x3ff)));
+                a.Append((char)(Character.MinLowSurrogate + (c & 0x3ff)));
                 return 2;
             }
         }
@@ -43,7 +43,7 @@ namespace ICU4N.Impl
             else
             {
                 a.Append((char)(0xd7c0 + (c >> 10)));
-                a.Append((char)(Character.MIN_LOW_SURROGATE + (c & 0x3ff)));
+                a.Append((char)(Character.MinLowSurrogate + (c & 0x3ff)));
                 return 2;
             }
         }

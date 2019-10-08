@@ -35,7 +35,7 @@ namespace ICU4N.Support.IO
             this.offset = offset;
         }
 
-    public override sealed char Get()
+        public override sealed char Get()
         {
             if (position == limit)
             {
@@ -44,7 +44,7 @@ namespace ICU4N.Support.IO
             return backingArray[offset + position++];
         }
 
-    public override sealed char Get(int index)
+        public override sealed char Get(int index)
         {
             if (index < 0 || index >= limit)
             {
@@ -53,7 +53,7 @@ namespace ICU4N.Support.IO
             return backingArray[offset + index];
         }
 
-    public override sealed CharBuffer Get(char[] dest, int off, int len)
+        public override sealed CharBuffer Get(char[] dest, int off, int len)
         {
             int length = dest.Length;
             if ((off < 0) || (len < 0) || (long)off + (long)len > length)
@@ -69,17 +69,17 @@ namespace ICU4N.Support.IO
             return this;
         }
 
-    public override sealed bool IsDirect
+        public override sealed bool IsDirect
         {
             get { return false; }
         }
 
-    public override sealed ByteOrder Order
+        public override sealed ByteOrder Order
         {
             get { return ByteOrder.NativeOrder; }
         }
 
-    public override sealed ICharSequence SubSequence(int start, int end)
+        public override sealed ICharSequence SubSequence(int start, int end)
         {
             if (start < 0 || end < start || end > Remaining)
             {

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace ICU4N.Support.IO
 {
@@ -300,7 +298,7 @@ namespace ICU4N.Support.IO
         public void Dispose()
         {
             Dispose(true);
-            GC.SuppressFinalize(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)

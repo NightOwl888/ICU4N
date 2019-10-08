@@ -487,7 +487,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Quickly constructs a set from a set of ranges &lt;s0, e0, s1, e1, s2, e2, ..., sn, en&gt;.
         /// There must be an even number of integers, and they must be all greater than zero,
-        /// all less than or equal to <see cref="Character.MAX_CODE_POINT"/>.
+        /// all less than or equal to <see cref="Character.MaxCodePoint"/>.
         /// In each pair (..., si, ei, ...) it must be true that si &lt;= ei
         /// Between adjacent pairs (...ei, sj...), it must be true that ei+1 &lt; sj.
         /// </summary>
@@ -4531,9 +4531,9 @@ namespace ICU4N.Text
                     buffer = new char[2];
                 }
                 // compute ourselves, to save tests and calls
-                int offset = codepoint - Character.MIN_SUPPLEMENTARY_CODE_POINT;
-                buffer[0] = (char)(offset.TripleShift(10) + Character.MIN_HIGH_SURROGATE);
-                buffer[1] = (char)((offset & 0x3ff) + Character.MIN_LOW_SURROGATE);
+                int offset = codepoint - Character.MinSupplementaryCodePoint;
+                buffer[0] = (char)(offset.TripleShift(10) + Character.MinHighSurrogate);
+                buffer[1] = (char)((offset & 0x3ff) + Character.MinLowSurrogate);
                 currentElement = new string(buffer);
                 return true;
             }

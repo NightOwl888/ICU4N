@@ -6,6 +6,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
+using ICU4N.Support;
 using ICU4N.Support.Text;
 using System;
 using System.Text;
@@ -637,7 +638,7 @@ namespace ICU4N.Globalization
         [Obsolete("This API is ICU internal only.")]
         public static int Compare(string str, int codePoint)
         {
-            if (codePoint < Character.MIN_CODE_POINT || codePoint > Character.MAX_CODE_POINT)
+            if (codePoint < Character.MinCodePoint || codePoint > Character.MaxCodePoint)
             {
                 throw new ArgumentException();
             }
@@ -647,7 +648,7 @@ namespace ICU4N.Globalization
                 return -1;
             }
             char firstChar = str[0];
-            int offset = codePoint - Character.MIN_SUPPLEMENTARY_CODE_POINT;
+            int offset = codePoint - Character.MinSupplementaryCodePoint;
 
             if (offset < 0)
             { // BMP codePoint
@@ -659,7 +660,7 @@ namespace ICU4N.Globalization
                 return stringLength - 1;
             }
             // non BMP
-            char lead = (char)((int)((uint)offset >> 10) + Character.MIN_HIGH_SURROGATE);
+            char lead = (char)((offset.TripleShift(10)) + Character.MinHighSurrogate);
             int result = firstChar - lead;
             if (result != 0)
             {
@@ -667,7 +668,7 @@ namespace ICU4N.Globalization
             }
             if (stringLength > 1)
             {
-                char trail = (char)((offset & 0x3ff) + Character.MIN_LOW_SURROGATE);
+                char trail = (char)((offset & 0x3ff) + Character.MinLowSurrogate);
                 result = str[1] - trail;
                 if (result != 0)
                 {
@@ -687,7 +688,7 @@ namespace ICU4N.Globalization
         [Obsolete("This API is ICU internal only.")]
         public static int Compare(StringBuilder str, int codePoint)
         {
-            if (codePoint < Character.MIN_CODE_POINT || codePoint > Character.MAX_CODE_POINT)
+            if (codePoint < Character.MinCodePoint || codePoint > Character.MaxCodePoint)
             {
                 throw new ArgumentException();
             }
@@ -697,7 +698,7 @@ namespace ICU4N.Globalization
                 return -1;
             }
             char firstChar = str[0];
-            int offset = codePoint - Character.MIN_SUPPLEMENTARY_CODE_POINT;
+            int offset = codePoint - Character.MinSupplementaryCodePoint;
 
             if (offset < 0)
             { // BMP codePoint
@@ -709,7 +710,7 @@ namespace ICU4N.Globalization
                 return stringLength - 1;
             }
             // non BMP
-            char lead = (char)((int)((uint)offset >> 10) + Character.MIN_HIGH_SURROGATE);
+            char lead = (char)((offset.TripleShift(10)) + Character.MinHighSurrogate);
             int result = firstChar - lead;
             if (result != 0)
             {
@@ -717,7 +718,7 @@ namespace ICU4N.Globalization
             }
             if (stringLength > 1)
             {
-                char trail = (char)((offset & 0x3ff) + Character.MIN_LOW_SURROGATE);
+                char trail = (char)((offset & 0x3ff) + Character.MinLowSurrogate);
                 result = str[1] - trail;
                 if (result != 0)
                 {
@@ -737,7 +738,7 @@ namespace ICU4N.Globalization
         [Obsolete("This API is ICU internal only.")]
         public static int Compare(char[] str, int codePoint)
         {
-            if (codePoint < Character.MIN_CODE_POINT || codePoint > Character.MAX_CODE_POINT)
+            if (codePoint < Character.MinCodePoint || codePoint > Character.MaxCodePoint)
             {
                 throw new ArgumentException();
             }
@@ -747,7 +748,7 @@ namespace ICU4N.Globalization
                 return -1;
             }
             char firstChar = str[0];
-            int offset = codePoint - Character.MIN_SUPPLEMENTARY_CODE_POINT;
+            int offset = codePoint - Character.MinSupplementaryCodePoint;
 
             if (offset < 0)
             { // BMP codePoint
@@ -759,7 +760,7 @@ namespace ICU4N.Globalization
                 return stringLength - 1;
             }
             // non BMP
-            char lead = (char)((int)((uint)offset >> 10) + Character.MIN_HIGH_SURROGATE);
+            char lead = (char)((offset.TripleShift(10)) + Character.MinHighSurrogate);
             int result = firstChar - lead;
             if (result != 0)
             {
@@ -767,7 +768,7 @@ namespace ICU4N.Globalization
             }
             if (stringLength > 1)
             {
-                char trail = (char)((offset & 0x3ff) + Character.MIN_LOW_SURROGATE);
+                char trail = (char)((offset & 0x3ff) + Character.MinLowSurrogate);
                 result = str[1] - trail;
                 if (result != 0)
                 {
@@ -787,7 +788,7 @@ namespace ICU4N.Globalization
         [Obsolete("This API is ICU internal only.")]
         internal static int Compare(ICharSequence str, int codePoint)
         {
-            if (codePoint < Character.MIN_CODE_POINT || codePoint > Character.MAX_CODE_POINT)
+            if (codePoint < Character.MinCodePoint || codePoint > Character.MaxCodePoint)
             {
                 throw new ArgumentException();
             }
@@ -797,7 +798,7 @@ namespace ICU4N.Globalization
                 return -1;
             }
             char firstChar = str[0];
-            int offset = codePoint - Character.MIN_SUPPLEMENTARY_CODE_POINT;
+            int offset = codePoint - Character.MinSupplementaryCodePoint;
 
             if (offset < 0)
             { // BMP codePoint
@@ -809,7 +810,7 @@ namespace ICU4N.Globalization
                 return stringLength - 1;
             }
             // non BMP
-            char lead = (char)((int)((uint)offset >> 10) + Character.MIN_HIGH_SURROGATE);
+            char lead = (char)((offset.TripleShift(10)) + Character.MinHighSurrogate);
             int result = firstChar - lead;
             if (result != 0)
             {
@@ -817,7 +818,7 @@ namespace ICU4N.Globalization
             }
             if (stringLength > 1)
             {
-                char trail = (char)((offset & 0x3ff) + Character.MIN_LOW_SURROGATE);
+                char trail = (char)((offset & 0x3ff) + Character.MinLowSurrogate);
                 result = str[1] - trail;
                 if (result != 0)
                 {

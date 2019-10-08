@@ -51,9 +51,9 @@ namespace ICU4N.Support.IO
     public abstract class Buffer
     {
         /// <summary>
-        /// <c>UNSET_MARK</c> means the mark has not been set.
+        /// <c>UnsetMark</c> means the mark has not been set.
         /// </summary>
-        internal readonly static int UNSET_MARK = -1;
+        internal readonly static int UnsetMark = -1;
 
         /// <summary>
         /// The capacity of this buffer, which never change.
@@ -71,7 +71,7 @@ namespace ICU4N.Support.IO
         /// Mark is not set by default. Mark is always no less than zero and no
         /// greater than <see cref="position"/>.
         /// </summary>
-        internal int mark = UNSET_MARK;
+        internal int mark = UnsetMark;
 
         /// <summary>
         /// The current position of this buffer. Position is always no less than zero
@@ -113,7 +113,7 @@ namespace ICU4N.Support.IO
         public Buffer Clear()
         {
             position = 0;
-            mark = UNSET_MARK;
+            mark = UnsetMark;
             limit = capacity;
             return this;
         }
@@ -131,7 +131,7 @@ namespace ICU4N.Support.IO
         {
             limit = position;
             position = 0;
-            mark = UNSET_MARK;
+            mark = UnsetMark;
             return this;
         }
 
@@ -184,9 +184,9 @@ namespace ICU4N.Support.IO
             {
                 position = newLimit;
             }
-            if ((mark != UNSET_MARK) && (mark > newLimit))
+            if ((mark != UnsetMark) && (mark > newLimit))
             {
-                mark = UNSET_MARK;
+                mark = UnsetMark;
             }
             return this;
         }
@@ -228,9 +228,9 @@ namespace ICU4N.Support.IO
             }
 
             position = newPosition;
-            if ((mark != UNSET_MARK) && (mark > position))
+            if ((mark != UnsetMark) && (mark > position))
             {
-                mark = UNSET_MARK;
+                mark = UnsetMark;
             }
             return this;
         }
@@ -251,7 +251,7 @@ namespace ICU4N.Support.IO
         /// <exception cref="InvalidMarkException">If the mark has not been set</exception>
         public Buffer Reset()
         {
-            if (mark == UNSET_MARK)
+            if (mark == UnsetMark)
             {
                 throw new InvalidMarkException();
             }
@@ -273,7 +273,7 @@ namespace ICU4N.Support.IO
         public Buffer Rewind()
         {
             position = 0;
-            mark = UNSET_MARK;
+            mark = UnsetMark;
             return this;
         }
     }
