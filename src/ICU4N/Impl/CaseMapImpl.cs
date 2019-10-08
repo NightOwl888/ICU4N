@@ -8,183 +8,185 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
-    public sealed partial class CaseMapImpl
+    /// <summary>
+    /// Implementation of <see cref="UCaseProps.IContextIterator"/>, iterates over a string.
+    /// See ustrcase.c/utf16_caseContextIterator().
+    /// </summary>
+    public sealed class StringContextIterator : UCaseProps.IContextIterator
     {
         /// <summary>
-        /// Implementation of <see cref="UCaseProps.IContextIterator"/>, iterates over a string.
-        /// See ustrcase.c/utf16_caseContextIterator().
+        /// Constructor.
         /// </summary>
-        public sealed class StringContextIterator : UCaseProps.IContextIterator
+        /// <param name="src">String to iterate over.</param>
+        public StringContextIterator(string src)
+            : this(src.ToCharSequence())
         {
-            /// <summary>
-            /// Constructor.
-            /// </summary>
-            /// <param name="src">String to iterate over.</param>
-            public StringContextIterator(string src)
-                : this(src.ToCharSequence())
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="src">String to iterate over.</param>
+        public StringContextIterator(StringBuilder src)
+            : this(src.ToCharSequence())
+        {
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="src">String to iterate over.</param>
+        public StringContextIterator(char[] src)
+            : this(src.ToCharSequence())
+        {
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="src">String to iterate over.</param>
+        internal StringContextIterator(ICharSequence src)
+        {
+            this.s = src;
+            limit = src.Length;
+            cpStart = cpLimit = index = 0;
+            dir = 0;
+        }
+
+        /// <summary>
+        /// Set the iteration limit for <see cref="NextCaseMapCP()"/> to an index within the string.
+        /// If the limit parameter is negative or past the string, then the
+        /// string length is restored as the iteration limit.
+        /// <para/>
+        /// This limit does not affect the <see cref="Next()"/> function which always
+        /// iterates to the very end of the string.
+        /// </summary>
+        /// <param name="lim">The iteration limit.</param>
+        public void SetLimit(int lim)
+        {
+            if (0 <= lim && lim <= s.Length)
             {
+                limit = lim;
             }
-
-            /// <summary>
-            /// Constructor.
-            /// </summary>
-            /// <param name="src">String to iterate over.</param>
-            public StringContextIterator(StringBuilder src)
-                : this(src.ToCharSequence())
+            else
             {
+                limit = s.Length;
             }
+        }
 
-            /// <summary>
-            /// Constructor.
-            /// </summary>
-            /// <param name="src">String to iterate over.</param>
-            public StringContextIterator(char[] src)
-                : this(src.ToCharSequence())
+        /// <summary>
+        /// Move to the iteration limit without fetching code points up to there.
+        /// </summary>
+        public void MoveToLimit()
+        {
+            cpStart = cpLimit = limit;
+        }
+
+        /// <summary>
+        /// Iterate forward through the string to fetch the next code point
+        /// to be case-mapped, and set the context indexes for it.
+        /// </summary>
+        /// <remarks>
+        /// When the iteration limit is reached (and -1 is returned),
+        /// <see cref="CPStart"/> will be at the iteration limit.
+        /// <para/>
+        /// Iteration with <see cref="Next()"/> does not affect the position for <see cref="NextCaseMapCP()"/>.
+        /// </remarks>
+        /// <returns>The next code point to be case-mapped, or &lt;0 when the iteration is done.</returns>
+        public int NextCaseMapCP()
+        {
+            cpStart = cpLimit;
+            if (cpLimit < limit)
             {
+                int c = Character.CodePointAt(s, cpLimit);
+                cpLimit += Character.CharCount(c);
+                return c;
             }
-
-            /// <summary>
-            /// Constructor.
-            /// </summary>
-            /// <param name="src">String to iterate over.</param>
-            internal StringContextIterator(ICharSequence src)
+            else
             {
-                this.s = src;
-                limit = src.Length;
-                cpStart = cpLimit = index = 0;
-                dir = 0;
-            }
-
-            /// <summary>
-            /// Set the iteration limit for <see cref="NextCaseMapCP()"/> to an index within the string.
-            /// If the limit parameter is negative or past the string, then the
-            /// string length is restored as the iteration limit.
-            /// <para/>
-            /// This limit does not affect the <see cref="Next()"/> function which always
-            /// iterates to the very end of the string.
-            /// </summary>
-            /// <param name="lim">The iteration limit.</param>
-            public void SetLimit(int lim)
-            {
-                if (0 <= lim && lim <= s.Length)
-                {
-                    limit = lim;
-                }
-                else
-                {
-                    limit = s.Length;
-                }
-            }
-
-            /// <summary>
-            /// Move to the iteration limit without fetching code points up to there.
-            /// </summary>
-            public void MoveToLimit()
-            {
-                cpStart = cpLimit = limit;
-            }
-
-            /// <summary>
-            /// Iterate forward through the string to fetch the next code point
-            /// to be case-mapped, and set the context indexes for it.
-            /// </summary>
-            /// <remarks>
-            /// When the iteration limit is reached (and -1 is returned),
-            /// <see cref="CPStart"/> will be at the iteration limit.
-            /// <para/>
-            /// Iteration with <see cref="Next()"/> does not affect the position for <see cref="NextCaseMapCP()"/>.
-            /// </remarks>
-            /// <returns>The next code point to be case-mapped, or &lt;0 when the iteration is done.</returns>
-            public int NextCaseMapCP()
-            {
-                cpStart = cpLimit;
-                if (cpLimit < limit)
-                {
-                    int c = Character.CodePointAt(s, cpLimit);
-                    cpLimit += Character.CharCount(c);
-                    return c;
-                }
-                else
-                {
-                    return -1;
-                }
-            }
-
-            /// <summary>
-            /// Gets the start of the code point that was last returned 
-            /// by <see cref="NextCaseMapCP()"/>.
-            /// </summary>
-            public int CPStart
-            {
-                get { return cpStart; }
-            }
-
-            /// <summary>
-            /// Gets the limit of the code point that was last returned
-            /// by <see cref="NextCaseMapCP()"/>.
-            /// </summary>
-            public int CPLimit
-            {
-                get { return cpLimit; }
-            }
-
-            /// <summary>
-            /// Gets the length of the code point that was last returned
-            /// by <see cref="NextCaseMapCP()"/>.
-            /// </summary>
-            public int CPLength
-            {
-                get { return cpLimit - cpStart; }
-            }
-
-            // implement UCaseProps.ContextIterator
-            // The following code is not used anywhere in this private class
-            public void Reset(int direction)
-            {
-                if (direction > 0)
-                {
-                    /* reset for forward iteration */
-                    dir = 1;
-                    index = cpLimit;
-                }
-                else if (direction < 0)
-                {
-                    /* reset for backward iteration */
-                    dir = -1;
-                    index = cpStart;
-                }
-                else
-                {
-                    // not a valid direction
-                    dir = 0;
-                    index = 0;
-                }
-            }
-
-            public int Next()
-            {
-                int c;
-
-                if (dir > 0 && index < s.Length)
-                {
-                    c = Character.CodePointAt(s, index);
-                    index += Character.CharCount(c);
-                    return c;
-                }
-                else if (dir < 0 && index > 0)
-                {
-                    c = Character.CodePointBefore(s, index);
-                    index -= Character.CharCount(c);
-                    return c;
-                }
                 return -1;
             }
-
-            // variables
-            private ICharSequence s;
-            private int index, limit, cpStart, cpLimit;
-            private int dir; // 0=initial state  >0=forward  <0=backward
         }
+
+        /// <summary>
+        /// Gets the start of the code point that was last returned 
+        /// by <see cref="NextCaseMapCP()"/>.
+        /// </summary>
+        public int CPStart
+        {
+            get { return cpStart; }
+        }
+
+        /// <summary>
+        /// Gets the limit of the code point that was last returned
+        /// by <see cref="NextCaseMapCP()"/>.
+        /// </summary>
+        public int CPLimit
+        {
+            get { return cpLimit; }
+        }
+
+        /// <summary>
+        /// Gets the length of the code point that was last returned
+        /// by <see cref="NextCaseMapCP()"/>.
+        /// </summary>
+        public int CPLength
+        {
+            get { return cpLimit - cpStart; }
+        }
+
+        // implement UCaseProps.ContextIterator
+        // The following code is not used anywhere in this private class
+        public void Reset(int direction)
+        {
+            if (direction > 0)
+            {
+                /* reset for forward iteration */
+                dir = 1;
+                index = cpLimit;
+            }
+            else if (direction < 0)
+            {
+                /* reset for backward iteration */
+                dir = -1;
+                index = cpStart;
+            }
+            else
+            {
+                // not a valid direction
+                dir = 0;
+                index = 0;
+            }
+        }
+
+        public int Next()
+        {
+            int c;
+
+            if (dir > 0 && index < s.Length)
+            {
+                c = Character.CodePointAt(s, index);
+                index += Character.CharCount(c);
+                return c;
+            }
+            else if (dir < 0 && index > 0)
+            {
+                c = Character.CodePointBefore(s, index);
+                index -= Character.CharCount(c);
+                return c;
+            }
+            return -1;
+        }
+
+        // variables
+        private ICharSequence s;
+        private int index, limit, cpStart, cpLimit;
+        private int dir; // 0=initial state  >0=forward  <0=backward
+    }
+
+    public sealed partial class CaseMapImpl
+    {
+        // ICU4N: De-nested StringContextIterator
 
         public const int TITLECASE_WHOLE_STRING = 0x20;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
         public const int TITLECASE_SENTENCES = 0x40;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
@@ -219,23 +221,23 @@ namespace ICU4N.Impl
             return options | newOption;
         }
 
-        private static readonly int LNS =
-                (1 << UUnicodeCategory.UppercaseLetter.ToInt32()) |
-                (1 << UUnicodeCategory.LowercaseLetter.ToInt32()) |
-                (1 << UUnicodeCategory.TitlecaseLetter.ToInt32()) |
+        private const int LNS =
+                (1 << (int)UUnicodeCategory.UppercaseLetter) |
+                (1 << (int)UUnicodeCategory.LowercaseLetter) |
+                (1 << (int)UUnicodeCategory.TitlecaseLetter) |
                 // Not MODIFIER_LETTER: We count only cased modifier letters.
-                (1 << UUnicodeCategory.OtherLetter.ToInt32()) |
+                (1 << (int)UUnicodeCategory.OtherLetter) |
 
-                (1 << UUnicodeCategory.DecimalDigitNumber.ToInt32()) |
-                (1 << UUnicodeCategory.LetterNumber.ToInt32()) |
-                (1 << UUnicodeCategory.OtherNumber.ToInt32()) |
+                (1 << (int)UUnicodeCategory.DecimalDigitNumber) |
+                (1 << (int)UUnicodeCategory.LetterNumber) |
+                (1 << (int)UUnicodeCategory.OtherNumber) |
 
-                (1 << UUnicodeCategory.MathSymbol.ToInt32()) |
-                (1 << UUnicodeCategory.CurrencySymbol.ToInt32()) |
-                (1 << UUnicodeCategory.ModifierSymbol.ToInt32()) |
-                (1 << UUnicodeCategory.OtherSymbol.ToInt32()) |
+                (1 << (int)UUnicodeCategory.MathSymbol) |
+                (1 << (int)UUnicodeCategory.CurrencySymbol) |
+                (1 << (int)UUnicodeCategory.ModifierSymbol) |
+                (1 << (int)UUnicodeCategory.OtherSymbol) |
 
-                (1 << UUnicodeCategory.PrivateUse.ToInt32());
+                (1 << (int)UUnicodeCategory.PrivateUse);
 
         private static bool IsLNS(int c)
         {
@@ -319,7 +321,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Omit unchanged text when case-mapping with Edits.
         /// </summary>
-        public static readonly int OMIT_UNCHANGED_TEXT = 0x4000; // ICU4N TODO: API - make into Flags enum
+        public const int OMIT_UNCHANGED_TEXT = 0x4000; // ICU4N TODO: API - make into Flags enum
 
         private sealed class WholeStringBreakIterator : BreakIterator
         {
@@ -437,23 +439,23 @@ namespace ICU4N.Impl
         private sealed partial class GreekUpper
         {
             // Data bits.
-            private static readonly int UPPER_MASK = 0x3ff;
-            private static readonly int HAS_VOWEL = 0x1000;
-            private static readonly int HAS_YPOGEGRAMMENI = 0x2000;
-            private static readonly int HAS_ACCENT = 0x4000;
-            private static readonly int HAS_DIALYTIKA = 0x8000;
+            private const int UPPER_MASK = 0x3ff;
+            private const int HAS_VOWEL = 0x1000;
+            private const int HAS_YPOGEGRAMMENI = 0x2000;
+            private const int HAS_ACCENT = 0x4000;
+            private const int HAS_DIALYTIKA = 0x8000;
             // Further bits during data building and processing, not stored in the data map.
-            private static readonly int HAS_COMBINING_DIALYTIKA = 0x10000;
-            private static readonly int HAS_OTHER_GREEK_DIACRITIC = 0x20000;
+            private const int HAS_COMBINING_DIALYTIKA = 0x10000;
+            private const int HAS_OTHER_GREEK_DIACRITIC = 0x20000;
 
-            private static readonly int HAS_VOWEL_AND_ACCENT = HAS_VOWEL | HAS_ACCENT;
-            private static readonly int HAS_VOWEL_AND_ACCENT_AND_DIALYTIKA =
+            private const int HAS_VOWEL_AND_ACCENT = HAS_VOWEL | HAS_ACCENT;
+            private const int HAS_VOWEL_AND_ACCENT_AND_DIALYTIKA =
                     HAS_VOWEL_AND_ACCENT | HAS_DIALYTIKA;
-            private static readonly int HAS_EITHER_DIALYTIKA = HAS_DIALYTIKA | HAS_COMBINING_DIALYTIKA;
+            private const int HAS_EITHER_DIALYTIKA = HAS_DIALYTIKA | HAS_COMBINING_DIALYTIKA;
 
             // State bits.
-            private static readonly int AFTER_CASED = 1;
-            private static readonly int AFTER_VOWEL_WITH_ACCENT = 2;
+            private const int AFTER_CASED = 1;
+            private const int AFTER_VOWEL_WITH_ACCENT = 2;
 
             // Data generated by prototype code, see
             // http://site.icu-project.org/design/case/greek-upper
