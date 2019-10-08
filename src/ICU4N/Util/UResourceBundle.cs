@@ -75,6 +75,7 @@ namespace ICU4N.Util
     /// </summary>
     /// <stable>ICU 3.0</stable>
     /// <author>ram</author>
+    // ICU4N TODO: Update above docs to demonstrate how to open files in .NET style
     public abstract class UResourceBundle : ResourceBundle, IEnumerable<UResourceBundle> //: ResourceManager
     {
         /// <summary>
@@ -333,7 +334,7 @@ namespace ICU4N.Util
             return GetULocale().ToLocale();
         }
 
-        private enum RootType { MISSING, ICU, JAVA } // ICU4N TODO: API - rename from JAVA
+        private enum RootType { Missing, ICU, DotNet }
 
         private static IDictionary<string, RootType> ROOT_CACHE = new ConcurrentDictionary<string, RootType>();
 
@@ -354,12 +355,12 @@ namespace ICU4N.Util
                     try
                     {
                         ResourceBundleWrapper.GetBundleInstance(baseName, rootLocale, root, true);
-                        rootType = RootType.JAVA;
+                        rootType = RootType.DotNet;
                     }
                     catch (MissingManifestResourceException)
                     {
                         //throw away the exception
-                        rootType = RootType.MISSING;
+                        rootType = RootType.Missing;
                     }
                 }
 
@@ -396,11 +397,11 @@ namespace ICU4N.Util
                 case RootType.ICU:
                     return ICUResourceBundle.GetBundleInstance(baseName, localeName, root, disableFallback);
 
-                case RootType.JAVA:
+                case RootType.DotNet:
                     return ResourceBundleWrapper.GetBundleInstance(baseName, localeName, root,
                                                                    disableFallback);
 
-                case RootType.MISSING:
+                case RootType.Missing:
                 default:
                     UResourceBundle b;
                     try
@@ -413,7 +414,7 @@ namespace ICU4N.Util
                     {
                         b = ResourceBundleWrapper.GetBundleInstance(baseName, localeName, root,
                                                                     disableFallback);
-                        SetRootType(baseName, RootType.JAVA);
+                        SetRootType(baseName, RootType.DotNet);
                     }
                     return b;
             }

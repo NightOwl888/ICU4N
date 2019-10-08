@@ -1306,13 +1306,13 @@ namespace ICU4N.Util
         // For a branch sub-node with at most this many entries, we drop down
         // to a linear search.
         /*package*/
-        internal static readonly int kMaxBranchLinearSubNodeLength = 5;
+        internal const int kMaxBranchLinearSubNodeLength = 5;
 
         // 10..1f: Linear-match node, match 1..16 bytes and continue reading the next node.
         /*package*/
-        internal static readonly int kMinLinearMatch = 0x10;
+        internal const int kMinLinearMatch = 0x10;
         /*package*/
-        internal static readonly int kMaxLinearMatchLength = 0x10;
+        internal const int kMaxLinearMatchLength = 0x10;
 
         // 20..ff: Variable-length value node.
         // If odd, the value is final. (Otherwise, intermediate value or jump delta.)
@@ -1320,49 +1320,49 @@ namespace ICU4N.Util
         // The remaining lead byte value indicates the number of following bytes (0..4)
         // and contains the value's top bits.
         /*package*/
-        internal static readonly int kMinValueLead = kMinLinearMatch + kMaxLinearMatchLength;  // 0x20
+        internal const int kMinValueLead = kMinLinearMatch + kMaxLinearMatchLength;  // 0x20
                                                                                                // It is a final value if bit 0 is set.
-        private static readonly int kValueIsFinal = 1;
+        private const int kValueIsFinal = 1;
 
         // Compact value: After testing bit 0, shift right by 1 and then use the following thresholds.
         /*package*/
-        internal static readonly int kMinOneByteValueLead = kMinValueLead / 2;  // 0x10
+        internal const int kMinOneByteValueLead = kMinValueLead / 2;  // 0x10
                                                                                 /*package*/
-        internal static readonly int kMaxOneByteValue = 0x40;  // At least 6 bits in the first byte.
+        internal const int kMaxOneByteValue = 0x40;  // At least 6 bits in the first byte.
 
         /*package*/
-        internal static readonly int kMinTwoByteValueLead = kMinOneByteValueLead + kMaxOneByteValue + 1;  // 0x51
+        internal const int kMinTwoByteValueLead = kMinOneByteValueLead + kMaxOneByteValue + 1;  // 0x51
                                                                                                           /*package*/
-        internal static readonly int kMaxTwoByteValue = 0x1aff;
+        internal const int kMaxTwoByteValue = 0x1aff;
 
         /*package*/
-        internal static readonly int kMinThreeByteValueLead = kMinTwoByteValueLead + (kMaxTwoByteValue >> 8) + 1;  // 0x6c
+        internal const int kMinThreeByteValueLead = kMinTwoByteValueLead + (kMaxTwoByteValue >> 8) + 1;  // 0x6c
                                                                                                                    /*package*/
-        internal static readonly int kFourByteValueLead = 0x7e;
+        internal const int kFourByteValueLead = 0x7e;
 
         // A little more than Unicode code points. (0x11ffff)
         /*package*/
-        internal static readonly int kMaxThreeByteValue = ((kFourByteValueLead - kMinThreeByteValueLead) << 16) - 1;
+        internal const int kMaxThreeByteValue = ((kFourByteValueLead - kMinThreeByteValueLead) << 16) - 1;
 
         /*package*/
-        internal static readonly int kFiveByteValueLead = 0x7f;
+        internal const int kFiveByteValueLead = 0x7f;
 
         // Compact delta integers.
         /*package*/
-        internal static readonly int kMaxOneByteDelta = 0xbf;
+        internal const int kMaxOneByteDelta = 0xbf;
         /*package*/
-        internal static readonly int kMinTwoByteDeltaLead = kMaxOneByteDelta + 1;  // 0xc0
+        internal const int kMinTwoByteDeltaLead = kMaxOneByteDelta + 1;  // 0xc0
                                                                                    /*package*/
-        internal static readonly int kMinThreeByteDeltaLead = 0xf0;
+        internal const int kMinThreeByteDeltaLead = 0xf0;
         /*package*/
-        internal static readonly int kFourByteDeltaLead = 0xfe;
+        internal const int kFourByteDeltaLead = 0xfe;
         /*package*/
-        internal static readonly int kFiveByteDeltaLead = 0xff;
+        internal const int kFiveByteDeltaLead = 0xff;
 
         /*package*/
-        internal static readonly int kMaxTwoByteDelta = ((kMinThreeByteDeltaLead - kMinTwoByteDeltaLead) << 8) - 1;  // 0x2fff
+        internal const int kMaxTwoByteDelta = ((kMinThreeByteDeltaLead - kMinTwoByteDeltaLead) << 8) - 1;  // 0x2fff
                                                                                                                      /*package*/
-        internal static readonly int kMaxThreeByteDelta = ((kFourByteDeltaLead - kMinThreeByteDeltaLead) << 16) - 1;  // 0xdffff
+        internal const int kMaxThreeByteDelta = ((kFourByteDeltaLead - kMinThreeByteDeltaLead) << 16) - 1;  // 0xdffff
 
         // Fixed value referencing the BytesTrie bytes.
         private byte[] bytes_;

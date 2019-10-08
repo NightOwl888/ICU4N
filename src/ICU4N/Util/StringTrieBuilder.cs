@@ -26,7 +26,7 @@ namespace ICU4N.Util
             /// Builds a trie quickly.
             /// </summary>
             /// <stable>ICU 4.8</stable>
-            FAST,
+            Fast,
             /// <summary>
             /// Builds a trie more slowly, attempting to generate
             /// a shorter but equivalent serialization.
@@ -37,7 +37,7 @@ namespace ICU4N.Util
             /// Runtime speed is not expected to improve.
             /// </summary>
             /// <stable>ICU 4.8</stable>
-            SMALL
+            Small
         }
 
 
@@ -48,7 +48,7 @@ namespace ICU4N.Util
         [Obsolete("This API is ICU internal only.")]
         protected virtual void AddImpl(ICharSequence s, int value)
         {
-            if (state != State.ADDING)
+            if (state != State.Adding)
             {
                 // Cannot add elements after building.
                 throw new InvalidOperationException("Cannot add (string, value) pairs after build().");
@@ -73,14 +73,14 @@ namespace ICU4N.Util
         {
             switch (state)
             {
-                case State.ADDING:
+                case State.Adding:
                     if (root == null)
                     {
                         throw new IndexOutOfRangeException("No (string, value) pairs were added.");
                     }
-                    if (buildOption == Option.FAST)
+                    if (buildOption == Option.Fast)
                     {
-                        state = State.BUILDING_FAST;
+                        state = State.BuildingFast;
                         // Building "fast" is somewhat faster (25..50% in some test)
                         // because it makes registerNode() return the input node
                         // rather than checking for duplicates.
@@ -93,14 +93,14 @@ namespace ICU4N.Util
                     }
                     else
                     {
-                        state = State.BUILDING_SMALL;
+                        state = State.BuildingSmall;
                     }
                     break;
-                case State.BUILDING_FAST:
-                case State.BUILDING_SMALL:
+                case State.BuildingFast:
+                case State.BuildingSmall:
                     // Building must have failed.
                     throw new InvalidOperationException("Builder failed and must be clear()ed.");
-                case State.BUILT:
+                case State.Built:
                     return;  // Nothing more to do.
             }
             // Implementation note:
@@ -112,7 +112,7 @@ namespace ICU4N.Util
             root = root.Register(this);
             root.MarkRightEdgesFirst(-1);
             root.Write(this);
-            state = State.BUILT;
+            state = State.Built;
         }
 
         [Obsolete("This API is ICU internal only.")]
@@ -121,19 +121,19 @@ namespace ICU4N.Util
             strings.Length = 0;
             nodes.Clear();
             root = null;
-            state = State.ADDING;
+            state = State.Adding;
         }
 
         /// <summary>
         /// Makes sure that there is only one unique node registered that is
-        /// equivalent to <paramref name="newNode"/>, unless <see cref="State.BUILDING_FAST"/>.
+        /// equivalent to <paramref name="newNode"/>, unless <see cref="State.BuildingFast"/>.
         /// </summary>
         /// <param name="newNode">Input node. The builder takes ownership.</param>
         /// <returns><paramref name="newNode"/> if it is the first of its kind, or
         /// an equivalent node if <paramref name="newNode"/> is a duplicate.</returns>
         private Node RegisterNode(Node newNode)
         {
-            if (state == State.BUILDING_FAST)
+            if (state == State.BuildingFast)
             {
                 return newNode;
             }
@@ -1009,9 +1009,9 @@ namespace ICU4N.Util
 
         private enum State
         {
-            ADDING, BUILDING_FAST, BUILDING_SMALL, BUILT
+            Adding, BuildingFast, BuildingSmall, Built
         }
-        private State state = State.ADDING;
+        private State state = State.Adding;
 
         // Strings and sub-strings for linear-match nodes.
         [Obsolete("This API is ICU internal only.")]

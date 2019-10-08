@@ -22,7 +22,7 @@ namespace ICU4N.Dev.Test.Util
             builder_.Clear();
             try
             {
-                builder_.Build(StringTrieBuilder.Option.FAST);
+                builder_.Build(StringTrieBuilder.Option.Fast);
                 Errln("BytesTrieBuilder().build() did not throw IndexOutOfBoundsException");
                 return;
             }
@@ -267,7 +267,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test40GetUniqueValue()
         {
-            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.FAST);
+            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Fast);
             long uniqueValue;
             if ((uniqueValue = trie.GetUniqueValue()) != 0)
             {
@@ -308,7 +308,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test41GetNextBytes()
         {
-            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.SMALL);
+            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Small);
             StringBuilder buffer = new StringBuilder();
             int count = trie.GetNextBytes(buffer);
             if (count != 2 || !"aj".ContentEquals(buffer))
@@ -362,7 +362,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test50IteratorFromBranch()
         {
-            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.FAST);
+            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Fast);
             // Go to a branch node.
             trie.Next('j');
             trie.Next('a');
@@ -406,7 +406,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test51IteratorFromLinearMatch()
         {
-            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.SMALL);
+            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Small);
             // Go into a linear-match node.
             trie.Next('j');
             trie.Next('a');
@@ -429,7 +429,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test52TruncatingIteratorFromRoot()
         {
-            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.FAST);
+            BytesTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Fast);
             BytesTrie.Enumerator iter = trie.GetEnumerator(4);
             // Expected data: Same as in buildMonthsTrie(), except only the first 4 characters
             // of each string, and no string duplicates from the truncation.
@@ -475,7 +475,7 @@ namespace ICU4N.Dev.Test.Util
             new StringAndValue("abcdepq", 200),
             new StringAndValue("abcdeyz", 3000)
              };
-            BytesTrie trie = buildTrie(data, data.Length, StringTrieBuilder.Option.FAST);
+            BytesTrie trie = buildTrie(data, data.Length, StringTrieBuilder.Option.Fast);
             // Go into a linear-match node.
             trie.Next('a');
             trie.Next('b');
@@ -498,7 +498,7 @@ namespace ICU4N.Dev.Test.Util
             new StringAndValue("abcdepq", 200),
             new StringAndValue("abcdeyz", 3000)
              };
-            BytesTrie trie = buildTrie(data, data.Length, StringTrieBuilder.Option.FAST);
+            BytesTrie trie = buildTrie(data, data.Length, StringTrieBuilder.Option.Fast);
             // Go into a linear-match node.
             trie.Next('a');
             trie.Next('b');
@@ -529,7 +529,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 builder_.Add(item.bytes, item.bytes.Length, item.value);
             }
-            ByteBuffer trieBytes = builder_.BuildByteBuffer(StringTrieBuilder.Option.FAST);
+            ByteBuffer trieBytes = builder_.BuildByteBuffer(StringTrieBuilder.Option.Fast);
             checkIterator(
                 BytesTrie.GetEnumerator(trieBytes.Array, trieBytes.ArrayOffset + trieBytes.Position, 0),
                 data);
@@ -543,9 +543,9 @@ namespace ICU4N.Dev.Test.Util
         private void checkData(StringAndValue[] data, int dataLength)
         {
             Logln("checkData(dataLength=" + dataLength + ", fast)");
-            checkData(data, dataLength, StringTrieBuilder.Option.FAST);
+            checkData(data, dataLength, StringTrieBuilder.Option.Fast);
             Logln("checkData(dataLength=" + dataLength + ", small)");
-            checkData(data, dataLength, StringTrieBuilder.Option.SMALL);
+            checkData(data, dataLength, StringTrieBuilder.Option.Small);
         }
 
         private void checkData(StringAndValue[] data, int dataLength, StringTrieBuilder.Option buildOption)

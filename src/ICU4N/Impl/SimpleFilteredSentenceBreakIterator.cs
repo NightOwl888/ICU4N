@@ -426,12 +426,12 @@ namespace ICU4N.Impl
 
                 if (revCount > 0)
                 {
-                    backwardsTrie = builder.Build(StringTrieBuilder.Option.FAST);
+                    backwardsTrie = builder.Build(StringTrieBuilder.Option.Fast);
                 }
 
                 if (fwdCount > 0)
                 {
-                    forwardsPartialTrie = builder2.Build(StringTrieBuilder.Option.FAST);
+                    forwardsPartialTrie = builder2.Build(StringTrieBuilder.Option.Fast);
                 }
                 return new SimpleFilteredSentenceBreakIterator(adoptBreakIterator, forwardsPartialTrie, backwardsTrie);
             }
