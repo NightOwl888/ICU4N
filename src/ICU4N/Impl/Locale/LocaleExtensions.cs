@@ -16,34 +16,47 @@ namespace ICU4N.Impl.Locale
         private static readonly IDictionary<char, Extension> EmptyMap =
             new SortedDictionary<char, Extension>().ToUnmodifiableDictionary();
 
-        public static readonly LocaleExtensions EmptyExtensions;
-        public static readonly LocaleExtensions CalendarJapanese;
-        public static readonly LocaleExtensions NumberThai;
+        public static readonly LocaleExtensions EmptyExtensions = LoadEmptyExtensions();
+        public static readonly LocaleExtensions CalendarJapanese = LoadCalendarJapanese();
+        public static readonly LocaleExtensions NumberThai = LoadNumberThai();
 
-        static LocaleExtensions() // ICU4N TODO: Avoid static constructor (create separate load method for each static variable)
+        private static LocaleExtensions LoadEmptyExtensions() // ICU4N: Avoid static constructor
         {
-            EmptyExtensions = new LocaleExtensions();
-            EmptyExtensions._id = "";
-            EmptyExtensions._map = EmptyMap;
-
-            CalendarJapanese = new LocaleExtensions();
-            CalendarJapanese._id = "u-ca-japanese";
-            CalendarJapanese._map = new SortedDictionary<char, Extension>();
-            CalendarJapanese._map[UnicodeLocaleExtension.Singleton] = UnicodeLocaleExtension.CalendarJapanese;
-
-            NumberThai = new LocaleExtensions();
-            NumberThai._id = "u-nu-thai";
-            NumberThai._map = new SortedDictionary<char, Extension>();
-            NumberThai._map[UnicodeLocaleExtension.Singleton] = UnicodeLocaleExtension.NumberThai;
+            return new LocaleExtensions
+            {
+                _id = "",
+                _map = EmptyMap
+            };
         }
-
+        private static LocaleExtensions LoadCalendarJapanese() // ICU4N: Avoid static constructor
+        {
+            return new LocaleExtensions
+            {
+                _id = "u-ca-japanese",
+                _map = new SortedDictionary<char, Extension>
+                {
+                    [UnicodeLocaleExtension.Singleton] = UnicodeLocaleExtension.CalendarJapanese
+                }
+            };
+        }
+        private static LocaleExtensions LoadNumberThai() // ICU4N: Avoid static constructor
+        {
+            return new LocaleExtensions
+            {
+                _id = "u-nu-thai",
+                _map = new SortedDictionary<char, Extension>
+                {
+                    [UnicodeLocaleExtension.Singleton] = UnicodeLocaleExtension.NumberThai
+                }
+            };
+        }
         private LocaleExtensions()
         {
         }
 
-        /*
-         * Package local constructor, only used by InternalLocaleBuilder.
-         */
+        /// <summary>
+        /// Internal constructor, only used by <see cref="InternalLocaleBuilder"/>.
+        /// </summary>
         internal LocaleExtensions(IDictionary<CaseInsensitiveChar, string> extensions,
                 ISet<CaseInsensitiveString> uattributes, IDictionary<CaseInsensitiveString, string> ukeywords)
         {
