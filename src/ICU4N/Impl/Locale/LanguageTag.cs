@@ -33,8 +33,8 @@ namespace ICU4N.Impl.Locale
 
         // Map contains grandfathered tags and its preferred mappings from
         // http://www.ietf.org/rfc/rfc5646.txt
-        private static readonly IDictionary<AsciiUtil.CaseInsensitiveKey, string[]> Grandfathered =
-            new Dictionary<AsciiUtil.CaseInsensitiveKey, string[]>();
+        private static readonly IDictionary<AsciiCaseInsensitiveKey, string[]> Grandfathered =
+            new Dictionary<AsciiCaseInsensitiveKey, string[]>();
 
         static LanguageTag()
         {
@@ -100,7 +100,7 @@ namespace ICU4N.Impl.Locale
             };
             foreach (string[] e in entries)
             {
-                Grandfathered[new AsciiUtil.CaseInsensitiveKey(e[0])] = e;
+                Grandfathered[new AsciiCaseInsensitiveKey(e[0])] = e;
             }
         }
 
@@ -168,8 +168,7 @@ namespace ICU4N.Impl.Locale
             bool isGrandfathered = false;
 
             // Check if the tag is grandfathered
-            string[] gfmap;
-            if (Grandfathered.TryGetValue(new AsciiUtil.CaseInsensitiveKey(languageTag), out gfmap) && gfmap != null)
+            if (Grandfathered.TryGetValue(new AsciiCaseInsensitiveKey(languageTag), out string[] gfmap) && gfmap != null)
             {
                 // use preferred mapping
                 itr = new StringTokenEnumerator(gfmap[1], Separator);

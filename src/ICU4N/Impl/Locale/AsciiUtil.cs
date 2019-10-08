@@ -196,34 +196,33 @@ namespace ICU4N.Impl.Locale
             }
             return b;
         }
+    }
+    public class AsciiCaseInsensitiveKey // ICU4N specific - renamed from CaseInsensitiveKey
+    {
+        private string _key;
+        private int _hash;
 
-        public class CaseInsensitiveKey // ICU4N TODO: API - de-nest
+        public AsciiCaseInsensitiveKey(string key)
         {
-            private string _key;
-            private int _hash;
+            _key = key;
+            _hash = AsciiUtil.ToLower(key).GetHashCode();
+        }
 
-            public CaseInsensitiveKey(string key)
+        public override bool Equals(Object o)
+        {
+            if (this == o)
             {
-                _key = key;
-                _hash = AsciiUtil.ToLower(key).GetHashCode();
+                return true;
             }
+            if (o is AsciiCaseInsensitiveKey) {
+                return AsciiUtil.CaseIgnoreMatch(_key, ((AsciiCaseInsensitiveKey)o)._key);
+            }
+            return false;
+        }
 
-            public override bool Equals(Object o)
-            {
-                if (this == o)
-                {
-                    return true;
-                }
-                if (o is CaseInsensitiveKey) {
-                    return AsciiUtil.CaseIgnoreMatch(_key, ((CaseInsensitiveKey)o)._key);
-                }
-                return false;
-            }
-
-            public override int GetHashCode()
-            {
-                return _hash;
-            }
+        public override int GetHashCode()
+        {
+            return _hash;
         }
     }
 }
