@@ -36,7 +36,7 @@ namespace ICU4N.Text
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public static FilteredBreakIteratorBuilder GetInstance(CultureInfo where)
         {
-            return new SimpleFilteredSentenceBreakIterator.Builder(where);
+            return new SimpleFilteredSentenceBreakIteratorBuilder(where);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace ICU4N.Text
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public static FilteredBreakIteratorBuilder GetInstance(ULocale where)
         {
-            return new SimpleFilteredSentenceBreakIterator.Builder(where);
+            return new SimpleFilteredSentenceBreakIteratorBuilder(where);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace ICU4N.Text
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public static FilteredBreakIteratorBuilder GetEmptyInstance()
         {
-            return new SimpleFilteredSentenceBreakIterator.Builder();
+            return new SimpleFilteredSentenceBreakIteratorBuilder();
         }
 
         // ICU4N TODO: API Generate APIs

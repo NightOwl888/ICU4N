@@ -83,11 +83,11 @@ namespace ICU4N.Impl
 
             if (bestPosn >= 0)
             {
-                if (bestValue == Builder.Match)
+                if (bestValue == SimpleFilteredSentenceBreakIteratorBuilder.Match)
                 { // exact match!
                     return true; // Exception here.
                 }
-                else if (bestValue == Builder.Partial && forwardsPartialTrie != null)
+                else if (bestValue == SimpleFilteredSentenceBreakIteratorBuilder.Partial && forwardsPartialTrie != null)
                 {
                     // make sure there's a forward trie
                     // We matched the "Ph." in "Ph.D." - now we need to run everything through the forwards trie
@@ -274,167 +274,169 @@ namespace ICU4N.Impl
             @delegate.SetText(newText);
         }
 
-        public class Builder : FilteredBreakIteratorBuilder // ICU4N TODO: API - de-nest ?
+        // ICU4N: De-nested Builder and renamed SimpleFilteredSentenceBreakIteratorBuilder
+    }
+
+    public class SimpleFilteredSentenceBreakIteratorBuilder : FilteredBreakIteratorBuilder
+    {
+        /// <summary>
+        /// Filter set to store all exceptions.
+        /// </summary>
+        private HashSet<ICharSequence> filterSet = new HashSet<ICharSequence>();
+
+        internal const int Partial = (1 << 0); // < partial - need to run through forward trie
+        internal const int Match = (1 << 1); // < exact match - skip this one.
+        internal const int SuppressInReverse = (1 << 0);
+        internal const int AddToForward = (1 << 1);
+
+        public SimpleFilteredSentenceBreakIteratorBuilder(CultureInfo loc)
+            : this(ULocale.ForLocale(loc))
         {
-            /// <summary>
-            /// Filter set to store all exceptions.
-            /// </summary>
-            private HashSet<ICharSequence> filterSet = new HashSet<ICharSequence>();
+        }
 
-            internal const int Partial = (1 << 0); // < partial - need to run through forward trie
-            internal const int Match = (1 << 1); // < exact match - skip this one.
-            internal const int SuppressInReverse = (1 << 0);
-            internal const int AddToForward = (1 << 1);
-
-            public Builder(CultureInfo loc)
-                : this(ULocale.ForLocale(loc))
-            {
-            }
-
-            /// <summary>
-            /// Create <see cref="SimpleFilteredSentenceBreakIterator.Builder"/> using given locale.
-            /// </summary>
-            /// <param name="loc">The locale to get filtered iterators.</param>
-            public Builder(ULocale loc)
+        /// <summary>
+        /// Create <see cref="SimpleFilteredSentenceBreakIteratorBuilder"/> using given locale.
+        /// </summary>
+        /// <param name="loc">The locale to get filtered iterators.</param>
+        public SimpleFilteredSentenceBreakIteratorBuilder(ULocale loc)
 #pragma warning disable 612, 618
             : base()
 #pragma warning restore 612, 618
+        {
+            ICUResourceBundle rb = ICUResourceBundle.GetBundleInstance(
+                    ICUData.IcuBreakIteratorBaseName, loc, OpenType.LocaleRoot);
+
+            ICUResourceBundle breaks = rb.FindWithFallback("exceptions/SentenceBreak");
+
+            if (breaks != null)
             {
-                ICUResourceBundle rb = ICUResourceBundle.GetBundleInstance(
-                        ICUData.IcuBreakIteratorBaseName, loc, OpenType.LocaleRoot);
-
-                ICUResourceBundle breaks = rb.FindWithFallback("exceptions/SentenceBreak");
-
-                if (breaks != null)
+                for (int index = 0, size = breaks.Length; index < size; ++index)
                 {
-                    for (int index = 0, size = breaks.Length; index < size; ++index)
-                    {
-                        ICUResourceBundle b = (ICUResourceBundle)breaks.Get(index);
-                        string br = b.GetString();
-                        filterSet.Add(br.ToCharSequence());
-                    }
+                    ICUResourceBundle b = (ICUResourceBundle)breaks.Get(index);
+                    string br = b.GetString();
+                    filterSet.Add(br.ToCharSequence());
                 }
             }
+        }
 
-            /// <summary>
-            /// Create <see cref="SimpleFilteredSentenceBreakIterator.Builder"/> with no exception.
-            /// </summary>
-            public Builder()
+        /// <summary>
+        /// Create <see cref="SimpleFilteredSentenceBreakIteratorBuilder"/> with no exception.
+        /// </summary>
+        public SimpleFilteredSentenceBreakIteratorBuilder()
 #pragma warning disable 612, 618
             : base()
 #pragma warning restore 612, 618
+        {
+        }
+
+        internal override bool SuppressBreakAfter(ICharSequence str) // ICU4N TODO: API should be public
+        {
+            return filterSet.Add(str);
+        }
+
+        internal override bool UnsuppressBreakAfter(ICharSequence str) // ICU4N TODO: API should be public
+        {
+            return filterSet.Remove(str);
+        }
+
+        public override BreakIterator WrapIteratorWithFilter(BreakIterator adoptBreakIterator)
+        {
+            if (filterSet.Count == 0)
             {
+                // Short circuit - nothing to except.
+                return adoptBreakIterator;
             }
 
-            internal override bool SuppressBreakAfter(ICharSequence str) // ICU4N TODO: API should be public
+            CharsTrieBuilder builder = new CharsTrieBuilder();
+            CharsTrieBuilder builder2 = new CharsTrieBuilder();
+
+            int revCount = 0;
+            int fwdCount = 0;
+
+            int subCount = filterSet.Count;
+            ICharSequence[] ustrs = new ICharSequence[subCount];
+            int[] partials = new int[subCount];
+
+            CharsTrie backwardsTrie = null; // i.e. ".srM" for Mrs.
+            CharsTrie forwardsPartialTrie = null; // Has ".a" for "a.M."
+
+            int i = 0;
+            foreach (ICharSequence s in filterSet)
             {
-                return filterSet.Add(str);
+                ustrs[i] = s; // copy by value?
+                partials[i] = 0; // default: no partial
+                i++;
             }
 
-            internal override bool UnsuppressBreakAfter(ICharSequence str) // ICU4N TODO: API should be public
+            for (i = 0; i < subCount; i++)
             {
-                return filterSet.Remove(str);
-            }
-
-            public override BreakIterator WrapIteratorWithFilter(BreakIterator adoptBreakIterator)
-            {
-                if (filterSet.Count == 0)
+                string thisStr = ustrs[i].ToString(); // TODO: don't cast to String?
+                int nn = thisStr.IndexOf('.'); // TODO: non-'.' abbreviations
+                if (nn > -1 && (nn + 1) != thisStr.Length)
                 {
-                    // Short circuit - nothing to except.
-                    return adoptBreakIterator;
-                }
-
-                CharsTrieBuilder builder = new CharsTrieBuilder();
-                CharsTrieBuilder builder2 = new CharsTrieBuilder();
-
-                int revCount = 0;
-                int fwdCount = 0;
-
-                int subCount = filterSet.Count;
-                ICharSequence[] ustrs = new ICharSequence[subCount];
-                int[] partials = new int[subCount];
-
-                CharsTrie backwardsTrie = null; // i.e. ".srM" for Mrs.
-                CharsTrie forwardsPartialTrie = null; // Has ".a" for "a.M."
-
-                int i = 0;
-                foreach (ICharSequence s in filterSet)
-                {
-                    ustrs[i] = s; // copy by value?
-                    partials[i] = 0; // default: no partial
-                    i++;
-                }
-
-                for (i = 0; i < subCount; i++)
-                {
-                    string thisStr = ustrs[i].ToString(); // TODO: don't cast to String?
-                    int nn = thisStr.IndexOf('.'); // TODO: non-'.' abbreviations
-                    if (nn > -1 && (nn + 1) != thisStr.Length)
+                    // is partial.
+                    // is it unique?
+                    int sameAs = -1;
+                    for (int j = 0; j < subCount; j++)
                     {
-                        // is partial.
-                        // is it unique?
-                        int sameAs = -1;
-                        for (int j = 0; j < subCount; j++)
+                        if (j == i)
+                            continue;
+                        if (thisStr.RegionMatches(0, ustrs[j].ToString() /* TODO */, 0, nn + 1))
                         {
-                            if (j == i)
-                                continue;
-                            if (thisStr.RegionMatches(0, ustrs[j].ToString() /* TODO */, 0, nn + 1))
+                            if (partials[j] == 0)
+                            { // hasn't been processed yet
+                                partials[j] = SuppressInReverse | AddToForward;
+                            }
+                            else if ((partials[j] & SuppressInReverse) != 0)
                             {
-                                if (partials[j] == 0)
-                                { // hasn't been processed yet
-                                    partials[j] = SuppressInReverse | AddToForward;
-                                }
-                                else if ((partials[j] & SuppressInReverse) != 0)
-                                {
-                                    sameAs = j; // the other entry is already in the reverse table.
-                                }
+                                sameAs = j; // the other entry is already in the reverse table.
                             }
                         }
-
-                        if ((sameAs == -1) && (partials[i] == 0))
-                        {
-                            StringBuilder prefix = new StringBuilder(thisStr.Substring(0, (nn + 1) - 0)); // ICU4N: Checked 2nd parameter
-                                                                                                          // first one - add the prefix to the reverse table.
-                            prefix.Reverse();
-                            builder.Add(prefix, Partial);
-                            revCount++;
-                            partials[i] = SuppressInReverse | AddToForward;
-                        }
                     }
-                }
 
-                for (i = 0; i < subCount; i++)
-                {
-                    string thisStr = ustrs[i].ToString(); // TODO
-                    if (partials[i] == 0)
+                    if ((sameAs == -1) && (partials[i] == 0))
                     {
-                        StringBuilder reversed = new StringBuilder(thisStr).Reverse();
-                        builder.Add(reversed, Match);
+                        StringBuilder prefix = new StringBuilder(thisStr.Substring(0, (nn + 1) - 0)); // ICU4N: Checked 2nd parameter
+                                                                                                      // first one - add the prefix to the reverse table.
+                        prefix.Reverse();
+                        builder.Add(prefix, Partial);
                         revCount++;
-                    }
-                    else
-                    {
-                        // an optimization would be to only add the portion after the '.'
-                        // for example, for "Ph.D." we store ".hP" in the reverse table. We could just store "D." in the
-                        // forward,
-                        // instead of "Ph.D." since we already know the "Ph." part is a match.
-                        // would need the trie to be able to hold 0-length strings, though.
-                        builder2.Add(thisStr, Match); // forward
-                        fwdCount++;
+                        partials[i] = SuppressInReverse | AddToForward;
                     }
                 }
-
-                if (revCount > 0)
-                {
-                    backwardsTrie = builder.Build(StringTrieBuilder.Option.Fast);
-                }
-
-                if (fwdCount > 0)
-                {
-                    forwardsPartialTrie = builder2.Build(StringTrieBuilder.Option.Fast);
-                }
-                return new SimpleFilteredSentenceBreakIterator(adoptBreakIterator, forwardsPartialTrie, backwardsTrie);
             }
+
+            for (i = 0; i < subCount; i++)
+            {
+                string thisStr = ustrs[i].ToString(); // TODO
+                if (partials[i] == 0)
+                {
+                    StringBuilder reversed = new StringBuilder(thisStr).Reverse();
+                    builder.Add(reversed, Match);
+                    revCount++;
+                }
+                else
+                {
+                    // an optimization would be to only add the portion after the '.'
+                    // for example, for "Ph.D." we store ".hP" in the reverse table. We could just store "D." in the
+                    // forward,
+                    // instead of "Ph.D." since we already know the "Ph." part is a match.
+                    // would need the trie to be able to hold 0-length strings, though.
+                    builder2.Add(thisStr, Match); // forward
+                    fwdCount++;
+                }
+            }
+
+            if (revCount > 0)
+            {
+                backwardsTrie = builder.Build(StringTrieBuilder.Option.Fast);
+            }
+
+            if (fwdCount > 0)
+            {
+                forwardsPartialTrie = builder2.Build(StringTrieBuilder.Option.Fast);
+            }
+            return new SimpleFilteredSentenceBreakIterator(adoptBreakIterator, forwardsPartialTrie, backwardsTrie);
         }
     }
 }
