@@ -47,7 +47,7 @@ namespace ICU4N.Impl
             // read the trie
             trie = Trie2_16.CreateFromSerialized(bytes);
             int expectedTrieLength = indexes[IX_TRIE_SIZE];
-            int trieLength = trie.GetSerializedLength();
+            int trieLength = trie.SerializedLength;
             if (trieLength > expectedTrieLength)
             {
                 throw new IOException(DATA_FILE_NAME + ": not enough bytes for the trie");

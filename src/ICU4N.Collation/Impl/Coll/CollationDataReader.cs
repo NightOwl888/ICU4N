@@ -222,7 +222,7 @@ namespace ICU4N.Impl.Coll
                 data.Base = baseData;
                 data.numericPrimary = inIndexes[IX_OPTIONS] & 0xff000000L;
                 data.trie = tailoring.Trie = Trie2_32.CreateFromSerialized(inBytes);
-                int trieLength = data.trie.GetSerializedLength();
+                int trieLength = data.trie.SerializedLength;
                 if (trieLength > length)
                 {
                     throw new ICUException("Not enough bytes for the mappings trie");  // No mappings.

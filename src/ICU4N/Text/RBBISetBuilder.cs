@@ -323,7 +323,7 @@ namespace ICU4N.Text
                 fFrozenTrie = fTrie.ToTrie2_16();
                 fTrie = null;
             }
-            return fFrozenTrie.GetSerializedLength();
+            return fFrozenTrie.SerializedLength;
         }
 
 

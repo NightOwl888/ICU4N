@@ -158,10 +158,7 @@ namespace ICU4N.Impl
         /// Gets the number of bytes of the serialized trie.
         /// </summary>
         /// <returns>The number of bytes of the serialized trie.</returns>
-        public int GetSerializedLength() // ICU4N TODO: API make property
-        {
-            return 16 + header.indexLength * 2 + dataLength * 4;
-        }
+        public int SerializedLength => 16 + header.indexLength * 2 + dataLength * 4;
 
         /// <summary>
         /// Given a starting code point, find the last in a range of code points,

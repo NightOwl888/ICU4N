@@ -414,7 +414,7 @@ namespace ICU4N.Impl
                 int offset = inIndexes[IX_NORM_TRIE_OFFSET];
                 int nextOffset = inIndexes[IX_EXTRA_DATA_OFFSET];
                 normTrie = Trie2_16.CreateFromSerialized(bytes);
-                int trieLength = normTrie.GetSerializedLength();
+                int trieLength = normTrie.SerializedLength;
                 if (trieLength > (nextOffset - offset))
                 {
                     throw new ICUUncheckedIOException("Normalizer2 data: not enough bytes for normTrie");

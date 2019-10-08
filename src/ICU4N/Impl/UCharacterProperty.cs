@@ -1456,7 +1456,7 @@ namespace ICU4N.Impl
             // read the main properties trie
             m_trie_ = Trie2_16.CreateFromSerialized(bytes);
             int expectedTrieLength = (propertyOffset - 16) * 4;
-            int trieLength = m_trie_.GetSerializedLength();
+            int trieLength = m_trie_.SerializedLength;
             if (trieLength > expectedTrieLength)
             {
                 throw new IOException("uprops.icu: not enough bytes for main trie");
@@ -1472,7 +1472,7 @@ namespace ICU4N.Impl
                 // reads the additional property block
                 m_additionalTrie_ = Trie2_16.CreateFromSerialized(bytes);
                 expectedTrieLength = (additionalVectorsOffset - additionalOffset) * 4;
-                trieLength = m_additionalTrie_.GetSerializedLength();
+                trieLength = m_additionalTrie_.SerializedLength;
                 if (trieLength > expectedTrieLength)
                 {
                     throw new IOException("uprops.icu: not enough bytes for additional-properties trie");
