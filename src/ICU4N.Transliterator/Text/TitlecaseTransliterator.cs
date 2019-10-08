@@ -14,7 +14,7 @@ namespace ICU4N.Text
     /// <author>Alan Liu</author>
     internal class TitlecaseTransliterator : Transliterator
     {
-        internal static readonly string _ID = "Any-Title";
+        internal const string _ID = "Any-Title";
         // TODO: Add variants for tr/az, lt, default = default locale: ICU ticket #12720
 
         /// <summary>

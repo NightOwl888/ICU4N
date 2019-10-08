@@ -287,7 +287,7 @@ namespace ICU4N.Text
             }
             for (int i = 0; i < trans.Length; ++i)
             {
-                String rule;
+                string rule;
 
                 // Anonymous RuleBasedTransliterators (inline rules and
                 // ::BEGIN/::END blocks) are given IDs that begin with

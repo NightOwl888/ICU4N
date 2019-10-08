@@ -32,7 +32,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Special character marking the end of the spec[] array.
         /// </summary>
-        private static readonly char END = (char)0xFFFF;
+        private const char END = (char)0xFFFF;
 
         /// <summary>
         /// Registers standard variants with the system.  Called by

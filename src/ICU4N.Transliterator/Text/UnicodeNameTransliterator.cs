@@ -10,11 +10,11 @@ namespace ICU4N.Text
     /// <author>Alan Liu</author>
     internal class UnicodeNameTransliterator : Transliterator
     {
-        internal static readonly string _ID = "Any-Name";
+        internal const string _ID = "Any-Name";
 
-        internal static readonly string OPEN_DELIM = "\\N{";
-        internal static readonly char CLOSE_DELIM = '}';
-        internal static readonly int OPEN_DELIM_LEN = 3;
+        internal const string OPEN_DELIM = "\\N{";
+        internal const char CLOSE_DELIM = '}';
+        internal const int OPEN_DELIM_LEN = 3;
 
         /// <summary>
         /// System registration hook.

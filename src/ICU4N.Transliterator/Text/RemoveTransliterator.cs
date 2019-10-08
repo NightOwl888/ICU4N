@@ -9,7 +9,7 @@
         /// <summary>
         /// ID for this transliterator.
         /// </summary>
-        private static readonly string _ID = "Any-Remove";
+        private const string _ID = "Any-Remove";
 
         /// <summary>
         /// System registration hook.

@@ -8,8 +8,8 @@
         /// <summary>
         /// Package accessible IDs for this transliterator.
         /// </summary>
-        internal static readonly string SHORT_ID = "Null";
-        internal static readonly string _ID = "Any-Null";
+        internal const string SHORT_ID = "Null";
+        internal const string _ID = "Any-Null";
 
         /// <summary>
         /// Constructs a transliterator.

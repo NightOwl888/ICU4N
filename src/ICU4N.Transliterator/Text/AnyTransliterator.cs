@@ -34,11 +34,11 @@ namespace ICU4N.Text
         //------------------------------------------------------------
         // Constants
 
-        internal static readonly char TARGET_SEP = '-';
-        new internal static readonly char VARIANT_SEP = '/';
-        internal static readonly string ANY = "Any";
-        internal static readonly string NULL_ID = "Null";
-        internal static readonly string LATIN_PIVOT = "-Latin;Latin-";
+        internal const char TARGET_SEP = '-';
+        new internal const char VARIANT_SEP = '/';
+        internal const string ANY = "Any";
+        internal const string NULL_ID = "Null";
+        internal const string LATIN_PIVOT = "-Latin;Latin-";
 
         /// <summary>
         /// Cache mapping Script code values to Transliterator*.

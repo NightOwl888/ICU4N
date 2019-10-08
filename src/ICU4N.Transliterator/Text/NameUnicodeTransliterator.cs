@@ -13,12 +13,12 @@ namespace ICU4N.Text
     /// <author>Alan Liu</author>
     internal class NameUnicodeTransliterator : Transliterator
     {
-        internal static readonly string _ID = "Name-Any";
+        internal const string _ID = "Name-Any";
 
-        internal static readonly string OPEN_PAT = "\\N~{~";
-        internal static readonly char OPEN_DELIM = '\\'; // first char of OPEN_PAT
-        internal static readonly char CLOSE_DELIM = '}';
-        internal static readonly char SPACE = ' ';
+        internal const string OPEN_PAT = "\\N~{~";
+        internal const char OPEN_DELIM = '\\'; // first char of OPEN_PAT
+        internal const char CLOSE_DELIM = '}';
+        internal const char SPACE = ' ';
 
 
         /// <summary>

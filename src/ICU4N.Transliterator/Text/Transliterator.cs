@@ -2029,9 +2029,9 @@ namespace ICU4N.Text
         {
             return registry.GetAvailableVariants(source, target);
         }
-        private static readonly string ROOT = "root",
+        private const string ROOT = "root",
                                         RB_RULE_BASED_IDS = "RuleBasedTransliteratorIDs";
-        static Transliterator()
+        static Transliterator() // ICU4N TODO: Avoid static constructor
         {
             registry = new TransliteratorRegistry();
 

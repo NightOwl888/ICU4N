@@ -45,9 +45,9 @@ namespace ICU4N.Text
 
         private const string ANY = "Any";
 
-        private static readonly TransliterationDirection Forward = TransliterationDirection.Forward;
+        private const TransliterationDirection Forward = TransliterationDirection.Forward;
 
-        private static readonly TransliterationDirection Reverse = TransliterationDirection.Reverse;
+        private const TransliterationDirection Reverse = TransliterationDirection.Reverse;
 
         private static readonly IDictionary<CaseInsensitiveString, string> SPECIAL_INVERSES =
             new ConcurrentDictionary<CaseInsensitiveString, string>();

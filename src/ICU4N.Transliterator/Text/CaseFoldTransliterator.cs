@@ -12,7 +12,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Package accessible ID.
         /// </summary>
-        internal static readonly string _ID = "Any-CaseFold";
+        internal const string _ID = "Any-CaseFold";
 
         // TODO: Add variants for tr, az, lt, default = default locale
 

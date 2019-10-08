@@ -14,7 +14,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Package accessible ID.
         /// </summary>
-        internal static readonly string _ID = "Any-Upper";
+        internal const string _ID = "Any-Upper";
         // TODO: Add variants for tr/az, el, lt, default = default locale: ICU ticket #12720
 
         /// <summary>
