@@ -380,7 +380,7 @@ namespace ICU4N.Util
          * start of the keyword list is indicated by '@', and consists of two
          * or more keyword/value pairs separated by semicolons(';').
          *
-         * <p>This constructor does not canonicalize the localeID.  So, for
+         * <para/>This constructor does not canonicalize the localeID.  So, for
          * example, "zh__pinyin" remains unchanged instead of converting
          * to "zh@collation=pinyin".  By default ICU only recognizes the
          * latter as specifying pinyin collation.  Use {@link #createCanonical}
@@ -412,7 +412,7 @@ namespace ICU4N.Util
          * a_b_c, which is then handled like the localeID passed to <code>ULocale(string
          * localeID)</code>.
          *
-         * <p>Java locale strings consisting of language, country, and
+         * <para/>Java locale strings consisting of language, country, and
          * variant will be handled by this form, since the country code
          * (being shorter than four letters long) will not be interpreted
          * as a script code.  If a script code is present, the final
@@ -551,15 +551,15 @@ namespace ICU4N.Util
 
         /**
          * Returns the current default ULocale.
-         * <p>
+         * <para/>
          * The default ULocale is synchronized to the default Java Locale. This method checks
          * the current default Java Locale and returns an equivalent ULocale.
-         * <p>
+         * <para/>
          * <b>Note:</b> Before Java 7, the {@link java.util.Locale} was not able to represent a
          * locale's script. Therefore, the script field in the default ULocale is always empty unless
          * a ULocale with non-empty script is explicitly set by {@link #setDefault(ULocale)}
          * on Java 6 or older systems.
-         * <p>
+         * <para/>
          * <b>Note for ICU 49 or later:</b> Some JRE implementations allow users to override the default
          * {@link java.util.Locale} using system properties - <code>user.language</code>,
          * <code>user.country</code> and <code>user.variant</code>. In addition to these system
@@ -619,7 +619,7 @@ namespace ICU4N.Util
          * If the caller does not have write permission to the
          * user.language property, a security exception will be thrown,
          * and the default ULocale will remain unchanged.
-         * <p>
+         * <para/>
          * By setting the default ULocale with this method, all of the default categoy locales
          * are also set to the specified default ULocale.
          * @param newLocale the new default locale
@@ -783,7 +783,7 @@ namespace ICU4N.Util
 
         /**
          * Compares two ULocale for ordering.
-         * <p><b>Note:</b> The order might change in future.
+         * <para/><b>Note:</b> The order might change in future.
          *
          * @param other the ULocale to be compared.
          * @return a negative integer, zero, or a positive integer as this ULocale is less than, equal to, or greater
@@ -1345,7 +1345,7 @@ namespace ICU4N.Util
          * locale id.  Otherwise, this adds/replaces the value for this keyword in the locale id.
          * The keyword and value must not be empty.
          *
-         * <p>Related: {@link #getBaseName()} returns the locale ID string with all keywords removed.
+         * <para/>Related: {@link #getBaseName()} returns the locale ID string with all keywords removed.
          *
          * @param keyword the keyword to add/remove, or null to remove all keywords.
          * @param value the value to add/set, or null to remove this particular keyword.
@@ -1364,7 +1364,7 @@ namespace ICU4N.Util
          * locale id.  Otherwise, this adds/replaces the value for this keyword in the locale id.
          * The keyword and value must not be empty.
          *
-         * <p>Related: {@link #getBaseName(string)} returns the locale ID string with all keywords removed.
+         * <para/>Related: {@link #getBaseName(string)} returns the locale ID string with all keywords removed.
          *
          * @param localeID the locale id to modify
          * @param keyword the keyword to add/remove, or null to remove all keywords.
@@ -1463,10 +1463,10 @@ namespace ICU4N.Util
          * see {@link #addLikelySubtags(ULocale)}.
          * If no likely script is known, then false is returned.
          *
-         * <p>A script is right-to-left according to the CLDR script metadata
+         * <para/>A script is right-to-left according to the CLDR script metadata
          * which corresponds to whether the script's letters have Bidi_Class=R or AL.
          *
-         * <p>Returns true for "ar" and "en-Hebr", false for "zh" and "fa-Cyrl".
+         * <para/>Returns true for "ar" and "en-Hebr", false for "zh" and "fa-Cyrl".
          *
          * @return true if the locale's script is written right-to-left
          * @stable ICU 54
@@ -2115,7 +2115,7 @@ namespace ICU4N.Util
          * the object was not constructed from locale data, then the
          * actual locale is <i>null</i>.
          *
-         * <p>Note: The valid locale will be returned correctly in ICU
+         * <para/>Note: The valid locale will be returned correctly in ICU
          * 3.0 or later.  In ICU 2.8, it is not returned correctly.
          * @draft ICU 2.8 (retain)
          * @provisional This API might change or be removed in a future release.
@@ -2858,7 +2858,7 @@ namespace ICU4N.Util
                 originalTrailing = loc.localeID.Substring(trailingIndex);
             }
 
-            /**
+            /*
              * First, we need to first get the maximization
              * by adding any likely subtags.
              **/
@@ -2869,7 +2869,7 @@ namespace ICU4N.Util
                             originalRegion,
                             null);
 
-            /**
+            /*
              * If maximization fails, there's nothing
              * we can do.
              **/
@@ -2879,7 +2879,7 @@ namespace ICU4N.Util
             }
             else
             {
-                /**
+                /*
                  * Start first with just the language.
                  **/
                 string tag =
@@ -2902,7 +2902,7 @@ namespace ICU4N.Util
                 }
             }
 
-            /**
+            /*
              * Next, try the language and region.
              **/
             if (fieldToFavor == Minimize.FAVOR_REGION)
@@ -2998,18 +2998,18 @@ namespace ICU4N.Util
             return loc;
         }
 
-        ///**
-        // * A trivial utility function that checks for a null
-        // * reference or checks the length of the supplied string.
-        // *
-        // *   @param string The string to check
-        // *
-        // *   @return true if the string is empty, or if the reference is null.
-        // */
-        //private static bool IsEmptyString(string str)
-        //{
-        //    return str == null || str.Length == 0;
-        //}
+        /////**
+        //// * A trivial utility function that checks for a null
+        //// * reference or checks the length of the supplied string.
+        //// *
+        //// *   @param string The string to check
+        //// *
+        //// *   @return true if the string is empty, or if the reference is null.
+        //// */
+        ////private static bool IsEmptyString(string str)
+        ////{
+        ////    return str == null || str.Length == 0;
+        ////}
 
         /**
          * Append a tag to a StringBuilder, adding the separator if necessary.The tag must
@@ -3301,7 +3301,7 @@ namespace ICU4N.Util
                 string variants)
         {
 
-            /**
+            /*
              * Try the language with the script and region first.
              */
             if (!string.IsNullOrEmpty(script) && !string.IsNullOrEmpty(region))
@@ -3344,7 +3344,7 @@ namespace ICU4N.Util
                 }
             }
 
-            /**
+            /*
              * Try the language with just the script.
              **/
             if (!string.IsNullOrEmpty(script))
@@ -3372,7 +3372,7 @@ namespace ICU4N.Util
                 }
             }
 
-            /**
+            /*
              * Try the language with just the region.
              **/
             if (!string.IsNullOrEmpty(region))
@@ -3401,7 +3401,7 @@ namespace ICU4N.Util
                 }
             }
 
-            /**
+            /*
              * Finally, try just the language.
              **/
             {
@@ -3549,21 +3549,21 @@ namespace ICU4N.Util
          * Returns a well-formed IETF BCP 47 language tag representing
          * this locale.
          *
-         * <p>If this <code>ULocale</code> has a language, script, country, or
+         * <para/>If this <code>ULocale</code> has a language, script, country, or
          * variant that does not satisfy the IETF BCP 47 language tag
          * syntax requirements, this method handles these fields as
          * described below:
          *
-         * <p><b>Language:</b> If language is empty, or not well-formed
+         * <para/><b>Language:</b> If language is empty, or not well-formed
          * (for example "a" or "e2"), it will be emitted as "und" (Undetermined).
          *
-         * <p><b>Script:</b> If script is not well-formed (for example "12"
+         * <para/><b>Script:</b> If script is not well-formed (for example "12"
          * or "Latin"), it will be omitted.
          *
-         * <p><b>Country:</b> If country is not well-formed (for example "12"
+         * <para/><b>Country:</b> If country is not well-formed (for example "12"
          * or "USA"), it will be omitted.
          *
-         * <p><b>Variant:</b> If variant <b>is</b> well-formed, each sub-segment
+         * <para/><b>Variant:</b> If variant <b>is</b> well-formed, each sub-segment
          * (delimited by '-' or '_') is emitted as a subtag.  Otherwise:
          * <ul>
          *
@@ -3573,7 +3573,7 @@ namespace ICU4N.Util
          * the private use subtag.  The first appended subtag will be
          * "lvariant", followed by the sub-segments in order, separated by
          * hyphen. For example, "x-lvariant-WIN",
-         * "Oracle-x-lvariant-JDK-Standard-Edition".
+         * "Oracle-x-lvariant-JDK-Standard-Edition".</li>
          *
          * <li>if any sub-segment does not match
          * <code>[0-9a-zA-Z]{1,8}</code>, the variant will be truncated
@@ -3584,7 +3584,7 @@ namespace ICU4N.Util
          * "Solaris_isjustthecoolestthing" is emitted as
          * "x-lvariant-Solaris", not as "solaris".</li></ul>
          *
-         * <p><b>Note:</b> Although the language tag created by this
+         * <para/><b>Note:</b> Although the language tag created by this
          * method is well-formed (satisfies the syntax requirements
          * defined by the IETF BCP 47 specification), it is not
          * necessarily a valid BCP 47 language tag.  For example,
@@ -3681,15 +3681,15 @@ namespace ICU4N.Util
         /**
          * Returns a locale for the specified IETF BCP 47 language tag string.
          *
-         * <p>If the specified language tag contains any ill-formed subtags,
+         * <para/>If the specified language tag contains any ill-formed subtags,
          * the first such subtag and all following subtags are ignored.  Compare
          * to {@link ULocale.Builder#setLanguageTag} which throws an exception
          * in this case.
          *
-         * <p>The following <b>conversions</b> are performed:
+         * <para/>The following <b>conversions</b> are performed:
          * <ul>
          *
-         * <li>The language code "und" is mapped to language "".
+         * <li>The language code "und" is mapped to language "".</li>
          *
          * <li>The portion of a private use subtag prefixed by "lvariant",
          * if any, is removed and appended to the variant field in the
@@ -3705,7 +3705,7 @@ namespace ICU4N.Util
          *     loc = Locale.forLanguageTag("de-icu4j-x-URP-lvariant-Abc-Def");
          *     loc.getVariant(); // returns "ICU4J_ABC_DEF"
          *     loc.getExtension('x'); // returns "urp"
-         * </pre>
+         * </pre></li>
          *
          * <li>When the languageTag argument contains an extlang subtag,
          * the first such subtag is used as the language, and the primary
@@ -3714,68 +3714,68 @@ namespace ICU4N.Util
          * <pre>
          *     ULocale.forLanguageTag("ar-aao").getLanguage(); // returns "aao"
          *     ULocale.forLanguageTag("en-abc-def-us").toString(); // returns "abc_US"
-         * </pre>
+         * </pre></li>
          *
          * <li>Case is normalized. Language is normalized to lower case,
          * script to title case, country to upper case, variant to upper case,
-         * and extensions to lower case.
+         * and extensions to lower case.</li>
          *
          * </ul>
          *
-         * <p>This implements the 'Language-Tag' production of BCP47, and
+         * <para/>This implements the 'Language-Tag' production of BCP47, and
          * so supports grandfathered (regular and irregular) as well as
          * private use language tags.  Stand alone private use tags are
          * represented as empty language and extension 'x-whatever',
          * and grandfathered tags are converted to their canonical replacements
          * where they exist.
          *
-         * <p>Grandfathered tags with canonical replacements are as follows:
+         * <para/>Grandfathered tags with canonical replacements are as follows:
          *
          * <table>
          * <tbody align="center">
-         * <tr><th>grandfathered tag</th><th>&nbsp;</th><th>modern replacement</th></tr>
-         * <tr><td>art-lojban</td><td>&nbsp;</td><td>jbo</td></tr>
-         * <tr><td>i-ami</td><td>&nbsp;</td><td>ami</td></tr>
-         * <tr><td>i-bnn</td><td>&nbsp;</td><td>bnn</td></tr>
-         * <tr><td>i-hak</td><td>&nbsp;</td><td>hak</td></tr>
-         * <tr><td>i-klingon</td><td>&nbsp;</td><td>tlh</td></tr>
-         * <tr><td>i-lux</td><td>&nbsp;</td><td>lb</td></tr>
-         * <tr><td>i-navajo</td><td>&nbsp;</td><td>nv</td></tr>
-         * <tr><td>i-pwn</td><td>&nbsp;</td><td>pwn</td></tr>
-         * <tr><td>i-tao</td><td>&nbsp;</td><td>tao</td></tr>
-         * <tr><td>i-tay</td><td>&nbsp;</td><td>tay</td></tr>
-         * <tr><td>i-tsu</td><td>&nbsp;</td><td>tsu</td></tr>
-         * <tr><td>no-bok</td><td>&nbsp;</td><td>nb</td></tr>
-         * <tr><td>no-nyn</td><td>&nbsp;</td><td>nn</td></tr>
-         * <tr><td>sgn-BE-FR</td><td>&nbsp;</td><td>sfb</td></tr>
-         * <tr><td>sgn-BE-NL</td><td>&nbsp;</td><td>vgt</td></tr>
-         * <tr><td>sgn-CH-DE</td><td>&nbsp;</td><td>sgg</td></tr>
-         * <tr><td>zh-guoyu</td><td>&nbsp;</td><td>cmn</td></tr>
-         * <tr><td>zh-hakka</td><td>&nbsp;</td><td>hak</td></tr>
-         * <tr><td>zh-min-nan</td><td>&nbsp;</td><td>nan</td></tr>
-         * <tr><td>zh-xiang</td><td>&nbsp;</td><td>hsn</td></tr>
+         * <tr><th>grandfathered tag</th><th>&#160;</th><th>modern replacement</th></tr>
+         * <tr><td>art-lojban</td><td>&#160;</td><td>jbo</td></tr>
+         * <tr><td>i-ami</td><td>&#160;</td><td>ami</td></tr>
+         * <tr><td>i-bnn</td><td>&#160;</td><td>bnn</td></tr>
+         * <tr><td>i-hak</td><td>&#160;</td><td>hak</td></tr>
+         * <tr><td>i-klingon</td><td>&#160;</td><td>tlh</td></tr>
+         * <tr><td>i-lux</td><td>&#160;</td><td>lb</td></tr>
+         * <tr><td>i-navajo</td><td>&#160;</td><td>nv</td></tr>
+         * <tr><td>i-pwn</td><td>&#160;</td><td>pwn</td></tr>
+         * <tr><td>i-tao</td><td>&#160;</td><td>tao</td></tr>
+         * <tr><td>i-tay</td><td>&#160;</td><td>tay</td></tr>
+         * <tr><td>i-tsu</td><td>&#160;</td><td>tsu</td></tr>
+         * <tr><td>no-bok</td><td>&#160;</td><td>nb</td></tr>
+         * <tr><td>no-nyn</td><td>&#160;</td><td>nn</td></tr>
+         * <tr><td>sgn-BE-FR</td><td>&#160;</td><td>sfb</td></tr>
+         * <tr><td>sgn-BE-NL</td><td>&#160;</td><td>vgt</td></tr>
+         * <tr><td>sgn-CH-DE</td><td>&#160;</td><td>sgg</td></tr>
+         * <tr><td>zh-guoyu</td><td>&#160;</td><td>cmn</td></tr>
+         * <tr><td>zh-hakka</td><td>&#160;</td><td>hak</td></tr>
+         * <tr><td>zh-min-nan</td><td>&#160;</td><td>nan</td></tr>
+         * <tr><td>zh-xiang</td><td>&#160;</td><td>hsn</td></tr>
          * </tbody>
          * </table>
          *
-         * <p>Grandfathered tags with no modern replacement will be
+         * <para/>Grandfathered tags with no modern replacement will be
          * converted as follows:
          *
          * <table>
          * <tbody align="center">
-         * <tr><th>grandfathered tag</th><th>&nbsp;</th><th>converts to</th></tr>
-         * <tr><td>cel-gaulish</td><td>&nbsp;</td><td>xtg-x-cel-gaulish</td></tr>
-         * <tr><td>en-GB-oed</td><td>&nbsp;</td><td>en-GB-x-oed</td></tr>
-         * <tr><td>i-default</td><td>&nbsp;</td><td>en-x-i-default</td></tr>
-         * <tr><td>i-enochian</td><td>&nbsp;</td><td>und-x-i-enochian</td></tr>
-         * <tr><td>i-mingo</td><td>&nbsp;</td><td>see-x-i-mingo</td></tr>
-         * <tr><td>zh-min</td><td>&nbsp;</td><td>nan-x-zh-min</td></tr>
+         * <tr><th>grandfathered tag</th><th>&#160;</th><th>converts to</th></tr>
+         * <tr><td>cel-gaulish</td><td>&#160;</td><td>xtg-x-cel-gaulish</td></tr>
+         * <tr><td>en-GB-oed</td><td>&#160;</td><td>en-GB-x-oed</td></tr>
+         * <tr><td>i-default</td><td>&#160;</td><td>en-x-i-default</td></tr>
+         * <tr><td>i-enochian</td><td>&#160;</td><td>und-x-i-enochian</td></tr>
+         * <tr><td>i-mingo</td><td>&#160;</td><td>see-x-i-mingo</td></tr>
+         * <tr><td>zh-min</td><td>&#160;</td><td>nan-x-zh-min</td></tr>
          * </tbody>
          * </table>
          *
-         * <p>For a list of all grandfathered tags, see the
+         * <para/>For a list of all grandfathered tags, see the
          * IANA Language Subtag Registry (search for "Type: grandfathered").
          *
-         * <p><b>Note</b>: there is no guarantee that <code>toLanguageTag</code>
+         * <para/><b>Note</b>: there is no guarantee that <code>toLanguageTag</code>
          * and <code>forLanguageTag</code> will round-trip.
          *
          * @param languageTag the language tag
@@ -3799,7 +3799,7 @@ namespace ICU4N.Util
          * extension key) to the equivalent BCP 47 Unicode locale extension key.
          * For example, BCP 47 Unicode locale extension key "co" is returned for
          * the input keyword "collation".
-         * <p>
+         * <para/>
          * When the specified keyword is unknown, but satisfies the BCP syntax,
          * then the lower-case version of the input keyword will be returned.
          * For example,
@@ -3831,7 +3831,7 @@ namespace ICU4N.Util
          * extension type for the specified keyword (category). For example, BCP 47
          * Unicode locale extension type "phonebk" is returned for the input
          * keyword value "phonebook", with the keyword "collation" (or "co").
-         * <p>
+         * <para/>
          * When the specified keyword is not recognized, but the specified value
          * satisfies the syntax of the BCP 47 Unicode locale extension type,
          * or when the specified keyword allows 'variable' type and the specified
@@ -3905,7 +3905,7 @@ namespace ICU4N.Util
          * or legacy type or type alias) to the canonical legacy type. For example,
          * the legacy type "phonebook" is returned for the input BCP 47 Unicode
          * locale extension type "phonebk" with the keyword "collation" (or "co").
-         * <p>
+         * <para/>
          * When the specified keyword is not recognized, but the specified value
          * satisfies the syntax of legacy key, or when the specified keyword
          * allows 'variable' type and the specified value satisfies the syntax,
@@ -3958,7 +3958,7 @@ namespace ICU4N.Util
          * well-formed and can be transformed to a well-formed IETF BCP 47 language tag
          * without losing information.
          *
-         * <p><b>Note:</b> The <code>ULocale</code> class does not provide any
+         * <para/><b>Note:</b> The <code>ULocale</code> class does not provide any
          * syntactic restrictions on variant, while BCP 47 requires each variant
          * subtag to be 5 to 8 alphanumerics or a single numeric followed by 3
          * alphanumerics.  The method <code>setVariant</code> throws
@@ -3968,7 +3968,7 @@ namespace ICU4N.Util
          * object created this way might lose the variant information when
          * transformed to a BCP 47 language tag.
          *
-         * <p>The following example shows how to create a <code>Locale</code> object
+         * <para/>The following example shows how to create a <code>Locale</code> object
          * with the <code>Builder</code>.
          * <blockquote>
          * <pre>
@@ -3976,7 +3976,7 @@ namespace ICU4N.Util
          * </pre>
          * </blockquote>
          *
-         * <p>Builders can be reused; <code>clear()</code> resets all
+         * <para/>Builders can be reused; <code>clear()</code> resets all
          * fields to their default values.
          *
          * @see ULocale#toLanguageTag()
@@ -4004,9 +4004,9 @@ namespace ICU4N.Util
              * Resets the <code>Builder</code> to match the provided
              * <code>locale</code>.  Existing state is discarded.
              *
-             * <p>All fields of the locale must be well-formed, see {@link Locale}.
+             * <para/>All fields of the locale must be well-formed, see {@link Locale}.
              *
-             * <p>Locales with any ill-formed fields cause
+             * <para/>Locales with any ill-formed fields cause
              * <code>IllformedLocaleException</code> to be thrown.
              *
              * @param locale the locale
@@ -4068,7 +4068,7 @@ namespace ICU4N.Util
              * the language must be <a href="./Locale.html#def_language">well-formed</a>
              * or an exception is thrown.
              *
-             * <p>The typical language value is a two or three-letter language
+             * <para/>The typical language value is a two or three-letter language
              * code as defined in ISO639.
              *
              * @param language the language
@@ -4095,7 +4095,7 @@ namespace ICU4N.Util
              * the script in this <code>Builder</code> is removed.
              * Otherwise, the script must be well-formed or an exception is thrown.
              *
-             * <p>The typical script value is a four-letter script code as defined by ISO 15924.
+             * <para/>The typical script value is a four-letter script code as defined by ISO 15924.
              *
              * @param script the script
              * @return This builder.
@@ -4121,10 +4121,10 @@ namespace ICU4N.Util
              * in this <code>Builder</code> is removed.  Otherwise,
              * the region must be well-formed or an exception is thrown.
              *
-             * <p>The typical region value is a two-letter ISO 3166 code or a
+             * <para/>The typical region value is a two-letter ISO 3166 code or a
              * three-digit UN M.49 area code.
              *
-             * <p>The country value in the <code>Locale</code> created by the
+             * <para/>The country value in the <code>Locale</code> created by the
              * <code>Builder</code> is always normalized to upper case.
              *
              * @param region the region
@@ -4151,7 +4151,7 @@ namespace ICU4N.Util
              * variant in this <code>Builder</code> is removed.  Otherwise, it
              * must consist of one or more well-formed subtags, or an exception is thrown.
              *
-             * <p><b>Note:</b> This method checks if <code>variant</code>
+             * <para/><b>Note:</b> This method checks if <code>variant</code>
              * satisfies the IETF BCP 47 variant subtag's syntax requirements,
              * and normalizes the value to lowercase letters.  However,
              * the <code>ULocale</code> class does not impose any syntactic
@@ -4182,12 +4182,12 @@ namespace ICU4N.Util
              * empty string, the extension is removed.  Otherwise, the extension
              * must be well-formed or an exception is thrown.
              *
-             * <p><b>Note:</b> The key {@link ULocale#UNICODE_LOCALE_EXTENSION
+             * <para/><b>Note:</b> The key {@link ULocale#UNICODE_LOCALE_EXTENSION
              * UNICODE_LOCALE_EXTENSION} ('u') is used for the Unicode locale extension.
              * Setting a value for this key replaces any existing Unicode locale key/type
              * pairs with those defined in the extension.
              *
-             * <p><b>Note:</b> The key {@link ULocale#PRIVATE_USE_EXTENSION
+             * <para/><b>Note:</b> The key {@link ULocale#PRIVATE_USE_EXTENSION
              * PRIVATE_USE_EXTENSION} ('x') is used for the private use code. To be
              * well-formed, the value for this key needs only to have subtags of one to
              * eight alphanumeric characters, not two to eight as in the general case.
@@ -4220,9 +4220,9 @@ namespace ICU4N.Util
              * non-null and both key and type must be well-formed or an exception
              * is thrown.
              *
-             * <p>Keys and types are converted to lower case.
+             * <para/>Keys and types are converted to lower case.
              *
-             * <p><b>Note</b>:Setting the 'u' extension via {@link #setExtension}
+             * <para/><b>Note</b>:Setting the 'u' extension via {@link #setExtension}
              * replaces all Unicode locale keywords with those defined in the
              * extension.
              *
@@ -4280,7 +4280,7 @@ namespace ICU4N.Util
              * effect.  The attribute must not be null and must be well-formed
              * or an exception is thrown.
              *
-             * <p>Attribute comparision for removal is case-insensitive.
+             * <para/>Attribute comparision for removal is case-insensitive.
              *
              * @param attribute the attribute
              * @return This builder.
@@ -4534,11 +4534,11 @@ namespace ICU4N.Util
              * to Java locale "no_NO_NY".
              */
 
-            /// <summary>
-            /// This table is used for mapping between ICU and special .NET locales.
-            /// When an ICU locale matches &lt;minumum base&gt; with
-            /// &lt;keyword>/&tl;value>, the ICU locale is mapped to &lt;.NET> locale.
-            /// </summary>
+            ///// <summary>
+            ///// This table is used for mapping between ICU and special .NET locales.
+            ///// When an ICU locale matches &lt;minumum base&gt; with
+            ///// &lt;keyword>/&tl;value>, the ICU locale is mapped to &lt;.NET> locale.
+            ///// </summary>
             //private static readonly string[][] NET_MAPDATA = { // ICU4N TODO: Do we need different values for .NET Framework/.NET Standard ?
             //    //  { <Java>,       <ICU base>, <keyword>,  <value>,    <minimum base>
             //    new string[] { "ja-JP",   "ja_JP",    "calendar", "japanese", "ja"},
@@ -4731,9 +4731,9 @@ namespace ICU4N.Util
 
         }
 
-        ///*
-        // * JDK Locale Helper
-        // */
+        /////*
+        //// * JDK Locale Helper
+        //// */
         //private sealed class JDKLocaleHelper
         //{
         //    private static bool hasScriptsAndUnicodeExtensions = false;
