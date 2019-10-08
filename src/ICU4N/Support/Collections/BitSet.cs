@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace ICU4N.Support.Collections
@@ -46,17 +45,16 @@ namespace ICU4N.Support.Collections
 
         private bool isLengthActual; // non-serializable
 
-        /**
-         * Create a new {@code BitSet} with size equal to 64 bits.
-         * 
-         * @see #clear(int)
-         * @see #set(int)
-         * @see #clear()
-         * @see #clear(int, int)
-         * @see #set(int, boolean)
-         * @see #set(int, int)
-         * @see #set(int, int, boolean)
-         */
+        /// <summary>
+        /// Create a new <see cref="BitSet"/> with size equal to 64 bits.
+        /// </summary>
+        /// <seealso cref="Clear(int)"/>
+        /// <seealso cref="Set(int)"/>
+        /// <seealso cref="Clear()"/>
+        /// <seealso cref="Clear(int, int)"/>
+        /// <seealso cref="Set(int, bool)"/>
+        /// <seealso cref="Set(int, int)"/>
+        /// <seealso cref="Set(int, int, bool)"/>
         public BitSet()
         {
             bits = new long[1];
@@ -64,23 +62,20 @@ namespace ICU4N.Support.Collections
             isLengthActual = true;
         }
 
-        /**
-         * Create a new {@code BitSet} with size equal to nbits. If nbits is not a
-         * multiple of 64, then create a {@code BitSet} with size nbits rounded to
-         * the next closest multiple of 64.
-         * 
-         * @param nbits
-         *            the size of the bit set.
-         * @throws NegativeArraySizeException
-         *             if {@code nbits} is negative.
-         * @see #clear(int)
-         * @see #set(int)
-         * @see #clear()
-         * @see #clear(int, int)
-         * @see #set(int, boolean)
-         * @see #set(int, int)
-         * @see #set(int, int, boolean)
-         */
+        /// <summary>
+        /// Create a new <see cref="BitSet"/> with size equal to nbits. If nbits is not a
+        /// multiple of 64, then create a <see cref="BitSet"/> with size nbits rounded to
+        /// the next closest multiple of 64.
+        /// </summary>
+        /// <param name="nbits">The size of the bit set.</param>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="nbits"/> is negative.</exception>
+        /// <seealso cref="Clear(int)"/>
+        /// <seealso cref="Set(int)"/>
+        /// <seealso cref="Clear()"/>
+        /// <seealso cref="Clear(int, int)"/>
+        /// <seealso cref="Set(int, bool)"/>
+        /// <seealso cref="Set(int, int)"/>
+        /// <seealso cref="Set(int, int, bool)"/>
         public BitSet(int nbits)
         {
             if (nbits < 0)
@@ -92,12 +87,13 @@ namespace ICU4N.Support.Collections
             isLengthActual = true;
         }
 
-        /**
-         * Private constructor called from get(int, int) method
-         * 
-         * @param bits
-         *            the size of the bit set
-         */
+        /// <summary>
+        /// Private constructor called from <see cref="Get(int, int)"/> method.
+        /// </summary>
+        /// <param name="bits">The size of the bit set.</param>
+        /// <param name="needClear"></param>
+        /// <param name="actualArrayLength"></param>
+        /// <param name="isLengthActual"></param>
         private BitSet(long[] bits, bool needClear, int actualArrayLength,
                 bool isLengthActual)
         {
@@ -107,11 +103,10 @@ namespace ICU4N.Support.Collections
             this.isLengthActual = isLengthActual;
         }
 
-        /**
-         * Creates a copy of this {@code BitSet}.
-         * 
-         * @return a copy of this {@code BitSet}.
-         */
+        /// <summary>
+        /// Creates a copy of this <see cref="BitSet"/>.
+        /// </summary>
+        /// <returns>A copy of this <see cref="BitSet"/>.</returns>
         public virtual object Clone()
         {
             BitSet clone = (BitSet)base.MemberwiseClone();
@@ -119,17 +114,15 @@ namespace ICU4N.Support.Collections
             return clone;
         }
 
-        /**
-         * Compares the argument to this {@code BitSet} and returns whether they are
-         * equal. The object must be an instance of {@code BitSet} with the same
-         * bits set.
-         * 
-         * @param obj
-         *            the {@code BitSet} object to compare.
-         * @return a {@code boolean} indicating whether or not this {@code BitSet} and
-         *         {@code obj} are equal.
-         * @see #hashCode
-         */
+        /// <summary>
+        /// Compares the argument to this <see cref="BitSet"/> and returns whether they are
+        /// equal. The object must be an instance of <see cref="BitSet"/> with the same
+        /// bits set.
+        /// </summary>
+        /// <param name="obj">The <see cref="BitSet"/> object to compare.</param>
+        /// <returns>A <see cref="bool"/> indicating whether or not this <see cref="BitSet"/> and
+        /// <paramref name="obj"/> are equal.</returns>
+        /// <seealso cref="GetHashCode()"/>
         public override bool Equals(object obj)
         {
             if (this == obj)
@@ -186,13 +179,11 @@ namespace ICU4N.Support.Collections
             return false;
         }
 
-        /**
-         * Increase the size of the internal array to accommodate {@code pos} bits.
-         * The new array max index will be a multiple of 64.
-         * 
-         * @param len
-         *            the index the new array needs to be able to access.
-         */
+        /// <summary>
+        /// Increase the size of the internal array to accommodate <paramref name="len"/> bits.
+        /// The new array max index will be a multiple of 64.
+        /// </summary>
+        /// <param name="len">The index the new array needs to be able to access.</param>
         private void GrowLength(int len)
         {
             long[] tempBits = new long[Math.Max(len, bits.Length * 2)];
@@ -200,15 +191,13 @@ namespace ICU4N.Support.Collections
             bits = tempBits;
         }
 
-        /**
-         * Computes the hash code for this {@code BitSet}. If two {@code BitSet}s are equal
-         * the have to return the same result for {@code hashCode()}.
-         * 
-         * @return the {@code int} representing the hash code for this bit
-         *         set.
-         * @see #equals
-         * @see java.util.Hashtable
-         */
+        /// <summary>
+        /// Computes the hash code for this <see cref="BitSet"/>. If two <see cref="BitSet"/>s are equal
+        /// the have to return the same result for <see cref="GetHashCode()"/>.
+        /// </summary>
+        /// <returns>The <see cref="int"/> representing the hash code for this bit
+        /// set.</returns>
+        /// <seealso cref="Equals(object)"/>
         public override int GetHashCode()
         {
             long x = 1234;
@@ -219,24 +208,21 @@ namespace ICU4N.Support.Collections
             return (int)((x >> 32) ^ x);
         }
 
-        /**
-         * Retrieves the bit at index {@code pos}. Grows the {@code BitSet} if
-         * {@code pos > size}.
-         * 
-         * @param pos
-         *            the index of the bit to be retrieved.
-         * @return {@code true} if the bit at {@code pos} is set,
-         *         {@code false} otherwise.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos} is negative.
-         * @see #clear(int)
-         * @see #set(int)
-         * @see #clear()
-         * @see #clear(int, int)
-         * @see #set(int, boolean)
-         * @see #set(int, int)
-         * @see #set(int, int, boolean)
-         */
+        /// <summary>
+        /// Retrieves the bit at index <paramref name="pos"/>. Grows the <see cref="BitSet"/> if
+        /// <paramref name="pos"/> &gt; size.
+        /// </summary>
+        /// <param name="pos">The index of the bit to be retrieved.</param>
+        /// <returns><c>true</c> if the bit at <paramref name="pos"/> is set,
+        /// <c>false</c> otherwise.</returns>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos"/> is negative.</exception>
+        /// <seealso cref="Clear(int)"/>
+        /// <seealso cref="Set(int)"/>
+        /// <seealso cref="Clear()"/>
+        /// <seealso cref="Clear(int, int)"/>
+        /// <seealso cref="Set(int, bool)"/>
+        /// <seealso cref="Set(int, int)"/>
+        /// <seealso cref="Set(int, int, bool)"/>
         public bool Get(int pos)
         {
             if (pos < 0)
@@ -253,21 +239,17 @@ namespace ICU4N.Support.Collections
             return false;
         }
 
-        /**
-         * Retrieves the bits starting from {@code pos1} to {@code pos2} and returns
-         * back a new bitset made of these bits. Grows the {@code BitSet} if
-         * {@code pos2 > size}.
-         * 
-         * @param pos1
-         *            beginning position.
-         * @param pos2
-         *            ending position.
-         * @return new bitset of the range specified.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos1} or {@code pos2} is negative, or if
-         *             {@code pos2} is smaller than {@code pos1}.
-         * @see #get(int)
-         */
+        /// <summary>
+        /// Retrieves the bits starting from <paramref name="pos1"/> to <paramref name="pos2"/> and returns
+        /// back a new bitset made of these bits. Grows the <see cref="BitSet"/> if
+        /// <paramref name="pos2"/> &gt; size.
+        /// </summary>
+        /// <param name="pos1">Beginning position.</param>
+        /// <param name="pos2">Ending position.</param>
+        /// <returns>New bitset of the range specified.</returns>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos1"/> or <paramref name="pos2"/> is negative, or if
+        /// <paramref name="pos2"/> is smaller than <paramref name="pos1"/>.</exception>
+        /// <seealso cref="Get(int)"/>
         public BitSet Get(int pos1, int pos2)
         {
             if (pos1 < 0 || pos2 < 0 || pos2 < pos1)
@@ -338,18 +320,15 @@ namespace ICU4N.Support.Collections
                     newbits[actualLen - 1] != 0);
         }
 
-        /**
-         * Sets the bit at index {@code pos} to 1. Grows the {@code BitSet} if
-         * {@code pos > size}.
-         * 
-         * @param pos
-         *            the index of the bit to set.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos} is negative.
-         * @see #clear(int)
-         * @see #clear()
-         * @see #clear(int, int)
-         */
+        /// <summary>
+        /// Sets the bit at index <paramref name="pos"/> to 1. Grows the <see cref="BitSet"/> if
+        /// <paramref name="pos"/> &gt; size.
+        /// </summary>
+        /// <param name="pos">The index of the bit to set.</param>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos"/> is negative.</exception>
+        /// <seealso cref="Clear(int)"/>
+        /// <seealso cref="Clear()"/>
+        /// <seealso cref="Clear(int, int)"/>
         public void Set(int pos)
         {
             if (pos < 0)
@@ -371,18 +350,14 @@ namespace ICU4N.Support.Collections
             NeedClear();
         }
 
-        /**
-         * Sets the bit at index {@code pos} to {@code val}. Grows the
-         * {@code BitSet} if {@code pos > size}.
-         * 
-         * @param pos
-         *            the index of the bit to set.
-         * @param val
-         *            value to set the bit.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos} is negative.
-         * @see #set(int)
-         */
+        /// <summary>
+        /// Sets the bit at index <paramref name="pos"/> to <paramref name="val"/>. Grows the
+        /// <see cref="BitSet"/> if <paramref name="pos"/> &gt; size.
+        /// </summary>
+        /// <param name="pos">The index of the bit to set.</param>
+        /// <param name="val">Value to set the bit.</param>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos"/> is negative.</exception>
+        /// <seealso cref="Set(int)"/>
         public void Set(int pos, bool val)
         {
             if (val)
@@ -395,19 +370,15 @@ namespace ICU4N.Support.Collections
             }
         }
 
-        /**
-         * Sets the bits starting from {@code pos1} to {@code pos2}. Grows the
-         * {@code BitSet} if {@code pos2 > size}.
-         * 
-         * @param pos1
-         *            beginning position.
-         * @param pos2
-         *            ending position.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos1} or {@code pos2} is negative, or if
-         *             {@code pos2} is smaller than {@code pos1}.
-         * @see #set(int)
-         */
+        /// <summary>
+        /// Sets the bits starting from <paramref name="pos1"/> to <paramref name="pos2"/>. Grows the
+        /// <see cref="BitSet"/> if <paramref name="pos2"/> &gt; size.
+        /// </summary>
+        /// <param name="pos1">Beginning position.</param>
+        /// <param name="pos2">Ending position.</param>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos1"/> or <paramref name="pos2"/> is negative, or if
+        /// <paramref name="pos2"/> is smaller than <paramref name="pos1"/>.</exception>
+        /// <seealso cref="Set(int)"/>
         public void Set(int pos1, int pos2)
         {
             if (pos1 < 0 || pos2 < 0 || pos2 < pos1)
@@ -456,21 +427,16 @@ namespace ICU4N.Support.Collections
             this.needClear = true;
         }
 
-        /**
-         * Sets the bits starting from {@code pos1} to {@code pos2} to the given
-         * {@code val}. Grows the {@code BitSet} if {@code pos2 > size}.
-         * 
-         * @param pos1
-         *            beginning position.
-         * @param pos2
-         *            ending position.
-         * @param val
-         *            value to set these bits.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos1} or {@code pos2} is negative, or if
-         *             {@code pos2} is smaller than {@code pos1}.
-         * @see #set(int,int)
-         */
+        /// <summary>
+        /// Sets the bits starting from <paramref name="pos1"/> to <paramref name="pos2"/> to the given
+        /// <paramref name="val"/>. Grows the <see cref="BitSet"/> if <paramref name="pos2"/> &gt; size.
+        /// </summary>
+        /// <param name="pos1">Beginning position.</param>
+        /// <param name="pos2">Ending position.</param>
+        /// <param name="val">Value to set these bits.</param>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos1"/> or <paramref name="pos2"/> is negative, or if
+        /// <paramref name="pos2"/> is smaller than <paramref name="pos1"/>.</exception>
+        /// <seealso cref="Set(int, int)"/>
         public void Set(int pos1, int pos2, bool val)
         {
             if (val)
@@ -483,12 +449,11 @@ namespace ICU4N.Support.Collections
             }
         }
 
-        /**
-         * Clears all the bits in this {@code BitSet}.
-         * 
-         * @see #clear(int)
-         * @see #clear(int, int)
-         */
+        /// <summary>
+        /// Clears all the bits in this <see cref="BitSet"/>.
+        /// </summary>
+        /// <seealso cref="Clear(int)"/>
+        /// <seealso cref="Clear(int, int)"/>
         public void Clear()
         {
             if (needClear)
@@ -503,16 +468,13 @@ namespace ICU4N.Support.Collections
             }
         }
 
-        /**
-         * Clears the bit at index {@code pos}. Grows the {@code BitSet} if
-         * {@code pos > size}.
-         * 
-         * @param pos
-         *            the index of the bit to clear.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos} is negative.
-         * @see #clear(int, int)
-         */
+        /// <summary>
+        /// Clears the bit at index <paramref name="pos"/>. Grows the <see cref="BitSet"/> if
+        /// <paramref name="pos"/> &gt; size.
+        /// </summary>
+        /// <param name="pos">The index of the bit to clear.</param>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos"/> is negative.</exception>
+        /// <seealso cref="Clear(int, int)"/>
         public void Clear(int pos)
         {
             if (pos < 0)
@@ -536,19 +498,15 @@ namespace ICU4N.Support.Collections
             }
         }
 
-        /**
-         * Clears the bits starting from {@code pos1} to {@code pos2}. Grows the
-         * {@code BitSet} if {@code pos2 > size}.
-         * 
-         * @param pos1
-         *            beginning position.
-         * @param pos2
-         *            ending position.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos1} or {@code pos2} is negative, or if
-         *             {@code pos2} is smaller than {@code pos1}.
-         * @see #clear(int)
-         */
+        /// <summary>
+        /// Clears the bits starting from <paramref name="pos1"/> to <paramref name="pos2"/>. Grows the
+        /// <see cref="BitSet"/> if <paramref name="pos2"/> &gt; size;
+        /// </summary>
+        /// <param name="pos1">Beginning position.</param>
+        /// <param name="pos2">Ending position.</param>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos1"/> or <paramref name="pos2"/> is negative, or if
+        /// <paramref name="pos2"/> is smaller than <paramref name="pos1"/>.</exception>
+        /// <seealso cref="Clear(int)"/>
         public void Clear(int pos1, int pos2)
         {
             if (pos1 < 0 || pos2 < 0 || pos2 < pos1)
@@ -594,16 +552,13 @@ namespace ICU4N.Support.Collections
             }
         }
 
-        /**
-         * Flips the bit at index {@code pos}. Grows the {@code BitSet} if
-         * {@code pos > size}.
-         * 
-         * @param pos
-         *            the index of the bit to flip.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos} is negative.
-         * @see #flip(int, int)
-         */
+        /// <summary>
+        /// Flips the bit at index <paramref name="pos"/>. Grows the <see cref="BitSet"/> if
+        /// <paramref name="pos"/> &gt; size.
+        /// </summary>
+        /// <param name="pos">The index of the bit to flip.</param>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos"/> is negative.</exception>
+        /// <seealso cref="Flip(int, int)"/>
         public void Flip(int pos)
         {
             if (pos < 0)
@@ -625,19 +580,15 @@ namespace ICU4N.Support.Collections
             NeedClear();
         }
 
-        /**
-         * Flips the bits starting from {@code pos1} to {@code pos2}. Grows the
-         * {@code BitSet} if {@code pos2 > size}.
-         * 
-         * @param pos1
-         *            beginning position.
-         * @param pos2
-         *            ending position.
-         * @throws IndexOutOfBoundsException
-         *             if {@code pos1} or {@code pos2} is negative, or if
-         *             {@code pos2} is smaller than {@code pos1}.
-         * @see #flip(int)
-         */
+        /// <summary>
+        /// Flips the bits starting from <paramref name="pos1"/> to <paramref name="pos2"/>. Grows the
+        ///  <see cref="BitSet"/> if <paramref name="pos2"/> &gt; size.
+        /// </summary>
+        /// <param name="pos1">Beginning position.</param>
+        /// <param name="pos2">Ending position.</param>
+        /// <exception cref="IndexOutOfRangeException">If <paramref name="pos1"/> or <paramref name="pos2"/> is negative, or if
+        /// <paramref name="pos2"/> is smaller than <paramref name="pos1"/>.</exception>
+        /// <seealso cref="Flip(int)"/>
         public void Flip(int pos1, int pos2)
         {
             if (pos1 < 0 || pos2 < 0 || pos2 < pos1)
@@ -681,16 +632,14 @@ namespace ICU4N.Support.Collections
             NeedClear();
         }
 
-        /**
-         * Checks if these two {@code BitSet}s have at least one bit set to true in the same
-         * position.
-         * 
-         * @param bs
-         *            {@code BitSet} used to calculate the intersection.
-         * @return {@code true} if bs intersects with this {@code BitSet},
-         *         {@code false} otherwise.
-         */
-        public bool Intersects(BitSet bs)
+        /// <summary>
+        /// Checks if these two <see cref="BitSet"/>s have at least one bit set to true in the same
+        /// position.
+        /// </summary>
+        /// <param name="bs"><see cref="BitSet"/> used to calculate the intersection.</param>
+        /// <returns><c>true</c> if bs intersects with this <see cref="BitSet"/>,
+        /// <c>false</c> otherwise.</returns>
+        public bool Intersects(BitSet bs) // ICU4N TODO: API - Make a member of ISet<T>?
         {
             long[] bsBits = bs.bits;
             int length1 = actualArrayLength, length2 = bs.actualArrayLength;
@@ -719,16 +668,14 @@ namespace ICU4N.Support.Collections
             return false;
         }
 
-        /**
-         * Performs the logical AND of this {@code BitSet} with another
-         * {@code BitSet}. The values of this {@code BitSet} are changed accordingly.
-         * 
-         * @param bs
-         *            {@code BitSet} to AND with.
-         * @see #or
-         * @see #xor
-         */
-        public void And(BitSet bs)
+        /// <summary>
+        /// Performs the logical AND of this <see cref="BitSet"/> with another
+        /// <see cref="BitSet"/>. The values of this <see cref="BitSet"/> are changed accordingly.
+        /// </summary>
+        /// <param name="bs"><see cref="BitSet"/> to AND with.</param>
+        /// <seealso cref="Or(BitSet)"/>
+        /// <seealso cref="Xor(BitSet)"/>
+        public void And(BitSet bs) // ICU4N TODO: API - Make a member of ISet<T>?
         {
             long[] bsBits = bs.bits;
             if (!needClear)
@@ -758,14 +705,12 @@ namespace ICU4N.Support.Collections
             isLengthActual = !((actualArrayLength > 0) && (bits[actualArrayLength - 1] == 0));
         }
 
-        /**
-         * Clears all bits in the receiver which are also set in the parameter
-         * {@code BitSet}. The values of this {@code BitSet} are changed accordingly.
-         * 
-         * @param bs
-         *            {@code BitSet} to ANDNOT with.
-         */
-        public void AndNot(BitSet bs)
+        /// <summary>
+        /// Clears all bits in the receiver which are also set in the <paramref name="bs"/> parameter.
+        /// The values of this <see cref="BitSet"/> are changed accordingly.
+        /// </summary>
+        /// <param name="bs"><see cref="BitSet"/> to ANDNOT with.</param>
+        public void AndNot(BitSet bs) // ICU4N TODO: API - Make a member of ISet<T>?
         {
             long[] bsBits = bs.bits;
             if (!needClear)
@@ -786,16 +731,14 @@ namespace ICU4N.Support.Collections
             isLengthActual = !((actualArrayLength > 0) && (bits[actualArrayLength - 1] == 0));
         }
 
-        /**
-         * Performs the logical OR of this {@code BitSet} with another {@code BitSet}.
-         * The values of this {@code BitSet} are changed accordingly.
-         *
-         * @param bs
-         *            {@code BitSet} to OR with.
-         * @see #xor
-         * @see #and
-         */
-        public void Or(BitSet bs)
+        /// <summary>
+        /// Performs the logical OR of this <see cref="BitSet"/> with another <see cref="BitSet"/>.
+        /// The values of this <see cref="BitSet"/> are changed accordingly.
+        /// </summary>
+        /// <param name="bs"><see cref="BitSet"/> to OR with.</param>
+        /// <seealso cref="Xor(BitSet)"/>
+        /// <seealso cref="And(BitSet)"/>
+        public void Or(BitSet bs) // ICU4N TODO: API - Make a member of ISet<T>?
         {
             int bsActualLen = bs.GetActualArrayLength();
             if (bsActualLen > bits.Length)
@@ -826,16 +769,14 @@ namespace ICU4N.Support.Collections
             NeedClear();
         }
 
-        /**
-         * Performs the logical XOR of this {@code BitSet} with another {@code BitSet}.
-         * The values of this {@code BitSet} are changed accordingly.
-         *
-         * @param bs
-         *            {@code BitSet} to XOR with.
-         * @see #or
-         * @see #and
-         */
-        public void Xor(BitSet bs)
+        /// <summary>
+        /// Performs the logical XOR of this <see cref="BitSet"/> with another <see cref="BitSet"/>.
+        /// The values of this <see cref="BitSet"/> are changed accordingly.
+        /// </summary>
+        /// <param name="bs"><see cref="BitSet"/> to XOR with.</param>
+        /// <seealso cref="Or(BitSet)"/>
+        /// <seealso cref="And(BitSet)"/>
+        public void Xor(BitSet bs) // ICU4N TODO: API - Make a member of ISet<T>?
         {
             int bsActualLen = bs.GetActualArrayLength();
             if (bsActualLen > bits.Length)
@@ -866,22 +807,19 @@ namespace ICU4N.Support.Collections
             NeedClear();
         }
 
-        /**
-         * Returns the number of bits this {@code BitSet} has.
-         * 
-         * @return the number of bits contained in this {@code BitSet}.
-         * @see #length
-         */
+        /// <summary>
+        /// Gets the number of bits this <see cref="BitSet"/> has.
+        /// </summary>
+        /// <seealso cref="GetLength()"/>
         public int Count
         {
             get { return bits.Length << OFFSET; }
         }
 
-        /**
-         * Returns the number of bits up to and including the highest bit set.
-         * 
-         * @return the length of the {@code BitSet}.
-         */
+        /// <summary>
+        /// Returns the number of bits up to and including the highest bit set.
+        /// </summary>
+        /// <returns>The length of the <see cref="BitSet"/>.</returns>
         public int GetLength()
         {
             int idx = actualArrayLength - 1;
@@ -919,12 +857,11 @@ namespace ICU4N.Support.Collections
             return actualArrayLength;
         }
 
-        /**
-         * Returns a string containing a concise, human-readable description of the
-         * receiver.
-         * 
-         * @return a comma delimited list of the indices of all bits that are set.
-         */
+        /// <summary>
+        /// Returns a string containing a concise, human-readable description of the
+        /// receiver.
+        /// </summary>
+        /// <returns>A comma delimited list of the indices of all bits that are set.</returns>
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder(bits.Length / 2);
@@ -956,13 +893,11 @@ namespace ICU4N.Support.Collections
             return sb.ToString();
         }
 
-        /**
-         * Returns the position of the first bit that is {@code true} on or after {@code pos}.
-         * 
-         * @param pos
-         *            the starting position (inclusive).
-         * @return -1 if there is no bits that are set to {@code true} on or after {@code pos}.
-         */
+        /// <summary>
+        /// Returns the position of the first bit that is <c>true</c> on or after <paramref name="pos"/>.
+        /// </summary>
+        /// <param name="pos">The starting position (inclusive).</param>
+        /// <returns>-1 if there is no bits that are set to <c>true</c> on or after <paramref name="pos"/>.</returns>
         public virtual int NextSetBit(int pos)
         {
             if (pos < 0)
@@ -1011,14 +946,12 @@ namespace ICU4N.Support.Collections
             return -1;
         }
 
-        /**
-         * Returns the position of the first bit that is {@code false} on or after {@code pos}.
-         * 
-         * @param pos
-         *            the starting position (inclusive).
-         * @return the position of the next bit set to {@code false}, even if it is further
-         *         than this {@code BitSet}'s size.
-         */
+        /// <summary>
+        /// Returns the position of the first bit that is <c>false</c> on or after <paramref name="pos"/>.
+        /// </summary>
+        /// <param name="pos">The starting position (inclusive).</param>
+        /// <returns>the position of the next bit set to <c>false</c>, even if it is further
+        /// than this <see cref="BitSet"/>'s size.</returns>
         public virtual int NextClearBit(int pos)
         {
             if (pos < 0)
@@ -1068,12 +1001,10 @@ namespace ICU4N.Support.Collections
             return bssize;
         }
 
-        /**
-         * Returns true if all the bits in this {@code BitSet} are set to false.
-         * 
-         * @return {@code true} if the {@code BitSet} is empty,
-         *         {@code false} otherwise.
-         */
+        /// <summary>
+        /// Returns true if all the bits in this <see cref="BitSet"/> are set to false.
+        /// </summary>
+        /// <returns><c>true</c> if the <see cref="BitSet"/> is empty, <c>false</c> otherwise.</returns>
         public virtual bool IsEmpty()
         {
             if (!needClear)
@@ -1091,11 +1022,10 @@ namespace ICU4N.Support.Collections
             return true;
         }
 
-        /**
-         * Returns the number of bits that are {@code true} in this {@code BitSet}.
-         * 
-         * @return the number of {@code true} bits in the set.
-         */
+        /// <summary>
+        /// Returns the number of bits that are <c>true</c> in this <see cref="BitSet"/>.
+        /// </summary>
+        /// <returns>The number of bits that are <c>true</c> in the set.</returns>
         public virtual int Cardinality()
         {
             if (!needClear)
