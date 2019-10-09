@@ -203,16 +203,16 @@ namespace ICU4N.Util
         /**
          * Handy constant.
          */
-        private static readonly string EMPTY_STRING = "";
+        private const string EMPTY_STRING = "";
 
         // Used in both ULocale and LocaleIDParser, so moved up here.
-        private static readonly char UNDERSCORE = '_';
+        private const char UNDERSCORE = '_';
 
         // default empty locale
         private static readonly CultureInfo EMPTY_LOCALE = CultureInfo.InvariantCulture;
 
         // special keyword key for Unicode locale attributes
-        private static readonly string LOCALE_ATTRIBUTE_KEY = "attribute";
+        private const string LOCALE_ATTRIBUTE_KEY = "attribute";
 
         /**
          * The root ULocale.
@@ -1454,7 +1454,7 @@ namespace ICU4N.Util
          * Pairs of (language subtag, + or -) for finding out fast if common languages
          * are LTR (minus) or RTL (plus).
          */
-        private static readonly string LANG_DIR_STRING =
+        private const string LANG_DIR_STRING =
                     "root-en-es-pt-zh-ja-ko-de-fr-it-ar+he+fa+ru-nl-pl-th-tr-";
 
         /**
@@ -2692,9 +2692,9 @@ namespace ICU4N.Util
             return acceptList;
         }
 
-        private static readonly string UNDEFINED_LANGUAGE = "und";
-        private static readonly string UNDEFINED_SCRIPT = "Zzzz";
-        private static readonly string UNDEFINED_REGION = "ZZ";
+        private const string UNDEFINED_LANGUAGE = "und";
+        private const string UNDEFINED_SCRIPT = "Zzzz";
+        private const string UNDEFINED_REGION = "ZZ";
 
         /**
          * {@icu} Adds the likely subtags for a provided locale ID, per the algorithm

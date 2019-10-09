@@ -555,7 +555,7 @@ namespace ICU4N.Dev.Test.Util
                 checkObject(requestedLocale, objUnreg, "gt", "ge");
             }
         }
-        private static readonly int LOCALE_SIZE = 9;
+        private const int LOCALE_SIZE = 9;
         private static readonly string[][] rawData2 = new string[][]{
                 /* language code */
                 new string[]{   "en",   "fr",   "ca",   "el",   "no",   "zh",   "de",   "es",  "ja"    },

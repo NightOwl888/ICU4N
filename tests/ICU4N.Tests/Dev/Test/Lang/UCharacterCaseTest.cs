@@ -1529,44 +1529,44 @@ namespace ICU4N.Dev.Test.Lang
         /**
          * "IESUS CHRISTOS"
          */
-        private static readonly String SHARED_UPPERCASE_GREEK_ =
+        private const String SHARED_UPPERCASE_GREEK_ =
             "\u0399\u0395\u03a3\u03a5\u03a3\u0020\u03a7\u03a1\u0399\u03a3\u03a4\u039f\u03a3";
         /**
          * "iesus christos"
          */
-        private static readonly String SHARED_LOWERCASE_GREEK_ =
+        private const String SHARED_LOWERCASE_GREEK_ =
             "\u03b9\u03b5\u03c3\u03c5\u03c2\u0020\u03c7\u03c1\u03b9\u03c3\u03c4\u03bf\u03c2";
-        private static readonly String SHARED_LOWERCASE_TURKISH_ =
+        private const String SHARED_LOWERCASE_TURKISH_ =
             "\u0069\u0073\u0074\u0061\u006e\u0062\u0075\u006c\u002c\u0020\u006e\u006f\u0074\u0020\u0063\u006f\u006e\u0073\u0074\u0061\u006e\u0074\u0131\u006e\u006f\u0070\u006c\u0065\u0021";
-        private static readonly String SHARED_UPPERCASE_TURKISH_ =
+        private const String SHARED_UPPERCASE_TURKISH_ =
             "\u0054\u004f\u0050\u004b\u0041\u0050\u0049\u0020\u0050\u0041\u004c\u0041\u0043\u0045\u002c\u0020\u0130\u0053\u0054\u0041\u004e\u0042\u0055\u004c";
-        private static readonly String SHARED_UPPERCASE_ISTANBUL_ =
+        private const String SHARED_UPPERCASE_ISTANBUL_ =
                                               "\u0130STANBUL, NOT CONSTANTINOPLE!";
-        private static readonly String SHARED_LOWERCASE_ISTANBUL_ =
+        private const String SHARED_LOWERCASE_ISTANBUL_ =
                                               "i\u0307stanbul, not constantinople!";
-        private static readonly String SHARED_LOWERCASE_TOPKAP_ =
+        private const String SHARED_LOWERCASE_TOPKAP_ =
                                               "topkap\u0131 palace, istanbul";
-        private static readonly String SHARED_UPPERCASE_TOPKAP_ =
+        private const String SHARED_UPPERCASE_TOPKAP_ =
                                               "TOPKAPI PALACE, ISTANBUL";
-        private static readonly String SHARED_LOWERCASE_GERMAN_ =
+        private const String SHARED_LOWERCASE_GERMAN_ =
                                               "S\u00FC\u00DFmayrstra\u00DFe";
-        private static readonly String SHARED_UPPERCASE_GERMAN_ =
+        private const String SHARED_UPPERCASE_GERMAN_ =
                                               "S\u00DCSSMAYRSTRASSE";
 
-        private static readonly String UPPER_BEFORE_ =
+        private const String UPPER_BEFORE_ =
              "\u0061\u0042\u0069\u03c2\u00df\u03c3\u002f\ufb03\ufb03\ufb03\ud93f\udfff";
-        private static readonly String UPPER_ROOT_ =
+        private const String UPPER_ROOT_ =
              "\u0041\u0042\u0049\u03a3\u0053\u0053\u03a3\u002f\u0046\u0046\u0049\u0046\u0046\u0049\u0046\u0046\u0049\ud93f\udfff";
-        private static readonly String UPPER_TURKISH_ =
+        private const String UPPER_TURKISH_ =
              "\u0041\u0042\u0130\u03a3\u0053\u0053\u03a3\u002f\u0046\u0046\u0049\u0046\u0046\u0049\u0046\u0046\u0049\ud93f\udfff";
-        private static readonly String UPPER_MINI_ = "\u00df\u0061";
-        private static readonly String UPPER_MINI_UPPER_ = "\u0053\u0053\u0041";
+        private const String UPPER_MINI_ = "\u00df\u0061";
+        private const String UPPER_MINI_UPPER_ = "\u0053\u0053\u0041";
 
-        private static readonly String LOWER_BEFORE_ =
+        private const String LOWER_BEFORE_ =
                           "\u0061\u0042\u0049\u03a3\u00df\u03a3\u002f\ud93f\udfff";
-        private static readonly String LOWER_ROOT_ =
+        private const String LOWER_ROOT_ =
                           "\u0061\u0062\u0069\u03c3\u00df\u03c2\u002f\ud93f\udfff";
-        private static readonly String LOWER_TURKISH_ =
+        private const String LOWER_TURKISH_ =
                           "\u0061\u0062\u0131\u03c3\u00df\u03c2\u002f\ud93f\udfff";
 
         /**
@@ -1692,23 +1692,23 @@ namespace ICU4N.Dev.Test.Lang
         null,
     };
 
-        private static readonly String SPECIAL_DOTTED_ =
+        private const String SPECIAL_DOTTED_ =
                 "I \u0130 I\u0307 I\u0327\u0307 I\u0301\u0307 I\u0327\u0307\u0301";
-        private static readonly String SPECIAL_DOTTED_LOWER_TURKISH_ =
+        private const String SPECIAL_DOTTED_LOWER_TURKISH_ =
                 "\u0131 i i i\u0327 \u0131\u0301\u0307 i\u0327\u0301";
-        private static readonly String SPECIAL_DOTTED_LOWER_GERMAN_ =
+        private const String SPECIAL_DOTTED_LOWER_GERMAN_ =
                 "i i\u0307 i\u0307 i\u0327\u0307 i\u0301\u0307 i\u0327\u0307\u0301";
-        private static readonly String SPECIAL_DOT_ABOVE_ =
+        private const String SPECIAL_DOT_ABOVE_ =
                 "a\u0307 \u0307 i\u0307 j\u0327\u0307 j\u0301\u0307";
-        private static readonly String SPECIAL_DOT_ABOVE_UPPER_LITHUANIAN_ =
+        private const String SPECIAL_DOT_ABOVE_UPPER_LITHUANIAN_ =
                 "A\u0307 \u0307 I J\u0327 J\u0301\u0307";
-        private static readonly String SPECIAL_DOT_ABOVE_UPPER_GERMAN_ =
+        private const String SPECIAL_DOT_ABOVE_UPPER_GERMAN_ =
                 "A\u0307 \u0307 I\u0307 J\u0327\u0307 J\u0301\u0307";
-        private static readonly String SPECIAL_DOT_ABOVE_UPPER_ =
+        private const String SPECIAL_DOT_ABOVE_UPPER_ =
                 "I I\u0301 J J\u0301 \u012e \u012e\u0301 \u00cc\u00cd\u0128";
-        private static readonly String SPECIAL_DOT_ABOVE_LOWER_LITHUANIAN_ =
+        private const String SPECIAL_DOT_ABOVE_LOWER_LITHUANIAN_ =
                 "i i\u0307\u0301 j j\u0307\u0301 \u012f \u012f\u0307\u0301 i\u0307\u0300i\u0307\u0301i\u0307\u0303";
-        private static readonly String SPECIAL_DOT_ABOVE_LOWER_GERMAN_ =
+        private const String SPECIAL_DOT_ABOVE_LOWER_GERMAN_ =
                 "i i\u0301 j j\u0301 \u012f \u012f\u0301 \u00ec\u00ed\u0129";
 
         // private methods -------------------------------------------------------

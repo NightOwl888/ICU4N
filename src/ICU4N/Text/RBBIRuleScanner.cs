@@ -15,7 +15,7 @@ namespace ICU4N.Text
     /// </summary>
     internal class RBBIRuleScanner
     {
-        private readonly static int kStackSize = 100;               // The size of the state stack for
+        private const int kStackSize = 100;                      // The size of the state stack for
                                                                  //   rules parsing.  Corresponds roughly
                                                                  //   to the depth of parentheses nesting
                                                                  //   that is allowed in the rules.
@@ -728,9 +728,9 @@ namespace ICU4N.Text
         //     Numeric because there is no portable way to enter them as literals.
         //     (Think EBCDIC).
         //
-        internal static readonly int chNEL = 0x85; //    NEL newline variant
+        internal const int chNEL = 0x85; //    NEL newline variant
 
-        internal static readonly int chLS = 0x2028; //    Unicode Line Separator
+        internal const int chLS = 0x2028; //    Unicode Line Separator
 
         //----------------------------------------------------------------------------------------
         //

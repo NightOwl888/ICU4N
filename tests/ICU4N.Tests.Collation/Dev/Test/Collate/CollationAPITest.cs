@@ -1618,8 +1618,8 @@ namespace ICU4N.Dev.Test.Collate
                 //log_verbose("Unsafes "+conts.size()+":\n"+conts.toPattern(true)+"\n");
             }
         }
-        private static readonly String bigone = "One";
-        private static readonly String littleone = "one";
+        private const String bigone = "One";
+        private const String littleone = "one";
 
         [Test]
         public void TestClone()

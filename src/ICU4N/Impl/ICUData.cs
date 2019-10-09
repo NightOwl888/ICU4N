@@ -16,7 +16,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// The data path to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        internal static readonly string IcuDataPath = "Impl/";
+        internal const string IcuDataPath = "Impl/";
 
         /// <summary>
         /// The ICU data package name.
@@ -24,49 +24,49 @@ namespace ICU4N.Impl
         /// of the package entry names.
         /// </summary>
 #pragma warning disable 612, 618
-        internal static readonly string PackageName = "icudt" + VersionInfo.IcuDataVersionPath;
+        internal const string PackageName = "icudt" + VersionInfo.IcuDataVersionPath;
 #pragma warning restore 612, 618
         /// <summary>
         /// The data path to be used with <see cref="Assembly.GetManifestResourceStream(string)"/>.
         /// </summary>
-        public static readonly string IcuBundle = "Data/" + PackageName;
+        public const string IcuBundle = "Data/" + PackageName;
 
         /// <summary>
         /// The base name of ICU data to be used with <see cref="Assembly.GetManifestResourceStream(string)"/>,
         /// <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, bool)"/> etc.
         /// </summary>
-        public static readonly string IcuBaseName = IcuDataPath + IcuBundle;
+        public const string IcuBaseName = IcuDataPath + IcuBundle;
 
         /// <summary>
         /// The base name of collation data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        public static readonly string IcuCollationBaseName = IcuBaseName + "/coll";
+        public const string IcuCollationBaseName = IcuBaseName + "/coll";
 
         /// <summary>
         /// The base name of rbbi data to be used with <see cref="ICUBinary.GetData(Assembly, string, string, bool)"/> API
         /// </summary>
-        public static readonly string IcuBreakIteratorName = "brkitr";
+        public const string IcuBreakIteratorName = "brkitr";
 
         /// <summary>
         /// The base name of rbbi data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        public static readonly string IcuBreakIteratorBaseName = IcuBaseName + '/' + IcuBreakIteratorName;
+        public const string IcuBreakIteratorBaseName = IcuBaseName + "/" + IcuBreakIteratorName;
 
         /// <summary>
         /// The base name of rbnf data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        public static readonly string IcuRuleBasedNumberFormatBaseName = IcuBaseName + "/rbnf";
+        public const string IcuRuleBasedNumberFormatBaseName = IcuBaseName + "/rbnf";
 
         /// <summary>
         /// The base name of transliterator data to be used with <see cref="ICUResourceBundle.GetBundleInstance(string, string, Assembly, OpenType)"/> API
         /// </summary>
-        public static readonly string IcuTransliteratorBaseName = IcuBaseName + "/translit";
+        public const string IcuTransliteratorBaseName = IcuBaseName + "/translit";
 
-        public static readonly string IcuLanguageBaseName = IcuBaseName + "/lang";
-        public static readonly string IcuCurrencyBaseName = IcuBaseName + "/curr";
-        public static readonly string IcuRegionBaseName = IcuBaseName + "/region";
-        public static readonly string IcuZoneBaseName = IcuBaseName + "/zone";
-        public static readonly string IcuUnitBaseName = IcuBaseName + "/unit";
+        public const string IcuLanguageBaseName = IcuBaseName + "/lang";
+        public const string IcuCurrencyBaseName = IcuBaseName + "/curr";
+        public const string IcuRegionBaseName = IcuBaseName + "/region";
+        public const string IcuZoneBaseName = IcuBaseName + "/zone";
+        public const string IcuUnitBaseName = IcuBaseName + "/unit";
 
         /// <summary>
         /// For testing (otherwise false): When reading a <see cref="Stream"/> from an <see cref="Assembly"/>

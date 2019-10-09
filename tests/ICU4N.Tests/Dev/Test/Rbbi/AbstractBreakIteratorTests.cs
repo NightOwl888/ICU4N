@@ -10,7 +10,7 @@ namespace ICU4N.Dev.Test.Rbbi
         private class AbstractBreakIterator : BreakIterator
         {
             private int position = 0;
-            private static readonly int LIMIT = 100;
+            private const int LIMIT = 100;
 
             private int Set(int n)
             {

@@ -183,8 +183,8 @@ namespace ICU4N.Dev.Test.Collate
 
         }
 
-        private static readonly int IS_SHIFTED = 1;
-        private static readonly int FROM_RULES = 2;
+        private const int IS_SHIFTED = 1;
+        private const int FROM_RULES = 2;
 
         private static bool skipLineBecauseOfBug(String s, int flags)
         {

@@ -38,7 +38,7 @@ namespace ICU4N.Impl
             /// <summary>
             /// .dat package data format ID "CmnD".
             /// </summary>
-            private static readonly int DATA_FORMAT = 0x436d6e44;
+            private const int DATA_FORMAT = 0x436d6e44;
 
             private sealed class IsAcceptable : IAuthenticate
             {

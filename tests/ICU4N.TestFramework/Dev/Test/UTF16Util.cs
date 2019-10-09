@@ -13,7 +13,7 @@ namespace ICU4N.Dev.Test
     /// <author>Vladimir Weinstein, Markus Scherer</author>
     public class UTF16Util
     {
-        internal static readonly int suppOffset = (0xd800 << 10) + 0xdc00 - 0x10000;
+        internal const int suppOffset = (0xd800 << 10) + 0xdc00 - 0x10000;
 
         /**
          * Method nextCodePoint. Returns the next code point
@@ -245,7 +245,7 @@ namespace ICU4N.Dev.Test
         /**
          * The minimum value for Supplementary code points
          */
-        public static readonly int SUPPLEMENTARY_MIN_VALUE = 0x10000;
+        public const int SUPPLEMENTARY_MIN_VALUE = 0x10000;
         /**
          * Determines how many chars this char32 requires.
          * If a validity check is required, use <code>
@@ -266,23 +266,23 @@ namespace ICU4N.Dev.Test
          * Lead surrogate maximum value
          * @stable ICU 2.1
          */
-        public static readonly int LEAD_SURROGATE_MAX_VALUE = 0xDBFF;
+        public const int LEAD_SURROGATE_MAX_VALUE = 0xDBFF;
         /**
          * Lead surrogate minimum value
          * @stable ICU 2.1
          */
-        public static readonly int LEAD_SURROGATE_MIN_VALUE = 0xD800;
+        public const int LEAD_SURROGATE_MIN_VALUE = 0xD800;
 
         /**
          * Trail surrogate minimum value
          * @stable ICU 2.1
          */
-        public static readonly int TRAIL_SURROGATE_MIN_VALUE = 0xDC00;
+        public const int TRAIL_SURROGATE_MIN_VALUE = 0xDC00;
         /**
          * Trail surrogate maximum value
          * @stable ICU 2.1
          */
-        public static readonly int TRAIL_SURROGATE_MAX_VALUE = 0xDFFF;
+        public const int TRAIL_SURROGATE_MAX_VALUE = 0xDFFF;
         /**
          * Determines whether the code value is a surrogate.
          * @param char16 the input character.
@@ -386,12 +386,12 @@ namespace ICU4N.Dev.Test
         /**
          * Shift value for lead surrogate to form a supplementary character.
          */
-        private static readonly int LEAD_SURROGATE_SHIFT_ = 10;
+        private const int LEAD_SURROGATE_SHIFT_ = 10;
 
         /** 
          * Offset to add to combined surrogate pair to avoid msking.
          */
-        private static readonly int SURROGATE_OFFSET_ =
+        private const int SURROGATE_OFFSET_ =
                                SUPPLEMENTARY_MIN_VALUE -
                                (LEAD_SURROGATE_MIN_VALUE <<
                                LEAD_SURROGATE_SHIFT_) -

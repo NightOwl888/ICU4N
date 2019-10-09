@@ -2021,7 +2021,7 @@ namespace ICU4N.Dev.Test.Lang
 
         // private data members ----------------------------------------------
 
-        private readonly static String INDEXOF_SUPPLEMENTARY_STRING_ =
+        private const String INDEXOF_SUPPLEMENTARY_STRING_ =
             "\ud841\udc02\u0071\udc02\ud841\u0071\ud841\udc02\u0071\u0072" +
             "\ud841\udc02\u0071\ud841\udc02\u0071\udc02\ud841\u0073";
         private readonly static int[] INDEXOF_SUPPLEMENTARY_CHAR_ =
@@ -2035,7 +2035,7 @@ namespace ICU4N.Dev.Test.Lang
             new int[] {3, 16},
             new int[] {0, 6, 10, 13}
         };
-        private readonly static String INDEXOF_SUPPLEMENTARY_STR_ = "\udc02\ud841";
+        private const String INDEXOF_SUPPLEMENTARY_STR_ = "\udc02\ud841";
         private readonly static int[] INDEXOF_SUPPLEMENTARY_STR_INDEX_ =
                 {3, 16};
 

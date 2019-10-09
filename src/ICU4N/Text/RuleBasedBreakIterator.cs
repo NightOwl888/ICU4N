@@ -768,7 +768,7 @@ namespace ICU4N.Text
             }   // end synchronized(gAllBreakEngines)
         }
 
-        private static readonly int kMaxLookaheads = 8;
+        private const int kMaxLookaheads = 8;
         private class LookAheadResults
         {
             int fUsedSlotLimit;
@@ -1900,8 +1900,8 @@ namespace ICU4N.Text
             }
 
 
-            internal static readonly bool RetainCachePosition = false;
-            internal static readonly bool UpdateCachePosition = true;
+            internal const bool RetainCachePosition = false;
+            internal const bool UpdateCachePosition = true;
 
             /// <summary>
             /// Add the boundary following the current position.
@@ -2051,7 +2051,7 @@ namespace ICU4N.Text
 
             private int ModChunkSize(int index) { return index & (CACHE_SIZE - 1); }
 
-            internal static readonly int CACHE_SIZE = 128;
+            internal const int CACHE_SIZE = 128;
             // static_assert((CACHE_SIZE & (CACHE_SIZE-1)) == 0, "CACHE_SIZE must be power of two.");
 
             internal int fStartBufIdx;

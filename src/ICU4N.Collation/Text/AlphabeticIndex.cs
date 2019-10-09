@@ -133,9 +133,9 @@ namespace ICU4N.Text
         /// Prefix string for Chinese index buckets.
         /// See http://unicode.org/repos/cldr/trunk/specs/ldml/tr35-collation.html#Collation_Indexes
         /// </summary>
-        private static readonly string BASE = "\uFDD0";
+        private const string BASE = "\uFDD0";
 
-        private static readonly char CGJ = '\u034F';
+        private const char CGJ = '\u034F';
 
         private static readonly IComparer<string> binaryCmp = new UTF16.StringComparer(true, false, 0);
 

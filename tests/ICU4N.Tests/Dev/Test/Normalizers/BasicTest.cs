@@ -2635,7 +2635,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
         }
 
-        static readonly int D = 0, C = 1, KD = 2, KC = 3, FCD = 4, NONE = 5;
+        const int D = 0, C = 1, KD = 2, KC = 3, FCD = 4, NONE = 5;
 
         private static UnicodeSet[] initSkippables(UnicodeSet[] skipSets)
         {

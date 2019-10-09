@@ -129,7 +129,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 text = txt;
                 expectOffsets = eOffs;
             }
-            private static readonly int maxOffsetCount = 128;
+            private const int maxOffsetCount = 128;
             private bool offsetsMatchExpected(int[] foundOffsets, int foundOffsetsLength)
             {
                 if (foundOffsetsLength != expectOffsets.Length)

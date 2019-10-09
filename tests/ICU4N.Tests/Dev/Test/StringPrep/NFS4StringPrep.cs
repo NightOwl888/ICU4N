@@ -129,7 +129,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
             return -1;
         }
-        private static readonly char AT_SIGN = '@';
+        private const char AT_SIGN = '@';
 
         public static byte[] MixedPrepare(byte[] src)
         {

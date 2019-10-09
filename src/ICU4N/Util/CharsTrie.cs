@@ -1150,60 +1150,60 @@ namespace ICU4N.Util
         // For a branch sub-node with at most this many entries, we drop down
         // to a linear search.
         /*package*/
-        internal static readonly int kMaxBranchLinearSubNodeLength = 5;
+        internal const int kMaxBranchLinearSubNodeLength = 5;
 
         // 0030..003f: Linear-match node, match 1..16 units and continue reading the next node.
         /*package*/
-        internal static readonly int kMinLinearMatch = 0x30;
+        internal const int kMinLinearMatch = 0x30;
         /*package*/
-        internal static readonly int kMaxLinearMatchLength = 0x10;
+        internal const int kMaxLinearMatchLength = 0x10;
 
         // Match-node lead unit bits 14..6 for the optional intermediate value.
         // If these bits are 0, then there is no intermediate value.
         // Otherwise, see the *NodeValue* constants below.
         /*package*/
-        internal static readonly int kMinValueLead = kMinLinearMatch + kMaxLinearMatchLength;  // 0x0040
+        internal const int kMinValueLead = kMinLinearMatch + kMaxLinearMatchLength;  // 0x0040
                                                                                                /*package*/
-        internal static readonly int kNodeTypeMask = kMinValueLead - 1;  // 0x003f
+        internal const int kNodeTypeMask = kMinValueLead - 1;  // 0x003f
 
         // A final-value node has bit 15 set.
         /*package*/
-        internal static readonly int kValueIsFinal = 0x8000;
+        internal const int kValueIsFinal = 0x8000;
 
         // Compact value: After testing and masking off bit 15, use the following thresholds.
         /*package*/
-        internal static readonly int kMaxOneUnitValue = 0x3fff;
+        internal const int kMaxOneUnitValue = 0x3fff;
 
         /*package*/
-        internal static readonly int kMinTwoUnitValueLead = kMaxOneUnitValue + 1;  // 0x4000
+        internal const int kMinTwoUnitValueLead = kMaxOneUnitValue + 1;  // 0x4000
                                                                                    /*package*/
-        internal static readonly int kThreeUnitValueLead = 0x7fff;
+        internal const int kThreeUnitValueLead = 0x7fff;
 
         /*package*/
-        internal static readonly int kMaxTwoUnitValue = ((kThreeUnitValueLead - kMinTwoUnitValueLead) << 16) - 1;  // 0x3ffeffff
+        internal const int kMaxTwoUnitValue = ((kThreeUnitValueLead - kMinTwoUnitValueLead) << 16) - 1;  // 0x3ffeffff
 
         // Compact intermediate-value integer, lead unit shared with a branch or linear-match node.
         /*package*/
-        internal static readonly int kMaxOneUnitNodeValue = 0xff;
+        internal const int kMaxOneUnitNodeValue = 0xff;
         /*package*/
-        internal static readonly int kMinTwoUnitNodeValueLead = kMinValueLead + ((kMaxOneUnitNodeValue + 1) << 6);  // 0x4040
+        internal const int kMinTwoUnitNodeValueLead = kMinValueLead + ((kMaxOneUnitNodeValue + 1) << 6);  // 0x4040
                                                                                                                     /*package*/
-        internal static readonly int kThreeUnitNodeValueLead = 0x7fc0;
+        internal const int kThreeUnitNodeValueLead = 0x7fc0;
 
         /*package*/
-        internal static readonly int kMaxTwoUnitNodeValue =
+        internal const int kMaxTwoUnitNodeValue =
             ((kThreeUnitNodeValueLead - kMinTwoUnitNodeValueLead) << 10) - 1;  // 0xfdffff
 
         // Compact delta integers.
         /*package*/
-        internal static readonly int kMaxOneUnitDelta = 0xfbff;
+        internal const int kMaxOneUnitDelta = 0xfbff;
         /*package*/
-        internal static readonly int kMinTwoUnitDeltaLead = kMaxOneUnitDelta + 1;  // 0xfc00
+        internal const int kMinTwoUnitDeltaLead = kMaxOneUnitDelta + 1;  // 0xfc00
                                                                                    /*package*/
-        internal static readonly int kThreeUnitDeltaLead = 0xffff;
+        internal const int kThreeUnitDeltaLead = 0xffff;
 
         /*package*/
-        internal static readonly int kMaxTwoUnitDelta = ((kThreeUnitDeltaLead - kMinTwoUnitDeltaLead) << 16) - 1;  // 0x03feffff
+        internal const int kMaxTwoUnitDelta = ((kThreeUnitDeltaLead - kMinTwoUnitDeltaLead) << 16) - 1;  // 0x03feffff
 
         // Fixed value referencing the CharsTrie words.
         private ICharSequence chars_;

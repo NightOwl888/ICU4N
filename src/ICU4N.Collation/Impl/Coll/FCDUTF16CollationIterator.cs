@@ -486,7 +486,7 @@ namespace ICU4N.Impl.Coll
         // rawSeq[segmentStart..segmentLimit[ turned into the normalized string,
         // corresponding to seq==normalized && 0==start<=pos<=limit==start+normalized.length().
         private ICharSequence rawSeq;
-        private static readonly int rawStart = 0;
+        private const int rawStart = 0;
         private int segmentStart;
         private int segmentLimit;
         private int rawLimit;

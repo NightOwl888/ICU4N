@@ -33,9 +33,9 @@ namespace ICU4N.Dev.Util
      * For serialization
      */
         //private static final long serialVersionUID = -6540936876295804105L;
-        internal static readonly bool ASSERTIONS = false;
-        internal static readonly long GROWTH_PERCENT = 200; // 100 is no growth!
-        internal static readonly long GROWTH_GAP = 10; // extra bump!
+        internal const bool ASSERTIONS = false;
+        internal const long GROWTH_PERCENT = 200; // 100 is no growth!
+        internal const long GROWTH_GAP = 10; // extra bump!
 
         private int length;
         // two parallel arrays to save memory. Wish Java had structs.
@@ -1008,7 +1008,7 @@ namespace ICU4N.Dev.Util
             return stringMap.Keys.ToUnmodifiableCollection();
         }
 
-        internal static readonly bool DEBUG_WRITE = false;
+        internal const bool DEBUG_WRITE = false;
 
         /* (non-Javadoc)
          * @see java.util.Map#containsKey(java.lang.Object)

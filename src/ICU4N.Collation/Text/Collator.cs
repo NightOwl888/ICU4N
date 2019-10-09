@@ -1196,7 +1196,7 @@ namespace ICU4N.Text
         /// the keyword for this service.
         /// </summary>
         /// <since>ICU 3.0</since>
-        private static readonly string RESOURCE = "collations"; // ICU4N TODO: API - Rename Resource
+        private const string RESOURCE = "collations"; // ICU4N TODO: API - Rename Resource
 
         /// <summary>
         /// The resource bundle base name for this service.

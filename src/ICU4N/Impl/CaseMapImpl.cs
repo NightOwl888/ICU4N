@@ -869,7 +869,7 @@ namespace ICU4N.Impl
             };
 
             // U+2126 Ohm sign
-            private static readonly char data2126 = (char)(0x03A9 | HAS_VOWEL);  // Ω
+            private const char data2126 = (char)(0x03A9 | HAS_VOWEL);  // Ω
 
             private static int GetLetterData(int c)
             {

@@ -202,7 +202,7 @@ namespace ICU4N.Util
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        internal static readonly string IcuDataVersionPath = "60b";
+        internal const string IcuDataVersionPath = "60b";
 
         /// <summary>
         /// Data version in ICU4N.

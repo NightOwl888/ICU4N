@@ -82,9 +82,9 @@ namespace ICU4N.Dev.Test.Translit
             internal ReplaceableString Chars { get; set; }
             internal ReplaceableString Styles { get; set; }
 
-            static readonly char NO_STYLE = '_';
+            const char NO_STYLE = '_';
 
-            static readonly char NO_STYLE_MARK = (char)0xFFFF;
+            const char NO_STYLE_MARK = (char)0xFFFF;
 
             internal TestReplaceable(String text, String styles)
             {
@@ -215,7 +215,7 @@ namespace ICU4N.Dev.Test.Translit
                 get { return true; }
             }
 
-            internal static readonly bool DEBUG = false;
+            internal const bool DEBUG = false;
         }
 
         [Test]

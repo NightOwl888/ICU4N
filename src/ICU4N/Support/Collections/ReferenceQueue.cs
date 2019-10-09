@@ -13,7 +13,7 @@ namespace ICU4N.Support.Collections
     /// <typeparam name="T"></typeparam>
     internal class ReferenceQueue<T> where T : class
     {
-        private static readonly int DEFAULT_QUEUE_SIZE = 128;
+        private const int DEFAULT_QUEUE_SIZE = 128;
 
         private Reference<T>[] references;
 

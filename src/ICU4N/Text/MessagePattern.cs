@@ -1853,7 +1853,7 @@ namespace ICU4N.Text
             AddPart(MessagePatternPartType.ArgDouble, start, length, numericIndex);
         }
 
-        private static readonly int MaxPrefixLength = 24;
+        private const int MaxPrefixLength = 24;
 
         /// <summary>
         /// Returns a prefix of s.Substring(start). Used for Exception messages.

@@ -47,21 +47,21 @@ namespace ICU4N.Dev.Test
 
         private readonly static CultureInfo defaultLocale = new CultureInfo("en-US");
 
-        private static readonly string EXHAUSTIVENESS = "ICU.exhaustive";
-        private static readonly int DEFAULT_EXHAUSTIVENESS = 0;
-        private static readonly int MAX_EXHAUSTIVENESS = 10;
+        private const string EXHAUSTIVENESS = "ICU.exhaustive";
+        private const int DEFAULT_EXHAUSTIVENESS = 0;
+        private const int MAX_EXHAUSTIVENESS = 10;
 
-        private static readonly string LOGGING_LEVEL = "ICU.logging";
-        private static readonly int DEFAULT_LOGGING_LEVEL = 0;
-        private static readonly int MAX_LOGGING_LEVEL = 3;
+        private const string LOGGING_LEVEL = "ICU.logging";
+        private const int DEFAULT_LOGGING_LEVEL = 0;
+        private const int MAX_LOGGING_LEVEL = 3;
 
         public static readonly int LOGGING_NONE = 0;
         public static readonly int LOGGING_WARN = 1;
         public static readonly int LOGGING_INFO = 2;
         public static readonly int LOGGING_DEBUG = 3;
 
-        private static readonly string SEED = "ICU.seed";
-        private static readonly string SECURITY_POLICY = "ICU.securitypolicy";
+        private const string SEED = "ICU.seed";
+        private const string SECURITY_POLICY = "ICU.securitypolicy";
 
         private static readonly TestParams testParams = TestParams.Create();
 
@@ -178,9 +178,9 @@ namespace ICU4N.Dev.Test
 
         }
 
-        static readonly string ICU_TRAC_URL = "http://bugs.icu-project.org/trac/ticket/";
-        static readonly string CLDR_TRAC_URL = "http://unicode.org/cldr/trac/ticket/";
-        static readonly string CLDR_TICKET_PREFIX = "cldrbug:";
+        const string ICU_TRAC_URL = "http://bugs.icu-project.org/trac/ticket/";
+        const string CLDR_TRAC_URL = "http://unicode.org/cldr/trac/ticket/";
+        const string CLDR_TICKET_PREFIX = "cldrbug:";
 
         /**
          * Log the known issue.

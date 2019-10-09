@@ -69,8 +69,8 @@ namespace ICU4N.Dev.Test.Translit
     /// </summary>
     public class UnicodeMapTest : TestFmwk
     {
-        internal static readonly int MODIFY_TEST_LIMIT = 32;
-        internal static readonly int MODIFY_TEST_ITERATIONS = 100000;
+        internal const int MODIFY_TEST_LIMIT = 32;
+        internal const int MODIFY_TEST_ITERATIONS = 100000;
 
 
 
@@ -384,10 +384,10 @@ namespace ICU4N.Dev.Test.Translit
             assertEquals("copy-def", new Integer(4), copy.Get("def"));
         }
 
-        private static readonly int LIMIT = 0x15; // limit to make testing more realistic in terms of collisions
-        private static readonly int ITERATIONS = 1000000;
-        private static readonly bool SHOW_PROGRESS = false;
-        private static readonly bool DEBUG = false;
+        private const int LIMIT = 0x15; // limit to make testing more realistic in terms of collisions
+        private const int ITERATIONS = 1000000;
+        private const bool SHOW_PROGRESS = false;
+        private const bool DEBUG = false;
 
         SortedSet<string> log = new SortedSet<string>();
         static string[] TEST_VALUES = { "A", "B", "C", "D", "E", "F" };
@@ -419,8 +419,8 @@ namespace ICU4N.Dev.Test.Translit
             checkNext(map1, map2, LIMIT);
         }
 
-        private static readonly int SET_LIMIT = 0x10FFFF;
-        private static readonly UProperty propEnum = UProperty.General_Category;
+        private const int SET_LIMIT = 0x10FFFF;
+        private const UProperty propEnum = UProperty.General_Category;
 
         [Test]
         public void TestUnicodeMapGeneralCategory()

@@ -14,11 +14,11 @@ namespace ICU4N.Support.Collections
         : ICloneable
 #endif
     {
-        private static readonly int OFFSET = 6;
+        private const int OFFSET = 6;
 
-        private static readonly int ELM_SIZE = 1 << OFFSET;
+        private const int ELM_SIZE = 1 << OFFSET;
 
-        private static readonly int RIGHT_BITS = ELM_SIZE - 1;
+        private const int RIGHT_BITS = ELM_SIZE - 1;
 
         private static readonly long[] TWO_N_ARRAY = new long[] { 0x1L, 0x2L, 0x4L,
             0x8L, 0x10L, 0x20L, 0x40L, 0x80L, 0x100L, 0x200L, 0x400L, 0x800L,

@@ -277,7 +277,7 @@ namespace ICU4N.Dev.Test.StringPrep
             }
 
         }
-        private static readonly int MAX_BUFFER_SIZE = 100;
+        private const int MAX_BUFFER_SIZE = 100;
 
         public static StringBuffer Decode(StringBuffer input, char[] case_flags)
         {

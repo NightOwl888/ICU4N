@@ -11,14 +11,14 @@ namespace ICU4N.Dev.Test.StringPrep
     public class IDNAReference
     {
         private static char[] ACE_PREFIX = new char[] { (char)0x0078, (char)0x006E, (char)0x002d, (char)0x002d };
-        private static readonly int ACE_PREFIX_LENGTH = 4;
+        private const int ACE_PREFIX_LENGTH = 4;
 
-        private static readonly int MAX_LABEL_LENGTH = 63;
-        private static readonly int HYPHEN = 0x002D;
-        private static readonly int CAPITAL_A = 0x0041;
-        private static readonly int CAPITAL_Z = 0x005A;
-        private static readonly int LOWER_CASE_DELTA = 0x0020;
-        private static readonly int FULL_STOP = 0x002E;
+        private const int MAX_LABEL_LENGTH = 63;
+        private const int HYPHEN = 0x002D;
+        private const int CAPITAL_A = 0x0041;
+        private const int CAPITAL_Z = 0x005A;
+        private const int LOWER_CASE_DELTA = 0x0020;
+        private const int FULL_STOP = 0x002E;
 
         public const IDNA2003Options DEFAULT = IDNA2003Options.Default; // 0x0000;
         public const IDNA2003Options ALLOW_UNASSIGNED = IDNA2003Options.AllowUnassigned; // 0x0001;

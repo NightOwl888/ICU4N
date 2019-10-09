@@ -691,14 +691,14 @@ namespace ICU4N.Impl
         ///     </description></item>
         /// </list>
         /// </summary>
-        public static readonly int MAX_STRING_LENGTH = 0x1f;
+        public const int MAX_STRING_LENGTH = 0x1f; // ICU4N TODO: API - rename per .NET conventions
 
-        //private static readonly int LOC_UNKNOWN=0;
-        public static readonly int LOC_ROOT = 1;
-        private static readonly int LOC_TURKISH = 2;
-        private static readonly int LOC_LITHUANIAN = 3;
-        internal static readonly int LOC_GREEK = 4;
-        public static readonly int LOC_DUTCH = 5;
+        //private const int LOC_UNKNOWN=0;
+        public const int LOC_ROOT = 1;
+        private const int LOC_TURKISH = 2;
+        private const int LOC_LITHUANIAN = 3;
+        internal const int LOC_GREEK = 4;
+        public const int LOC_DUTCH = 5;
 
         public static int GetCaseLocale(CultureInfo locale)
         {
@@ -932,7 +932,7 @@ namespace ICU4N.Impl
             return false; /* no dot above following */
         }
 
-        private static readonly string
+        private const string
                 iDot = "i\u0307",
                 jDot = "j\u0307",
                 iOgonekDot = "\u012f\u0307",
@@ -1010,7 +1010,7 @@ namespace ICU4N.Impl
         /// when operating on strings.
         /// </remarks>
         /// <internal/>
-        private static readonly int FOLD_CASE_OPTIONS_MASK = 7;
+        private const int FOLD_CASE_OPTIONS_MASK = 7;
 
         /// <summary>Returns the simple case folding mapping for <paramref name="c"/>.</summary>
         public int Fold(int c, FoldCase options)

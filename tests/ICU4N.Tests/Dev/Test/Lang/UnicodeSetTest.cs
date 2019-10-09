@@ -22,7 +22,7 @@ namespace ICU4N.Dev.Test.Lang
     /// </summary>
     public class UnicodeSetTest : TestFmwk
     {
-        static readonly String NOT = "%%%%";
+        const String NOT = "%%%%";
 
         private static bool IsCccValue(int ccc)
         {

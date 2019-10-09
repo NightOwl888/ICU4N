@@ -22,10 +22,10 @@ namespace ICU4N.Dev.Test.Translit
     public class RoundTripTest : TestFmwk
     {
         //TODO - revisit test cases referencing FIX_ME
-        internal static readonly bool FIX_ME = false;
+        internal const bool FIX_ME = false;
 
-        internal static readonly bool EXTRA_TESTS = true;
-        internal static readonly bool PRINT_RULES = true;
+        internal const bool EXTRA_TESTS = true;
+        internal const bool PRINT_RULES = true;
 
         /*
         public void TestSingle() throws IOException, ParseException {
@@ -425,7 +425,7 @@ namespace ICU4N.Dev.Test.Translit
             ShowElapsed(start, "TestCyrillic");
         }
 
-        static readonly String ARABIC = "[\u06A9\u060C\u061B\u061F\u0621\u0627-\u063A\u0641-\u0655\u0660-\u066C\u067E\u0686\u0698\u06A4\u06AD\u06AF\u06CB-\u06CC\u06F0-\u06F9]";
+        const String ARABIC = "[\u06A9\u060C\u061B\u061F\u0621\u0627-\u063A\u0641-\u0655\u0660-\u066C\u067E\u0686\u0698\u06A4\u06AD\u06AF\u06CB-\u06CC\u06F0-\u06F9]";
 
         [Test]
         public void TestArabic()
@@ -1094,7 +1094,7 @@ namespace ICU4N.Dev.Test.Translit
                 this.full = full;
             }
 
-            static readonly char IOTA_SUBSCRIPT = '\u0345';
+            const char IOTA_SUBSCRIPT = '\u0345';
             static readonly UnicodeSet breathing = new UnicodeSet("[\\u0313\\u0314']");
             static readonly UnicodeSet validSecondVowel = new UnicodeSet("[\\u03C5\\u03B9\\u03A5\\u0399]");
 

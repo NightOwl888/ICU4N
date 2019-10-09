@@ -376,7 +376,7 @@ namespace ICU4N.Impl
             }
         }
         private static readonly IsAcceptable IS_ACCEPTABLE = new IsAcceptable();
-        private static readonly int DATA_FORMAT = 0x4e726d32;  // "Nrm2"
+        private const int DATA_FORMAT = 0x4e726d32;  // "Nrm2"
 
         public Normalizer2Impl Load(ByteBuffer bytes)
         {
@@ -1771,9 +1771,9 @@ namespace ICU4N.Impl
         private IList<UnicodeSet> canonStartSets;
 
         // bits in canonIterData
-        private static readonly int CANON_NOT_SEGMENT_STARTER = unchecked((int)0x80000000);
-        private static readonly int CANON_HAS_COMPOSITIONS = 0x40000000;
-        private static readonly int CANON_HAS_SET = 0x200000;
-        private static readonly int CANON_VALUE_MASK = 0x1fffff;
+        private const int CANON_NOT_SEGMENT_STARTER = unchecked((int)0x80000000);
+        private const int CANON_HAS_COMPOSITIONS = 0x40000000;
+        private const int CANON_HAS_SET = 0x200000;
+        private const int CANON_VALUE_MASK = 0x1fffff;
     }
 }

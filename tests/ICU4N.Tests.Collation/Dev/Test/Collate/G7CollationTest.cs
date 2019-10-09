@@ -40,10 +40,10 @@ namespace ICU4N.Dev.Test.Collate
             new int[] { 19, 22, 21, 24, 23, 25, 12, 13, 9, 0, 17, 16, 28, 26, 27, 15, 18, 14, 1, 11, 2, 3, 4, 5, 20, 6, 8, 10, 7, 29 }
         };
 
-        //private static readonly int MAX_TOKEN_LEN = 16;
-        //private static readonly int TESTLOCALES = 12;
-        private static readonly int FIXEDTESTSET = 15;
-        private static readonly int TOTALTESTSET = 30;
+        //private const int MAX_TOKEN_LEN = 16;
+        //private const int TESTLOCALES = 12;
+        private const int FIXEDTESTSET = 15;
+        private const int TOTALTESTSET = 30;
 
         // perform test with added rules " & Z < p, P"
         [Test]

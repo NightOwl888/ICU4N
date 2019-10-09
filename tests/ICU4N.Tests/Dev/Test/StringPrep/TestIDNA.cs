@@ -721,9 +721,9 @@ namespace ICU4N.Dev.Test.StringPrep
         }
 
 
-        private static readonly int loopCount = 100;
-        private static readonly int maxCharCount = 15;
-        // private static final int maxCodePoint = 0x10ffff;
+        private const int loopCount = 100;
+        private const int maxCharCount = 15;
+        // private const int maxCodePoint = 0x10ffff;
         private Random random = null;
 
         /**

@@ -12,7 +12,7 @@ namespace ICU4N.Dev.Test.Normalizers
 {
     public class TestCanonicalIterator : TestFmwk
     {
-        static readonly bool SHOW_NAMES = false;
+        const bool SHOW_NAMES = false;
 
         static readonly string[][] testArray = {
            new string[] {"\u00C5d\u0307\u0327", "A\u030Ad\u0307\u0327, A\u030Ad\u0327\u0307, A\u030A\u1E0B\u0327, "

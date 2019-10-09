@@ -16,7 +16,7 @@ namespace ICU4N.Dev.Test.Collate
     /// <author>Mark Davis</author>
     public class AlphabeticIndexTest : TestFmwk
     {
-        private static readonly string ARROW = "\u2192";
+        private const string ARROW = "\u2192";
         private static readonly bool DEBUG = ICUDebug.Enabled("alphabeticindex");
 
         public static IList<string> KEY_LOCALES = new List<string>() {

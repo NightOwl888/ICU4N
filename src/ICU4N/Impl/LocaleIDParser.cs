@@ -111,7 +111,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Character to indicate no more text is available in the id.
         /// </summary>
-        private static readonly char DONE = '\uffff';
+        private const char DONE = '\uffff';
 
         /// <summary>
         /// Returns the character at index in the id, and advance index.  The returned character

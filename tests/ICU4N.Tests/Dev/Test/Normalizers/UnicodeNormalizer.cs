@@ -24,7 +24,7 @@ namespace ICU4N.Dev.Test.Normalizers
         /**
         * Masks for the form selector
         */
-        static readonly byte
+        const byte
             COMPATIBILITY_MASK = 1,
             COMPOSITION_MASK = 2;
 

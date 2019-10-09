@@ -441,23 +441,23 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         // spans to be performed and compared
-        internal static readonly int SPAN_UTF16 = 1;
-        internal static readonly int SPAN_UTF8 = 2;
-        internal static readonly int SPAN_UTFS = 3;
+        internal const int SPAN_UTF16 = 1;
+        internal const int SPAN_UTF8 = 2;
+        internal const int SPAN_UTFS = 3;
 
-        internal static readonly int SPAN_SET = 4;
-        internal static readonly int SPAN_COMPLEMENT = 8;
-        internal static readonly int SPAN_POLARITY = 0xc;
+        internal const int SPAN_SET = 4;
+        internal const int SPAN_COMPLEMENT = 8;
+        internal const int SPAN_POLARITY = 0xc;
 
-        internal static readonly int SPAN_FWD = 0x10;
-        internal static readonly int SPAN_BACK = 0x20;
-        internal static readonly int SPAN_DIRS = 0x30;
+        internal const int SPAN_FWD = 0x10;
+        internal const int SPAN_BACK = 0x20;
+        internal const int SPAN_DIRS = 0x30;
 
-        internal static readonly int SPAN_CONTAINED = 0x100;
-        internal static readonly int SPAN_SIMPLE = 0x200;
-        internal static readonly int SPAN_CONDITION = 0x300;
+        internal const int SPAN_CONTAINED = 0x100;
+        internal const int SPAN_SIMPLE = 0x200;
+        internal const int SPAN_CONDITION = 0x300;
 
-        internal static readonly int SPAN_ALL = 0x33f;
+        internal const int SPAN_ALL = 0x33f;
 
         internal static SpanCondition InvertSpanCondition(SpanCondition spanCondition, SpanCondition contained)
         {
@@ -655,11 +655,11 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         // sets to be tested; odd index=isComplement
-        internal static readonly int SLOW = 0;
-        internal static readonly int SLOW_NOT = 1;
-        internal static readonly int FAST = 2;
-        internal static readonly int FAST_NOT = 3;
-        internal static readonly int SET_COUNT = 4;
+        internal const int SLOW = 0;
+        internal const int SLOW_NOT = 1;
+        internal const int FAST = 2;
+        internal const int FAST_NOT = 3;
+        internal const int SET_COUNT = 4;
 
         internal static readonly String[] setNames = { "slow", "slow.not", "fast", "fast.not" };
 
@@ -882,7 +882,7 @@ namespace ICU4N.Dev.Test.Lang
                     (char)0xd7a4, (char)0xdc05, (char)0xd900, (char)0x2028  // unassigned, surrogates in wrong order, LS
             };
         internal static String interestingString = new String(interestingStringChars);
-        internal static readonly String unicodeSet1 = "[[[:ID_Continue:]-[\\u30ab\\u30ad]]{\\u3000\\u30ab}{\\u3000\\u30ab\\u30ad}]";
+        internal const String unicodeSet1 = "[[[:ID_Continue:]-[\\u30ab\\u30ad]]{\\u3000\\u30ab}{\\u3000\\u30ab\\u30ad}]";
 
         [Test]
         public void TestInterestingStringSpan()
@@ -954,16 +954,16 @@ namespace ICU4N.Dev.Test.Lang
         // and a trailing lead surrogate must not match in the middle of a proper surrogate pair.
         // U+20001 == \\uD840\\uDC01
         // U+20400 == \\uD841\\uDC00
-        internal static readonly String patternWithUnpairedSurrogate =
+        internal const String patternWithUnpairedSurrogate =
         "[a\\U00020001\\U00020400{ab}{b\\uD840}{\\uDC00a}]";
-        internal static readonly String stringWithUnpairedSurrogate =
+        internal const String stringWithUnpairedSurrogate =
         "aaab\\U00020001ba\\U00020400aba\\uD840ab\\uD840\\U00020000b\\U00020000a\\U00020000\\uDC00a\\uDC00babbb";
 
-        internal static readonly String _63_a = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-        internal static readonly String _64_a = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-        internal static readonly String _63_b = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
-        internal static readonly String _64_b = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
-        internal static readonly String longPattern =
+        internal const String _63_a = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        internal const String _64_a = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        internal const String _63_b = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+        internal const String _64_b = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+        internal const String longPattern =
         "[a{" + _64_a + _64_a + _64_a + _64_a + "b}" + "{a" + _64_b + _64_b + _64_b + _64_b + "}]";
 
         [Test]

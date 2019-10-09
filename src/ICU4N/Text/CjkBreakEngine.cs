@@ -48,10 +48,10 @@ namespace ICU4N.Text
             return GetType().GetHashCode();
         }
 
-        private static readonly int kMaxKatakanaLength = 8;
-        private static readonly int kMaxKatakanaGroupLength = 20;
-        private static readonly int maxSnlp = 255;
-        private static readonly int kint32max = int.MaxValue;
+        private const int kMaxKatakanaLength = 8;
+        private const int kMaxKatakanaGroupLength = 20;
+        private const int maxSnlp = 255;
+        private const int kint32max = int.MaxValue;
         private static int GetKatakanaCost(int wordlength)
         {
             int[] katakanaCost = new int[] { 8192, 984, 408, 240, 204, 252, 300, 372, 480 };

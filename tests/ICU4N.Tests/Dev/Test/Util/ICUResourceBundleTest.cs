@@ -812,8 +812,8 @@ namespace ICU4N.Dev.Test.Util
             }
         }
 
-        private static readonly string CALENDAR_RESNAME = "calendar";
-        private static readonly string CALENDAR_KEYWORD = "calendar";
+        private const string CALENDAR_RESNAME = "calendar";
+        private const string CALENDAR_KEYWORD = "calendar";
 
         [Test]
         public void TestLocaleDisplayNames()

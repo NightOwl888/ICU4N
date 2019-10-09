@@ -1237,7 +1237,7 @@ namespace ICU4N.Impl
                             reader.GetKey16String(keyOffsets[index]) :
                             reader.GetKey32String(key32Offsets[index]);
             }
-            private static readonly int URESDATA_ITEM_NOT_FOUND = -1;
+            private const int URESDATA_ITEM_NOT_FOUND = -1;
             internal int FindTableItem(ICUResourceBundleReader reader, string key) // ICU4N specific: Changed key from ICharSequence to string
             {
                 int mid, start, limit;
@@ -1368,12 +1368,12 @@ namespace ICU4N.Impl
         private sealed class ResourceCache
         {
             // Number of items to be stored in a simple array with binary search and insertion sort.
-            private static readonly int SIMPLE_LENGTH = 32;
+            private const int SIMPLE_LENGTH = 32;
 
             // When more than SIMPLE_LENGTH items are cached,
             // then switch to a trie-like tree of levels with different array lengths.
-            private static readonly int ROOT_BITS = 7;
-            private static readonly int NEXT_BITS = 6;
+            private const int ROOT_BITS = 7;
+            private const int NEXT_BITS = 6;
 
             // Simple table, used when length >= 0.
             private int[] keys = new int[SIMPLE_LENGTH];
@@ -1664,7 +1664,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private static readonly string ICU_RESOURCE_SUFFIX = ".res";
+        private const string ICU_RESOURCE_SUFFIX = ".res";
 
         /// <summary>
         /// Gets the full name of the resource with suffix.

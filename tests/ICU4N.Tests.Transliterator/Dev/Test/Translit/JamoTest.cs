@@ -262,7 +262,7 @@ namespace ICU4N.Dev.Test.Translit
         }
 
         // Test text taken from the Unicode web site
-        internal static readonly String WHAT_IS_UNICODE =
+        internal const String WHAT_IS_UNICODE =
 
         "\uc720\ub2c8\ucf54\ub4dc\uc5d0 \ub300\ud574 ? " +
 

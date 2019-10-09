@@ -1595,7 +1595,7 @@ namespace ICU4N.Impl.Coll
         /// <summary>
         /// <see cref="Collation.BUILDER_DATA_TAG"/>
         /// </summary>
-        private static readonly int IS_BUILDER_JAMO_CE32 = 0x100;
+        private const int IS_BUILDER_JAMO_CE32 = 0x100;
 
         private Normalizer2Impl nfcImpl;
         private CollationData base_;

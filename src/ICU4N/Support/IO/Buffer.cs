@@ -53,7 +53,7 @@ namespace ICU4N.Support.IO
         /// <summary>
         /// <c>UnsetMark</c> means the mark has not been set.
         /// </summary>
-        internal readonly static int UnsetMark = -1;
+        internal const int UnsetMark = -1;
 
         /// <summary>
         /// The capacity of this buffer, which never change.

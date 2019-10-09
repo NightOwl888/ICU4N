@@ -12,10 +12,10 @@ namespace ICU4N.Dev.Test.Util
 {
     public sealed class ICUResourceBundleCollationTest : TestFmwk
     {
-        private static readonly String COLLATION_RESNAME = "collations";
-        private static readonly String COLLATION_KEYWORD = "collation";
-        private static readonly String DEFAULT_NAME = "default";
-        private static readonly String STANDARD_NAME = "standard";
+        private const String COLLATION_RESNAME = "collations";
+        private const String COLLATION_KEYWORD = "collation";
+        private const String DEFAULT_NAME = "default";
+        private const String STANDARD_NAME = "standard";
 
         [Test]
         [Ignore("ICU4N TOOD: Fix this")]
