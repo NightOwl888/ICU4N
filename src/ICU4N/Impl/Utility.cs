@@ -453,20 +453,20 @@ namespace ICU4N.Impl
         /// <summary>
         /// Construct an array of <see cref="int"/>s from a run-length encoded <see cref="string"/>.
         /// </summary>
-        static public int[] RLEStringToIntArray(string s) // ICU4N TODO: API - rename Int to Int32
+        static public int[] RLEStringToInt32Array(string s) // ICU4N specific - renamed from RLEStringToIntArray
         {
-            int length = GetInt(s, 0);
+            int length = GetInt32(s, 0);
             int[] array = new int[length];
             int ai = 0, i = 1;
 
             int maxI = s.Length / 2;
             while (ai < length && i < maxI)
             {
-                int c = GetInt(s, i++);
+                int c = GetInt32(s, i++);
 
                 if (c == ESCAPE)
                 {
-                    c = GetInt(s, i++);
+                    c = GetInt32(s, i++);
                     if (c == ESCAPE)
                     {
                         array[ai++] = c;
@@ -474,7 +474,7 @@ namespace ICU4N.Impl
                     else
                     {
                         int runLength = c;
-                        int runValue = GetInt(s, i++);
+                        int runValue = GetInt32(s, i++);
                         for (int j = 0; j < runLength; ++j)
                         {
                             array[ai++] = runValue;
@@ -494,7 +494,7 @@ namespace ICU4N.Impl
 
             return array;
         }
-        internal static int GetInt(string s, int i) // ICU4N TODO: API - rename Int to Int32
+        internal static int GetInt32(string s, int i) // ICU4N specific - renamed from GetInt
         {
             return ((s[2 * i]) << 16) | s[2 * i + 1];
         }
@@ -502,7 +502,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Construct an array of <see cref="short"/>s from a run-length encoded <see cref="string"/>.
         /// </summary>
-        static public short[] RLEStringToShortArray(string s) // ICU4N TODO: API - rename Short to Int16
+        static public short[] RLEStringToInt16Array(string s) // ICU4N specific - renamed from RLEStringToShortArray
         {
             int length = ((s[0]) << 16) | (s[1]);
             short[] array = new short[length];
