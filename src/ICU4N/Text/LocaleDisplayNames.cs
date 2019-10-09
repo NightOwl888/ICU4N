@@ -20,7 +20,7 @@ namespace ICU4N.Text
         /// Enumerator used in <see cref="GetInstance(ULocale, DialectHandling)"/>.
         /// </summary>
         /// <stable>ICU 4.4</stable>
-        public enum DialectHandling // ICU4N TODO: API - de-nest and rename LocaleDisplayNamesDialectHandling
+        public enum DialectHandling
         {
             /// <summary>
             /// Use standard names when generating a locale name,
@@ -332,28 +332,26 @@ namespace ICU4N.Text
         /// <stable>ICU 55</stable>
         public class UiListItem
         {
-            // ICU4N TODO: API - make into properties
-
-            /// <summary>
+             /// <summary>
             /// Returns the minimized locale for an input locale, such as sr-Cyrl → sr
             /// </summary>
             /// <stable>ICU 55</stable>
-            public readonly ULocale minimized;
+            public ULocale Minimized { get; private set; }
             /// <summary>
             /// Returns the modified locale for an input locale, such as sr → sr-Cyrl, where there is also an sr-Latn in the list
             /// </summary>
             /// <stable>ICU 55</stable>
-            public readonly ULocale modified;
+            public ULocale Modified { get; private set; }
             /// <summary>
             /// Returns the name of the modified locale in the display locale, such as "Englisch (VS)" (for 'en-US', where the display locale is 'de').
             /// </summary>
             /// <stable>ICU 55</stable>
-            public readonly string nameInDisplayLocale;
+            public string NameInDisplayLocale { get; private set; }
             /// <summary>
             /// Returns the name of the modified locale in itself, such as "English (US)" (for 'en-US').
             /// </summary>
             /// <stable>ICU 55</stable>
-            public readonly string nameInSelf;
+            public string NameInSelf { get; private set; }
 
             /// <summary>
             /// Constructor, normally only called internally.
@@ -365,10 +363,10 @@ namespace ICU4N.Text
             /// <stable>ICU 55</stable>
             public UiListItem(ULocale minimized, ULocale modified, string nameInDisplayLocale, string nameInSelf)
             {
-                this.minimized = minimized;
-                this.modified = modified;
-                this.nameInDisplayLocale = nameInDisplayLocale;
-                this.nameInSelf = nameInSelf;
+                this.Minimized = minimized;
+                this.Modified = modified;
+                this.NameInDisplayLocale = nameInDisplayLocale;
+                this.NameInSelf = nameInSelf;
             }
 
             /// <summary>
@@ -388,10 +386,10 @@ namespace ICU4N.Text
                     return false;
                 }
                 UiListItem other = (UiListItem)obj;
-                return nameInDisplayLocale.Equals(other.nameInDisplayLocale)
-                        && nameInSelf.Equals(other.nameInSelf)
-                        && minimized.Equals(other.minimized)
-                        && modified.Equals(other.modified);
+                return NameInDisplayLocale.Equals(other.NameInDisplayLocale)
+                        && NameInSelf.Equals(other.NameInSelf)
+                        && Minimized.Equals(other.Minimized)
+                        && Modified.Equals(other.Modified);
             }
 
             /// <summary>
@@ -401,7 +399,7 @@ namespace ICU4N.Text
             /// <stable>ICU 55</stable>
             public override int GetHashCode()
             {
-                return modified.GetHashCode() ^ nameInDisplayLocale.GetHashCode();
+                return Modified.GetHashCode() ^ NameInDisplayLocale.GetHashCode();
             }
 
             /// <summary>
@@ -411,7 +409,7 @@ namespace ICU4N.Text
             /// <stable>ICU 55</stable>
             public override string ToString()
             {
-                return "{" + minimized + ", " + modified + ", " + nameInDisplayLocale + ", " + nameInSelf + "}";
+                return "{" + Minimized + ", " + Modified + ", " + NameInDisplayLocale + ", " + NameInSelf + "}";
             }
 
             /// <summary>
@@ -424,7 +422,7 @@ namespace ICU4N.Text
             /// <stable>ICU 55</stable>
             public static IComparer<UiListItem> GetComparer(IComparer<string> comparer, bool inSelf)
             {
-                return new UiListItemComparator(comparer, inSelf);
+                return new UiListItemComparer(comparer, inSelf);
             }
 
             /// <summary>
@@ -437,20 +435,20 @@ namespace ICU4N.Text
             /// <stable>ICU4N 60</stable>
             public static IComparer<UiListItem> GetComparer(CompareInfo comparer, bool inSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
             {
-                return new UiListItemComparator(comparer, inSelf);
+                return new UiListItemComparer(comparer, inSelf);
             }
 
-            private class UiListItemComparator : IComparer<UiListItem>
+            private class UiListItemComparer : IComparer<UiListItem>
             {
                 private readonly IComparer<string> collator;
                 private readonly bool useSelf;
 
-                internal UiListItemComparator(CompareInfo collator, bool useSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
+                internal UiListItemComparer(CompareInfo collator, bool useSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
                     : this(collator.ToComparer(), useSelf)
                 {
                 }
 
-                internal UiListItemComparator(IComparer<string> collator, bool useSelf)
+                internal UiListItemComparer(IComparer<string> collator, bool useSelf)
                 {
                     this.collator = collator;
                     this.useSelf = useSelf;
@@ -458,9 +456,9 @@ namespace ICU4N.Text
 
                 public int Compare(UiListItem o1, UiListItem o2)
                 {
-                    int result = useSelf ? collator.Compare(o1.nameInSelf, o2.nameInSelf)
-                            : collator.Compare(o1.nameInDisplayLocale, o2.nameInDisplayLocale);
-                    return result != 0 ? result : o1.modified.CompareTo(o2.modified); // just in case
+                    int result = useSelf ? collator.Compare(o1.NameInSelf, o2.NameInSelf)
+                            : collator.Compare(o1.NameInDisplayLocale, o2.NameInDisplayLocale);
+                    return result != 0 ? result : o1.Modified.CompareTo(o2.Modified); // just in case
                 }
             }
         }
