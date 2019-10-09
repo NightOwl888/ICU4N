@@ -15,20 +15,30 @@ namespace ICU4N.Impl.Locale
         private SortedSet<string> _attributes = EMPTY_SORTED_SET;
         private SortedDictionary<string, string> _keywords = EMPTY_SORTED_MAP;
 
-        public static readonly UnicodeLocaleExtension CalendarJapanese;
-        public static readonly UnicodeLocaleExtension NumberThai;
+        public static readonly UnicodeLocaleExtension CalendarJapanese = LoadCalendarJapanese();
+        public static readonly UnicodeLocaleExtension NumberThai = LoadNumberThai();
 
-        static UnicodeLocaleExtension() // ICU4N TODO: Avoid static constructor
+        private static UnicodeLocaleExtension LoadCalendarJapanese() // ICU4N: Avoid static constructor
         {
-            CalendarJapanese = new UnicodeLocaleExtension();
-            CalendarJapanese._keywords = new SortedDictionary<string, string>(StringComparer.Ordinal);
-            CalendarJapanese._keywords["ca"] = "japanese";
-            CalendarJapanese.m_value = "ca-japanese";
-
-            NumberThai = new UnicodeLocaleExtension();
-            NumberThai._keywords = new SortedDictionary<string, string>(StringComparer.Ordinal);
-            NumberThai._keywords["nu"] = "thai";
-            NumberThai.m_value = "nu-thai";
+            return new UnicodeLocaleExtension
+            {
+                _keywords = new SortedDictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["ca"] = "japanese"
+                },
+                m_value = "ca-japanese"
+            };
+        }
+        private static UnicodeLocaleExtension LoadNumberThai() // ICU4N: Avoid static constructor
+        {
+            return new UnicodeLocaleExtension
+            {
+                _keywords = new SortedDictionary<string, string>(StringComparer.Ordinal)
+                {
+                    ["nu"] = "thai"
+                },
+                m_value = "nu-thai"
+            };
         }
 
         private UnicodeLocaleExtension()

@@ -23,7 +23,7 @@ namespace ICU4N.Impl
         private IDictionary<string, string> localeIdToOrdinalRulesId;
         private IDictionary<string, ULocale> rulesIdToEquivalentULocale;
 #pragma warning disable 612, 618
-        private static IDictionary<string, PluralRanges> localeIdToPluralRanges;
+        private static readonly IDictionary<string, PluralRanges> localeIdToPluralRanges = LoadLocaleIdToPluralRanges();
 #pragma warning restore 612, 618
 
         private readonly object syncLock = new object();
@@ -343,7 +343,11 @@ namespace ICU4N.Impl
 #pragma warning restore 1591
 
         // TODO markdavis FIX HARD-CODED HACK once we have data from CLDR in the bundles
-        static PluralRulesLoader()
+
+        // ICU4N: Avoid static constructor by initializing inline
+#pragma warning disable 612, 618
+        private static IDictionary<string, PluralRanges> LoadLocaleIdToPluralRanges()
+#pragma warning restore 612, 618
         {
             string[][] pluralRangeData = new string[][] {
                 new string[] {"locales", "id ja km ko lo ms my th vi zh"},
@@ -575,7 +579,7 @@ namespace ICU4N.Impl
                 tempLocaleIdToPluralRanges[locale] = pr;
             }
             // now make whole thing immutable
-            localeIdToPluralRanges = tempLocaleIdToPluralRanges.ToUnmodifiableDictionary();
+            return tempLocaleIdToPluralRanges.ToUnmodifiableDictionary();
         }
     }
 }

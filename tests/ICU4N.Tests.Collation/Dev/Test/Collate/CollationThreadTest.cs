@@ -9,8 +9,8 @@ namespace ICU4N.Dev.Test.Collate
 {
     public class CollationThreadTest : TestFmwk
     {
-        private static readonly String[] threadTestData;
-        static CollationThreadTest()
+        private static readonly String[] threadTestData = LoadCollationThreadTestData();
+        private static string[] LoadCollationThreadTestData()
         {
             Collator collator = Collator.GetInstance(new CultureInfo("pl"));
             String[] temporaryData = {
@@ -122,9 +122,9 @@ namespace ICU4N.Dev.Test.Collate
                 "Zakgat Meqivadj Nrpxlekmodx s Bbymjozge W.Y.",
                 "Zjetxpbkpgj Mmhhgohasjtpkjd Uwucubbpdj K.N.",
                 "ZREH"
-        };
+            };
             Sort(temporaryData, collator);
-            threadTestData = temporaryData;
+            return temporaryData;
         }
 
         private static void Scramble(String[] data, Random r)

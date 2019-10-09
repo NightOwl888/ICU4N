@@ -517,7 +517,7 @@ namespace ICU4N.Util
 
         // static declaration ------------------------------------------------
 
-        // ICU4N specific - eliminated static constructor in favor of loading static fields individually on demand.
+        // ICU4N specific - eliminated static constructor in favor of loading static fields inline.
 
         // private constructor -----------------------------------------------
 

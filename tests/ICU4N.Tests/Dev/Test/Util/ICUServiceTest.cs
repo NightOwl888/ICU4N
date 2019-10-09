@@ -718,17 +718,16 @@ namespace ICU4N.Dev.Test.Util
             public static string valley = californio + "_VALLEY";
             public static string surfer = californio + "_SURFER";
             public static string geek = californio + "_GEEK";
-            public static ISet<string> supportedIDs;
-            static CalifornioLanguageFactory()
+            public static ISet<string> supportedIDs = LoadSupportedIDs();
+            private static ISet<string> LoadSupportedIDs()
             {
                 HashSet<string> result = new HashSet<string>();
-                // ICU4N TODO: Finish implementation
-                //result.UnionWith(ICUResourceBundle.GetAvailableLocaleNameSet());
+                result.UnionWith(ICUResourceBundle.GetAvailableLocaleNameSet());
                 result.Add(californio);
                 result.Add(valley);
                 result.Add(surfer);
                 result.Add(geek);
-                supportedIDs = result.ToUnmodifiableSet();
+                return result.ToUnmodifiableSet();
             }
 
             protected override ICollection<string> GetSupportedIDs()

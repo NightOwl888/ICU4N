@@ -63,11 +63,7 @@ namespace ICU4N.Dev.Test
         private static readonly string SEED = "ICU.seed";
         private static readonly string SECURITY_POLICY = "ICU.securitypolicy";
 
-        private static readonly TestParams testParams;
-        static TestFmwk()
-        {
-            testParams = TestParams.Create();
-        }
+        private static readonly TestParams testParams = TestParams.Create();
 
         protected TestFmwk()
         {

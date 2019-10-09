@@ -1406,7 +1406,7 @@ namespace ICU4N.Text
                 }
                 if (msg[index] == '}')
                 {
-                    if (!inMessageFormatPattern(nestingLevel))
+                    if (!InMessageFormatPattern(nestingLevel))
                     {
                         throw new ArgumentException(
                             "Bad choice pattern syntax: " + Prefix(start));
@@ -1431,7 +1431,7 @@ namespace ICU4N.Text
                 bool eos = index == msg.Length;
                 if (eos || msg[index] == '}')
                 {
-                    if (eos == inMessageFormatPattern(nestingLevel))
+                    if (eos == InMessageFormatPattern(nestingLevel))
                     {
                         throw new ArgumentException(
                             "Bad " +
@@ -1807,7 +1807,7 @@ namespace ICU4N.Text
 
         /// <returns>true if we are inside a <see cref="MessageFormat"/> (sub-)pattern,
         /// as opposed to inside a top-level choice/plural/select pattern.</returns>
-        private bool inMessageFormatPattern(int nestingLevel)
+        private bool InMessageFormatPattern(int nestingLevel)
         {
             return nestingLevel > 0 || parts[0].Type == MessagePatternPartType.MsgStart;
         }
@@ -1913,16 +1913,12 @@ namespace ICU4N.Text
         private bool hasArgNumbers;
         private bool needsAutoQuoting;
         private volatile bool frozen;
-        private static readonly ApostropheMode defaultAposMode;
+
+        // ICU4N specific - changed the casing of the text to match that of the enum
+        // (both here and in ICUConfig.resx)
+        private static readonly ApostropheMode defaultAposMode = (ApostropheMode)Enum.Parse(typeof(ApostropheMode),
+                ICU4N.Impl.ICUConfig.Get("MessagePattern_ApostropheMode", "DoubleOptional"));
 
         // ICU4N specific - moved argTypes to Part class
-
-        static MessagePattern()
-        {
-            // ICU4N specific - changed the casing of the text to match that of the enum
-            // (both here and in ICUConfig.resx)
-            defaultAposMode = (ApostropheMode)Enum.Parse(typeof(ApostropheMode),
-                ICU4N.Impl.ICUConfig.Get("MessagePattern_ApostropheMode", "DoubleOptional"));
-        }
     }
 }

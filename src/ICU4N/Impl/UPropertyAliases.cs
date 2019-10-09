@@ -234,29 +234,24 @@ namespace ICU4N.Impl
         //----------------------------------------------------------------
         // Public API
 
-        private static readonly UPropertyAliases instance;
-
         /// <summary>
         /// public singleton instance
         /// </summary>
-        public static UPropertyAliases Instance
-        {
-            get { return instance;}
-        }
+        public static UPropertyAliases Instance { get; private set; } = LoadSingletonInstance(); // ICU4N: Avoid static constructor by initializing inline
 
-        static UPropertyAliases()
+        private static UPropertyAliases LoadSingletonInstance()
         {
             try
             {
-                instance = new UPropertyAliases();
+                return new UPropertyAliases();
             }
             catch (IOException e)
             {
-                //CLOVER:OFF
+                ////CLOVER:OFF
                 MissingManifestResourceException mre = new MissingManifestResourceException(
                         "Could not construct UPropertyAliases. Missing pnames.icu", e);
                 throw mre;
-                //CLOVER:ON
+                ////CLOVER:ON
             }
         }
 

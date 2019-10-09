@@ -17,38 +17,15 @@ namespace ICU4N.Text
         // Minimum word size
         private const byte BURMESE_MIN_WORD = 2;
 
-        private DictionaryMatcher fDictionary;
-        private static UnicodeSet fBurmeseWordSet;
-        private static UnicodeSet fEndWordSet;
-        private static UnicodeSet fBeginWordSet;
-        private static UnicodeSet fMarkSet;
+        private readonly DictionaryMatcher fDictionary;
 
-        static BurmeseBreakEngine() // ICU4N TODO: Avoid static constructor
-        {
-            // Initialize UnicodeSets
-            fBurmeseWordSet = new UnicodeSet();
-            fMarkSet = new UnicodeSet();
-            fBeginWordSet = new UnicodeSet();
-
-            fBurmeseWordSet.ApplyPattern("[[:Mymr:]&[:LineBreak=SA:]]");
-            fBurmeseWordSet.Compact();
-
-            fMarkSet.ApplyPattern("[[:Mymr:]&[:LineBreak=SA:]&[:M:]]");
-            fMarkSet.Add(0x0020);
-            fEndWordSet = new UnicodeSet(fBurmeseWordSet);
-            fBeginWordSet.Add(0x1000, 0x102A);      // basic consonants and independent vowels
-
-            // Compact for caching
-            fMarkSet.Compact();
-            fEndWordSet.Compact();
-            fBeginWordSet.Compact();
-
-            // Freeze the static UnicodeSet
-            fBurmeseWordSet.Freeze();
-            fMarkSet.Freeze();
-            fEndWordSet.Freeze();
-            fBeginWordSet.Freeze();
-        }
+        // ICU4N: Avoid static constructor by initializing inline
+        private static readonly UnicodeSet fBurmeseWordSet = new UnicodeSet("[[:Mymr:]&[:LineBreak=SA:]]").Compact().Freeze();
+        private static readonly UnicodeSet fEndWordSet = new UnicodeSet(fBurmeseWordSet).Compact().Freeze();
+        private static readonly UnicodeSet fBeginWordSet = new UnicodeSet()
+            .Add(0x1000, 0x102A) // basic consonants and independent vowels
+            .Compact().Freeze();
+        private static readonly UnicodeSet fMarkSet = new UnicodeSet("[[:Mymr:]&[:LineBreak=SA:]&[:M:]]").Add(0x0020).Compact().Freeze();
 
         public BurmeseBreakEngine()
             : base(BreakIterator.KIND_WORD, BreakIterator.KIND_LINE)

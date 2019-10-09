@@ -473,14 +473,37 @@ namespace ICU4N.Text
         {
         }
 
-        private static readonly MethodInfo FACTORY_DIALECTHANDLING;
-        private static readonly MethodInfo FACTORY_DISPLAYCONTEXT;
+        // ICU4N: Load class name only once for both methods below
+        private static readonly string implClassName = Impl.ICUConfig.Get("ICU4N.Text.LocaleDisplayNames.impl", "ICU4N.Impl.LocaleDisplayNamesImpl, ICU4N");
+        // ICU4N: Avoid static constructor by initializing inline
+        private static readonly MethodInfo FACTORY_DIALECTHANDLING = LoadFactoryDialectHandling();
+        private static readonly MethodInfo FACTORY_DISPLAYCONTEXT = LoadFactoryDisplayContext();
 
-        static LocaleDisplayNames() // ICU4N TODO: Avoid static constructor
+        private static MethodInfo LoadFactoryDialectHandling()
         {
-            string implClassName = Impl.ICUConfig.Get("ICU4N.LocaleDisplayNames.impl", "ICU4N.Impl.LocaleDisplayNamesImpl, ICU4N");
-
             MethodInfo factoryDialectHandling = null;
+
+            try
+            {
+                Type implClass = Type.GetType(implClassName);
+
+                if (implClass == null)
+                    return null;
+
+                // ICU4N NOTE: GetMethod() doesn't throw an exception if the method
+                // is not found in .NET.
+                factoryDialectHandling = implClass.GetMethod("GetInstance",
+                    new Type[] { typeof(ULocale), typeof(DialectHandling) });
+            }
+            catch (TypeLoadException)
+            {
+                // fallback to last resort impl
+            }
+
+            return factoryDialectHandling;
+        }
+        private static MethodInfo LoadFactoryDisplayContext()
+        {
             MethodInfo factoryDisplayContext = null;
 
             try
@@ -488,13 +511,10 @@ namespace ICU4N.Text
                 Type implClass = Type.GetType(implClassName);
 
                 if (implClass == null)
-                    return;
+                    return null;
 
                 // ICU4N NOTE: GetMethod() doesn't throw an exception if the method
                 // is not found in .NET.
-                factoryDialectHandling = implClass.GetMethod("GetInstance", 
-                    new Type[] { typeof(ULocale), typeof(DialectHandling) });
-
                 factoryDisplayContext = implClass.GetMethod("GetInstance",
                     new Type[] { typeof(ULocale), typeof(DialectHandling[]) });
             }
@@ -503,8 +523,7 @@ namespace ICU4N.Text
                 // fallback to last resort impl
             }
 
-            FACTORY_DIALECTHANDLING = factoryDialectHandling;
-            FACTORY_DISPLAYCONTEXT = factoryDisplayContext;
+            return factoryDisplayContext;
         }
 
         /// <summary>

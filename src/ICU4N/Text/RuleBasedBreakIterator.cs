@@ -285,7 +285,7 @@ namespace ICU4N.Text
         /// <para/>
         /// Only one instance; shared by all break iterators.
         /// </summary>
-        private static readonly UnhandledBreakEngine gUnhandledBreakEngine;
+        private static readonly UnhandledBreakEngine gUnhandledBreakEngine = new UnhandledBreakEngine(); // ICU4N: Avoid static constructor by intitializing inline
 
         /// <summary>
         /// List of all known break engines, common for all break iterators.
@@ -295,14 +295,7 @@ namespace ICU4N.Text
         /// Because <see cref="gAllBreakEngines"/> can be referenced concurrently from different
         /// <see cref="BreakIterator"/> instances, all access is synchronized.
         /// </summary>
-        private static readonly IList<ILanguageBreakEngine> gAllBreakEngines;
-
-        static RuleBasedBreakIterator() // ICU4N TODO: Avoid static constructor
-        {
-            gUnhandledBreakEngine = new UnhandledBreakEngine();
-            gAllBreakEngines = new List<ILanguageBreakEngine>();
-            gAllBreakEngines.Add(gUnhandledBreakEngine);
-        }
+        private static readonly IList<ILanguageBreakEngine> gAllBreakEngines = new List<ILanguageBreakEngine> { gUnhandledBreakEngine }; // ICU4N: Avoid static constructor by intitializing inline
 
         /// <summary>
         /// List of all known break engines. Similar to <see cref="gAllBreakEngines"/>, but local to a

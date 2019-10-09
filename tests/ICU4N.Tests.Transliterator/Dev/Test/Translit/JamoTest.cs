@@ -477,18 +477,25 @@ namespace ICU4N.Dev.Test.Translit
         "(Hf)", "\u11C2",
     };
 
-        internal static IDictionary<String, String> JAMO_TO_NAME;
-        internal static IDictionary<String, String> NAME_TO_JAMO;
-
-        static JamoTest()
+        internal static IDictionary<string, string> JAMO_TO_NAME = LoadJamoToName();
+        internal static IDictionary<string, string> NAME_TO_JAMO = LoadNameToJamo();
+        private static IDictionary<string, string> LoadJamoToName()
         {
-            JAMO_TO_NAME = new Dictionary<String, String>();
-            NAME_TO_JAMO = new Dictionary<String, String>();
+            var result = new Dictionary<string, string>();
             for (int i = 0; i < JAMO_NAMES.Length; i += 2)
             {
-                JAMO_TO_NAME[JAMO_NAMES[i + 1]] = JAMO_NAMES[i];
-                NAME_TO_JAMO[JAMO_NAMES[i]] = JAMO_NAMES[i + 1];
+                result[JAMO_NAMES[i + 1]] = JAMO_NAMES[i];
             }
+            return result;
+        }
+        private static IDictionary<string, string> LoadNameToJamo()
+        {
+            var result = new Dictionary<string, string>();
+            for (int i = 0; i < JAMO_NAMES.Length; i += 2)
+            {
+                result[JAMO_NAMES[i]] = JAMO_NAMES[i + 1];
+            }
+            return result;
         }
 
         /**

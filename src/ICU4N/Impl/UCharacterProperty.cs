@@ -37,16 +37,8 @@ namespace ICU4N.Impl
     {
         // public data members -----------------------------------------------
 
-        private static readonly UCharacterProperty instance;
-
-        /// <summary>
-        /// Public singleton instance.
-        /// </summary>
-        public static UCharacterProperty Instance
-        {
-            get { return instance; }
-        }
-
+        // ICU4N: Moved public Instance property to where static constructor was (we initialize inline and need to ensure it is last)
+        
         private Trie2_16 m_trie_;
         /// <summary>
         /// Trie data.
@@ -1662,13 +1654,18 @@ namespace ICU4N.Impl
             }
         }
 
+        /// <summary>
+        /// Public singleton instance.
+        /// </summary>
+        public static UCharacterProperty Instance { get; private set; } = LoadSingletonInstance(); // ICU4N: Avoid static constructor by initializing inline
+
         // This static initializer block must be placed after
         // other static member initialization
-        static UCharacterProperty() // ICU4N TODO: Avoid static constructor
+        private static UCharacterProperty LoadSingletonInstance()
         {
             try
             {
-                instance = new UCharacterProperty();
+                return new UCharacterProperty();
             }
             catch (IOException e)
             {

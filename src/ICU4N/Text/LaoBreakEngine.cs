@@ -17,41 +17,18 @@ namespace ICU4N.Text
         // Minimum word size
         private const byte LAO_MIN_WORD = 2;
 
-        private DictionaryMatcher fDictionary;
-        private static UnicodeSet fLaoWordSet;
-        private static UnicodeSet fEndWordSet;
-        private static UnicodeSet fBeginWordSet;
-        private static UnicodeSet fMarkSet;
-
-        static LaoBreakEngine() // ICU4N TODO: Avoid static constructor
-        {
-            // Initialize UnicodeSets
-            fLaoWordSet = new UnicodeSet();
-            fMarkSet = new UnicodeSet();
-            fBeginWordSet = new UnicodeSet();
-
-            fLaoWordSet.ApplyPattern("[[:Laoo:]&[:LineBreak=SA:]]");
-            fLaoWordSet.Compact();
-
-            fMarkSet.ApplyPattern("[[:Laoo:]&[:LineBreak=SA:]&[:M:]]");
-            fMarkSet.Add(0x0020);
-            fEndWordSet = new UnicodeSet(fLaoWordSet);
-            fEndWordSet.Remove(0x0EC0, 0x0EC4); // prefix vowels
-            fBeginWordSet.Add(0x0E81, 0x0EAE); // basic consonants (including holes for corresponding Thai characters)
-            fBeginWordSet.Add(0x0EDC, 0x0EDD); // digraph consonants (no Thai equivalent)
-            fBeginWordSet.Add(0x0EC0, 0x0EC4); // prefix vowels
-
-            // Compact for caching
-            fMarkSet.Compact();
-            fEndWordSet.Compact();
-            fBeginWordSet.Compact();
-
-            // Freeze the static UnicodeSet
-            fLaoWordSet.Freeze();
-            fMarkSet.Freeze();
-            fEndWordSet.Freeze();
-            fBeginWordSet.Freeze();
-        }
+        private readonly DictionaryMatcher fDictionary;
+        // ICU4N: Avoid static constructor by initializing inline
+        private static readonly UnicodeSet fLaoWordSet = new UnicodeSet("[[:Laoo:]&[:LineBreak=SA:]]").Compact().Freeze();
+        private static readonly UnicodeSet fEndWordSet = new UnicodeSet(fLaoWordSet)
+            .Remove(0x0EC0, 0x0EC4) // prefix vowels
+            .Compact().Freeze();
+        private static readonly UnicodeSet fBeginWordSet = new UnicodeSet()
+            .Add(0x0E81, 0x0EAE) // basic consonants (including holes for corresponding Thai characters)
+            .Add(0x0EDC, 0x0EDD) // digraph consonants (no Thai equivalent)
+            .Add(0x0EC0, 0x0EC4) // prefix vowels
+            .Compact().Freeze();
+        private static readonly UnicodeSet fMarkSet = new UnicodeSet("[[:Laoo:]&[:LineBreak=SA:]&[:M:]]").Add(0x0020).Compact().Freeze();
 
         public LaoBreakEngine()
             : base(BreakIterator.KIND_WORD, BreakIterator.KIND_LINE)

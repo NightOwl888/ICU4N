@@ -55,10 +55,9 @@ namespace ICU4N.Impl
         /// <summary>
         /// Map from resource key to <see cref="CapitalizationContextUsage"/> value
         /// </summary>
-        private static readonly IDictionary<string, CapitalizationContextUsage> contextUsageTypeMap;
-        static LocaleDisplayNamesImpl()
-        {
-            contextUsageTypeMap = new Dictionary<string, CapitalizationContextUsage>
+        private static readonly IDictionary<string, CapitalizationContextUsage> contextUsageTypeMap 
+            // ICU4N: Avoid static constructor and initialize inline
+            = new Dictionary<string, CapitalizationContextUsage>
             {
                 {"languages", CapitalizationContextUsage.Language},
                 {"script",    CapitalizationContextUsage.Script},
@@ -67,7 +66,7 @@ namespace ICU4N.Impl
                 {"key",       CapitalizationContextUsage.Key},
                 {"keyValue",  CapitalizationContextUsage.KeyValue},
             };
-        }
+
         /// <summary>
         /// <see cref="BreakIterator"/> to use for capitalization
         /// </summary>

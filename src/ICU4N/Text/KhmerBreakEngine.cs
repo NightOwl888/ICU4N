@@ -20,39 +20,14 @@ namespace ICU4N.Text
         private const byte KHMER_MIN_WORD_SPAN = (byte)(KHMER_MIN_WORD * 2);
 
 
-        private DictionaryMatcher fDictionary;
-        private static UnicodeSet fKhmerWordSet;
-        private static UnicodeSet fEndWordSet;
-        private static UnicodeSet fBeginWordSet;
-        private static UnicodeSet fMarkSet;
-
-        static KhmerBreakEngine() // ICU4N TODO: Avoid static constructor
-        {
-            // Initialize UnicodeSets
-            fKhmerWordSet = new UnicodeSet();
-            fMarkSet = new UnicodeSet();
-            fBeginWordSet = new UnicodeSet();
-
-            fKhmerWordSet.ApplyPattern("[[:Khmer:]&[:LineBreak=SA:]]");
-            fKhmerWordSet.Compact();
-
-            fMarkSet.ApplyPattern("[[:Khmer:]&[:LineBreak=SA:]&[:M:]]");
-            fMarkSet.Add(0x0020);
-            fEndWordSet = new UnicodeSet(fKhmerWordSet);
-            fBeginWordSet.Add(0x1780, 0x17B3);
-            fEndWordSet.Remove(0x17D2); // KHMER SIGN COENG that combines some following characters
-
-            // Compact for caching
-            fMarkSet.Compact();
-            fEndWordSet.Compact();
-            fBeginWordSet.Compact();
-
-            // Freeze the static UnicodeSet
-            fKhmerWordSet.Freeze();
-            fMarkSet.Freeze();
-            fEndWordSet.Freeze();
-            fBeginWordSet.Freeze();
-        }
+        private readonly DictionaryMatcher fDictionary;
+        // ICU4N: Avoid static constructor by initializing inline
+        private static readonly UnicodeSet fKhmerWordSet = new UnicodeSet("[[:Khmer:]&[:LineBreak=SA:]]").Compact().Freeze();
+        private static readonly UnicodeSet fEndWordSet = new UnicodeSet(fKhmerWordSet)
+            .Remove(0x17D2) // KHMER SIGN COENG that combines some following characters
+            .Compact().Freeze();
+        private static readonly UnicodeSet fBeginWordSet = new UnicodeSet().Add(0x1780, 0x17B3).Compact().Freeze();
+        private static readonly UnicodeSet fMarkSet = new UnicodeSet("[[:Khmer:]&[:LineBreak=SA:]&[:M:]]").Add(0x0020).Compact().Freeze();
 
         public KhmerBreakEngine()
             : base(BreakIterator.KIND_WORD, BreakIterator.KIND_LINE)

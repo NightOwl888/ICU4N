@@ -15,7 +15,7 @@ namespace ICU4N.Impl.Coll
     /// <author>Markus W. Scherer</author>
     public static class CollationRoot // purely static
     {
-        private static readonly CollationTailoring rootSingleton;
+        private static readonly CollationTailoring rootSingleton = LoadCollationTailoring(out exception);
         private static readonly Exception exception;
 
         public static CollationTailoring Root
@@ -46,8 +46,10 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        static CollationRoot()
-        {  // Corresponds to C++ load() function.
+        // ICU4N: Avoid static constructor by initializing inline
+        private static CollationTailoring LoadCollationTailoring(out Exception exception)
+        {
+            // Corresponds to C++ load() function.
             CollationTailoring t = null;
             Exception e2 = null;
             try
@@ -70,8 +72,8 @@ namespace ICU4N.Impl.Coll
             {
                 e2 = e;
             }
-            rootSingleton = t;
             exception = e2;
+            return t;
         }
     }
 }

@@ -26,27 +26,22 @@ namespace ICU4N.Impl
     {
         // public data members ----------------------------------------------
 
-        private static readonly UCharacterName instance;
-
         /// <summary>
         /// Public singleton instance.
         /// </summary>
-        public static UCharacterName Instance
-        {
-            get { return instance; }
-        }
+        public static UCharacterName Instance { get; private set; } = LoadSingletonInstance(); // ICU4N: Avoid static constructor by initializing inline
 
-        static UCharacterName()
+        private static UCharacterName LoadSingletonInstance()
         {
             try
             {
-                instance = new UCharacterName();
+                return new UCharacterName();
             }
             catch (IOException e)
             {
-                //CLOVER:OFF
+                ////CLOVER:OFF
                 throw new MissingManifestResourceException("Could not construct UCharacterName. Missing unames.icu", e/*, "", ""*/);
-                //CLOVER:ON
+                ////CLOVER:ON
             }
         }
 

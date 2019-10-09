@@ -101,10 +101,7 @@ namespace ICU4N.Dev.Test.Normalizers
             }
         }
 
-        private static readonly IDictionary<string, IDNAError> errorNamesToErrors;
-        static UTS46Test()
-        {
-            errorNamesToErrors = new SortedDictionary<string, IDNAError>(StringComparer.Ordinal)
+        private static readonly IDictionary<string, IDNAError> errorNamesToErrors = new SortedDictionary<string, IDNAError>(StringComparer.Ordinal)
             {
                 { "UIDNA_ERROR_EMPTY_LABEL", IDNAError.EmptyLabel },
                 { "UIDNA_ERROR_LABEL_TOO_LONG", IDNAError.LabelTooLong },
@@ -122,7 +119,6 @@ namespace ICU4N.Dev.Test.Normalizers
                 { "UIDNA_ERROR_CONTEXTO_PUNCTUATION", IDNAError.ContextOPunctuation },
                 { "UIDNA_ERROR_CONTEXTO_DIGITS", IDNAError.ContextODigits },
             };
-        }
 
         private sealed class TestCase
         {

@@ -6,25 +6,12 @@ namespace ICU4N.Text
 {
     internal class CjkBreakEngine : DictionaryBreakEngine
     {
-        private static readonly UnicodeSet fHangulWordSet = new UnicodeSet();
-        private static readonly UnicodeSet fHanWordSet = new UnicodeSet();
-        private static readonly UnicodeSet fKatakanaWordSet = new UnicodeSet();
-        private static readonly UnicodeSet fHiraganaWordSet = new UnicodeSet();
-        static CjkBreakEngine() // ICU4N TODO: Avoid static constructor
-        {
-            fHangulWordSet.ApplyPattern("[\\uac00-\\ud7a3]");
-            fHanWordSet.ApplyPattern("[:Han:]");
-            fKatakanaWordSet.ApplyPattern("[[:Katakana:]\\uff9e\\uff9f]");
-            fHiraganaWordSet.ApplyPattern("[:Hiragana:]");
-
-            // freeze them all
-            fHangulWordSet.Freeze();
-            fHanWordSet.Freeze();
-            fKatakanaWordSet.Freeze();
-            fHiraganaWordSet.Freeze();
-        }
-
-        private DictionaryMatcher fDictionary = null;
+        // ICU4N: Avoid static constructor by initializing inline
+        private static readonly UnicodeSet fHangulWordSet = new UnicodeSet("[\\uac00-\\ud7a3]").Freeze();
+        private static readonly UnicodeSet fHanWordSet = new UnicodeSet("[:Han:]").Freeze();
+        private static readonly UnicodeSet fKatakanaWordSet = new UnicodeSet("[[:Katakana:]\\uff9e\\uff9f]").Freeze();
+        private static readonly UnicodeSet fHiraganaWordSet = new UnicodeSet("[:Hiragana:]").Freeze();
+        private readonly DictionaryMatcher fDictionary = null;
 
         public CjkBreakEngine(bool korean)
             : base(BreakIterator.KIND_WORD)

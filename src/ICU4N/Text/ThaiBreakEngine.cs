@@ -22,47 +22,22 @@ namespace ICU4N.Text
         // Minimum number of characters for two words
         private const byte THAI_MIN_WORD_SPAN = (byte)(THAI_MIN_WORD * 2);
 
-        private DictionaryMatcher fDictionary;
-        private static UnicodeSet fThaiWordSet;
-        private static UnicodeSet fEndWordSet;
-        private static UnicodeSet fBeginWordSet;
-        private static UnicodeSet fSuffixSet;
-        private static UnicodeSet fMarkSet;
-
-        static ThaiBreakEngine() // ICU4N TODO: Avoid static constructor
-        {
-            // Initialize UnicodeSets
-            fThaiWordSet = new UnicodeSet();
-            fMarkSet = new UnicodeSet();
-            fBeginWordSet = new UnicodeSet();
-            fSuffixSet = new UnicodeSet();
-
-            fThaiWordSet.ApplyPattern("[[:Thai:]&[:LineBreak=SA:]]");
-            fThaiWordSet.Compact();
-
-            fMarkSet.ApplyPattern("[[:Thai:]&[:LineBreak=SA:]&[:M:]]");
-            fMarkSet.Add(0x0020);
-            fEndWordSet = new UnicodeSet(fThaiWordSet);
-            fEndWordSet.Remove(0x0E31); // MAI HAN-AKAT
-            fEndWordSet.Remove(0x0E40, 0x0E44); // SARA E through SARA AI MAIMALAI
-            fBeginWordSet.Add(0x0E01, 0x0E2E); //KO KAI through HO NOKHUK
-            fBeginWordSet.Add(0x0E40, 0x0E44); // SARA E through SARA AI MAIMALAI
-            fSuffixSet.Add(THAI_PAIYANNOI);
-            fSuffixSet.Add(THAI_MAIYAMOK);
-
-            // Compact for caching
-            fMarkSet.Compact();
-            fEndWordSet.Compact();
-            fBeginWordSet.Compact();
-            fSuffixSet.Compact();
-
-            // Freeze the static UnicodeSet
-            fThaiWordSet.Freeze();
-            fMarkSet.Freeze();
-            fEndWordSet.Freeze();
-            fBeginWordSet.Freeze();
-            fSuffixSet.Freeze();
-        }
+        private readonly DictionaryMatcher fDictionary;
+        // ICU4N: Avoid static constructor by initializing inline
+        private static readonly UnicodeSet fThaiWordSet = new UnicodeSet("[[:Thai:]&[:LineBreak=SA:]]").Compact().Freeze();
+        private static readonly UnicodeSet fEndWordSet = new UnicodeSet(fThaiWordSet)
+            .Remove(0x0E31) // MAI HAN-AKAT
+            .Remove(0x0E40, 0x0E44) // SARA E through SARA AI MAIMALAI
+            .Compact().Freeze();
+        private static readonly UnicodeSet fBeginWordSet = new UnicodeSet()
+            .Add(0x0E01, 0x0E2E) // KO KAI through HO NOKHUK
+            .Add(0x0E40, 0x0E44) // SARA E through SARA AI MAIMALAI
+            .Compact().Freeze();
+        private static readonly UnicodeSet fSuffixSet = new UnicodeSet()
+            .Add(THAI_PAIYANNOI)
+            .Add(THAI_MAIYAMOK)
+            .Compact().Freeze();
+        private static readonly UnicodeSet fMarkSet = new UnicodeSet("[[:Thai:]&[:LineBreak=SA:]&[:M:]]").Add(0x0020).Compact().Freeze();
 
         public ThaiBreakEngine()
             : base(BreakIterator.KIND_WORD, BreakIterator.KIND_LINE)
