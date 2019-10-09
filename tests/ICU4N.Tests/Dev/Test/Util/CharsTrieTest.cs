@@ -22,7 +22,7 @@ namespace ICU4N.Dev.Test.Util
             builder_.Clear();
             try
             {
-                builder_.Build(StringTrieBuilder.Option.Fast);
+                builder_.Build(TrieBuilderOption.Fast);
                 Errln("CharsTrieBuilder().Build() did not throw IndexOutOfRangeException");
                 return;
             }
@@ -244,7 +244,7 @@ namespace ICU4N.Dev.Test.Util
             // "\u4dff\\U000103ff"
             new StringAndValue("\u4dff\ud800\udfff", 99999)
              };
-            CharsTrie trie = buildTrie(data, data.Length, StringTrieBuilder.Option.Fast);
+            CharsTrie trie = buildTrie(data, data.Length, TrieBuilderOption.Fast);
             Result result;
             if ((result = trie.NextForCodePoint(0x4dff)) != Result.NoValue || result != trie.Current ||
                 (result = trie.NextForCodePoint(0x10000)) != Result.NoValue || result != trie.Current ||
@@ -327,7 +327,7 @@ namespace ICU4N.Dev.Test.Util
                 gen.Next();
             }
             Logln("buildLargeTrie(" + numUniqueFirst + ") added " + gen.GetIndex() + " strings");
-            ICharSequence trieChars = builder_.BuildCharSequence(StringTrieBuilder.Option.Fast);
+            ICharSequence trieChars = builder_.BuildCharSequence(TrieBuilderOption.Fast);
             Logln("serialized trie size: " + trieChars.Length + " chars\n");
             return new CharsTrie(trieChars, 0);
         }
@@ -369,7 +369,7 @@ namespace ICU4N.Dev.Test.Util
             }
         }
 
-        private CharsTrie buildMonthsTrie(StringTrieBuilder.Option buildOption)
+        private CharsTrie buildMonthsTrie(TrieBuilderOption buildOption)
         {
             // All types of nodes leading to the same value,
             // for code coverage of recursive functions.
@@ -413,7 +413,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test40GetUniqueValue()
         {
-            CharsTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Fast);
+            CharsTrie trie = buildMonthsTrie(TrieBuilderOption.Fast);
             long uniqueValue;
             if ((uniqueValue = trie.GetUniqueValue()) != 0)
             {
@@ -454,7 +454,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test41GetNextChars()
         {
-            CharsTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Small);
+            CharsTrie trie = buildMonthsTrie(TrieBuilderOption.Small);
             StringBuilder buffer = new StringBuilder();
             int count = trie.GetNextChars(buffer);
             if (count != 2 || !"aj".ContentEquals(buffer))
@@ -508,7 +508,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test50IteratorFromBranch()
         {
-            CharsTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Fast);
+            CharsTrie trie = buildMonthsTrie(TrieBuilderOption.Fast);
             // Go to a branch node.
             trie.Next('j');
             trie.Next('a');
@@ -552,7 +552,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test51IteratorFromLinearMatch()
         {
-            CharsTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Small);
+            CharsTrie trie = buildMonthsTrie(TrieBuilderOption.Small);
             // Go into a linear-match node.
             trie.Next('j');
             trie.Next('a');
@@ -575,7 +575,7 @@ namespace ICU4N.Dev.Test.Util
         [Test]
         public void Test52TruncatingIteratorFromRoot()
         {
-            CharsTrie trie = buildMonthsTrie(StringTrieBuilder.Option.Fast);
+            CharsTrie trie = buildMonthsTrie(TrieBuilderOption.Fast);
             CharsTrie.Enumerator iter = trie.GetEnumerator(4);
             // Expected data: Same as in buildMonthsTrie(), except only the first 4 characters
             // of each string, and no string duplicates from the truncation.
@@ -621,7 +621,7 @@ namespace ICU4N.Dev.Test.Util
             new StringAndValue("abcdepq", 200),
             new StringAndValue("abcdeyz", 3000)
              };
-            CharsTrie trie = buildTrie(data, data.Length, StringTrieBuilder.Option.Fast);
+            CharsTrie trie = buildTrie(data, data.Length, TrieBuilderOption.Fast);
             // Go into a linear-match node.
             trie.Next('a');
             trie.Next('b');
@@ -644,7 +644,7 @@ namespace ICU4N.Dev.Test.Util
             new StringAndValue("abcdepq", 200),
             new StringAndValue("abcdeyz", 3000)
              };
-            CharsTrie trie = buildTrie(data, data.Length, StringTrieBuilder.Option.Fast);
+            CharsTrie trie = buildTrie(data, data.Length, TrieBuilderOption.Fast);
             // Go into a linear-match node.
             trie.Next('a');
             trie.Next('b');
@@ -675,7 +675,7 @@ namespace ICU4N.Dev.Test.Util
             {
                 builder_.Add(item.s, item.value);
             }
-            ICharSequence trieChars = builder_.BuildCharSequence(StringTrieBuilder.Option.Fast);
+            ICharSequence trieChars = builder_.BuildCharSequence(TrieBuilderOption.Fast);
             checkIterator(CharsTrie.GetEnumerator(trieChars, 0, 0), data);
         }
 
@@ -687,12 +687,12 @@ namespace ICU4N.Dev.Test.Util
         private void checkData(StringAndValue[] data, int dataLength)
         {
             Logln("checkData(dataLength=" + dataLength + ", fast)");
-            checkData(data, dataLength, StringTrieBuilder.Option.Fast);
+            checkData(data, dataLength, TrieBuilderOption.Fast);
             Logln("checkData(dataLength=" + dataLength + ", small)");
-            checkData(data, dataLength, StringTrieBuilder.Option.Small);
+            checkData(data, dataLength, TrieBuilderOption.Small);
         }
 
-        private void checkData(StringAndValue[] data, int dataLength, StringTrieBuilder.Option buildOption)
+        private void checkData(StringAndValue[] data, int dataLength, TrieBuilderOption buildOption)
         {
             CharsTrie trie = buildTrie(data, dataLength, buildOption);
             checkFirst(trie, data, dataLength);
@@ -703,7 +703,7 @@ namespace ICU4N.Dev.Test.Util
         }
 
         private CharsTrie buildTrie(StringAndValue[] data, int dataLength,
-                                    StringTrieBuilder.Option buildOption)
+                                    TrieBuilderOption buildOption)
         {
             // Add the items to the trie builder in an interesting (not trivial, not random) order.
             int index, step;

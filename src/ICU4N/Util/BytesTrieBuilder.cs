@@ -66,15 +66,15 @@ namespace ICU4N.Util
         /// <para/>A <see cref="BytesTrie"/> cannot be empty. At least one (byte sequence, value) pair
         /// must have been added.
         ///
-        /// <para/>Multiple calls to <see cref="Build(Option)"/> or <see cref="BuildByteBuffer(Option)"/> return tries or buffers
+        /// <para/>Multiple calls to <see cref="Build(TrieBuilderOption)"/> or <see cref="BuildByteBuffer(TrieBuilderOption)"/> return tries or buffers
         /// which share the builder's byte array, without rebuilding.
-        /// <em>The byte array must not be modified via the <see cref="BuildByteBuffer(Option)"/> result object.</em>
+        /// <em>The byte array must not be modified via the <see cref="BuildByteBuffer(TrieBuilderOption)"/> result object.</em>
         /// After <see cref="Clear()"/> has been called, a new array will be used.
         /// </summary>
-        /// <param name="buildOption">Build option, see <see cref="StringTrieBuilder.Option"/>.</param>
+        /// <param name="buildOption">Build option, see <see cref="TrieBuilderOption"/>.</param>
         /// <returns> A new <see cref="BytesTrie"/> for the added data.</returns>
         /// <stable>ICU 4.8</stable>
-        public BytesTrie Build(StringTrieBuilder.Option buildOption)
+        public BytesTrie Build(TrieBuilderOption buildOption)
         {
             BuildBytes(buildOption);
             return new BytesTrie(bytes, bytes.Length - bytesLength);
@@ -86,7 +86,7 @@ namespace ICU4N.Util
         /// <para/>A <see cref="BytesTrie"/> cannot be empty. At least one (byte sequence, value) pair
         /// must have been added.
         ///
-        /// <para/>Multiple calls to <see cref="Build(Option)"/> or <see cref="BuildByteBuffer(Option)"/> return tries or buffers
+        /// <para/>Multiple calls to <see cref="Build(TrieBuilderOption)"/> or <see cref="BuildByteBuffer(TrieBuilderOption)"/> return tries or buffers
         /// which share the builder's byte array, without rebuilding.
         /// <em>Do not modify the bytes in the buffer!</em>
         /// After <see cref="Clear()"/> has been called, a new array will be used.
@@ -94,17 +94,17 @@ namespace ICU4N.Util
         /// <para/>The serialized <see cref="BytesTrie"/> is accessible via the buffer's
         /// <see cref="ByteBuffer.Array"/>/<see cref="ByteBuffer.ArrayOffset"/>+Position or Remaining/Get(byte[]) etc.
         /// </summary>
-        /// <param name="buildOption">Build option, see <see cref="StringTrieBuilder.Option"/>.</param>
+        /// <param name="buildOption">Build option, see <see cref="TrieBuilderOption"/>.</param>
         /// <returns>A <see cref="ByteBuffer"/> with the byte-serialized <see cref="BytesTrie"/> for the added data.
         /// The buffer is not read-only and <see cref="ByteBuffer.Array"/> can be called.</returns>
         /// <stable>ICU 4.8</stable>
-        public ByteBuffer BuildByteBuffer(StringTrieBuilder.Option buildOption)
+        public ByteBuffer BuildByteBuffer(TrieBuilderOption buildOption)
         {
             BuildBytes(buildOption);
             return ByteBuffer.Wrap(bytes, bytes.Length - bytesLength, bytesLength);
         }
 
-        private void BuildBytes(StringTrieBuilder.Option buildOption)
+        private void BuildBytes(TrieBuilderOption buildOption)
         {
             // Create and byte-serialize the trie for the elements.
             if (bytes == null)

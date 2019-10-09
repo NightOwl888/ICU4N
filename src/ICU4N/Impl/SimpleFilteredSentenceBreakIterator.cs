@@ -429,12 +429,12 @@ namespace ICU4N.Impl
 
             if (revCount > 0)
             {
-                backwardsTrie = builder.Build(StringTrieBuilder.Option.Fast);
+                backwardsTrie = builder.Build(TrieBuilderOption.Fast);
             }
 
             if (fwdCount > 0)
             {
-                forwardsPartialTrie = builder2.Build(StringTrieBuilder.Option.Fast);
+                forwardsPartialTrie = builder2.Build(TrieBuilderOption.Fast);
             }
             return new SimpleFilteredSentenceBreakIterator(adoptBreakIterator, forwardsPartialTrie, backwardsTrie);
         }

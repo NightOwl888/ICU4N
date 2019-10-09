@@ -8,6 +8,30 @@ using System.Text;
 namespace ICU4N.Util
 {
     /// <summary>
+    /// Build options for <see cref="BytesTrieBuilder"/> and <see cref="CharsTrieBuilder"/>.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public enum TrieBuilderOption
+    {
+        /// <summary>
+        /// Builds a trie quickly.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        Fast,
+        /// <summary>
+        /// Builds a trie more slowly, attempting to generate
+        /// a shorter but equivalent serialization.
+        /// This build option also uses more memory.
+        /// <para/>
+        /// This option can be effective when many integer values are the same
+        /// and string/byte sequence suffixes can be shared.
+        /// Runtime speed is not expected to improve.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        Small
+    }
+
+    /// <summary>
     /// Base class for string trie builder classes.
     /// <para/>
     /// This class is not intended for public subclassing.
@@ -16,30 +40,7 @@ namespace ICU4N.Util
     /// <stable>ICU 4.8</stable>
     public abstract class StringTrieBuilder
     {
-        /// <summary>
-        /// Build options for <see cref="BytesTrieBuilder"/> and <see cref="CharsTrieBuilder"/>.
-        /// </summary>
-        /// <stable>ICU 4.8</stable>
-        public enum Option // ICU4N TODO: API - de-nest
-        {
-            /// <summary>
-            /// Builds a trie quickly.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            Fast,
-            /// <summary>
-            /// Builds a trie more slowly, attempting to generate
-            /// a shorter but equivalent serialization.
-            /// This build option also uses more memory.
-            /// <para/>
-            /// This option can be effective when many integer values are the same
-            /// and string/byte sequence suffixes can be shared.
-            /// Runtime speed is not expected to improve.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            Small
-        }
-
+        // ICU4N: De-nested Option and renamed TrieBuilderOption
 
         [Obsolete("This API is ICU internal only.")]
         protected StringTrieBuilder() { }
@@ -69,7 +70,7 @@ namespace ICU4N.Util
         }
 
         [Obsolete("This API is ICU internal only.")]
-        protected void BuildImpl(Option buildOption)
+        protected void BuildImpl(TrieBuilderOption buildOption)
         {
             switch (state)
             {
@@ -78,7 +79,7 @@ namespace ICU4N.Util
                     {
                         throw new IndexOutOfRangeException("No (string, value) pairs were added.");
                     }
-                    if (buildOption == Option.Fast)
+                    if (buildOption == TrieBuilderOption.Fast)
                     {
                         state = State.BuildingFast;
                         // Building "fast" is somewhat faster (25..50% in some test)

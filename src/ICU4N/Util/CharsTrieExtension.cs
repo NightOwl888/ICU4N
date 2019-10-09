@@ -22,7 +22,7 @@ namespace ICU4N.Util
         /// with the offset indicating the first char of that sequence.
         /// The <see cref="CharsTrie"/> object will not read more chars than
         /// the <see cref="CharsTrieBuilder"/> generated in the corresponding 
-        /// <see cref="CharsTrieBuilder.Build(StringTrieBuilder.Option)"/> call.
+        /// <see cref="CharsTrieBuilder.Build(TrieBuilderOption)"/> call.
         /// <para/>
         /// The <see cref="string"/> is not copied/cloned and must not be modified while
         /// the <see cref="CharsTrie"/> object is in use.
@@ -45,7 +45,7 @@ namespace ICU4N.Util
         /// with the offset indicating the first char of that sequence.
         /// The <see cref="CharsTrie"/> object will not read more chars than
         /// the <see cref="CharsTrieBuilder"/> generated in the corresponding 
-        /// <see cref="CharsTrieBuilder.Build(StringTrieBuilder.Option)"/> call.
+        /// <see cref="CharsTrieBuilder.Build(TrieBuilderOption)"/> call.
         /// <para/>
         /// The <see cref="StringBuilder"/> is not copied/cloned and must not be modified while
         /// the <see cref="CharsTrie"/> object is in use.
@@ -68,7 +68,7 @@ namespace ICU4N.Util
         /// with the offset indicating the first char of that sequence.
         /// The <see cref="CharsTrie"/> object will not read more chars than
         /// the <see cref="CharsTrieBuilder"/> generated in the corresponding 
-        /// <see cref="CharsTrieBuilder.Build(StringTrieBuilder.Option)"/> call.
+        /// <see cref="CharsTrieBuilder.Build(TrieBuilderOption)"/> call.
         /// <para/>
         /// The <see cref="T:char[]"/> is not copied/cloned and must not be modified while
         /// the <see cref="CharsTrie"/> object is in use.
@@ -91,7 +91,7 @@ namespace ICU4N.Util
         /// with the offset indicating the first char of that sequence.
         /// The <see cref="CharsTrie"/> object will not read more chars than
         /// the <see cref="CharsTrieBuilder"/> generated in the corresponding 
-        /// <see cref="CharsTrieBuilder.Build(StringTrieBuilder.Option)"/> call.
+        /// <see cref="CharsTrieBuilder.Build(TrieBuilderOption)"/> call.
         /// <para/>
         /// The <see cref="ICharSequence"/> is not copied/cloned and must not be modified while
         /// the <see cref="CharsTrie"/> object is in use.

@@ -100,7 +100,7 @@ namespace ICU4N.Util
         /// The array must contain a copy of a byte sequence from the <see cref="BytesTrieBuilder"/>,
         /// with the offset indicating the first byte of that sequence.
         /// The <see cref="BytesTrie"/> object will not read more bytes than
-        /// the <see cref="BytesTrieBuilder"/> generated in the corresponding <see cref="BytesTrieBuilder.Build(StringTrieBuilder.Option)"/> call.
+        /// the <see cref="BytesTrieBuilder"/> generated in the corresponding <see cref="BytesTrieBuilder.Build(TrieBuilderOption)"/> call.
         /// <para/>
         /// The array is not copied/cloned and must not be modified while
         /// the <see cref="BytesTrie"/> object is in use.

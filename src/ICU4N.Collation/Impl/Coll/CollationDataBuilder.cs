@@ -1359,7 +1359,7 @@ namespace ICU4N.Impl.Coll
         {
             StringBuilder context = new StringBuilder();
             context.Append((char)(defaultCE32 >> 16)).Append((char)defaultCE32);
-            context.Append(trieBuilder.BuildCharSequence(StringTrieBuilder.Option.Small));
+            context.Append(trieBuilder.BuildCharSequence(TrieBuilderOption.Small));
             int index = contexts.IndexOf(context.ToString());
             if (index < 0)
             {

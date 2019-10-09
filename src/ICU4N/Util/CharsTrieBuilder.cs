@@ -105,14 +105,14 @@ namespace ICU4N.Util
         /// A <see cref="CharsTrie"/> cannot be empty. At least one (string, value) pair
         /// must have been <see cref="Add(string, int)"/>ed.
         /// <para/>
-        /// Multiple calls to <see cref="Build(Option)"/> or <see cref="BuildCharSequence(Option)"/> return tries or sequences
+        /// Multiple calls to <see cref="Build(TrieBuilderOption)"/> or <see cref="BuildCharSequence(TrieBuilderOption)"/> return tries or sequences
         /// which share the builder's char array, without rebuilding.
         /// After <see cref="Clear()"/> has been called, a new array will be used.
         /// </remarks>
-        /// <param name="buildOption">Build option, see <see cref="StringTrieBuilder.Option"/>.</param>
+        /// <param name="buildOption">Build option, see <see cref="TrieBuilderOption"/>.</param>
         /// <returns>A new <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.</returns>
         /// <stable>ICU 4.8</stable>
-        public CharsTrie Build(StringTrieBuilder.Option buildOption)
+        public CharsTrie Build(TrieBuilderOption buildOption)
         {
             return new CharsTrie(BuildCharSequence(buildOption), 0);
         }
@@ -125,20 +125,20 @@ namespace ICU4N.Util
         /// A <see cref="CharsTrie"/> cannot be empty. At least one (string, value) pair
         /// must have been <see cref="Add(string, int)"/>ed.
         /// <para/>
-        /// Multiple calls to <see cref="Build(Option)"/> or <see cref="BuildCharSequence(Option)"/> return tries or sequences
+        /// Multiple calls to <see cref="Build(TrieBuilderOption)"/> or <see cref="BuildCharSequence(TrieBuilderOption)"/> return tries or sequences
         /// which share the builder's char array, without rebuilding.
         /// After <see cref="Clear()"/> has been called, a new array will be used.
         /// </remarks>
-        /// <param name="buildOption">Build option, see <see cref="StringTrieBuilder.Option"/>.</param>
+        /// <param name="buildOption">Build option, see <see cref="TrieBuilderOption"/>.</param>
         /// <returns>A <see cref="ICharSequence"/> with the char-serialized <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.</returns>
         /// <stable>ICU 4.8</stable>
-        public ICharSequence BuildCharSequence(StringTrieBuilder.Option buildOption)
+        public ICharSequence BuildCharSequence(TrieBuilderOption buildOption)
         {
             BuildChars(buildOption);
             return CharBuffer.Wrap(chars, chars.Length - charsLength, charsLength);
         }
 
-        private void BuildChars(StringTrieBuilder.Option buildOption)
+        private void BuildChars(TrieBuilderOption buildOption)
         {
             // Create and char-serialize the trie for the elements.
             if (chars == null)
