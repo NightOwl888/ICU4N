@@ -111,7 +111,7 @@ namespace ICU4N.Text
         /// Returns the next precomposed Unicode character.
         /// Repeated calls to <see cref="Next()"/> return all of the precomposed characters defined
         /// by Unicode, in ascending order.  After all precomposed characters have
-        /// been returned, <see cref="HasNext()"/> will return <c>false</c> and further calls
+        /// been returned, <see cref="HasNext"/> will return <c>false</c> and further calls
         /// to <see cref="Next()"/> will return <see cref="Done"/>.
         /// </summary>
         /// <returns></returns>

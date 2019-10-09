@@ -488,7 +488,7 @@ namespace ICU4N.Util
             /// </summary>
             /// <returns>true if there are more elements.</returns>
             /// <stable>ICU 4.8</stable>
-            private bool HasNext() /*const*/ { return pos_ >= 0 || stack_.Count > 0; } // ICU4N TODO: API - make property
+            private bool HasNext /*const*/ => pos_ >= 0 || stack_.Count > 0;
 
             /// <summary>
             /// Finds the next (string, value) pair if there is one.
@@ -682,7 +682,7 @@ namespace ICU4N.Util
             /// <stable>ICU 4.8</stable>
             public bool MoveNext()
             {
-                if (!HasNext())
+                if (!HasNext)
                     return false;
                 current = Next();
                 return (current != null);
