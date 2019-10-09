@@ -12,7 +12,6 @@ using System.Linq;
 using System.Text;
 using static ICU4N.Text.UnicodeSet; // ICU4N TODO: API De-nest?
 using StringBuffer = System.Text.StringBuilder;
-using static ICU4N.Text.UnicodeSetSpanner; // ICU4N TODO: API De-nest?
 using System.Diagnostics;
 
 namespace ICU4N.Dev.Test.Lang

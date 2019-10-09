@@ -64,7 +64,7 @@ namespace ICU4N.Util
         ///// Count of EXTypes for <see cref="GetExemplarSet(PatternOptions, ExemplarSetType)"/>.
         ///// </summary>
         //[Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-        //Count = 5; // ICU4N TODO: API - Make enum ExemplarSetType
+        //Count = 5;
     }
 
     /// <summary>

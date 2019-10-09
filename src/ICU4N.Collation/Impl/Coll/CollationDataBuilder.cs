@@ -350,7 +350,7 @@ namespace ICU4N.Impl.Coll
             modified = true;
         }
 
-        internal void EnableFastLatin() { fastLatinEnabled = true; } // ICU4N TODO: Make property ?
+        internal void EnableFastLatin() { fastLatinEnabled = true; }
         internal void Build(CollationData data)
         {
             BuildMappings(data);
