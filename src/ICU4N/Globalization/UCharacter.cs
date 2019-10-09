@@ -2616,7 +2616,7 @@ namespace ICU4N
         /// Same as <see cref="Character.MinCodePoint"/>, same integer value as <see cref="Char.MinValue"/>.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int MinValue = Character.MinCodePoint; // ICU4N TODO: Change to Char.MinValue
+        public const int MinValue = Character.MinCodePoint;
 
         /// <summary>
         /// The highest Unicode code point value (scalar value), constant U+10FFFF (uses 21 bits).
@@ -2626,7 +2626,7 @@ namespace ICU4N
         /// which is still a char with the value U+FFFF.
         /// </summary>
         /// <stable>ICU 2.1</stable>
-        public const int MaxValue = Character.MaxCodePoint; // ICU4N TODO: Change to Char.MaxValue (and check documentation to ensure it is right)
+        public const int MaxValue = Character.MaxCodePoint;
 
         /// <summary>
         /// The minimum value for Supplementary code points, constant U+10000.
