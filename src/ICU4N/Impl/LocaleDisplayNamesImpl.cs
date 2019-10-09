@@ -709,7 +709,7 @@ namespace ICU4N.Impl
             return new UiListItem(minimized, modified, nameInDisplayLocale, nameInSelf);
         }
 
-        public class DataTable // ICU4N TODO: API - de-nest ?
+        public class DataTable
         {
             protected bool nullIfNotFound;
 
@@ -765,7 +765,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public abstract class DataTables // ICU4N TODO: API - de-nest ?
+        public abstract class DataTables
         {
             public abstract DataTable Get(ULocale locale, bool nullIfNotFound);
             public static DataTables Load(string className)
@@ -782,7 +782,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public abstract class ICUDataTables : DataTables // ICU4N TODO: API - de-nest ?
+        public abstract class ICUDataTables : DataTables
         {
             private readonly string path;
 
