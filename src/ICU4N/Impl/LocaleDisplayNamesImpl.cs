@@ -73,7 +73,7 @@ namespace ICU4N.Impl
         /// </summary>
         private /*transient*/ BreakIterator capitalizationBrkIter = null;
 
-        private static readonly CaseMap.Title TO_TITLE_WHOLE_STRING_NO_LOWERCASE =
+        private static readonly TitleCaseMap TO_TITLE_WHOLE_STRING_NO_LOWERCASE =
                 CaseMap.ToTitle().WholeString().NoLowercase();
 
         private static string ToTitleWholeStringNoLowercase(ULocale locale, string s)

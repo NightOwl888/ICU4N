@@ -370,7 +370,7 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         // Not a [Test]. See ICU4C intltest strcase.cpp TestCasingImpl().
-        void TestCasingImpl(String input, String output, CaseMap.Title toTitle, CultureInfo locale)
+        void TestCasingImpl(String input, String output, TitleCaseMap toTitle, CultureInfo locale)
         {
             String result = toTitle.Apply(locale, null, input, new StringBuilder(), null).ToString();
             assertEquals("toTitle(" + input + ')', output, result);

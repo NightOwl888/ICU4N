@@ -5189,7 +5189,7 @@ namespace ICU4N
             return TO_TITLE_WHOLE_STRING_NO_LOWERCASE.Apply(locale.ToLocale(), null, str);
         }
 
-        private static readonly CaseMap.Title TO_TITLE_WHOLE_STRING_NO_LOWERCASE =
+        private static readonly TitleCaseMap TO_TITLE_WHOLE_STRING_NO_LOWERCASE =
                 CaseMap.ToTitle().WholeString().NoLowercase();
 
         /// <icu/>
