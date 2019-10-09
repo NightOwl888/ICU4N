@@ -190,7 +190,7 @@ namespace ICU4N.Impl
                 }
                 else
                 {
-                    This.data32 = ICUBinary.GetInts(bytes, This.dataLength, 0);
+                    This.data32 = ICUBinary.GetInt32s(bytes, This.dataLength, 0);
                 }
 
                 switch (width)

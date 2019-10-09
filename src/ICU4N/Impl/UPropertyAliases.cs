@@ -87,7 +87,7 @@ namespace ICU4N.Impl
             int offset = inIndexes[IX_VALUE_MAPS_OFFSET];
             int nextOffset = inIndexes[IX_BYTE_TRIES_OFFSET];
             int numInts = (nextOffset - offset) / 4;
-            valueMaps = ICUBinary.GetInts(bytes, numInts, 0);
+            valueMaps = ICUBinary.GetInt32s(bytes, numInts, 0);
 
             // Read the bytesTries.
             offset = nextOffset;

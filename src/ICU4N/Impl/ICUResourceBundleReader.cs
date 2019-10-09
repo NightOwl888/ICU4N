@@ -359,7 +359,7 @@ namespace ICU4N.Impl
 
         internal VersionInfo Version
         {
-            get { return ICUBinary.GetVersionInfoFromCompactInt(dataVersion); }
+            get { return ICUBinary.GetVersionInfoFromCompactInt32(dataVersion); }
         }
 
         internal int RootResource

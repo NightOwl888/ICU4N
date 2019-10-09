@@ -49,7 +49,7 @@ namespace ICU4N.Impl
 
         public byte[] GetUnicodeVersion()
         {
-            return ICUBinary.GetVersionByteArrayFromCompactInt(unicodeVersion);
+            return ICUBinary.GetVersionByteArrayFromCompactInt32(unicodeVersion);
         }
         // private data members -------------------------------------------------
 

@@ -1474,7 +1474,7 @@ namespace ICU4N.Impl
 
                 // additional properties
                 int size = scriptExtensionsOffset - additionalVectorsOffset;
-                m_additionalVectors_ = ICUBinary.GetInts(bytes, size, 0);
+                m_additionalVectors_ = ICUBinary.GetInt32s(bytes, size, 0);
             }
 
             // Script_Extensions

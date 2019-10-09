@@ -59,7 +59,7 @@ namespace ICU4N.Impl
             count = indexes[IX_MIRROR_LENGTH];
             if (count > 0)
             {
-                mirrors = ICUBinary.GetInts(bytes, count, 0);
+                mirrors = ICUBinary.GetInt32s(bytes, count, 0);
             }
 
             // read jgArray[]

@@ -160,7 +160,7 @@ namespace ICU4N.Impl.Coll
                     throw new ICUException("Collation base data must not reorder scripts");
                 }
                 reorderCodesLength = length / 4;
-                reorderCodes = ICUBinary.GetInts(inBytes, reorderCodesLength, length & 3);
+                reorderCodes = ICUBinary.GetInt32s(inBytes, reorderCodesLength, length & 3);
 
                 // The reorderRanges (if any) are the trailing reorderCodes entries.
                 // Split the array at the boundary.
@@ -254,7 +254,7 @@ namespace ICU4N.Impl.Coll
                 {
                     throw new ICUException("Tailored ces without tailored trie");
                 }
-                data.ces = ICUBinary.GetLongs(inBytes, length / 8, length & 7);
+                data.ces = ICUBinary.GetInt64s(inBytes, length / 8, length & 7);
             }
             else
             {
@@ -275,7 +275,7 @@ namespace ICU4N.Impl.Coll
                 {
                     throw new ICUException("Tailored ce32s without tailored trie");
                 }
-                data.ce32s = ICUBinary.GetInts(inBytes, length / 4, length & 3);
+                data.ce32s = ICUBinary.GetInt32s(inBytes, length / 4, length & 3);
             }
             else
             {

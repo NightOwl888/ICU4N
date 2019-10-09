@@ -105,7 +105,7 @@ namespace ICU4N.Impl
                                        byte[] dataformatversion)
         {
             return Arrays.Equals(
-                    ICUBinary.GetVersionByteArrayFromCompactInt(DATA_FORMAT_ID_),
+                    ICUBinary.GetVersionByteArrayFromCompactInt32(DATA_FORMAT_ID_),
                     dataformatid) &&
                    IsDataVersionAcceptable(dataformatversion);
         }

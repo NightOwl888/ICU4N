@@ -659,7 +659,7 @@ namespace ICU4N.Impl
                                                                  int dataFormat,
                                                                  IAuthenticate authenticate)
         {
-            return GetVersionInfoFromCompactInt(ReadHeader(bytes, dataFormat, authenticate));
+            return GetVersionInfoFromCompactInt32(ReadHeader(bytes, dataFormat, authenticate));
         }
 
         /// <summary>
@@ -786,7 +786,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public static short[] GetShorts(ByteBuffer bytes, int length, int additionalSkipLength) // ICU4N TODO: Rename GetInt16s
+        public static short[] GetInt16s(ByteBuffer bytes, int length, int additionalSkipLength) // ICU4N specific - Renamed from GetShorts
         {
             short[] dest = new short[length];
             bytes.AsInt16Buffer().Get(dest);
@@ -794,7 +794,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public static int[] GetInts(ByteBuffer bytes, int length, int additionalSkipLength) // ICU4N TODO: Rename GetInt32s
+        public static int[] GetInt32s(ByteBuffer bytes, int length, int additionalSkipLength) // ICU4N specific - Renamed from GetInts
         {
             int[] dest = new int[length];
             bytes.AsInt32Buffer().Get(dest);
@@ -802,7 +802,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        public static long[] GetLongs(ByteBuffer bytes, int length, int additionalSkipLength) // ICU4N TODO: Rename GetInt64s
+        public static long[] GetInt64s(ByteBuffer bytes, int length, int additionalSkipLength) // ICU4N specific - Renamed from GetLongs
         {
             long[] dest = new long[length];
             bytes.AsInt64Buffer().Get(dest);
@@ -893,7 +893,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a <see cref="VersionInfo"/> for the bytes in the compact version integer.
         /// </summary>
-        public static VersionInfo GetVersionInfoFromCompactInt(int version) // ICU4N TODO: API - Rename GetVersionInfoFromCompactInt32
+        public static VersionInfo GetVersionInfoFromCompactInt32(int version) // ICU4N specific - Renamed from GetVersionInfoFromCompactInt
         {
             return VersionInfo.GetInstance(
                     (version.TripleShift(24)), (version >> 16) & 0xff, (version >> 8) & 0xff, version & 0xff);
@@ -902,7 +902,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns an array of the bytes in the compact version integer.
         /// </summary>
-        public static byte[] GetVersionByteArrayFromCompactInt(int version) // ICU4N TODO: API - Rename GetVersionByteArrayFromCompactInt32
+        public static byte[] GetVersionByteArrayFromCompactInt32(int version) // ICU4N specific - Renamed from GetVersionByteArrayFromCompactInt
         {
             return new byte[] {
                 (byte)(version >> 24),

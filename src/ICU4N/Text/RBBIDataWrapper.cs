@@ -204,7 +204,7 @@ namespace ICU4N.Text
             ICUBinary.SkipBytes(bytes, This.fHeader.fFTable - pos);
             pos = This.fHeader.fFTable;
 
-            This.fFTable = ICUBinary.GetShorts(
+            This.fFTable = ICUBinary.GetInt16s(
                     bytes, This.fHeader.fFTableLen / 2, This.fHeader.fFTableLen & 1);
             pos += This.fHeader.fFTableLen;
 
@@ -217,7 +217,7 @@ namespace ICU4N.Text
             pos = This.fHeader.fRTable;
 
             // Create & fill the table itself.
-            This.fRTable = ICUBinary.GetShorts(
+            This.fRTable = ICUBinary.GetInt16s(
                     bytes, This.fHeader.fRTableLen / 2, This.fHeader.fRTableLen & 1);
             pos += This.fHeader.fRTableLen;
 
@@ -231,7 +231,7 @@ namespace ICU4N.Text
                 pos = This.fHeader.fSFTable;
 
                 // Create & fill the table itself.
-                This.fSFTable = ICUBinary.GetShorts(
+                This.fSFTable = ICUBinary.GetInt16s(
                         bytes, This.fHeader.fSFTableLen / 2, This.fHeader.fSFTableLen & 1);
                 pos += This.fHeader.fSFTableLen;
             }
@@ -246,7 +246,7 @@ namespace ICU4N.Text
                 pos = This.fHeader.fSRTable;
 
                 // Create & fill the table itself.
-                This.fSRTable = ICUBinary.GetShorts(
+                This.fSRTable = ICUBinary.GetInt16s(
                         bytes, This.fHeader.fSRTableLen / 2, This.fHeader.fSRTableLen & 1);
                 pos += This.fHeader.fSRTableLen;
             }
@@ -294,7 +294,7 @@ namespace ICU4N.Text
             }
             ICUBinary.SkipBytes(bytes, This.fHeader.fStatusTable - pos);
             pos = This.fHeader.fStatusTable;
-            This.fStatusTable = ICUBinary.GetInts(
+            This.fStatusTable = ICUBinary.GetInt32s(
                     bytes, This.fHeader.fStatusTableLen / 4, This.fHeader.fStatusTableLen & 3);
             pos += This.fHeader.fStatusTableLen;
 

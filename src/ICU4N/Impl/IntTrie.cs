@@ -253,7 +253,7 @@ namespace ICU4N.Impl
         {
             base.Unserialize(bytes);
             // one used for initial value
-            m_data_ = ICUBinary.GetInts(bytes, m_dataLength, 0);
+            m_data_ = ICUBinary.GetInt32s(bytes, m_dataLength, 0);
             m_initialValue_ = m_data_[0];
         }
 
