@@ -866,7 +866,7 @@ namespace ICU4N.Dev.Test.Lang
             }
         }
 
-        private static String PrintOneEdit(Edits.Enumerator ei)
+        private static String PrintOneEdit(EditsEnumerator ei)
         {
             if (ei.HasChange)
             {
@@ -956,8 +956,8 @@ namespace ICU4N.Dev.Test.Lang
 
         private void CheckEqualEdits(String name, Edits e1, Edits e2)
         {
-            Edits.Enumerator ei1 = e1.GetFineEnumerator();
-            Edits.Enumerator ei2 = e2.GetFineEnumerator();
+            EditsEnumerator ei1 = e1.GetFineEnumerator();
+            EditsEnumerator ei2 = e2.GetFineEnumerator();
             for (int i = 0; ; ++i)
             {
                 bool ei1HasNext = ei1.MoveNext();
@@ -972,7 +972,7 @@ namespace ICU4N.Dev.Test.Lang
         }
 
         private static void CheckEditsIter(
-                String name, Edits.Enumerator ei1, Edits.Enumerator ei2,  // two equal iterators
+                String name, EditsEnumerator ei1, EditsEnumerator ei2,  // two equal iterators
                 EditChange[] expected, bool withUnchanged)
         {
             assertFalse(name, ei2.FindSourceIndex(-1));
@@ -1188,7 +1188,7 @@ namespace ICU4N.Dev.Test.Lang
             assertFalse("reset hasChanges", edits.HasChanges);
             assertEquals("reset numberOfChanges", 0, edits.NumberOfChanges);
             assertEquals("reset", 0, edits.LengthDelta);
-            Edits.Enumerator ei = edits.GetCoarseChangesEnumerator();
+            EditsEnumerator ei = edits.GetCoarseChangesEnumerator();
             assertFalse("reset then iterator", ei.MoveNext());
         }
 
@@ -1204,7 +1204,7 @@ namespace ICU4N.Dev.Test.Lang
                 e.AddUnchanged(1);
                 e.AddReplace(3, 1);
             }
-            Edits.Enumerator iter = e.GetFineEnumerator();
+            EditsEnumerator iter = e.GetFineEnumerator();
             for (int i = 0; i <= N; i += 2)
             {
                 assertEquals("ascending", i * 2, iter.SourceIndexFromDestinationIndex(i));
