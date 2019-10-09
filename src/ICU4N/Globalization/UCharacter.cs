@@ -3948,25 +3948,24 @@ namespace ICU4N
         /// this implementation differs in that it returns null rather than throwing exceptions if
         /// the input is not a valid code point.
         /// </summary>
-        /// <param name="ch">Code point.</param>
+        /// <param name="utf32">Code point.</param>
         /// <returns>String representation of the code point, null if code point is not
         /// defined in unicode.
         /// </returns>
         /// <stable>ICU 2.1</stable>
-        // ICU4N TODO: API - to cover Char, add overload for (string, int)
-        public static string ToString(int ch) // ICU4N TODO: API - Rename ConvertFromUtf32 to cover Char
+        public static string ConvertFromUtf32(int utf32) // ICU4N: Renamed from ToString to cover System.Char API
         {
-            if (ch < MinValue || ch > MaxValue)
+            if (utf32 < MinValue || utf32 > MaxValue)
             {
                 return null;
             }
 
-            if (ch < SupplementaryMinValue)
+            if (utf32 < SupplementaryMinValue)
             {
-                return new string(new char[] { (char)ch });
+                return new string(new char[] { (char)utf32 });
             }
 
-            return new string(Character.ToChars(ch));
+            return new string(Character.ToChars(utf32));
         }
 
         /// <summary>
@@ -4877,17 +4876,16 @@ namespace ICU4N
         /// <summary>
         /// Returns a code point corresponding to the two surrogate code units.
         /// </summary>
-        /// <param name="lead">The lead char.</param>
-        /// <param name="trail">The trail char.</param>
+        /// <param name="highSurrogate">The lead char (high surrogate).</param>
+        /// <param name="lowSurrogate">The trail char (low surrogate).</param>
         /// <returns>Code point if surrogate characters are valid.</returns>
         /// <exception cref="ArgumentException">Thrown when the code units do not form a valid code point.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int GetCodePoint(char lead, char trail) // ICU4N TODO: API - rename ConvertToUtf32 to match Char
+        public static int ConvertToUtf32(char highSurrogate, char lowSurrogate) // ICU4N specific - renamed from GetCodePoint() to match System.Char
         {
-            // ICU4N TODO: Perhaps we should just call char.ConvertToUtf32, since this is a duplicate of that functionality
-            if (char.IsSurrogatePair(lead, trail))
+            if (char.IsSurrogatePair(highSurrogate, lowSurrogate))
             {
-                return Character.ToCodePoint(lead, trail);
+                return Character.ToCodePoint(highSurrogate, lowSurrogate);
             }
             throw new ArgumentException("Illegal surrogate characters");
         }
@@ -4900,13 +4898,34 @@ namespace ICU4N
         /// <returns>Code point if argument is a valid character.</returns>
         /// <exception cref="ArgumentException">Thrown when the code units do not form a valid code point.</exception>
         /// <stable>ICU 2.1</stable>
-        public static int GetCodePoint(char char16) // ICU4N TODO: API - rename ConvertToUtf32 to match Char
+        public static int ConvertToUtf32(char char16) // ICU4N specific - renamed from GetCodePoint() to match System.Char
         {
             if (UChar.IsLegal(char16))
             {
                 return char16;
             }
             throw new ArgumentException("Illegal codepoint");
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Returns the code point corresponding to the BMP code point.
+        /// </summary>
+        /// <param name="s">A <see cref="string"/>.</param>
+        /// <param name="index">The position of the character to evaluate in <paramref name="s"/>.</param>
+        /// <returns>Code point if char at <paramref name="index"/> is a valid character.</returns>
+        /// <exception cref="ArgumentException">Thrown when the code units do not form a valid code point.</exception>
+        /// <draft>ICU4N 60.1</draft>
+        // ICU4N TODO: Tests
+        public static int ConvertToUtf32(string s, int index) // ICU4N specific overload to cover System.Char
+        {
+            if (s == null)
+                throw new ArgumentNullException(nameof(s));
+            if (((uint)index) >= ((uint)s.Length))
+            {
+                throw new ArgumentOutOfRangeException(nameof(index));
+            }
+            return ConvertToUtf32(s[index]);
         }
 
         /// <summary>
@@ -5980,17 +5999,17 @@ namespace ICU4N
             {
                 case UProperty.Age: return GetAge(codepoint).ToString();
                 case UProperty.ISO_Comment: return GetISOComment(codepoint);
-                case UProperty.Bidi_Mirroring_Glyph: return ToString(GetMirror(codepoint));
-                case UProperty.Case_Folding: return ToString(FoldCase(codepoint, true));
-                case UProperty.Lowercase_Mapping: return ToString(ToLower(codepoint));
+                case UProperty.Bidi_Mirroring_Glyph: return ConvertFromUtf32(GetMirror(codepoint));
+                case UProperty.Case_Folding: return ConvertFromUtf32(FoldCase(codepoint, true));
+                case UProperty.Lowercase_Mapping: return ConvertFromUtf32(ToLower(codepoint));
                 case UProperty.Name: return GetName(codepoint);
-                case UProperty.Simple_Case_Folding: return ToString(FoldCase(codepoint, true));
-                case UProperty.Simple_Lowercase_Mapping: return ToString(ToLower(codepoint));
-                case UProperty.Simple_Titlecase_Mapping: return ToString(ToTitleCase(codepoint));
-                case UProperty.Simple_Uppercase_Mapping: return ToString(ToUpper(codepoint));
-                case UProperty.Titlecase_Mapping: return ToString(ToTitleCase(codepoint));
+                case UProperty.Simple_Case_Folding: return ConvertFromUtf32(FoldCase(codepoint, true));
+                case UProperty.Simple_Lowercase_Mapping: return ConvertFromUtf32(ToLower(codepoint));
+                case UProperty.Simple_Titlecase_Mapping: return ConvertFromUtf32(ToTitleCase(codepoint));
+                case UProperty.Simple_Uppercase_Mapping: return ConvertFromUtf32(ToUpper(codepoint));
+                case UProperty.Titlecase_Mapping: return ConvertFromUtf32(ToTitleCase(codepoint));
                 case UProperty.Unicode_1_Name: return GetName1_0(codepoint);
-                case UProperty.Uppercase_Mapping: return ToString(ToUpper(codepoint));
+                case UProperty.Uppercase_Mapping: return ConvertFromUtf32(ToUpper(codepoint));
             }
             throw new ArgumentException("Illegal Property Enum");
         }

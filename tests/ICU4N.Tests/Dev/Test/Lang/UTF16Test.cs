@@ -1028,7 +1028,7 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestValueOf()
         {
-            if (UChar.GetCodePoint('\ud800', '\udc00') != 0x10000)
+            if (UChar.ConvertToUtf32('\ud800', '\udc00') != 0x10000)
             {
                 Errln("FAIL: getCodePoint('\ud800','\udc00')");
             }
@@ -1143,7 +1143,7 @@ namespace ICU4N.Dev.Test.Lang
             // int    testChar3 = 0xdc02;
             // int    testChar4 = 0xd841;
             String test3 = "\ud841\udc02\u0071\udc02\ud841\u0071\ud841\udc02\u0071\u0072\ud841\udc02\u0071\ud841\udc02\u0071\udc02\ud841\u0073";
-            String test4 = UChar.ToString(testChar2);
+            String test4 = UChar.ConvertFromUtf32(testChar2);
 
             if (UTF16.IndexOf(test1, test2, StringComparison.Ordinal) != 0 ||
                 UTF16.IndexOf(test1, test2, 0, StringComparison.Ordinal) != 0)
@@ -1446,7 +1446,7 @@ namespace ICU4N.Dev.Test.Lang
                     if (UTF16.IndexOf(INDEXOF_SUPPLEMENTARY_STRING_, ch, index) !=
                         expected ||
                         UTF16.IndexOf(INDEXOF_SUPPLEMENTARY_STRING_,
-                              UChar.ToString(ch), index, StringComparison.Ordinal) !=
+                              UChar.ConvertFromUtf32(ch), index, StringComparison.Ordinal) !=
                         expected)
                     {
                         Errln("Failed finding index for supplementary 0x" +
@@ -1460,7 +1460,7 @@ namespace ICU4N.Dev.Test.Lang
                     if (UTF16.LastIndexOf(INDEXOF_SUPPLEMENTARY_STRING_, ch,
                                   index) != expected ||
                         UTF16.LastIndexOf(INDEXOF_SUPPLEMENTARY_STRING_,
-                                  UChar.ToString(ch), index, StringComparison.Ordinal)
+                                  UChar.ConvertFromUtf32(ch), index, StringComparison.Ordinal)
                         != expected)
                     {
                         Errln("Failed finding last index for supplementary 0x" +

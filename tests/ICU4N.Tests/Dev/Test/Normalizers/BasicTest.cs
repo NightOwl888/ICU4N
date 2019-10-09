@@ -1268,7 +1268,7 @@ namespace ICU4N.Dev.Test.Normalizers
                            "' (" + Hex(ch) + ")" + " at index " + index);
                     break;
                 }
-                got.Append(UChar.ToString(ch));
+                got.Append(UChar.ConvertFromUtf32(ch));
                 index++;
             }
             if (!expected.Equals(got.ToString()))
@@ -1294,7 +1294,7 @@ namespace ICU4N.Dev.Test.Normalizers
                                    + "' (" + Hex(ch) + ")" + " at index " + index);
                     break;
                 }
-                got.Append(UChar.ToString(ch));
+                got.Append(UChar.ConvertFromUtf32(ch));
             }
             if (!expectedReverse.Equals(got.ToString()))
             {

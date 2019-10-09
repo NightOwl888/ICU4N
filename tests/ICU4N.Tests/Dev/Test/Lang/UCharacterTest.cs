@@ -1649,7 +1649,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 for (char j = (char)0xDC00; j <= 0xDFFF; j++)
                 {
-                    if (UChar.GetCodePoint(i, j) != ch)
+                    if (UChar.ConvertToUtf32(i, j) != ch)
                     {
                         Errln("Error getting codepoint for surrogate " +
                               "characters \\u"
@@ -1661,7 +1661,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             try
             {
-                UChar.GetCodePoint((char)0xD7ff, (char)0xDC00);
+                UChar.ConvertToUtf32((char)0xD7ff, (char)0xDC00);
                 Errln("Invalid surrogate characters should not form a " +
                       "supplementary");
             }
@@ -1677,7 +1677,7 @@ namespace ICU4N.Dev.Test.Lang
                     // not a character
                     try
                     {
-                        UChar.GetCodePoint(i);
+                        UChar.ConvertToUtf32(i);
                         Errln("Not a character is not a valid codepoint");
                     }
                     catch (Exception e)
@@ -1686,7 +1686,7 @@ namespace ICU4N.Dev.Test.Lang
                 }
                 else
                 {
-                    if (UChar.GetCodePoint(i) != i)
+                    if (UChar.ConvertToUtf32(i) != i)
                     {
                         Errln("A valid codepoint should return itself");
                     }
@@ -3179,7 +3179,7 @@ namespace ICU4N.Dev.Test.Lang
 
             for (int i = 0; i < valid_tests.Length; i++)
             {
-                if (UChar.ToString(valid_tests[i]) == null)
+                if (UChar.ConvertFromUtf32(valid_tests[i]) == null)
                 {
                     Errln("UCharacter.toString(int) was not suppose to return " +
                     "null because it was given a valid parameter. Value passed: " +
@@ -3189,11 +3189,11 @@ namespace ICU4N.Dev.Test.Lang
 
             for (int i = 0; i < invalid_tests.Length; i++)
             {
-                if (UChar.ToString(invalid_tests[i]) != null)
+                if (UChar.ConvertFromUtf32(invalid_tests[i]) != null)
                 {
                     Errln("UCharacter.toString(int) was suppose to return " +
                     "null because it was given an invalid parameter. Value passed: " +
-                    invalid_tests[i] + ". Got: " + UChar.ToString(invalid_tests[i]));
+                    invalid_tests[i] + ". Got: " + UChar.ConvertFromUtf32(invalid_tests[i]));
                 }
             }
         }

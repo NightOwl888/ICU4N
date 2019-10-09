@@ -56,7 +56,7 @@ namespace ICU4N.Impl
                     {
                         ++j;
 
-                        n |= UChar.GetCodePoint(c, c2);
+                        n |= UChar.ConvertToUtf32(c, c2);
                     }
                     else
                     {
@@ -209,7 +209,7 @@ namespace ICU4N.Impl
                     {
                         ++j;
 
-                        n |= UChar.GetCodePoint(c, c2);
+                        n |= UChar.ConvertToUtf32(c, c2);
                     }
                     else
                     {
@@ -362,7 +362,7 @@ namespace ICU4N.Impl
                     {
                         ++j;
 
-                        n |= UChar.GetCodePoint(c, c2);
+                        n |= UChar.ConvertToUtf32(c, c2);
                     }
                     else
                     {
@@ -515,7 +515,7 @@ namespace ICU4N.Impl
                     {
                         ++j;
 
-                        n |= UChar.GetCodePoint(c, c2);
+                        n |= UChar.ConvertToUtf32(c, c2);
                     }
                     else
                     {

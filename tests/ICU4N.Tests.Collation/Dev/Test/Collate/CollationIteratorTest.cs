@@ -184,7 +184,7 @@ namespace ICU4N.Dev.Test.Collate
                                       + " maximum expansion count == 1");
             }
 
-            str = UChar.ToString(unassigned);
+            str = UChar.ConvertFromUtf32(unassigned);
             iter.SetText(str);
             temporder = iter.Previous();
 
