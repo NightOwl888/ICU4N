@@ -12,13 +12,13 @@ namespace ICU4N.Impl
     /// Implementation of <see cref="ICasePropertiesContextEnumerator"/>, iterates over a string.
     /// See ustrcase.c/utf16_caseContextIterator().
     /// </summary>
-    public sealed class StringContextIterator : ICasePropertiesContextEnumerator
+    public sealed class StringContextEnumerator : ICasePropertiesContextEnumerator
     {
         /// <summary>
         /// Constructor.
         /// </summary>
         /// <param name="src">String to iterate over.</param>
-        public StringContextIterator(string src)
+        public StringContextEnumerator(string src)
             : this(src.ToCharSequence())
         {
         }
@@ -27,7 +27,7 @@ namespace ICU4N.Impl
         /// Constructor.
         /// </summary>
         /// <param name="src">String to iterate over.</param>
-        public StringContextIterator(StringBuilder src)
+        public StringContextEnumerator(StringBuilder src)
             : this(src.ToCharSequence())
         {
         }
@@ -36,7 +36,7 @@ namespace ICU4N.Impl
         /// Constructor.
         /// </summary>
         /// <param name="src">String to iterate over.</param>
-        public StringContextIterator(char[] src)
+        public StringContextEnumerator(char[] src)
             : this(src.ToCharSequence())
         {
         }
@@ -45,7 +45,7 @@ namespace ICU4N.Impl
         /// Constructor.
         /// </summary>
         /// <param name="src">String to iterate over.</param>
-        internal StringContextIterator(ICharSequence src)
+        internal StringContextEnumerator(ICharSequence src)
         {
             this.s = src;
             limit = src.Length;

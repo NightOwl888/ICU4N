@@ -356,7 +356,7 @@ namespace ICU4N.Impl
             return result.ToString();
         }
 
-        private static void InternalToLower(CaseLocale caseLocale, int options, StringContextIterator iter,
+        private static void InternalToLower(CaseLocale caseLocale, int options, StringContextEnumerator iter,
             StringBuilder dest, Edits edits)
         {
             int c;
@@ -367,7 +367,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private static void InternalToLower(CaseLocale caseLocale, int options, StringContextIterator iter,
+        private static void InternalToLower(CaseLocale caseLocale, int options, StringContextEnumerator iter,
             IAppendable dest, Edits edits)
         {
             int c;
@@ -475,7 +475,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 InternalToLower(caseLocale, options, iter, dest, edits);
                 return dest;
             }
@@ -494,7 +494,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 InternalToLower(caseLocale, options, iter, dest, edits);
                 return dest;
             }
@@ -513,7 +513,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 InternalToLower(caseLocale, options, iter, dest, edits);
                 return dest;
             }
@@ -532,7 +532,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 InternalToLower(caseLocale, options, iter, dest, edits);
                 return dest;
             }
@@ -551,7 +551,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 InternalToLower(caseLocale, options, iter, dest, edits);
                 return dest;
             }
@@ -570,7 +570,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 InternalToLower(caseLocale, options, iter, dest, edits);
                 return dest;
             }
@@ -589,7 +589,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 InternalToLower(caseLocale, options, iter, dest, edits);
                 return dest;
             }
@@ -608,7 +608,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 InternalToLower(caseLocale, options, iter, dest, edits);
                 return dest;
             }
@@ -719,7 +719,7 @@ namespace ICU4N.Impl
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
@@ -747,7 +747,7 @@ namespace ICU4N.Impl
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
@@ -775,7 +775,7 @@ namespace ICU4N.Impl
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
@@ -803,7 +803,7 @@ namespace ICU4N.Impl
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
@@ -831,7 +831,7 @@ namespace ICU4N.Impl
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
@@ -859,7 +859,7 @@ namespace ICU4N.Impl
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
@@ -887,7 +887,7 @@ namespace ICU4N.Impl
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
@@ -915,7 +915,7 @@ namespace ICU4N.Impl
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int c;
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
@@ -1034,7 +1034,7 @@ namespace ICU4N.Impl
                 }
 
                 /* set up local variables */
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int srcLength = src.Length;
                 int prev = 0;
                 bool isFirstIndex = true;
@@ -1169,7 +1169,7 @@ namespace ICU4N.Impl
                 }
 
                 /* set up local variables */
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int srcLength = src.Length;
                 int prev = 0;
                 bool isFirstIndex = true;
@@ -1304,7 +1304,7 @@ namespace ICU4N.Impl
                 }
 
                 /* set up local variables */
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int srcLength = src.Length;
                 int prev = 0;
                 bool isFirstIndex = true;
@@ -1439,7 +1439,7 @@ namespace ICU4N.Impl
                 }
 
                 /* set up local variables */
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int srcLength = src.Length;
                 int prev = 0;
                 bool isFirstIndex = true;
@@ -1574,7 +1574,7 @@ namespace ICU4N.Impl
                 }
 
                 /* set up local variables */
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int srcLength = src.Length;
                 int prev = 0;
                 bool isFirstIndex = true;
@@ -1709,7 +1709,7 @@ namespace ICU4N.Impl
                 }
 
                 /* set up local variables */
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int srcLength = src.Length;
                 int prev = 0;
                 bool isFirstIndex = true;
@@ -1844,7 +1844,7 @@ namespace ICU4N.Impl
                 }
 
                 /* set up local variables */
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int srcLength = src.Length;
                 int prev = 0;
                 bool isFirstIndex = true;
@@ -1979,7 +1979,7 @@ namespace ICU4N.Impl
                 }
 
                 /* set up local variables */
-                StringContextIterator iter = new StringContextIterator(src);
+                StringContextEnumerator iter = new StringContextEnumerator(src);
                 int srcLength = src.Length;
                 int prev = 0;
                 bool isFirstIndex = true;
