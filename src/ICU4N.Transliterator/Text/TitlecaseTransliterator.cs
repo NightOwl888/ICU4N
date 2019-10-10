@@ -73,7 +73,7 @@ namespace ICU4N.Text
                 }
 
                 // case type: >0 cased (UCaseProps.LOWER etc.)  ==0 uncased  <0 case-ignorable
-                int type;
+                CaseType type;
 
                 // Our mode; we are either converting letter toTitle or
                 // toLower.
@@ -131,7 +131,7 @@ namespace ICU4N.Text
                         {
                             c = csp.ToFullLower(c, iter, result, caseLocale);
                         }
-                        doTitle = type == 0; // doTitle=isUncased
+                        doTitle = type == CaseType.None; // doTitle=isUncased
 
                         if (iter.DidReachLimit && isIncremental)
                         {

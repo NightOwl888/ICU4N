@@ -59,6 +59,19 @@ namespace ICU4N.Impl
     }
 
     /// <summary>
+    /// Case type for non-case-ignorable properties.
+    /// </summary>
+    /// <seealso cref="UCaseProps.GetCaseType(int)"/>
+    /// <seealso cref="UCaseProps.IsCaseIgnorable(int, out CaseType)"/>
+    public enum CaseType
+    {
+        None = 0,
+        Lower = 1,
+        Upper = 2,
+        Title = 3,
+    }
+
+    /// <summary>
     /// Low-level Unicode character/string case mapping code.
     /// .NET port of ucase.h/.c.
     /// </summary>
@@ -247,7 +260,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) >= Upper)
+                if (GetCaseTypeFromProps(props) >= CaseType.Upper)
                 {
                     c += GetDelta(props);
                 }
@@ -269,7 +282,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) == Lower)
+                if (GetCaseTypeFromProps(props) == CaseType.Lower)
                 {
                     c += GetDelta(props);
                 }
@@ -291,7 +304,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) == Lower)
+                if (GetCaseTypeFromProps(props) == CaseType.Lower)
                 {
                     c += GetDelta(props);
                 }
@@ -365,7 +378,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) != None)
+                if (GetCaseTypeFromProps(props) != CaseType.None)
                 {
                     /* add the one simple case mapping, no matter what type it is */
                     int delta = GetDelta(props);
@@ -572,21 +585,21 @@ namespace ICU4N.Impl
             return false; /* string not found */
         }
 
-        /// <returns><see cref="None"/>, <see cref="Lower"/>, <see cref="Upper"/>, <see cref="Title"/></returns>
-        public int GetType(int c)
+        /// <returns><see cref="CaseType.None"/>, <see cref="CaseType.Lower"/>, <see cref="CaseType.Upper"/>, <see cref="CaseType.Title"/></returns>
+        public CaseType GetCaseType(int c)
         {
-            return GetTypeFromProps(trie.Get(c));
+            return GetCaseTypeFromProps(trie.Get(c));
         }
 
         /// <summary>
-        /// Like <see cref="GetType(int)"/>, but returns <c>true</c> if <paramref name="c"/> is case-ignorable
+        /// Like <see cref="GetCaseType(int)"/>, but returns <c>true</c> if <paramref name="c"/> is case-ignorable
         /// and returns <paramref name="type"/> as an out parameter.
         /// </summary>
         // ICU4N specific - rather than returning 2 bits in an int in GetTypeOrIgnorable, 
         // we return ignorable as a bool and type as an out parameter, which makes usage simpler for end users.
         // For performance reasons, it still works best to get these 2 values in one go rather than making 2
         // separate functions.
-        public bool IsCaseIgnorable(int c, out int type)
+        public bool IsCaseIgnorable(int c, out CaseType type)
         {
             return IsCaseIgnorableFromProps(trie.Get(c), out type);
         }
@@ -789,11 +802,11 @@ namespace ICU4N.Impl
             for (iter.Reset(dir); (c = iter.Next()) >= 0;)
             {
                 // ICU4N: Simplfied version of GetTypeOrIgnorable
-                if (IsCaseIgnorable(c, out int type))
+                if (IsCaseIgnorable(c, out CaseType type))
                 {
                     /* case-ignorable, continue with the loop */
                 }
-                else if (type != None)
+                else if (type != CaseType.None)
                 {
                     return true; /* followed by cased letter */
                 }
@@ -1034,7 +1047,7 @@ namespace ICU4N.Impl
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                if (GetTypeFromProps(props) >= Upper)
+                if (GetCaseTypeFromProps(props) >= CaseType.Upper)
                 {
                     c += GetDelta(props);
                 }
@@ -1116,18 +1129,18 @@ namespace ICU4N.Impl
             switch (which)
             {
                 case UProperty.Lowercase:
-                    return Lower == GetType(c);
+                    return CaseType.Lower == GetCaseType(c);
                 case UProperty.Uppercase:
-                    return Upper == GetType(c);
+                    return CaseType.Upper == GetCaseType(c);
                 case UProperty.Soft_Dotted:
                     return IsSoftDotted(c);
                 case UProperty.Case_Sensitive:
                     return IsCaseSensitive(c);
                 case UProperty.Cased:
-                    return None != GetType(c);
+                    return CaseType.None != GetCaseType(c);
                 case UProperty.Case_Ignorable:
                     // ICU4N: Simplfied version of GetTypeOrIgnorable
-                    return IsCaseIgnorable(c, out int _);
+                    return IsCaseIgnorable(c, out CaseType _);
                     //return (GetTypeOrIgnorable(c) >> 2) != 0;
                 /*
                  * Note: The following Changes_When_Xyz are defined as testing whether
@@ -1190,27 +1203,24 @@ namespace ICU4N.Impl
         // definitions for 16-bit case properties word ------------------------- ***
 
         /* 2-bit constants for types of cased characters */
-        public const int TypeMask = 3;
-        public const int None = 0; // ICU4N TODO: API Make into enum ?
-        public const int Lower = 1;
-        public const int Upper = 2;
-        public const int Title = 3;
+        private const int TypeMask = 3;
+        // ICU4N specific: Refactored Type constants into an enum named CaseType
 
-        /// <returns><see cref="None"/>, <see cref="Lower"/>, <see cref="Upper"/>, <see cref="Title"/></returns>
-        private static int GetTypeFromProps(int props)
+        /// <returns><see cref="CaseType.None"/>, <see cref="CaseType.Lower"/>, <see cref="CaseType.Upper"/>, <see cref="CaseType.Title"/></returns>
+        private static CaseType GetCaseTypeFromProps(int props)
         {
-            return props & TypeMask;
+            return (CaseType)(props & TypeMask);
         }
 
         /// <summary>
-        /// Like <see cref="GetTypeFromProps(int)"/>, but returns <c>true</c> if <paramref name="props"/> indicate case-ignorable
+        /// Like <see cref="GetCaseTypeFromProps(int)"/>, but returns <c>true</c> if <paramref name="props"/> indicate case-ignorable
         /// and returns <paramref name="type"/> as an out parameter.
         /// </summary>
         // ICU4N specific - rather than returning 2 bits in an int in GetTypeAndIgnorableFromProps, 
         // we return ignorable as a bool and type as an out parameter, which makes usage simpler for end users
-        private static bool IsCaseIgnorableFromProps(int props, out int type)
+        private static bool IsCaseIgnorableFromProps(int props, out CaseType type)
         {
-            type = props & TypeMask;
+            type = (CaseType)(props & TypeMask);
             return (props & IGNORABLE) != 0; // Return true if ignorable
         }
 
