@@ -2260,7 +2260,7 @@ namespace ICU4N.Text
             }
             else
             {
-                if (folded1Length > UCaseProps.MAX_STRING_LENGTH)
+                if (folded1Length > UCaseProps.MaxStringLength)
                 {
                     folded.AppendCodePoint(folded1Length);
                 }
@@ -3222,7 +3222,7 @@ namespace ICU4N.Text
 
                     /* copy the folding result to fold1[] */
                     /* Java: the buffer was probably not empty, remove the old contents */
-                    if (length <= UCaseProps.MAX_STRING_LENGTH)
+                    if (length <= UCaseProps.MaxStringLength)
                     {
                         fold1.Delete(0, fold1.Length - length);
                     }
@@ -3279,7 +3279,7 @@ namespace ICU4N.Text
 
                     /* copy the folding result to fold2[] */
                     /* Java: the buffer was probably not empty, remove the old contents */
-                    if (length <= UCaseProps.MAX_STRING_LENGTH)
+                    if (length <= UCaseProps.MaxStringLength)
                     {
                         fold2.Delete(0, fold2.Length - length);
                     }

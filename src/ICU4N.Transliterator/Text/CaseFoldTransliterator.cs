@@ -90,7 +90,7 @@ namespace ICU4N.Text
                         /* c mapped to itself, no change */
                         continue;
                     }
-                    else if (c <= UCaseProps.MAX_STRING_LENGTH)
+                    else if (c <= UCaseProps.MaxStringLength)
                     {
                         /* replace by the mapping string */
                         delta = iter.Replace(result.ToString());

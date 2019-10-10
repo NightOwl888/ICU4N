@@ -49,7 +49,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Appends a full case mapping result, see <see cref="UCaseProps.MAX_STRING_LENGTH"/>
+        /// Appends a full case mapping result, see <see cref="UCaseProps.MaxStringLength"/>
         /// </summary>
         /// <exception cref="IOException"/>
         private static void AppendResult(int result, StringBuilder dest,
@@ -69,7 +69,7 @@ namespace ICU4N.Impl
                 }
                 AppendCodePoint(dest, ~result);
             }
-            else if (result <= UCaseProps.MAX_STRING_LENGTH)
+            else if (result <= UCaseProps.MaxStringLength)
             {
                 // The mapping has already been appended to result.
                 if (edits != null)
@@ -89,7 +89,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Appends a full case mapping result, see <see cref="UCaseProps.MAX_STRING_LENGTH"/>
+        /// Appends a full case mapping result, see <see cref="UCaseProps.MaxStringLength"/>
         /// </summary>
         /// <exception cref="IOException"/>
         private static void AppendResult(int result, IAppendable dest,
@@ -109,7 +109,7 @@ namespace ICU4N.Impl
                 }
                 AppendCodePoint(dest, ~result);
             }
-            else if (result <= UCaseProps.MAX_STRING_LENGTH)
+            else if (result <= UCaseProps.MaxStringLength)
             {
                 // The mapping has already been appended to result.
                 if (edits != null)

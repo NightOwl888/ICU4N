@@ -28,9 +28,9 @@ namespace ICU4N.Impl
         /// </param>
         /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
         /// <param name="caseLocale">Case locale value from ucase_getCaseLocale().</param>
-        /// <returns>Output code point or string length, see <see cref="MAX_STRING_LENGTH"/>.</returns>
+        /// <returns>Output code point or string length, see <see cref="MaxStringLength"/>.</returns>
         /// <seealso cref="ICasePropertiesContextIterator"/>
-        /// <seealso cref="MAX_STRING_LENGTH"/>
+        /// <seealso cref="MaxStringLength"/>
         /// <internal/>
         public int ToFullLower(int c, ICasePropertiesContextIterator iter, StringBuilder output, int caseLocale)
         {
@@ -229,9 +229,9 @@ namespace ICU4N.Impl
         /// </param>
         /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
         /// <param name="caseLocale">Case locale value from ucase_getCaseLocale().</param>
-        /// <returns>Output code point or string length, see <see cref="MAX_STRING_LENGTH"/>.</returns>
+        /// <returns>Output code point or string length, see <see cref="MaxStringLength"/>.</returns>
         /// <seealso cref="ICasePropertiesContextIterator"/>
-        /// <seealso cref="MAX_STRING_LENGTH"/>
+        /// <seealso cref="MaxStringLength"/>
         /// <internal/>
         internal int ToFullLower(int c, ICasePropertiesContextIterator iter, IAppendable output, int caseLocale)
         {

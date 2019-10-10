@@ -686,17 +686,17 @@ namespace ICU4N.Impl
         /// value as follows:
         /// <list type="table">
         ///     <item><term>Mapping to self</term><description>Negative values (~self instead of -self to support U+0000)</description></item>
-        ///     <item><term>Mapping to another code point</term><description>Positive values ><see cref="MAX_STRING_LENGTH"/></description></item>
+        ///     <item><term>Mapping to another code point</term><description>Positive values ><see cref="MaxStringLength"/></description></item>
         ///     <item><term>Mapping to a string</term><description>
-        ///         The string length (0..MAX_STRING_LENGTH) is
+        ///         The string length (0..<see cref="MaxStringLength"/>) is
         ///         returned. Note that the string result may indeed have zero length.
         ///     </description></item>
         /// </list>
         /// </summary>
-        public const int MAX_STRING_LENGTH = 0x1f; // ICU4N TODO: API - rename per .NET conventions
+        public const int MaxStringLength = 0x1f;
 
         //private const int LOC_UNKNOWN=0;
-        public const int LOC_ROOT = 1;
+        public const int LOC_ROOT = 1; // ICU4N TODO: API - move to enum named CaseLocale and remove LOC_
         private const int LOC_TURKISH = 2;
         private const int LOC_LITHUANIAN = 3;
         internal const int LOC_GREEK = 4;

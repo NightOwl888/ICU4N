@@ -3978,7 +3978,7 @@ namespace ICU4N.Text
         {
             if (result >= 0)
             {
-                if (result > UCaseProps.MAX_STRING_LENGTH)
+                if (result > UCaseProps.MaxStringLength)
                 {
                     // add a single-code point case mapping
                     set.Add(result);
