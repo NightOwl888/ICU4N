@@ -12,37 +12,42 @@ using System.Text;
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Iterator for string case mappings, which need to look at the
+    /// Enumerator for string case mappings, which need to look at the
     /// context (surrounding text) of a given character for conditional mappings.
     /// </summary>
     /// <remarks>
-    /// The iterator only needs to go backward or forward away from the
+    /// The enumerator only needs to go backward or forward away from the
     /// character in question. It does not use any indexes on this interface.
     /// It does not support random access or an arbitrary change of
     /// iteration direction.
     /// <para/>
     /// The code point being case-mapped itself is never returned by
-    /// this iterator.
+    /// this enumerator.
     /// </remarks>
-    public interface ICasePropertiesContextIterator // ICU4N specific - renamed from IContextIterator
+    public interface ICasePropertiesContextEnumerator // ICU4N specific - renamed from IContextIterator
     {
         /// <summary>
-        /// Reset the iterator for forward or backward iteration.
+        /// Reset the enumerator for forward or backward iteration.
         /// </summary>
-        /// <param name="dir">
-        /// >0: Begin iterating forward from the first code point
+        /// <param name="forward">
+        /// If <c>true</c>, begin iterating forward from the first code point
         /// after the one that is being case-mapped.
-        /// &lt;0: Begin iterating backward from the first code point
+        /// If <c>false</c>, begin iterating backward from the first code point
         /// before the one that is being case-mapped.
         /// </param>
-        void Reset(int dir);
+        void Reset(bool forward);
 
         /// <summary>
-        /// Iterate and return the next code point, moving in the direction
-        /// determined by the <see cref="Reset(int)"/> call.
+        /// Returns the current code point.
         /// </summary>
-        /// <returns>Next code point, or &lt;0 when the iteration is done.</returns>
-        int Next();
+        int Current { get; }
+
+        /// <summary>
+        /// Iterate moving in the direction determined by the <see cref="Reset(bool)"/> call.
+        /// </summary>
+        /// <returns><c>true</c> if the enumerator was successfully advanced to the next element; 
+        /// <c>false</c> if the enumerator has reached the end.</returns>
+        bool MoveNext();
     }
 
     /// <summary>
@@ -804,19 +809,17 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is followed by {case-ignorable}* cased  ? (dir determines looking forward/backward)</summary>
-        private bool IsFollowedByCasedLetter(ICasePropertiesContextIterator iter, int dir)
+        private bool IsFollowedByCasedLetter(ICasePropertiesContextEnumerator iter, bool forward)
         {
-            int c;
-
             if (iter == null)
             {
                 return false;
             }
 
-            for (iter.Reset(dir); (c = iter.Next()) >= 0;)
+            for (iter.Reset(forward); iter.MoveNext();)
             {
                 // ICU4N: Simplfied version of GetTypeOrIgnorable
-                if (IsCaseIgnorable(c, out CaseType type))
+                if (IsCaseIgnorable(iter.Current, out CaseType type))
                 {
                     /* case-ignorable, continue with the loop */
                 }
@@ -834,9 +837,8 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is preceded by Soft_Dotted character with no intervening cc=230 ?</summary>
-        private bool IsPrecededBySoftDotted(ICasePropertiesContextIterator iter)
+        private bool IsPrecededBySoftDotted(ICasePropertiesContextEnumerator iter)
         {
-            int c;
             DotType dotType;
 
             if (iter == null)
@@ -844,9 +846,9 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            for (iter.Reset(-1); (c = iter.Next()) >= 0;)
+            for (iter.Reset(forward: false); iter.MoveNext();)
             {
-                dotType = GetDotType(c);
+                dotType = GetDotType(iter.Current);
                 if (dotType == DotType.SoftDotted)
                 {
                     return true; /* preceded by TYPE_i */
@@ -895,7 +897,7 @@ namespace ICU4N.Impl
          */
 
         /// <summary>Is preceded by base character 'I' with no intervening cc=230 ?</summary>
-        private bool IsPrecededBy_I(ICasePropertiesContextIterator iter)
+        private bool IsPrecededBy_I(ICasePropertiesContextEnumerator iter)
         {
             int c;
             DotType dotType;
@@ -905,8 +907,9 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            for (iter.Reset(-1); (c = iter.Next()) >= 0;)
+            for (iter.Reset(forward: false); iter.MoveNext();)
             {
+                c = iter.Current;
                 if (c == 0x49)
                 {
                     return true; /* preceded by I */
@@ -922,9 +925,9 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is followed by one or more cc==230 ?</summary>
-        private bool IsFollowedByMoreAbove(ICasePropertiesContextIterator iter)
+        private bool IsFollowedByMoreAbove(ICasePropertiesContextEnumerator iter)
         {
-            int c;
+            //int c;
             DotType dotType;
 
             if (iter == null)
@@ -932,9 +935,9 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            for (iter.Reset(1); (c = iter.Next()) >= 0;)
+            for (iter.Reset(forward: true); iter.MoveNext();)
             {
-                dotType = GetDotType(c);
+                dotType = GetDotType(iter.Current);
                 if (dotType == DotType.Above)
                 {
                     return true; /* at least one cc==230 following */
@@ -949,7 +952,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is followed by a dot above (without cc==230 in between) ?</summary>
-        private bool IsFollowedByDotAbove(ICasePropertiesContextIterator iter)
+        private bool IsFollowedByDotAbove(ICasePropertiesContextEnumerator iter)
         {
             int c;
             DotType dotType;
@@ -959,8 +962,9 @@ namespace ICU4N.Impl
                 return false;
             }
 
-            for (iter.Reset(1); (c = iter.Next()) >= 0;)
+            for (iter.Reset(forward: true); iter.MoveNext();)
             {
+                c = iter.Current;
                 if (c == 0x307)
                 {
                     return true;

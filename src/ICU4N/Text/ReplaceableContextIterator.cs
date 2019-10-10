@@ -3,10 +3,10 @@
 namespace ICU4N.Text
 {
     /// <summary>
-    /// Implementation of <see cref="ICasePropertiesContextIterator"/>, iterates over a <see cref="IReplaceable"/>.
+    /// Implementation of <see cref="ICasePropertiesContextEnumerator"/>, iterates over a <see cref="IReplaceable"/>.
     /// See casetrn.cpp/utrans_rep_caseContextIterator().
     /// </summary>
-    internal class ReplaceableContextIterator : ICasePropertiesContextIterator
+    internal class ReplaceableContextIterator : ICasePropertiesContextEnumerator
     {
         /// <summary>
         /// Constructor.
@@ -15,8 +15,9 @@ namespace ICU4N.Text
         {
             this.rep = null;
             limit = cpStart = cpLimit = index = contextStart = contextLimit = 0;
-            dir = 0;
+            forward = true;
             reachedLimit = false;
+            Current = -1;
         }
 
         /// <summary>
@@ -28,8 +29,9 @@ namespace ICU4N.Text
             this.rep = rep;
             limit = contextLimit = rep.Length;
             cpStart = cpLimit = index = contextStart = 0;
-            dir = 0;
+            forward = true;
             reachedLimit = false;
+            Current = -1;
         }
 
         /// <summary>
@@ -40,8 +42,9 @@ namespace ICU4N.Text
         {
             cpStart = cpLimit = index;
             this.index = 0;
-            dir = 0;
+            forward = true;
             reachedLimit = false;
+            Current = -1;
         }
 
         /// <summary>
@@ -104,6 +107,7 @@ namespace ICU4N.Text
                 this.contextLimit = rep.Length;
             }
             reachedLimit = false;
+            Current = -1;
         }
 
         /// <summary>
@@ -144,42 +148,27 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Did forward context iteration with <see cref="Next()"/> reach the iteration limit?
+        /// Did forward context iteration with <see cref="MoveNext()"/> reach the iteration limit?
         /// </summary>
-        public virtual bool DidReachLimit
-        {
-            get { return reachedLimit; }
-        }
+        public virtual bool DidReachLimit => reachedLimit;
+
 
         // implement UCaseProps.ContextIterator
-        public virtual void Reset(int direction)
+        public virtual void Reset(bool forward)
         {
-            if (direction > 0)
-            {
-                /* reset for forward iteration */
-                this.dir = 1;
-                index = cpLimit;
-            }
-            else if (direction < 0)
-            {
-                /* reset for backward iteration */
-                this.dir = -1;
-                index = cpStart;
-            }
-            else
-            {
-                // not a valid direction
-                this.dir = 0;
-                index = 0;
-            }
+            this.forward = forward;
+            index = forward 
+                ? cpLimit  /* reset for forward iteration */
+                : cpStart; /* reset for backward iteration */
+
             reachedLimit = false;
+            Current = -1;
         }
 
-        public virtual int Next()
+        private int Next()
         {
             int c;
-
-            if (dir > 0)
+            if (forward)
             {
                 if (index < contextLimit)
                 {
@@ -193,7 +182,7 @@ namespace ICU4N.Text
                     reachedLimit = true;
                 }
             }
-            else if (dir < 0 && index > contextStart)
+            else if (!forward && index > contextStart)
             {
                 c = rep.Char32At(index - 1);
                 index -= UTF16.GetCharCount(c);
@@ -202,10 +191,25 @@ namespace ICU4N.Text
             return -1;
         }
 
+        /// <summary>
+        /// Iterate moving in the direction determined by the <see cref="Reset(bool)"/> call.
+        /// </summary>
+        /// <returns><c>true</c> if the enumerator was successfully advanced to the next element; 
+        /// <c>false</c> if the enumerator has reached the end.</returns>
+        public bool MoveNext()
+        {
+            return (Current = Next()) >= 0;
+        }
+
+        /// <summary>
+        /// Gets the current code point.
+        /// </summary>
+        public int Current { get; private set; }
+
         // variables
         protected IReplaceable rep;
         protected int index, limit, cpStart, cpLimit, contextStart, contextLimit;
-        protected int dir; // 0=initial state  >0=forward  <0=backward
         protected bool reachedLimit;
+        protected bool forward;
     }
 }

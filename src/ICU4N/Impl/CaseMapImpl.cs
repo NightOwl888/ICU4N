@@ -9,10 +9,10 @@ using System.Text;
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Implementation of <see cref="ICasePropertiesContextIterator"/>, iterates over a string.
+    /// Implementation of <see cref="ICasePropertiesContextEnumerator"/>, iterates over a string.
     /// See ustrcase.c/utf16_caseContextIterator().
     /// </summary>
-    public sealed class StringContextIterator : ICasePropertiesContextIterator
+    public sealed class StringContextIterator : ICasePropertiesContextEnumerator
     {
         /// <summary>
         /// Constructor.
@@ -50,7 +50,7 @@ namespace ICU4N.Impl
             this.s = src;
             limit = src.Length;
             cpStart = cpLimit = index = 0;
-            dir = 0;
+            forward = true;
         }
 
         /// <summary>
@@ -112,64 +112,40 @@ namespace ICU4N.Impl
         /// Gets the start of the code point that was last returned 
         /// by <see cref="NextCaseMapCP()"/>.
         /// </summary>
-        public int CPStart
-        {
-            get { return cpStart; }
-        }
+        public int CPStart => cpStart;
 
         /// <summary>
         /// Gets the limit of the code point that was last returned
         /// by <see cref="NextCaseMapCP()"/>.
         /// </summary>
-        public int CPLimit
-        {
-            get { return cpLimit; }
-        }
+        public int CPLimit => cpLimit;
 
         /// <summary>
         /// Gets the length of the code point that was last returned
         /// by <see cref="NextCaseMapCP()"/>.
         /// </summary>
-        public int CPLength
-        {
-            get { return cpLimit - cpStart; }
-        }
+        public int CPLength => cpLimit - cpStart;
 
         // implement UCaseProps.ContextIterator
         // The following code is not used anywhere in this private class
-        public void Reset(int direction)
+        public void Reset(bool forward)
         {
-            if (direction > 0)
-            {
-                /* reset for forward iteration */
-                dir = 1;
-                index = cpLimit;
-            }
-            else if (direction < 0)
-            {
-                /* reset for backward iteration */
-                dir = -1;
-                index = cpStart;
-            }
-            else
-            {
-                // not a valid direction
-                dir = 0;
-                index = 0;
-            }
+            this.forward = forward;
+            index = forward
+                ? cpLimit  /* reset for forward iteration */
+                : cpStart; /* reset for backward iteration */
         }
 
-        public int Next()
+        private int Next()
         {
             int c;
-
-            if (dir > 0 && index < s.Length)
+            if (forward && index < s.Length)
             {
                 c = Character.CodePointAt(s, index);
                 index += Character.CharCount(c);
                 return c;
             }
-            else if (dir < 0 && index > 0)
+            else if (!forward && index > 0)
             {
                 c = Character.CodePointBefore(s, index);
                 index -= Character.CharCount(c);
@@ -178,10 +154,25 @@ namespace ICU4N.Impl
             return -1;
         }
 
+        /// <summary>
+        /// Iterate moving in the direction determined by the <see cref="Reset(bool)"/> call.
+        /// </summary>
+        /// <returns><c>true</c> if the enumerator was successfully advanced to the next element; 
+        /// <c>false</c> if the enumerator has reached the end.</returns>
+        public bool MoveNext()
+        {
+            return (Current = Next()) >= 0;
+        }
+
+        /// <summary>
+        /// Gets the current code point.
+        /// </summary>
+        public int Current { get; private set; }
+
         // variables
         private ICharSequence s;
         private int index, limit, cpStart, cpLimit;
-        private int dir; // 0=initial state  >0=forward  <0=backward
+        private bool forward;
     }
 
     public sealed partial class CaseMapImpl

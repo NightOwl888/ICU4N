@@ -23,16 +23,16 @@ namespace ICU4N.Impl
         /// <param name="c">Character to be mapped.</param>
         /// <param name="iter">
         /// Character iterator, used for context-sensitive mappings.
-        /// See <see cref="ICasePropertiesContextIterator"/> for details.
+        /// See <see cref="ICasePropertiesContextEnumerator"/> for details.
         /// If iter==null then a context-independent result is returned.
         /// </param>
         /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
         /// <param name="caseLocale">Case locale value from <see cref="GetCaseLocale(System.Globalization.CultureInfo)"/>.</param>
         /// <returns>Output code point or string length, see <see cref="MaxStringLength"/>.</returns>
-        /// <seealso cref="ICasePropertiesContextIterator"/>
+        /// <seealso cref="ICasePropertiesContextEnumerator"/>
         /// <seealso cref="MaxStringLength"/>
         /// <internal/>
-        public int ToFullLower(int c, ICasePropertiesContextIterator iter, StringBuilder output, CaseLocale caseLocale)
+        public int ToFullLower(int c, ICasePropertiesContextEnumerator iter, StringBuilder output, CaseLocale caseLocale)
         {
             int result, props;
 
@@ -168,8 +168,8 @@ namespace ICU4N.Impl
                         }
                     }
                     else if (c == 0x3a3 &&
-                              !IsFollowedByCasedLetter(iter, 1) &&
-                              IsFollowedByCasedLetter(iter, -1) /* -1=preceded */
+                              !IsFollowedByCasedLetter(iter, forward: true) &&
+                              IsFollowedByCasedLetter(iter, forward: false) /* -1=preceded */
                   )
                     {
                         /* greek capital sigma maps depending on surrounding cased letters (see SpecialCasing.txt) */
@@ -224,16 +224,16 @@ namespace ICU4N.Impl
         /// <param name="c">Character to be mapped.</param>
         /// <param name="iter">
         /// Character iterator, used for context-sensitive mappings.
-        /// See <see cref="ICasePropertiesContextIterator"/> for details.
+        /// See <see cref="ICasePropertiesContextEnumerator"/> for details.
         /// If iter==null then a context-independent result is returned.
         /// </param>
         /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
         /// <param name="caseLocale">Case locale value from <see cref="GetCaseLocale(System.Globalization.CultureInfo)"/>.</param>
         /// <returns>Output code point or string length, see <see cref="MaxStringLength"/>.</returns>
-        /// <seealso cref="ICasePropertiesContextIterator"/>
+        /// <seealso cref="ICasePropertiesContextEnumerator"/>
         /// <seealso cref="MaxStringLength"/>
         /// <internal/>
-        internal int ToFullLower(int c, ICasePropertiesContextIterator iter, IAppendable output, CaseLocale caseLocale)
+        internal int ToFullLower(int c, ICasePropertiesContextEnumerator iter, IAppendable output, CaseLocale caseLocale)
         {
             int result, props;
 
@@ -369,8 +369,8 @@ namespace ICU4N.Impl
                         }
                     }
                     else if (c == 0x3a3 &&
-                              !IsFollowedByCasedLetter(iter, 1) &&
-                              IsFollowedByCasedLetter(iter, -1) /* -1=preceded */
+                              !IsFollowedByCasedLetter(iter, forward: true) &&
+                              IsFollowedByCasedLetter(iter, forward: false) /* -1=preceded */
                   )
                     {
                         /* greek capital sigma maps depending on surrounding cased letters (see SpecialCasing.txt) */
@@ -420,7 +420,7 @@ namespace ICU4N.Impl
         }
 
         /* internal */
-        private int ToUpperOrTitle(int c, ICasePropertiesContextIterator iter,
+        private int ToUpperOrTitle(int c, ICasePropertiesContextEnumerator iter,
             StringBuilder output,
             CaseLocale caseLocale,
             bool upperNotTitle)
@@ -543,7 +543,7 @@ namespace ICU4N.Impl
         }
 
         /* internal */
-        private int ToUpperOrTitle(int c, ICasePropertiesContextIterator iter,
+        private int ToUpperOrTitle(int c, ICasePropertiesContextEnumerator iter,
             IAppendable output,
             CaseLocale caseLocale,
             bool upperNotTitle)
@@ -665,28 +665,28 @@ namespace ICU4N.Impl
             return (result == c) ? ~result : result;
         }
 
-        public int ToFullUpper(int c, ICasePropertiesContextIterator iter,
+        public int ToFullUpper(int c, ICasePropertiesContextEnumerator iter,
             StringBuilder output,
             CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
 
-        internal int ToFullUpper(int c, ICasePropertiesContextIterator iter,
+        internal int ToFullUpper(int c, ICasePropertiesContextEnumerator iter,
             IAppendable output,
             CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
 
-        public int ToFullTitle(int c, ICasePropertiesContextIterator iter,
+        public int ToFullTitle(int c, ICasePropertiesContextEnumerator iter,
             StringBuilder output,
             CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, false);
         }
 
-        internal int ToFullTitle(int c, ICasePropertiesContextIterator iter,
+        internal int ToFullTitle(int c, ICasePropertiesContextEnumerator iter,
             IAppendable output,
             CaseLocale caseLocale)
         {
