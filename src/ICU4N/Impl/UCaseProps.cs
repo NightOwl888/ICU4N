@@ -4,6 +4,7 @@ using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -69,6 +70,19 @@ namespace ICU4N.Impl
         Lower = 1,
         Upper = 2,
         Title = 3,
+    }
+
+    /// <summary>
+    /// Dot type for case properties.
+    /// </summary>
+    /// <seealso cref="UCaseProps.GetDotType(int)"/>
+    [SuppressMessage("Microsoft.Design", "CA1027", Justification = "Enum values cannot be combined")]
+    public enum DotType
+    {
+        NoDot = 0,           /* normal characters with cc=0 */
+        SoftDotted = 0x20,   /* soft-dotted characters with cc=0 */
+        Above = 0x40,        /* "above" accents with cc=230 */
+        OtherAccent = 0x60,  /* other accent character (0<cc!=230) */
     }
 
     /// <summary>
@@ -604,23 +618,23 @@ namespace ICU4N.Impl
             return IsCaseIgnorableFromProps(trie.Get(c), out type);
         }
 
-        /// <returns>NO_DOT, <see cref="SOFT_DOTTED"/>, <see cref="ABOVE"/>, <see cref="OTHER_ACCENT"/>.</returns>
-        public int GetDotType(int c)
+        /// <returns><see cref="DotType.NoDot"/>, <see cref="DotType.SoftDotted"/>, <see cref="DotType.Above"/>, <see cref="DotType.OtherAccent"/>.</returns>
+        public DotType GetDotType(int c)
         {
             int props = trie.Get(c);
             if (!PropsHasException(props))
             {
-                return props & DOT_MASK;
+                return (DotType)(props & DOT_MASK);
             }
             else
             {
-                return (exceptions[GetExceptionsOffset(props)] >> EXC_DOT_SHIFT) & DOT_MASK;
+                return (DotType)((exceptions[GetExceptionsOffset(props)] >> EXC_DOT_SHIFT) & DOT_MASK);
             }
         }
 
         public bool IsSoftDotted(int c)
         {
-            return GetDotType(c) == SOFT_DOTTED;
+            return GetDotType(c) == DotType.SoftDotted;
         }
 
         public bool IsCaseSensitive(int c)
@@ -823,7 +837,7 @@ namespace ICU4N.Impl
         private bool IsPrecededBySoftDotted(ICasePropertiesContextIterator iter)
         {
             int c;
-            int dotType;
+            DotType dotType;
 
             if (iter == null)
             {
@@ -833,11 +847,11 @@ namespace ICU4N.Impl
             for (iter.Reset(-1); (c = iter.Next()) >= 0;)
             {
                 dotType = GetDotType(c);
-                if (dotType == SOFT_DOTTED)
+                if (dotType == DotType.SoftDotted)
                 {
                     return true; /* preceded by TYPE_i */
                 }
-                else if (dotType != OTHER_ACCENT)
+                else if (dotType != DotType.OtherAccent)
                 {
                     return false; /* preceded by different base character (not TYPE_i), or intervening cc==230 */
                 }
@@ -884,7 +898,7 @@ namespace ICU4N.Impl
         private bool IsPrecededBy_I(ICasePropertiesContextIterator iter)
         {
             int c;
-            int dotType;
+            DotType dotType;
 
             if (iter == null)
             {
@@ -898,7 +912,7 @@ namespace ICU4N.Impl
                     return true; /* preceded by I */
                 }
                 dotType = GetDotType(c);
-                if (dotType != OTHER_ACCENT)
+                if (dotType != DotType.OtherAccent)
                 {
                     return false; /* preceded by different base character (not I), or intervening cc==230 */
                 }
@@ -911,7 +925,7 @@ namespace ICU4N.Impl
         private bool IsFollowedByMoreAbove(ICasePropertiesContextIterator iter)
         {
             int c;
-            int dotType;
+            DotType dotType;
 
             if (iter == null)
             {
@@ -921,11 +935,11 @@ namespace ICU4N.Impl
             for (iter.Reset(1); (c = iter.Next()) >= 0;)
             {
                 dotType = GetDotType(c);
-                if (dotType == ABOVE)
+                if (dotType == DotType.Above)
                 {
                     return true; /* at least one cc==230 following */
                 }
-                else if (dotType != OTHER_ACCENT)
+                else if (dotType != DotType.OtherAccent)
                 {
                     return false; /* next base character, no more cc==230 following */
                 }
@@ -938,7 +952,7 @@ namespace ICU4N.Impl
         private bool IsFollowedByDotAbove(ICasePropertiesContextIterator iter)
         {
             int c;
-            int dotType;
+            DotType dotType;
 
             if (iter == null)
             {
@@ -952,7 +966,7 @@ namespace ICU4N.Impl
                     return true;
                 }
                 dotType = GetDotType(c);
-                if (dotType != OTHER_ACCENT)
+                if (dotType != DotType.OtherAccent)
                 {
                     return false; /* next base character or cc==230 in between */
                 }
@@ -1228,12 +1242,8 @@ namespace ICU4N.Impl
         private const int SENSITIVE = 8;
         private const int EXCEPTION = 0x10;
 
-        // ICU4N TODO: API - make into [Flags] enum ?
         private const int DOT_MASK = 0x60;
-        //private const int NO_DOT=        0;      /* normal characters with cc=0 */
-        private const int SOFT_DOTTED = 0x20;   /* soft-dotted characters with cc=0 */
-        private const int ABOVE = 0x40;   /* "above" accents with cc=230 */
-        private const int OTHER_ACCENT = 0x60;   /* other accent character (0<cc!=230) */
+        // ICU4N: moved constants to DotType enumeration
 
         /* no exception: bits 15..7 are a 9-bit signed case mapping delta */
         private const int DELTA_SHIFT = 7;
