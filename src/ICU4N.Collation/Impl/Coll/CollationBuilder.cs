@@ -319,13 +319,13 @@ namespace ICU4N.Impl.Coll
                     CollationRuleParser.POSITION_VALUES[str[1] - CollationRuleParser.POS_BASE];
             switch (pos)
             {
-                case CollationRuleParser.Position.FIRST_TERTIARY_IGNORABLE:
+                case CollationRuleParser.Position.FirstTertiaryIgnorable:
                     // Quaternary CEs are not supported.
                     // Non-zero quaternary weights are possible only on tertiary or stronger CEs.
                     return 0;
-                case CollationRuleParser.Position.LAST_TERTIARY_IGNORABLE:
+                case CollationRuleParser.Position.LastTertiaryIgnorable:
                     return 0;
-                case CollationRuleParser.Position.FIRST_SECONDARY_IGNORABLE:
+                case CollationRuleParser.Position.FirstSecondaryIgnorable:
                     {
                         // Look for a tailored tertiary node after [0, 0, 0].
                         int index2 = FindOrInsertNodeForRootCE(0, CollationStrength.Tertiary);
@@ -342,11 +342,11 @@ namespace ICU4N.Impl.Coll
                         return rootElements.FirstTertiaryCE;
                         // No need to look for nodeHasAnyBefore() on a tertiary node.
                     }
-                case CollationRuleParser.Position.LAST_SECONDARY_IGNORABLE:
+                case CollationRuleParser.Position.LastSecondaryIgnorable:
                     ce = rootElements.LastTertiaryCE;
                     strength = CollationStrength.Tertiary;
                     break;
-                case CollationRuleParser.Position.FIRST_PRIMARY_IGNORABLE:
+                case CollationRuleParser.Position.FirstPrimaryIgnorable:
                     {
                         // Look for a tailored secondary node after [0, 0, *].
                         int index2 = FindOrInsertNodeForRootCE(0, CollationStrength.Secondary);
@@ -377,40 +377,40 @@ namespace ICU4N.Impl.Coll
                         strength = CollationStrength.Secondary;
                         break;
                     }
-                case CollationRuleParser.Position.LAST_PRIMARY_IGNORABLE:
+                case CollationRuleParser.Position.LastPrimaryIgnorable:
                     ce = rootElements.LastSecondaryCE;
                     strength = CollationStrength.Secondary;
                     break;
-                case CollationRuleParser.Position.FIRST_VARIABLE:
+                case CollationRuleParser.Position.FirstVariable:
                     ce = rootElements.FirstPrimaryCE;
                     isBoundary = true;  // FractionalUCA.txt: FDD1 00A0, SPACE first primary
                     break;
-                case CollationRuleParser.Position.LAST_VARIABLE:
+                case CollationRuleParser.Position.LastVariable:
                     ce = rootElements.LastCEWithPrimaryBefore(variableTop + 1);
                     break;
-                case CollationRuleParser.Position.FIRST_REGULAR:
+                case CollationRuleParser.Position.FirstRegular:
                     ce = rootElements.FirstCEWithPrimaryAtLeast(variableTop + 1);
                     isBoundary = true;  // FractionalUCA.txt: FDD1 263A, SYMBOL first primary
                     break;
-                case CollationRuleParser.Position.LAST_REGULAR:
+                case CollationRuleParser.Position.LastRegular:
                     // Use the Hani-first-primary rather than the actual last "regular" CE before it,
                     // for backward compatibility with behavior before the introduction of
                     // script-first-primary CEs in the root collator.
                     ce = rootElements.FirstCEWithPrimaryAtLeast(
                         baseData.GetFirstPrimaryForGroup(UScript.Han));
                     break;
-                case CollationRuleParser.Position.FIRST_IMPLICIT:
+                case CollationRuleParser.Position.FirstImplicit:
                     ce = baseData.GetSingleCE(0x4e00);
                     break;
-                case CollationRuleParser.Position.LAST_IMPLICIT:
+                case CollationRuleParser.Position.LastImplicit:
                     // We do not support tailoring to an unassigned-implicit CE.
                     throw new NotSupportedException(
                             "reset to [last implicit] not supported");
-                case CollationRuleParser.Position.FIRST_TRAILING:
+                case CollationRuleParser.Position.FirstTrailing:
                     ce = Collation.MakeCE(Collation.FIRST_TRAILING_PRIMARY);
                     isBoundary = true;  // trailing first primary (there is no mapping for it)
                     break;
-                case CollationRuleParser.Position.LAST_TRAILING:
+                case CollationRuleParser.Position.LastTrailing:
                     throw new ArgumentException("LDML forbids tailoring to U+FFFF");
                 default:
                     Debug.Assert(false);

@@ -19,20 +19,20 @@ namespace ICU4N.Impl.Coll
         /// <summary>Special reset positions.</summary>
         internal enum Position
         {
-            FIRST_TERTIARY_IGNORABLE,
-            LAST_TERTIARY_IGNORABLE,
-            FIRST_SECONDARY_IGNORABLE,
-            LAST_SECONDARY_IGNORABLE,
-            FIRST_PRIMARY_IGNORABLE,
-            LAST_PRIMARY_IGNORABLE,
-            FIRST_VARIABLE,
-            LAST_VARIABLE,
-            FIRST_REGULAR,
-            LAST_REGULAR,
-            FIRST_IMPLICIT,
-            LAST_IMPLICIT,
-            FIRST_TRAILING,
-            LAST_TRAILING
+            FirstTertiaryIgnorable,
+            LastTertiaryIgnorable,
+            FirstSecondaryIgnorable,
+            LastSecondaryIgnorable,
+            FirstPrimaryIgnorable,
+            LastPrimaryIgnorable,
+            FirstVariable,
+            LastVariable,
+            FirstRegular,
+            LastRegular,
+            FirstImplicit,
+            LastImplicit,
+            FirstTrailing,
+            LastTrailing
         }
         internal static readonly Position[] POSITION_VALUES = (Position[])Enum.GetValues(typeof(Position));
 
@@ -612,12 +612,12 @@ namespace ICU4N.Impl.Coll
                 }
                 if (raw.Equals("top"))
                 {
-                    str.Append(POS_LEAD).Append((char)(POS_BASE + (int)Position.LAST_REGULAR));
+                    str.Append(POS_LEAD).Append((char)(POS_BASE + (int)Position.LastRegular));
                     return j;
                 }
                 if (raw.Equals("variable top"))
                 {
-                    str.Append(POS_LEAD).Append((char)(POS_BASE + (int)Position.LAST_VARIABLE));
+                    str.Append(POS_LEAD).Append((char)(POS_BASE + (int)Position.LastVariable));
                     return j;
                 }
             }
