@@ -26,7 +26,7 @@ namespace ICU4N.Text
             {
                 locale = CultureInfo.CurrentCulture;
             }
-            return UCaseProps.GetCaseLocale(locale);
+            return UCaseProperties.GetCaseLocale(locale);
         }
 
         /// <summary>

@@ -238,7 +238,7 @@ namespace ICU4N.Impl
             int gc = UCharacterProperty.Instance.GetType(c);
             return ((1 << gc) & LNS) != 0 ||
                     (gc == UUnicodeCategory.ModifierLetter.ToInt32() &&
-                        UCaseProps.Instance.GetCaseType(c) != CaseType.None);
+                        UCaseProperties.Instance.GetCaseType(c) != CaseType.None);
         }
 
         public static int AddTitleIteratorOption(int options, int newOption)

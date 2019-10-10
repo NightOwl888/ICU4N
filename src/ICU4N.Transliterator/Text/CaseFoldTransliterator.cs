@@ -29,7 +29,7 @@ namespace ICU4N.Text
             Transliterator.RegisterSpecialInverse("CaseFold", "Upper", false);
         }
 
-        private readonly UCaseProps csp;
+        private readonly UCaseProperties csp;
         private ReplaceableContextEnumerator iter;
         private StringBuilder result;
 
@@ -39,7 +39,7 @@ namespace ICU4N.Text
         public CaseFoldTransliterator()
                 : base(_ID, null)
         {
-            csp = UCaseProps.Instance;
+            csp = UCaseProperties.Instance;
             iter = new ReplaceableContextEnumerator();
             result = new StringBuilder();
         }
@@ -90,7 +90,7 @@ namespace ICU4N.Text
                         /* c mapped to itself, no change */
                         continue;
                     }
-                    else if (c <= UCaseProps.MaxStringLength)
+                    else if (c <= UCaseProperties.MaxStringLength)
                     {
                         /* replace by the mapping string */
                         delta = iter.Replace(result.ToString());

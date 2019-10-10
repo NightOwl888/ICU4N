@@ -226,7 +226,7 @@ namespace ICU4N.Impl
             }
             internal override bool Contains(int c)
             {
-                return UCaseProps.Instance.HasBinaryProperty(c, (UProperty)which);
+                return UCaseProperties.Instance.HasBinaryProperty(c, (UProperty)which);
             }
         }
 
@@ -398,9 +398,9 @@ namespace ICU4N.Impl
                         if (c >= 0)
                         {
                             /* single code point */
-                            UCaseProps csp = UCaseProps.Instance;
-                            UCaseProps.DummyStringBuilder.Length = 0;
-                            return csp.ToFullFolding(c, UCaseProps.DummyStringBuilder,
+                            UCaseProperties csp = UCaseProperties.Instance;
+                            UCaseProperties.DummyStringBuilder.Length = 0;
+                            return csp.ToFullFolding(c, UCaseProperties.DummyStringBuilder,
                                                         UChar.FoldCaseDefault) >= 0;
                         }
                         else

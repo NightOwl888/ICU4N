@@ -2245,7 +2245,7 @@ namespace ICU4N.Text
             // case folding and NFKC.)
             // For the derivation, see Unicode's DerivedNormalizationProps.txt.
             Normalizer2 nfkc = NFKCModeImpl.Instance.Normalizer2;
-            UCaseProps csp = UCaseProps.Instance;
+            UCaseProperties csp = UCaseProperties.Instance;
             // first: b = NFKC(Fold(a))
             StringBuilder folded = new StringBuilder();
             int folded1Length = csp.ToFullFolding(c, folded, 0);
@@ -2260,7 +2260,7 @@ namespace ICU4N.Text
             }
             else
             {
-                if (folded1Length > UCaseProps.MaxStringLength)
+                if (folded1Length > UCaseProperties.MaxStringLength)
                 {
                     folded.AppendCodePoint(folded1Length);
                 }
@@ -2983,7 +2983,7 @@ namespace ICU4N.Text
         internal static int CmpEquivFold(ICharSequence cs1, ICharSequence cs2, int options)
         {
             Normalizer2Impl nfcImpl;
-            UCaseProps csp;
+            UCaseProperties csp;
 
             /* current-level start/limit - s1/s2 as current */
             int s1, s2, limit1, limit2;
@@ -3025,7 +3025,7 @@ namespace ICU4N.Text
             }
             if ((options & COMPARE_IGNORE_CASE) != 0)
             {
-                csp = UCaseProps.Instance;
+                csp = UCaseProperties.Instance;
                 fold1 = new StringBuilder();
                 fold2 = new StringBuilder();
             }
@@ -3222,7 +3222,7 @@ namespace ICU4N.Text
 
                     /* copy the folding result to fold1[] */
                     /* Java: the buffer was probably not empty, remove the old contents */
-                    if (length <= UCaseProps.MaxStringLength)
+                    if (length <= UCaseProperties.MaxStringLength)
                     {
                         fold1.Delete(0, fold1.Length - length);
                     }
@@ -3279,7 +3279,7 @@ namespace ICU4N.Text
 
                     /* copy the folding result to fold2[] */
                     /* Java: the buffer was probably not empty, remove the old contents */
-                    if (length <= UCaseProps.MaxStringLength)
+                    if (length <= UCaseProperties.MaxStringLength)
                     {
                         fold2.Delete(0, fold2.Length - length);
                     }

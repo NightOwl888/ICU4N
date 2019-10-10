@@ -51,8 +51,8 @@ namespace ICU4N.Impl
     }
 
     /// <summary>
-    /// Casing locale types for <see cref="UCaseProps.GetCaseLocale(string)"/>,
-    /// <see cref="UCaseProps.GetCaseLocale(CultureInfo)"/> and <see cref="UCaseProps.GetCaseLocale(ULocale)"/>.
+    /// Casing locale types for <see cref="UCaseProperties.GetCaseLocale(string)"/>,
+    /// <see cref="UCaseProperties.GetCaseLocale(CultureInfo)"/> and <see cref="UCaseProperties.GetCaseLocale(ULocale)"/>.
     /// </summary>
     public enum CaseLocale
     {
@@ -67,8 +67,8 @@ namespace ICU4N.Impl
     /// <summary>
     /// Case type for non-case-ignorable properties.
     /// </summary>
-    /// <seealso cref="UCaseProps.GetCaseType(int)"/>
-    /// <seealso cref="UCaseProps.IsCaseIgnorable(int, out CaseType)"/>
+    /// <seealso cref="UCaseProperties.GetCaseType(int)"/>
+    /// <seealso cref="UCaseProperties.IsCaseIgnorable(int, out CaseType)"/>
     public enum CaseType
     {
         None = 0,
@@ -80,7 +80,7 @@ namespace ICU4N.Impl
     /// <summary>
     /// Dot type for case properties.
     /// </summary>
-    /// <seealso cref="UCaseProps.GetDotType(int)"/>
+    /// <seealso cref="UCaseProperties.GetDotType(int)"/>
     [SuppressMessage("Microsoft.Design", "CA1027", Justification = "Enum values cannot be combined")]
     public enum DotType
     {
@@ -96,12 +96,12 @@ namespace ICU4N.Impl
     /// </summary>
     /// <author>Markus W. Scherer</author>
     /// <created>2005jan29</created>
-    public sealed partial class UCaseProps
+    public sealed partial class UCaseProperties
     {
         // constructors etc. --------------------------------------------------- ***
 
         // port of ucase_openProps()
-        private UCaseProps()
+        private UCaseProperties()
         {
             ByteBuffer bytes = ICUBinary.GetRequiredData(DATA_FILE_NAME);
             ReadData(bytes);
@@ -1315,14 +1315,14 @@ namespace ICU4N.Impl
         /// <summary>
         /// Public singleton instance.
         /// </summary>
-        public static UCaseProps Instance { get; private set; } = LoadSingletonInstance();
+        public static UCaseProperties Instance { get; private set; } = LoadSingletonInstance();
 
         // ICU4N: Avoid static constructors
-        private static UCaseProps LoadSingletonInstance()
+        private static UCaseProperties LoadSingletonInstance()
         {
             try
             {
-                return new UCaseProps();
+                return new UCaseProperties();
             }
             catch (IOException e)
             {

@@ -3332,7 +3332,7 @@ namespace ICU4N.Text
                             break;
                         case UCharacterProperty.SRC_CASE_AND_NORM:
                             Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
-                            UCaseProps.Instance.AddPropertyStarts(incl);
+                            UCaseProperties.Instance.AddPropertyStarts(incl);
                             break;
                         case UCharacterProperty.SRC_NFC:
                             Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
@@ -3347,7 +3347,7 @@ namespace ICU4N.Text
                             Norm2AllModes.GetNFCInstance().Impl.AddCanonIterPropertyStarts(incl);
                             break;
                         case UCharacterProperty.SRC_CASE:
-                            UCaseProps.Instance.AddPropertyStarts(incl);
+                            UCaseProperties.Instance.AddPropertyStarts(incl);
                             break;
                         case UCharacterProperty.SRC_BIDI:
                             UBiDiProps.Instance.AddPropertyStarts(incl);
@@ -3978,7 +3978,7 @@ namespace ICU4N.Text
         {
             if (result >= 0)
             {
-                if (result > UCaseProps.MaxStringLength)
+                if (result > UCaseProperties.MaxStringLength)
                 {
                     // add a single-code point case mapping
                     set.Add(result);
@@ -4030,7 +4030,7 @@ namespace ICU4N.Text
             CheckFrozen();
             if ((attribute & (Case | AddCaseMappings)) != 0)
             {
-                UCaseProps csp = UCaseProps.Instance;
+                UCaseProperties csp = UCaseProperties.Instance;
                 UnicodeSet foldSet = new UnicodeSet(this);
                 ULocale root = ULocale.ROOT;
 

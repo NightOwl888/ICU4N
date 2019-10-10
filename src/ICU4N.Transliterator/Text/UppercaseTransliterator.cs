@@ -30,7 +30,7 @@ namespace ICU4N.Text
 
         private readonly ULocale locale;
 
-        private readonly UCaseProps csp;
+        private readonly UCaseProperties csp;
         private ReplaceableContextEnumerator iter;
         private StringBuilder result;
         private CaseLocale caseLocale;
@@ -42,10 +42,10 @@ namespace ICU4N.Text
                 : base(_ID, null)
         {
             locale = loc;
-            csp = UCaseProps.Instance;
+            csp = UCaseProperties.Instance;
             iter = new ReplaceableContextEnumerator();
             result = new StringBuilder();
-            caseLocale = UCaseProps.GetCaseLocale(locale);
+            caseLocale = UCaseProperties.GetCaseLocale(locale);
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace ICU4N.Text
                         /* c mapped to itself, no change */
                         continue;
                     }
-                    else if (c <= UCaseProps.MaxStringLength)
+                    else if (c <= UCaseProperties.MaxStringLength)
                     {
                         /* replace by the mapping string */
                         delta = iter.Replace(result.ToString());

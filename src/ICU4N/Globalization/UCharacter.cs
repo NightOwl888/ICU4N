@@ -3936,7 +3936,7 @@ namespace ICU4N
         // ICU4N TODO: API - to cover Char, add overload for (string, int)
         public static int ToLower(int ch) // ICU4N TODO: API - should this be ToLowerInvariant? Need to figure out the context-sensitive behavior and add overload if necessary.
         {
-            return UCaseProps.Instance.ToLower(ch);
+            return UCaseProperties.Instance.ToLower(ch);
         }
 
         /// <summary>
@@ -3992,7 +3992,7 @@ namespace ICU4N
         // ICU4N TODO: API - to cover Char, add overload for (string, int)
         public static int ToTitleCase(int ch)
         {
-            return UCaseProps.Instance.ToTitle(ch);
+            return UCaseProperties.Instance.ToTitle(ch);
         }
 
         /// <summary>
@@ -4018,7 +4018,7 @@ namespace ICU4N
         // ICU4N TODO: API - to cover Char, add overload for (string, int)
         public static int ToUpper(int ch) // ICU4N TODO: API - should this be ToUpperInvariant? Need to figure out the context-sensitive behavior and add overload if necessary.
         {
-            return UCaseProps.Instance.ToUpper(ch);
+            return UCaseProperties.Instance.ToUpper(ch);
         }
 
         // ICU4N TODO: API - move functions from above not in System.Char to this section
@@ -4980,7 +4980,7 @@ namespace ICU4N
 
         private static CaseLocale GetDefaultCaseLocale() 
         {
-            return UCaseProps.GetCaseLocale(CultureInfo.CurrentCulture);
+            return UCaseProperties.GetCaseLocale(CultureInfo.CurrentCulture);
         }
 
         private static CaseLocale GetCaseLocale(CultureInfo locale)
@@ -4989,7 +4989,7 @@ namespace ICU4N
             {
                 locale = CultureInfo.CurrentCulture;
             }
-            return UCaseProps.GetCaseLocale(locale);
+            return UCaseProperties.GetCaseLocale(locale);
         }
 
         private static CaseLocale GetCaseLocale(ULocale locale)
@@ -4998,7 +4998,7 @@ namespace ICU4N
             {
                 locale = ULocale.GetDefault();
             }
-            return UCaseProps.GetCaseLocale(locale);
+            return UCaseProperties.GetCaseLocale(locale);
         }
 
         /// <summary>
@@ -5358,7 +5358,7 @@ namespace ICU4N
         /// <stable>ICU 2.6</stable>
         public static int FoldCase(int ch, FoldCase foldCase)
         {
-            return UCaseProps.Instance.Fold(ch, foldCase);
+            return UCaseProperties.Instance.Fold(ch, foldCase);
         }
 
         /// <icu/>

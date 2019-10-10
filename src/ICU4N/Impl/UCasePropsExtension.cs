@@ -14,7 +14,7 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
-    public sealed partial class UCaseProps
+    public sealed partial class UCaseProperties
     {
 
         /// <summary>
