@@ -9,10 +9,10 @@ using System.Text;
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Implementation of <see cref="UCaseProps.IContextIterator"/>, iterates over a string.
+    /// Implementation of <see cref="ICasePropertiesContextIterator"/>, iterates over a string.
     /// See ustrcase.c/utf16_caseContextIterator().
     /// </summary>
-    public sealed class StringContextIterator : UCaseProps.IContextIterator
+    public sealed class StringContextIterator : ICasePropertiesContextIterator
     {
         /// <summary>
         /// Constructor.

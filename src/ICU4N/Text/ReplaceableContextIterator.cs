@@ -3,10 +3,10 @@
 namespace ICU4N.Text
 {
     /// <summary>
-    /// Implementation of <see cref="UCaseProps.IContextIterator"/>, iterates over a <see cref="IReplaceable"/>.
+    /// Implementation of <see cref="ICasePropertiesContextIterator"/>, iterates over a <see cref="IReplaceable"/>.
     /// See casetrn.cpp/utrans_rep_caseContextIterator().
     /// </summary>
-    internal class ReplaceableContextIterator : UCaseProps.IContextIterator
+    internal class ReplaceableContextIterator : ICasePropertiesContextIterator
     {
         /// <summary>
         /// Constructor.

@@ -23,16 +23,16 @@ namespace ICU4N.Impl
         /// <param name="c">Character to be mapped.</param>
         /// <param name="iter">
         /// Character iterator, used for context-sensitive mappings.
-        /// See <see cref="IContextIterator"/> for details.
+        /// See <see cref="ICasePropertiesContextIterator"/> for details.
         /// If iter==null then a context-independent result is returned.
         /// </param>
         /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
         /// <param name="caseLocale">Case locale value from ucase_getCaseLocale().</param>
         /// <returns>Output code point or string length, see <see cref="MAX_STRING_LENGTH"/>.</returns>
-        /// <seealso cref="IContextIterator"/>
+        /// <seealso cref="ICasePropertiesContextIterator"/>
         /// <seealso cref="MAX_STRING_LENGTH"/>
         /// <internal/>
-        public int ToFullLower(int c, IContextIterator iter, StringBuilder output, int caseLocale)
+        public int ToFullLower(int c, ICasePropertiesContextIterator iter, StringBuilder output, int caseLocale)
         {
             int result, props;
 
@@ -196,7 +196,7 @@ namespace ICU4N.Impl
 
                         try
                         {
-							// append the lowercase mapping
+                            // append the lowercase mapping
                             output.Append(exceptions, excOffset, full); // ICU4N: (excOffset + full) - excOffset == full
 
                             /* return the string length */
@@ -224,16 +224,16 @@ namespace ICU4N.Impl
         /// <param name="c">Character to be mapped.</param>
         /// <param name="iter">
         /// Character iterator, used for context-sensitive mappings.
-        /// See <see cref="IContextIterator"/> for details.
+        /// See <see cref="ICasePropertiesContextIterator"/> for details.
         /// If iter==null then a context-independent result is returned.
         /// </param>
         /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
         /// <param name="caseLocale">Case locale value from ucase_getCaseLocale().</param>
         /// <returns>Output code point or string length, see <see cref="MAX_STRING_LENGTH"/>.</returns>
-        /// <seealso cref="IContextIterator"/>
+        /// <seealso cref="ICasePropertiesContextIterator"/>
         /// <seealso cref="MAX_STRING_LENGTH"/>
         /// <internal/>
-        internal int ToFullLower(int c, IContextIterator iter, IAppendable output, int caseLocale)
+        internal int ToFullLower(int c, ICasePropertiesContextIterator iter, IAppendable output, int caseLocale)
         {
             int result, props;
 
@@ -397,7 +397,7 @@ namespace ICU4N.Impl
 
                         try
                         {
-							// append the lowercase mapping
+                            // append the lowercase mapping
                             output.Append(exceptions, excOffset, excOffset + full);
 
                             /* return the string length */
@@ -420,7 +420,7 @@ namespace ICU4N.Impl
         }
 
         /* internal */
-        private int ToUpperOrTitle(int c, IContextIterator iter,
+        private int ToUpperOrTitle(int c, ICasePropertiesContextIterator iter,
             StringBuilder output,
             int loc,
             bool upperNotTitle)
@@ -543,7 +543,7 @@ namespace ICU4N.Impl
         }
 
         /* internal */
-        private int ToUpperOrTitle(int c, IContextIterator iter,
+        private int ToUpperOrTitle(int c, ICasePropertiesContextIterator iter,
             IAppendable output,
             int loc,
             bool upperNotTitle)
@@ -634,7 +634,7 @@ namespace ICU4N.Impl
                         try
                         {
                             // append the result string
-							output.Append(exceptions, excOffset, excOffset + full);
+                            output.Append(exceptions, excOffset, excOffset + full);
 
                             /* return the string length */
                             return full;
@@ -665,28 +665,28 @@ namespace ICU4N.Impl
             return (result == c) ? ~result : result;
         }
 
-        public int ToFullUpper(int c, IContextIterator iter,
+        public int ToFullUpper(int c, ICasePropertiesContextIterator iter,
             StringBuilder output,
             int caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
 
-        internal int ToFullUpper(int c, IContextIterator iter,
+        internal int ToFullUpper(int c, ICasePropertiesContextIterator iter,
             IAppendable output,
             int caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
 
-        public int ToFullTitle(int c, IContextIterator iter,
+        public int ToFullTitle(int c, ICasePropertiesContextIterator iter,
             StringBuilder output,
             int caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, false);
         }
 
-        internal int ToFullTitle(int c, IContextIterator iter,
+        internal int ToFullTitle(int c, ICasePropertiesContextIterator iter,
             IAppendable output,
             int caseLocale)
         {
@@ -909,7 +909,7 @@ namespace ICU4N.Impl
                         try
                         {
                             // append the result string
-							output.Append(exceptions, excOffset, excOffset + full);
+                            output.Append(exceptions, excOffset, excOffset + full);
 
                             /* return the string length */
                             return full;
@@ -938,5 +938,5 @@ namespace ICU4N.Impl
 
             return (result == c) ? ~result : result;
         }
-	}
+    }
 }

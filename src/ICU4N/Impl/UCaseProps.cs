@@ -11,6 +11,40 @@ using System.Text;
 namespace ICU4N.Impl
 {
     /// <summary>
+    /// Iterator for string case mappings, which need to look at the
+    /// context (surrounding text) of a given character for conditional mappings.
+    /// </summary>
+    /// <remarks>
+    /// The iterator only needs to go backward or forward away from the
+    /// character in question. It does not use any indexes on this interface.
+    /// It does not support random access or an arbitrary change of
+    /// iteration direction.
+    /// <para/>
+    /// The code point being case-mapped itself is never returned by
+    /// this iterator.
+    /// </remarks>
+    public interface ICasePropertiesContextIterator // ICU4N specific - renamed from IContextIterator
+    {
+        /// <summary>
+        /// Reset the iterator for forward or backward iteration.
+        /// </summary>
+        /// <param name="dir">
+        /// >0: Begin iterating forward from the first code point
+        /// after the one that is being case-mapped.
+        /// &lt;0: Begin iterating backward from the first code point
+        /// before the one that is being case-mapped.
+        /// </param>
+        void Reset(int dir);
+
+        /// <summary>
+        /// Iterate and return the next code point, moving in the direction
+        /// determined by the <see cref="Reset(int)"/> call.
+        /// </summary>
+        /// <returns>Next code point, or &lt;0 when the iteration is done.</returns>
+        int Next();
+    }
+
+    /// <summary>
     /// Low-level Unicode character/string case mapping code.
     /// .NET port of ucase.h/.c.
     /// </summary>
@@ -642,39 +676,7 @@ namespace ICU4N.Impl
          *     zero or more case-ignorable characters.
          */
 
-        /// <summary>
-        /// Iterator for string case mappings, which need to look at the
-        /// context (surrounding text) of a given character for conditional mappings.
-        /// </summary>
-        /// <remarks>
-        /// The iterator only needs to go backward or forward away from the
-        /// character in question. It does not use any indexes on this interface.
-        /// It does not support random access or an arbitrary change of
-        /// iteration direction.
-        /// <para/>
-        /// The code point being case-mapped itself is never returned by
-        /// this iterator.
-        /// </remarks>
-        public interface IContextIterator // ICU4N TODO: API De-nest this interface
-        {
-            /// <summary>
-            /// Reset the iterator for forward or backward iteration.
-            /// </summary>
-            /// <param name="dir">
-            /// >0: Begin iterating forward from the first code point
-            /// after the one that is being case-mapped.
-            /// &lt;0: Begin iterating backward from the first code point
-            /// before the one that is being case-mapped.
-            /// </param>
-            void Reset(int dir);
-
-            /// <summary>
-            /// Iterate and return the next code point, moving in the direction
-            /// determined by the <see cref="Reset(int)"/> call.
-            /// </summary>
-            /// <returns>Next code point, or &lt;0 when the iteration is done.</returns>
-            int Next();
-        }
+        // ICU4N specific - de-nested IContextIterator and renamed
 
         /// <summary>
         /// For string case mappings, a single character (a code point) is mapped
@@ -761,7 +763,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is followed by {case-ignorable}* cased  ? (dir determines looking forward/backward)</summary>
-        private bool IsFollowedByCasedLetter(IContextIterator iter, int dir)
+        private bool IsFollowedByCasedLetter(ICasePropertiesContextIterator iter, int dir)
         {
             int c;
 
@@ -791,7 +793,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is preceded by Soft_Dotted character with no intervening cc=230 ?</summary>
-        private bool IsPrecededBySoftDotted(IContextIterator iter)
+        private bool IsPrecededBySoftDotted(ICasePropertiesContextIterator iter)
         {
             int c;
             int dotType;
@@ -852,7 +854,7 @@ namespace ICU4N.Impl
          */
 
         /// <summary>Is preceded by base character 'I' with no intervening cc=230 ?</summary>
-        private bool IsPrecededBy_I(IContextIterator iter)
+        private bool IsPrecededBy_I(ICasePropertiesContextIterator iter)
         {
             int c;
             int dotType;
@@ -879,7 +881,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is followed by one or more cc==230 ?</summary>
-        private bool IsFollowedByMoreAbove(IContextIterator iter)
+        private bool IsFollowedByMoreAbove(ICasePropertiesContextIterator iter)
         {
             int c;
             int dotType;
@@ -906,7 +908,7 @@ namespace ICU4N.Impl
         }
 
         /// <summary>Is followed by a dot above (without cc==230 in between) ?</summary>
-        private bool IsFollowedByDotAbove(IContextIterator iter)
+        private bool IsFollowedByDotAbove(ICasePropertiesContextIterator iter)
         {
             int c;
             int dotType;
