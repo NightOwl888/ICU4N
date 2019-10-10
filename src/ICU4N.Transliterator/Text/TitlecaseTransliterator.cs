@@ -33,7 +33,7 @@ namespace ICU4N.Text
         private readonly ULocale locale;
 
         private readonly UCaseProps csp;
-        private ReplaceableContextIterator iter;
+        private ReplaceableContextEnumerator iter;
         private StringBuilder result;
         private CaseLocale caseLocale;
 
@@ -47,7 +47,7 @@ namespace ICU4N.Text
             // Need to look back 2 characters in the case of "can't"
             MaximumContextLength = 2;
             csp = UCaseProps.Instance;
-            iter = new ReplaceableContextIterator();
+            iter = new ReplaceableContextEnumerator();
             result = new StringBuilder();
             caseLocale = UCaseProps.GetCaseLocale(locale);
         }

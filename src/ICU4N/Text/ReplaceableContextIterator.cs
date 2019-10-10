@@ -6,12 +6,12 @@ namespace ICU4N.Text
     /// Implementation of <see cref="ICasePropertiesContextEnumerator"/>, iterates over a <see cref="IReplaceable"/>.
     /// See casetrn.cpp/utrans_rep_caseContextIterator().
     /// </summary>
-    internal class ReplaceableContextIterator : ICasePropertiesContextEnumerator
+    internal class ReplaceableContextEnumerator : ICasePropertiesContextEnumerator
     {
         /// <summary>
         /// Constructor.
         /// </summary>
-        internal ReplaceableContextIterator()
+        internal ReplaceableContextEnumerator()
         {
             this.rep = null;
             limit = cpStart = cpLimit = index = contextStart = contextLimit = 0;

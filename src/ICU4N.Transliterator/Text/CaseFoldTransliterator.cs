@@ -30,7 +30,7 @@ namespace ICU4N.Text
         }
 
         private readonly UCaseProps csp;
-        private ReplaceableContextIterator iter;
+        private ReplaceableContextEnumerator iter;
         private StringBuilder result;
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace ICU4N.Text
                 : base(_ID, null)
         {
             csp = UCaseProps.Instance;
-            iter = new ReplaceableContextIterator();
+            iter = new ReplaceableContextEnumerator();
             result = new StringBuilder();
         }
 
