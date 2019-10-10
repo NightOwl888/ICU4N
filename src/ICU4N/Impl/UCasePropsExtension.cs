@@ -27,12 +27,12 @@ namespace ICU4N.Impl
         /// If iter==null then a context-independent result is returned.
         /// </param>
         /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
-        /// <param name="caseLocale">Case locale value from ucase_getCaseLocale().</param>
+        /// <param name="caseLocale">Case locale value from <see cref="GetCaseLocale(System.Globalization.CultureInfo)"/>.</param>
         /// <returns>Output code point or string length, see <see cref="MaxStringLength"/>.</returns>
         /// <seealso cref="ICasePropertiesContextIterator"/>
         /// <seealso cref="MaxStringLength"/>
         /// <internal/>
-        public int ToFullLower(int c, ICasePropertiesContextIterator iter, StringBuilder output, int caseLocale)
+        public int ToFullLower(int c, ICasePropertiesContextIterator iter, StringBuilder output, CaseLocale caseLocale)
         {
             int result, props;
 
@@ -62,7 +62,7 @@ namespace ICU4N.Impl
                      * then test for characters that have unconditional mappings in SpecialCasing.txt,
                      * then get the UnicodeData.txt mappings.
                      */
-                    if (caseLocale == LOC_LITHUANIAN &&
+                    if (caseLocale == CaseLocale.Lithuanian &&
                             /* base characters, find accents above */
                             (((c == 0x49 || c == 0x4a || c == 0x12e) &&
                                 IsFollowedByMoreAbove(iter)) ||
@@ -118,7 +118,7 @@ namespace ICU4N.Impl
                         }
                         /* # Turkish and Azeri */
                     }
-                    else if (caseLocale == LOC_TURKISH && c == 0x130)
+                    else if (caseLocale == CaseLocale.Turkish && c == 0x130)
                     {
                         /*
                             # I and i-dotless; I-dot and i are case pairs in Turkish and Azeri
@@ -129,7 +129,7 @@ namespace ICU4N.Impl
                          */
                         return 0x69;
                     }
-                    else if (caseLocale == LOC_TURKISH && c == 0x307 && IsPrecededBy_I(iter))
+                    else if (caseLocale == CaseLocale.Turkish && c == 0x307 && IsPrecededBy_I(iter))
                     {
                         /*
                             # When lowercasing, remove dot_above in the sequence I + dot_above, which will turn into i.
@@ -140,7 +140,7 @@ namespace ICU4N.Impl
                          */
                         return 0; /* remove the dot (continue without output) */
                     }
-                    else if (caseLocale == LOC_TURKISH && c == 0x49 && !IsFollowedByDotAbove(iter))
+                    else if (caseLocale == CaseLocale.Turkish && c == 0x49 && !IsFollowedByDotAbove(iter))
                     {
                         /*
                             # When lowercasing, unless an I is before a dot_above, it turns into a dotless i.
@@ -228,12 +228,12 @@ namespace ICU4N.Impl
         /// If iter==null then a context-independent result is returned.
         /// </param>
         /// <param name="output">If the mapping result is a string, then it is appended to <paramref name="output"/>.</param>
-        /// <param name="caseLocale">Case locale value from ucase_getCaseLocale().</param>
+        /// <param name="caseLocale">Case locale value from <see cref="GetCaseLocale(System.Globalization.CultureInfo)"/>.</param>
         /// <returns>Output code point or string length, see <see cref="MaxStringLength"/>.</returns>
         /// <seealso cref="ICasePropertiesContextIterator"/>
         /// <seealso cref="MaxStringLength"/>
         /// <internal/>
-        internal int ToFullLower(int c, ICasePropertiesContextIterator iter, IAppendable output, int caseLocale)
+        internal int ToFullLower(int c, ICasePropertiesContextIterator iter, IAppendable output, CaseLocale caseLocale)
         {
             int result, props;
 
@@ -263,7 +263,7 @@ namespace ICU4N.Impl
                      * then test for characters that have unconditional mappings in SpecialCasing.txt,
                      * then get the UnicodeData.txt mappings.
                      */
-                    if (caseLocale == LOC_LITHUANIAN &&
+                    if (caseLocale == CaseLocale.Lithuanian &&
                             /* base characters, find accents above */
                             (((c == 0x49 || c == 0x4a || c == 0x12e) &&
                                 IsFollowedByMoreAbove(iter)) ||
@@ -319,7 +319,7 @@ namespace ICU4N.Impl
                         }
                         /* # Turkish and Azeri */
                     }
-                    else if (caseLocale == LOC_TURKISH && c == 0x130)
+                    else if (caseLocale == CaseLocale.Turkish && c == 0x130)
                     {
                         /*
                             # I and i-dotless; I-dot and i are case pairs in Turkish and Azeri
@@ -330,7 +330,7 @@ namespace ICU4N.Impl
                          */
                         return 0x69;
                     }
-                    else if (caseLocale == LOC_TURKISH && c == 0x307 && IsPrecededBy_I(iter))
+                    else if (caseLocale == CaseLocale.Turkish && c == 0x307 && IsPrecededBy_I(iter))
                     {
                         /*
                             # When lowercasing, remove dot_above in the sequence I + dot_above, which will turn into i.
@@ -341,7 +341,7 @@ namespace ICU4N.Impl
                          */
                         return 0; /* remove the dot (continue without output) */
                     }
-                    else if (caseLocale == LOC_TURKISH && c == 0x49 && !IsFollowedByDotAbove(iter))
+                    else if (caseLocale == CaseLocale.Turkish && c == 0x49 && !IsFollowedByDotAbove(iter))
                     {
                         /*
                             # When lowercasing, unless an I is before a dot_above, it turns into a dotless i.
@@ -422,7 +422,7 @@ namespace ICU4N.Impl
         /* internal */
         private int ToUpperOrTitle(int c, ICasePropertiesContextIterator iter,
             StringBuilder output,
-            int loc,
+            CaseLocale caseLocale,
             bool upperNotTitle)
         {
             int result;
@@ -448,7 +448,7 @@ namespace ICU4N.Impl
                 if ((excWord & EXC_CONDITIONAL_SPECIAL) != 0)
                 {
                     /* use hardcoded conditions and mappings */
-                    if (loc == LOC_TURKISH && c == 0x69)
+                    if (caseLocale == CaseLocale.Turkish && c == 0x69)
                     {
                         /*
                             # Turkish and Azeri
@@ -463,7 +463,7 @@ namespace ICU4N.Impl
                         */
                         return 0x130;
                     }
-                    else if (loc == LOC_LITHUANIAN && c == 0x307 && IsPrecededBySoftDotted(iter))
+                    else if (caseLocale == CaseLocale.Lithuanian && c == 0x307 && IsPrecededBySoftDotted(iter))
                     {
                         /*
                             # Lithuanian
@@ -545,7 +545,7 @@ namespace ICU4N.Impl
         /* internal */
         private int ToUpperOrTitle(int c, ICasePropertiesContextIterator iter,
             IAppendable output,
-            int loc,
+            CaseLocale caseLocale,
             bool upperNotTitle)
         {
             int result;
@@ -571,7 +571,7 @@ namespace ICU4N.Impl
                 if ((excWord & EXC_CONDITIONAL_SPECIAL) != 0)
                 {
                     /* use hardcoded conditions and mappings */
-                    if (loc == LOC_TURKISH && c == 0x69)
+                    if (caseLocale == CaseLocale.Turkish && c == 0x69)
                     {
                         /*
                             # Turkish and Azeri
@@ -586,7 +586,7 @@ namespace ICU4N.Impl
                         */
                         return 0x130;
                     }
-                    else if (loc == LOC_LITHUANIAN && c == 0x307 && IsPrecededBySoftDotted(iter))
+                    else if (caseLocale == CaseLocale.Lithuanian && c == 0x307 && IsPrecededBySoftDotted(iter))
                     {
                         /*
                             # Lithuanian
@@ -667,28 +667,28 @@ namespace ICU4N.Impl
 
         public int ToFullUpper(int c, ICasePropertiesContextIterator iter,
             StringBuilder output,
-            int caseLocale)
+            CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
 
         internal int ToFullUpper(int c, ICasePropertiesContextIterator iter,
             IAppendable output,
-            int caseLocale)
+            CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
 
         public int ToFullTitle(int c, ICasePropertiesContextIterator iter,
             StringBuilder output,
-            int caseLocale)
+            CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, false);
         }
 
         internal int ToFullTitle(int c, ICasePropertiesContextIterator iter,
             IAppendable output,
-            int caseLocale)
+            CaseLocale caseLocale)
         {
             return ToUpperOrTitle(c, iter, output, caseLocale, false);
         }

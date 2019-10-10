@@ -45,6 +45,20 @@ namespace ICU4N.Impl
     }
 
     /// <summary>
+    /// Casing locale types for <see cref="UCaseProps.GetCaseLocale(string)"/>,
+    /// <see cref="UCaseProps.GetCaseLocale(CultureInfo)"/> and <see cref="UCaseProps.GetCaseLocale(ULocale)"/>.
+    /// </summary>
+    public enum CaseLocale
+    {
+        // Unknown = 0,
+        Root = 1,
+        Turkish = 2,
+        Lithuanian = 3,
+        Greek = 4,
+        Dutch = 5
+    }
+
+    /// <summary>
     /// Low-level Unicode character/string case mapping code.
     /// .NET port of ucase.h/.c.
     /// </summary>
@@ -695,23 +709,18 @@ namespace ICU4N.Impl
         /// </summary>
         public const int MaxStringLength = 0x1f;
 
-        //private const int LOC_UNKNOWN=0;
-        public const int LOC_ROOT = 1; // ICU4N TODO: API - move to enum named CaseLocale and remove LOC_
-        private const int LOC_TURKISH = 2;
-        private const int LOC_LITHUANIAN = 3;
-        internal const int LOC_GREEK = 4;
-        public const int LOC_DUTCH = 5;
+        // ICU4N specific - moved LOC_ constants to CaseLocale enum and de-nested
 
-        public static int GetCaseLocale(CultureInfo locale)
+        public static CaseLocale GetCaseLocale(CultureInfo locale)
         {
             return GetCaseLocale(locale.TwoLetterISOLanguageName);
         }
-        public static int GetCaseLocale(ULocale locale)
+        public static CaseLocale GetCaseLocale(ULocale locale)
         {
             return GetCaseLocale(locale.GetLanguage());
         }
         /// <summary>Accepts both 2- and 3-letter language subtags.</summary>
-        private static int GetCaseLocale(string language)
+        private static CaseLocale GetCaseLocale(string language)
         {
             // Check the subtag length to reduce the number of comparisons
             // for locales without special behavior.
@@ -721,45 +730,45 @@ namespace ICU4N.Impl
             {
                 if (language.Equals("en") || language[0] > 't')
                 {
-                    return LOC_ROOT;
+                    return CaseLocale.Root;
                 }
                 else if (language.Equals("tr") || language.Equals("az"))
                 {
-                    return LOC_TURKISH;
+                    return CaseLocale.Turkish;
                 }
                 else if (language.Equals("el"))
                 {
-                    return LOC_GREEK;
+                    return CaseLocale.Greek;
                 }
                 else if (language.Equals("lt"))
                 {
-                    return LOC_LITHUANIAN;
+                    return CaseLocale.Lithuanian;
                 }
                 else if (language.Equals("nl"))
                 {
-                    return LOC_DUTCH;
+                    return CaseLocale.Dutch;
                 }
             }
             else if (language.Length == 3)
             {
                 if (language.Equals("tur") || language.Equals("aze"))
                 {
-                    return LOC_TURKISH;
+                    return CaseLocale.Turkish;
                 }
                 else if (language.Equals("ell"))
                 {
-                    return LOC_GREEK;
+                    return CaseLocale.Greek;
                 }
                 else if (language.Equals("lit"))
                 {
-                    return LOC_LITHUANIAN;
+                    return CaseLocale.Lithuanian;
                 }
                 else if (language.Equals("nld"))
                 {
-                    return LOC_DUTCH;
+                    return CaseLocale.Dutch;
                 }
             }
-            return LOC_ROOT;
+            return CaseLocale.Root;
         }
 
         /// <summary>Is followed by {case-ignorable}* cased  ? (dir determines looking forward/backward)</summary>
@@ -1127,20 +1136,20 @@ namespace ICU4N.Impl
                  */
                 case UProperty.Changes_When_Lowercased:
                     dummyStringBuilder.Length = 0;
-                    return ToFullLower(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
+                    return ToFullLower(c, null, dummyStringBuilder, CaseLocale.Root) >= 0;
                 case UProperty.Changes_When_Uppercased:
                     dummyStringBuilder.Length = 0;
-                    return ToFullUpper(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
+                    return ToFullUpper(c, null, dummyStringBuilder, CaseLocale.Root) >= 0;
                 case UProperty.Changes_When_Titlecased:
                     dummyStringBuilder.Length = 0;
-                    return ToFullTitle(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
+                    return ToFullTitle(c, null, dummyStringBuilder, CaseLocale.Root) >= 0;
                 /* case UProperty.CHANGES_WHEN_CASEFOLDED: -- in UCharacterProperty.java */
                 case UProperty.Changes_When_Casemapped:
                     dummyStringBuilder.Length = 0;
                     return
-                ToFullLower(c, null, dummyStringBuilder, LOC_ROOT) >= 0 ||
-                ToFullUpper(c, null, dummyStringBuilder, LOC_ROOT) >= 0 ||
-                ToFullTitle(c, null, dummyStringBuilder, LOC_ROOT) >= 0;
+                ToFullLower(c, null, dummyStringBuilder, CaseLocale.Root) >= 0 ||
+                ToFullUpper(c, null, dummyStringBuilder, CaseLocale.Root) >= 0 ||
+                ToFullTitle(c, null, dummyStringBuilder, CaseLocale.Root) >= 0;
                 default:
                     return false;
             }

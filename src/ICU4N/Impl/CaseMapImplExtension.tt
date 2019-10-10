@@ -96,7 +96,7 @@ namespace ICU4N.Impl
         }
 <# } #>
 <# foreach (var appendable in appendables) { #>
-	<# foreach (var charSequence in charSequences) { #>
+    <# foreach (var charSequence in charSequences) { #>
 
         private static void AppendUnchanged(<#=charSequence#> src, int start, int length,
             <#=appendable#> dest, int options, Edits edits)
@@ -112,13 +112,13 @@ namespace ICU4N.Impl
                     return;
                 }
 <# if (appendable == "IAppendable") { #>
-				dest.Append(src, start, start + length);
+                dest.Append(src, start, start + length);
 <# } else { #>
                 dest.Append(src, start, length); // ICU4N: (start + length) - start == length
 <# } #>
             }
         }
-	<# } #>
+    <# } #>
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
@@ -147,7 +147,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var appendable in appendables) { #>
 
-        private static void InternalToLower(int caseLocale, int options, StringContextIterator iter,
+        private static void InternalToLower(CaseLocale caseLocale, int options, StringContextIterator iter,
             <#=appendable#> dest, Edits edits)
         {
             int c;
@@ -160,7 +160,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static string ToLower(int caseLocale, int options, <#=charSequence#> src)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static string ToLower(CaseLocale caseLocale, int options, <#=charSequence#> src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -186,10 +186,10 @@ namespace ICU4N.Impl
     <# foreach (var charSequence in charSequences) { #>
 
 <# if (appendable == "IAppendable") { #>
-        <#=charSequenceAccessibility#> static T ToLower<T>(int caseLocale, int options,
+        <#=charSequenceAccessibility#> static T ToLower<T>(CaseLocale caseLocale, int options,
             <#=charSequence#> src, T dest, Edits edits) where T : <#=appendable#>
 <# } else { #>
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static <#=appendable#> ToLower(int caseLocale, int options,
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static <#=appendable#> ToLower(CaseLocale caseLocale, int options,
             <#=charSequence#> src, <#=appendable#> dest, Edits edits)
 <# } #>
         {
@@ -212,7 +212,7 @@ namespace ICU4N.Impl
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static string ToUpper(int caseLocale, int options, <#=charSequence#> src)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static string ToUpper(CaseLocale caseLocale, int options, <#=charSequence#> src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -235,14 +235,14 @@ namespace ICU4N.Impl
         }
 <# } #>
 <# foreach (var appendable in appendables) { #>
-	<# foreach (var charSequence in charSequences) { #>
+    <# foreach (var charSequence in charSequences) { #>
 
 <# if (appendable == "IAppendable") { #>
-		<#=charSequenceAccessibility#> static T ToUpper<T>(int caseLocale, int options,
-			<#=charSequence#> src, T dest, Edits edits) where T : <#=appendable#>
+        <#=charSequenceAccessibility#> static T ToUpper<T>(CaseLocale caseLocale, int options,
+            <#=charSequence#> src, T dest, Edits edits) where T : <#=appendable#>
 <# } else { #>
-		<#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static <#=appendable#> ToUpper(int caseLocale, int options,
-			<#=charSequence#> src, <#=appendable#> dest, Edits edits)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static <#=appendable#> ToUpper(CaseLocale caseLocale, int options,
+            <#=charSequence#> src, <#=appendable#> dest, Edits edits)
 <# } #>
         {
             try
@@ -251,7 +251,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                if (caseLocale == UCaseProps.LOC_GREEK)
+                if (caseLocale == CaseLocale.Greek)
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
@@ -269,11 +269,11 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
-	<# } #>
+    <# } #>
 <# } #>
 <# foreach (var charSequence in charSequences) { #>
 
-        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static string ToTitle(int caseLocale, int options, BreakIterator iter, <#=charSequence#> src)
+        <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, <#=charSequence#> src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -301,11 +301,11 @@ namespace ICU4N.Impl
 
 <# if (appendable == "IAppendable") { #>
         <#=charSequenceAccessibility#> static T ToTitle<T>(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             <#=charSequence#> src, T dest, Edits edits) where T : <#=appendable#>
 <# } else { #>
         <#=charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static <#=appendable#> ToTitle(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             <#=charSequence#> src, <#=appendable#> dest, Edits edits)
 <# } #>
         {
@@ -382,7 +382,7 @@ namespace ICU4N.Impl
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
-                            if (titleStart + 1 < index && caseLocale == UCaseProps.LOC_DUTCH)
+                            if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
                             {
                                 char c1 = src[titleStart];
                                 if ((c1 == 'i' || c1 == 'I'))
@@ -702,7 +702,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, CaseLocale.Greek);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;

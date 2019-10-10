@@ -4065,13 +4065,13 @@ namespace ICU4N.Text
                         // (does not add long s for regular s, or Kelvin for k, for example)
                         for (int cp = start; cp <= end; ++cp)
                         {
-                            result = csp.ToFullLower(cp, null, full, UCaseProps.LOC_ROOT);
+                            result = csp.ToFullLower(cp, null, full, CaseLocale.Root);
                             AddCaseMapping(foldSet, result, full);
 
-                            result = csp.ToFullTitle(cp, null, full, UCaseProps.LOC_ROOT);
+                            result = csp.ToFullTitle(cp, null, full, CaseLocale.Root);
                             AddCaseMapping(foldSet, result, full);
 
-                            result = csp.ToFullUpper(cp, null, full, UCaseProps.LOC_ROOT);
+                            result = csp.ToFullUpper(cp, null, full, CaseLocale.Root);
                             AddCaseMapping(foldSet, result, full);
 
                             result = csp.ToFullFolding(cp, full, 0);

@@ -4978,12 +4978,12 @@ namespace ICU4N
             return ToTitleCase(CultureInfo.CurrentCulture, str, breakiter, 0);
         }
 
-        private static int GetDefaultCaseLocale() 
+        private static CaseLocale GetDefaultCaseLocale() 
         {
             return UCaseProps.GetCaseLocale(CultureInfo.CurrentCulture);
         }
 
-        private static int GetCaseLocale(CultureInfo locale)
+        private static CaseLocale GetCaseLocale(CultureInfo locale)
         {
             if (locale == null)
             {
@@ -4992,7 +4992,7 @@ namespace ICU4N
             return UCaseProps.GetCaseLocale(locale);
         }
 
-        private static int GetCaseLocale(ULocale locale)
+        private static CaseLocale GetCaseLocale(ULocale locale)
         {
             if (locale == null)
             {

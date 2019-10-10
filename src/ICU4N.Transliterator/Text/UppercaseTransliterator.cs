@@ -33,7 +33,7 @@ namespace ICU4N.Text
         private readonly UCaseProps csp;
         private ReplaceableContextIterator iter;
         private StringBuilder result;
-        private int caseLocale;
+        private CaseLocale caseLocale;
 
         /// <summary>
         /// Constructs a transliterator.

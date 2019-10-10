@@ -127,7 +127,7 @@ namespace ICU4N.Impl
                 }
             }
         }
-	
+    
         private static void AppendUnchanged(string src, int start, int length,
             StringBuilder dest, int options, Edits edits)
         {
@@ -144,7 +144,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: (start + length) - start == length
             }
         }
-	
+    
         private static void AppendUnchanged(StringBuilder src, int start, int length,
             StringBuilder dest, int options, Edits edits)
         {
@@ -161,7 +161,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: (start + length) - start == length
             }
         }
-	
+    
         private static void AppendUnchanged(char[] src, int start, int length,
             StringBuilder dest, int options, Edits edits)
         {
@@ -178,7 +178,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: (start + length) - start == length
             }
         }
-	
+    
         private static void AppendUnchanged(ICharSequence src, int start, int length,
             StringBuilder dest, int options, Edits edits)
         {
@@ -195,7 +195,7 @@ namespace ICU4N.Impl
                 dest.Append(src, start, length); // ICU4N: (start + length) - start == length
             }
         }
-		
+        
         private static void AppendUnchanged(string src, int start, int length,
             IAppendable dest, int options, Edits edits)
         {
@@ -209,10 +209,10 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-				dest.Append(src, start, start + length);
+                dest.Append(src, start, start + length);
             }
         }
-	
+    
         private static void AppendUnchanged(StringBuilder src, int start, int length,
             IAppendable dest, int options, Edits edits)
         {
@@ -226,10 +226,10 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-				dest.Append(src, start, start + length);
+                dest.Append(src, start, start + length);
             }
         }
-	
+    
         private static void AppendUnchanged(char[] src, int start, int length,
             IAppendable dest, int options, Edits edits)
         {
@@ -243,10 +243,10 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-				dest.Append(src, start, start + length);
+                dest.Append(src, start, start + length);
             }
         }
-	
+    
         private static void AppendUnchanged(ICharSequence src, int start, int length,
             IAppendable dest, int options, Edits edits)
         {
@@ -260,10 +260,10 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-				dest.Append(src, start, start + length);
+                dest.Append(src, start, start + length);
             }
         }
-	
+    
         private static string ApplyEdits(string src, StringBuilder replacementChars, Edits edits)
         {
             if (!edits.HasChanges)
@@ -356,7 +356,7 @@ namespace ICU4N.Impl
             return result.ToString();
         }
 
-        private static void InternalToLower(int caseLocale, int options, StringContextIterator iter,
+        private static void InternalToLower(CaseLocale caseLocale, int options, StringContextIterator iter,
             StringBuilder dest, Edits edits)
         {
             int c;
@@ -367,7 +367,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private static void InternalToLower(int caseLocale, int options, StringContextIterator iter,
+        private static void InternalToLower(CaseLocale caseLocale, int options, StringContextIterator iter,
             IAppendable dest, Edits edits)
         {
             int c;
@@ -378,7 +378,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static string ToLower(int caseLocale, int options, string src)
+        public static string ToLower(CaseLocale caseLocale, int options, string src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -400,7 +400,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static string ToLower(int caseLocale, int options, StringBuilder src)
+        public static string ToLower(CaseLocale caseLocale, int options, StringBuilder src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -422,7 +422,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static string ToLower(int caseLocale, int options, char[] src)
+        public static string ToLower(CaseLocale caseLocale, int options, char[] src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -444,7 +444,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal static string ToLower(int caseLocale, int options, ICharSequence src)
+        internal static string ToLower(CaseLocale caseLocale, int options, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -466,7 +466,7 @@ namespace ICU4N.Impl
             }
         }
     
-        public static StringBuilder ToLower(int caseLocale, int options,
+        public static StringBuilder ToLower(CaseLocale caseLocale, int options,
             string src, StringBuilder dest, Edits edits)
         {
             try
@@ -485,7 +485,7 @@ namespace ICU4N.Impl
             }
         }
     
-        public static StringBuilder ToLower(int caseLocale, int options,
+        public static StringBuilder ToLower(CaseLocale caseLocale, int options,
             StringBuilder src, StringBuilder dest, Edits edits)
         {
             try
@@ -504,7 +504,7 @@ namespace ICU4N.Impl
             }
         }
     
-        public static StringBuilder ToLower(int caseLocale, int options,
+        public static StringBuilder ToLower(CaseLocale caseLocale, int options,
             char[] src, StringBuilder dest, Edits edits)
         {
             try
@@ -523,7 +523,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static StringBuilder ToLower(int caseLocale, int options,
+        internal static StringBuilder ToLower(CaseLocale caseLocale, int options,
             ICharSequence src, StringBuilder dest, Edits edits)
         {
             try
@@ -542,7 +542,7 @@ namespace ICU4N.Impl
             }
         }
         
-        internal static T ToLower<T>(int caseLocale, int options,
+        internal static T ToLower<T>(CaseLocale caseLocale, int options,
             string src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -561,7 +561,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToLower<T>(int caseLocale, int options,
+        internal static T ToLower<T>(CaseLocale caseLocale, int options,
             StringBuilder src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -580,7 +580,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToLower<T>(int caseLocale, int options,
+        internal static T ToLower<T>(CaseLocale caseLocale, int options,
             char[] src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -599,7 +599,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToLower<T>(int caseLocale, int options,
+        internal static T ToLower<T>(CaseLocale caseLocale, int options,
             ICharSequence src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -618,7 +618,7 @@ namespace ICU4N.Impl
             }
         }
     
-        public static string ToUpper(int caseLocale, int options, string src)
+        public static string ToUpper(CaseLocale caseLocale, int options, string src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -640,7 +640,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static string ToUpper(int caseLocale, int options, StringBuilder src)
+        public static string ToUpper(CaseLocale caseLocale, int options, StringBuilder src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -662,7 +662,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static string ToUpper(int caseLocale, int options, char[] src)
+        public static string ToUpper(CaseLocale caseLocale, int options, char[] src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -684,7 +684,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal static string ToUpper(int caseLocale, int options, ICharSequence src)
+        internal static string ToUpper(CaseLocale caseLocale, int options, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -705,9 +705,9 @@ namespace ICU4N.Impl
                         new StringBuilder(src.Length), null).ToString();
             }
         }
-	
-		public static StringBuilder ToUpper(int caseLocale, int options,
-			string src, StringBuilder dest, Edits edits)
+    
+        public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
+            string src, StringBuilder dest, Edits edits)
         {
             try
             {
@@ -715,7 +715,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                if (caseLocale == UCaseProps.LOC_GREEK)
+                if (caseLocale == CaseLocale.Greek)
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
@@ -733,9 +733,9 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
-		public static StringBuilder ToUpper(int caseLocale, int options,
-			StringBuilder src, StringBuilder dest, Edits edits)
+    
+        public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
+            StringBuilder src, StringBuilder dest, Edits edits)
         {
             try
             {
@@ -743,7 +743,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                if (caseLocale == UCaseProps.LOC_GREEK)
+                if (caseLocale == CaseLocale.Greek)
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
@@ -761,9 +761,9 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
-		public static StringBuilder ToUpper(int caseLocale, int options,
-			char[] src, StringBuilder dest, Edits edits)
+    
+        public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
+            char[] src, StringBuilder dest, Edits edits)
         {
             try
             {
@@ -771,7 +771,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                if (caseLocale == UCaseProps.LOC_GREEK)
+                if (caseLocale == CaseLocale.Greek)
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
@@ -789,9 +789,9 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
-		internal static StringBuilder ToUpper(int caseLocale, int options,
-			ICharSequence src, StringBuilder dest, Edits edits)
+    
+        internal static StringBuilder ToUpper(CaseLocale caseLocale, int options,
+            ICharSequence src, StringBuilder dest, Edits edits)
         {
             try
             {
@@ -799,7 +799,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                if (caseLocale == UCaseProps.LOC_GREEK)
+                if (caseLocale == CaseLocale.Greek)
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
@@ -817,9 +817,9 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
-		
-		internal static T ToUpper<T>(int caseLocale, int options,
-			string src, T dest, Edits edits) where T : IAppendable
+        
+        internal static T ToUpper<T>(CaseLocale caseLocale, int options,
+            string src, T dest, Edits edits) where T : IAppendable
         {
             try
             {
@@ -827,7 +827,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                if (caseLocale == UCaseProps.LOC_GREEK)
+                if (caseLocale == CaseLocale.Greek)
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
@@ -845,9 +845,9 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
-		internal static T ToUpper<T>(int caseLocale, int options,
-			StringBuilder src, T dest, Edits edits) where T : IAppendable
+    
+        internal static T ToUpper<T>(CaseLocale caseLocale, int options,
+            StringBuilder src, T dest, Edits edits) where T : IAppendable
         {
             try
             {
@@ -855,7 +855,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                if (caseLocale == UCaseProps.LOC_GREEK)
+                if (caseLocale == CaseLocale.Greek)
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
@@ -873,9 +873,9 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
-		internal static T ToUpper<T>(int caseLocale, int options,
-			char[] src, T dest, Edits edits) where T : IAppendable
+    
+        internal static T ToUpper<T>(CaseLocale caseLocale, int options,
+            char[] src, T dest, Edits edits) where T : IAppendable
         {
             try
             {
@@ -883,7 +883,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                if (caseLocale == UCaseProps.LOC_GREEK)
+                if (caseLocale == CaseLocale.Greek)
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
@@ -901,9 +901,9 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
-		internal static T ToUpper<T>(int caseLocale, int options,
-			ICharSequence src, T dest, Edits edits) where T : IAppendable
+    
+        internal static T ToUpper<T>(CaseLocale caseLocale, int options,
+            ICharSequence src, T dest, Edits edits) where T : IAppendable
         {
             try
             {
@@ -911,7 +911,7 @@ namespace ICU4N.Impl
                 {
                     edits.Reset();
                 }
-                if (caseLocale == UCaseProps.LOC_GREEK)
+                if (caseLocale == CaseLocale.Greek)
                 {
                     return GreekUpper.ToUpper(options, src, dest, edits);
                 }
@@ -929,8 +929,8 @@ namespace ICU4N.Impl
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
-        public static string ToTitle(int caseLocale, int options, BreakIterator iter, string src)
+    
+        public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, string src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -953,7 +953,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static string ToTitle(int caseLocale, int options, BreakIterator iter, StringBuilder src)
+        public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, StringBuilder src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -976,7 +976,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public static string ToTitle(int caseLocale, int options, BreakIterator iter, char[] src)
+        public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, char[] src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -999,7 +999,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal static string ToTitle(int caseLocale, int options, BreakIterator iter, ICharSequence src)
+        internal static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
             {
@@ -1023,7 +1023,7 @@ namespace ICU4N.Impl
         }
     
         public static StringBuilder ToTitle(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             string src, StringBuilder dest, Edits edits)
         {
             try
@@ -1099,7 +1099,7 @@ namespace ICU4N.Impl
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
-                            if (titleStart + 1 < index && caseLocale == UCaseProps.LOC_DUTCH)
+                            if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
                             {
                                 char c1 = src[titleStart];
                                 if ((c1 == 'i' || c1 == 'I'))
@@ -1158,7 +1158,7 @@ namespace ICU4N.Impl
         }
     
         public static StringBuilder ToTitle(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             StringBuilder src, StringBuilder dest, Edits edits)
         {
             try
@@ -1234,7 +1234,7 @@ namespace ICU4N.Impl
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
-                            if (titleStart + 1 < index && caseLocale == UCaseProps.LOC_DUTCH)
+                            if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
                             {
                                 char c1 = src[titleStart];
                                 if ((c1 == 'i' || c1 == 'I'))
@@ -1293,7 +1293,7 @@ namespace ICU4N.Impl
         }
     
         public static StringBuilder ToTitle(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             char[] src, StringBuilder dest, Edits edits)
         {
             try
@@ -1369,7 +1369,7 @@ namespace ICU4N.Impl
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
-                            if (titleStart + 1 < index && caseLocale == UCaseProps.LOC_DUTCH)
+                            if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
                             {
                                 char c1 = src[titleStart];
                                 if ((c1 == 'i' || c1 == 'I'))
@@ -1428,7 +1428,7 @@ namespace ICU4N.Impl
         }
     
         internal static StringBuilder ToTitle(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             ICharSequence src, StringBuilder dest, Edits edits)
         {
             try
@@ -1504,7 +1504,7 @@ namespace ICU4N.Impl
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
-                            if (titleStart + 1 < index && caseLocale == UCaseProps.LOC_DUTCH)
+                            if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
                             {
                                 char c1 = src[titleStart];
                                 if ((c1 == 'i' || c1 == 'I'))
@@ -1563,7 +1563,7 @@ namespace ICU4N.Impl
         }
         
         internal static T ToTitle<T>(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             string src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -1639,7 +1639,7 @@ namespace ICU4N.Impl
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
-                            if (titleStart + 1 < index && caseLocale == UCaseProps.LOC_DUTCH)
+                            if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
                             {
                                 char c1 = src[titleStart];
                                 if ((c1 == 'i' || c1 == 'I'))
@@ -1698,7 +1698,7 @@ namespace ICU4N.Impl
         }
     
         internal static T ToTitle<T>(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             StringBuilder src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -1774,7 +1774,7 @@ namespace ICU4N.Impl
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
-                            if (titleStart + 1 < index && caseLocale == UCaseProps.LOC_DUTCH)
+                            if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
                             {
                                 char c1 = src[titleStart];
                                 if ((c1 == 'i' || c1 == 'I'))
@@ -1833,7 +1833,7 @@ namespace ICU4N.Impl
         }
     
         internal static T ToTitle<T>(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             char[] src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -1909,7 +1909,7 @@ namespace ICU4N.Impl
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
-                            if (titleStart + 1 < index && caseLocale == UCaseProps.LOC_DUTCH)
+                            if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
                             {
                                 char c1 = src[titleStart];
                                 if ((c1 == 'i' || c1 == 'I'))
@@ -1968,7 +1968,7 @@ namespace ICU4N.Impl
         }
     
         internal static T ToTitle<T>(
-            int caseLocale, int options, BreakIterator titleIter,
+            CaseLocale caseLocale, int options, BreakIterator titleIter,
             ICharSequence src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -2044,7 +2044,7 @@ namespace ICU4N.Impl
                             AppendResult(c, dest, iter.CPLength, options, edits);
 
                             // Special case Dutch IJ titlecasing
-                            if (titleStart + 1 < index && caseLocale == UCaseProps.LOC_DUTCH)
+                            if (titleStart + 1 < index && caseLocale == CaseLocale.Dutch)
                             {
                                 char c1 = src[titleStart];
                                 if ((c1 == 'i' || c1 == 'I'))
@@ -2656,7 +2656,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, CaseLocale.Greek);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -2832,7 +2832,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, CaseLocale.Greek);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3008,7 +3008,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, CaseLocale.Greek);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3184,7 +3184,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, CaseLocale.Greek);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3360,7 +3360,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, CaseLocale.Greek);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3536,7 +3536,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, CaseLocale.Greek);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3712,7 +3712,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, CaseLocale.Greek);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;
@@ -3888,7 +3888,7 @@ namespace ICU4N.Impl
                     }
                     else
                     {
-                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, UCaseProps.LOC_GREEK);
+                        c = UCaseProps.Instance.ToFullUpper(c, null, dest, CaseLocale.Greek);
                         AppendResult(c, dest, nextIndex - i, options, edits);
                     }
                     i = nextIndex;

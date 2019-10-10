@@ -20,7 +20,7 @@ namespace ICU4N.Text
 
         internal CaseMap(int opt) { internalOptions = opt; } // ICU4N TODO: API - see whether it makes sense to make a [Flags] enum for opt
 
-        internal static int GetCaseLocale(CultureInfo locale)
+        internal static CaseLocale GetCaseLocale(CultureInfo locale)
         {
             if (locale == null)
             {
