@@ -87,17 +87,20 @@ namespace ICU4N.Text
                 for (start = offsets.Start - 1; start >= offsets.ContextStart; start -= UTF16.GetCharCount(c))
                 {
                     c = text.Char32At(start);
-                    type = csp.GetTypeOrIgnorable(c);
-                    if (type > 0)
-                    { // cased
-                        doTitle = false;
-                        break;
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (!csp.IsCaseIgnorable(c, out type))
+                    {
+                        if (type > 0)
+                        { // cased
+                            doTitle = false;
+                            break;
+                        }
+                        else if (type == 0)
+                        { // uncased but not ignorable
+                            break;
+                        }
                     }
-                    else if (type == 0)
-                    { // uncased but not ignorable
-                        break;
-                    }
-                    // else (type<0) case-ignorable: continue
+                    // else case-ignorable: continue
                 }
 
                 // Convert things after a cased character toLower; things
@@ -117,9 +120,9 @@ namespace ICU4N.Text
 
                 while ((c = iter.NextCaseMapCP()) >= 0)
                 {
-                    type = csp.GetTypeOrIgnorable(c);
-                    if (type >= 0)
-                    { // not case-ignorable
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (!csp.IsCaseIgnorable(c, out type))
+                    {// not case-ignorable
                         if (doTitle)
                         {
                             c = csp.ToFullTitle(c, iter, result, caseLocale);

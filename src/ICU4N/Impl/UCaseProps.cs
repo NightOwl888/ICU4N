@@ -579,11 +579,16 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Like <see cref="GetType(int)"/>, but also sets <see cref="IGNORABLE"/> if <paramref name="c"/> is case-ignorable.
+        /// Like <see cref="GetType(int)"/>, but returns <c>true</c> if <paramref name="c"/> is case-ignorable
+        /// and returns <paramref name="type"/> as an out parameter.
         /// </summary>
-        public int GetTypeOrIgnorable(int c)
+        // ICU4N specific - rather than returning 2 bits in an int in GetTypeOrIgnorable, 
+        // we return ignorable as a bool and type as an out parameter, which makes usage simpler for end users.
+        // For performance reasons, it still works best to get these 2 values in one go rather than making 2
+        // separate functions.
+        public bool IsCaseIgnorable(int c, out int type)
         {
-            return GetTypeAndIgnorableFromProps(trie.Get(c));
+            return IsCaseIgnorableFromProps(trie.Get(c), out type);
         }
 
         /// <returns>NO_DOT, <see cref="SOFT_DOTTED"/>, <see cref="ABOVE"/>, <see cref="OTHER_ACCENT"/>.</returns>
@@ -783,8 +788,8 @@ namespace ICU4N.Impl
 
             for (iter.Reset(dir); (c = iter.Next()) >= 0;)
             {
-                int type = GetTypeOrIgnorable(c);
-                if ((type & 4) != 0)
+                // ICU4N: Simplfied version of GetTypeOrIgnorable
+                if (IsCaseIgnorable(c, out int type))
                 {
                     /* case-ignorable, continue with the loop */
                 }
@@ -1121,7 +1126,9 @@ namespace ICU4N.Impl
                 case UProperty.Cased:
                     return None != GetType(c);
                 case UProperty.Case_Ignorable:
-                    return (GetTypeOrIgnorable(c) >> 2) != 0;
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    return IsCaseIgnorable(c, out int _);
+                    //return (GetTypeOrIgnorable(c) >> 2) != 0;
                 /*
                  * Note: The following Changes_When_Xyz are defined as testing whether
                  * the NFD form of the input changes when Xyz-case-mapped.
@@ -1196,11 +1203,15 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Like <see cref="GetTypeFromProps(int)"/>, but also sets <see cref="IGNORABLE"/> if <paramref name="props"/> indicate case-ignorable.
+        /// Like <see cref="GetTypeFromProps(int)"/>, but returns <c>true</c> if <paramref name="props"/> indicate case-ignorable
+        /// and returns <paramref name="type"/> as an out parameter.
         /// </summary>
-        private static int GetTypeAndIgnorableFromProps(int props)
+        // ICU4N specific - rather than returning 2 bits in an int in GetTypeAndIgnorableFromProps, 
+        // we return ignorable as a bool and type as an out parameter, which makes usage simpler for end users
+        private static bool IsCaseIgnorableFromProps(int props, out int type)
         {
-            return props & 7;
+            type = props & TypeMask;
+            return (props & IGNORABLE) != 0; // Return true if ignorable
         }
 
         internal const int IGNORABLE = 4;

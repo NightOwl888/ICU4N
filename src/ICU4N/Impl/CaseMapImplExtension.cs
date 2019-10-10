@@ -2402,8 +2402,8 @@ namespace ICU4N.Impl
                 while (i < s.Length)
                 {
                     int c = Character.CodePointAt(s, i);
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // Case-ignorable, continue with the loop.
                         i += Character.CharCount(c);
@@ -2425,8 +2425,8 @@ namespace ICU4N.Impl
                 while (i < s.Length)
                 {
                     int c = Character.CodePointAt(s, i);
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // Case-ignorable, continue with the loop.
                         i += Character.CharCount(c);
@@ -2448,8 +2448,8 @@ namespace ICU4N.Impl
                 while (i < s.Length)
                 {
                     int c = Character.CodePointAt(s, i);
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // Case-ignorable, continue with the loop.
                         i += Character.CharCount(c);
@@ -2471,8 +2471,8 @@ namespace ICU4N.Impl
                 while (i < s.Length)
                 {
                     int c = Character.CodePointAt(s, i);
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // Case-ignorable, continue with the loop.
                         i += Character.CharCount(c);
@@ -2508,8 +2508,8 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
@@ -2684,8 +2684,8 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
@@ -2860,8 +2860,8 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
@@ -3036,8 +3036,8 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
@@ -3212,8 +3212,8 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
@@ -3388,8 +3388,8 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
@@ -3564,8 +3564,8 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
@@ -3740,8 +3740,8 @@ namespace ICU4N.Impl
                     int c = Character.CodePointAt(src, i);
                     int nextIndex = i + Character.CharCount(c);
                     int nextState = 0;
-                    int type = UCaseProps.Instance.GetTypeOrIgnorable(c);
-                    if ((type & UCaseProps.IGNORABLE) != 0)
+                    // ICU4N: Simplfied version of GetTypeOrIgnorable
+                    if (UCaseProps.Instance.IsCaseIgnorable(c, out int type))
                     {
                         // c is case-ignorable
                         nextState |= (state & AFTER_CASED);
