@@ -51,10 +51,10 @@ namespace ICU4N.Impl.Coll
         /// <seealso cref="POS_LEAD"/>
         internal const char POS_BASE = (char)0x2800;
 
-        public abstract class Sink // ICU4N specific - made public because it has public subclass
+        // ICU4N specific - changed from an abstract class to an interface because C# doesn't allow a public class to subclass an internal abstract class.
+        // We make the methods only visible to this interface by using explicit interface declarations on the subclasses, so they do not have to be declared public.
+        internal interface ISink
         {
-            internal Sink() { } // ICU4N specific - added internal constructor as this is not meant for end-users.
-
             /// <summary>
             /// Adds a reset.
             /// <para/>
@@ -62,16 +62,17 @@ namespace ICU4N.Impl.Coll
             /// <para/>
             /// strength=<see cref="CollationStrength.Primary"/>/<see cref="CollationStrength.Secondary"/>/<see cref="CollationStrength.Tertiary"/> for &amp;[before n]str where n=1/2/3.
             /// </summary>
-            internal abstract void AddReset(CollationStrength strength, ICharSequence str);
+            void AddReset(CollationStrength strength, ICharSequence str);
+
             /// <summary>
             /// Adds a relation with strength and prefix | str / extension.
             /// </summary>
-            internal abstract void AddRelation(CollationStrength strength, ICharSequence prefix,
+            void AddRelation(CollationStrength strength, ICharSequence prefix,
                     ICharSequence str, string extension); // ICU4N specific - changed extension from ICharSequence to string
 
-            internal virtual void SuppressContractions(UnicodeSet set) { }
+            void SuppressContractions(UnicodeSet set);
 
-            internal virtual void Optimize(UnicodeSet set) { }
+            void Optimize(UnicodeSet set);
         }
 
         internal interface IImporter
@@ -81,7 +82,7 @@ namespace ICU4N.Impl.Coll
 
         /// <summary>
         /// Constructor.
-        /// The <see cref="Sink"/> must be set before parsing.
+        /// The <see cref="ISink"/> must be set before parsing.
         /// The <see cref="IImporter"/> can be set, otherwise [import locale] syntax is not supported.
         /// </summary>
         /// <param name="baseData"></param>
@@ -91,10 +92,10 @@ namespace ICU4N.Impl.Coll
         }
 
         /// <summary>
-        /// Sets the pointer to a <see cref="Sink"/> object.
+        /// Sets the pointer to a <see cref="ISink"/> object.
         /// The pointer is aliased: Pointer copy without cloning or taking ownership.
         /// </summary>
-        internal void SetSink(Sink sinkAlias)
+        internal void SetSink(ISink sinkAlias)
         {
             sink = sinkAlias;
         }
@@ -1147,7 +1148,7 @@ namespace ICU4N.Impl.Coll
         private readonly CollationData baseData;
         private CollationSettings settings;
 
-        private Sink sink;
+        private ISink sink;
         private IImporter importer;
 
         private int ruleIndex;

@@ -10,7 +10,7 @@ using System.Text;
 
 namespace ICU4N.Impl.Coll
 {
-    public sealed class CollationBuilder : CollationRuleParser.Sink
+    public sealed class CollationBuilder : CollationRuleParser.ISink
     {
         private static readonly bool DEBUG = false;
         private sealed class BundleImporter : CollationRuleParser.IImporter
@@ -96,8 +96,8 @@ namespace ICU4N.Impl.Coll
             return tailoring;
         }
 
-        /// <summary>Implements <see cref="CollationRuleParser.Sink"/>.</summary>
-        internal override void AddReset(CollationStrength strength, ICharSequence str)
+        /// <summary>Implements <see cref="CollationRuleParser.ISink"/>.</summary>
+        void CollationRuleParser.ISink.AddReset(CollationStrength strength, ICharSequence str)
         {
             Debug.Assert(str.Length != 0);
             if (str[0] == CollationRuleParser.POS_LEAD)
@@ -490,8 +490,8 @@ namespace ICU4N.Impl.Coll
             return ce;
         }
 
-        /// <summary>Implements <see cref="CollationRuleParser.Sink"/>.</summary>
-        internal override void AddRelation(CollationStrength strength, ICharSequence prefix, ICharSequence str, string extension) // ICU4N specific - changed extension from ICharSequence to string
+        /// <summary>Implements <see cref="CollationRuleParser.ISink"/>.</summary>
+        void CollationRuleParser.ISink.AddRelation(CollationStrength strength, ICharSequence prefix, ICharSequence str, string extension) // ICU4N specific - changed extension from ICharSequence to string
         {
             StringCharSequence nfdPrefix;
             if (prefix.Length == 0)
@@ -962,14 +962,14 @@ namespace ICU4N.Impl.Coll
             }
         }
 
-        /// <summary>Implements <see cref="CollationRuleParser.Sink"/>.</summary>
-        internal override void SuppressContractions(UnicodeSet set)
+        /// <summary>Implements <see cref="CollationRuleParser.ISink"/>.</summary>
+        void CollationRuleParser.ISink.SuppressContractions(UnicodeSet set)
         {
             dataBuilder.SuppressContractions(set);
         }
 
-        /// <summary>Implements <see cref="CollationRuleParser.Sink"/>.</summary>
-        internal override void Optimize(UnicodeSet set)
+        /// <summary>Implements <see cref="CollationRuleParser.ISink"/>.</summary>
+        void CollationRuleParser.ISink.Optimize(UnicodeSet set)
         {
             optimizeSet.AddAll(set);
         }
