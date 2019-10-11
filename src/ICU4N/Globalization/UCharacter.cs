@@ -2831,7 +2831,7 @@ namespace ICU4N
         /// <stable>ICU 2.1</stable>
         public static UUnicodeCategory GetUnicodeCategory(int ch) // ICU4N specific - renamed from GetType() to cover System.Char.GetUnicodeCategory()
         {
-            return (UUnicodeCategory)UCharacterProperty.Instance.GetType(ch);
+            return UCharacterProperty.Instance.GetUnicodeCategory(ch);
         }
 
         /// <summary>

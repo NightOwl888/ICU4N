@@ -235,9 +235,9 @@ namespace ICU4N.Impl
             // Letter, number, symbol,
             // or a private use code point because those are typically used as letters or numbers.
             // Consider modifier letters only if they are cased.
-            int gc = UCharacterProperty.Instance.GetType(c);
-            return ((1 << gc) & LNS) != 0 ||
-                    (gc == UUnicodeCategory.ModifierLetter.ToInt32() &&
+            UUnicodeCategory gc = UCharacterProperty.Instance.GetUnicodeCategory(c);
+            return ((1 << (int)gc) & LNS) != 0 ||
+                    (gc == UUnicodeCategory.ModifierLetter &&
                         UCaseProperties.Instance.GetCaseType(c) != CaseType.None);
         }
 

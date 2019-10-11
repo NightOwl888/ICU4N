@@ -168,14 +168,14 @@ namespace ICU4N.Impl
                                version & LAST_NIBBLE_MASK_, 0, 0);
         }
 
-        private static readonly int GC_CN_MASK = GetMask(UUnicodeCategory.OtherNotAssigned.ToInt32());
-        private static readonly int GC_CC_MASK = GetMask(UUnicodeCategory.Control.ToInt32());
-        private static readonly int GC_CS_MASK = GetMask(UUnicodeCategory.Surrogate.ToInt32());
-        private static readonly int GC_ZS_MASK = GetMask(UUnicodeCategory.SpaceSeparator.ToInt32());
-        private static readonly int GC_ZL_MASK = GetMask(UUnicodeCategory.LineSeparator.ToInt32());
-        private static readonly int GC_ZP_MASK = GetMask(UUnicodeCategory.ParagraphSeparator.ToInt32());
+        private const int GC_CN_MASK = 1 << (int)UUnicodeCategory.OtherNotAssigned;
+        private const int GC_CC_MASK = 1 << (int)UUnicodeCategory.Control;
+        private const int GC_CS_MASK = 1 << (int)UUnicodeCategory.Surrogate;
+        private const int GC_ZS_MASK = 1 << (int)UUnicodeCategory.SpaceSeparator;
+        private const int GC_ZL_MASK = 1 << (int)UUnicodeCategory.LineSeparator;
+        private const int GC_ZP_MASK = 1 << (int)UUnicodeCategory.ParagraphSeparator;
         /// <summary>Mask constant for multiple UCharCategory bits (Z Separators).</summary>
-        private static readonly int GC_Z_MASK = GC_ZS_MASK | GC_ZL_MASK | GC_ZP_MASK;
+        private const int GC_Z_MASK = GC_ZS_MASK | GC_ZL_MASK | GC_ZP_MASK;
 
         /// <summary>
         /// Checks if <paramref name="c"/> is in
@@ -188,7 +188,7 @@ namespace ICU4N.Impl
         {
             /* \p{space}\p{gc=Control} == \p{gc=Z}\p{Control} */
             /* comparing ==0 returns FALSE for the categories mentioned */
-            return (GetMask(UChar.GetUnicodeCategory(c).ToInt32()) &
+            return (GetMask(UChar.GetUnicodeCategory(c)) &
                     (GC_CC_MASK | GC_CS_MASK | GC_CN_MASK | GC_Z_MASK))
                    == 0;
         }
@@ -454,7 +454,7 @@ namespace ICU4N.Impl
                 new IntProperty(this, 0, EAST_ASIAN_MASK_, EAST_ASIAN_SHIFT_),
                 new AnonymousIntProperty(this, UPropertySource.Char, getValue: (c) =>
                     {  // GENERAL_CATEGORY
-                        return GetType(c);
+                        return (int)GetUnicodeCategory(c);
                     }, getMaxValue: (which) =>
                     {
                         return UUnicodeCategoryExtensions.CharCategoryCount - 1;
@@ -545,9 +545,9 @@ namespace ICU4N.Impl
 
         // int-value and enumerated properties --------------------------------- ***
 
-        public int GetType(int c) // ICU4N TODO: API - Return UCharacterCategory type
+        public UUnicodeCategory GetUnicodeCategory(int c)  // ICU4N specific - renamed from GetType() to cover System.Char.GetUnicodeCategory()
         {
-            return GetProperty(c) & TypeMask;
+            return (UUnicodeCategory)(GetProperty(c) & TypeMask);
         }
 
         /// <summary>
@@ -721,7 +721,7 @@ namespace ICU4N.Impl
             }
             else if (which == UProperty.General_Category_Mask)
             {
-                return GetMask(GetType(c));
+                return GetMask(GetUnicodeCategory(c));
             }
             return 0; // undefined
         }
@@ -730,7 +730,7 @@ namespace ICU4N.Impl
         {
             if (which < UProperty.Int_Start)
             {
-                if ((int)UProperty.Binary_Start <= which
+                if (UProperty.Binary_Start <= which
 #pragma warning disable 612, 618
                     && which < UProperty.Binary_Limit)
 #pragma warning restore 612, 618
@@ -921,9 +921,9 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="type">Character type.</param>
         /// <returns>Mask.</returns>
-        public static int GetMask(int type)
+        public static int GetMask(UUnicodeCategory type)
         {
-            return 1 << type;
+            return 1 << (int)type;
         }
 
         /// <summary>
