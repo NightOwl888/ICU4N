@@ -8,6 +8,25 @@ using System.Diagnostics;
 namespace ICU4N.Impl
 {
     /// <summary>
+    /// Character data in <see cref="Trie"/> have different user-specified format
+    /// for different purposes.
+    /// This interface specifies methods to be implemented in order for
+    /// <see cref="Trie"/> to surrogate offset information encapsulated within
+    /// the data.
+    /// </summary>
+    public interface ITrieDataManipulate // ICU4N: renamed from IDataManipulate
+    {
+        /// <summary>
+        /// Called by <see cref="Trie"/> to extract from a lead surrogate's
+        /// data.
+        /// The index array offset of the indexes for that lead surrogate.
+        /// </summary>
+        /// <param name="value">Data value for a surrogate from the trie, including the folding offset.</param>
+        /// <returns>Offset or 0 if there is no data for the lead surrogate.</returns>
+        int GetFoldingOffset(int value);
+    }
+
+    /// <summary>
     /// A trie is a kind of compressed, serializable table of values
     /// associated with Unicode code points (0..0x10ffff).
     /// </summary>
@@ -18,7 +37,7 @@ namespace ICU4N.Impl
     /// Data will be the form of an array of basic types, char or int.
     /// <para/>
     /// The actual data format will have to be specified by the user in the
-    /// interface <see cref="IDataManipulate"/>.
+    /// interface <see cref="ITrieDataManipulate"/>.
     /// <para/>
     /// This trie implementation is optimized for getting offset while walking
     /// forward through a UTF-16 string.
@@ -33,7 +52,7 @@ namespace ICU4N.Impl
     /// To handle such supplementary codepoints, some offset information are kept
     /// in the data.
     /// <para/>
-    /// Methods in <see cref="IDataManipulate"/> are called to retrieve
+    /// Methods in <see cref="ITrieDataManipulate"/> are called to retrieve
     /// that offset from the folded value for the lead surrogate unit.
     /// <para/>
     /// For examples of use, see <see cref="CharTrie"/> or
@@ -49,27 +68,10 @@ namespace ICU4N.Impl
     {
         // public class declaration ----------------------------------------
 
-        /// <summary>
-        /// Character data in <see cref="Trie"/> have different user-specified format
-        /// for different purposes.
-        /// This interface specifies methods to be implemented in order for
-        /// <see cref="Trie"/> to surrogate offset information encapsulated within
-        /// the data.
-        /// </summary>
-        public interface IDataManipulate // ICU4N TODO: API de-nest ?
-        {
-            /// <summary>
-            /// Called by <see cref="Trie"/> to extract from a lead surrogate's
-            /// data.
-            /// The index array offset of the indexes for that lead surrogate.
-            /// </summary>
-            /// <param name="value">Data value for a surrogate from the trie, including the folding offset.</param>
-            /// <returns>Offset or 0 if there is no data for the lead surrogate.</returns>
-            int GetFoldingOffset(int value);
-        }
+        // ICU4N specific - de-nested IDataManipulate and renamed ITrieDataManipulate
 
         // default implementation
-        private class DefaultGetFoldingOffset : IDataManipulate
+        private class DefaultGetFoldingOffset : ITrieDataManipulate
         {
             public virtual int GetFoldingOffset(int value)
             {
@@ -149,7 +151,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="bytes">Data of an ICU data file, containing the trie.</param>
         /// <param name="dataManipulate">Object containing the information to parse the trie data.</param>
-        protected Trie(ByteBuffer bytes, IDataManipulate dataManipulate) // ICU4N TODO: API Change to use byte[]
+        protected Trie(ByteBuffer bytes, ITrieDataManipulate dataManipulate) // ICU4N TODO: API Change to use byte[]
         {
             // Magic number to authenticate the data.
             int signature = bytes.GetInt32();
@@ -181,7 +183,7 @@ namespace ICU4N.Impl
         /// <param name="index">Array to be used for index.</param>
         /// <param name="options">Options used by the trie.</param>
         /// <param name="dataManipulate">Object containing the information to parse the trie data.</param>
-        protected Trie(char[] index, int options, IDataManipulate dataManipulate) // ICU4N TODO: API - change to use [Flags] enum for options ?
+        protected Trie(char[] index, int options, ITrieDataManipulate dataManipulate) // ICU4N TODO: API - change to use [Flags] enum for options ?
         {
             m_options_ = options;
             if (dataManipulate != null)
@@ -257,7 +259,7 @@ namespace ICU4N.Impl
         /// Internal TrieValue which handles the parsing of the data value.
         /// This class is to be implemented by the user.
         /// </summary>
-        protected internal IDataManipulate m_dataManipulate;
+        protected internal ITrieDataManipulate m_dataManipulate;
         /// <summary>
         /// Start index of the data portion of the trie. <see cref="CharTrie"/> combines
         /// index and data into a char array, so this is used to indicate the

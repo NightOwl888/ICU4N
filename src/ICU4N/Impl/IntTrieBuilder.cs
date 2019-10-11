@@ -238,7 +238,7 @@ namespace ICU4N.Impl
         /// <param name="triedatamanipulate">Result trie fold method.</param>
         /// <returns>A new trie.</returns>
         public virtual Int32Trie Serialize(TrieBuilder.IDataManipulate datamanipulate,
-                                 Trie.IDataManipulate triedatamanipulate)
+                                 ITrieDataManipulate triedatamanipulate)
         {
             if (datamanipulate == null)
             {

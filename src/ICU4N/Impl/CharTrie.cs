@@ -25,7 +25,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="bytes">Data of an ICU data file, containing the trie.</param>
         /// <param name="dataManipulate">Object which provides methods to parse the char data.</param>
-        public CharTrie(ByteBuffer bytes, IDataManipulate dataManipulate) // ICU4N TODO: API - make internal and make overload that accepts byte[]
+        public CharTrie(ByteBuffer bytes, ITrieDataManipulate dataManipulate) // ICU4N TODO: API - make internal and make overload that accepts byte[]
             : base(bytes, dataManipulate)
         {
             if (!IsCharTrie)
@@ -49,7 +49,7 @@ namespace ICU4N.Impl
         /// <param name="initialValue">The initial value that is set for all code points.</param>
         /// <param name="leadUnitValue">The value for lead surrogate code _units_ that do not have associated supplementary data.</param>
         /// <param name="dataManipulate">Object which provides methods to parse the char data.</param>
-        public CharTrie(int initialValue, int leadUnitValue, IDataManipulate dataManipulate)
+        public CharTrie(int initialValue, int leadUnitValue, ITrieDataManipulate dataManipulate)
                 : base(new char[BMPIndexLength + SurrogateBlockCount], HeaderOptionsLatin1IsLinearMask, dataManipulate)
         {
             int dataLength, latin1Length, i, limit;

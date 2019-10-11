@@ -24,9 +24,9 @@ namespace ICU4N.Impl
         /// Unserialize the 32-bit-aligned input stream and use the data for the trie.
         /// </summary>
         /// <param name="bytes">File buffer to a ICU data file, containing the trie.</param>
-        /// <param name="dataManipulate"><see cref="Trie.IDataManipulate"/> object which provides methods to parse the char data.</param>
+        /// <param name="dataManipulate"><see cref="ITrieDataManipulate"/> object which provides methods to parse the char data.</param>
         /// <exception cref="System.IO.IOException">Thrown when data reading fails.</exception>
-        public Int32Trie(ByteBuffer bytes, IDataManipulate dataManipulate)
+        public Int32Trie(ByteBuffer bytes, ITrieDataManipulate dataManipulate)
             : base(bytes, dataManipulate)
         {
             if (!IsInt32Trie)
@@ -50,8 +50,8 @@ namespace ICU4N.Impl
         /// <param name="initialValue">The initial value that is set for all code points.</param>
         /// <param name="leadUnitValue">The value for lead surrogate code _units_ that do not
         /// have associated supplementary data.</param>
-        /// <param name="dataManipulate"><see cref="Trie.IDataManipulate"/> object which provides methods to parse the char data.</param>
-        public Int32Trie(int initialValue, int leadUnitValue, IDataManipulate dataManipulate)
+        /// <param name="dataManipulate"><see cref="ITrieDataManipulate"/> object which provides methods to parse the char data.</param>
+        public Int32Trie(int initialValue, int leadUnitValue, ITrieDataManipulate dataManipulate)
                 : base(new char[BMPIndexLength + SurrogateBlockCount], HeaderOptionsLatin1IsLinearMask, dataManipulate)
         {
 
@@ -315,7 +315,7 @@ namespace ICU4N.Impl
         /// <param name="options">Trie options to use.</param>
         /// <param name="datamanipulate">Folding implementation.</param>
         internal Int32Trie(char[] index, int[] data, int initialvalue, int options,
-                IDataManipulate datamanipulate)
+                ITrieDataManipulate datamanipulate)
                 : base(index, options, datamanipulate)
         {
             m_data_ = data;

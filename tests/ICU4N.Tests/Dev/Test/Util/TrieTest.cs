@@ -98,8 +98,7 @@ namespace ICU4N.Dev.Test.Util
             private Int32TrieBuilder m_builder_;
         }
 
-        private sealed class _testFoldingOffset
-                                                    : Trie.IDataManipulate
+        private sealed class _testFoldingOffset : ITrieDataManipulate
         {
             public int GetFoldingOffset(int value)
             {
@@ -500,7 +499,7 @@ namespace ICU4N.Dev.Test.Util
                              checkRanges3.Length);
         }
 
-        private class DummyGetFoldingOffset : Trie.IDataManipulate
+        private class DummyGetFoldingOffset : ITrieDataManipulate
         {
             public virtual int GetFoldingOffset(int value)
             {
