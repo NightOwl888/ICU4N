@@ -62,8 +62,7 @@ namespace ICU4N.Dev.Test.Util
             internal int Value { get; set; }
         }
 
-        private sealed class _testFoldedValue
-                                        : TrieBuilder.IDataManipulate
+        private sealed class _testFoldedValue : ITrieBuilderDataManipulate
         {
             public _testFoldedValue(Int32TrieBuilder builder)
             {

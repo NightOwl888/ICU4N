@@ -5,6 +5,38 @@ using System;
 namespace ICU4N.Impl
 {
     /// <summary>
+    /// Character data in <see cref="Trie"/> have different user-specified format
+    /// for different purposes.
+    /// This interface specifies methods to be implemented in order for
+    /// <see cref="Trie"/>, to surrogate offset information encapsulated within 
+    /// the data.
+    /// </summary>
+    public interface ITrieBuilderDataManipulate
+    {
+        /// <summary>
+        /// Build-time trie callback function, used with serialize().
+        /// This function calculates a lead surrogate's value including a
+        /// folding offset from the 1024 supplementary code points 
+        /// [start..start+1024[ .
+        /// It is U+10000 &lt;= start &lt;= U+10fc00 and (start&amp;0x3ff)==0.
+        /// The folding offset is provided by the caller. 
+        /// It is offset=<see cref="Trie.BMPIndexLength"/>+ n * <see cref="Trie.SurrogateBlockCount"/> 
+        /// with n=0..1023. 
+        /// Instead of the offset itself, n can be stored in 10 bits - or fewer 
+        /// if it can be assumed that few lead surrogates have associated data.
+        /// The returned value must be
+        /// <list type="bullet">
+        ///     <item><description>not zero if and only if there is relevant data for the
+        ///     corresponding 1024 supplementary code points</description></item>
+        ///     <item><description>such that UTrie.GetFoldingOffset(UNewTrieGetFoldedValue(..., offset))==offset</description></item>
+        /// </list>
+        /// </summary>
+        /// <returns>a folded value, or 0 if there is no relevant data for the
+        /// lead surrogate.</returns>
+        int GetFoldedValue(int start, int offset);
+    }
+
+    /// <summary>
     /// Builder class to manipulate and generate a trie.
     /// </summary>
     /// <remarks>
@@ -35,37 +67,7 @@ namespace ICU4N.Impl
 
         // public class declaration ----------------------------------------
 
-        /// <summary>
-        /// Character data in <see cref="Trie"/> have different user-specified format
-        /// for different purposes.
-        /// This interface specifies methods to be implemented in order for
-        /// <see cref="Trie"/>, to surrogate offset information encapsulated within 
-        /// the data.
-        /// </summary>
-        public interface IDataManipulate // ICU4N TODO: API - de-nest ?
-        {
-            /// <summary>
-            /// Build-time trie callback function, used with serialize().
-            /// This function calculates a lead surrogate's value including a
-            /// folding offset from the 1024 supplementary code points 
-            /// [start..start+1024[ .
-            /// It is U+10000 &lt;= start &lt;= U+10fc00 and (start&amp;0x3ff)==0.
-            /// The folding offset is provided by the caller. 
-            /// It is offset=UTRIE_BMP_INDEX_LENGTH+n*UTRIE_SURROGATE_BLOCK_COUNT 
-            /// with n=0..1023. 
-            /// Instead of the offset itself, n can be stored in 10 bits - or fewer 
-            /// if it can be assumed that few lead surrogates have associated data.
-            /// The returned value must be
-            /// <list type="bullet">
-            ///     <item><description>not zero if and only if there is relevant data for the
-            ///     corresponding 1024 supplementary code points</description></item>
-            ///     <item><description>such that UTrie.GetFoldingOffset(UNewTrieGetFoldedValue(..., offset))==offset</description></item>
-            /// </list>
-            /// </summary>
-            /// <returns>a folded value, or 0 if there is no relevant data for the
-            /// lead surrogate.</returns>
-            int GetFoldedValue(int start, int offset);
-        }
+        // ICU4N specific - de-nested IDataManipulate and renamed ITrieBuilderDataManipulate
 
         // public methods ----------------------------------------------------
 

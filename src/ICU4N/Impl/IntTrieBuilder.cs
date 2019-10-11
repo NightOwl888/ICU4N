@@ -237,7 +237,7 @@ namespace ICU4N.Impl
         /// <param name="datamanipulate">Builder raw fold method implementation.</param>
         /// <param name="triedatamanipulate">Result trie fold method.</param>
         /// <returns>A new trie.</returns>
-        public virtual Int32Trie Serialize(TrieBuilder.IDataManipulate datamanipulate,
+        public virtual Int32Trie Serialize(ITrieBuilderDataManipulate datamanipulate,
                                  ITrieDataManipulate triedatamanipulate)
         {
             if (datamanipulate == null)
@@ -301,7 +301,7 @@ namespace ICU4N.Impl
         /// <param name="datamanipulate">Builder raw fold method implementation.</param>
         /// <returns>The number of bytes written to the output stream.</returns>
         public virtual int Serialize(Stream os, bool reduceTo16Bits,
-            TrieBuilder.IDataManipulate datamanipulate)
+            ITrieBuilderDataManipulate datamanipulate)
         {
             if (datamanipulate == null)
             {
@@ -731,7 +731,7 @@ namespace ICU4N.Impl
         /// code point lookups.
         /// </summary>
         /// <param name="manipulate">Fold implementation.</param>
-        private void Fold(IDataManipulate manipulate)
+        private void Fold(ITrieBuilderDataManipulate manipulate)
         {
             int[] leadIndexes = new int[SurrogateBlockCount];
             int[] index = m_index_;
