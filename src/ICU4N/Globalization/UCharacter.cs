@@ -5702,7 +5702,7 @@ namespace ICU4N
         /// <stable>ICU 2.6</stable>
         public static bool HasBinaryProperty(int ch, UProperty property)
         {
-            return UCharacterProperty.Instance.HasBinaryProperty(ch, (int)property);
+            return UCharacterProperty.Instance.HasBinaryProperty(ch, property);
         }
 
         /// <icu/>

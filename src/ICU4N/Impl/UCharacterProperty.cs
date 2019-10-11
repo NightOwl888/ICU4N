@@ -224,29 +224,29 @@ namespace ICU4N.Impl
 
         private class CaseBinaryProperty : BinaryProperty
         {  // case mapping properties
-            private readonly int which;
-            internal CaseBinaryProperty(UCharacterProperty outerInstance, int which)
+            private readonly UProperty which;
+            internal CaseBinaryProperty(UCharacterProperty outerInstance, UProperty which)
                 : base(outerInstance, UPropertySource.Case)
             {
                 this.which = which;
             }
             internal override bool Contains(int c)
             {
-                return UCaseProperties.Instance.HasBinaryProperty(c, (UProperty)which);
+                return UCaseProperties.Instance.HasBinaryProperty(c, which);
             }
         }
 
         private class NormInertBinaryProperty : BinaryProperty
         {  // UCHAR_NF*_INERT properties
-            private readonly int which;
-            internal NormInertBinaryProperty(UCharacterProperty outerInstance, UPropertySource source, int which)
+            private readonly UProperty which;
+            internal NormInertBinaryProperty(UCharacterProperty outerInstance, UPropertySource source, UProperty which)
                 : base(outerInstance, source)
             {
                 this.which = which;
             }
             internal override bool Contains(int c)
             {
-                return Norm2AllModes.GetN2WithImpl(which - (int)UProperty.NFD_Inert).IsInert(c);
+                return Norm2AllModes.GetN2WithImpl((int)which - (int)UProperty.NFD_Inert).IsInert(c);
             }
         }
 
@@ -310,25 +310,25 @@ namespace ICU4N.Impl
                         return UBiDiProps.Instance.IsJoinControl(c);
                     }),
                 new BinaryProperty(this,1, (1<<LOGICAL_ORDER_EXCEPTION_PROPERTY_)),
-                new CaseBinaryProperty(this, (int)UProperty.Lowercase),
+                new CaseBinaryProperty(this, UProperty.Lowercase),
                 new BinaryProperty(this,1, (1<<MATH_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<NONCHARACTER_CODE_POINT_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<QUOTATION_MARK_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<RADICAL_PROPERTY_)),
-                new CaseBinaryProperty(this, (int)UProperty.Soft_Dotted),
+                new CaseBinaryProperty(this, UProperty.Soft_Dotted),
                 new BinaryProperty(this,1, (1<<TERMINAL_PUNCTUATION_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<UNIFIED_IDEOGRAPH_PROPERTY_)),
-                new CaseBinaryProperty(this, (int)UProperty.Uppercase),
+                new CaseBinaryProperty(this, UProperty.Uppercase),
                 new BinaryProperty(this,1, (1<<WHITE_SPACE_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<XID_CONTINUE_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<XID_START_PROPERTY_)),
-                new CaseBinaryProperty(this, (int)UProperty.Case_Sensitive),
+                new CaseBinaryProperty(this, UProperty.Case_Sensitive),
                 new BinaryProperty(this,1, (1<<S_TERM_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<VARIATION_SELECTOR_PROPERTY_)),
-                new NormInertBinaryProperty(this,UPropertySource.NFC, (int)UProperty.NFD_Inert),
-                new NormInertBinaryProperty(this,UPropertySource.NFKC, (int)UProperty.NFKD_Inert),
-                new NormInertBinaryProperty(this,UPropertySource.NFC, (int)UProperty.NFC_Inert),
-                new NormInertBinaryProperty(this,UPropertySource.NFKC, (int)UProperty.NFKC_Inert),
+                new NormInertBinaryProperty(this,UPropertySource.NFC, UProperty.NFD_Inert),
+                new NormInertBinaryProperty(this,UPropertySource.NFKC, UProperty.NFKD_Inert),
+                new NormInertBinaryProperty(this,UPropertySource.NFC, UProperty.NFC_Inert),
+                new NormInertBinaryProperty(this,UPropertySource.NFKC, UProperty.NFKC_Inert),
                 new AnonymousBinaryProperty(this, UPropertySource.NFCCanonicalIterator, contains: (c) =>
                     {  // UCHAR_SEGMENT_STARTER
                         return Norm2AllModes.GetNFCInstance().Impl.
@@ -379,11 +379,11 @@ namespace ICU4N.Impl
                         }
                         return UChar.GetUnicodeCategory(c) == UUnicodeCategory.DecimalDigitNumber;
                     }),
-                new CaseBinaryProperty(this, (int)UProperty.Cased),
-                new CaseBinaryProperty(this, (int)UProperty.Case_Ignorable),
-                new CaseBinaryProperty(this, (int)UProperty.Changes_When_Lowercased),
-                new CaseBinaryProperty(this, (int)UProperty.Changes_When_Uppercased),
-                new CaseBinaryProperty(this, (int)UProperty.Changes_When_Titlecased),
+                new CaseBinaryProperty(this, UProperty.Cased),
+                new CaseBinaryProperty(this, UProperty.Case_Ignorable),
+                new CaseBinaryProperty(this, UProperty.Changes_When_Lowercased),
+                new CaseBinaryProperty(this, UProperty.Changes_When_Uppercased),
+                new CaseBinaryProperty(this, UProperty.Changes_When_Titlecased),
                 new AnonymousBinaryProperty(this, UPropertySource.CaseAndNormalizer, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_CASEFOLDED
                         string nfd = Norm2AllModes.GetNFCInstance().Impl.GetDecomposition(c);
@@ -415,7 +415,7 @@ namespace ICU4N.Impl
                             return !folded.Equals(nfd);
                         }
                     }),
-                new CaseBinaryProperty(this, (int)UProperty.Changes_When_Casemapped),
+                new CaseBinaryProperty(this, UProperty.Changes_When_Casemapped),
                 new AnonymousBinaryProperty(this, UPropertySource.NFKCCaseFold, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_NFKC_CASEFOLDED
                         Normalizer2Impl kcf = Norm2AllModes.GetNFKC_CFInstance().Impl;
@@ -500,11 +500,11 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
                     }),
                 // max=1=YES -- these are never "maybe", only "no" or "yes"
-                new NormQuickCheckIntProperty(this, UPropertySource.NFC, (int)UProperty.NFD_Quick_Check, 1),
-                new NormQuickCheckIntProperty(this, UPropertySource.NFKC, (int)UProperty.NFKD_Quick_Check, 1),
+                new NormQuickCheckIntProperty(this, UPropertySource.NFC, UProperty.NFD_Quick_Check, 1),
+                new NormQuickCheckIntProperty(this, UPropertySource.NFKC, UProperty.NFKD_Quick_Check, 1),
                 // max=2=MAYBE
-                new NormQuickCheckIntProperty(this, UPropertySource.NFC, (int)UProperty.NFC_Quick_Check, 2),
-                new NormQuickCheckIntProperty(this, UPropertySource.NFKC, (int)UProperty.NFKC_Quick_Check, 2),
+                new NormQuickCheckIntProperty(this, UPropertySource.NFC, UProperty.NFC_Quick_Check, 2),
+                new NormQuickCheckIntProperty(this, UPropertySource.NFKC, UProperty.NFKC_Quick_Check, 2),
                 new CombiningClassIntProperty(this, UPropertySource.NFC, getValue: (c) =>
                     {  // LEAD_CANONICAL_COMBINING_CLASS
                         return Norm2AllModes.GetNFCInstance().Impl.GetFCD16(c) >> 8;
@@ -527,11 +527,11 @@ namespace ICU4N.Impl
         private BinaryProperty[] binProps;
 
 
-        public bool HasBinaryProperty(int c, int which)
+        public bool HasBinaryProperty(int c, UProperty which)
         {
-            if (which < (int)UProperty.Binary_Start
+            if (which < UProperty.Binary_Start
 #pragma warning disable 612, 618
-                || (int)UProperty.Binary_Limit <= which)
+                || UProperty.Binary_Limit <= which)
 #pragma warning restore 612, 618
             {
                 // not a known binary property
@@ -539,7 +539,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                return binProps[which].Contains(c);
+                return binProps[(int)which].Contains(c);
             }
         }
 
@@ -679,9 +679,9 @@ namespace ICU4N.Impl
 
         private class NormQuickCheckIntProperty : IntProperty
         {  // UCHAR_NF*_QUICK_CHECK properties
-            private readonly int which;
+            private readonly UProperty which;
             private readonly int max;
-            internal NormQuickCheckIntProperty(UCharacterProperty outerInstance, UPropertySource source, int which, int max)
+            internal NormQuickCheckIntProperty(UCharacterProperty outerInstance, UPropertySource source, UProperty which, int max)
                 : base(outerInstance, source)
             {
                 this.which = which;
@@ -690,7 +690,7 @@ namespace ICU4N.Impl
 
             internal override int GetValue(int c)
             {
-                return Norm2AllModes.GetN2WithImpl(which - (int)UProperty.NFD_Quick_Check).GetQuickCheck(c);
+                return Norm2AllModes.GetN2WithImpl((int)which - (int)UProperty.NFD_Quick_Check).GetQuickCheck(c);
             }
 
             internal override int GetMaxValue(UProperty which)
