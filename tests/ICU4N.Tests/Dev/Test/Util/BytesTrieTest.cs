@@ -367,7 +367,7 @@ namespace ICU4N.Dev.Test.Util
             trie.Next('j');
             trie.Next('a');
             trie.Next('n');
-            BytesTrie.Enumerator iter = (BytesTrie.Enumerator)trie.GetEnumerator();
+            BytesTrieEnumerator iter = (BytesTrieEnumerator)trie.GetEnumerator();
             // Expected data: Same as in buildMonthsTrie(), except only the suffixes
             // following "jan".
             StringAndValue[] data ={
@@ -413,7 +413,7 @@ namespace ICU4N.Dev.Test.Util
             trie.Next('n');
             trie.Next('u');
             trie.Next('a');
-            BytesTrie.Enumerator iter = trie.GetEnumerator();
+            BytesTrieEnumerator iter = trie.GetEnumerator();
             // Expected data: Same as in buildMonthsTrie(), except only the suffixes
             // following "janua".
             StringAndValue[] data ={
@@ -430,7 +430,7 @@ namespace ICU4N.Dev.Test.Util
         public void Test52TruncatingIteratorFromRoot()
         {
             BytesTrie trie = buildMonthsTrie(TrieBuilderOption.Fast);
-            BytesTrie.Enumerator iter = trie.GetEnumerator(4);
+            BytesTrieEnumerator iter = trie.GetEnumerator(4);
             // Expected data: Same as in buildMonthsTrie(), except only the first 4 characters
             // of each string, and no string duplicates from the truncation.
             StringAndValue[] data ={
@@ -480,7 +480,7 @@ namespace ICU4N.Dev.Test.Util
             trie.Next('a');
             trie.Next('b');
             // Truncate within the linear-match node.
-            BytesTrie.Enumerator iter = trie.GetEnumerator(2);
+            BytesTrieEnumerator iter = trie.GetEnumerator(2);
             StringAndValue[] expected ={
                 new StringAndValue("cd", -1)
              };
@@ -504,7 +504,7 @@ namespace ICU4N.Dev.Test.Util
             trie.Next('b');
             trie.Next('c');
             // Truncate after the linear-match node.
-            BytesTrie.Enumerator iter = trie.GetEnumerator(3);
+            BytesTrieEnumerator iter = trie.GetEnumerator(3);
             StringAndValue[] expected ={
                 new StringAndValue("def", 10),
             new StringAndValue("dep", -1),
@@ -639,7 +639,7 @@ namespace ICU4N.Dev.Test.Util
 
         private void checkNext(BytesTrie trie, StringAndValue[] data, int dataLength)
         {
-            BytesTrie.State state = new BytesTrie.State();
+            BytesTrieState state = new BytesTrieState();
             for (int i = 0; i < dataLength; ++i)
             {
                 int stringLength = data[i].s.Length;
@@ -728,7 +728,7 @@ namespace ICU4N.Dev.Test.Util
 
         private void checkNextWithState(BytesTrie trie, StringAndValue[] data, int dataLength)
         {
-            BytesTrie.State noState = new BytesTrie.State(), state = new BytesTrie.State();
+            BytesTrieState noState = new BytesTrieState(), state = new BytesTrieState();
             for (int i = 0; i < dataLength; ++i)
             {
                 if ((i & 1) == 0)
@@ -826,12 +826,12 @@ namespace ICU4N.Dev.Test.Util
             checkIterator(trie.GetEnumerator(), data, dataLength);
         }
 
-        private void checkIterator(BytesTrie.Enumerator iter, StringAndValue[] data)
+        private void checkIterator(BytesTrieEnumerator iter, StringAndValue[] data)
         {
             checkIterator(iter, data, data.Length);
         }
 
-        private void checkIterator(BytesTrie.Enumerator iter, StringAndValue[] data, int dataLength)
+        private void checkIterator(BytesTrieEnumerator iter, StringAndValue[] data, int dataLength)
         {
             for (int i = 0; i < dataLength; ++i)
             {
@@ -840,7 +840,7 @@ namespace ICU4N.Dev.Test.Util
                     Errln("trie iterator MoveNext()=false for item " + i + ": " + data[i].s);
                     break;
                 }
-                BytesTrie.Entry entry = iter.Current;
+                BytesTrieEntry entry = iter.Current;
                 StringBuilder bytesString = new StringBuilder();
                 for (int j = 0; j < entry.BytesLength; ++j)
                 {

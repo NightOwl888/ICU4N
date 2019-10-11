@@ -80,6 +80,366 @@ namespace ICU4N.Util
     }
 
     /// <summary>
+    /// <see cref="BytesTrie"/> state object, for saving a trie's current state
+    /// and resetting the trie back to this state later.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public sealed class BytesTrieState
+    {
+        /// <summary>
+        /// Constructs an empty <see cref="BytesTrieState"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public BytesTrieState() { }
+        internal byte[] Bytes { get; set; }
+        internal int Root { get; set; }
+        internal int Pos { get; set; }
+        internal int RemainingMatchLength { get; set; }
+    }
+
+    /// <summary>
+    /// Return value type for the <see cref="BytesTrieEnumerator"/>.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public sealed class BytesTrieEntry
+    {
+        internal BytesTrieEntry(int capacity)
+        {
+            bytes = new byte[capacity];
+        }
+
+        /// <summary>
+        /// Gets the length of the byte sequence.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public int BytesLength { get { return length; } }
+
+        /// <summary>
+        /// Returns a byte of the byte sequence.
+        /// </summary>
+        /// <remarks>
+        /// This was byteAt(int) in ICU4J.
+        /// </remarks>
+        /// <param name="index">An index into the byte sequence.</param>
+        /// <returns>The index-th byte sequence byte.</returns>
+        /// <stable>ICU 4.8</stable>
+        public byte ByteAt(int index) { return bytes[index]; } // ICU4N TODO: API - make into this[]
+
+        /// <summary>
+        /// Copies the byte sequence into a byte array.
+        /// </summary>
+        /// <param name="dest">Destination byte array.</param>
+        /// <param name="destOffset">Starting offset to where in dest the byte sequence is copied.</param>
+        /// <stable>ICU 4.8</stable>
+        public void CopyBytesTo(byte[] dest, int destOffset)
+        {
+            System.Array.Copy(bytes, 0, dest, destOffset, length);
+        }
+
+        /// <summary>
+        /// Returns the byte sequence as a read-only <see cref="ByteBuffer"/>.
+        /// </summary>
+        /// <returns>The byte sequence as a read-only <see cref="ByteBuffer"/>.</returns>
+        /// <stable>ICU 4.8</stable>
+        public ByteBuffer BytesAsByteBuffer() // ICU4N TODO: API Make internal ?
+        {
+            return ByteBuffer.Wrap(bytes, 0, length).AsReadOnlyBuffer();
+        }
+
+        /// <summary>
+        /// The value associated with the byte sequence.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public int value;
+
+        private void EnsureCapacity(int len)
+        {
+            if (bytes.Length < len)
+            {
+                byte[] newBytes = new byte[Math.Min(2 * bytes.Length, 2 * len)];
+                System.Array.Copy(bytes, 0, newBytes, 0, length);
+                bytes = newBytes;
+            }
+        }
+        internal void Append(byte b)
+        {
+            EnsureCapacity(length + 1);
+            bytes[length++] = b;
+        }
+        internal void Append(byte[] b, int off, int len)
+        {
+            EnsureCapacity(length + len);
+            System.Array.Copy(b, off, bytes, length, len);
+            length += len;
+        }
+        internal void TruncateString(int newLength) { length = newLength; }
+
+        private byte[] bytes;
+        private int length;
+
+        internal int Length { get { return length; } }
+    }
+
+    /// <summary>
+    /// Iterator for all of the (byte sequence, value) pairs in a <see cref="BytesTrie"/>.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public sealed class BytesTrieEnumerator : IEnumerator<BytesTrieEntry>
+    {
+        private BytesTrieEntry current = null;
+
+        internal BytesTrieEnumerator(byte[] trieBytes, int offset, int remainingMatchLength, int maxStringLength)
+        {
+            bytes_ = trieBytes;
+            pos_ = initialPos_ = offset;
+            remainingMatchLength_ = initialRemainingMatchLength_ = remainingMatchLength;
+            maxLength_ = maxStringLength;
+            entry_ = new BytesTrieEntry(maxLength_ != 0 ? maxLength_ : 32);
+            int length = remainingMatchLength_;  // Actual remaining match length minus 1.
+            if (length >= 0)
+            {
+                // Pending linear-match node, append remaining bytes to entry_.
+                ++length;
+                if (maxLength_ > 0 && length > maxLength_)
+                {
+                    length = maxLength_;  // This will leave remainingMatchLength>=0 as a signal.
+                }
+                entry_.Append(bytes_, pos_, length);
+                pos_ += length;
+                remainingMatchLength_ -= length;
+            }
+        }
+
+        /// <summary>
+        /// Resets this iterator to its initial state.
+        /// </summary>
+        /// <returns>This.</returns>
+        /// <stable>ICU 4.8</stable>
+        public BytesTrieEnumerator Reset()
+        {
+            pos_ = initialPos_;
+            remainingMatchLength_ = initialRemainingMatchLength_;
+            int length = remainingMatchLength_ + 1;  // Remaining match length.
+            if (maxLength_ > 0 && length > maxLength_)
+            {
+                length = maxLength_;
+            }
+            entry_.TruncateString(length);
+            pos_ += length;
+            remainingMatchLength_ -= length;
+            stack_.Clear();
+            return this;
+        }
+
+        void IEnumerator.Reset() // ICU4N specific - explicit interface declaration for .NET compatibility
+        {
+            Reset();
+        }
+
+        /// <summary>
+        /// Returns true if there are more elements.
+        /// </summary>
+        /// <returns>true if there are more elements.</returns>
+        /// <stable>ICU 4.8</stable>
+        private bool HasNext /*const*/ => pos_ >= 0 || stack_.Count > 0;
+
+        /// <summary>
+        /// Finds the next (byte sequence, value) pair if there is one.
+        /// </summary>
+        /// <remarks>
+        /// If the byte sequence is truncated to the maximum length and does not
+        /// have a real value, then the value is set to -1.
+        /// In this case, this "not a real value" is indistinguishable from
+        /// a real value of -1.
+        /// </remarks>
+        /// <returns>An <see cref="BytesTrieEntry"/> with the string and value of the next element.</returns>
+        /// <stable>ICU 4.8</stable>
+        private BytesTrieEntry Next()
+        {
+            int pos = pos_;
+            if (pos < 0)
+            {
+                //if (!stack_.Any())
+                //{
+                //    throw new NoSuchElementException();
+                //}
+                // Pop the state off the stack and continue with the next outbound edge of
+                // the branch node.
+                long top = stack_[stack_.Count - 1];
+                stack_.Remove(top);
+                int length = (int)top;
+                pos = (int)(top >> 32);
+                entry_.TruncateString(length & 0xffff);
+                length = length.TripleShift(16);
+                if (length > 1)
+                {
+                    pos = BranchNext(pos, length);
+                    if (pos < 0)
+                    {
+                        return entry_;  // Reached a final value.
+                    }
+                }
+                else
+                {
+                    entry_.Append(bytes_[pos++]);
+                }
+            }
+            if (remainingMatchLength_ >= 0)
+            {
+                // We only get here if we started in a pending linear-match node
+                // with more than maxLength remaining bytes.
+                return TruncateAndStop();
+            }
+            for (; ; )
+            {
+                int node = bytes_[pos++] & 0xff;
+                if (node >= BytesTrie.kMinValueLead)
+                {
+                    // Deliver value for the byte sequence so far.
+                    bool isFinal = (node & BytesTrie.kValueIsFinal) != 0;
+                    entry_.value = BytesTrie.ReadValue(bytes_, pos, node >> 1);
+                    if (isFinal || (maxLength_ > 0 && entry_.Length == maxLength_))
+                    {
+                        pos_ = -1;
+                    }
+                    else
+                    {
+                        pos_ = BytesTrie.SkipValue(pos, node);
+                    }
+                    return entry_;
+                }
+                if (maxLength_ > 0 && entry_.Length == maxLength_)
+                {
+                    return TruncateAndStop();
+                }
+                if (node < BytesTrie.kMinLinearMatch)
+                {
+                    if (node == 0)
+                    {
+                        node = bytes_[pos++] & 0xff;
+                    }
+                    pos = BranchNext(pos, node + 1);
+                    if (pos < 0)
+                    {
+                        return entry_;  // Reached a final value.
+                    }
+                }
+                else
+                {
+                    // Linear-match node, append length bytes to entry_.
+                    int length = node - BytesTrie.kMinLinearMatch + 1;
+                    if (maxLength_ > 0 && entry_.Length + length > maxLength_)
+                    {
+                        entry_.Append(bytes_, pos, maxLength_ - entry_.Length); // ICU4N: (pos + maxLength_ - str_.Length) - pos == (maxLength_ - str_.Length)
+                        return TruncateAndStop();
+                    }
+                    entry_.Append(bytes_, pos, length); // ICU4N: (pos + length) - pos == length
+                    pos += length;
+                }
+            }
+        }
+
+        // ICU4N specific - Remove() not supported in .NET
+
+        private BytesTrieEntry TruncateAndStop()
+        {
+            pos_ = -1;
+            entry_.value = -1;  // no real value for str
+            return entry_;
+        }
+
+        private int BranchNext(int pos, int length)
+        {
+            while (length > BytesTrie.kMaxBranchLinearSubNodeLength)
+            {
+                ++pos;  // ignore the comparison byte
+                        // Push state for the greater-or-equal edge.
+                        // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
+                stack_.Add(((long)BytesTrie.SkipDelta(bytes_, pos) << 32) | (uint)((length - (length >> 1)) << 16) | (uint)entry_.Length);
+                // Follow the less-than edge.
+                length >>= 1;
+                pos = BytesTrie.JumpByDelta(bytes_, pos);
+            }
+            // List of key-value pairs where values are either final values or jump deltas.
+            // Read the first (key, value) pair.
+            byte trieByte = bytes_[pos++];
+            int node = bytes_[pos++] & 0xff;
+            bool isFinal = (node & BytesTrie.kValueIsFinal) != 0;
+            int value = BytesTrie.ReadValue(bytes_, pos, node >> 1);
+            pos = BytesTrie.SkipValue(pos, node);
+            // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
+            stack_.Add(((long)pos << 32) | (uint)((length - 1) << 16) | (uint)entry_.Length);
+            entry_.Append(trieByte);
+            if (isFinal)
+            {
+                pos_ = -1;
+                entry_.value = value;
+                return -1;
+            }
+            else
+            {
+                return pos + value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public BytesTrieEntry Current
+        {
+            get { return current; }
+        }
+
+        object IEnumerator.Current
+        {
+            get { return current; }
+        }
+
+        /// <summary>
+        /// Finds the next (byte sequence, value) pair if there is one.
+        /// </summary>
+        /// <remarks>
+        /// If the byte sequence is truncated to the maximum length and does not
+        /// have a real value, then the value is set to -1.
+        /// In this case, this "not a real value" is indistinguishable from
+        /// a real value of -1.
+        /// </remarks>
+        /// <returns>Returns true if an element has been set to <see cref="Current"/>; otherwise false.</returns>
+        /// <stable>ICU 4.8</stable>
+        public bool MoveNext()
+        {
+            if (!HasNext)
+                return false;
+            current = Next();
+            return (current != null);
+        }
+
+        public void Dispose()
+        {
+            // Nothing to do
+        }
+
+        private byte[] bytes_;
+        private int pos_;
+        private int initialPos_;
+        private int remainingMatchLength_;
+        private int initialRemainingMatchLength_;
+
+        private int maxLength_;
+        private BytesTrieEntry entry_;
+
+        // The stack stores longs for backtracking to another
+        // outbound edge of a branch node.
+        // Each long has the offset from bytes_ in bits 62..32,
+        // the entry_.stringLength() from before the node in bits 15..0,
+        // and the remaining branch length in bits 24..16. (Bits 31..25 are unused.)
+        // (We could store the remaining branch length minus 1 in bits 23..16 and not use bits 31..24,
+        // but the code looks more confusing that way.)
+        private List<long> stack_ = new List<long>();
+    }
+
+    /// <summary>
     /// Light-weight, non-const reader class for a BytesTrie.
     /// Traverses a byte-serialized data structure with minimal state,
     /// for mapping byte sequences to non-negative integer values.
@@ -88,7 +448,7 @@ namespace ICU4N.Util
     /// </summary>
     /// <stable>ICU 4.8</stable>
     /// <author>Markus W. Scherer</author>
-    public sealed class BytesTrie : IEnumerable<BytesTrie.Entry>
+    public sealed class BytesTrie : IEnumerable<BytesTrieEntry>
 #if FEATURE_CLONEABLE
         , ICloneable
 #endif
@@ -138,31 +498,15 @@ namespace ICU4N.Util
             return this;
         }
 
-        /// <summary>
-        /// <see cref="BytesTrie"/> state object, for saving a trie's current state
-        /// and resetting the trie back to this state later.
-        /// </summary>
-        /// <stable>ICU 4.8</stable>
-        public sealed class State // ICU4N TODO: API De-nest?
-        {
-            /// <summary>
-            /// Constructs an empty <see cref="State"/>.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public State() { }
-            internal byte[] Bytes { get; set; }
-            internal int Root { get; set; }
-            internal int Pos { get; set; }
-            internal int RemainingMatchLength { get; set; }
-        }
+        // ICU4N specific - de-nested State and renamed BytesTrieState
 
         /// <summary>
         /// Saves the state of this trie.
         /// </summary>
         /// <param name="state">The State object to hold the trie's state.</param>
-        /// <seealso cref="ResetToState(State)"/>
+        /// <seealso cref="ResetToState(BytesTrieState)"/>
         /// <stable>ICU 4.8</stable>
-        public BytesTrie SaveState(State state) /*const*/
+        public BytesTrie SaveState(BytesTrieState state) /*const*/
         {
             state.Bytes = bytes_;
             state.Root = root_;
@@ -178,10 +522,10 @@ namespace ICU4N.Util
         /// <returns>This.</returns>
         /// <exception cref="ArgumentException">If the state object contains no state,
         /// or the state of a different trie.</exception>
-        /// <seealso cref="SaveState(State)"/>
+        /// <seealso cref="SaveState(BytesTrieState)"/>
         /// <seealso cref="Reset()"/>
         /// <stable>ICU 4.8</stable>
-        public BytesTrie ResetToState(State state)
+        public BytesTrie ResetToState(BytesTrieState state)
         {
             if (bytes_ == state.Bytes && bytes_ != null && root_ == state.Root)
             {
@@ -489,17 +833,17 @@ namespace ICU4N.Util
         /// <remarks>
         /// This is equivalent to iterator() in ICU4J.
         /// </remarks>
-        /// <returns>A new <see cref="BytesTrie.Enumerator"/>.</returns>
+        /// <returns>A new <see cref="BytesTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        public Enumerator GetEnumerator()
+        public BytesTrieEnumerator GetEnumerator()
         {
-            return new Enumerator(bytes_, pos_, remainingMatchLength_, 0);
+            return new BytesTrieEnumerator(bytes_, pos_, remainingMatchLength_, 0);
         }
 
         // ICU4N specific for .NET enumerator support
-        IEnumerator<Entry> IEnumerable<Entry>.GetEnumerator()
+        IEnumerator<BytesTrieEntry> IEnumerable<BytesTrieEntry>.GetEnumerator()
         {
-            return new Enumerator(bytes_, pos_, remainingMatchLength_, 0);
+            return new BytesTrieEnumerator(bytes_, pos_, remainingMatchLength_, 0);
         }
 
         // ICU4N specific for .NET enumerator support
@@ -516,11 +860,11 @@ namespace ICU4N.Util
         /// </remarks>
         /// <param name="maxStringLength">If 0, the enumerator returns full strings/byte sequences.
         /// Otherwise, the enumerator returns strings with this maximum length.</param>
-        /// <returns>A new <see cref="BytesTrie.Enumerator"/>.</returns>
+        /// <returns>A new <see cref="BytesTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        public Enumerator GetEnumerator(int maxStringLength)
+        public BytesTrieEnumerator GetEnumerator(int maxStringLength)
         {
-            return new Enumerator(bytes_, pos_, remainingMatchLength_, maxStringLength);
+            return new BytesTrieEnumerator(bytes_, pos_, remainingMatchLength_, maxStringLength);
         }
 
         /// <summary>
@@ -533,354 +877,16 @@ namespace ICU4N.Util
         /// <param name="offset">Root offset of the trie in the array.</param>
         /// <param name="maxStringLength">If 0, the enumerator returns full strings/byte sequences.
         /// Otherwise, the enumerator returns strings with this maximum length.</param>
-        /// <returns>A new <see cref="BytesTrie.Enumerator"/>.</returns>
+        /// <returns>A new <see cref="BytesTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        public static Enumerator GetEnumerator(byte[] trieBytes, int offset, int maxStringLength)
+        public static BytesTrieEnumerator GetEnumerator(byte[] trieBytes, int offset, int maxStringLength)
         {
-            return new Enumerator(trieBytes, offset, -1, maxStringLength);
+            return new BytesTrieEnumerator(trieBytes, offset, -1, maxStringLength);
         }
 
-        /// <summary>
-        /// Return value type for the <see cref="Enumerator"/>.
-        /// </summary>
-        /// <stable>ICU 4.8</stable>
-        public sealed class Entry // ICU4N TODO: API De-nest?
-        {
-            internal Entry(int capacity)
-            {
-                bytes = new byte[capacity];
-            }
+        // ICU4N specific - De-nested Entry and renamed BytesTrieEntry
 
-            /// <summary>
-            /// Gets the length of the byte sequence.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public int BytesLength { get { return length; } }
-
-            /// <summary>
-            /// Returns a byte of the byte sequence.
-            /// </summary>
-            /// <remarks>
-            /// This was byteAt(int) in ICU4J.
-            /// </remarks>
-            /// <param name="index">An index into the byte sequence.</param>
-            /// <returns>The index-th byte sequence byte.</returns>
-            /// <stable>ICU 4.8</stable>
-            public byte ByteAt(int index) { return bytes[index]; } // ICU4N TODO: API - make into this[]
-
-            /// <summary>
-            /// Copies the byte sequence into a byte array.
-            /// </summary>
-            /// <param name="dest">Destination byte array.</param>
-            /// <param name="destOffset">Starting offset to where in dest the byte sequence is copied.</param>
-            /// <stable>ICU 4.8</stable>
-            public void CopyBytesTo(byte[] dest, int destOffset)
-            {
-                System.Array.Copy(bytes, 0, dest, destOffset, length);
-            }
-
-            /// <summary>
-            /// Returns the byte sequence as a read-only <see cref="ByteBuffer"/>.
-            /// </summary>
-            /// <returns>The byte sequence as a read-only <see cref="ByteBuffer"/>.</returns>
-            /// <stable>ICU 4.8</stable>
-            public ByteBuffer BytesAsByteBuffer() // ICU4N TODO: API Make internal ?
-            {
-                return ByteBuffer.Wrap(bytes, 0, length).AsReadOnlyBuffer();
-            }
-
-            /// <summary>
-            /// The value associated with the byte sequence.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public int value;
-
-            private void EnsureCapacity(int len)
-            {
-                if (bytes.Length < len)
-                {
-                    byte[] newBytes = new byte[Math.Min(2 * bytes.Length, 2 * len)];
-                    System.Array.Copy(bytes, 0, newBytes, 0, length);
-                    bytes = newBytes;
-                }
-            }
-            internal void Append(byte b)
-            {
-                EnsureCapacity(length + 1);
-                bytes[length++] = b;
-            }
-            internal void Append(byte[] b, int off, int len)
-            {
-                EnsureCapacity(length + len);
-                System.Array.Copy(b, off, bytes, length, len);
-                length += len;
-            }
-            internal void TruncateString(int newLength) { length = newLength; }
-
-            private byte[] bytes;
-            private int length;
-
-            internal int Length { get { return length; } }
-        }
-
-        /// <summary>
-        /// Iterator for all of the (byte sequence, value) pairs in a <see cref="BytesTrie"/>.
-        /// </summary>
-        /// <stable>ICU 4.8</stable>
-        public sealed class Enumerator : IEnumerator<Entry> // ICU4N TODO: API de-nest ?
-        {
-            private Entry current = null;
-
-            internal Enumerator(byte[] trieBytes, int offset, int remainingMatchLength, int maxStringLength)
-            {
-                bytes_ = trieBytes;
-                pos_ = initialPos_ = offset;
-                remainingMatchLength_ = initialRemainingMatchLength_ = remainingMatchLength;
-                maxLength_ = maxStringLength;
-                entry_ = new Entry(maxLength_ != 0 ? maxLength_ : 32);
-                int length = remainingMatchLength_;  // Actual remaining match length minus 1.
-                if (length >= 0)
-                {
-                    // Pending linear-match node, append remaining bytes to entry_.
-                    ++length;
-                    if (maxLength_ > 0 && length > maxLength_)
-                    {
-                        length = maxLength_;  // This will leave remainingMatchLength>=0 as a signal.
-                    }
-                    entry_.Append(bytes_, pos_, length);
-                    pos_ += length;
-                    remainingMatchLength_ -= length;
-                }
-            }
-
-            /// <summary>
-            /// Resets this iterator to its initial state.
-            /// </summary>
-            /// <returns>This.</returns>
-            /// <stable>ICU 4.8</stable>
-            public Enumerator Reset()
-            {
-                pos_ = initialPos_;
-                remainingMatchLength_ = initialRemainingMatchLength_;
-                int length = remainingMatchLength_ + 1;  // Remaining match length.
-                if (maxLength_ > 0 && length > maxLength_)
-                {
-                    length = maxLength_;
-                }
-                entry_.TruncateString(length);
-                pos_ += length;
-                remainingMatchLength_ -= length;
-                stack_.Clear();
-                return this;
-            }
-
-            void IEnumerator.Reset() // ICU4N specific - expicit interface declaration for .NET compatibility
-            {
-                Reset();
-            }
-
-            /// <summary>
-            /// Returns true if there are more elements.
-            /// </summary>
-            /// <returns>true if there are more elements.</returns>
-            /// <stable>ICU 4.8</stable>
-            private bool HasNext /*const*/ => pos_ >= 0 || stack_.Count > 0;
-
-            /// <summary>
-            /// Finds the next (byte sequence, value) pair if there is one.
-            /// </summary>
-            /// <remarks>
-            /// If the byte sequence is truncated to the maximum length and does not
-            /// have a real value, then the value is set to -1.
-            /// In this case, this "not a real value" is indistinguishable from
-            /// a real value of -1.
-            /// </remarks>
-            /// <returns>An <see cref="Entry"/> with the string and value of the next element.</returns>
-            /// <stable>ICU 4.8</stable>
-            private Entry Next()
-            {
-                int pos = pos_;
-                if (pos < 0)
-                {
-                    //if (!stack_.Any())
-                    //{
-                    //    throw new NoSuchElementException();
-                    //}
-                    // Pop the state off the stack and continue with the next outbound edge of
-                    // the branch node.
-                    long top = stack_[stack_.Count - 1];
-                    stack_.Remove(top);
-                    int length = (int)top;
-                    pos = (int)(top >> 32);
-                    entry_.TruncateString(length & 0xffff);
-                    length = length.TripleShift(16);
-                    if (length > 1)
-                    {
-                        pos = BranchNext(pos, length);
-                        if (pos < 0)
-                        {
-                            return entry_;  // Reached a final value.
-                        }
-                    }
-                    else
-                    {
-                        entry_.Append(bytes_[pos++]);
-                    }
-                }
-                if (remainingMatchLength_ >= 0)
-                {
-                    // We only get here if we started in a pending linear-match node
-                    // with more than maxLength remaining bytes.
-                    return TruncateAndStop();
-                }
-                for (; ; )
-                {
-                    int node = bytes_[pos++] & 0xff;
-                    if (node >= kMinValueLead)
-                    {
-                        // Deliver value for the byte sequence so far.
-                        bool isFinal = (node & kValueIsFinal) != 0;
-                        entry_.value = ReadValue(bytes_, pos, node >> 1);
-                        if (isFinal || (maxLength_ > 0 && entry_.Length == maxLength_))
-                        {
-                            pos_ = -1;
-                        }
-                        else
-                        {
-                            pos_ = SkipValue(pos, node);
-                        }
-                        return entry_;
-                    }
-                    if (maxLength_ > 0 && entry_.Length == maxLength_)
-                    {
-                        return TruncateAndStop();
-                    }
-                    if (node < kMinLinearMatch)
-                    {
-                        if (node == 0)
-                        {
-                            node = bytes_[pos++] & 0xff;
-                        }
-                        pos = BranchNext(pos, node + 1);
-                        if (pos < 0)
-                        {
-                            return entry_;  // Reached a final value.
-                        }
-                    }
-                    else
-                    {
-                        // Linear-match node, append length bytes to entry_.
-                        int length = node - kMinLinearMatch + 1;
-                        if (maxLength_ > 0 && entry_.Length + length > maxLength_)
-                        {
-                            entry_.Append(bytes_, pos, maxLength_ - entry_.Length); // ICU4N: (pos + maxLength_ - str_.Length) - pos == (maxLength_ - str_.Length)
-                            return TruncateAndStop();
-                        }
-                        entry_.Append(bytes_, pos, length); // ICU4N: (pos + length) - pos == length
-                        pos += length;
-                    }
-                }
-            }
-
-            // ICU4N specific - Remove() not supported in .NET
-
-            private Entry TruncateAndStop()
-            {
-                pos_ = -1;
-                entry_.value = -1;  // no real value for str
-                return entry_;
-            }
-
-            private int BranchNext(int pos, int length)
-            {
-                while (length > kMaxBranchLinearSubNodeLength)
-                {
-                    ++pos;  // ignore the comparison byte
-                            // Push state for the greater-or-equal edge.
-                    // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
-                    stack_.Add(((long)SkipDelta(bytes_, pos) << 32) | (uint)((length - (length >> 1)) << 16) | (uint)entry_.Length);
-                    // Follow the less-than edge.
-                    length >>= 1;
-                    pos = JumpByDelta(bytes_, pos);
-                }
-                // List of key-value pairs where values are either final values or jump deltas.
-                // Read the first (key, value) pair.
-                byte trieByte = bytes_[pos++];
-                int node = bytes_[pos++] & 0xff;
-                bool isFinal = (node & kValueIsFinal) != 0;
-                int value = ReadValue(bytes_, pos, node >> 1);
-                pos = SkipValue(pos, node);
-                // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
-                stack_.Add(((long)pos << 32) | (uint)((length - 1) << 16) | (uint)entry_.Length);
-                entry_.Append(trieByte);
-                if (isFinal)
-                {
-                    pos_ = -1;
-                    entry_.value = value;
-                    return -1;
-                }
-                else
-                {
-                    return pos + value;
-                }
-            }
-
-            /// <summary>
-            /// Gets the element in the collection at the current position of the enumerator.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public Entry Current
-            {
-                get { return current; }
-            }
-
-            object IEnumerator.Current
-            {
-                get { return current; }
-            }
-
-            /// <summary>
-            /// Finds the next (byte sequence, value) pair if there is one.
-            /// </summary>
-            /// <remarks>
-            /// If the byte sequence is truncated to the maximum length and does not
-            /// have a real value, then the value is set to -1.
-            /// In this case, this "not a real value" is indistinguishable from
-            /// a real value of -1.
-            /// </remarks>
-            /// <returns>Returns true if an element has been set to <see cref="Current"/>; otherwise false.</returns>
-            /// <stable>ICU 4.8</stable>
-            public bool MoveNext()
-            {
-                if (!HasNext)
-                    return false;
-                current = Next();
-                return (current != null);
-            }
-
-            public void Dispose()
-            {
-                // Nothing to do
-            }
-
-            private byte[] bytes_;
-            private int pos_;
-            private int initialPos_;
-            private int remainingMatchLength_;
-            private int initialRemainingMatchLength_;
-
-            private int maxLength_;
-            private Entry entry_;
-
-            // The stack stores longs for backtracking to another
-            // outbound edge of a branch node.
-            // Each long has the offset from bytes_ in bits 62..32,
-            // the entry_.stringLength() from before the node in bits 15..0,
-            // and the remaining branch length in bits 24..16. (Bits 31..25 are unused.)
-            // (We could store the remaining branch length minus 1 in bits 23..16 and not use bits 31..24,
-            // but the code looks more confusing that way.)
-            private List<long> stack_ = new List<long>();
-        }
+        // ICU4N specific - De-nested Enumerator and renamed BytesTrieEnumerator
 
         private void Stop()
         {
@@ -889,7 +895,7 @@ namespace ICU4N.Util
 
         // Reads a compact 32-bit integer.
         // pos is already after the leadByte, and the lead byte is already shifted right by 1.
-        private static int ReadValue(byte[] bytes, int pos, int leadByte)
+        internal static int ReadValue(byte[] bytes, int pos, int leadByte)
         {
             int value;
             if (leadByte < kMinTwoByteValueLead)
@@ -914,7 +920,7 @@ namespace ICU4N.Util
             }
             return value;
         }
-        private static int SkipValue(int pos, int leadByte)
+        internal static int SkipValue(int pos, int leadByte)
         {
             Debug.Assert(leadByte >= kMinValueLead);
             if (leadByte >= (kMinTwoByteValueLead << 1))
@@ -941,7 +947,7 @@ namespace ICU4N.Util
         }
 
         // Reads a jump delta and jumps.
-        private static int JumpByDelta(byte[] bytes, int pos)
+        internal static int JumpByDelta(byte[] bytes, int pos)
         {
             int delta = bytes[pos++] & 0xff;
             if (delta < kMinTwoByteDeltaLead)
@@ -970,7 +976,7 @@ namespace ICU4N.Util
             return pos + delta;
         }
 
-        private static int SkipDelta(byte[] bytes, int pos)
+        internal static int SkipDelta(byte[] bytes, int pos)
         {
             int delta = bytes[pos++] & 0xff;
             if (delta >= kMinTwoByteDeltaLead)
@@ -1322,7 +1328,7 @@ namespace ICU4N.Util
         /*package*/
         internal const int kMinValueLead = kMinLinearMatch + kMaxLinearMatchLength;  // 0x20
                                                                                                // It is a final value if bit 0 is set.
-        private const int kValueIsFinal = 1;
+        internal const int kValueIsFinal = 1;
 
         // Compact value: After testing bit 0, shift right by 1 and then use the following thresholds.
         /*package*/
