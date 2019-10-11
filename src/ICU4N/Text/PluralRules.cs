@@ -13,6 +13,90 @@ using System.Text.RegularExpressions;
 namespace ICU4N.Text
 {
     /// <summary>
+    /// Provides a factory for returning plural rules
+    /// </summary>
+    /// <internal/>
+    [Obsolete("This API is ICU internal only.")]
+    public abstract class PluralRulesFactory
+    {
+        /// <summary>
+        /// Sole constructor
+        /// </summary>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        protected PluralRulesFactory()
+        {
+        }
+
+        /// <summary>
+        /// Provides access to the predefined <see cref="PluralRules"/> for a given locale and the plural type.
+        /// <para/>
+        /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>. For these predefined
+        /// rules, see CLDR page at 
+        /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
+        /// </summary>
+        /// <param name="locale">The locale for which a <see cref="PluralRules"/> object is returned.</param>
+        /// <param name="type">The plural type (e.g., cardinal or ordinal).</param>
+        /// <returns>The predefined <see cref="PluralRules"/> object for this locale. If there's no predefined rules for
+        /// this locale, the rules for the closest parent in the locale hierarchy that has one will be returned.
+        /// The final fallback always returns the default rules.</returns>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public abstract PluralRules ForLocale(ULocale locale, PluralType type);
+
+        /// <summary>
+        /// Utility for getting <see cref="PluralType.Cardinal"/> rules.
+        /// </summary>
+        /// <param name="locale">the locale</param>
+        /// <returns>plural rules.</returns>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public PluralRules ForLocale(ULocale locale)
+        {
+            return ForLocale(locale, PluralType.Cardinal);
+        }
+
+        /// <summary>
+        /// Returns the locales for which there is plurals data.
+        /// </summary>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public abstract ULocale[] GetAvailableULocales();
+
+        /// <summary>
+        /// Returns the 'functionally equivalent' locale with respect to plural rules. Calling PluralRules.forLocale with
+        /// the functionally equivalent locale, and with the provided locale, returns rules that behave the same. 
+        /// All locales with the same functionally equivalent locale have plural rules that behave the same. This is not
+        /// exaustive; there may be other locales whose plural rules behave the same that do not have the same equivalent
+        /// locale.
+        /// </summary>
+        /// <param name="locale">The locale to check.</param>
+        /// <param name="isAvailable">if not null and of length &gt; 0, this will hold 'true' at index 0 if locale is directly defined
+        /// (without fallback) as having plural rules</param>
+        /// <returns>the functionally-equivalent locale</returns>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public abstract ULocale GetFunctionalEquivalent(ULocale locale, bool[] isAvailable);
+
+        /// <summary>
+        /// Returns the default factory.
+        /// </summary>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public static PluralRulesLoader DefaultFactory
+        {
+            get { return PluralRulesLoader.Loader; }
+        }
+
+        /// <summary>
+        /// Returns whether or not there are overrides.
+        /// </summary>
+        /// <internal/>
+        [Obsolete("This API is ICU internal only.")]
+        public abstract bool HasOverride(ULocale locale);
+    }
+
+    /// <summary>
     /// Defines rules for mapping non-negative numeric values onto a small set of keywords.
     /// </summary>
     /// <remarks>
@@ -156,89 +240,8 @@ namespace ICU4N.Text
 #endif
         private readonly ICollection<string> keywords; // ICU4N: Changed from Set<T> to ICollection<T>
 
-        /// <summary>
-        /// Provides a factory for returning plural rules
-        /// </summary>
-        /// <internal/>
-        [Obsolete("This API is ICU internal only.")]
-        internal abstract class Factory // ICU4N specific - changed from public to internal (obsolete anyway)
-        {
-            /// <summary>
-            /// Sole constructor
-            /// </summary>
-            /// <internal/>
-            [Obsolete("This API is ICU internal only.")]
-            protected Factory()
-            {
-            }
+        // ICU4N specific - de-nested Factory and renamed PluralRulesFactory
 
-            /// <summary>
-            /// Provides access to the predefined <see cref="PluralRules"/> for a given locale and the plural type.
-            /// <para/>
-            /// ICU defines plural rules for many locales based on CLDR <i>Language Plural Rules</i>. For these predefined
-            /// rules, see CLDR page at 
-            /// <a href="http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html">http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html</a>.
-            /// </summary>
-            /// <param name="locale">The locale for which a <see cref="PluralRules"/> object is returned.</param>
-            /// <param name="type">The plural type (e.g., cardinal or ordinal).</param>
-            /// <returns>The predefined <see cref="PluralRules"/> object for this locale. If there's no predefined rules for
-            /// this locale, the rules for the closest parent in the locale hierarchy that has one will be returned.
-            /// The final fallback always returns the default rules.</returns>
-            /// <internal/>
-            [Obsolete("This API is ICU internal only.")]
-            public abstract PluralRules ForLocale(ULocale locale, PluralType type);
-
-            /// <summary>
-            /// Utility for getting <see cref="PluralType.Cardinal"/> rules.
-            /// </summary>
-            /// <param name="locale">the locale</param>
-            /// <returns>plural rules.</returns>
-            /// <internal/>
-            [Obsolete("This API is ICU internal only.")]
-            public PluralRules ForLocale(ULocale locale)
-            {
-                return ForLocale(locale, PluralType.Cardinal);
-            }
-
-            /// <summary>
-            /// Returns the locales for which there is plurals data.
-            /// </summary>
-            /// <internal/>
-            [Obsolete("This API is ICU internal only.")]
-            public abstract ULocale[] GetAvailableULocales();
-
-            /// <summary>
-            /// Returns the 'functionally equivalent' locale with respect to plural rules. Calling PluralRules.forLocale with
-            /// the functionally equivalent locale, and with the provided locale, returns rules that behave the same. 
-            /// All locales with the same functionally equivalent locale have plural rules that behave the same. This is not
-            /// exaustive; there may be other locales whose plural rules behave the same that do not have the same equivalent
-            /// locale.
-            /// </summary>
-            /// <param name="locale">The locale to check.</param>
-            /// <param name="isAvailable">if not null and of length &gt; 0, this will hold 'true' at index 0 if locale is directly defined
-            /// (without fallback) as having plural rules</param>
-            /// <returns>the functionally-equivalent locale</returns>
-            /// <internal/>
-            [Obsolete("This API is ICU internal only.")]
-            public abstract ULocale GetFunctionalEquivalent(ULocale locale, bool[] isAvailable);
-
-            /// <summary>
-            /// Returns the default factory.
-            /// </summary>
-            /// <internal/>
-            [Obsolete("This API is ICU internal only.")]
-            public static PluralRulesLoader DefaultFactory
-            {
-                get { return PluralRulesLoader.Loader; }
-            }
-
-            /// <summary>
-            /// Returns whether or not there are overrides.
-            /// </summary>
-            /// <internal/>
-            [Obsolete("This API is ICU internal only.")]
-            public abstract bool HasOverride(ULocale locale);
-        }
         // Standard keywords.
 
         /// <summary>
@@ -2050,7 +2053,7 @@ namespace ICU4N.Text
         public static PluralRules ForLocale(ULocale locale)
         {
 #pragma warning disable 612, 618
-            return Factory.DefaultFactory.ForLocale(locale, PluralType.Cardinal);
+            return PluralRulesFactory.DefaultFactory.ForLocale(locale, PluralType.Cardinal);
 #pragma warning restore 612, 618
         }
 
@@ -2100,7 +2103,7 @@ namespace ICU4N.Text
         public static PluralRules ForLocale(ULocale locale, PluralType type)
         {
 #pragma warning disable 612, 618
-            return Factory.DefaultFactory.ForLocale(locale, type);
+            return PluralRulesFactory.DefaultFactory.ForLocale(locale, type);
 #pragma warning restore 612, 618
         }
 
@@ -2398,7 +2401,7 @@ namespace ICU4N.Text
         public static ULocale[] GetAvailableULocales()
         {
 #pragma warning disable 612, 618
-            return Factory.DefaultFactory.GetAvailableULocales();
+            return PluralRulesFactory.DefaultFactory.GetAvailableULocales();
 #pragma warning restore 612, 618
         }
 
@@ -2422,7 +2425,7 @@ namespace ICU4N.Text
         public static ULocale GetFunctionalEquivalent(ULocale locale, bool[] isAvailable)
         {
 #pragma warning disable 612, 618
-            return Factory.DefaultFactory.GetFunctionalEquivalent(locale, isAvailable);
+            return PluralRulesFactory.DefaultFactory.GetFunctionalEquivalent(locale, isAvailable);
 #pragma warning restore 612, 618
         }
 

@@ -14,7 +14,7 @@ namespace ICU4N.Impl
     /// </summary>
     public class PluralRulesLoader
 #pragma warning disable 612, 618
-        : PluralRules.Factory
+        : PluralRulesFactory
 #pragma warning restore 612, 618
     {
         private readonly IDictionary<string, PluralRules> rulesIdToRules;
@@ -300,7 +300,7 @@ namespace ICU4N.Impl
         /// </summary>
         public static PluralRulesLoader Loader => loader; // ICU4N specific - property accessor for local member
 
-        /// <seealso cref="PluralRules.Factory.HasOverride(ULocale)"/>
+        /// <seealso cref="PluralRulesFactory.HasOverride(ULocale)"/>
 #pragma warning disable 672
         public override bool HasOverride(ULocale locale)
 #pragma warning restore 672
