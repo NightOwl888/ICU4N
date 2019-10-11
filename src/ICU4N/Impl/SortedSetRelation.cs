@@ -5,6 +5,36 @@ using System.Collections.Generic;
 namespace ICU4N.Impl
 {
     /// <summary>
+    /// Relations that correspond to the filters in <see cref="SortedSetRelation.HasRelation{T}(SortedSet{T}, SortedSetOperation, SortedSet{T})"/>.
+    /// </summary>
+    public enum SortedSetFilter
+    {
+        Any = SortedSetRelation.ANY,
+        Contains = SortedSetRelation.CONTAINS,
+        Disjoint = SortedSetRelation.DISJOINT,
+        IsContained = SortedSetRelation.ISCONTAINED,
+        No_B = SortedSetRelation.NO_B,
+        Equals = SortedSetRelation.A_AND_B,
+        No_A = SortedSetRelation.NO_A,
+        None = SortedSetRelation.NONE,
+    }
+
+    /// <summary>
+    /// Relations that correspond to set operations in <see cref="SortedSetRelation.DoOperation{T}(SortedSet{T}, SortedSetOperation, SortedSet{T})"/>.
+    /// </summary>
+    public enum SortedSetOperation
+    {
+        None = SortedSetRelation.NONE,
+        UnionWith = SortedSetRelation.ANY,
+        A = SortedSetRelation.CONTAINS,
+        SymmetricExceptWith = SortedSetRelation.DISJOINT,
+        B = SortedSetRelation.ISCONTAINED,
+        ExceptWith = SortedSetRelation.NO_B,
+        IntersectWith = SortedSetRelation.EQUALS,
+        B_ExceptWith = SortedSetRelation.NO_A,
+    }
+
+    /// <summary>
     /// Computationally efficient determination of the relationship between
     /// two SortedSets.
     /// </summary>
@@ -24,27 +54,25 @@ namespace ICU4N.Impl
         ///     <item><description>BIT 0 is true if B - A is not empty</description></item>
         /// </list>
         /// </summary>
-        public const int // ICU4N TODO: API Make [Flags] enum ?
+        internal const int // ICU4N specific - using SortedSetOperation enum, but left constants in for compatibility. Made internal instead of public.
             A_NOT_B = 4,
             A_AND_B = 2,
             B_NOT_A = 1;
 
-        // ICU4N TODO: API Make [Flags] enum ?
         /// <summary>
         /// There are 8 combinations of the relationship bits. These correspond to
-        /// the filters (combinations of allowed bits) in <see cref="HasRelation{T}(SortedSet{T}, int, SortedSet{T})"/>. They also
+        /// the filters (combinations of allowed bits) in <see cref="HasRelation{T}(SortedSet{T}, SortedSetOperation, SortedSet{T})"/>. They also
         /// correspond to the modification functions, listed in comments.
         /// </summary>
-        public const int
-            ANY = A_NOT_B | A_AND_B | B_NOT_A,    // union,           addAll
+        internal const int // ICU4N specific - using SortedSetOperation enum, but left constants in for compatibility. Made internal instead of public.
+            ANY = A_NOT_B | A_AND_B | B_NOT_A,           // union,           addAll
             CONTAINS = A_NOT_B | A_AND_B,                // A                (unnecessary)
-            DISJOINT = A_NOT_B | B_NOT_A,    // A xor B,         missing Java function
-            ISCONTAINED = A_AND_B | B_NOT_A,    // B                (unnecessary)
-            NO_B = A_NOT_B,                            // A setDiff B,     removeAll
-            // ICU4N TODO: API - rename for CLS compliance
-            EQUALS = A_AND_B,                // A intersect B,   retainAll
-            NO_A = B_NOT_A,    // B setDiff A,     removeAll
-            NONE = 0,                                  // null             (unnecessary)
+            DISJOINT = A_NOT_B | B_NOT_A,                // A xor B,         missing Java function
+            ISCONTAINED = A_AND_B | B_NOT_A,             // B                (unnecessary)
+            NO_B = A_NOT_B,                              // A setDiff B,     removeAll
+            EQUALS = A_AND_B,                            // A intersect B,   retainAll
+            NO_A = B_NOT_A,                              // B setDiff A,     removeAll
+            NONE = 0,                                    // null             (unnecessary)
 
             ADDALL = ANY,                // union,           addAll
             A = CONTAINS,                // A                (unnecessary)
@@ -60,11 +88,12 @@ namespace ICU4N.Impl
         /// </summary>
         /// <typeparam name="T">Type of element. Must implement <see cref="IComparable{T}"/>.</typeparam>
         /// <param name="a">First set.</param>
-        /// <param name="allow">Filter, using <see cref="ANY"/>, <see cref="CONTAINS"/>, etc.</param>
+        /// <param name="filter">Filter, using <see cref="SortedSetFilter"/>.</param>
         /// <param name="b">Second set.</param>
         /// <returns>Whether the filter relationship is true or not.</returns>
-        public static bool HasRelation<T>(SortedSet<T> a, int allow, SortedSet<T> b) where T : IComparable<T>
+        public static bool HasRelation<T>(SortedSet<T> a, SortedSetFilter filter, SortedSet<T> b) where T : IComparable<T>
         {
+            int allow = (int)filter;
             if (allow < NONE || allow > ANY)
             {
                 throw new ArgumentException("Relation " + allow + " out of range");
@@ -152,46 +181,41 @@ namespace ICU4N.Impl
         /// </summary>
         /// <typeparam name="T">Type of element. Must implement <see cref="IComparable{T}"/>.</typeparam>
         /// <param name="a">First set.</param>
-        /// <param name="relation">Relation the relation filter, using <see cref="ANY"/>, <see cref="CONTAINS"/>, etc.</param>
+        /// <param name="relation">The relation filter, using <see cref="SortedSetOperation"/>.</param>
         /// <param name="b">Second set.</param>
         /// <returns>The new set.</returns>
-        public static SortedSet<T> DoOperation<T>(SortedSet<T> a, int relation, SortedSet<T> b) where T : IComparable<T>
+        public static SortedSet<T> DoOperation<T>(SortedSet<T> a, SortedSetOperation relation, SortedSet<T> b) where T : IComparable<T>
         {
             // TODO: optimize this as above
             SortedSet<T> temp;
             switch (relation)
             {
-                case ADDALL:
+                case SortedSetOperation.UnionWith:
                     a.UnionWith(b);
                     return a;
-                case A:
+                case SortedSetOperation.A:
                     return a; // no action
-                case B:
+                case SortedSetOperation.B:
                     a.Clear();
                     a.UnionWith(b);
                     return a;
-                case REMOVEALL:
+                case SortedSetOperation.ExceptWith:
                     a.ExceptWith(b);
                     return a;
-                case RETAINALL:
+                case SortedSetOperation.IntersectWith:
                     a.IntersectWith(b);
                     return a;
-                // the following is the only case not really supported by .NET
-                // although all could be optimized
-                case COMPLEMENTALL:
-                    temp = new SortedSet<T>(b, GenericComparer.NaturalComparer<T>());
-                    temp.ExceptWith(a);
-                    a.ExceptWith(b);
-                    a.UnionWith(temp);
-                    // a.SymmetricExceptWith(b); // ICU4N TODO: This should be the equivalent in .NET (need to test it)
+                case SortedSetOperation.SymmetricExceptWith:
+                    a.SymmetricExceptWith(b);
                     return a;
-                case B_REMOVEALL:
+                // the following is the only case not really supported by .NET
+                case SortedSetOperation.B_ExceptWith:
                     temp = new SortedSet<T>(b, GenericComparer.NaturalComparer<T>());
                     temp.ExceptWith(a);
                     a.Clear();
                     a.UnionWith(temp);
                     return a;
-                case NONE:
+                case SortedSetOperation.None:
                     a.Clear();
                     return a;
                 default:

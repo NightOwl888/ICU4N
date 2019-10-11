@@ -973,7 +973,7 @@ namespace ICU4N.Dev.Test.Lang
             // make sure code is loaded:
             //x = iset.ContainsAll(jset);
             x = iset.IsSupersetOf(jset);
-            y = SortedSetRelation.HasRelation(iset, SortedSetRelation.CONTAINS, jset);
+            y = SortedSetRelation.HasRelation(iset, SortedSetFilter.Contains, jset);
             if (x != y) Errln("FAIL contains comparison");
 
             double start = Time.CurrentTimeMilliseconds();
@@ -985,7 +985,7 @@ namespace ICU4N.Dev.Test.Lang
             double middle = Time.CurrentTimeMilliseconds();
             for (int i = 0; i < iterations; ++i)
             {
-                y |= SortedSetRelation.HasRelation(iset, SortedSetRelation.CONTAINS, jset);
+                y |= SortedSetRelation.HasRelation(iset, SortedSetFilter.Contains, jset);
             }
             double end = Time.CurrentTimeMilliseconds();
 
@@ -1004,7 +1004,7 @@ namespace ICU4N.Dev.Test.Lang
 
             // make sure code is loaded:
             x = iset.Equals(jset);
-            y = SortedSetRelation.HasRelation(iset, SortedSetRelation.EQUALS, jset);
+            y = SortedSetRelation.HasRelation(iset, SortedSetFilter.Equals, jset);
             if (x != y) Errln("FAIL equality comparison");
 
 
@@ -1016,7 +1016,7 @@ namespace ICU4N.Dev.Test.Lang
             double middle = Time.CurrentTimeMilliseconds();
             for (int i = 0; i < iterations; ++i)
             {
-                y |= SortedSetRelation.HasRelation(iset, SortedSetRelation.EQUALS, jset);
+                y |= SortedSetRelation.HasRelation(iset, SortedSetFilter.Equals, jset);
             }
             double end = Time.CurrentTimeMilliseconds();
 
@@ -1069,7 +1069,7 @@ namespace ICU4N.Dev.Test.Lang
             for (int i = 0; i < 8; ++i)
             {
 
-                bool hasRelation = SortedSetRelation.HasRelation(a, i, b);
+                bool hasRelation = SortedSetRelation.HasRelation(a, (SortedSetFilter)i, b);
                 bool dumbHasRelation = DumbHasRelation(a, i, b);
 
                 Logln(message + " " + hasRelation + ":\t" + a + "\t" + RELATION_NAME[i] + "\t" + b);

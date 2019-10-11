@@ -1958,7 +1958,7 @@ namespace ICU4N.Text
                 return false;
             }
 
-            if (!SortedSetRelation.HasRelation(strings, SortedSetRelation.DISJOINT, b.strings)) return false;
+            if (!SortedSetRelation.HasRelation(strings, SortedSetFilter.Disjoint, b.strings)) return false;
             return true;
         }
 
@@ -1981,7 +1981,7 @@ namespace ICU4N.Text
         //                return false;
         //            }
         //        }
-        //        if (!SortedSetRelation.hasRelation(strings, SortedSetRelation.DISJOINT, c.strings)) return false;
+        //        if (!SortedSetRelation.HasRelation(strings, SortedSetFilter.Disjoint, c.strings)) return false;
         //        return true;
         //    }
 
@@ -2073,11 +2073,11 @@ namespace ICU4N.Text
         /// <param name="c">Set that defines which elements will be complemented from
         /// this set.</param>
         /// <stable>ICU 2.0</stable>
-        internal virtual UnicodeSet ComplementAll(UnicodeSet c) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
+        internal virtual UnicodeSet ComplementAll(UnicodeSet c) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWith in .NET)
         {
             CheckFrozen();
             Xor(c.list, c.len, 0);
-            SortedSetRelation.DoOperation(strings, SortedSetRelation.COMPLEMENTALL, c.strings);
+            SortedSetRelation.DoOperation(strings, SortedSetOperation.SymmetricExceptWith, c.strings);
             return this;
         }
 
