@@ -33,7 +33,7 @@ namespace ICU4N.Dev.Util
      * For serialization
      */
         //private static final long serialVersionUID = -6540936876295804105L;
-        internal const bool ASSERTIONS = false;
+        internal static readonly bool ASSERTIONS = false;
         internal const long GROWTH_PERCENT = 200; // 100 is no growth!
         internal const long GROWTH_GAP = 10; // extra bump!
 

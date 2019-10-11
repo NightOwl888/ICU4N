@@ -215,7 +215,7 @@ namespace ICU4N.Dev.Test.Translit
                 get { return true; }
             }
 
-            internal const bool DEBUG = false;
+            internal static readonly bool DEBUG = false;
         }
 
         [Test]

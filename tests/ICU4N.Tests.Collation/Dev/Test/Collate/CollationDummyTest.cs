@@ -349,7 +349,7 @@ namespace ICU4N.Dev.Test.Collate
             }
         }
 
-        private const bool SUPPORT_VARIABLE_TOP_RELATION = false;
+        private static readonly bool SUPPORT_VARIABLE_TOP_RELATION = false;
         //TestVariableTop() is ported from cintltst/callcoll.c
         /**
         * Tests the [variable top] tag in rule syntax. Since the default [alternate]

@@ -16,7 +16,7 @@ namespace ICU4N.Dev.Test.Util
 {
     public class ICUServiceThreadTest : TestFmwk
     {
-        private const bool PRINTSTATS = false;
+        private static readonly bool PRINTSTATS = false;
 
         private static readonly string[] countries = {
             "ab", "bc", "cd", "de", "ef", "fg", "gh", "ji", "ij", "jk"

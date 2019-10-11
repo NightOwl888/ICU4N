@@ -22,7 +22,7 @@ namespace ICU4N.Dev.Test.Translit
     public class RoundTripTest : TestFmwk
     {
         //TODO - revisit test cases referencing FIX_ME
-        internal const bool FIX_ME = false;
+        internal static readonly bool FIX_ME = false;
 
         internal const bool EXTRA_TESTS = true;
         internal const bool PRINT_RULES = true;
