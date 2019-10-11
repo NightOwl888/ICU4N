@@ -161,7 +161,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public abstract class Factory
+        internal abstract class Factory // ICU4N specific - changed from public to internal (obsolete anyway)
         {
             /// <summary>
             /// Sole constructor
@@ -428,7 +428,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public interface IFixedDecimal
+        internal interface IFixedDecimal // ICU4N specific - changed from public to internal (obsolete anyway)
         {
             /// <summary>
             /// Returns the value corresponding to the specified operand (n, i, f, t, v, or w).
@@ -449,7 +449,7 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public class FixedDecimal /*extends Number*/ : IComparable<FixedDecimal>, IFixedDecimal
+        internal class FixedDecimal /*extends Number*/ : IComparable<FixedDecimal>, IFixedDecimal // ICU4N specific - changed from public to internal (obsolete anyway)
         {
             //private static readonly long serialVersionUID = -4756200506571685661L;
 
@@ -877,7 +877,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public class FixedDecimalRange
+        internal class FixedDecimalRange // ICU4N specific - changed from public to internal (obsolete anyway)
         {
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -917,7 +917,7 @@ namespace ICU4N.Text
 #if FEATURE_SERIALIZABLE
         [Serializable]
 #endif
-        public class FixedDecimalSamples
+        internal class FixedDecimalSamples // ICU4N specific - changed from public to internal (obsolete anyway)
         {
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -2194,7 +2194,7 @@ namespace ICU4N.Text
         /// <returns>The keyword of the selected rule.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual string Select(IFixedDecimal number)
+        internal virtual string Select(IFixedDecimal number) // ICU4N specific - changed from public to internal (obsolete anyway)
         {
             return rules.Select(number);
         }
@@ -2206,7 +2206,7 @@ namespace ICU4N.Text
         /// <param name="keyword">The keyword to filter on.</param>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual bool Matches(FixedDecimal sample, String keyword)
+        internal virtual bool Matches(FixedDecimal sample, string keyword) // ICU4N specific - changed from public to internal (obsolete anyway)
         {
             return rules.Select(sample, keyword);
         }
@@ -2384,7 +2384,7 @@ namespace ICU4N.Text
         /// <returns>A list of values matching the <paramref name="keyword"/>.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual FixedDecimalSamples GetDecimalSamples(string keyword, PluralRulesSampleType sampleType)
+        internal virtual FixedDecimalSamples GetDecimalSamples(string keyword, PluralRulesSampleType sampleType) // ICU4N specific - changed from public to internal (obsolete anyway)
         {
             return rules.GetDecimalSamples(keyword, sampleType);
         }
