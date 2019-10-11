@@ -15,6 +15,40 @@ using static ICU4N.UChar;
 namespace ICU4N.Impl
 {
     /// <summary>
+    /// Constants for which data and implementation files provide which properties.
+    /// Used by <see cref="UnicodeSet"/> for service-specific property enumeration.
+    /// </summary>
+    public enum UPropertySource
+    {
+        /// <summary>No source, not a supported property.</summary>
+        None = 0,
+        /// <summary>From uchar.c/uprops.icu main trie</summary>
+        Char = 1,
+        /// <summary>From uchar.c/uprops.icu properties vectors trie</summary>
+        PropertiesVectorsTrie = 2,
+        /// <summary>From unames.c/unames.icu</summary>
+        Names = 3,
+        /// <summary>From ucase.c/ucase.icu</summary>
+        Case = 4,
+        /// <summary>From ubidi_props.c/ubidi.icu</summary>
+        BiDi = 5,
+        /// <summary>From uchar.c/uprops.icu main trie as well as properties vectors trie</summary>
+        CharAndPropertiesVectorsTrie = 6,
+        /// <summary>From ucase.c/ucase.icu as well as unorm.cpp/unorm.icu</summary>
+        CaseAndNormalizer = 7,
+        /// <summary>From normalizer2impl.cpp/nfc.nrm</summary>
+        NFC = 8,
+        /// <summary>From normalizer2impl.cpp/nfkc.nrm</summary>
+        NFKC = 9,
+        /// <summary>From normalizer2impl.cpp/nfkc_cf.nrm</summary>
+        NFKCCaseFold = 10,
+        /// <summary>From normalizer2impl.cpp/nfc.nrm canonical iterator data</summary>
+        NFCCanonicalIterator = 11,
+        /// <summary>One more than the highest UPropertySource (SRC_) constant.</summary>
+        Count = 12,
+    }
+
+    /// <summary>
     /// Internal class used for Unicode character property database.
     /// </summary>
     /// <remarks>
@@ -71,34 +105,7 @@ namespace ICU4N.Impl
 
         // uprops.h enum UPropertySource --------------------------------------- ***
 
-        // ICU4N TODO: API - Make into enum?
-
-        /// <summary>No source, not a supported property.</summary>
-        public const int SRC_NONE = 0;
-        /// <summary>From uchar.c/uprops.icu main trie</summary>
-        public const int SRC_CHAR = 1;
-        /// <summary>From uchar.c/uprops.icu properties vectors trie</summary>
-        public const int SRC_PROPSVEC = 2;
-        /// <summary>From unames.c/unames.icu</summary>
-        public const int SRC_NAMES = 3;
-        /// <summary>From ucase.c/ucase.icu</summary>
-        public const int SRC_CASE = 4;
-        /// <summary>From ubidi_props.c/ubidi.icu</summary>
-        public const int SRC_BIDI = 5;
-        /// <summary>From uchar.c/uprops.icu main trie as well as properties vectors trie</summary>
-        public const int SRC_CHAR_AND_PROPSVEC = 6;
-        /// <summary>From ucase.c/ucase.icu as well as unorm.cpp/unorm.icu</summary>
-        public const int SRC_CASE_AND_NORM = 7;
-        /// <summary>From normalizer2impl.cpp/nfc.nrm</summary>
-        public const int SRC_NFC = 8;
-        /// <summary>From normalizer2impl.cpp/nfkc.nrm</summary>
-        public const int SRC_NFKC = 9;
-        /// <summary>From normalizer2impl.cpp/nfkc_cf.nrm</summary>
-        public const int SRC_NFKC_CF = 10;
-        /// <summary>From normalizer2impl.cpp/nfc.nrm canonical iterator data</summary>
-        public const int SRC_NFC_CANON_ITER = 11;
-        /// <summary>One more than the highest UPropertySource (SRC_) constant.</summary>
-        public const int SRC_COUNT = 12;
+        // ICU4N specific - made constants int UPropertySource enum
 
         // public methods ----------------------------------------------------
 
@@ -191,24 +198,23 @@ namespace ICU4N.Impl
         private class BinaryProperty
         {
             private readonly UCharacterProperty outerInstance;
-            int column;  // SRC_PROPSVEC column, or "source" if mask==0
-            int mask;
+            private readonly int column;  // SRC_PROPSVEC column, or "source" if mask==0
+            private readonly UPropertySource source;
+            private readonly int mask;
             internal BinaryProperty(UCharacterProperty outerInstance, int column, int mask)
             {
                 this.outerInstance = outerInstance;
                 this.column = column;
                 this.mask = mask;
             }
-            internal BinaryProperty(UCharacterProperty outerInstance, int source)
+            internal BinaryProperty(UCharacterProperty outerInstance, UPropertySource source)
             {
                 this.outerInstance = outerInstance;
-                this.column = source;
+                this.source = source;
                 this.mask = 0;
             }
-            internal int GetSource()
-            {
-                return mask == 0 ? column : SRC_PROPSVEC;
-            }
+            internal UPropertySource Source => mask == 0 ? source : UPropertySource.PropertiesVectorsTrie;
+
             internal virtual bool Contains(int c)
             {
                 // systematic, directly stored properties
@@ -218,9 +224,9 @@ namespace ICU4N.Impl
 
         private class CaseBinaryProperty : BinaryProperty
         {  // case mapping properties
-            int which;
+            private readonly int which;
             internal CaseBinaryProperty(UCharacterProperty outerInstance, int which)
-                    : base(outerInstance, SRC_CASE)
+                : base(outerInstance, UPropertySource.Case)
             {
                 this.which = which;
             }
@@ -232,9 +238,9 @@ namespace ICU4N.Impl
 
         private class NormInertBinaryProperty : BinaryProperty
         {  // UCHAR_NF*_INERT properties
-            int which;
-            internal NormInertBinaryProperty(UCharacterProperty outerInstance, int source, int which)
-                    : base(outerInstance, source)
+            private readonly int which;
+            internal NormInertBinaryProperty(UCharacterProperty outerInstance, UPropertySource source, int which)
+                : base(outerInstance, source)
             {
                 this.which = which;
             }
@@ -249,7 +255,7 @@ namespace ICU4N.Impl
         {
             private readonly Func<int, bool> contains;
 
-            internal AnonymousBinaryProperty(UCharacterProperty outerInstance, int source, Func<int, bool> contains)
+            internal AnonymousBinaryProperty(UCharacterProperty outerInstance, UPropertySource source, Func<int, bool> contains)
                 : base(outerInstance, source)
             {
                 this.contains = contains;
@@ -270,11 +276,11 @@ namespace ICU4N.Impl
                  */
                 new BinaryProperty(this, 1, (1 << ALPHABETIC_PROPERTY_)),
                 new BinaryProperty(this, 1, (1 << ASCII_HEX_DIGIT_PROPERTY_)),
-                new AnonymousBinaryProperty(this, SRC_BIDI, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.BiDi, contains: (c) =>
                     {
                         return UBiDiProps.Instance.IsBidiControl(c);
                     }),
-                new AnonymousBinaryProperty(this, SRC_BIDI, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.BiDi, contains: (c) =>
                     {
                         return UBiDiProps.Instance.IsMirrored(c);
                     }),
@@ -283,7 +289,7 @@ namespace ICU4N.Impl
                 new BinaryProperty(this, 1, (1<<DEPRECATED_PROPERTY_)),
                 new BinaryProperty(this, 1, (1<<DIACRITIC_PROPERTY_)),
                 new BinaryProperty(this, 1, (1<<EXTENDER_PROPERTY_)),
-                new AnonymousBinaryProperty(this, SRC_NFC, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.NFC, contains: (c) =>
                     {// UCHAR_FULL_COMPOSITION_EXCLUSION
                         // By definition, Full_Composition_Exclusion is the same as NFC_QC=No.
                         Normalizer2Impl impl = Norm2AllModes.GetNFCInstance().Impl;
@@ -299,7 +305,7 @@ namespace ICU4N.Impl
                 new BinaryProperty(this,1, (1<<IDEOGRAPHIC_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<IDS_BINARY_OPERATOR_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<IDS_TRINARY_OPERATOR_PROPERTY_)),
-                new AnonymousBinaryProperty(this, SRC_BIDI, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.BiDi, contains: (c) =>
                     { // UCHAR_JOIN_CONTROL
                         return UBiDiProps.Instance.IsJoinControl(c);
                     }),
@@ -319,22 +325,22 @@ namespace ICU4N.Impl
                 new CaseBinaryProperty(this, (int)UProperty.Case_Sensitive),
                 new BinaryProperty(this,1, (1<<S_TERM_PROPERTY_)),
                 new BinaryProperty(this,1, (1<<VARIATION_SELECTOR_PROPERTY_)),
-                new NormInertBinaryProperty(this,SRC_NFC, (int)UProperty.NFD_Inert),
-                new NormInertBinaryProperty(this,SRC_NFKC, (int)UProperty.NFKD_Inert),
-                new NormInertBinaryProperty(this,SRC_NFC, (int)UProperty.NFC_Inert),
-                new NormInertBinaryProperty(this,SRC_NFKC, (int)UProperty.NFKC_Inert),
-                new AnonymousBinaryProperty(this, SRC_NFC_CANON_ITER, contains: (c) =>
+                new NormInertBinaryProperty(this,UPropertySource.NFC, (int)UProperty.NFD_Inert),
+                new NormInertBinaryProperty(this,UPropertySource.NFKC, (int)UProperty.NFKD_Inert),
+                new NormInertBinaryProperty(this,UPropertySource.NFC, (int)UProperty.NFC_Inert),
+                new NormInertBinaryProperty(this,UPropertySource.NFKC, (int)UProperty.NFKC_Inert),
+                new AnonymousBinaryProperty(this, UPropertySource.NFCCanonicalIterator, contains: (c) =>
                     {  // UCHAR_SEGMENT_STARTER
                         return Norm2AllModes.GetNFCInstance().Impl.
                             EnsureCanonIterData().IsCanonSegmentStarter(c);
                     }),
                 new BinaryProperty(this, 1, (1<<PATTERN_SYNTAX)),
                 new BinaryProperty(this, 1, (1<<PATTERN_WHITE_SPACE)),
-                new AnonymousBinaryProperty(this, SRC_CHAR_AND_PROPSVEC, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.CharAndPropertiesVectorsTrie, contains: (c) =>
                     {  // UCHAR_POSIX_ALNUM
                         return UChar.IsUAlphabetic(c) || UChar.IsDigit(c);
                     }),
-                new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.Char, contains: (c) =>
                     {  // UCHAR_POSIX_BLANK
                         // "horizontal space"
                         if (c <= 0x9f)
@@ -347,11 +353,11 @@ namespace ICU4N.Impl
                             return UChar.GetUnicodeCategory(c) == UUnicodeCategory.SpaceSeparator;
                         }
                     }),
-                new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.Char, contains: (c) =>
                     {  // UCHAR_POSIX_GRAPH
                         return IsgraphPOSIX(c);
                     }),
-                new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.Char, contains: (c) =>
                     {  // UCHAR_POSIX_PRINT
                         /*
                         * Checks if codepoint is in \p{graph}\p{blank} - \p{cntrl}.
@@ -361,7 +367,7 @@ namespace ICU4N.Impl
                         */
                         return (UChar.GetUnicodeCategory(c) == UUnicodeCategory.SpaceSeparator) || IsgraphPOSIX(c);
                     }),
-                new AnonymousBinaryProperty(this, SRC_CHAR, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.Char, contains: (c) =>
                     {  // UCHAR_POSIX_XDIGIT
                         /* check ASCII and Fullwidth ASCII a-fA-F */
                         if (
@@ -378,7 +384,7 @@ namespace ICU4N.Impl
                 new CaseBinaryProperty(this, (int)UProperty.Changes_When_Lowercased),
                 new CaseBinaryProperty(this, (int)UProperty.Changes_When_Uppercased),
                 new CaseBinaryProperty(this, (int)UProperty.Changes_When_Titlecased),
-                new AnonymousBinaryProperty(this, SRC_CASE_AND_NORM, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.CaseAndNormalizer, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_CASEFOLDED
                         string nfd = Norm2AllModes.GetNFCInstance().Impl.GetDecomposition(c);
                         if (nfd != null)
@@ -410,7 +416,7 @@ namespace ICU4N.Impl
                         }
                     }),
                 new CaseBinaryProperty(this, (int)UProperty.Changes_When_Casemapped),
-                new AnonymousBinaryProperty(this, SRC_NFKC_CF, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.NFKCCaseFold, contains: (c) =>
                     {  // UCHAR_CHANGES_WHEN_NFKC_CASEFOLDED
                         Normalizer2Impl kcf = Norm2AllModes.GetNFKC_CFInstance().Impl;
                         string src = UTF16.ValueOf(c);
@@ -425,7 +431,7 @@ namespace ICU4N.Impl
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI_MODIFIER),
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI_MODIFIER_BASE),
                 new BinaryProperty(this, 2, 1<<PROPS_2_EMOJI_COMPONENT),
-                new AnonymousBinaryProperty(this, SRC_PROPSVEC, contains: (c) =>
+                new AnonymousBinaryProperty(this, UPropertySource.PropertiesVectorsTrie, contains: (c) =>
                     {  // REGIONAL_INDICATOR
                         // Property starts are a subset of lb=RI etc.
                         return 0x1F1E6 <= c && c <= 0x1F1FF;
@@ -440,13 +446,13 @@ namespace ICU4N.Impl
                         return UBiDiProps.Instance.GetClass(c).ToInt32();
                     }),
                 new IntProperty(this, 0, BLOCK_MASK_, BLOCK_SHIFT_),
-                new CombiningClassIntProperty(this, SRC_NFC, getValue: (c) =>
+                new CombiningClassIntProperty(this, UPropertySource.NFC, getValue: (c) =>
                     { // CANONICAL_COMBINING_CLASS
                         return Normalizer2.GetNFDInstance().GetCombiningClass(c);
                     }),
                 new IntProperty(this, 2, DECOMPOSITION_TYPE_MASK_, 0),
                 new IntProperty(this, 0, EAST_ASIAN_MASK_, EAST_ASIAN_SHIFT_),
-                new AnonymousIntProperty(this, SRC_CHAR, getValue: (c) =>
+                new AnonymousIntProperty(this, UPropertySource.Char, getValue: (c) =>
                     {  // GENERAL_CATEGORY
                         return GetType(c);
                     }, getMaxValue: (which) =>
@@ -462,7 +468,7 @@ namespace ICU4N.Impl
                         return UBiDiProps.Instance.GetJoiningType(c);
                     }),
                 new IntProperty(this, 2, LB_MASK, LB_SHIFT),  // LINE_BREAK
-                new AnonymousIntProperty(this, SRC_CHAR, getValue: (c) =>
+                new AnonymousIntProperty(this, UPropertySource.Char, getValue: (c) =>
                     {  // NUMERIC_TYPE
                         return NtvGetType(GetNumericTypeValue(GetProperty(c)));
                     }, getMaxValue: (which) =>
@@ -475,7 +481,7 @@ namespace ICU4N.Impl
                     {
                         return (int)UScript.GetScript(c);
                     }, getMaxValue: null),
-                new AnonymousIntProperty(this, SRC_PROPSVEC, getValue: (c) =>
+                new AnonymousIntProperty(this, UPropertySource.PropertiesVectorsTrie, getValue: (c) =>
                     {  // HANGUL_SYLLABLE_TYPE
                         /* see comments on gcbToHst[] above */
                         int gcb = (GetAdditional(c, 2) & GCB_MASK).TripleShift(GCB_SHIFT);
@@ -494,16 +500,16 @@ namespace ICU4N.Impl
 #pragma warning restore 612, 618
                     }),
                 // max=1=YES -- these are never "maybe", only "no" or "yes"
-                new NormQuickCheckIntProperty(this, SRC_NFC, (int)UProperty.NFD_Quick_Check, 1),
-                new NormQuickCheckIntProperty(this, SRC_NFKC, (int)UProperty.NFKD_Quick_Check, 1),
+                new NormQuickCheckIntProperty(this, UPropertySource.NFC, (int)UProperty.NFD_Quick_Check, 1),
+                new NormQuickCheckIntProperty(this, UPropertySource.NFKC, (int)UProperty.NFKD_Quick_Check, 1),
                 // max=2=MAYBE
-                new NormQuickCheckIntProperty(this, SRC_NFC, (int)UProperty.NFC_Quick_Check, 2),
-                new NormQuickCheckIntProperty(this, SRC_NFKC, (int)UProperty.NFKC_Quick_Check, 2),
-                new CombiningClassIntProperty(this, SRC_NFC, getValue: (c) =>
+                new NormQuickCheckIntProperty(this, UPropertySource.NFC, (int)UProperty.NFC_Quick_Check, 2),
+                new NormQuickCheckIntProperty(this, UPropertySource.NFKC, (int)UProperty.NFKC_Quick_Check, 2),
+                new CombiningClassIntProperty(this, UPropertySource.NFC, getValue: (c) =>
                     {  // LEAD_CANONICAL_COMBINING_CLASS
                         return Norm2AllModes.GetNFCInstance().Impl.GetFCD16(c) >> 8;
                     }),
-                new CombiningClassIntProperty(this, SRC_NFC, getValue: (c) =>
+                new CombiningClassIntProperty(this, UPropertySource.NFC, getValue: (c) =>
                     {  // TRAIL_CANONICAL_COMBINING_CLASS
                         return Norm2AllModes.GetNFCInstance().Impl.GetFCD16(c) & 0xff;
                     }),
@@ -567,10 +573,11 @@ namespace ICU4N.Impl
 
         private class IntProperty
         {
-            internal readonly UCharacterProperty outerInstance;
-            int column;  // SRC_PROPSVEC column, or "source" if mask==0
-            int mask;
-            int shift;
+            private readonly UCharacterProperty outerInstance;
+            private readonly int column;  // SRC_PROPSVEC column, or "source" if mask==0
+            private readonly UPropertySource source;
+            private readonly int mask;
+            private readonly int shift;
             internal IntProperty(UCharacterProperty outerInstance, int column, int mask, int shift)
             {
                 this.outerInstance = outerInstance;
@@ -578,16 +585,14 @@ namespace ICU4N.Impl
                 this.mask = mask;
                 this.shift = shift;
             }
-            internal IntProperty(UCharacterProperty outerInstance, int source)
+            internal IntProperty(UCharacterProperty outerInstance, UPropertySource source)
             {
                 this.outerInstance = outerInstance;
-                this.column = source;
+                this.source = source;
                 this.mask = 0;
             }
-            internal int GetSource()
-            {
-                return mask == 0 ? column : SRC_PROPSVEC;
-            }
+            internal UPropertySource Source => mask == 0 ? source : UPropertySource.PropertiesVectorsTrie;
+
             internal virtual int GetValue(int c)
             {
                 // systematic, directly stored properties
@@ -604,8 +609,8 @@ namespace ICU4N.Impl
             private readonly Func<int, int> getValue;
             private readonly Func<UProperty, int> getMaxValue;
 
-            internal AnonymousIntProperty(UCharacterProperty outerInstance, int source, Func<int, int> getValue, Func<UProperty, int> getMaxValue)
-            : base(outerInstance, source)
+            internal AnonymousIntProperty(UCharacterProperty outerInstance, UPropertySource source, Func<int, int> getValue, Func<UProperty, int> getMaxValue)
+                : base(outerInstance, source)
             {
                 this.getValue = getValue;
                 this.getMaxValue = getMaxValue;
@@ -635,7 +640,7 @@ namespace ICU4N.Impl
             private readonly Func<int, int> getValue;
 
             internal BiDiIntProperty(UCharacterProperty outerInstance, Func<int, int> getValue)
-                        : base(outerInstance, SRC_BIDI)
+                        : base(outerInstance, UPropertySource.BiDi)
             {
                 this.getValue = getValue;
             }
@@ -655,8 +660,8 @@ namespace ICU4N.Impl
         {
             private readonly Func<int, int> getValue;
 
-            internal CombiningClassIntProperty(UCharacterProperty outerInstance, int source, Func<int, int> getValue)
-                        : base(outerInstance, source)
+            internal CombiningClassIntProperty(UCharacterProperty outerInstance, UPropertySource source, Func<int, int> getValue)
+                : base(outerInstance, source)
             {
                 this.getValue = getValue;
             }
@@ -674,9 +679,9 @@ namespace ICU4N.Impl
 
         private class NormQuickCheckIntProperty : IntProperty
         {  // UCHAR_NF*_QUICK_CHECK properties
-            int which;
-            int max;
-            internal NormQuickCheckIntProperty(UCharacterProperty outerInstance, int source, int which, int max)
+            private readonly int which;
+            private readonly int max;
+            internal NormQuickCheckIntProperty(UCharacterProperty outerInstance, UPropertySource source, int which, int max)
                 : base(outerInstance, source)
             {
                 this.which = which;
@@ -742,27 +747,27 @@ namespace ICU4N.Impl
             return -1; // undefined
         }
 
-        public int GetSource(UProperty which)
+        public UPropertySource GetSource(UProperty which)
         {
             if (which < UProperty.Binary_Start)
             {
-                return SRC_NONE; /* undefined */
+                return UPropertySource.None; /* undefined */
             }
 #pragma warning disable 612, 618
             else if (which < UProperty.Binary_Limit)
 #pragma warning restore 612, 618
             {
-                return binProps[(int)which].GetSource();
+                return binProps[(int)which].Source;
             }
             else if (which < UProperty.Int_Start)
             {
-                return SRC_NONE; /* undefined */
+                return UPropertySource.None; /* undefined */
             }
 #pragma warning disable 612, 618
             else if (which < UProperty.Int_Limit)
 #pragma warning restore 612, 618
             {
-                return intProps[which - UProperty.Int_Start].GetSource();
+                return intProps[which - UProperty.Int_Start].Source;
             }
             else if (which < UProperty.String_Start)
             {
@@ -770,10 +775,10 @@ namespace ICU4N.Impl
                 {
                     case UProperty.General_Category_Mask:
                     case UProperty.Numeric_Value:
-                        return SRC_CHAR;
+                        return UPropertySource.Char;
 
                     default:
-                        return SRC_NONE;
+                        return UPropertySource.None;
                 }
             }
 #pragma warning disable 612, 618
@@ -783,10 +788,10 @@ namespace ICU4N.Impl
                 switch (which)
                 {
                     case UProperty.Age:
-                        return SRC_PROPSVEC;
+                        return UPropertySource.PropertiesVectorsTrie;
 
                     case UProperty.Bidi_Mirroring_Glyph:
-                        return SRC_BIDI;
+                        return UPropertySource.BiDi;
 
                     case UProperty.Case_Folding:
                     case UProperty.Lowercase_Mapping:
@@ -796,17 +801,17 @@ namespace ICU4N.Impl
                     case UProperty.Simple_Uppercase_Mapping:
                     case UProperty.Titlecase_Mapping:
                     case UProperty.Uppercase_Mapping:
-                        return SRC_CASE;
+                        return UPropertySource.Case;
 
 #pragma warning disable 612, 618
                     case UProperty.ISO_Comment:
                     case UProperty.Name:
                     case UProperty.Unicode_1_Name:
 #pragma warning restore 612, 618
-                        return SRC_NAMES;
+                        return UPropertySource.Names;
 
                     default:
-                        return SRC_NONE;
+                        return UPropertySource.None;
                 }
             }
             else
@@ -814,9 +819,9 @@ namespace ICU4N.Impl
                 switch (which)
                 {
                     case UProperty.Script_Extensions:
-                        return SRC_PROPSVEC;
+                        return UPropertySource.PropertiesVectorsTrie;
                     default:
-                        return SRC_NONE; /* undefined */
+                        return UPropertySource.None; /* undefined */
                 }
             }
         }

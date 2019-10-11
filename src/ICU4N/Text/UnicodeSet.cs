@@ -3307,53 +3307,54 @@ namespace ICU4N.Text
             }
         }
 
-        private static UnicodeSet GetInclusions(int src)
+        private static UnicodeSet GetInclusions(UPropertySource source)
         {
             lock (syncLock)
             {
                 if (INCLUSIONS == null)
                 {
-                    INCLUSIONS = new UnicodeSet[UCharacterProperty.SRC_COUNT];
+                    INCLUSIONS = new UnicodeSet[(int)UPropertySource.Count];
                 }
+                int src = (int)source;
                 if (INCLUSIONS[src] == null)
                 {
                     UnicodeSet incl = new UnicodeSet();
-                    switch (src)
+                    switch (source)
                     {
-                        case UCharacterProperty.SRC_CHAR:
+                        case UPropertySource.Char:
                             UCharacterProperty.Instance.AddPropertyStarts(incl);
                             break;
-                        case UCharacterProperty.SRC_PROPSVEC:
+                        case UPropertySource.PropertiesVectorsTrie:
                             UCharacterProperty.Instance.upropsvec_addPropertyStarts(incl);
                             break;
-                        case UCharacterProperty.SRC_CHAR_AND_PROPSVEC:
+                        case UPropertySource.CharAndPropertiesVectorsTrie:
                             UCharacterProperty.Instance.AddPropertyStarts(incl);
                             UCharacterProperty.Instance.upropsvec_addPropertyStarts(incl);
                             break;
-                        case UCharacterProperty.SRC_CASE_AND_NORM:
+                        case UPropertySource.CaseAndNormalizer:
                             Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
                             UCaseProperties.Instance.AddPropertyStarts(incl);
                             break;
-                        case UCharacterProperty.SRC_NFC:
+                        case UPropertySource.NFC:
                             Norm2AllModes.GetNFCInstance().Impl.AddPropertyStarts(incl);
                             break;
-                        case UCharacterProperty.SRC_NFKC:
+                        case UPropertySource.NFKC:
                             Norm2AllModes.GetNFKCInstance().Impl.AddPropertyStarts(incl);
                             break;
-                        case UCharacterProperty.SRC_NFKC_CF:
+                        case UPropertySource.NFKCCaseFold:
                             Norm2AllModes.GetNFKC_CFInstance().Impl.AddPropertyStarts(incl);
                             break;
-                        case UCharacterProperty.SRC_NFC_CANON_ITER:
+                        case UPropertySource.NFCCanonicalIterator:
                             Norm2AllModes.GetNFCInstance().Impl.AddCanonIterPropertyStarts(incl);
                             break;
-                        case UCharacterProperty.SRC_CASE:
+                        case UPropertySource.Case:
                             UCaseProperties.Instance.AddPropertyStarts(incl);
                             break;
-                        case UCharacterProperty.SRC_BIDI:
+                        case UPropertySource.BiDi:
                             UBiDiProps.Instance.AddPropertyStarts(incl);
                             break;
                         default:
-                            throw new InvalidOperationException("UnicodeSet.getInclusions(unknown src " + src + ")");
+                            throw new InvalidOperationException("UnicodeSet.GetInclusions(unknown src " + source + ")");
                     }
                     INCLUSIONS[src] = incl;
                 }
@@ -3364,7 +3365,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Generic filter-based scanning code for UCD property <see cref="UnicodeSet"/>s.
         /// </summary>
-        private UnicodeSet ApplyFilter(IFilter filter, int src)
+        private UnicodeSet ApplyFilter(IFilter filter, UPropertySource src)
         {
             // Logically, walk through all Unicode characters, noting the start
             // and end of each range for which filter.contain(c) is
@@ -3480,11 +3481,11 @@ namespace ICU4N.Text
             CheckFrozen();
             if (prop == UProperty.General_Category_Mask)
             {
-                ApplyFilter(new GeneralCategoryMaskFilter(value), UCharacterProperty.SRC_CHAR);
+                ApplyFilter(new GeneralCategoryMaskFilter(value), UPropertySource.Char);
             }
             else if (prop == UProperty.Script_Extensions)
             {
-                ApplyFilter(new ScriptExtensionsFilter(value), UCharacterProperty.SRC_PROPSVEC);
+                ApplyFilter(new ScriptExtensionsFilter(value), UPropertySource.PropertiesVectorsTrie);
             }
             else
             {
@@ -3617,7 +3618,7 @@ namespace ICU4N.Text
                         case UProperty.Numeric_Value:
                             {
                                 double value = double.Parse(PatternProps.TrimWhiteSpace(valueAlias), CultureInfo.InvariantCulture);
-                                ApplyFilter(new NumericValueFilter(value), UCharacterProperty.SRC_CHAR);
+                                ApplyFilter(new NumericValueFilter(value), UPropertySource.Char);
                                 return this;
                             }
                         case UProperty.Name:
@@ -3646,7 +3647,7 @@ namespace ICU4N.Text
                                 // VersionInfo.getInstance() does not do
                                 // 'loose' matching.
                                 VersionInfo version = VersionInfo.GetInstance(MungeCharName(valueAlias));
-                                ApplyFilter(new VersionFilter(version), UCharacterProperty.SRC_PROPSVEC);
+                                ApplyFilter(new VersionFilter(version), UPropertySource.PropertiesVectorsTrie);
                                 return this;
                             }
                         case UProperty.Script_Extensions:
