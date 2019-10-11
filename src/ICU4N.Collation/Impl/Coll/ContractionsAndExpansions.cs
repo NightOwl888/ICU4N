@@ -272,7 +272,7 @@ namespace ICU4N.Impl.Coll
             {
                 return;
             }
-            using (CharsTrie.Enumerator prefixes = new CharsTrie(data.contexts, index + 2).GetEnumerator())
+            using (CharsTrieEnumerator prefixes = new CharsTrie(data.contexts, index + 2).GetEnumerator())
             {
                 while (prefixes.MoveNext())
                 {
@@ -304,7 +304,7 @@ namespace ICU4N.Impl.Coll
                 Debug.Assert(!Collation.IsContractionCE32(ce32));
                 HandleCE32(start, end, ce32);
             }
-            using (CharsTrie.Enumerator suffixes = new CharsTrie(data.contexts, index + 2).GetEnumerator())
+            using (CharsTrieEnumerator suffixes = new CharsTrie(data.contexts, index + 2).GetEnumerator())
             {
                 while (suffixes.MoveNext())
                 {

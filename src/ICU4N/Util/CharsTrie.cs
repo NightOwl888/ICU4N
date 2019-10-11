@@ -11,6 +11,334 @@ using System.Collections;
 namespace ICU4N.Util
 {
     /// <summary>
+    /// CharsTrie state object, for saving a trie's current state
+    /// and resetting the trie back to this state later.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public sealed class CharsTrieState
+    {
+        /// <summary>
+        /// Constructs an empty <see cref="CharsTrieState"/>.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public CharsTrieState() { }
+        internal ICharSequence Chars { get; set; }
+        internal int Root { get; set; }
+        internal int Pos { get; set; }
+        internal int RemainingMatchLength { get; set; }
+    }
+
+    /// <summary>
+    /// Return value type for the <see cref="CharsTrieEnumerator"/>.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public sealed class CharsTrieEntry
+    {
+        /// <summary>
+        /// The string.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public ICharSequence Chars { get; set; }
+
+        /// <summary>
+        /// Gets or Sets the value associated with the string.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public int Value { get; set; }
+
+        internal CharsTrieEntry()
+        {
+        }
+    }
+
+    /// <summary>
+    /// Iterator for all of the (string, value) pairs in a <see cref="CharsTrie"/>.
+    /// </summary>
+    /// <stable>ICU 4.8</stable>
+    public sealed class CharsTrieEnumerator : IEnumerator<CharsTrieEntry>
+    {
+        private CharsTrieEntry current = null;
+
+        internal CharsTrieEnumerator(ICharSequence trieChars, int offset, int remainingMatchLength, int maxStringLength)
+        {
+            chars_ = trieChars;
+            pos_ = initialPos_ = offset;
+            remainingMatchLength_ = initialRemainingMatchLength_ = remainingMatchLength;
+            maxLength_ = maxStringLength;
+            int length = remainingMatchLength_;  // Actual remaining match length minus 1.
+            if (length >= 0)
+            {
+                // Pending linear-match node, append remaining bytes to str_.
+                ++length;
+                if (maxLength_ > 0 && length > maxLength_)
+                {
+                    length = maxLength_;  // This will leave remainingMatchLength>=0 as a signal.
+                }
+                str_.Append(chars_, pos_, (pos_ + length) - pos_); // ICU4N: Corrected 3rd parameter
+                pos_ += length;
+                remainingMatchLength_ -= length;
+            }
+        }
+
+        /// <summary>
+        /// Resets this iterator to its initial state.
+        /// </summary>
+        /// <returns>This.</returns>
+        /// <stable>ICU 4.8</stable>
+        public CharsTrieEnumerator Reset()
+        {
+            pos_ = initialPos_;
+            remainingMatchLength_ = initialRemainingMatchLength_;
+            skipValue_ = false;
+            int length = remainingMatchLength_ + 1;  // Remaining match length.
+            if (maxLength_ > 0 && length > maxLength_)
+            {
+                length = maxLength_;
+            }
+            str_.Length = length;
+            pos_ += length;
+            remainingMatchLength_ -= length;
+            stack_.Clear();
+            return this;
+        }
+
+        /// <summary>
+        /// Returns true if there are more elements.
+        /// </summary>
+        /// <returns>true if there are more elements.</returns>
+        /// <stable>ICU 4.8</stable>
+        private bool HasNext /*const*/ => pos_ >= 0 || stack_.Count > 0;
+
+        /// <summary>
+        /// Finds the next (string, value) pair if there is one.
+        /// </summary>
+        /// <remarks>
+        /// If the string is truncated to the maximum length and does not
+        /// have a real value, then the value is set to -1.
+        /// In this case, this "not a real value" is indistinguishable from
+        /// a real value of -1.
+        /// </remarks>
+        /// <returns>An <see cref="CharsTrieEntry"/> with the string and value of the next element.</returns>
+        /// <stable>ICU 4.8</stable>
+        private CharsTrieEntry Next()
+        {
+            int pos = pos_;
+            if (pos < 0)
+            {
+                //if (stack_.isEmpty())
+                //{
+                //    throw new NoSuchElementException();
+                //}
+                // Pop the state off the stack and continue with the next outbound edge of
+                // the branch node.
+                long top = stack_[stack_.Count - 1];
+                stack_.Remove(top);
+                int length = (int)top;
+                pos = (int)(top >> 32);
+                str_.Length = (length & 0xffff);
+                length = length.TripleShift(16);
+                if (length > 1)
+                {
+                    pos = BranchNext(pos, length);
+                    if (pos < 0)
+                    {
+                        return entry_;  // Reached a final value.
+                    }
+                }
+                else
+                {
+                    str_.Append(chars_[pos++]);
+                }
+            }
+            if (remainingMatchLength_ >= 0)
+            {
+                // We only get here if we started in a pending linear-match node
+                // with more than maxLength remaining units.
+                return TruncateAndStop();
+            }
+            for (; ; )
+            {
+                int node = chars_[pos++];
+                if (node >= CharsTrie.kMinValueLead)
+                {
+                    if (skipValue_)
+                    {
+                        pos = CharsTrie.SkipNodeValue(pos, node);
+                        node &= CharsTrie.kNodeTypeMask;
+                        skipValue_ = false;
+                    }
+                    else
+                    {
+                        // Deliver value for the string so far.
+                        bool isFinal = (node & CharsTrie.kValueIsFinal) != 0;
+                        if (isFinal)
+                        {
+                            entry_.Value = CharsTrie.ReadValue(chars_, pos, node & 0x7fff);
+                        }
+                        else
+                        {
+                            entry_.Value = CharsTrie.ReadNodeValue(chars_, pos, node);
+                        }
+                        if (isFinal || (maxLength_ > 0 && str_.Length == maxLength_))
+                        {
+                            pos_ = -1;
+                        }
+                        else
+                        {
+                            // We cannot skip the value right here because it shares its
+                            // lead unit with a match node which we have to evaluate
+                            // next time.
+                            // Instead, keep pos_ on the node lead unit itself.
+                            pos_ = pos - 1;
+                            skipValue_ = true;
+                        }
+                        entry_.Chars = str_.ToCharSequence();
+                        return entry_;
+                    }
+                }
+                if (maxLength_ > 0 && str_.Length == maxLength_)
+                {
+                    return TruncateAndStop();
+                }
+                if (node < CharsTrie.kMinLinearMatch)
+                {
+                    if (node == 0)
+                    {
+                        node = chars_[pos++];
+                    }
+                    pos = BranchNext(pos, node + 1);
+                    if (pos < 0)
+                    {
+                        return entry_;  // Reached a final value.
+                    }
+                }
+                else
+                {
+                    // Linear-match node, append length units to str_.
+                    int length = node - CharsTrie.kMinLinearMatch + 1;
+                    if (maxLength_ > 0 && str_.Length + length > maxLength_)
+                    {
+                        str_.Append(chars_, pos, maxLength_ - str_.Length); // ICU4N: (pos + maxLength_ - str_.Length) - pos == (maxLength_ - str_.Length)
+                        return TruncateAndStop();
+                    }
+                    str_.Append(chars_, pos, length); // ICU4N: (pos + length) - pos == length
+                    pos += length;
+                }
+            }
+        }
+
+        // ICU4N specific - Remove() not supported in .NET
+
+        private CharsTrieEntry TruncateAndStop()
+        {
+            pos_ = -1;
+            // We reset entry_.chars every time we return entry_
+            // just because the caller might have modified the Entry.
+            entry_.Chars = str_.ToCharSequence();
+            entry_.Value = -1;  // no real value for str
+            return entry_;
+        }
+
+        private int BranchNext(int pos, int length)
+        {
+            while (length > CharsTrie.kMaxBranchLinearSubNodeLength)
+            {
+                ++pos;  // ignore the comparison unit
+                        // Push state for the greater-or-equal edge.
+                        // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
+                stack_.Add(((long)CharsTrie.SkipDelta(chars_, pos) << 32) | (uint)((length - (length >> 1)) << 16) | (uint)str_.Length);
+                // Follow the less-than edge.
+                length >>= 1;
+                pos = CharsTrie.JumpByDelta(chars_, pos);
+            }
+            // List of key-value pairs where values are either final values or jump deltas.
+            // Read the first (key, value) pair.
+            char trieUnit = chars_[pos++];
+            int node = chars_[pos++];
+            bool isFinal = (node & CharsTrie.kValueIsFinal) != 0;
+            int value = CharsTrie.ReadValue(chars_, pos, node &= 0x7fff);
+            pos = CharsTrie.SkipValue(pos, node);
+            // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
+            stack_.Add(((long)pos << 32) | (uint)((length - 1) << 16) | (uint)str_.Length);
+            str_.Append(trieUnit);
+            if (isFinal)
+            {
+                pos_ = -1;
+                entry_.Chars = str_.ToCharSequence();
+                entry_.Value = value;
+                return -1;
+            }
+            else
+            {
+                return pos + value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
+        /// <stable>ICU 4.8</stable>
+        public CharsTrieEntry Current
+        {
+            get { return current; }
+        }
+
+        object IEnumerator.Current
+        {
+            get { return current; }
+        }
+
+        /// <summary>
+        /// Finds the next (string, value) pair if there is one.
+        /// </summary>
+        /// <remarks>
+        /// If the string is truncated to the maximum length and does not
+        /// have a real value, then the value is set to -1.
+        /// In this case, this "not a real value" is indistinguishable from
+        /// a real value of -1.
+        /// </remarks>
+        /// <returns>Returns true if an element has been set to <see cref="Current"/>; otherwise false.</returns>
+        /// <stable>ICU 4.8</stable>
+        public bool MoveNext()
+        {
+            if (!HasNext)
+                return false;
+            current = Next();
+            return (current != null);
+        }
+
+        void IEnumerator.Reset() // ICU4N specific - expicit interface declaration for .NET compatibility
+        {
+            Reset();
+        }
+
+        public void Dispose()
+        {
+            // nothing to do
+        }
+
+        private ICharSequence chars_;
+        private int pos_;
+        private int initialPos_;
+        private int remainingMatchLength_;
+        private int initialRemainingMatchLength_;
+        private bool skipValue_;  // Skip intermediate value which was already delivered.
+
+        private StringBuilder str_ = new StringBuilder();
+        private int maxLength_;
+        private CharsTrieEntry entry_ = new CharsTrieEntry();
+
+        // The stack stores longs for backtracking to another
+        // outbound edge of a branch node.
+        // Each long has the offset in chars_ in bits 62..32,
+        // the str_.length() from before the node in bits 15..0,
+        // and the remaining branch length in bits 31..16.
+        // (We could store the remaining branch length minus 1 in bits 30..16 and not use bit 31,
+        // but the code looks more confusing that way.)
+        private List<long> stack_ = new List<long>();
+    }
+
+    /// <summary>
     /// Light-weight, non-const reader class for a CharsTrie.
     /// Traverses a char-serialized data structure with minimal state,
     /// for mapping strings (16-bit-unit sequences) to non-negative integer values.
@@ -19,7 +347,7 @@ namespace ICU4N.Util
     /// </summary>
     /// <stable>ICU 4.8</stable>
     /// <author>Markus W. Scherer</author>
-    public sealed partial class CharsTrie : IEnumerable<CharsTrie.Entry>
+    public sealed partial class CharsTrie : IEnumerable<CharsTrieEntry>
 #if FEATURE_CLONEABLE
         , ICloneable
 #endif
@@ -49,32 +377,16 @@ namespace ICU4N.Util
             return this;
         }
 
-        /// <summary>
-        /// CharsTrie state object, for saving a trie's current state
-        /// and resetting the trie back to this state later.
-        /// </summary>
-        /// <stable>ICU 4.8</stable>
-        public sealed class State // ICU4N TODO: API De-nest?
-        {
-            /// <summary>
-            /// Constructs an empty <see cref="State"/>.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public State() { }
-            internal ICharSequence Chars { get; set; }
-            internal int Root { get; set; }
-            internal int Pos { get; set; }
-            internal int RemainingMatchLength { get; set; }
-        }
+        // ICU4N specific - de-nested State and renamed CharsTrieState
 
         /// <summary>
         /// Saves the state of this trie.
         /// </summary>
-        /// <param name="state">The <see cref="State"/> object to hold the trie's state.</param>
+        /// <param name="state">The <see cref="CharsTrieState"/> object to hold the trie's state.</param>
         /// <returns>This.</returns>
-        /// <see cref="ResetToState(State)"/>
+        /// <see cref="ResetToState(CharsTrieState)"/>
         /// <stable>ICU 4.8</stable>
-        public CharsTrie SaveState(State state) /*const*/
+        public CharsTrie SaveState(CharsTrieState state) /*const*/
         {
             state.Chars = chars_;
             state.Root = root_;
@@ -90,10 +402,10 @@ namespace ICU4N.Util
         /// <returns>This.</returns>
         /// <exception cref="ArgumentException">If the state object contains no state,
         /// or the state of a different trie.</exception>
-        /// <seealso cref="SaveState(State)"/>
+        /// <seealso cref="SaveState(CharsTrieState)"/>
         /// <seealso cref="Reset()"/>
         /// <stable>ICU 4.8</stable>
-        public CharsTrie ResetToState(State state)
+        public CharsTrie ResetToState(CharsTrieState state)
         {
             if (chars_ == state.Chars && chars_ != null && root_ == state.Root)
             {
@@ -309,11 +621,11 @@ namespace ICU4N.Util
         /// <remarks>
         /// This is equivalent to iterator() in ICU4J.
         /// </remarks>
-        /// <returns>A new <see cref="CharsTrie.Enumerator"/>.</returns>
+        /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        public Enumerator GetEnumerator()
+        public CharsTrieEnumerator GetEnumerator()
         {
-            return new Enumerator(chars_, pos_, remainingMatchLength_, 0);
+            return new CharsTrieEnumerator(chars_, pos_, remainingMatchLength_, 0);
         }
 
         /// <summary>
@@ -324,16 +636,16 @@ namespace ICU4N.Util
         /// </remarks>
         /// <param name="maxStringLength">If 0, the enumerator returns full strings.
         /// Otherwise, the enumerator returns strings with this maximum length.</param>
-        /// <returns>A new <see cref="CharsTrie.Enumerator"/>.</returns>
+        /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        public Enumerator GetEnumerator(int maxStringLength)
+        public CharsTrieEnumerator GetEnumerator(int maxStringLength)
         {
-            return new Enumerator(chars_, pos_, remainingMatchLength_, maxStringLength);
+            return new CharsTrieEnumerator(chars_, pos_, remainingMatchLength_, maxStringLength);
         }
 
-        IEnumerator<Entry> IEnumerable<Entry>.GetEnumerator()
+        IEnumerator<CharsTrieEntry> IEnumerable<CharsTrieEntry>.GetEnumerator()
         {
-            return new Enumerator(chars_, pos_, remainingMatchLength_, 0);
+            return new CharsTrieEnumerator(chars_, pos_, remainingMatchLength_, 0);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -351,11 +663,11 @@ namespace ICU4N.Util
         /// <param name="offset">Root offset of the trie in the <see cref="string"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
         /// Otherwise, the iterator returns strings with this maximum length.</param>
-        /// <returns>A new <see cref="CharsTrie.Enumerator"/>.</returns>
+        /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        public static Enumerator GetEnumerator(string trieChars, int offset, int maxStringLength)
+        public static CharsTrieEnumerator GetEnumerator(string trieChars, int offset, int maxStringLength)
         {
-            return new Enumerator(trieChars.ToCharSequence(), offset, -1, maxStringLength);
+            return new CharsTrieEnumerator(trieChars.ToCharSequence(), offset, -1, maxStringLength);
         }
 
         /// <summary>
@@ -368,11 +680,11 @@ namespace ICU4N.Util
         /// <param name="offset">Root offset of the trie in the <see cref="StringBuilder"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
         /// Otherwise, the iterator returns strings with this maximum length.</param>
-        /// <returns>A new <see cref="CharsTrie.Enumerator"/>.</returns>
+        /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        public static Enumerator GetEnumerator(StringBuilder trieChars, int offset, int maxStringLength)
+        public static CharsTrieEnumerator GetEnumerator(StringBuilder trieChars, int offset, int maxStringLength)
         {
-            return new Enumerator(trieChars.ToCharSequence(), offset, -1, maxStringLength);
+            return new CharsTrieEnumerator(trieChars.ToCharSequence(), offset, -1, maxStringLength);
         }
 
         /// <summary>
@@ -385,11 +697,11 @@ namespace ICU4N.Util
         /// <param name="offset">Root offset of the trie in the <see cref="T:char[]"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
         /// Otherwise, the iterator returns strings with this maximum length.</param>
-        /// <returns>A new <see cref="CharsTrie.Enumerator"/>.</returns>
+        /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        public static Enumerator GetEnumerator(char[] trieChars, int offset, int maxStringLength)
+        public static CharsTrieEnumerator GetEnumerator(char[] trieChars, int offset, int maxStringLength)
         {
-            return new Enumerator(trieChars.ToCharSequence(), offset, -1, maxStringLength);
+            return new CharsTrieEnumerator(trieChars.ToCharSequence(), offset, -1, maxStringLength);
         }
 
         /// <summary>
@@ -402,322 +714,16 @@ namespace ICU4N.Util
         /// <param name="offset">Root offset of the trie in the <see cref="ICharSequence"/>.</param>
         /// <param name="maxStringLength">If 0, the iterator returns full strings.
         /// Otherwise, the iterator returns strings with this maximum length.</param>
-        /// <returns>A new <see cref="CharsTrie.Enumerator"/>.</returns>
+        /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        internal static Enumerator GetEnumerator(ICharSequence trieChars, int offset, int maxStringLength)
+        internal static CharsTrieEnumerator GetEnumerator(ICharSequence trieChars, int offset, int maxStringLength)
         {
-            return new Enumerator(trieChars, offset, -1, maxStringLength);
+            return new CharsTrieEnumerator(trieChars, offset, -1, maxStringLength);
         }
 
-        /// <summary>
-        /// Return value type for the <see cref="Enumerator"/>.
-        /// </summary>
-        /// <stable>ICU 4.8</stable>
-        public sealed class Entry
-        {
-            /// <summary>
-            /// The string.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public ICharSequence Chars { get; set; }
+        // ICU4N specific - de-nested Entry and renamed CharsTrieEntry
 
-            /// <summary>
-            /// Gets or Sets the value associated with the string.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public int Value { get; set; }
-
-            internal Entry()
-            {
-            }
-        }
-
-        /// <summary>
-        /// Iterator for all of the (string, value) pairs in a <see cref="CharsTrie"/>.
-        /// </summary>
-        /// <stable>ICU 4.8</stable>
-        public sealed class Enumerator : IEnumerator<Entry>
-        {
-            private Entry current = null;
-
-            internal Enumerator(ICharSequence trieChars, int offset, int remainingMatchLength, int maxStringLength)
-            {
-                chars_ = trieChars;
-                pos_ = initialPos_ = offset;
-                remainingMatchLength_ = initialRemainingMatchLength_ = remainingMatchLength;
-                maxLength_ = maxStringLength;
-                int length = remainingMatchLength_;  // Actual remaining match length minus 1.
-                if (length >= 0)
-                {
-                    // Pending linear-match node, append remaining bytes to str_.
-                    ++length;
-                    if (maxLength_ > 0 && length > maxLength_)
-                    {
-                        length = maxLength_;  // This will leave remainingMatchLength>=0 as a signal.
-                    }
-                    str_.Append(chars_, pos_, (pos_ + length) - pos_); // ICU4N: Corrected 3rd parameter
-                    pos_ += length;
-                    remainingMatchLength_ -= length;
-                }
-            }
-
-            /// <summary>
-            /// Resets this iterator to its initial state.
-            /// </summary>
-            /// <returns>This.</returns>
-            /// <stable>ICU 4.8</stable>
-            public Enumerator Reset()
-            {
-                pos_ = initialPos_;
-                remainingMatchLength_ = initialRemainingMatchLength_;
-                skipValue_ = false;
-                int length = remainingMatchLength_ + 1;  // Remaining match length.
-                if (maxLength_ > 0 && length > maxLength_)
-                {
-                    length = maxLength_;
-                }
-                str_.Length = length;
-                pos_ += length;
-                remainingMatchLength_ -= length;
-                stack_.Clear();
-                return this;
-            }
-
-            /// <summary>
-            /// Returns true if there are more elements.
-            /// </summary>
-            /// <returns>true if there are more elements.</returns>
-            /// <stable>ICU 4.8</stable>
-            private bool HasNext /*const*/ => pos_ >= 0 || stack_.Count > 0;
-
-            /// <summary>
-            /// Finds the next (string, value) pair if there is one.
-            /// </summary>
-            /// <remarks>
-            /// If the string is truncated to the maximum length and does not
-            /// have a real value, then the value is set to -1.
-            /// In this case, this "not a real value" is indistinguishable from
-            /// a real value of -1.
-            /// </remarks>
-            /// <returns>An <see cref="Entry"/> with the string and value of the next element.</returns>
-            /// <stable>ICU 4.8</stable>
-            private Entry Next()
-            {
-                int pos = pos_;
-                if (pos < 0)
-                {
-                    //if (stack_.isEmpty())
-                    //{
-                    //    throw new NoSuchElementException();
-                    //}
-                    // Pop the state off the stack and continue with the next outbound edge of
-                    // the branch node.
-                    long top = stack_[stack_.Count - 1];
-                    stack_.Remove(top);
-                    int length = (int)top;
-                    pos = (int)(top >> 32);
-                    str_.Length = (length & 0xffff);
-                    length = length.TripleShift(16);
-                    if (length > 1)
-                    {
-                        pos = BranchNext(pos, length);
-                        if (pos < 0)
-                        {
-                            return entry_;  // Reached a final value.
-                        }
-                    }
-                    else
-                    {
-                        str_.Append(chars_[pos++]);
-                    }
-                }
-                if (remainingMatchLength_ >= 0)
-                {
-                    // We only get here if we started in a pending linear-match node
-                    // with more than maxLength remaining units.
-                    return TruncateAndStop();
-                }
-                for (; ; )
-                {
-                    int node = chars_[pos++];
-                    if (node >= kMinValueLead)
-                    {
-                        if (skipValue_)
-                        {
-                            pos = SkipNodeValue(pos, node);
-                            node &= kNodeTypeMask;
-                            skipValue_ = false;
-                        }
-                        else
-                        {
-                            // Deliver value for the string so far.
-                            bool isFinal = (node & kValueIsFinal) != 0;
-                            if (isFinal)
-                            {
-                                entry_.Value = ReadValue(chars_, pos, node & 0x7fff);
-                            }
-                            else
-                            {
-                                entry_.Value = ReadNodeValue(chars_, pos, node);
-                            }
-                            if (isFinal || (maxLength_ > 0 && str_.Length == maxLength_))
-                            {
-                                pos_ = -1;
-                            }
-                            else
-                            {
-                                // We cannot skip the value right here because it shares its
-                                // lead unit with a match node which we have to evaluate
-                                // next time.
-                                // Instead, keep pos_ on the node lead unit itself.
-                                pos_ = pos - 1;
-                                skipValue_ = true;
-                            }
-                            entry_.Chars = str_.ToCharSequence();
-                            return entry_;
-                        }
-                    }
-                    if (maxLength_ > 0 && str_.Length == maxLength_)
-                    {
-                        return TruncateAndStop();
-                    }
-                    if (node < kMinLinearMatch)
-                    {
-                        if (node == 0)
-                        {
-                            node = chars_[pos++];
-                        }
-                        pos = BranchNext(pos, node + 1);
-                        if (pos < 0)
-                        {
-                            return entry_;  // Reached a final value.
-                        }
-                    }
-                    else
-                    {
-                        // Linear-match node, append length units to str_.
-                        int length = node - kMinLinearMatch + 1;
-                        if (maxLength_ > 0 && str_.Length + length > maxLength_)
-                        {
-                            str_.Append(chars_, pos, maxLength_ - str_.Length); // ICU4N: (pos + maxLength_ - str_.Length) - pos == (maxLength_ - str_.Length)
-                            return TruncateAndStop();
-                        }
-                        str_.Append(chars_, pos, length); // ICU4N: (pos + length) - pos == length
-                        pos += length;
-                    }
-                }
-            }
-
-            // ICU4N specific - Remove() not supported in .NET
-
-            private Entry TruncateAndStop()
-            {
-                pos_ = -1;
-                // We reset entry_.chars every time we return entry_
-                // just because the caller might have modified the Entry.
-                entry_.Chars = str_.ToCharSequence();
-                entry_.Value = -1;  // no real value for str
-                return entry_;
-            }
-
-            private int BranchNext(int pos, int length)
-            {
-                while (length > kMaxBranchLinearSubNodeLength)
-                {
-                    ++pos;  // ignore the comparison unit
-                    // Push state for the greater-or-equal edge.
-                    // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
-                    stack_.Add(((long)SkipDelta(chars_, pos) << 32) | (uint)((length - (length >> 1)) << 16) | (uint)str_.Length);
-                    // Follow the less-than edge.
-                    length >>= 1;
-                    pos = JumpByDelta(chars_, pos);
-                }
-                // List of key-value pairs where values are either final values or jump deltas.
-                // Read the first (key, value) pair.
-                char trieUnit = chars_[pos++];
-                int node = chars_[pos++];
-                bool isFinal = (node & kValueIsFinal) != 0;
-                int value = ReadValue(chars_, pos, node &= 0x7fff);
-                pos = SkipValue(pos, node);
-                // ICU4N: Sign extended operand here is desirable, as that is what was happening in Java
-                stack_.Add(((long)pos << 32) | (uint)((length - 1) << 16) | (uint)str_.Length);
-                str_.Append(trieUnit);
-                if (isFinal)
-                {
-                    pos_ = -1;
-                    entry_.Chars = str_.ToCharSequence();
-                    entry_.Value = value;
-                    return -1;
-                }
-                else
-                {
-                    return pos + value;
-                }
-            }
-
-            /// <summary>
-            /// Gets the element in the collection at the current position of the enumerator.
-            /// </summary>
-            /// <stable>ICU 4.8</stable>
-            public Entry Current
-            {
-                get { return current; }
-            }
-
-            object IEnumerator.Current
-            {
-                get { return current; }
-            }
-
-            /// <summary>
-            /// Finds the next (string, value) pair if there is one.
-            /// </summary>
-            /// <remarks>
-            /// If the string is truncated to the maximum length and does not
-            /// have a real value, then the value is set to -1.
-            /// In this case, this "not a real value" is indistinguishable from
-            /// a real value of -1.
-            /// </remarks>
-            /// <returns>Returns true if an element has been set to <see cref="Current"/>; otherwise false.</returns>
-            /// <stable>ICU 4.8</stable>
-            public bool MoveNext()
-            {
-                if (!HasNext)
-                    return false;
-                current = Next();
-                return (current != null);
-            }
-
-            void IEnumerator.Reset() // ICU4N specific - expicit interface declaration for .NET compatibility
-            {
-                Reset();
-            }
-
-            public void Dispose()
-            {
-                // nothing to do
-            }
-
-            private ICharSequence chars_;
-            private int pos_;
-            private int initialPos_;
-            private int remainingMatchLength_;
-            private int initialRemainingMatchLength_;
-            private bool skipValue_;  // Skip intermediate value which was already delivered.
-
-            private StringBuilder str_ = new StringBuilder();
-            private int maxLength_;
-            private Entry entry_ = new Entry();
-
-            // The stack stores longs for backtracking to another
-            // outbound edge of a branch node.
-            // Each long has the offset in chars_ in bits 62..32,
-            // the str_.length() from before the node in bits 15..0,
-            // and the remaining branch length in bits 31..16.
-            // (We could store the remaining branch length minus 1 in bits 30..16 and not use bit 31,
-            // but the code looks more confusing that way.)
-            private List<long> stack_ = new List<long>();
-        }
+        // ICU4N specific - de-nested Enumerator and renamed CharsTrieEnumerator
 
         private void Stop()
         {
@@ -726,7 +732,7 @@ namespace ICU4N.Util
 
         // Reads a compact 32-bit integer.
         // pos is already after the leadUnit, and the lead unit has bit 15 reset.
-        private static int ReadValue(ICharSequence chars, int pos, int leadUnit)
+        internal static int ReadValue(ICharSequence chars, int pos, int leadUnit)
         {
             int value;
             if (leadUnit < kMinTwoUnitValueLead)
@@ -743,7 +749,7 @@ namespace ICU4N.Util
             }
             return value;
         }
-        private static int SkipValue(int pos, int leadUnit)
+        internal static int SkipValue(int pos, int leadUnit)
         {
             if (leadUnit >= kMinTwoUnitValueLead)
             {
@@ -764,7 +770,7 @@ namespace ICU4N.Util
             return SkipValue(pos, leadUnit & 0x7fff);
         }
 
-        private static int ReadNodeValue(ICharSequence chars, int pos, int leadUnit)
+        internal static int ReadNodeValue(ICharSequence chars, int pos, int leadUnit)
         {
             Debug.Assert(kMinValueLead <= leadUnit && leadUnit < kValueIsFinal);
             int value;
@@ -782,7 +788,7 @@ namespace ICU4N.Util
             }
             return value;
         }
-        private static int SkipNodeValue(int pos, int leadUnit)
+        internal static int SkipNodeValue(int pos, int leadUnit)
         {
             Debug.Assert(kMinValueLead <= leadUnit && leadUnit < kValueIsFinal);
             if (leadUnit >= kMinTwoUnitNodeValueLead)
@@ -799,7 +805,7 @@ namespace ICU4N.Util
             return pos;
         }
 
-        private static int JumpByDelta(ICharSequence chars, int pos)
+        internal static int JumpByDelta(ICharSequence chars, int pos)
         {
             int delta = chars[pos++];
             if (delta >= kMinTwoUnitDeltaLead)
@@ -817,7 +823,7 @@ namespace ICU4N.Util
             return pos + delta;
         }
 
-        private static int SkipDelta(ICharSequence chars, int pos)
+        internal static int SkipDelta(ICharSequence chars, int pos)
         {
             int delta = chars[pos++];
             if (delta >= kMinTwoUnitDeltaLead)

@@ -685,11 +685,11 @@ namespace ICU4N.Impl.Coll
                             head.Next = index = AddConditionalCE32(context.ToString(), ce32);
                         }
                         ConditionalCE32 cond = GetConditionalCE32(index);  // the last ConditionalCE32 so far
-                        using (CharsTrie.Enumerator prefixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
+                        using (CharsTrieEnumerator prefixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
                         {
                             while (prefixes.MoveNext())
                             {
-                                CharsTrie.Entry entry = prefixes.Current;
+                                CharsTrieEntry entry = prefixes.Current;
                                 context.Length = 0;
                                 context.Append(entry.Chars).Reverse().Insert(0, (char)entry.Chars.Length);
                                 ce32 = entry.Value;
@@ -767,11 +767,11 @@ namespace ICU4N.Impl.Coll
             }
 
             int suffixStart = context.Length;
-            using (CharsTrie.Enumerator suffixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
+            using (CharsTrieEnumerator suffixes = CharsTrie.GetEnumerator(base_.contexts, trieIndex + 2, 0))
             {
                 while (suffixes.MoveNext())
                 {
-                    CharsTrie.Entry entry = suffixes.Current;
+                    CharsTrieEntry entry = suffixes.Current;
                     context.Append(entry.Chars);
                     ce32 = CopyFromBaseCE32(c, entry.Value, true);
                     cond.Next = index = AddConditionalCE32(context.ToString(), ce32);

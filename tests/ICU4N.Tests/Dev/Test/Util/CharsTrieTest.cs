@@ -513,7 +513,7 @@ namespace ICU4N.Dev.Test.Util
             trie.Next('j');
             trie.Next('a');
             trie.Next('n');
-            CharsTrie.Enumerator iter = trie.GetEnumerator();
+            CharsTrieEnumerator iter = trie.GetEnumerator();
             // Expected data: Same as in buildMonthsTrie(), except only the suffixes
             // following "jan".
             StringAndValue[] data ={
@@ -559,7 +559,7 @@ namespace ICU4N.Dev.Test.Util
             trie.Next('n');
             trie.Next('u');
             trie.Next('a');
-            CharsTrie.Enumerator iter = trie.GetEnumerator();
+            CharsTrieEnumerator iter = trie.GetEnumerator();
             // Expected data: Same as in buildMonthsTrie(), except only the suffixes
             // following "janua".
             StringAndValue[] data ={
@@ -576,7 +576,7 @@ namespace ICU4N.Dev.Test.Util
         public void Test52TruncatingIteratorFromRoot()
         {
             CharsTrie trie = buildMonthsTrie(TrieBuilderOption.Fast);
-            CharsTrie.Enumerator iter = trie.GetEnumerator(4);
+            CharsTrieEnumerator iter = trie.GetEnumerator(4);
             // Expected data: Same as in buildMonthsTrie(), except only the first 4 characters
             // of each string, and no string duplicates from the truncation.
             StringAndValue[] data ={
@@ -626,7 +626,7 @@ namespace ICU4N.Dev.Test.Util
             trie.Next('a');
             trie.Next('b');
             // Truncate within the linear-match node.
-            CharsTrie.Enumerator iter = trie.GetEnumerator(2);
+            CharsTrieEnumerator iter = trie.GetEnumerator(2);
             StringAndValue[] expected ={
                 new StringAndValue("cd", -1)
              };
@@ -650,7 +650,7 @@ namespace ICU4N.Dev.Test.Util
             trie.Next('b');
             trie.Next('c');
             // Truncate after the linear-match node.
-            CharsTrie.Enumerator iter = trie.GetEnumerator(3);
+            CharsTrieEnumerator iter = trie.GetEnumerator(3);
             StringAndValue[] expected ={
                 new StringAndValue("def", 10),
             new StringAndValue("dep", -1),
@@ -799,7 +799,7 @@ namespace ICU4N.Dev.Test.Util
 
         private void checkNext(CharsTrie trie, StringAndValue[] data, int dataLength)
         {
-            CharsTrie.State state = new CharsTrie.State();
+            CharsTrieState state = new CharsTrieState();
             for (int i = 0; i < dataLength; ++i)
             {
                 String expectedString = data[i].s;
@@ -893,7 +893,7 @@ namespace ICU4N.Dev.Test.Util
 
         private void checkNextWithState(CharsTrie trie, StringAndValue[] data, int dataLength)
         {
-            CharsTrie.State noState = new CharsTrie.State(), state = new CharsTrie.State();
+            CharsTrieState noState = new CharsTrieState(), state = new CharsTrieState();
             for (int i = 0; i < dataLength; ++i)
             {
                 if ((i & 1) == 0)
@@ -991,12 +991,12 @@ namespace ICU4N.Dev.Test.Util
             checkIterator(trie.GetEnumerator(), data, dataLength);
         }
 
-        private void checkIterator(CharsTrie.Enumerator iter, StringAndValue[] data)
+        private void checkIterator(CharsTrieEnumerator iter, StringAndValue[] data)
         {
             checkIterator(iter, data, data.Length);
         }
 
-        private void checkIterator(CharsTrie.Enumerator iter, StringAndValue[] data, int dataLength)
+        private void checkIterator(CharsTrieEnumerator iter, StringAndValue[] data, int dataLength)
         {
             for (int i = 0; i < dataLength; ++i)
             {
@@ -1005,7 +1005,7 @@ namespace ICU4N.Dev.Test.Util
                     Errln("trie iterator hasNext()=false for item " + i + ": " + data[i].s);
                     break;
                 }
-                CharsTrie.Entry entry = iter.Current;
+                CharsTrieEntry entry = iter.Current;
                 String expectedString = data[i].s;
                 if (!expectedString.ContentEquals(entry.Chars))
                 {

@@ -193,7 +193,7 @@ namespace ICU4N.Impl.Coll
             private int skipLengthAtMatch;
             // We save the trie state before we attempt to match a character,
             // so that we can skip it and try the next one.
-            private CharsTrie.State state = new CharsTrie.State();
+            private CharsTrieState state = new CharsTrieState();
         };
 
         /// <summary>

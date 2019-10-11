@@ -412,11 +412,11 @@ namespace ICU4N.Impl.Coll
             // and starts with the same character.
             int prevX = -1;
             bool addContraction = false;
-            using (CharsTrie.Enumerator suffixes = CharsTrie.GetEnumerator(data.contexts, trieIndex + 2, 0))
+            using (CharsTrieEnumerator suffixes = CharsTrie.GetEnumerator(data.contexts, trieIndex + 2, 0))
             {
                 while (suffixes.MoveNext())
                 {
-                    CharsTrie.Entry entry = suffixes.Current;
+                    CharsTrieEntry entry = suffixes.Current;
                     ICharSequence suffix = entry.Chars;
                     int x = CollationFastLatin.GetCharIndex(suffix[0]);
                     if (x < 0) { continue; }  // ignore anything but fast Latin text

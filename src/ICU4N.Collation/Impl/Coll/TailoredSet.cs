@@ -279,15 +279,15 @@ namespace ICU4N.Impl.Coll
         private void ComparePrefixes(int c, string p, int pidx, string q, int qidx) // ICU4N specific - changed p and q from ICharSequence to string
         {
             // Parallel iteration over prefixes of both tables.
-            using (CharsTrie.Enumerator prefixes = new CharsTrie(p, pidx).GetEnumerator())
-            using (CharsTrie.Enumerator basePrefixes = new CharsTrie(q, qidx).GetEnumerator())
+            using (CharsTrieEnumerator prefixes = new CharsTrie(p, pidx).GetEnumerator())
+            using (CharsTrieEnumerator basePrefixes = new CharsTrie(q, qidx).GetEnumerator())
             {
                 string tp = null; // Tailoring prefix.
                 string bp = null; // Base prefix.
                                   // Use a string with a U+FFFF as the limit sentinel.
                                   // U+FFFF is untailorable and will not occur in prefixes.
                 string none = "\uffff";
-                CharsTrie.Entry te = null, be = null;
+                CharsTrieEntry te = null, be = null;
                 for (; ; )
                 {
                     if (tp == null)
@@ -353,8 +353,8 @@ namespace ICU4N.Impl.Coll
         private void CompareContractions(int c, string p, int pidx, string q, int qidx) // ICU4N specific - changed p and q from ICharSequence to string
         {
             // Parallel iteration over suffixes of both tables.
-            using (CharsTrie.Enumerator suffixes = new CharsTrie(p, pidx).GetEnumerator())
-            using (CharsTrie.Enumerator baseSuffixes = new CharsTrie(q, qidx).GetEnumerator())
+            using (CharsTrieEnumerator suffixes = new CharsTrie(p, pidx).GetEnumerator())
+            using (CharsTrieEnumerator baseSuffixes = new CharsTrie(q, qidx).GetEnumerator())
             {
                 string ts = null; // Tailoring suffix.
                 string bs = null; // Base suffix.
@@ -362,7 +362,7 @@ namespace ICU4N.Impl.Coll
                                   // U+FFFF is untailorable and will not occur in contractions except maybe
                                   // as a single suffix character for a root-collator boundary contraction.
                 string none = "\uffff\uffff";
-                CharsTrie.Entry te = null, be = null;
+                CharsTrieEntry te = null, be = null;
                 for (; ; )
                 {
                     if (ts == null)
@@ -424,7 +424,7 @@ namespace ICU4N.Impl.Coll
 
         private void AddPrefixes(CollationData d, int c, string p, int pidx) // ICU4N specific - changed p from ICharSequence to string
         {
-            using (CharsTrie.Enumerator prefixes = new CharsTrie(p, pidx).GetEnumerator())
+            using (CharsTrieEnumerator prefixes = new CharsTrie(p, pidx).GetEnumerator())
             {
                 while (prefixes.MoveNext())
                 {
@@ -464,7 +464,7 @@ namespace ICU4N.Impl.Coll
         // ICU4N specific overload
         private void AddContractions(int c, string p, int pidx)
         {
-            using (CharsTrie.Enumerator suffixes = new CharsTrie(p, pidx).GetEnumerator())
+            using (CharsTrieEnumerator suffixes = new CharsTrie(p, pidx).GetEnumerator())
             {
                 while (suffixes.MoveNext())
                 {
@@ -476,7 +476,7 @@ namespace ICU4N.Impl.Coll
 
         private void AddContractions(int c, ICharSequence p, int pidx)
         {
-            using (CharsTrie.Enumerator suffixes = new CharsTrie(p, pidx).GetEnumerator())
+            using (CharsTrieEnumerator suffixes = new CharsTrie(p, pidx).GetEnumerator())
             {
                 while (suffixes.MoveNext())
                 {
