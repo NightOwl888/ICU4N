@@ -561,7 +561,7 @@ namespace ICU4N.Impl
                                 new ReorderingBuffer(impl, new StringBuilder(), 5));
         }
 
-        public override QuickCheckResult QuickCheck(string s)
+        public override QuickCheckResult QuickCheck(string s) // ICU4N TODO: API Generate overloads
         {
             int spanLengthAndMaybe = impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
             if ((spanLengthAndMaybe & 1) != 0)
@@ -629,7 +629,7 @@ namespace ICU4N.Impl
             }
         }
 
-        public override int SpanQuickCheckYes(string s)
+        public override int SpanQuickCheckYes(string s) // ICU4N TODO: API Generate overloads
         {
             return impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
         }
@@ -676,7 +676,7 @@ namespace ICU4N.Impl
         {
         }
 
-        protected override void Normalize(string src, ReorderingBuffer buffer)
+        protected override void Normalize(string src, ReorderingBuffer buffer) // ICU4N TODO: API Generate overloads
         {
             impl.MakeFCD(src, 0, src.Length, buffer);
         }
@@ -697,7 +697,7 @@ namespace ICU4N.Impl
         }
 
         protected override void NormalizeAndAppend(
-            string src, bool doNormalize, ReorderingBuffer buffer)
+            string src, bool doNormalize, ReorderingBuffer buffer) // ICU4N TODO: API Generate overloads
         {
             impl.MakeFCDAndAppend(src, doNormalize, buffer);
         }
@@ -720,7 +720,7 @@ namespace ICU4N.Impl
             impl.MakeFCDAndAppend(src, doNormalize, buffer);
         }
 
-        public override int SpanQuickCheckYes(string s)
+        public override int SpanQuickCheckYes(string s) // ICU4N TODO: API Generate overloads
         {
             return impl.MakeFCD(s, 0, s.Length, null);
         }
@@ -816,7 +816,7 @@ namespace ICU4N.Impl
                 default: return null;
             }
         }
-        public static Norm2AllModes GetInstance(ByteBuffer bytes, string name)
+        public static Norm2AllModes GetInstance(ByteBuffer bytes, string name) // ICU4N TODO: API - Eliminate ByteBuffer
         {
             if (bytes == null)
             {

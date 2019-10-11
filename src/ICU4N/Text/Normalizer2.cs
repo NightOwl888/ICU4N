@@ -480,7 +480,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="s">Input string.</param>
         /// <returns>true if s is normalized.</returns>
-        public abstract bool IsNormalized(string s);
+        public abstract bool IsNormalized(string s); // ICU4N TODO: API Generate overloads
 
         /// <summary>
         /// Tests if the <see cref="StringBuilder"/> is normalized.
@@ -526,7 +526,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
-        public abstract QuickCheckResult QuickCheck(string s);
+        public abstract QuickCheckResult QuickCheck(string s); // ICU4N TODO: API Generate overloads
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -585,7 +585,7 @@ namespace ICU4N.Text
         /// </remarks>
         /// <param name="s">Input string.</param>
         /// <returns>"yes" span end index.</returns>
-        public abstract int SpanQuickCheckYes(string s);
+        public abstract int SpanQuickCheckYes(string s); // ICU4N TODO: API Generate overloads
 
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
