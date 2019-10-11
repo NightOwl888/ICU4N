@@ -7,16 +7,16 @@ using System.Text;
 
 namespace ICU4N.Impl
 {
+    public interface IStringRangeAdder
+    {
+        /// <param name="start"></param>
+        /// <param name="end">May be null, for adding single string.</param>
+        void Add(string start, string end);
+    }
+
     public class StringRange
     {
         private static readonly bool DEBUG = false;
-
-        public interface IAdder // ICU4N TODO: API - de-nest ?
-        {
-            /// <param name="start"></param>
-            /// <param name="end">May be null, for adding single string.</param>
-            void Add(string start, string end);
-        }
 
         private class Int32ArrayComparer : IComparer<int[]>
         {
@@ -41,10 +41,10 @@ namespace ICU4N.Impl
         /// Compact the set of strings.
         /// </summary>
         /// <param name="source">Set of strings.</param>
-        /// <param name="adder">Adds each pair to the output. See the <see cref="IAdder"/> interface.</param>
+        /// <param name="adder">Adds each pair to the output. See the <see cref="IStringRangeAdder"/> interface.</param>
         /// <param name="shorterPairs">Use abc-d instead of abc-abd.</param>
         /// <param name="moreCompact">Use a more compact form, at the expense of more processing. If false, source must be sorted.</param>
-        public static void Compact(ISet<string> source, IAdder adder, bool shorterPairs, bool moreCompact)
+        public static void Compact(ISet<string> source, IStringRangeAdder adder, bool shorterPairs, bool moreCompact)
         {
             if (!moreCompact)
             {
@@ -108,9 +108,9 @@ namespace ICU4N.Impl
         /// Faster but not as good compaction. Only looks at final codepoint.
         /// </summary>
         /// <param name="source">Set of strings.</param>
-        /// <param name="adder">Adds each pair to the output. See the <see cref="IAdder"/> interface.</param>
+        /// <param name="adder">Adds each pair to the output. See the <see cref="IStringRangeAdder"/> interface.</param>
         /// <param name="shorterPairs">Use abc-d instead of abc-abd.</param>
-        public static void Compact(ISet<string> source, IAdder adder, bool shorterPairs)
+        public static void Compact(ISet<string> source, IStringRangeAdder adder, bool shorterPairs)
         {
             Compact(source, adder, shorterPairs, false);
         }
