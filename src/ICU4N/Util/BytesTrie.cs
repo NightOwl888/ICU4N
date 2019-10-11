@@ -112,7 +112,7 @@ namespace ICU4N.Util
         /// Gets the length of the byte sequence.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public int BytesLength { get { return length; } }
+        public int BytesLength => length;
 
         /// <summary>
         /// Returns a byte of the byte sequence.
@@ -123,7 +123,7 @@ namespace ICU4N.Util
         /// <param name="index">An index into the byte sequence.</param>
         /// <returns>The index-th byte sequence byte.</returns>
         /// <stable>ICU 4.8</stable>
-        public byte ByteAt(int index) { return bytes[index]; } // ICU4N TODO: API - make into this[]
+        public byte this[int index] => bytes[index];
 
         /// <summary>
         /// Copies the byte sequence into a byte array.

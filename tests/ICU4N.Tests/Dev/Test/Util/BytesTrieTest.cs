@@ -844,7 +844,7 @@ namespace ICU4N.Dev.Test.Util
                 StringBuilder bytesString = new StringBuilder();
                 for (int j = 0; j < entry.BytesLength; ++j)
                 {
-                    bytesString.Append((char)(entry.ByteAt(j) & 0xff));
+                    bytesString.Append((char)(entry[j] & 0xff));
                 }
                 if (!data[i].s.ContentEquals(bytesString))
                 {
