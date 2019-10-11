@@ -1813,7 +1813,7 @@ namespace ICU4N
                 }
 
                 return UnicodeBlock.GetInstance(
-                        UCharacterProperty.Instance.GetIntPropertyValue(ch, (int)UProperty.Block));
+                        UCharacterProperty.Instance.GetIntPropertyValue(ch, UProperty.Block));
             }
 
             /// <summary>
@@ -5968,7 +5968,7 @@ namespace ICU4N
         /// <stable>ICU 2.4</stable>
         public static int GetIntPropertyValue(int ch, UProperty type)
         {
-            return UCharacterProperty.Instance.GetIntPropertyValue(ch, (int)type);
+            return UCharacterProperty.Instance.GetIntPropertyValue(ch, type);
         }
 
         /// <icu/>
@@ -6076,7 +6076,7 @@ namespace ICU4N
         /// </returns>
         public static int GetIntPropertyMaxValue(UProperty type)
         {
-            return UCharacterProperty.Instance.GetIntPropertyMaxValue((int)type);
+            return UCharacterProperty.Instance.GetIntPropertyMaxValue(type);
         }
 
         /// <summary>

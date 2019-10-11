@@ -152,20 +152,20 @@ namespace ICU4N.Impl
 
         // property access functions ------------------------------------------- ***
 
-        public int GetMaxValue(int which)
+        public int GetMaxValue(UProperty which)
         {
             int max;
 
             max = indexes[IX_MAX_VALUES];
             switch (which)
             {
-                case (int)UProperty.Bidi_Class:
+                case UProperty.Bidi_Class:
                     return (max & CLASS_MASK);
-                case (int)UProperty.Joining_Group:
+                case UProperty.Joining_Group:
                     return (max & MAX_JG_MASK) >> MAX_JG_SHIFT;
-                case (int)UProperty.Joining_Type:
+                case UProperty.Joining_Type:
                     return (max & JT_MASK) >> JT_SHIFT;
-                case (int)UProperty.Bidi_Paired_Bracket_Type:
+                case UProperty.Bidi_Paired_Bracket_Type:
                     return (max & BPT_MASK) >> BPT_SHIFT;
                 default:
                     return -1; /* undefined */

@@ -593,7 +593,7 @@ namespace ICU4N.Impl
                 // systematic, directly stored properties
                 return (outerInstance.GetAdditional(c, column) & mask).TripleShift(shift);
             }
-            internal virtual int GetMaxValue(int which)
+            internal virtual int GetMaxValue(UProperty which)
             {
                 return (outerInstance.GetMaxValues(column) & mask).TripleShift(shift);
             }
@@ -602,16 +602,16 @@ namespace ICU4N.Impl
         private class AnonymousIntProperty : IntProperty
         {
             private readonly Func<int, int> getValue;
-            private readonly Func<int, int> getMaxValue;
+            private readonly Func<UProperty, int> getMaxValue;
 
-            internal AnonymousIntProperty(UCharacterProperty outerInstance, int source, Func<int, int> getValue, Func<int, int> getMaxValue)
+            internal AnonymousIntProperty(UCharacterProperty outerInstance, int source, Func<int, int> getValue, Func<UProperty, int> getMaxValue)
             : base(outerInstance, source)
             {
                 this.getValue = getValue;
                 this.getMaxValue = getMaxValue;
             }
 
-            internal AnonymousIntProperty(UCharacterProperty outerInstance, int column, int mask, int shift, Func<int, int> getValue, Func<int, int> getMaxValue)
+            internal AnonymousIntProperty(UCharacterProperty outerInstance, int column, int mask, int shift, Func<int, int> getValue, Func<UProperty, int> getMaxValue)
                 : base(outerInstance, column, mask, shift)
             {
                 this.getValue = getValue;
@@ -623,7 +623,7 @@ namespace ICU4N.Impl
                 return getValue == null ? base.GetValue(c) : getValue(c);
             }
 
-            internal override int GetMaxValue(int which)
+            internal override int GetMaxValue(UProperty which)
             {
                 return getMaxValue == null ? base.GetMaxValue(which) : getMaxValue(which);
             }
@@ -645,7 +645,7 @@ namespace ICU4N.Impl
                 return getValue == null ? base.GetValue(c) : getValue(c);
             }
 
-            internal override int GetMaxValue(int which)
+            internal override int GetMaxValue(UProperty which)
             {
                 return UBiDiProps.Instance.GetMaxValue(which);
             }
@@ -666,7 +666,7 @@ namespace ICU4N.Impl
                 return getValue == null ? base.GetValue(c) : getValue(c);
             }
 
-            internal override int GetMaxValue(int which)
+            internal override int GetMaxValue(UProperty which)
             {
                 return 0xff;
             }
@@ -688,7 +688,7 @@ namespace ICU4N.Impl
                 return Norm2AllModes.GetN2WithImpl(which - (int)UProperty.NFD_Quick_Check).GetQuickCheck(c);
             }
 
-            internal override int GetMaxValue(int which)
+            internal override int GetMaxValue(UProperty which)
             {
                 return max;
             }
@@ -696,50 +696,48 @@ namespace ICU4N.Impl
 
         private IntProperty[] intProps;
 
-        // ICU4N TODO: API - change which to UProperty
-        public int GetIntPropertyValue(int c, int which) // ICU4N TODO: API - rename back to GetIntPropertyValue (we don't have to discern between different data types)
+        public int GetIntPropertyValue(int c, UProperty which)
         {
-            if (which < (int)UProperty.Int_Start)
+            if (which < UProperty.Int_Start)
             {
-                if ((int)UProperty.Binary_Start <= which
+                if (UProperty.Binary_Start <= which
 #pragma warning disable 612, 618
-                    && which < (int)UProperty.Binary_Limit)
+                    && which < UProperty.Binary_Limit)
 #pragma warning restore 612, 618
                 {
-                    return binProps[which].Contains(c) ? 1 : 0;
+                    return binProps[(int)which].Contains(c) ? 1 : 0;
                 }
             }
 #pragma warning disable 612, 618
-            else if (which < (int)UProperty.Int_Limit)
+            else if (which < UProperty.Int_Limit)
 #pragma warning restore 612, 618
             {
-                return intProps[which - (int)UProperty.Int_Start].GetValue(c);
+                return intProps[which - UProperty.Int_Start].GetValue(c);
             }
-            else if (which == (int)UProperty.General_Category_Mask)
+            else if (which == UProperty.General_Category_Mask)
             {
                 return GetMask(GetType(c));
             }
             return 0; // undefined
         }
 
-        // ICU4N TODO: API - change which to UProperty
-        public int GetIntPropertyMaxValue(int which)
+        public int GetIntPropertyMaxValue(UProperty which)
         {
-            if (which < (int)UProperty.Int_Start)
+            if (which < UProperty.Int_Start)
             {
                 if ((int)UProperty.Binary_Start <= which
 #pragma warning disable 612, 618
-                    && which < (int)UProperty.Binary_Limit)
+                    && which < UProperty.Binary_Limit)
 #pragma warning restore 612, 618
                 {
                     return 1;  // maximum TRUE for all binary properties
                 }
             }
 #pragma warning disable 612, 618
-            else if (which < (int)UProperty.Int_Limit)
+            else if (which < UProperty.Int_Limit)
 #pragma warning restore 612, 618
             {
-                return intProps[which - (int)UProperty.Int_Start].GetMaxValue(which);
+                return intProps[which - UProperty.Int_Start].GetMaxValue(which);
             }
             return -1; // undefined
         }
