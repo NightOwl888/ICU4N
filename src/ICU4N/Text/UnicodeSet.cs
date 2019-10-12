@@ -94,6 +94,45 @@ namespace ICU4N.Text
         AddCaseMappings = 4,
     }
 
+    /// <summary>
+    /// A struct-like class used for iteration through ranges, for faster iteration than by String.
+    /// Read about the restrictions on usage in <see cref="UnicodeSet.Ranges"/>.
+    /// </summary>
+    /// <stable>ICU 54</stable>
+    public class UnicodeSetEntryRange
+    {
+        /// <summary>
+        /// The starting code point of the range.
+        /// </summary>
+        /// <stable>ICU 54</stable>
+        public int Codepoint { get; set; }
+
+        /// <summary>
+        /// The ending code point of the range.
+        /// </summary>
+        /// <stable>ICU 54</stable>
+        public int CodepointEnd { get; set; }
+
+
+        internal UnicodeSetEntryRange()
+        {
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        /// <stable>ICU 54</stable>
+        public override string ToString()
+        {
+            StringBuilder b = new StringBuilder();
+            return (
+                    Codepoint == CodepointEnd ? UnicodeSet.AppendToPat(b, Codepoint, false)
+                            : UnicodeSet.AppendToPat(UnicodeSet.AppendToPat(b, Codepoint, false).Append('-'), CodepointEnd, false))
+                            .ToString();
+        }
+    }
+
 
     /// <summary>
     /// A mutable set of Unicode characters and multicharacter strings.
@@ -4277,48 +4316,9 @@ namespace ICU4N.Text
         // ************************
 
         /// <summary>
-        /// A struct-like class used for iteration through ranges, for faster iteration than by String.
-        /// Read about the restrictions on usage in <see cref="UnicodeSet.Ranges"/>.
-        /// </summary>
-        /// <stable>ICU 54</stable>
-        public class EntryRange // ICU4N TODO: API - de-nest ?
-        {
-            /// <summary>
-            /// The starting code point of the range.
-            /// </summary>
-            /// <stable>ICU 54</stable>
-            public int Codepoint { get; set; }
-
-            /// <summary>
-            /// The ending code point of the range.
-            /// </summary>
-            /// <stable>ICU 54</stable>
-            public int CodepointEnd { get; set; }
-
-
-            internal EntryRange()
-            {
-            }
-
-            /// <summary>
-            /// Returns a string that represents the current object.
-            /// </summary>
-            /// <returns>A string that represents the current object.</returns>
-            /// <stable>ICU 54</stable>
-            public override string ToString()
-            {
-                StringBuilder b = new StringBuilder();
-                return (
-                        Codepoint == CodepointEnd ? AppendToPat(b, Codepoint, false)
-                                : AppendToPat(AppendToPat(b, Codepoint, false).Append('-'), CodepointEnd, false))
-                                .ToString();
-            }
-        }
-
-        /// <summary>
         /// Provide for faster enumeration than by <see cref="string"/>. Returns an Enumerable/Enumerator over ranges of code points.
         /// The <see cref="UnicodeSet"/> must not be altered during the iteration.
-        /// The <see cref="EntryRange"/> instance is the same each time; the contents are just reset.
+        /// The <see cref="UnicodeSetEntryRange"/> instance is the same each time; the contents are just reset.
         /// </summary>
         /// <remarks>
         /// <b>Warning: </b>To iterate over the full contents, you have to also iterate over the strings.
@@ -4338,12 +4338,12 @@ namespace ICU4N.Text
         /// </code>
         /// </remarks>
         /// <stable>ICU 54</stable>
-        public IEnumerable<EntryRange> Ranges
+        public IEnumerable<UnicodeSetEntryRange> Ranges
         {
             get { return new EntryRangeEnumerable(this); }
         }
 
-        private class EntryRangeEnumerable : IEnumerable<EntryRange>
+        private class EntryRangeEnumerable : IEnumerable<UnicodeSetEntryRange>
         {
             internal readonly UnicodeSet outerInstance;
 
@@ -4352,7 +4352,7 @@ namespace ICU4N.Text
                 this.outerInstance = outerInstance;
             }
 
-            public virtual IEnumerator<EntryRange> GetEnumerator()
+            public virtual IEnumerator<UnicodeSetEntryRange> GetEnumerator()
             {
                 return new EntryRangeEnumerator(this);
             }
@@ -4363,10 +4363,10 @@ namespace ICU4N.Text
             }
         }
 
-        private class EntryRangeEnumerator : IEnumerator<EntryRange>
+        private class EntryRangeEnumerator : IEnumerator<UnicodeSetEntryRange>
         {
             private int pos;
-            private EntryRange result = new EntryRange();
+            private UnicodeSetEntryRange result = new UnicodeSetEntryRange();
             private readonly EntryRangeEnumerable outerInstance;
 
             internal EntryRangeEnumerator(EntryRangeEnumerable outerInstance)
@@ -4374,7 +4374,7 @@ namespace ICU4N.Text
                 this.outerInstance = outerInstance;
             }
 
-            public virtual EntryRange Current
+            public virtual UnicodeSetEntryRange Current
             {
                 get { return result; }
             }
@@ -4406,7 +4406,7 @@ namespace ICU4N.Text
                 get { return pos < outerInstance.outerInstance.len - 1; }
             }
 
-            private EntryRange Next()
+            private UnicodeSetEntryRange Next()
             {
                 if (pos < outerInstance.outerInstance.len - 1)
                 {

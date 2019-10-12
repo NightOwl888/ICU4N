@@ -837,7 +837,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
+    
 	    // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(StringBuilder app, StringBuilder s)
@@ -851,7 +851,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
+    
 	    // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(StringBuilder app, char[] s)
@@ -865,7 +865,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
+    
 	    // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(StringBuilder app, ICharSequence s)
@@ -879,7 +879,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-		
+    	
 	    // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(IAppendable app, string s)
@@ -893,7 +893,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
+    
 	    // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(IAppendable app, StringBuilder s)
@@ -907,7 +907,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
+    
 	    // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(IAppendable app, char[] s)
@@ -921,7 +921,7 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
+    
 	    // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(IAppendable app, ICharSequence s)
@@ -935,12 +935,12 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
+    
         /// <summary>
         /// Append the <see cref="ToPattern(bool)"/> representation of a
         /// string to the given <see cref="StringBuilder"/>.
         /// </summary>
-        private static StringBuilder AppendToPat(StringBuilder buf, string s, bool escapeUnprintable)
+        internal static StringBuilder AppendToPat(StringBuilder buf, string s, bool escapeUnprintable)
         {
             int cp;
             for (int i = 0; i < s.Length; i += Character.CharCount(cp))
@@ -970,7 +970,7 @@ namespace ICU4N.Text
         /// Append the <see cref="ToPattern(bool)"/> representation of a
         /// character to the given <see cref="StringBuilder"/>.
         /// </summary>
-        private static StringBuilder AppendToPat(StringBuilder buf, int c, bool escapeUnprintable)
+        internal static StringBuilder AppendToPat(StringBuilder buf, int c, bool escapeUnprintable)
         {
             try
             {
@@ -1507,7 +1507,7 @@ namespace ICU4N.Text
 
             return offset + lastLen;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1533,7 +1533,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1559,7 +1559,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1585,7 +1585,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1611,7 +1611,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-		
+        
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1637,7 +1637,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1663,7 +1663,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1689,7 +1689,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1715,7 +1715,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-		
+        
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1741,7 +1741,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1767,7 +1767,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1793,7 +1793,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1819,7 +1819,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-		
+        
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1845,7 +1845,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1871,7 +1871,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1897,7 +1897,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Does one string contain another, starting at a specific offset?
         /// </summary>
@@ -1923,7 +1923,7 @@ namespace ICU4N.Text
             }
             return i;
         }
-	
+    
         /// <summary>
         /// Adds the specified multicharacter to this set if it is not already
         /// present.  If this set already contains the multicharacter,
@@ -2517,7 +2517,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual int Span(string s, int start, SpanCondition spanCondition)
         {
-			int ignoredOutCount;
+            int ignoredOutCount;
             int end = s.Length;
             if (start < 0)
             {
@@ -2566,7 +2566,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual int Span(StringBuilder s, int start, SpanCondition spanCondition)
         {
-			int ignoredOutCount;
+            int ignoredOutCount;
             int end = s.Length;
             if (start < 0)
             {
@@ -2615,7 +2615,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual int Span(char[] s, int start, SpanCondition spanCondition)
         {
-			int ignoredOutCount;
+            int ignoredOutCount;
             int end = s.Length;
             if (start < 0)
             {
@@ -2664,7 +2664,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         internal virtual int Span(ICharSequence s, int start, SpanCondition spanCondition)
         {
-			int ignoredOutCount;
+            int ignoredOutCount;
             int end = s.Length;
             if (start < 0)
             {
@@ -3736,5 +3736,5 @@ namespace ICU4N.Text
             }
             return result.ToString();
         }
-	}
+    }
 }

@@ -2792,7 +2792,7 @@ namespace ICU4N.Dev.Test.Lang
             assertEquals("", "M, a-c", string.Join(", ", us1.Ranges));
 
             // Sample code
-            foreach (EntryRange range in us1.Ranges)
+            foreach (UnicodeSetEntryRange range in us1.Ranges)
             {
                 // do something with code points between range.CodepointEnd and range.CodepointEnd;
             }
@@ -2812,7 +2812,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 UnicodeSet us = new UnicodeSet(test);
                 UnicodeSetIterator it = new UnicodeSetIterator(us);
-                foreach (EntryRange range in us.Ranges)
+                foreach (UnicodeSetEntryRange range in us.Ranges)
                 {
                     String title = range.ToString();
                     Logln(title);
