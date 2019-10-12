@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Text;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Resources;
 using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: API de-nest?
 
@@ -12,6 +13,7 @@ namespace ICU4N.Util
     /// <a href="http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements">
     /// http://www.unicode.org/reports/tr35/tr35-general.html#Character_Elements</a>.
     /// </summary>
+    [SuppressMessage("Microsoft.Design", "CA1027", Justification = "Enum values cannot be combined")]
     public enum ExemplarSetType
     {
         /// <summary>
@@ -102,6 +104,58 @@ namespace ICU4N.Util
         ///// </summary>
         //[Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
         //Count = 4
+    }
+
+    /// <summary>
+    /// Enumeration for representing the measurement systems.
+    /// </summary>
+    /// <stable>ICU 2.8</stable>
+    public enum MeasurementSystem
+    {
+        /// <summary>
+        /// Measurement system specified by Le Syst&#x00E8;me International d'Unit&#x00E9;s (SI)
+        /// otherwise known as Metric system.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        Metric = 0,
+
+        /// <summary>
+        /// Measurement system followed in the United States of America.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        UnitedStates = 1,
+
+        /// <summary>
+        /// Mix of metric and imperial units used in Great Britain.
+        /// </summary>
+        /// <stable>ICU 55</stable>
+        UnitedKingdom = 2,
+    }
+
+    /// <summary>
+    /// A class that represents the size of letter head
+    /// used in the country.
+    /// </summary>
+    /// <stable>ICU 2.8</stable>
+    public sealed class PaperSize
+    {
+        internal PaperSize(int h, int w)
+        {
+            Height = h;
+            Width = w;
+        }
+
+        /// <summary>
+        /// Gets the height of the paper.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        public int Height { get; private set; }
+
+        /// <summary>
+        /// Gets the width of the paper.
+        /// </summary>
+        /// <stable>ICU 2.8</stable>
+        public int Width { get; private set; }
     }
 
     /// <summary>
@@ -347,40 +401,7 @@ namespace ICU4N.Util
             return measTypeBundle;
         }
 
-
-        /**
-         * Enumeration for representing the measurement systems.
-         * @stable ICU 2.8
-         */
-        //public enum MeasurementSystem
-        //{
-        //    SI,
-        //    US,
-        //    UK
-        //}
-
-        public sealed class MeasurementSystem
-        {
-            /// <summary>
-            /// Measurement system specified by Le Syst&#x00E8;me International d'Unit&#x00E9;s (SI)
-            /// otherwise known as Metric system.
-            /// </summary>
-            /// <stable>ICU 2.8</stable>
-            public static readonly MeasurementSystem SI = new MeasurementSystem();
-            /// <summary>
-            /// Measurement system followed in the United States of America.
-            /// </summary>
-            /// <stable>ICU 2.8</stable>
-            public static readonly MeasurementSystem US = new MeasurementSystem();
-
-            /// <summary>
-            /// Mix of metric and imperial units used in Great Britain.
-            /// </summary>
-            /// <stable>ICU 55</stable>
-            public static readonly MeasurementSystem UK = new MeasurementSystem();
-
-            private MeasurementSystem() { }
-        }
+        // ICU4N specific - de-nested MeasurementSystem
 
         /// <summary>
         /// Returns the measurement system used in the locale specified by the locale.
@@ -391,53 +412,10 @@ namespace ICU4N.Util
         public static MeasurementSystem GetMeasurementSystem(ULocale locale)
         {
             UResourceBundle sysBundle = MeasurementTypeBundleForLocale(locale, MEASUREMENT_SYSTEM);
-
-            switch (sysBundle.GetInt32())
-            {
-                case 0: return MeasurementSystem.SI;
-                case 1: return MeasurementSystem.US;
-                case 2: return MeasurementSystem.UK;
-                default:
-                    // return null if the object is null or is not an instance
-                    // of integer indicating an error
-                    return null;
-            }
+            return (MeasurementSystem)sysBundle.GetInt32();
         }
 
-        /// <summary>
-        /// A class that represents the size of letter head
-        /// used in the country.
-        /// </summary>
-        /// <stable>ICU 2.8</stable>
-        public sealed class PaperSize
-        {
-            private int height;
-            private int width;
-
-            internal PaperSize(int h, int w)
-            {
-                height = h;
-                width = w;
-            }
-
-            /// <summary>
-            /// Gets the height of the paper.
-            /// </summary>
-            /// <stable>ICU 2.8</stable>
-            public int Height
-            {
-                get { return height; }
-            }
-
-            /// <summary>
-            /// Gets the width of the paper.
-            /// </summary>
-            /// <stable>ICU 2.8</stable>
-            public int Width
-            {
-                get { return width; }
-            }
-        }
+        // ICU4N specific - de-nested PaperSize
 
         /// <summary>
         /// Returns the size of paper used in the locale. The paper sizes returned are always in
