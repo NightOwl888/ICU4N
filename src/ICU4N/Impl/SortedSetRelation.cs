@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace ICU4N.Impl
 {
     /// <summary>
-    /// Relations that correspond to the filters in <see cref="SortedSetRelation.HasRelation{T}(SortedSet{T}, SortedSetOperation, SortedSet{T})"/>.
+    /// Relations that correspond to the filters in <see cref="SortedSetRelation.HasRelation{T}(SortedSet{T}, SortedSetFilter, SortedSet{T})"/>.
     /// </summary>
     public enum SortedSetFilter
     {
@@ -61,7 +61,7 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// There are 8 combinations of the relationship bits. These correspond to
-        /// the filters (combinations of allowed bits) in <see cref="HasRelation{T}(SortedSet{T}, SortedSetOperation, SortedSet{T})"/>. They also
+        /// the filters (combinations of allowed bits) in <see cref="HasRelation{T}(SortedSet{T}, SortedSetFilter, SortedSet{T})"/>. They also
         /// correspond to the modification functions, listed in comments.
         /// </summary>
         internal const int // ICU4N specific - using SortedSetOperation enum, but left constants in for compatibility. Made internal instead of public.
