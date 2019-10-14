@@ -1,5 +1,8 @@
-﻿using System;
+﻿using ICU4N.Support.Collections;
+using ICU4N.Support.Text;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace ICU4N.Text
 {
@@ -92,15 +95,84 @@ namespace ICU4N.Text
         /// <summary>
         /// Add the contents of the UnicodeSet (as strings) into a collection.
         /// </summary>
-        /// <typeparam name="T">Collection type.</typeparam>
         /// <param name="target">Collection to add into.</param>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual T CopyTo<T>(T target) where T : ICollection<string>
+        public virtual ICollection<string> CopyTo(ICollection<string> target)
         {
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
             return AddAllTo(this, target);
+        }
+
+        /// <summary>
+        /// Add the contents of the UnicodeSet (as <see cref="T:char[]"/>s) into a collection.
+        /// </summary>
+        /// <param name="target">Collection to add into.</param>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual ICollection<char[]> CopyTo(ICollection<char[]> target)
+        {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+            foreach (var item in this)
+            {
+                target.Add(item.ToCharArray());
+            }
+            return target;
+        }
+
+        /// <summary>
+        /// Add the contents of the UnicodeSet (as <see cref="StringBuilder"/>s) into a collection.
+        /// </summary>
+        /// <param name="target">Collection to add into.</param>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual ICollection<StringBuilder> CopyTo(ICollection<StringBuilder> target)
+        {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+            foreach (var item in this)
+            {
+                target.Add(new StringBuilder(item));
+            }
+            return target;
+        }
+
+        /// <summary>
+        /// Add the contents of the UnicodeSet (as <see cref="StringCharSequence"/>s) into a collection.
+        /// </summary>
+        /// <param name="target">Collection to add into.</param>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal virtual ICollection<ICharSequence> CopyTo(ICollection<ICharSequence> target)
+        {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+            foreach (var item in this)
+            {
+                target.Add(item.ToCharSequence());
+            }
+            return target;
+        }
+
+        /// <summary>
+        /// Add the contents of the UnicodeSet (using a factory delegate to instantiate the <see cref="ICharSequence"/> types) into a collection.
+        /// </summary>
+        /// <typeparam name="T">Collection type.</typeparam>
+        /// <param name="target">Collection to add into.</param>
+        /// <param name="charSequencFactory">A factory delegate to  instantiate the <see cref="ICharSequence"/> types.</param>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        internal virtual T CopyTo<T>(T target, Func<string, ICharSequence> charSequencFactory) where T : ICollection<ICharSequence>
+        {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+            foreach (var item in this)
+            {
+                target.Add(charSequencFactory(item));
+            }
+            return target;
         }
 
         /// <summary>
@@ -161,8 +233,8 @@ namespace ICU4N.Text
         /// Returns true if there is a partition of the string such that this set contains each of the partitioned strings.
         /// For example, for the Unicode set [a{bc}{cd}]
         /// <list type="bullet">
-        ///     <item><description><see cref="ContainsAll(string)"/> is true for each of: "a", "bc", ""cdbca"</description></item>
-        ///     <item><description><see cref="ContainsAll(string)"/> is false for each of: "acb", "bcda", "bcx"</description></item>
+        ///     <item><description><see cref="IsSupersetOf(string)"/> is true for each of: "a", "bc", ""cdbca"</description></item>
+        ///     <item><description><see cref="IsSupersetOf(string)"/> is false for each of: "acb", "bcda", "bcx"</description></item>
         /// </list>
         /// </summary>
         /// <param name="s">String containing characters to be checked for containment.</param>
@@ -188,6 +260,51 @@ namespace ICU4N.Text
             if (b == null)
                 throw new ArgumentNullException(nameof(b));
             return ContainsAll(b);
+        }
+
+        /// <summary>
+        /// Determines whether a <see cref="UnicodeSet"/> object is a proper subset of the specified <see cref="UnicodeSet"/>.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current <see cref="UnicodeSet"/> object.</param>
+        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of other; otherwise, false.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool IsProperSubsetOf(UnicodeSet other)
+        {
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
+
+            if (this.Count >= other.Count)
+                return false;
+
+            return IsSubsetOfInternal(other);
+        }
+
+        /// <summary>
+        /// Determines whether a <see cref="UnicodeSet"/> object is a subset of the specified <see cref="UnicodeSet"/>.
+        /// </summary>
+        /// <param name="other">The collection to compare to the current <see cref="UnicodeSet"/> object.</param>
+        /// <returns>true if the <see cref="UnicodeSet"/> object is a subset of other; otherwise, false.</returns>
+        /// <draft>ICU4N 60.1</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool IsSubsetOf(UnicodeSet other)
+        {
+            if (other == null)
+                throw new ArgumentNullException(nameof(other));
+
+            return IsSubsetOfInternal(other);
+        }
+
+        private bool IsSubsetOfInternal(UnicodeSet other)
+        {
+            foreach (var item in this)
+            {
+                if (!other.Contains(item))
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         /// <summary>
@@ -334,99 +451,9 @@ namespace ICU4N.Text
             }
         }
 
-        /// <summary>
-        /// Determines whether a <see cref="UnicodeSet"/> object is a proper subset of the specified collection.
-        /// </summary>
-        /// <param name="other">The collection to compare to the current <see cref="UnicodeSet"/> object.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of other; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsProperSubsetOf(IEnumerable<string> other)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
-            throw new NotImplementedException(); // ICU4N TODO: Implementation
-        }
-
-        /// <summary>
-        /// Determines whether a <see cref="UnicodeSet"/> object is a proper superset of the specified collection.
-        /// </summary>
-        /// <param name="other">The collection to compare to the current <see cref="UnicodeSet"/> object.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of other; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsProperSupersetOf(IEnumerable<string> other)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
-            throw new NotImplementedException(); // ICU4N TODO: Implementation
-        }
-
-        /// <summary>
-        /// Determines whether a <see cref="UnicodeSet"/> object is a subset of the specified collection.
-        /// </summary>
-        /// <param name="other">The collection to compare to the current <see cref="UnicodeSet"/> object.</param>
-        /// <returns>true if the <see cref="UnicodeSet"/> object is a subset of other; otherwise, false.</returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool IsSubsetOf(IEnumerable<string> other)
-        {
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
-            throw new NotImplementedException(); // ICU4N TODO: Implementation
-        }
-
-        /// <summary>
-        /// Checks if this and other contain the same elements. This is set equality: 
-        /// duplicates and order are ignored
-        /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
-        /// <draft>ICU4N 60.1</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        public virtual bool SetEquals(IEnumerable<string> other) // TODO: Generate overloads with T4
-        {
-            if (other == null)
-            {
-                return false;
-            }
-            if (this == other)
-            {
-                return true;
-            }
-            UnicodeSet otherAsSet = other as UnicodeSet;
-            if (otherAsSet != null)
-            {
-                if (this.Count != otherAsSet.Count)
-                {
-                    return false;
-                }
-                return ContainsAll(otherAsSet);
-            }
-            else
-            {
-                ICollection<string> otherAsCollection = other as ICollection<string>;
-                if (otherAsCollection != null)
-                {
-                    if (this.Count == 0 && otherAsCollection.Count > 0)
-                    {
-                        return false;
-                    }
-                }
-                int countOfOther = 0;
-                foreach (var item in other)
-                {
-                    if (!this.Contains(item))
-                        return false;
-                    countOfOther++;
-                }
-                return countOfOther == this.Count;
-            }
-        }
-
         void ISet<string>.ExceptWith(IEnumerable<string> other)
         {
-            this.ExceptWith(other);
+            this.ExceptWith(other); // standard implementation returns UnicodeSet, so we need an overload
         }
 
         void ISet<string>.IntersectWith(IEnumerable<string> other)
@@ -436,8 +463,7 @@ namespace ICU4N.Text
 
         void ISet<string>.SymmetricExceptWith(IEnumerable<string> other)
         {
-            throw new NotImplementedException(); // ICU4N TODO: Implementation
-            //this.SymmetricExceptWith(other); // standard implementation returns UnicodeSet, so we need an overload
+            this.SymmetricExceptWith(other); // standard implementation returns UnicodeSet, so we need an overload
         }
 
         void ISet<string>.UnionWith(IEnumerable<string> other)

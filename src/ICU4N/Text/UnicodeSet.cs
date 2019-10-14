@@ -827,7 +827,7 @@ namespace ICU4N.Text
         /// codepoints and strings.
         /// </summary>
         /// <stable>ICU 2.0</stable>
-        public virtual int Count // ICU4N TODO: Not the best candidate for a property...
+        public virtual int Count
         {
             get
             {

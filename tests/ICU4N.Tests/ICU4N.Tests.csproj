@@ -34,6 +34,14 @@
     <EmbeddedResource Include="Dev\Test\Util\Trie2Test.setRangesSingleValue.32.tri2" />
     <EmbeddedResource Include="Dev\Test\Rbbi\break_rules\*" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Support\Text\UnicodeSetPartialTestExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UnicodeSetPartialTestExtension.tt</DependentUpon>
+    </None>
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\ICU4N.CurrencyData\ICU4N.CurrencyData.csproj" />
@@ -41,6 +49,25 @@
     <ProjectReference Include="..\..\src\ICU4N.RegionData\ICU4N.RegionData.csproj" />
     <ProjectReference Include="..\ICU4N.TestFramework\ICU4N.TestFramework.csproj" />
     <ProjectReference Include="..\..\src\ICU4N\ICU4N.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Update="Support\Text\UnicodeSetPartialTestExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>UnicodeSetPartialTestExtension.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Compile Update="Support\Text\UnicodeSetPartialTestExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>UnicodeSetPartialTestExtension.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>
