@@ -506,10 +506,9 @@ namespace ICU4N.Impl.Locale
                 foreach (char key in extKeys)
                 {
                     Extension e = extensions.GetExtension(key);
-                    if (e is UnicodeLocaleExtension)
+                    if (e is UnicodeLocaleExtension ue)
                     {
-                        UnicodeLocaleExtension ue = (UnicodeLocaleExtension)e;
-                        foreach (string uatr in ue.GetUnicodeLocaleAttributes())
+                        foreach (string uatr in ue.UnicodeLocaleAttributes)
                         {
                             if (_uattributes == null)
                             {
@@ -517,7 +516,7 @@ namespace ICU4N.Impl.Locale
                             }
                             _uattributes.Add(new CaseInsensitiveString(uatr));
                         }
-                        foreach (string ukey in ue.GetUnicodeLocaleKeys())
+                        foreach (string ukey in ue.UnicodeLocaleKeys)
                         {
                             if (_ukeywords == null)
                             {

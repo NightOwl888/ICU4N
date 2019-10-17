@@ -81,15 +81,10 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-        public virtual ISet<string> GetUnicodeLocaleAttributes() // ICU4N TODO: API Make property
-        {
-            return _attributes.ToUnmodifiableSet();
-        }
+        public virtual ISet<string> UnicodeLocaleAttributes => _attributes.ToUnmodifiableSet();
 
-        public virtual ICollection<string> GetUnicodeLocaleKeys() // ICU4N TODO: API Make property
-        {
-            return _keywords.Keys.ToUnmodifiableCollection();
-        }
+        public virtual ICollection<string> UnicodeLocaleKeys => _keywords.Keys.ToUnmodifiableCollection();
+
 
         public virtual string GetUnicodeLocaleType(string unicodeLocaleKey)
         {

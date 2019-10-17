@@ -158,26 +158,30 @@ namespace ICU4N.Impl.Locale
             return ext.Value;
         }
 
-        public virtual ISet<string> GetUnicodeLocaleAttributes()
+        public virtual ISet<string> UnicodeLocaleAttributes
         {
-            Extension ext;
-            if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out ext) || ext == null)
+            get
             {
-                return new HashSet<string>();
+                if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out Extension ext) || ext == null)
+                {
+                    return new HashSet<string>();
+                }
+                Debug.Assert(ext is UnicodeLocaleExtension);
+                return ((UnicodeLocaleExtension)ext).UnicodeLocaleAttributes;
             }
-            Debug.Assert(ext is UnicodeLocaleExtension);
-            return ((UnicodeLocaleExtension)ext).GetUnicodeLocaleAttributes();
         }
 
-        public virtual ICollection<string> GetUnicodeLocaleKeys()
+        public virtual ICollection<string> UnicodeLocaleKeys
         {
-            Extension ext;
-            if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out ext) || ext == null)
+            get
             {
-                return new HashSet<string>();
+                if (!_map.TryGetValue(UnicodeLocaleExtension.Singleton, out Extension ext) || ext == null)
+                {
+                    return new HashSet<string>();
+                }
+                Debug.Assert(ext is UnicodeLocaleExtension);
+                return ((UnicodeLocaleExtension)ext).UnicodeLocaleKeys;
             }
-            Debug.Assert(ext is UnicodeLocaleExtension);
-            return ((UnicodeLocaleExtension)ext).GetUnicodeLocaleKeys();
         }
 
         public virtual string GetUnicodeLocaleType(string unicodeLocaleKey)

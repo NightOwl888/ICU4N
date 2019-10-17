@@ -4622,7 +4622,7 @@ namespace ICU4N.Dev.Test.Util
                 }
 
                 // Check attributes
-                ISet<String> attributes = loc.GetUnicodeLocaleAttributes();
+                var attributes = loc.GetUnicodeLocaleAttributes();
                 if (attributes.Count != expectedAttributes.Count)
                 {
                     Errln("Incorrect number for Unicode locale attributes: returned="

@@ -3504,7 +3504,7 @@ namespace ICU4N.Util
          */
         public ISet<string> GetUnicodeLocaleAttributes()
         {
-            return Extensions().GetUnicodeLocaleAttributes();
+            return Extensions().UnicodeLocaleAttributes;
         }
 
         /**
@@ -3542,7 +3542,7 @@ namespace ICU4N.Util
          */
         public ICollection<string> GetUnicodeLocaleKeys()
         {
-            return Extensions().GetUnicodeLocaleKeys();
+            return Extensions().UnicodeLocaleKeys;
         }
 
         /**
@@ -4364,7 +4364,7 @@ namespace ICU4N.Util
                     if (ext is UnicodeLocaleExtension)
                     {
                         UnicodeLocaleExtension uext = (UnicodeLocaleExtension)ext;
-                        var ukeys = uext.GetUnicodeLocaleKeys();
+                        var ukeys = uext.UnicodeLocaleKeys;
                         foreach (string bcpKey in ukeys)
                         {
                             string bcpType = uext.GetUnicodeLocaleType(bcpKey);
@@ -4382,7 +4382,7 @@ namespace ICU4N.Util
                             }
                         }
                         // Mapping Unicode locale attribute to the special keyword, attribute=xxx-yyy
-                        ISet<string> uattributes = uext.GetUnicodeLocaleAttributes();
+                        var uattributes = uext.UnicodeLocaleAttributes;
                         if (uattributes.Count > 0)
                         {
                             StringBuilder attrbuf = new StringBuilder();
