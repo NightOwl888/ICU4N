@@ -318,6 +318,33 @@ namespace ICU4N.Text
         /// <param name="src">Source string.</param>
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
+        internal abstract IAppendable Normalize(string src, IAppendable dest);
+
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination string
+        /// (replacing its contents) and returns the destination string.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        internal abstract IAppendable Normalize(StringBuilder src, IAppendable dest);
+
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination string
+        /// (replacing its contents) and returns the destination string.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        internal abstract IAppendable Normalize(char[] src, IAppendable dest);
+
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination string
+        /// (replacing its contents) and returns the destination string.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
         internal abstract IAppendable Normalize(ICharSequence src, IAppendable dest);
 
         /// <summary>

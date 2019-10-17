@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ICU4N.Support.Text
 {
-    internal class StringBuilderCharSequence : ICharSequence, IComparable<ICharSequence>, IComparable
+    internal class StringBuilderCharSequence : ICharSequence, IAppendable, IComparable<ICharSequence>, IComparable
     {
         private readonly StringBuilder value;
 
@@ -23,6 +23,8 @@ namespace ICU4N.Support.Text
         internal string Value { get { return value.ToString(); } } // ICU4N TODO: API - replace with StringBuilder property?
 
         public StringBuilder StringBuilder { get { return value; } }
+
+        #region ICharSequence
 
         public char this[int index]
         {
@@ -62,6 +64,10 @@ namespace ICU4N.Support.Text
             return value.ToString();
         }
 
+        #endregion
+
+
+        #region Operator Overrides
         public static bool operator ==(StringBuilderCharSequence csq1, StringBuilder csq2)
         {
             if ((StringBuilderCharSequence)null == csq1)
@@ -95,6 +101,10 @@ namespace ICU4N.Support.Text
 
             return csq1 != csq2.value;
         }
+
+        #endregion
+
+        #region Equality
 
         public override bool Equals(object obj)
         {
@@ -141,11 +151,9 @@ namespace ICU4N.Support.Text
             return this.value.ToString().GetHashCode();
         }
 
-        // ICU4N TODO: Figure out where this was used and fix the reference
-        //public override bool Equals(object obj)
-        //{
-        //    return this.value == obj;
-        //}
+        #endregion
+
+        #region IComparable<T>
 
         public int CompareTo(ICharSequence other)
         {
@@ -156,5 +164,65 @@ namespace ICU4N.Support.Text
         {
             return this.value.ToString().CompareToOrdinal(other.ToString());
         }
+
+        #endregion
+
+        #region IAppendable
+
+        public IAppendable Append(char c)
+        {
+            value.Append(c);
+            return this;
+        }
+
+        public IAppendable Append(string csq)
+        {
+            value.Append(csq);
+            return this;
+        }
+
+        public IAppendable Append(string csq, int start, int end)
+        {
+            value.Append(csq, start, end - start);
+            return this;
+        }
+
+        public IAppendable Append(StringBuilder csq)
+        {
+            value.Append(csq.ToString());
+            return this;
+        }
+
+        public IAppendable Append(StringBuilder csq, int start, int end)
+        {
+            value.Append(csq.ToString(start, end - start));
+            return this;
+        }
+
+        public IAppendable Append(char[] csq)
+        {
+            value.Append(csq);
+            return this;
+        }
+
+        public IAppendable Append(char[] csq, int start, int end)
+        {
+            value.Append(csq, start, end - start);
+            return this;
+        }
+
+        IAppendable IAppendable.Append(ICharSequence csq)
+        {
+            value.Append(csq);
+            return this;
+        }
+
+        IAppendable IAppendable.Append(ICharSequence csq, int start, int end)
+        {
+            value.Append(csq, start, end - start);
+            return this;
+        }
+
+        #endregion
     }
 }

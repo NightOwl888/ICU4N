@@ -72,6 +72,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Impl\Norm2AllModesExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Norm2AllModesExtension.tt</DependentUpon>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Globalization\CharSequencesExtension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -96,6 +104,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>CaseMapImplExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Impl\Norm2AllModesExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Norm2AllModesExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Impl\Normalizer2ImplExtension.cs">
       <DesignTime>True</DesignTime>
@@ -224,6 +237,10 @@
     <None Update="Impl\CaseMapImplExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CaseMapImplExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Impl\Norm2AllModesExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Norm2AllModesExtension.cs</LastGenOutput>
     </None>
     <None Update="Impl\Normalizer2ImplExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

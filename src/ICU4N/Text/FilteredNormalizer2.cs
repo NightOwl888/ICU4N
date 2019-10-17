@@ -35,22 +35,8 @@ namespace ICU4N.Text
         // ICU4N specific - Normalize(
         //    ICharSequence src, StringBuilder dest) moved to FilteredNormalizerExtension.tt
 
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        /// <stable>ICU 4.6</stable>
-        internal override IAppendable Normalize(ICharSequence src, IAppendable dest) // ICU4N TODO: Is this needed?
-        {
-            if (dest == src)
-            {
-                throw new ArgumentException();
-            }
-            return Normalize(src, dest, SpanCondition.Simple);
-        }
+        // ICU4N specific - Normalize(
+        //    ICharSequence src, IAppendable dest) moved to FilteredNormalizerExtension.tt
 
         // ICU4N specific - NormalizeSecondAndAppend(
         //    StringBuilder first, ICharSequence second) moved to FilteredNormalizerExtension.tt

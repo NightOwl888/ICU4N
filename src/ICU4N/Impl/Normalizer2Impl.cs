@@ -89,10 +89,10 @@ namespace ICU4N.Impl
         {
             impl = ni;
             app = dest;
-            if (app is StringBuilderAppendable)
+            if (app is StringBuilderCharSequence)
             {
                 appIsStringBuilder = true;
-                str = ((StringBuilderAppendable)dest).StringBuilder;
+                str = ((StringBuilderCharSequence)dest).StringBuilder;
                 // In Java, the constructor subsumes public void init(int destCapacity) {
                 str.EnsureCapacity(destCapacity);
                 reorderStart = 0;
@@ -175,7 +175,7 @@ namespace ICU4N.Impl
         /// Flushes from the intermediate <see cref="StringBuilder"/> to the <see cref="IAppendable"/>,
         /// if they are different objects.
         /// Used after recomposition.
-        /// Must be called at the end when writing to a non-StringBuilderAppendable <see cref="IAppendable"/>.
+        /// Must be called at the end when writing to a non-<see cref="StringBuilderCharSequence"/> <see cref="IAppendable"/>.
         /// </summary>
         public void Flush()
         {

@@ -10,149 +10,44 @@ using System.Text;
 namespace ICU4N.Impl
 {
     // Normalizer2 implementation for the old UNORM_NONE.
-    public sealed class NoopNormalizer2 : Normalizer2
+    public sealed partial class NoopNormalizer2 : Normalizer2
     {
-        public override StringBuilder Normalize(string src, StringBuilder dest) // ICU4N TODO: API code generation for ICharSequence overloads
-        {
-            dest.Length = 0;
-            return dest.Append(src);
-        }
+        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModesExtension.tt
 
-        public override StringBuilder Normalize(StringBuilder src, StringBuilder dest)
-        {
-            if (dest != src)
-            {
-                dest.Length = 0;
-                return dest.Append(src);
-            }
-            else
-            {
-                throw new ArgumentException("'src' cannot be the same instance as 'dest'");
-            }
-        }
+        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModesExtension.tt
 
-        public override StringBuilder Normalize(char[] src, StringBuilder dest)
-        {
-            dest.Length = 0;
-            return dest.Append(src);
-        }
+        //internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
+        //{
+        //    if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence &&
+        //        ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
+        //    {
+        //        throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+        //    }
+        //    try
+        //    {
+        //        return dest.Append(src.ToString());
+        //    }
+        //    catch (IOException e)
+        //    {
+        //        throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
+        //    }
+        //}
 
-        internal override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
-        {
-            dest.Length = 0;
-            return dest.Append(src.ToString());
-        }
+        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
 
-        internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
-        {
-            if (dest != src)
-            {
-                try
-                {
-                    return dest.Append(src.ToString());
-                }
-                catch (IOException e)
-                {
-                    throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-                }
-            }
-            else
-            {
-                throw new ArgumentException("'src' cannot be the same instance as 'dest'");
-            }
-        }
+        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
 
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
-        {
-            return first.Append(second);
-        }
+        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModesExtension.tt
 
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, StringBuilder second)
-        {
-            if (first != second)
-            {
-                return first.Append(second.ToString());
-            }
-            else
-            {
-                throw new ArgumentException("'first' cannot be the same instance as 'second'");
-            }
-        }
+        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModesExtension.tt
 
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, char[] second)
-        {
-            return first.Append(second);
-        }
-
-        internal override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second)
-        {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).StringBuilder == first)
-            {
-                throw new ArgumentException("'first' cannot be the same instance as 'second'");
-            }
-            return first.Append(second.ToString());
-        }
-
-        public override StringBuilder Append(StringBuilder first, string second)
-        {
-            return first.Append(second);
-        }
-
-        public override StringBuilder Append(StringBuilder first, StringBuilder second)
-        {
-            if (first != second)
-            {
-                return first.Append(second.ToString());
-            }
-            else
-            {
-                throw new ArgumentException("'first' cannot be the same instance as 'second'");
-            }
-        }
-
-        public override StringBuilder Append(StringBuilder first, char[] second)
-        {
-            return first.Append(second);
-        }
-
-        internal override StringBuilder Append(StringBuilder first, ICharSequence second)
-        {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).StringBuilder == first)
-            {
-                throw new ArgumentException("'first' cannot be the same instance as 'second'");
-            }
-            return first.Append(second.ToString());
-        }
+        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
 
         public override string GetDecomposition(int c)
         {
             return null;
         }
         // No need to override the default GetRawDecomposition().
-
-        public override bool IsNormalized(string s) { return true; }
-
-        public override bool IsNormalized(StringBuilder s) { return true; }
-
-        public override bool IsNormalized(char[] s) { return true; }
-
-        internal override bool IsNormalized(ICharSequence s) { return true; }
-
-        public override QuickCheckResult QuickCheck(string s) { return QuickCheckResult.Yes; }
-
-        public override QuickCheckResult QuickCheck(StringBuilder s) { return QuickCheckResult.Yes; }
-
-        public override QuickCheckResult QuickCheck(char[] s) { return QuickCheckResult.Yes; }
-
-        internal override QuickCheckResult QuickCheck(ICharSequence s) { return QuickCheckResult.Yes; }
-
-        public override int SpanQuickCheckYes(string s) { return s.Length; }
-
-        public override int SpanQuickCheckYes(StringBuilder s) { return s.Length; }
-
-        public override int SpanQuickCheckYes(char[] s) { return s.Length; }
-
-        internal override int SpanQuickCheckYes(ICharSequence s) { return s.Length; }
 
         public override bool HasBoundaryBefore(int c) { return true; }
 
@@ -163,321 +58,104 @@ namespace ICU4N.Impl
 
     // Intermediate class:
     // Has Normalizer2Impl and does boilerplate argument checking and setup.
-    public abstract class Normalizer2WithImpl : Normalizer2
+    public abstract partial class Normalizer2WithImpl : Normalizer2
     {
         public Normalizer2WithImpl(Normalizer2Impl ni)
         {
-            impl = ni;
+            Impl = ni;
         }
 
         // normalize
 
-        public override StringBuilder Normalize(string src, StringBuilder dest)
-        {
-            dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(impl, dest, src.Length));
-            return dest;
-        }
+        // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModesExtension.tt
 
-        public override StringBuilder Normalize(StringBuilder src, StringBuilder dest)
-        {
-            if (dest == src)
-            {
-                throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
-            }
-            dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(impl, dest, src.Length));
-            return dest;
-        }
+        // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModesExtension.tt
 
-        public override StringBuilder Normalize(char[] src, StringBuilder dest)
-        {
-            dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(impl, dest, src.Length));
-            return dest;
-        }
+        //internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
+        //{
+        //    if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence &&
+        //        ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
+        //    {
+        //        throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+        //    }
+        //    ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
+        //    Normalize(src, buffer);
+        //    buffer.Flush();
+        //    return dest;
+        //}
 
-        internal override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
-        {
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).StringBuilder == dest)
-            {
-                throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
-            }
-            dest.Length = 0;
-            Normalize(src, new ReorderingBuffer(impl, dest, src.Length));
-            return dest;
-        }
-
-        internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
-        {
-            if (dest == src)
-            {
-                throw new ArgumentException("'src' cannot be the same instance as 'dest'");
-            }
-            if (src is StringBuilderCharSequence && dest is StringBuilderAppendable &&
-                ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderAppendable)dest).StringBuilder)
-            {
-                throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
-            }
-            ReorderingBuffer buffer = new ReorderingBuffer(impl, dest, src.Length);
-            Normalize(src, buffer);
-            buffer.Flush();
-            return dest;
-        }
-
-        protected abstract void Normalize(string src, ReorderingBuffer buffer);
-
-        protected abstract void Normalize(StringBuilder src, ReorderingBuffer buffer);
-
-        protected abstract void Normalize(char[] src, ReorderingBuffer buffer);
-
-        internal abstract void Normalize(ICharSequence src, ReorderingBuffer buffer);
+        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
 
         // normalize and append
 
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
-        {
-            return NormalizeSecondAndAppend(first, second, true);
-        }
+        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
 
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, StringBuilder second)
-        {
-            return NormalizeSecondAndAppend(first, second, true);
-        }
+        // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
 
-        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, char[] second)
-        {
-            return NormalizeSecondAndAppend(first, second, true);
-        }
+        // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence, bool) to Norm2AllModesExtension.tt
 
-        internal override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second)
-        {
-            return NormalizeSecondAndAppend(first, second, true);
-        }
+        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
 
-        public override StringBuilder Append(StringBuilder first, string second)
-        {
-            return NormalizeSecondAndAppend(first, second, false);
-        }
-
-        public override StringBuilder Append(StringBuilder first, StringBuilder second)
-        {
-            return NormalizeSecondAndAppend(first, second, false);
-        }
-
-        public override StringBuilder Append(StringBuilder first, char[] second)
-        {
-            return NormalizeSecondAndAppend(first, second, false);
-        }
-
-        internal override StringBuilder Append(StringBuilder first, ICharSequence second)
-        {
-            return NormalizeSecondAndAppend(first, second, false);
-        }
-
-        public virtual StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, string second, bool doNormalize)
-        {
-            NormalizeAndAppend(
-                second, doNormalize,
-                new ReorderingBuffer(impl, first, first.Length + second.Length));
-            return first;
-        }
-
-        public virtual StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, StringBuilder second, bool doNormalize)
-        {
-            if (first == second)
-            {
-                throw new ArgumentException("'first' cannot be the same instance as 'second'");
-            }
-            NormalizeAndAppend(
-                second, doNormalize,
-                new ReorderingBuffer(impl, first, first.Length + second.Length));
-            return first;
-        }
-
-        public virtual StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, char[] second, bool doNormalize)
-        {
-            NormalizeAndAppend(
-                second, doNormalize,
-                new ReorderingBuffer(impl, first, first.Length + second.Length));
-            return first;
-        }
-
-        internal virtual StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, ICharSequence second, bool doNormalize)
-        {
-            NormalizeAndAppend(
-                second, doNormalize,
-                new ReorderingBuffer(impl, first, first.Length + second.Length));
-            return first;
-        }
-
-        protected abstract void NormalizeAndAppend(
-            string src, bool doNormalize, ReorderingBuffer buffer);
-
-        protected abstract void NormalizeAndAppend(
-            StringBuilder src, bool doNormalize, ReorderingBuffer buffer);
-
-        protected abstract void NormalizeAndAppend(
-            char[] src, bool doNormalize, ReorderingBuffer buffer);
-
-        internal abstract void NormalizeAndAppend(
-            ICharSequence src, bool doNormalize, ReorderingBuffer buffer);
 
         public override string GetDecomposition(int c)
         {
-            return impl.GetDecomposition(c);
+            return Impl.GetDecomposition(c);
         }
 
         public override string GetRawDecomposition(int c)
         {
-            return impl.GetRawDecomposition(c);
+            return Impl.GetRawDecomposition(c);
         }
 
         public override int ComposePair(int a, int b)
         {
-            return impl.ComposePair(a, b);
+            return Impl.ComposePair(a, b);
         }
 
 
         public override int GetCombiningClass(int c)
         {
-            return impl.GetCC(impl.GetNorm16(c));
+            return Impl.GetCC(Impl.GetNorm16(c));
         }
 
         // quick checks
 
-        public override bool IsNormalized(string s)
-        {
-            return s.Length == SpanQuickCheckYes(s);
-        }
+        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModesExtension.tt
 
-        public override bool IsNormalized(StringBuilder s)
-        {
-            return s.Length == SpanQuickCheckYes(s);
-        }
+        // ICU4N specific: Moved QuickCheck(ICharSequence s) to Norm2AllModesExtension.tt
 
-        public override bool IsNormalized(char[] s)
-        {
-            return s.Length == SpanQuickCheckYes(s);
-        }
-
-        internal override bool IsNormalized(ICharSequence s)
-        {
-            return s.Length == SpanQuickCheckYes(s);
-        }
-
-        public override QuickCheckResult QuickCheck(string s)
-        {
-            return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
-        }
-
-        public override QuickCheckResult QuickCheck(StringBuilder s)
-        {
-            return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
-        }
-
-        public override QuickCheckResult QuickCheck(char[] s)
-        {
-            return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
-        }
-
-        internal override QuickCheckResult QuickCheck(ICharSequence s)
-        {
-            return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
-        }
 
         public abstract int GetQuickCheck(int c);
 
-        public readonly Normalizer2Impl impl;
+        public Normalizer2Impl Impl { get; private set; }
     }
 
-    public sealed class DecomposeNormalizer2 : Normalizer2WithImpl
+    public sealed partial class DecomposeNormalizer2 : Normalizer2WithImpl
     {
         public DecomposeNormalizer2(Normalizer2Impl ni)
             : base(ni)
         {
         }
 
-        protected override void Normalize(string src, ReorderingBuffer buffer)
-        {
-            impl.Decompose(src, 0, src.Length, buffer);
-        }
+        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
 
-        protected override void Normalize(StringBuilder src, ReorderingBuffer buffer)
-        {
-            impl.Decompose(src, 0, src.Length, buffer);
-        }
+        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
 
-        protected override void Normalize(char[] src, ReorderingBuffer buffer)
-        {
-            impl.Decompose(src, 0, src.Length, buffer);
-        }
-
-        internal override void Normalize(ICharSequence src, ReorderingBuffer buffer)
-        {
-            impl.Decompose(src, 0, src.Length, buffer);
-        }
-
-        protected override void NormalizeAndAppend(
-            string src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.DecomposeAndAppend(src, doNormalize, buffer);
-        }
-
-        protected override void NormalizeAndAppend(
-            StringBuilder src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.DecomposeAndAppend(src, doNormalize, buffer);
-        }
-
-        protected override void NormalizeAndAppend(
-            char[] src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.DecomposeAndAppend(src, doNormalize, buffer);
-        }
-
-        internal override void NormalizeAndAppend(ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.DecomposeAndAppend(src, doNormalize, buffer);
-        }
-
-        public override int SpanQuickCheckYes(string s)
-        {
-            return impl.Decompose(s, 0, s.Length, null);
-        }
-
-        public override int SpanQuickCheckYes(StringBuilder s)
-        {
-            return impl.Decompose(s, 0, s.Length, null);
-        }
-
-        public override int SpanQuickCheckYes(char[] s)
-        {
-            return impl.Decompose(s, 0, s.Length, null);
-        }
-
-        internal override int SpanQuickCheckYes(ICharSequence s)
-        {
-            return impl.Decompose(s, 0, s.Length, null);
-        }
+        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
 
         public override int GetQuickCheck(int c)
         {
-            return impl.IsDecompYes(impl.GetNorm16(c)) ? 1 : 0;
+            return Impl.IsDecompYes(Impl.GetNorm16(c)) ? 1 : 0;
         }
 
-        public override bool HasBoundaryBefore(int c) { return impl.HasDecompBoundaryBefore(c); }
+        public override bool HasBoundaryBefore(int c) { return Impl.HasDecompBoundaryBefore(c); }
 
-        public override bool HasBoundaryAfter(int c) { return impl.HasDecompBoundaryAfter(c); }
+        public override bool HasBoundaryAfter(int c) { return Impl.HasDecompBoundaryAfter(c); }
 
-        public override bool IsInert(int c) { return impl.IsDecompInert(c); }
+        public override bool IsInert(int c) { return Impl.IsDecompInert(c); }
     }
 
-    public sealed class ComposeNormalizer2 : Normalizer2WithImpl
+    public sealed partial class ComposeNormalizer2 : Normalizer2WithImpl
     {
         public ComposeNormalizer2(Normalizer2Impl ni, bool fcc)
             : base(ni)
@@ -485,271 +163,60 @@ namespace ICU4N.Impl
             onlyContiguous = fcc;
         }
 
-        protected override void Normalize(string src, ReorderingBuffer buffer)
-        {
-            impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
-        }
+        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
 
-        protected override void Normalize(StringBuilder src, ReorderingBuffer buffer)
-        {
-            impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
-        }
+        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
 
-        protected override void Normalize(char[] src, ReorderingBuffer buffer)
-        {
-            impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
-        }
+        // ICU4N specific: Moved IsNormalized(ICharSequence) to Norm2AllModesExtension.tt
 
-        internal override void Normalize(ICharSequence src, ReorderingBuffer buffer)
-        {
-            impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
-        }
+        // ICU4N specific: Moved QuickCheck(ICharSequence) to Norm2AllModesExtension.tt
 
-        protected override void NormalizeAndAppend(
-            string src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
-        }
-
-        protected override void NormalizeAndAppend(
-            StringBuilder src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
-        }
-
-        protected override void NormalizeAndAppend(
-            char[] src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
-        }
-
-        internal override void NormalizeAndAppend(
-            ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
-        }
-
-        public override bool IsNormalized(string s)
-        {
-            // 5: small destCapacity for substring normalization
-            return impl.Compose(s, 0, s.Length,
-                                onlyContiguous, false,
-                                new ReorderingBuffer(impl, new StringBuilder(), 5));
-        }
-
-        public override bool IsNormalized(StringBuilder s)
-        {
-            // 5: small destCapacity for substring normalization
-            return impl.Compose(s, 0, s.Length,
-                                onlyContiguous, false,
-                                new ReorderingBuffer(impl, new StringBuilder(), 5));
-        }
-
-        public override bool IsNormalized(char[] s)
-        {
-            // 5: small destCapacity for substring normalization
-            return impl.Compose(s, 0, s.Length,
-                                onlyContiguous, false,
-                                new ReorderingBuffer(impl, new StringBuilder(), 5));
-        }
-
-        internal override bool IsNormalized(ICharSequence s)
-        {
-            // 5: small destCapacity for substring normalization
-            return impl.Compose(s, 0, s.Length,
-                                onlyContiguous, false,
-                                new ReorderingBuffer(impl, new StringBuilder(), 5));
-        }
-
-        public override QuickCheckResult QuickCheck(string s) // ICU4N TODO: API Generate overloads
-        {
-            int spanLengthAndMaybe = impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
-            if ((spanLengthAndMaybe & 1) != 0)
-            {
-                return QuickCheckResult.Maybe;
-            }
-            else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
-            {
-                return QuickCheckResult.Yes;
-            }
-            else
-            {
-                return QuickCheckResult.No;
-            }
-        }
-
-        public override QuickCheckResult QuickCheck(StringBuilder s)
-        {
-            int spanLengthAndMaybe = impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
-            if ((spanLengthAndMaybe & 1) != 0)
-            {
-                return QuickCheckResult.Maybe;
-            }
-            else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
-            {
-                return QuickCheckResult.Yes;
-            }
-            else
-            {
-                return QuickCheckResult.No;
-            }
-        }
-
-        public override QuickCheckResult QuickCheck(char[] s)
-        {
-            int spanLengthAndMaybe = impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
-            if ((spanLengthAndMaybe & 1) != 0)
-            {
-                return QuickCheckResult.Maybe;
-            }
-            else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
-            {
-                return QuickCheckResult.Yes;
-            }
-            else
-            {
-                return QuickCheckResult.No;
-            }
-        }
-
-        internal override QuickCheckResult QuickCheck(ICharSequence s)
-        {
-            int spanLengthAndMaybe = impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
-            if ((spanLengthAndMaybe & 1) != 0)
-            {
-                return QuickCheckResult.Maybe;
-            }
-            else if ((spanLengthAndMaybe.TripleShift(1)) == s.Length)
-            {
-                return QuickCheckResult.Yes;
-            }
-            else
-            {
-                return QuickCheckResult.No;
-            }
-        }
-
-        public override int SpanQuickCheckYes(string s) // ICU4N TODO: API Generate overloads
-        {
-            return impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
-        }
-
-        public override int SpanQuickCheckYes(StringBuilder s)
-        {
-            return impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
-        }
-
-        public override int SpanQuickCheckYes(char[] s)
-        {
-            return impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
-        }
-
-        internal override int SpanQuickCheckYes(ICharSequence s)
-        {
-            return impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
-        }
+        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
 
         public override int GetQuickCheck(int c)
         {
-            return impl.GetCompQuickCheck(impl.GetNorm16(c));
+            return Impl.GetCompQuickCheck(Impl.GetNorm16(c));
         }
 
-        public override bool HasBoundaryBefore(int c) { return impl.HasCompBoundaryBefore(c); }
+        public override bool HasBoundaryBefore(int c) { return Impl.HasCompBoundaryBefore(c); }
 
         public override bool HasBoundaryAfter(int c)
         {
-            return impl.HasCompBoundaryAfter(c, onlyContiguous);
+            return Impl.HasCompBoundaryAfter(c, onlyContiguous);
         }
 
         public override bool IsInert(int c)
         {
-            return impl.IsCompInert(c, onlyContiguous);
+            return Impl.IsCompInert(c, onlyContiguous);
         }
 
         private readonly bool onlyContiguous;
     }
 
-    public sealed class FCDNormalizer2 : Normalizer2WithImpl
+    public sealed partial class FCDNormalizer2 : Normalizer2WithImpl
     {
         public FCDNormalizer2(Normalizer2Impl ni)
             : base(ni)
         {
         }
 
-        protected override void Normalize(string src, ReorderingBuffer buffer) // ICU4N TODO: API Generate overloads
-        {
-            impl.MakeFCD(src, 0, src.Length, buffer);
-        }
+        // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
 
-        protected override void Normalize(StringBuilder src, ReorderingBuffer buffer)
-        {
-            impl.MakeFCD(src, 0, src.Length, buffer);
-        }
+        // ICU4N specific: Moved NormalizeAndAppend(ICharSequence, bool, ReorderingBuffer) to Norm2AllModesExtension.tt
 
-        protected override void Normalize(char[] src, ReorderingBuffer buffer)
-        {
-            impl.MakeFCD(src, 0, src.Length, buffer);
-        }
+        // ICU4N specific: Moved SpanQuickCheckYes(ICharSequence) to Norm2AllModesExtension.tt
 
-        internal override void Normalize(ICharSequence src, ReorderingBuffer buffer)
-        {
-            impl.MakeFCD(src, 0, src.Length, buffer);
-        }
-
-        protected override void NormalizeAndAppend(
-            string src, bool doNormalize, ReorderingBuffer buffer) // ICU4N TODO: API Generate overloads
-        {
-            impl.MakeFCDAndAppend(src, doNormalize, buffer);
-        }
-
-        protected override void NormalizeAndAppend(
-            StringBuilder src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.MakeFCDAndAppend(src, doNormalize, buffer);
-        }
-
-        protected override void NormalizeAndAppend(
-            char[] src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.MakeFCDAndAppend(src, doNormalize, buffer);
-        }
-
-        internal override void NormalizeAndAppend(
-            ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
-        {
-            impl.MakeFCDAndAppend(src, doNormalize, buffer);
-        }
-
-        public override int SpanQuickCheckYes(string s) // ICU4N TODO: API Generate overloads
-        {
-            return impl.MakeFCD(s, 0, s.Length, null);
-        }
-
-        public override int SpanQuickCheckYes(StringBuilder s)
-        {
-            return impl.MakeFCD(s, 0, s.Length, null);
-        }
-
-        public override int SpanQuickCheckYes(char[] s)
-        {
-            return impl.MakeFCD(s, 0, s.Length, null);
-        }
-
-        internal override int SpanQuickCheckYes(ICharSequence s)
-        {
-            return impl.MakeFCD(s, 0, s.Length, null);
-        }
 
         public override int GetQuickCheck(int c)
         {
-            return impl.IsDecompYes(impl.GetNorm16(c)) ? 1 : 0;
+            return Impl.IsDecompYes(Impl.GetNorm16(c)) ? 1 : 0;
         }
 
-        public override bool HasBoundaryBefore(int c) { return impl.HasFCDBoundaryBefore(c); }
+        public override bool HasBoundaryBefore(int c) { return Impl.HasFCDBoundaryBefore(c); }
 
-        public override bool HasBoundaryAfter(int c) { return impl.HasFCDBoundaryAfter(c); }
+        public override bool HasBoundaryAfter(int c) { return Impl.HasFCDBoundaryAfter(c); }
 
-        public override bool IsInert(int c) { return impl.IsFCDInert(c); }
+        public override bool IsInert(int c) { return Impl.IsFCDInert(c); }
     }
 
     public sealed class Norm2AllModes

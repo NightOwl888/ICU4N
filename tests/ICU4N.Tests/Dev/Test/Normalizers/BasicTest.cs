@@ -3285,6 +3285,9 @@ namespace ICU4N.Dev.Test.Normalizers
 
             internal override StringBuilder Normalize(ICharSequence src, StringBuilder dest) { return null; }
 
+            internal override IAppendable Normalize(string src, IAppendable dest) { return null; }
+            internal override IAppendable Normalize(StringBuffer src, IAppendable dest) { return null; }
+            internal override IAppendable Normalize(char[] src, IAppendable dest) { return null; }
             internal override IAppendable Normalize(ICharSequence src, IAppendable dest) { return null; }
 
             public override StringBuffer NormalizeSecondAndAppend(StringBuffer first, string second) { return null; }

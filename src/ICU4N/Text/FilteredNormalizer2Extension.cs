@@ -42,9 +42,9 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public override StringBuilder Normalize(StringBuilder src, StringBuilder dest)
         {
-			if (src == dest)
+            if (src == dest)
             {
-                throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
             dest.Length = 0;
             Normalize(src, dest, SpanCondition.Simple);
@@ -78,11 +78,72 @@ namespace ICU4N.Text
         {
             if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).StringBuilder == dest)
             {
-                throw new ArgumentException("'src' cannot be the same StringBuilder instance as 'dest'");
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
             dest.Length = 0;
             Normalize(src, dest, SpanCondition.Simple);
             return dest;
+        }
+
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination string
+        /// (replacing its contents) and returns the destination string.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        internal override IAppendable Normalize(string src, IAppendable dest)
+        {
+            return Normalize(src, dest, SpanCondition.Simple);
+        }
+
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination string
+        /// (replacing its contents) and returns the destination string.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        internal override IAppendable Normalize(StringBuilder src, IAppendable dest)
+        {
+            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).StringBuilder == src)
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+            }
+            return Normalize(src, dest, SpanCondition.Simple);
+        }
+
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination string
+        /// (replacing its contents) and returns the destination string.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        internal override IAppendable Normalize(char[] src, IAppendable dest)
+        {
+            return Normalize(src, dest, SpanCondition.Simple);
+        }
+
+        /// <summary>
+        /// Writes the normalized form of the source string to the destination string
+        /// (replacing its contents) and returns the destination string.
+        /// </summary>
+        /// <param name="src">Source string.</param>
+        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
+        /// <returns><paramref name="dest"/></returns>
+        /// <stable>ICU 4.6</stable>
+        internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
+        {
+            if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
+                && ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
+            {
+                throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
+            }
+            return Normalize(src, dest, SpanCondition.Simple);
         }
 
         /// <summary>
@@ -684,7 +745,7 @@ namespace ICU4N.Text
             }
             return s.Length;
         }
-	
+    
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
@@ -730,7 +791,7 @@ namespace ICU4N.Text
             }
             return dest;
         }
-	
+    
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
@@ -776,7 +837,7 @@ namespace ICU4N.Text
             }
             return dest;
         }
-	
+    
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
@@ -822,7 +883,7 @@ namespace ICU4N.Text
             }
             return dest;
         }
-	
+    
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
@@ -868,7 +929,7 @@ namespace ICU4N.Text
             }
             return dest;
         }
-		
+        
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
@@ -891,7 +952,7 @@ namespace ICU4N.Text
                     {
                         if (spanLength != 0)
                         {
-							dest.Append(src, prevSpanLimit, spanLimit);
+                            dest.Append(src, prevSpanLimit, spanLimit);
                         }
                         spanCondition = SpanCondition.Simple;
                     }
@@ -914,7 +975,7 @@ namespace ICU4N.Text
             }
             return dest;
         }
-	
+    
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
@@ -937,7 +998,7 @@ namespace ICU4N.Text
                     {
                         if (spanLength != 0)
                         {
-							dest.Append(src, prevSpanLimit, spanLimit);
+                            dest.Append(src, prevSpanLimit, spanLimit);
                         }
                         spanCondition = SpanCondition.Simple;
                     }
@@ -960,7 +1021,7 @@ namespace ICU4N.Text
             }
             return dest;
         }
-	
+    
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
@@ -983,7 +1044,7 @@ namespace ICU4N.Text
                     {
                         if (spanLength != 0)
                         {
-							dest.Append(src, prevSpanLimit, spanLimit);
+                            dest.Append(src, prevSpanLimit, spanLimit);
                         }
                         spanCondition = SpanCondition.Simple;
                     }
@@ -1006,7 +1067,7 @@ namespace ICU4N.Text
             }
             return dest;
         }
-	
+    
         // Internal: No argument checking, and appends to dest.
         // Pass as input spanCondition the one that is likely to yield a non-zero
         // span length at the start of src.
@@ -1029,7 +1090,7 @@ namespace ICU4N.Text
                     {
                         if (spanLength != 0)
                         {
-							dest.Append(src, prevSpanLimit, spanLimit);
+                            dest.Append(src, prevSpanLimit, spanLimit);
                         }
                         spanCondition = SpanCondition.Simple;
                     }
@@ -1052,7 +1113,7 @@ namespace ICU4N.Text
             }
             return dest;
         }
-	
+    
         private StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second,
                                                        bool doNormalize)
         {
@@ -1117,7 +1178,7 @@ namespace ICU4N.Text
         private StringBuilder NormalizeSecondAndAppend(StringBuilder first, StringBuilder second,
                                                        bool doNormalize)
         {
-			if (first == second)
+            if (first == second)
             {
                 throw new ArgumentException("'first' cannot be the same StringBuilder instance as 'second'");
             }
@@ -1305,5 +1366,5 @@ namespace ICU4N.Text
             return first;
         }
 
-	}
+    }
 }

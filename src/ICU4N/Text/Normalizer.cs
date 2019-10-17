@@ -2251,7 +2251,7 @@ namespace ICU4N.Text
             int folded1Length = csp.ToFullFolding(c, folded, 0);
             if (folded1Length < 0)
             {
-                Normalizer2Impl nfkcImpl = ((Normalizer2WithImpl)nfkc).impl;
+                Normalizer2Impl nfkcImpl = ((Normalizer2WithImpl)nfkc).Impl;
                 if (nfkcImpl.GetCompQuickCheck(nfkcImpl.GetNorm16(c)) != 0)
                 {
                     return "";  // c does not change at all under CaseFolding+NFKC
