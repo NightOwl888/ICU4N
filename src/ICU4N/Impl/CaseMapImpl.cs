@@ -179,24 +179,24 @@ namespace ICU4N.Impl
     {
         // ICU4N: De-nested StringContextIterator
 
-        public const int TITLECASE_WHOLE_STRING = 0x20;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
-        public const int TITLECASE_SENTENCES = 0x40;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
+        public const int TitleCaseWholeString = 0x20;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
+        public const int TitleCaseSentences = 0x40;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
 
         /// <summary>
         /// Bit mask for the titlecasing iterator options bit field.
         /// Currently only 3 out of 8 values are used:
-        /// 0 (words), <see cref="TITLECASE_WHOLE_STRING"/>, <see cref="TITLECASE_SENTENCES"/>.
+        /// 0 (words), <see cref="TitleCaseWholeString"/>, <see cref="TitleCaseSentences"/>.
         /// See stringoptions.h.
         /// </summary>
         /// <internal/>
         private const int TITLECASE_ITERATOR_MASK = 0xe0;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
 
-        public const int TITLECASE_ADJUST_TO_CASED = 0x400;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
+        public const int TitleCaseAdjustToCased = 0x400;  // ICU4N TODO: API Change to [Flags] enum, Rename to follow .NET Conventions
 
         /// <summary>
         /// Bit mask for the titlecasing index adjustment options bit set.
         /// Currently two bits are defined:
-        /// <see cref="UChar.TitleCaseNoBreakAdjustment"/>, <see cref="TITLECASE_ADJUST_TO_CASED"/>.
+        /// <see cref="UChar.TitleCaseNoBreakAdjustment"/>, <see cref="TitleCaseAdjustToCased"/>.
         /// See stringoptions.h.
         /// </summary>
         /// <internal/>
@@ -267,10 +267,10 @@ namespace ICU4N.Impl
                     case 0:
                         iter = BreakIterator.GetWordInstance(locale);
                         break;
-                    case TITLECASE_WHOLE_STRING:
+                    case TitleCaseWholeString:
                         iter = new WholeStringBreakIterator();
                         break;
-                    case TITLECASE_SENTENCES:
+                    case TitleCaseSentences:
                         iter = BreakIterator.GetSentenceInstance(locale);
                         break;
                     default:
@@ -296,10 +296,10 @@ namespace ICU4N.Impl
                     case 0:
                         iter = BreakIterator.GetWordInstance(locale);
                         break;
-                    case TITLECASE_WHOLE_STRING:
+                    case TitleCaseWholeString:
                         iter = new WholeStringBreakIterator();
                         break;
-                    case TITLECASE_SENTENCES:
+                    case TitleCaseSentences:
                         iter = BreakIterator.GetSentenceInstance(locale);
                         break;
                     default:
@@ -312,7 +312,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Omit unchanged text when case-mapping with Edits.
         /// </summary>
-        public const int OMIT_UNCHANGED_TEXT = 0x4000; // ICU4N TODO: API - make into Flags enum
+        public const int OmitUnchangedText = 0x4000; // ICU4N TODO: API - make into Flags enum
 
         private sealed class WholeStringBreakIterator : BreakIterator
         {

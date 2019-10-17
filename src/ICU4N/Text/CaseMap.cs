@@ -80,7 +80,7 @@ namespace ICU4N.Text
     public sealed partial class LowerCaseMap : CaseMap
     {
         internal static readonly LowerCaseMap DEFAULT = new LowerCaseMap(0);
-        private static readonly LowerCaseMap OMIT_UNCHANGED = new LowerCaseMap(CaseMapImpl.OMIT_UNCHANGED_TEXT);
+        private static readonly LowerCaseMap OMIT_UNCHANGED = new LowerCaseMap(CaseMapImpl.OmitUnchangedText);
         internal LowerCaseMap(int opt)
             : base(opt)
         {
@@ -113,7 +113,7 @@ namespace ICU4N.Text
     public sealed partial class UpperCaseMap : CaseMap
     {
         internal static readonly UpperCaseMap DEFAULT = new UpperCaseMap(0);
-        private static readonly UpperCaseMap OMIT_UNCHANGED = new UpperCaseMap(CaseMapImpl.OMIT_UNCHANGED_TEXT);
+        private static readonly UpperCaseMap OMIT_UNCHANGED = new UpperCaseMap(CaseMapImpl.OmitUnchangedText);
         internal UpperCaseMap(int opt)
             : base(opt)
         {
@@ -146,7 +146,7 @@ namespace ICU4N.Text
     public sealed partial class TitleCaseMap : CaseMap
     {
         internal static readonly TitleCaseMap DEFAULT = new TitleCaseMap(0);
-        private static readonly TitleCaseMap OMIT_UNCHANGED = new TitleCaseMap(CaseMapImpl.OMIT_UNCHANGED_TEXT);
+        private static readonly TitleCaseMap OMIT_UNCHANGED = new TitleCaseMap(CaseMapImpl.OmitUnchangedText);
         private TitleCaseMap(int opt)
             : base(opt)
         {
@@ -167,7 +167,7 @@ namespace ICU4N.Text
         public TitleCaseMap WholeString()
         {
             return new TitleCaseMap(CaseMapImpl.AddTitleIteratorOption(
-                internalOptions, CaseMapImpl.TITLECASE_WHOLE_STRING));
+                internalOptions, CaseMapImpl.TitleCaseWholeString));
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace ICU4N.Text
         public TitleCaseMap Sentences()
         {
             return new TitleCaseMap(CaseMapImpl.AddTitleIteratorOption(
-                internalOptions, CaseMapImpl.TITLECASE_SENTENCES));
+                internalOptions, CaseMapImpl.TitleCaseSentences));
         }
 
         /// <summary>
@@ -197,11 +197,11 @@ namespace ICU4N.Text
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public TitleCaseMap OmitUnchangedText()
         {
-            if (internalOptions == 0 || internalOptions == CaseMapImpl.OMIT_UNCHANGED_TEXT)
+            if (internalOptions == 0 || internalOptions == CaseMapImpl.OmitUnchangedText)
             {
                 return OMIT_UNCHANGED;
             }
-            return new TitleCaseMap(internalOptions | CaseMapImpl.OMIT_UNCHANGED_TEXT);
+            return new TitleCaseMap(internalOptions | CaseMapImpl.OmitUnchangedText);
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace ICU4N.Text
         public TitleCaseMap AdjustToCased()
         {
             return new TitleCaseMap(CaseMapImpl.AddTitleAdjustmentOption(
-                internalOptions, CaseMapImpl.TITLECASE_ADJUST_TO_CASED));
+                internalOptions, CaseMapImpl.TitleCaseAdjustToCased));
         }
 
         // ICU4N specific - Apply(CultureInfo locale, BreakIterator iter, ICharSequence src) moved to CaseMapExtension.tt
@@ -286,9 +286,9 @@ namespace ICU4N.Text
     {
         internal static readonly FoldCaseMap DEFAULT = new FoldCaseMap(0);
         private static readonly FoldCaseMap TURKIC = new FoldCaseMap(UChar.FoldCaseExcludeSpecialI);
-        private static readonly FoldCaseMap OMIT_UNCHANGED = new FoldCaseMap(CaseMapImpl.OMIT_UNCHANGED_TEXT);
+        private static readonly FoldCaseMap OMIT_UNCHANGED = new FoldCaseMap(CaseMapImpl.OmitUnchangedText);
         private static readonly FoldCaseMap TURKIC_OMIT_UNCHANGED = new FoldCaseMap(
-                UChar.FoldCaseExcludeSpecialI | CaseMapImpl.OMIT_UNCHANGED_TEXT);
+                UChar.FoldCaseExcludeSpecialI | CaseMapImpl.OmitUnchangedText);
         internal FoldCaseMap(int opt)
             : base(opt)
         {
@@ -321,7 +321,7 @@ namespace ICU4N.Text
         /// <provisional>This API might change or be removed in a future release.</provisional>
         public FoldCaseMap Turkic()
         {
-            return (internalOptions & CaseMapImpl.OMIT_UNCHANGED_TEXT) == 0 ?
+            return (internalOptions & CaseMapImpl.OmitUnchangedText) == 0 ?
                 TURKIC : TURKIC_OMIT_UNCHANGED;
         }
 

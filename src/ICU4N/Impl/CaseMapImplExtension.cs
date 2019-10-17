@@ -63,7 +63,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(cpLength);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -103,7 +103,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(cpLength);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -137,7 +137,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(length);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -154,7 +154,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(length);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -171,7 +171,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(length);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -188,7 +188,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(length);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -205,7 +205,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(length);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -222,7 +222,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(length);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -239,7 +239,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(length);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -256,7 +256,7 @@ namespace ICU4N.Impl
                 {
                     edits.AddUnchanged(length);
                 }
-                if ((options & OMIT_UNCHANGED_TEXT) != 0)
+                if ((options & OmitUnchangedText) != 0)
                 {
                     return;
                 }
@@ -380,7 +380,7 @@ namespace ICU4N.Impl
 
         public static string ToLower(CaseLocale caseLocale, int options, string src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -390,7 +390,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToLower(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        caseLocale, options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -402,7 +402,7 @@ namespace ICU4N.Impl
 
         public static string ToLower(CaseLocale caseLocale, int options, StringBuilder src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -412,7 +412,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToLower(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        caseLocale, options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -424,7 +424,7 @@ namespace ICU4N.Impl
 
         public static string ToLower(CaseLocale caseLocale, int options, char[] src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -434,7 +434,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToLower(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        caseLocale, options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -446,7 +446,7 @@ namespace ICU4N.Impl
 
         internal static string ToLower(CaseLocale caseLocale, int options, ICharSequence src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -456,7 +456,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToLower(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        caseLocale, options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -620,7 +620,7 @@ namespace ICU4N.Impl
     
         public static string ToUpper(CaseLocale caseLocale, int options, string src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -630,7 +630,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToUpper(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        caseLocale, options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -642,7 +642,7 @@ namespace ICU4N.Impl
 
         public static string ToUpper(CaseLocale caseLocale, int options, StringBuilder src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -652,7 +652,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToUpper(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        caseLocale, options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -664,7 +664,7 @@ namespace ICU4N.Impl
 
         public static string ToUpper(CaseLocale caseLocale, int options, char[] src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -674,7 +674,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToUpper(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        caseLocale, options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -686,7 +686,7 @@ namespace ICU4N.Impl
 
         internal static string ToUpper(CaseLocale caseLocale, int options, ICharSequence src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -696,7 +696,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToUpper(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        caseLocale, options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -932,7 +932,7 @@ namespace ICU4N.Impl
     
         public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, string src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -942,7 +942,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToTitle(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, iter, src,
+                        caseLocale, options | OmitUnchangedText, iter, src,
                         new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
@@ -955,7 +955,7 @@ namespace ICU4N.Impl
 
         public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, StringBuilder src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -965,7 +965,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToTitle(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, iter, src,
+                        caseLocale, options | OmitUnchangedText, iter, src,
                         new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
@@ -978,7 +978,7 @@ namespace ICU4N.Impl
 
         public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, char[] src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -988,7 +988,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToTitle(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, iter, src,
+                        caseLocale, options | OmitUnchangedText, iter, src,
                         new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
@@ -1001,7 +1001,7 @@ namespace ICU4N.Impl
 
         internal static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, ICharSequence src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -1011,7 +1011,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = ToTitle(
-                        caseLocale, options | OMIT_UNCHANGED_TEXT, iter, src,
+                        caseLocale, options | OmitUnchangedText, iter, src,
                         new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
@@ -1077,7 +1077,7 @@ namespace ICU4N.Impl
                             // Stop with titleStart<titleLimit<=index
                             // if there is a character to be titlecased,
                             // or else stop with titleStart==titleLimit==index.
-                            bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
+                            bool toCased = (options & CaseMapImpl.TitleCaseAdjustToCased) != 0;
                             while ((toCased ?
                                         CaseType.None == UCaseProperties.Instance.GetCaseType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
@@ -1212,7 +1212,7 @@ namespace ICU4N.Impl
                             // Stop with titleStart<titleLimit<=index
                             // if there is a character to be titlecased,
                             // or else stop with titleStart==titleLimit==index.
-                            bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
+                            bool toCased = (options & CaseMapImpl.TitleCaseAdjustToCased) != 0;
                             while ((toCased ?
                                         CaseType.None == UCaseProperties.Instance.GetCaseType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
@@ -1347,7 +1347,7 @@ namespace ICU4N.Impl
                             // Stop with titleStart<titleLimit<=index
                             // if there is a character to be titlecased,
                             // or else stop with titleStart==titleLimit==index.
-                            bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
+                            bool toCased = (options & CaseMapImpl.TitleCaseAdjustToCased) != 0;
                             while ((toCased ?
                                         CaseType.None == UCaseProperties.Instance.GetCaseType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
@@ -1482,7 +1482,7 @@ namespace ICU4N.Impl
                             // Stop with titleStart<titleLimit<=index
                             // if there is a character to be titlecased,
                             // or else stop with titleStart==titleLimit==index.
-                            bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
+                            bool toCased = (options & CaseMapImpl.TitleCaseAdjustToCased) != 0;
                             while ((toCased ?
                                         CaseType.None == UCaseProperties.Instance.GetCaseType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
@@ -1617,7 +1617,7 @@ namespace ICU4N.Impl
                             // Stop with titleStart<titleLimit<=index
                             // if there is a character to be titlecased,
                             // or else stop with titleStart==titleLimit==index.
-                            bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
+                            bool toCased = (options & CaseMapImpl.TitleCaseAdjustToCased) != 0;
                             while ((toCased ?
                                         CaseType.None == UCaseProperties.Instance.GetCaseType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
@@ -1752,7 +1752,7 @@ namespace ICU4N.Impl
                             // Stop with titleStart<titleLimit<=index
                             // if there is a character to be titlecased,
                             // or else stop with titleStart==titleLimit==index.
-                            bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
+                            bool toCased = (options & CaseMapImpl.TitleCaseAdjustToCased) != 0;
                             while ((toCased ?
                                         CaseType.None == UCaseProperties.Instance.GetCaseType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
@@ -1887,7 +1887,7 @@ namespace ICU4N.Impl
                             // Stop with titleStart<titleLimit<=index
                             // if there is a character to be titlecased,
                             // or else stop with titleStart==titleLimit==index.
-                            bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
+                            bool toCased = (options & CaseMapImpl.TitleCaseAdjustToCased) != 0;
                             while ((toCased ?
                                         CaseType.None == UCaseProperties.Instance.GetCaseType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
@@ -2022,7 +2022,7 @@ namespace ICU4N.Impl
                             // Stop with titleStart<titleLimit<=index
                             // if there is a character to be titlecased,
                             // or else stop with titleStart==titleLimit==index.
-                            bool toCased = (options & CaseMapImpl.TITLECASE_ADJUST_TO_CASED) != 0;
+                            bool toCased = (options & CaseMapImpl.TitleCaseAdjustToCased) != 0;
                             while ((toCased ?
                                         CaseType.None == UCaseProperties.Instance.GetCaseType(c) :
                                             !CaseMapImpl.IsLNS(c)) &&
@@ -2104,7 +2104,7 @@ namespace ICU4N.Impl
     
         public static string Fold(int options, string src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -2114,7 +2114,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = Fold(
-                        options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -2125,7 +2125,7 @@ namespace ICU4N.Impl
 
         public static string Fold(int options, StringBuilder src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -2135,7 +2135,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = Fold(
-                        options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -2146,7 +2146,7 @@ namespace ICU4N.Impl
 
         public static string Fold(int options, char[] src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -2156,7 +2156,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = Fold(
-                        options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -2167,7 +2167,7 @@ namespace ICU4N.Impl
 
         internal static string Fold(int options, ICharSequence src)
         {
-            if (src.Length <= 100 && (options & OMIT_UNCHANGED_TEXT) == 0)
+            if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
                 if (src.Length == 0)
                 {
@@ -2177,7 +2177,7 @@ namespace ICU4N.Impl
                 // Good if no or few changes. Bad (slow) if many changes.
                 Edits edits = new Edits();
                 StringBuilder replacementChars = Fold(
-                        options | OMIT_UNCHANGED_TEXT, src, new StringBuilder(), edits);
+                        options | OmitUnchangedText, src, new StringBuilder(), edits);
                 return ApplyEdits(src, replacementChars, edits);
             }
             else
@@ -2596,7 +2596,7 @@ namespace ICU4N.Impl
                         }
 
                         bool change;
-                        if (edits == null && (options & OMIT_UNCHANGED_TEXT) == 0)
+                        if (edits == null && (options & OmitUnchangedText) == 0)
                         {
                             change = true;  // common, simple usage
                         }
@@ -2632,7 +2632,7 @@ namespace ICU4N.Impl
                                     edits.AddUnchanged(oldLength);
                                 }
                                 // Write unchanged text?
-                                change = (options & OMIT_UNCHANGED_TEXT) == 0;
+                                change = (options & OmitUnchangedText) == 0;
                             }
                         }
 
@@ -2772,7 +2772,7 @@ namespace ICU4N.Impl
                         }
 
                         bool change;
-                        if (edits == null && (options & OMIT_UNCHANGED_TEXT) == 0)
+                        if (edits == null && (options & OmitUnchangedText) == 0)
                         {
                             change = true;  // common, simple usage
                         }
@@ -2808,7 +2808,7 @@ namespace ICU4N.Impl
                                     edits.AddUnchanged(oldLength);
                                 }
                                 // Write unchanged text?
-                                change = (options & OMIT_UNCHANGED_TEXT) == 0;
+                                change = (options & OmitUnchangedText) == 0;
                             }
                         }
 
@@ -2948,7 +2948,7 @@ namespace ICU4N.Impl
                         }
 
                         bool change;
-                        if (edits == null && (options & OMIT_UNCHANGED_TEXT) == 0)
+                        if (edits == null && (options & OmitUnchangedText) == 0)
                         {
                             change = true;  // common, simple usage
                         }
@@ -2984,7 +2984,7 @@ namespace ICU4N.Impl
                                     edits.AddUnchanged(oldLength);
                                 }
                                 // Write unchanged text?
-                                change = (options & OMIT_UNCHANGED_TEXT) == 0;
+                                change = (options & OmitUnchangedText) == 0;
                             }
                         }
 
@@ -3124,7 +3124,7 @@ namespace ICU4N.Impl
                         }
 
                         bool change;
-                        if (edits == null && (options & OMIT_UNCHANGED_TEXT) == 0)
+                        if (edits == null && (options & OmitUnchangedText) == 0)
                         {
                             change = true;  // common, simple usage
                         }
@@ -3160,7 +3160,7 @@ namespace ICU4N.Impl
                                     edits.AddUnchanged(oldLength);
                                 }
                                 // Write unchanged text?
-                                change = (options & OMIT_UNCHANGED_TEXT) == 0;
+                                change = (options & OmitUnchangedText) == 0;
                             }
                         }
 
@@ -3300,7 +3300,7 @@ namespace ICU4N.Impl
                         }
 
                         bool change;
-                        if (edits == null && (options & OMIT_UNCHANGED_TEXT) == 0)
+                        if (edits == null && (options & OmitUnchangedText) == 0)
                         {
                             change = true;  // common, simple usage
                         }
@@ -3336,7 +3336,7 @@ namespace ICU4N.Impl
                                     edits.AddUnchanged(oldLength);
                                 }
                                 // Write unchanged text?
-                                change = (options & OMIT_UNCHANGED_TEXT) == 0;
+                                change = (options & OmitUnchangedText) == 0;
                             }
                         }
 
@@ -3476,7 +3476,7 @@ namespace ICU4N.Impl
                         }
 
                         bool change;
-                        if (edits == null && (options & OMIT_UNCHANGED_TEXT) == 0)
+                        if (edits == null && (options & OmitUnchangedText) == 0)
                         {
                             change = true;  // common, simple usage
                         }
@@ -3512,7 +3512,7 @@ namespace ICU4N.Impl
                                     edits.AddUnchanged(oldLength);
                                 }
                                 // Write unchanged text?
-                                change = (options & OMIT_UNCHANGED_TEXT) == 0;
+                                change = (options & OmitUnchangedText) == 0;
                             }
                         }
 
@@ -3652,7 +3652,7 @@ namespace ICU4N.Impl
                         }
 
                         bool change;
-                        if (edits == null && (options & OMIT_UNCHANGED_TEXT) == 0)
+                        if (edits == null && (options & OmitUnchangedText) == 0)
                         {
                             change = true;  // common, simple usage
                         }
@@ -3688,7 +3688,7 @@ namespace ICU4N.Impl
                                     edits.AddUnchanged(oldLength);
                                 }
                                 // Write unchanged text?
-                                change = (options & OMIT_UNCHANGED_TEXT) == 0;
+                                change = (options & OmitUnchangedText) == 0;
                             }
                         }
 
@@ -3828,7 +3828,7 @@ namespace ICU4N.Impl
                         }
 
                         bool change;
-                        if (edits == null && (options & OMIT_UNCHANGED_TEXT) == 0)
+                        if (edits == null && (options & OmitUnchangedText) == 0)
                         {
                             change = true;  // common, simple usage
                         }
@@ -3864,7 +3864,7 @@ namespace ICU4N.Impl
                                     edits.AddUnchanged(oldLength);
                                 }
                                 // Write unchanged text?
-                                change = (options & OMIT_UNCHANGED_TEXT) == 0;
+                                change = (options & OmitUnchangedText) == 0;
                             }
                         }
 
