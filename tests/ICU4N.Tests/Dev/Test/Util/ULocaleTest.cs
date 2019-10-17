@@ -1297,7 +1297,7 @@ namespace ICU4N.Dev.Test.Util
                     DisplayContext dialectHandling = ldn.GetContext(DisplayContextType.DialectHandling);
                     assertEquals("consistent dialect handling",
                             dialectHandling == DisplayContext.DialectNames,
-                            ldn.GetDialectHandling() == DialectHandling.DialectNames);
+                            ldn.DialectHandling == DialectHandling.DialectNames);
                     DisplayContext capitalization = ldn.GetContext(DisplayContextType.Capitalization);
                     DisplayContext nameLength = ldn.GetContext(DisplayContextType.DisplayLength);
                     DisplayContext substituteHandling = ldn.GetContext(DisplayContextType.SubstituteHandling);

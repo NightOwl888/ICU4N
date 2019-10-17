@@ -290,14 +290,14 @@ namespace ICU4N.Text
         /// </summary>
         /// <returns>The display locale.</returns>
         /// <stable>ICU 4.4</stable>
-        public abstract ULocale GetLocale(); // ICU4N TODO: API - make property, rename Culture ?
+        public abstract ULocale Locale { get; } // ICU4N TODO: API - rename Culture ?
 
         /// <summary>
         /// Returns the dialect handling used in the display names.
         /// </summary>
         /// <returns>The dialect handling enumeration.</returns>
         /// <stable>ICU 4.4</stable>
-        public abstract DialectHandling GetDialectHandling(); // ICU4N TODO: API - make property
+        public abstract DialectHandling DialectHandling { get; }
 
         /// <summary>
         /// Returns the current value for a specified <see cref="DisplayContextType"/>.
@@ -559,26 +559,26 @@ namespace ICU4N.Text
                 System.Array.Copy(contexts, 0, this.contexts, 0, contexts.Length);
             }
 
-            public override ULocale GetLocale()
-            {
-                return locale;
-            }
+            public override ULocale Locale => locale;
 
-            public override DialectHandling GetDialectHandling()
+            public override DialectHandling DialectHandling
             {
-                DialectHandling result = DialectHandling.StandardNames;
-                foreach (DisplayContext context in contexts)
+                get
                 {
-                    if (context.Type() == DisplayContextType.DialectHandling)
+                    DialectHandling result = DialectHandling.StandardNames;
+                    foreach (DisplayContext context in contexts)
                     {
-                        if (context.Value() == (int)DisplayContext.DialectNames)
+                        if (context.Type() == DisplayContextType.DialectHandling)
                         {
-                            result = DialectHandling.DialectNames;
-                            break;
+                            if (context.Value() == (int)DisplayContext.DialectNames)
+                            {
+                                result = DialectHandling.DialectNames;
+                                break;
+                            }
                         }
                     }
+                    return result;
                 }
-                return result;
             }
 
             public override DisplayContext GetContext(DisplayContextType type)

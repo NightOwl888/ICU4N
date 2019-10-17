@@ -247,15 +247,9 @@ namespace ICU4N.Impl
             this.currencyDisplayInfo = CurrencyData.Provider.GetInstance(locale, false);
         }
 
-        public override ULocale GetLocale()
-        {
-            return locale;
-        }
+        public override ULocale Locale => locale;
 
-        public override DialectHandling GetDialectHandling()
-        {
-            return dialectHandling;
-        }
+        public override DialectHandling DialectHandling => dialectHandling;
 
         public override DisplayContext GetContext(DisplayContextType type)
         {
