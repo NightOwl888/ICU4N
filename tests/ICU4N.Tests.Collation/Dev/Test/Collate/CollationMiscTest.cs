@@ -3612,7 +3612,6 @@ namespace ICU4N.Dev.Test.Collate
         [Test]
         public void TestReorderingAPI()
         {
-            // ICU4N TODO: API - can we use reorder codes without casting?
             Collator myCollation;
             int[] reorderCodes = { UScript.Greek, UScript.Han, ReorderCodes.Punctuation };
             int[] duplicateReorderCodes = { UScript.Hiragana, UScript.Greek, ReorderCodes.Currency, UScript.Katakana };

@@ -10,7 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Resources;
 using System.Text;
-using ReaderValue = ICU4N.Impl.ICUResourceBundleReader.ReaderValue; // ICU4N TODO: API - de-nest?
+using ReaderValue = ICU4N.Impl.ICUResourceBundleReader.ReaderValue;
 
 namespace ICU4N.Impl
 {

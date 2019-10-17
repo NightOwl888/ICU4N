@@ -49,14 +49,14 @@ namespace ICU4N.Impl
     {
         private static readonly int SpacingTypeCount = Enum.GetNames(typeof(SpacingType)).Length;
         private static readonly int SpacingPatternCount = Enum.GetNames(typeof(SpacingPattern)).Length;
-        private readonly string[][] symbols = Arrays.NewRectangularArray<string>(SpacingTypeCount, SpacingTypeCount); ///new String[SpacingType.COUNT.ordinal()][SpacingPattern.COUNT.ordinal()];
+        private readonly string[][] symbols = Arrays.NewRectangularArray<string>(SpacingTypeCount, SpacingTypeCount);
 
         public bool HasBeforeCurrency { get; set; } = false;
         public bool HasAfterCurrency { get; set; } = false;
 
-        public enum SpacingType { Before, After }; // ICU4N TODO: API de-nest
+        public enum SpacingType { Before, After };
 
-        public enum SpacingPattern // ICU4N TODO: API de-nest
+        public enum SpacingPattern
         {
             CurrencyMatch,
             SurroundingMatch,

@@ -949,7 +949,7 @@ namespace ICU4N.Impl
         /// descriptor or use custom API on the key in order to
         /// instantiate the service.
         /// </summary>
-        public virtual string GetCurrentDescriptor() // ICU4N TODO: API - make property ?
+        public virtual string GetCurrentDescriptor() // ICU4N specific - Added "Get"
         {
             return "/" + CurrentID;
         }
