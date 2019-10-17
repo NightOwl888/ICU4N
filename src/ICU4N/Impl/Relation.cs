@@ -352,42 +352,6 @@ namespace ICU4N.Impl
         // ICU4N specific - SimpleEntry class not needed, since we have implemented IEnumerator.
         // KeyValuePair is sealed anyway, so this won't work.
 
-        //internal class SimpleEntry /*: KeyValuePair<TKey, TValue>*/
-        //{
-        //    TKey key;
-        //    TValue value;
-
-        //    public SimpleEntry(TKey key, TValue value)
-        //    {
-        //        this.key = key;
-        //        this.value = value;
-        //    }
-
-        //    public SimpleEntry(KeyValuePair<TKey, TValue> e)
-        //    {
-        //        this.key = e.Key;
-        //        this.value = e.Value;
-        //    }
-
-        //    public virtual TKey Key
-        //    {
-        //        get { return key; }
-        //    }
-
-        //    public virtual TValue Value
-        //    {
-        //        get { return value; }
-        //    }
-
-        //    public virtual TValue SetValue(TValue value) // ICU4N TODO: Perhaps just make an extension method for KeyValuePair, since it is sealed?
-        //    {
-        //        TValue oldValue = this.value;
-        //        this.value = value;
-        //        return oldValue;
-                
-        //    }
-        //}
-
         public virtual Relation<TKey, TValue> AddAllInverted<K>(Relation<TValue, K> source)
                 where K : class, TKey
         {
