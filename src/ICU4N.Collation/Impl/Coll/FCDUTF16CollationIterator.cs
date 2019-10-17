@@ -15,7 +15,7 @@ namespace ICU4N.Impl.Coll
         public FCDUTF16CollationIterator(CollationData d)
             : base(d)
         {
-            nfcImpl = d.nfcImpl;
+            nfcImpl = d.NfcImpl;
         }
 
         public FCDUTF16CollationIterator(CollationData data, bool numeric, ICharSequence s, int p)
@@ -24,7 +24,7 @@ namespace ICU4N.Impl.Coll
             rawSeq = s;
             segmentStart = p;
             rawLimit = s.Length;
-            nfcImpl = data.nfcImpl;
+            nfcImpl = data.NfcImpl;
             checkDir = 1;
         }
 

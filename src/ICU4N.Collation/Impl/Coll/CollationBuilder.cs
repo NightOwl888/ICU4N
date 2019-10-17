@@ -30,7 +30,7 @@ namespace ICU4N.Impl.Coll
             nfcImpl = Norm2AllModes.GetNFCInstance().Impl;
             @base = b;
             baseData = b.Data;
-            rootElements = new CollationRootElements(b.Data.rootElements);
+            rootElements = new CollationRootElements(b.Data.RootElements);
             variableTop = 0;
             dataBuilder = new CollationDataBuilder();
             fastLatinEnabled = true;
@@ -43,7 +43,7 @@ namespace ICU4N.Impl.Coll
 
         public CollationTailoring ParseAndBuild(string ruleString)
         {
-            if (baseData.rootElements == null)
+            if (baseData.RootElements == null)
             {
                 // C++ U_MISSING_RESOURCE_ERROR
                 throw new NotSupportedException(

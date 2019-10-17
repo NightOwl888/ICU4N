@@ -320,17 +320,17 @@ namespace ICU4N.Impl.Coll
                 {
                     throw new ICUException("Root elements array too short");
                 }
-                data.rootElements = new long[rootElementsLength];
+                data.RootElements = new long[rootElementsLength];
                 for (int i = 0; i < rootElementsLength; ++i)
                 {
-                    data.rootElements[i] = inBytes.GetInt32() & 0xffffffffL;  // unsigned int -> long
+                    data.RootElements[i] = inBytes.GetInt32() & 0xffffffffL;  // unsigned int -> long
                 }
-                long commonSecTer = data.rootElements[CollationRootElements.IX_COMMON_SEC_AND_TER_CE];
+                long commonSecTer = data.RootElements[CollationRootElements.IX_COMMON_SEC_AND_TER_CE];
                 if (commonSecTer != Collation.CommonSecondaryAndTertiaryCE)
                 {
                     throw new ICUException("Common sec/ter weights in base data differ from the hardcoded value");
                 }
-                long secTerBoundaries = data.rootElements[CollationRootElements.IX_SEC_TER_BOUNDARIES];
+                long secTerBoundaries = data.RootElements[CollationRootElements.IX_SEC_TER_BOUNDARIES];
                 if ((secTerBoundaries.TripleShift(24)) < CollationKeys.SEC_COMMON_HIGH)
                 {
                     // [fixed last secondary common byte] is too low,
@@ -380,7 +380,7 @@ namespace ICU4N.Impl.Coll
                     // new UnicodeSet("[[:^lccc=0:][\\udc00-\\udfff]]").
                     // It is faster and requires fewer code dependencies.
                     tailoring.UnsafeBackwardSet = new UnicodeSet(0xdc00, 0xdfff);  // trail surrogates
-                    data.nfcImpl.AddLcccChars(tailoring.UnsafeBackwardSet);
+                    data.NfcImpl.AddLcccChars(tailoring.UnsafeBackwardSet);
                 }
                 else
                 {
@@ -435,7 +435,7 @@ namespace ICU4N.Impl.Coll
             length = inIndexes[index + 1] - offset;
             if (data != null)
             {
-                data.fastLatinTable = null;
+                data.FastLatinTable = null;
                 data.fastLatinTableHeader = null;
                 if (((inIndexes[IX_OPTIONS] >> 16) & 0xff) == CollationFastLatin.Version)
                 {
@@ -450,7 +450,7 @@ namespace ICU4N.Impl.Coll
                             data.fastLatinTableHeader[i] = inBytes.GetChar();
                         }
                         int tableLength = length / 2 - headerLength;
-                        data.fastLatinTable = ICUBinary.GetChars(inBytes, tableLength, length & 1);
+                        data.FastLatinTable = ICUBinary.GetChars(inBytes, tableLength, length & 1);
                         length = 0;
                         if ((header0 >> 8) != CollationFastLatin.Version)
                         {
@@ -459,7 +459,7 @@ namespace ICU4N.Impl.Coll
                     }
                     else if (baseData != null)
                     {
-                        data.fastLatinTable = baseData.fastLatinTable;
+                        data.FastLatinTable = baseData.FastLatinTable;
                         data.fastLatinTableHeader = baseData.fastLatinTableHeader;
                     }
                 }
@@ -515,10 +515,10 @@ namespace ICU4N.Impl.Coll
                 {
                     throw new ICUException("Data for compressible primary lead bytes but no mappings");
                 }
-                data.compressibleBytes = new bool[256];
+                data.CompressibleBytes = new bool[256];
                 for (int i = 0; i < 256; ++i)
                 {
-                    data.compressibleBytes[i] = inBytes.Get() != 0;
+                    data.CompressibleBytes[i] = inBytes.Get() != 0;
                 }
                 length -= 256;
             }
@@ -528,7 +528,7 @@ namespace ICU4N.Impl.Coll
             }
             else if (baseData != null)
             {
-                data.compressibleBytes = baseData.compressibleBytes;
+                data.CompressibleBytes = baseData.CompressibleBytes;
             }
             else
             {

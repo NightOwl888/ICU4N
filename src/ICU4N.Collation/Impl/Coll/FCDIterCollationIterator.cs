@@ -16,7 +16,7 @@ namespace ICU4N.Impl.Coll
         {
             state = State.IterCheckFwd;
             start = startIndex;
-            nfcImpl = data.nfcImpl;
+            nfcImpl = data.NfcImpl;
         }
 
         public override void ResetToOffset(int newOffset)

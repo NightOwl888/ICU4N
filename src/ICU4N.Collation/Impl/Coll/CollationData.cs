@@ -5,6 +5,7 @@ using ICU4N.Util;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
@@ -33,7 +34,7 @@ namespace ICU4N.Impl.Coll
 
         internal CollationData(Normalizer2Impl nfc)
         {
-            nfcImpl = nfc;
+            NfcImpl = nfc;
         }
 
         public int GetCE32(int c)
@@ -59,7 +60,7 @@ namespace ICU4N.Impl.Coll
 
         public bool IsCompressibleLeadByte(int b)
         {
-            return compressibleBytes[b];
+            return CompressibleBytes[b];
         }
 
         public bool IsCompressiblePrimary(long p)
@@ -133,8 +134,8 @@ namespace ICU4N.Impl.Coll
             int ce32 = GetCE32(c);
             if (ce32 == Collation.FALLBACK_CE32)
             {
-                d = base_;
-                ce32 = base_.GetCE32(c);
+                d = Base;
+                ce32 = Base.GetCE32(c);
             }
             else
             {
@@ -209,7 +210,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal int GetFCD16(int c)
         {
-            return nfcImpl.GetFCD16(c);
+            return NfcImpl.GetFCD16(c);
         }
 
         /// <summary>
@@ -440,19 +441,19 @@ namespace ICU4N.Impl.Coll
                         if (script == UScript.Unknown)
                         {  // Must occur at most once.
                             throw new ArgumentException(
-                                    "setReorderCodes(): duplicate UScript.UNKNOWN");
+                                    "SetReorderCodes(): duplicate UScript.Unknown");
                         }
                         if (script == ReorderCodes.Default)
                         {
                             throw new ArgumentException(
-                                    "setReorderCodes(): UScript.DEFAULT together with other scripts");
+                                    "SetReorderCodes(): UScript.Default together with other scripts");
                         }
                         int index2 = GetScriptIndex(script);
                         if (index2 == 0) { continue; }
                         if (table[index2] != 0)
                         {  // Duplicate or equivalent script.
                             throw new ArgumentException(
-                                    "setReorderCodes(): duplicate or equivalent script " +
+                                    "SetReorderCodes(): duplicate or equivalent script " +
                                     ScriptCodeString(script));
                         }
                         highLimit = AddHighScriptRange(table, index2, highLimit);
@@ -464,14 +465,14 @@ namespace ICU4N.Impl.Coll
                     // The default code must be the only one in the list, and that is handled by the caller.
                     // Otherwise it must not be used.
                     throw new ArgumentException(
-                            "setReorderCodes(): UScript.DEFAULT together with other scripts");
+                            "SetReorderCodes(): UScript.Default together with other scripts");
                 }
                 int index = GetScriptIndex(script);
                 if (index == 0) { continue; }
                 if (table[index] != 0)
                 {  // Duplicate or equivalent script.
                     throw new ArgumentException(
-                            "setReorderCodes(): duplicate or equivalent script " +
+                            "SetReorderCodes(): duplicate or equivalent script " +
                             ScriptCodeString(script));
                 }
                 lowStart = AddLowScriptRange(table, index, lowStart);
@@ -500,7 +501,7 @@ namespace ICU4N.Impl.Coll
                 }
                 // We need more primary lead bytes than available, despite the reserved ranges.
                 throw new ICUException(
-                        "setReorderCodes(): reordering too many partial-primary-lead-byte scripts");
+                        "SetReorderCodes(): reordering too many partial-primary-lead-byte scripts");
             }
 
             // Turn lead bytes into a list of (limit, offset) pairs.
@@ -583,17 +584,9 @@ namespace ICU4N.Impl.Coll
         internal IList<long> ces;
         /// <summary>Array of prefix and contraction-suffix matching data.</summary>
         internal string contexts;
-        /// <summary>Base collation data, or null if this data itself is a base.</summary>
-        private CollationData base_;
 
         /// <summary>Base collation data, or null if this data itself is a base.</summary>
-        public CollationData Base
-        {
-            get { return base_; }
-            set { base_ = value; }
-        }
-
-        // ICU4N TODO: API Make fields into properties
+        public CollationData Base { get; set; }
 
         /// <summary>
         /// Simple array of <see cref="JAMO_CE32S_LENGTH"/>=19+21+27 CE32s, one per canonical Jamo L/V/T.
@@ -601,12 +594,13 @@ namespace ICU4N.Impl.Coll
         /// For fast handling of <see cref="Collation.HANGUL_TAG"/>.
         /// </summary>
         internal int[] jamoCE32s = new int[JAMO_CE32S_LENGTH];
-        public Normalizer2Impl nfcImpl;
+        public Normalizer2Impl NfcImpl { get; set; }
         /// <summary>The single-byte primary weight (xx000000) for numeric collation.</summary>
         internal long numericPrimary = 0x12000000;
 
         /// <summary>256 flags for which primary-weight lead bytes are compressible.</summary>
-        public bool[] compressibleBytes;
+        [SuppressMessage("Microsoft.Performance", "CA1819", Justification = "design requires some writable array properties")]
+        public bool[] CompressibleBytes { get; set; }
 
         /// <summary>
         /// Set of code points that are unsafe for starting string comparison after an identical prefix,
@@ -618,10 +612,11 @@ namespace ICU4N.Impl.Coll
         /// Fast Latin table for common-Latin-text string comparisons.
         /// Data structure see class <see cref="CollationFastLatin"/>.
         /// </summary>
-        public char[] fastLatinTable;
+        [SuppressMessage("Microsoft.Performance", "CA1819", Justification = "design requires some writable array properties")]
+        public char[] FastLatinTable { get; set; }
 
         /// <summary>
-        /// Header portion of the <see cref="fastLatinTable"/>.
+        /// Header portion of the <see cref="FastLatinTable"/>.
         /// In C++, these are one array, and the header is skipped for mapping characters.
         /// In .NET, two arrays work better.
         /// </summary>
@@ -658,6 +653,7 @@ namespace ICU4N.Impl.Coll
         /// Used by the <see cref="CollationRootElements"/> class. The data structure is described there.
         /// null in a tailoring.
         /// </summary>
-        public long[] rootElements;
+        [SuppressMessage("Microsoft.Performance", "CA1819", Justification = "design requires some writable array properties")]
+        public long[] RootElements { get; set; }
     }
 }

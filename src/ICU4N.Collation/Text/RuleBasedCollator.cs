@@ -1207,7 +1207,7 @@ namespace ICU4N.Text
             {
                 buffer.LeftUTF16CollIter.SetText(numeric, s, 0);
                 CollationKeys.WriteSortKeyUpToQuaternary(
-                        buffer.LeftUTF16CollIter, data.compressibleBytes, settings.ReadOnly,
+                        buffer.LeftUTF16CollIter, data.CompressibleBytes, settings.ReadOnly,
                         sink, CollationSortKeyLevel.Primary,
                         CollationKeys.SimpleLevelFallback, true);
             }
@@ -1215,7 +1215,7 @@ namespace ICU4N.Text
             {
                 buffer.LeftFCDUTF16Iter.SetText(numeric, s, 0);
                 CollationKeys.WriteSortKeyUpToQuaternary(
-                        buffer.LeftFCDUTF16Iter, data.compressibleBytes, settings.ReadOnly,
+                        buffer.LeftFCDUTF16Iter, data.CompressibleBytes, settings.ReadOnly,
                         sink, CollationSortKeyLevel.Primary,
                         CollationKeys.SimpleLevelFallback, true);
             }
@@ -1229,7 +1229,7 @@ namespace ICU4N.Text
         private void WriteIdenticalLevel(ICharSequence s, CollationKeyByteSink sink)
         {
             // NFD quick check
-            int nfdQCYesLimit = data.nfcImpl.Decompose(s, 0, s.Length, null);
+            int nfdQCYesLimit = data.NfcImpl.Decompose(s, 0, s.Length, null);
             sink.Append(Collation.LevelSeparatorByte);
             // Sync the ByteArrayWrapper size with the key length.
             sink.Key.Length = sink.NumberOfBytesAppended;
@@ -1243,7 +1243,7 @@ namespace ICU4N.Text
             {
                 int destLengthEstimate = s.Length - nfdQCYesLimit;
                 StringBuilderCharSequence nfd = new StringBuilderCharSequence();
-                data.nfcImpl.Decompose(s, nfdQCYesLimit, s.Length, nfd.StringBuilder, destLengthEstimate);
+                data.NfcImpl.Decompose(s, nfdQCYesLimit, s.Length, nfd.StringBuilder, destLengthEstimate);
                 BOCSU.WriteIdenticalLevelRun(prev, nfd, 0, nfd.Length, sink.Key);
             }
             // Sync the key with the buffer again which got bytes appended and may have been reallocated.
@@ -1624,7 +1624,7 @@ namespace ICU4N.Text
                     (equalPrefixLength == right.Length ||
                         right[equalPrefixLength] <= CollationFastLatin.LatinMax))
             {
-                result = CollationFastLatin.CompareUTF16(data.fastLatinTable,
+                result = CollationFastLatin.CompareUTF16(data.FastLatinTable,
                                                           roSettings.FastLatinPrimaries,
                                                           fastLatinOptions,
                                                           left, right, equalPrefixLength);
@@ -1670,7 +1670,7 @@ namespace ICU4N.Text
             {
                 buffer2 = GetCollationBuffer();
                 // Compare identical level.
-                Normalizer2Impl nfcImpl = data.nfcImpl;
+                Normalizer2Impl nfcImpl = data.NfcImpl;
                 if (roSettings.DontCheckFCD)
                 {
                     buffer2.LeftUTF16NFDIter.SetText(left, equalPrefixLength);

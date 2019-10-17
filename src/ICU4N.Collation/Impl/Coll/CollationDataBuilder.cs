@@ -357,7 +357,7 @@ namespace ICU4N.Impl.Coll
             if (base_ != null)
             {
                 data.numericPrimary = base_.numericPrimary;
-                data.compressibleBytes = base_.compressibleBytes;
+                data.CompressibleBytes = base_.CompressibleBytes;
                 data.numScripts = base_.numScripts;
                 data.scriptsIndex = base_.scriptsIndex;
                 data.scriptStarts = base_.scriptStarts;
@@ -1380,15 +1380,15 @@ namespace ICU4N.Impl.Coll
                 char[] table = fastLatinBuilder.GetTable();
                 if (base_ != null &&
                         Arrays.Equals(header, base_.fastLatinTableHeader) &&
-                        Arrays.Equals(table, base_.fastLatinTable))
+                        Arrays.Equals(table, base_.FastLatinTable))
                 {
                     // Same fast Latin table as in the base, use that one instead.
                     fastLatinBuilder = null;
                     header = base_.fastLatinTableHeader;
-                    table = base_.fastLatinTable;
+                    table = base_.FastLatinTable;
                 }
                 data.fastLatinTableHeader = header;
-                data.fastLatinTable = table;
+                data.FastLatinTable = table;
             }
             else
             {

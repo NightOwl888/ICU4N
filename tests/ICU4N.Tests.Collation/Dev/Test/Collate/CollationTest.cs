@@ -834,7 +834,7 @@ namespace ICU4N.Dev.Test.Collate
             internal RootElementsIterator(CollationData root)
             {
                 data = root;
-                elements = root.rootElements;
+                elements = root.RootElements;
                 length = elements.Length;
                 pri = 0;
                 secTer = 0;
@@ -933,7 +933,7 @@ namespace ICU4N.Dev.Test.Collate
         {
             CollationData root = CollationRoot.Data;
 
-            CollationRootElements rootElements = new CollationRootElements(root.rootElements);
+            CollationRootElements rootElements = new CollationRootElements(root.RootElements);
             RootElementsIterator iter = new RootElementsIterator(root);
 
             // We check each root CE for validity,
@@ -1082,7 +1082,7 @@ namespace ICU4N.Dev.Test.Collate
         public void TestTailoredElements()
         {
             CollationData root = CollationRoot.Data;
-            CollationRootElements rootElements = new CollationRootElements(root.rootElements);
+            CollationRootElements rootElements = new CollationRootElements(root.RootElements);
 
             ISet<String> prevLocales = new HashSet<String>();
             prevLocales.Add("");

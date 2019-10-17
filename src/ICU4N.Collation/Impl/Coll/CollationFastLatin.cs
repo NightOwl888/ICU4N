@@ -278,7 +278,7 @@ namespace ICU4N.Impl.Coll
                 }
             }
 
-            char[] table = data.fastLatinTable;  // skip the header
+            char[] table = data.FastLatinTable;  // skip the header
             for (int c = 0; c < LatinLimit; ++c)
             {
                 int p = table[c];
