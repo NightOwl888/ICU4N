@@ -363,7 +363,7 @@ namespace ICU4N.Impl.Coll
             int options = settings.Options;
             // Set of levels to process and write.
             int levels = levelMasks[(int)CollationSettings.GetStrength(options)];
-            if ((options & CollationSettings.CASE_LEVEL) != 0)
+            if ((options & CollationSettings.CaseLevel) != 0)
             {
                 levels |= Collation.CASE_LEVEL_FLAG;
             }
@@ -375,7 +375,7 @@ namespace ICU4N.Impl.Coll
             }
 
             long variableTop;
-            if ((options & CollationSettings.ALTERNATE_MASK) == 0)
+            if ((options & CollationSettings.AlternateMask) == 0)
             {
                 variableTop = 0;
             }
@@ -523,14 +523,14 @@ namespace ICU4N.Impl.Coll
                         // secondary ignorable
                     }
                     else if (s == Collation.CommonWeight16 &&
-                          ((options & CollationSettings.BACKWARD_SECONDARY) == 0 ||
+                          ((options & CollationSettings.BackwardSecondary) == 0 ||
                               p != Collation.MergeSeparatorPrimary))
                     {
                         // s is a common secondary weight, and
                         // backwards-secondary is off or the ce is not the merge separator.
                         ++commonSecondaries;
                     }
-                    else if ((options & CollationSettings.BACKWARD_SECONDARY) == 0)
+                    else if ((options & CollationSettings.BackwardSecondary) == 0)
                     {
                         if (commonSecondaries != 0)
                         {
@@ -624,7 +624,7 @@ namespace ICU4N.Impl.Coll
                         }
                         else
                         {
-                            if ((options & CollationSettings.UPPER_FIRST) == 0)
+                            if ((options & CollationSettings.UpperFirst) == 0)
                             {
                                 // lowerFirst: Compress common weights to nibbles 1..7..13, mixed=14,
                                 // upper=15.
@@ -724,7 +724,7 @@ namespace ICU4N.Impl.Coll
                         }
                         tertiaries.AppendWeight16(t);
                     }
-                    else if ((options & CollationSettings.UPPER_FIRST) == 0)
+                    else if ((options & CollationSettings.UpperFirst) == 0)
                     {
                         // Tertiary weights with caseFirst=lowerFirst.
                         // Move lead bytes 06..BF to 46..FF for the common-weight range.
@@ -820,7 +820,7 @@ namespace ICU4N.Impl.Coll
                         ++commonQuaternaries;
                     }
                     else if (q == Collation.NO_CE_WEIGHT16
-                          && (options & CollationSettings.ALTERNATE_MASK) == 0
+                          && (options & CollationSettings.AlternateMask) == 0
                           && quaternaries.IsEmpty)
                     {
                         // If alternate=non-ignorable and there are only common quaternary weights,

@@ -212,7 +212,7 @@ namespace ICU4N.Impl.Coll
             }
 
             int miniVarTop;
-            if ((settings.Options & CollationSettings.ALTERNATE_MASK) == 0)
+            if ((settings.Options & CollationSettings.AlternateMask) == 0)
             {
                 // No mini primaries are variable, set a variableTop just below the
                 // lowest long mini primary.
@@ -296,7 +296,7 @@ namespace ICU4N.Impl.Coll
                 }
                 primaries[c] = (char)p;
             }
-            if (digitsAreReordered || (settings.Options & CollationSettings.NUMERIC) != 0)
+            if (digitsAreReordered || (settings.Options & CollationSettings.Numeric) != 0)
             {
                 // Bail out for digits.
                 for (int c = 0x30; c <= 0x39; ++c) { primaries[c] = (char)0; }
@@ -338,7 +338,7 @@ namespace ICU4N.Impl.Coll
                     {
                         leftPair = primaries[c];
                         if (leftPair != 0) { break; }
-                        if (c <= 0x39 && c >= 0x30 && (options & CollationSettings.NUMERIC) != 0)
+                        if (c <= 0x39 && c >= 0x30 && (options & CollationSettings.Numeric) != 0)
                         {
                             return BailOutResult;
                         }
@@ -388,7 +388,7 @@ namespace ICU4N.Impl.Coll
                     {
                         rightPair = primaries[c];
                         if (rightPair != 0) { break; }
-                        if (c <= 0x39 && c >= 0x30 && (options & CollationSettings.NUMERIC) != 0)
+                        if (c <= 0x39 && c >= 0x30 && (options & CollationSettings.Numeric) != 0)
                         {
                             return BailOutResult;
                         }
@@ -551,7 +551,7 @@ namespace ICU4N.Impl.Coll
                     int rightSecondary = rightPair & 0xffff;
                     if (leftSecondary != rightSecondary)
                     {
-                        if ((options & CollationSettings.BACKWARD_SECONDARY) != 0)
+                        if ((options & CollationSettings.BackwardSecondary) != 0)
                         {
                             // Full support for backwards secondary requires backwards contraction matching
                             // and moving backwards between merge separators.
@@ -567,7 +567,7 @@ namespace ICU4N.Impl.Coll
                 }
             }
 
-            if ((options & CollationSettings.CASE_LEVEL) != 0)
+            if ((options & CollationSettings.CaseLevel) != 0)
             {
                 bool strengthIsPrimary = CollationSettings.GetStrength(options) == CollationStrength.Primary;
                 leftIndex = rightIndex = startIndex;
@@ -628,7 +628,7 @@ namespace ICU4N.Impl.Coll
                     int rightCase = rightPair & 0xffff;
                     if (leftCase != rightCase)
                     {
-                        if ((options & CollationSettings.UPPER_FIRST) == 0)
+                        if ((options & CollationSettings.UpperFirst) == 0)
                         {
                             return (leftCase < rightCase) ? Collation.Less : Collation.Greater;
                         }

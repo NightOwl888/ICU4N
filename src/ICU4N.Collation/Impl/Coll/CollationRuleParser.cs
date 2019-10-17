@@ -155,7 +155,7 @@ namespace ICU4N.Impl.Coll
                         ruleIndex = SkipComment(ruleIndex + 1);
                         break;
                     case '@': // is equivalent to [backwards 2]
-                        settings.SetFlag(CollationSettings.BACKWARD_SECONDARY, true);
+                        settings.SetFlag(CollationSettings.BackwardSecondary, true);
                         ++ruleIndex;
                         break;
                     case '!':  // '!' used to turn on Thai/Lao character reversal
@@ -647,7 +647,7 @@ namespace ICU4N.Impl.Coll
                 }
                 if (raw.Equals("backwards 2"))
                 {
-                    settings.SetFlag(CollationSettings.BACKWARD_SECONDARY, true);
+                    settings.SetFlag(CollationSettings.BackwardSecondary, true);
                     ruleIndex = j;
                     return;
                 }
@@ -704,19 +704,19 @@ namespace ICU4N.Impl.Coll
                     int value = UCOL_DEFAULT;
                     if (v.Equals("space"))
                     {
-                        value = CollationSettings.MAX_VAR_SPACE;
+                        value = CollationSettings.MaxVariableSpace;
                     }
                     else if (v.Equals("punct"))
                     {
-                        value = CollationSettings.MAX_VAR_PUNCT;
+                        value = CollationSettings.MaxVariblePunctuation;
                     }
                     else if (v.Equals("symbol"))
                     {
-                        value = CollationSettings.MAX_VAR_SYMBOL;
+                        value = CollationSettings.MaxVariableSymbol;
                     }
                     else if (v.Equals("currency"))
                     {
-                        value = CollationSettings.MAX_VAR_CURRENCY;
+                        value = CollationSettings.MaxVarCurrency;
                     }
                     if (value != UCOL_DEFAULT)
                     {
@@ -737,11 +737,11 @@ namespace ICU4N.Impl.Coll
                     }
                     else if (v.Equals("lower"))
                     {
-                        value = CollationSettings.CASE_FIRST;  // UCOL_LOWER_FIRST
+                        value = CollationSettings.CaseFirst;  // UCOL_LOWER_FIRST
                     }
                     else if (v.Equals("upper"))
                     {
-                        value = CollationSettings.CASE_FIRST_AND_UPPER_MASK;  // UCOL_UPPER_FIRST
+                        value = CollationSettings.CaseFirstAndUpperMask;  // UCOL_UPPER_FIRST
                     }
                     if (value != UCOL_DEFAULT)
                     {
@@ -755,7 +755,7 @@ namespace ICU4N.Impl.Coll
                     int value = GetOnOffValue(v);
                     if (value != UCOL_DEFAULT)
                     {
-                        settings.SetFlag(CollationSettings.CASE_LEVEL, value > 0);
+                        settings.SetFlag(CollationSettings.CaseLevel, value > 0);
                         ruleIndex = j;
                         return;
                     }
@@ -765,7 +765,7 @@ namespace ICU4N.Impl.Coll
                     int value = GetOnOffValue(v);
                     if (value != UCOL_DEFAULT)
                     {
-                        settings.SetFlag(CollationSettings.CHECK_FCD, value > 0);
+                        settings.SetFlag(CollationSettings.CheckFCD, value > 0);
                         ruleIndex = j;
                         return;
                     }
@@ -775,7 +775,7 @@ namespace ICU4N.Impl.Coll
                     int value = GetOnOffValue(v);
                     if (value != UCOL_DEFAULT)
                     {
-                        settings.SetFlag(CollationSettings.NUMERIC, value > 0);
+                        settings.SetFlag(CollationSettings.Numeric, value > 0);
                         ruleIndex = j;
                         return;
                     }

@@ -22,7 +22,7 @@ namespace ICU4N.Impl.Coll
         /// <summary>
         /// Options bit 0: Perform the FCD check on the input text and deliver normalized text.
         /// </summary>
-        public const int CHECK_FCD = 1;
+        public const int CheckFCD = 1;
         /// <summary>
         /// Options bit 1: Numeric collation.
         /// Also known as CODAN = COllate Digits As Numbers.
@@ -30,62 +30,62 @@ namespace ICU4N.Impl.Coll
         /// Treat digit sequences as numbers with CE sequences in numeric order,
         /// rather than returning a normal CE for each digit.
         /// </summary>
-        public const int NUMERIC = 2;
+        public const int Numeric = 2;
         /// <summary>
-        /// "Shifted" alternate handling, see <see cref="ALTERNATE_MASK"/>.
+        /// "Shifted" alternate handling, see <see cref="AlternateMask"/>.
         /// </summary>
-        internal const int SHIFTED = 4;
+        internal const int Shifted = 4;
         /// <summary>
         /// Options bits 3..2: Alternate-handling mask. 0 for non-ignorable.
         /// Reserve values 8 and 0xc for shift-trimmed and blanked.
         /// </summary>
-        internal const int ALTERNATE_MASK = 0xc;
+        internal const int AlternateMask = 0xc;
         /// <summary>
         /// Options bits 6..4: The 3-bit maxVariable value bit field is shifted by this value.
         /// </summary>
-        internal const int MAX_VARIABLE_SHIFT = 4;
+        internal const int MaxVariableShift = 4;
         /// <summary>maxVariable options bit mask before shifting.</summary>
-        internal const int MAX_VARIABLE_MASK = 0x70;
+        internal const int MaxVariableMask = 0x70;
         // Options bit 7: Reserved/unused/0.
         /// <summary>
         /// Options bit 8: Sort uppercase first if caseLevel or caseFirst is on.
         /// </summary>
-        internal const int UPPER_FIRST = 0x100;
+        internal const int UpperFirst = 0x100;
         /// <summary>
         /// Options bit 9: Keep the case bits in the tertiary weight (they trump other tertiary values)
         /// unless case level is on (when they are *moved* into the separate case level).
         /// By default, the case bits are removed from the tertiary weight (ignored).
         /// <para/>
-        /// When <see cref="CASE_FIRST"/> is off, <see cref="UPPER_FIRST"/> must be off too, corresponding to
+        /// When <see cref="CaseFirst"/> is off, <see cref="UpperFirst"/> must be off too, corresponding to
         /// the tri-value UCOL_CASE_FIRST attribute: UCOL_OFF vs. UCOL_LOWER_FIRST vs. UCOL_UPPER_FIRST.
         /// </summary>
-        public const int CASE_FIRST = 0x200;
+        public const int CaseFirst = 0x200;
         /// <summary>
         /// Options bit mask for caseFirst and upperFirst, before shifting.
         /// Same value as caseFirst==upperFirst.
         /// </summary>
-        public const int CASE_FIRST_AND_UPPER_MASK = CASE_FIRST | UPPER_FIRST; // ICU4N TODO: API - convert constants to [Flags] enum? Check the C implementation for ideas.
+        public const int CaseFirstAndUpperMask = CaseFirst | UpperFirst; // ICU4N TODO: API - convert constants to [Flags] enum? Check the C implementation for ideas.
         /// <summary>
         /// Options bit 10: Insert the case level between the secondary and tertiary levels.
         /// </summary>
-        public const int CASE_LEVEL = 0x400;
+        public const int CaseLevel = 0x400;
         /// <summary>
         /// Options bit 11: Compare secondary weights backwards. ("French secondary")
         /// </summary>
-        public const int BACKWARD_SECONDARY = 0x800;
+        public const int BackwardSecondary = 0x800;
         /// <summary>
         /// Options bits 15..12: The 4-bit strength value bit field is shifted by this value.
         /// It is the top used bit field in the options. (No need to mask after shifting.)
         /// </summary>
-        internal const int STRENGTH_SHIFT = 12;
+        internal const int StrengthShift = 12;
         /// <summary>Strength options bit mask before shifting.</summary>
-        internal const int STRENGTH_MASK = 0xf000;
+        internal const int StrengthMask = 0xf000;
 
         /// <summary>maxVariable values</summary>
-        internal const int MAX_VAR_SPACE = 0;
-        internal const int MAX_VAR_PUNCT = 1;
-        internal const int MAX_VAR_SYMBOL = 2;
-        internal const int MAX_VAR_CURRENCY = 3;
+        internal const int MaxVariableSpace = 0;
+        internal const int MaxVariblePunctuation = 1;
+        internal const int MaxVariableSymbol = 2;
+        internal const int MaxVarCurrency = 3;
 
         internal CollationSettings() { }
 
@@ -104,7 +104,7 @@ namespace ICU4N.Impl.Coll
             if (!this.GetType().Equals(other.GetType())) { return false; }
             CollationSettings o = (CollationSettings)other;
             if (options != o.options) { return false; }
-            if ((options & ALTERNATE_MASK) != 0 && variableTop != o.variableTop) { return false; }
+            if ((options & AlternateMask) != 0 && variableTop != o.variableTop) { return false; }
             if (!Arrays.Equals(reorderCodes, o.reorderCodes)) { return false; }
             return true;
         }
@@ -112,7 +112,7 @@ namespace ICU4N.Impl.Coll
         public override int GetHashCode()
         {
             int h = options << 8;
-            if ((options & ALTERNATE_MASK) != 0) { h = (int)(h ^ variableTop); }
+            if ((options & AlternateMask) != 0) { h = (int)(h ^ variableTop); }
             h ^= reorderCodes.Length;
             for (int i = 0; i < reorderCodes.Length; ++i)
             {
@@ -348,7 +348,7 @@ namespace ICU4N.Impl.Coll
             get { return GetStrength(options); }
             set
             {
-                int noStrength = options & ~STRENGTH_MASK;
+                int noStrength = options & ~StrengthMask;
                 switch (value)
                 {
                     case CollationStrength.Primary:
@@ -356,7 +356,7 @@ namespace ICU4N.Impl.Coll
                     case CollationStrength.Tertiary:
                     case CollationStrength.Quaternary:
                     case CollationStrength.Identical:
-                        options = noStrength | ((int)value << STRENGTH_SHIFT);
+                        options = noStrength | ((int)value << StrengthShift);
                         break;
                     default:
                         throw new ArgumentException("illegal strength value " + value);
@@ -366,13 +366,13 @@ namespace ICU4N.Impl.Coll
 
         public void SetStrengthDefault(int defaultOptions)
         {
-            int noStrength = options & ~STRENGTH_MASK;
-            options = noStrength | (defaultOptions & STRENGTH_MASK);
+            int noStrength = options & ~StrengthMask;
+            options = noStrength | (defaultOptions & StrengthMask);
         }
 
         internal static CollationStrength GetStrength(int options)
         {
-            return (CollationStrength)(options >> STRENGTH_SHIFT);
+            return (CollationStrength)(options >> StrengthShift);
         }
 
         /// <summary>Sets the options bit for an on/off attribute.</summary>
@@ -400,28 +400,28 @@ namespace ICU4N.Impl.Coll
 
         public void SetCaseFirst(int value)
         {
-            Debug.Assert(value == 0 || value == CASE_FIRST || value == CASE_FIRST_AND_UPPER_MASK);
-            int noCaseFirst = options & ~CASE_FIRST_AND_UPPER_MASK;
+            Debug.Assert(value == 0 || value == CaseFirst || value == CaseFirstAndUpperMask);
+            int noCaseFirst = options & ~CaseFirstAndUpperMask;
             options = noCaseFirst | value;
         }
 
         public void SetCaseFirstDefault(int defaultOptions)
         {
-            int noCaseFirst = options & ~CASE_FIRST_AND_UPPER_MASK;
-            options = noCaseFirst | (defaultOptions & CASE_FIRST_AND_UPPER_MASK);
+            int noCaseFirst = options & ~CaseFirstAndUpperMask;
+            options = noCaseFirst | (defaultOptions & CaseFirstAndUpperMask);
         }
 
         public int GetCaseFirst()
         {
-            return options & CASE_FIRST_AND_UPPER_MASK;
+            return options & CaseFirstAndUpperMask;
         }
 
         public void SetAlternateHandlingShifted(bool value)
         {
-            int noAlternate = options & ~ALTERNATE_MASK;
+            int noAlternate = options & ~AlternateMask;
             if (value)
             {
-                options = noAlternate | SHIFTED;
+                options = noAlternate | Shifted;
             }
             else
             {
@@ -431,28 +431,28 @@ namespace ICU4N.Impl.Coll
 
         public void SetAlternateHandlingDefault(int defaultOptions)
         {
-            int noAlternate = options & ~ALTERNATE_MASK;
-            options = noAlternate | (defaultOptions & ALTERNATE_MASK);
+            int noAlternate = options & ~AlternateMask;
+            options = noAlternate | (defaultOptions & AlternateMask);
         }
 
         public bool AlternateHandling
         {
-            get { return (options & ALTERNATE_MASK) != 0; }
+            get { return (options & AlternateMask) != 0; }
         }
 
         public void SetMaxVariable(int value, int defaultOptions)
         {
-            int noMax = options & ~MAX_VARIABLE_MASK;
+            int noMax = options & ~MaxVariableMask;
             switch (value)
             {
-                case MAX_VAR_SPACE:
-                case MAX_VAR_PUNCT:
-                case MAX_VAR_SYMBOL:
-                case MAX_VAR_CURRENCY:
-                    options = noMax | (value << MAX_VARIABLE_SHIFT);
+                case MaxVariableSpace:
+                case MaxVariblePunctuation:
+                case MaxVariableSymbol:
+                case MaxVarCurrency:
+                    options = noMax | (value << MaxVariableShift);
                     break;
                 case -1:
-                    options = noMax | (defaultOptions & MAX_VARIABLE_MASK);
+                    options = noMax | (defaultOptions & MaxVariableMask);
                     break;
                 default:
                     throw new ArgumentException("illegal maxVariable value " + value);
@@ -461,7 +461,7 @@ namespace ICU4N.Impl.Coll
 
         public int MaxVariable
         {
-            get { return (options & MAX_VARIABLE_MASK) >> MAX_VARIABLE_SHIFT; }
+            get { return (options & MaxVariableMask) >> MaxVariableShift; }
         }
 
         /// <summary>
@@ -469,7 +469,7 @@ namespace ICU4N.Impl.Coll
         /// </summary>
         internal static bool IsTertiaryWithCaseBits(int options)
         {
-            return (options & (CASE_LEVEL | CASE_FIRST)) == CASE_FIRST;
+            return (options & (CaseLevel | CaseFirst)) == CaseFirst;
         }
         internal static int GetTertiaryMask(int options)
         {
@@ -482,27 +482,27 @@ namespace ICU4N.Impl.Coll
         {
             // On tertiary level, consider case bits and sort uppercase first
             // if caseLevel is off and caseFirst==upperFirst.
-            return (options & (CASE_LEVEL | CASE_FIRST_AND_UPPER_MASK)) == CASE_FIRST_AND_UPPER_MASK;
+            return (options & (CaseLevel | CaseFirstAndUpperMask)) == CaseFirstAndUpperMask;
         }
 
         public bool DontCheckFCD // ICU4N TODO: API - per MSDN properties should be in the affirmative
         {
-            get { return (options & CHECK_FCD) == 0; }
+            get { return (options & CheckFCD) == 0; }
         }
 
         internal bool HasBackwardSecondary
         {
-            get { return (options & BACKWARD_SECONDARY) != 0; }
+            get { return (options & BackwardSecondary) != 0; }
         }
 
         public bool IsNumeric
         {
-            get { return (options & NUMERIC) != 0; }
+            get { return (options & Numeric) != 0; }
         }
 
         /// <summary>CHECK_FCD etc.</summary>
-        private int options = ((int)CollationStrength.Tertiary << STRENGTH_SHIFT) |  // DEFAULT_STRENGTH
-                (MAX_VAR_PUNCT << MAX_VARIABLE_SHIFT);
+        private int options = ((int)CollationStrength.Tertiary << StrengthShift) |  // DEFAULT_STRENGTH
+                (MaxVariblePunctuation << MaxVariableShift);
         /// <summary>Variable-top primary weight.</summary>
         private long variableTop;
         /// <summary>

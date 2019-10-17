@@ -13,7 +13,7 @@ namespace ICU4N.Impl.Coll
         {
             int options = settings.Options;
             long variableTop;
-            if ((options & CollationSettings.ALTERNATE_MASK) == 0)
+            if ((options & CollationSettings.AlternateMask) == 0)
             {
                 variableTop = 0;
             }
@@ -111,7 +111,7 @@ namespace ICU4N.Impl.Coll
             // which is turned on separately.
             if (CollationSettings.GetStrength(options) >= CollationStrength.Secondary)
             {
-                if ((options & CollationSettings.BACKWARD_SECONDARY) == 0)
+                if ((options & CollationSettings.BackwardSecondary) == 0)
                 {
                     int leftIndex2 = 0;
                     int rightIndex2 = 0;
@@ -204,7 +204,7 @@ namespace ICU4N.Impl.Coll
                 }
             }
 
-            if ((options & CollationSettings.CASE_LEVEL) != 0)
+            if ((options & CollationSettings.CaseLevel) != 0)
             {
                 CollationStrength strength = CollationSettings.GetStrength(options);
                 int leftIndex4 = 0;
@@ -270,7 +270,7 @@ namespace ICU4N.Impl.Coll
                     // so level length differences were handled there.
                     if (leftCase != rightCase)
                     {
-                        if ((options & CollationSettings.UPPER_FIRST) == 0)
+                        if ((options & CollationSettings.UpperFirst) == 0)
                         {
                             return (leftCase < rightCase) ? Collation.Less : Collation.Greater;
                         }

@@ -360,14 +360,14 @@ namespace ICU4N.Text
         {
             get
             {
-                return (settings.ReadOnly.GetCaseFirst() == CollationSettings.CASE_FIRST_AND_UPPER_MASK);
+                return (settings.ReadOnly.GetCaseFirst() == CollationSettings.CaseFirstAndUpperMask);
             }
             set
             {
                 CheckNotFrozen();
                 if (value == IsUpperCaseFirst) { return; }
                 CollationSettings ownedSettings = GetOwnedSettings();
-                ownedSettings.SetCaseFirst(value ? CollationSettings.CASE_FIRST_AND_UPPER_MASK : 0);
+                ownedSettings.SetCaseFirst(value ? CollationSettings.CaseFirstAndUpperMask : 0);
                 SetFastLatinOptions(ownedSettings);
             }
         }
@@ -384,14 +384,14 @@ namespace ICU4N.Text
         {
             get
             {
-                return (settings.ReadOnly.GetCaseFirst() == CollationSettings.CASE_FIRST);
+                return (settings.ReadOnly.GetCaseFirst() == CollationSettings.CaseFirst);
             }
             set
             {
                 CheckNotFrozen();
                 if (value == IsLowerCaseFirst) { return; }
                 CollationSettings ownedSettings = GetOwnedSettings();
-                ownedSettings.SetCaseFirst(value ? CollationSettings.CASE_FIRST : 0);
+                ownedSettings.SetCaseFirst(value ? CollationSettings.CaseFirst : 0);
                 SetFastLatinOptions(ownedSettings);
             }
         }
@@ -441,7 +441,7 @@ namespace ICU4N.Text
             CollationSettings defaultSettings = GetDefaultSettings();
             if (settings.ReadOnly == defaultSettings) { return; }
             CollationSettings ownedSettings = GetOwnedSettings();
-            ownedSettings.SetFlagDefault(CollationSettings.CASE_LEVEL, defaultSettings.Options);
+            ownedSettings.SetFlagDefault(CollationSettings.CaseLevel, defaultSettings.Options);
             SetFastLatinOptions(ownedSettings);
         }
 
@@ -457,7 +457,7 @@ namespace ICU4N.Text
             CollationSettings defaultSettings = GetDefaultSettings();
             if (settings.ReadOnly == defaultSettings) { return; }
             CollationSettings ownedSettings = GetOwnedSettings();
-            ownedSettings.SetFlagDefault(CollationSettings.CHECK_FCD, defaultSettings.Options);
+            ownedSettings.SetFlagDefault(CollationSettings.CheckFCD, defaultSettings.Options);
             SetFastLatinOptions(ownedSettings);
         }
 
@@ -473,7 +473,7 @@ namespace ICU4N.Text
             CollationSettings defaultSettings = GetDefaultSettings();
             if (settings.ReadOnly == defaultSettings) { return; }
             CollationSettings ownedSettings = GetOwnedSettings();
-            ownedSettings.SetFlagDefault(CollationSettings.BACKWARD_SECONDARY, defaultSettings.Options);
+            ownedSettings.SetFlagDefault(CollationSettings.BackwardSecondary, defaultSettings.Options);
             SetFastLatinOptions(ownedSettings);
         }
 
@@ -504,7 +504,7 @@ namespace ICU4N.Text
             CollationSettings defaultSettings = GetDefaultSettings();
             if (settings.ReadOnly == defaultSettings) { return; }
             CollationSettings ownedSettings = GetOwnedSettings();
-            ownedSettings.SetFlagDefault(CollationSettings.NUMERIC, defaultSettings.Options);
+            ownedSettings.SetFlagDefault(CollationSettings.Numeric, defaultSettings.Options);
             SetFastLatinOptions(ownedSettings);
         }
 
@@ -521,14 +521,14 @@ namespace ICU4N.Text
         {
             get
             {
-                return (settings.ReadOnly.Options & CollationSettings.BACKWARD_SECONDARY) != 0;
+                return (settings.ReadOnly.Options & CollationSettings.BackwardSecondary) != 0;
             }
             set
             {
                 CheckNotFrozen();
                 if (value == IsFrenchCollation) { return; }
                 CollationSettings ownedSettings = GetOwnedSettings();
-                ownedSettings.SetFlag(CollationSettings.BACKWARD_SECONDARY, value);
+                ownedSettings.SetFlag(CollationSettings.BackwardSecondary, value);
                 SetFastLatinOptions(ownedSettings);
             }
         }
@@ -578,14 +578,14 @@ namespace ICU4N.Text
         {
             get
             {
-                return (settings.ReadOnly.Options & CollationSettings.CASE_LEVEL) != 0;
+                return (settings.ReadOnly.Options & CollationSettings.CaseLevel) != 0;
             }
             set
             {
                 CheckNotFrozen();
                 if (value == IsCaseLevel) { return; }
                 CollationSettings ownedSettings = GetOwnedSettings();
-                ownedSettings.SetFlag(CollationSettings.CASE_LEVEL, value);
+                ownedSettings.SetFlag(CollationSettings.CaseLevel, value);
                 SetFastLatinOptions(ownedSettings);
             }
         }
@@ -620,7 +620,7 @@ namespace ICU4N.Text
         {
             get
             {
-                return (settings.ReadOnly.Options & CollationSettings.CHECK_FCD) != 0 ?
+                return (settings.ReadOnly.Options & CollationSettings.CheckFCD) != 0 ?
                     NormalizationMode.CanonicalDecomposition : NormalizationMode.NoDecomposition;
             }
             set
@@ -638,9 +638,9 @@ namespace ICU4N.Text
                     default:
                         throw new ArgumentException("Wrong decomposition mode.");
                 }
-                if (flag == settings.ReadOnly.GetFlag(CollationSettings.CHECK_FCD)) { return; }
+                if (flag == settings.ReadOnly.GetFlag(CollationSettings.CheckFCD)) { return; }
                 CollationSettings ownedSettings = GetOwnedSettings();
-                ownedSettings.SetFlag(CollationSettings.CHECK_FCD, flag);
+                ownedSettings.SetFlag(CollationSettings.CheckFCD, flag);
                 SetFastLatinOptions(ownedSettings);
             }
         }
@@ -868,7 +868,7 @@ namespace ICU4N.Text
         {
             get
             {
-                return (settings.ReadOnly.Options & CollationSettings.NUMERIC) != 0;
+                return (settings.ReadOnly.Options & CollationSettings.Numeric) != 0;
             }
             set
             {
@@ -876,7 +876,7 @@ namespace ICU4N.Text
                 // sort substrings of digits as numbers
                 if (value == IsNumericCollation) { return; }
                 CollationSettings ownedSettings = GetOwnedSettings();
-                ownedSettings.SetFlag(CollationSettings.NUMERIC, value);
+                ownedSettings.SetFlag(CollationSettings.Numeric, value);
                 SetFastLatinOptions(ownedSettings);
             }
         }
