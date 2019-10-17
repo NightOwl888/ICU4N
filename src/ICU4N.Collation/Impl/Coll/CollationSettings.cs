@@ -398,21 +398,22 @@ namespace ICU4N.Impl.Coll
             return (options & bit) != 0;
         }
 
+        public void SetCaseFirst(int value)
+        {
+            Debug.Assert(value == 0 || value == CASE_FIRST || value == CASE_FIRST_AND_UPPER_MASK);
+            int noCaseFirst = options & ~CASE_FIRST_AND_UPPER_MASK;
+            options = noCaseFirst | value;
+        }
+
         public void SetCaseFirstDefault(int defaultOptions)
         {
             int noCaseFirst = options & ~CASE_FIRST_AND_UPPER_MASK;
             options = noCaseFirst | (defaultOptions & CASE_FIRST_AND_UPPER_MASK);
         }
 
-        public int CaseFirst
+        public int GetCaseFirst()
         {
-            get { return options & CASE_FIRST_AND_UPPER_MASK; }
-            set
-            {
-                Debug.Assert(value == 0 || value == CASE_FIRST || value == CASE_FIRST_AND_UPPER_MASK);
-                int noCaseFirst = options & ~CASE_FIRST_AND_UPPER_MASK;
-                options = noCaseFirst | value;
-            }
+            return options & CASE_FIRST_AND_UPPER_MASK;
         }
 
         public void SetAlternateHandlingShifted(bool value)

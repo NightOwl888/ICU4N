@@ -360,14 +360,14 @@ namespace ICU4N.Text
         {
             get
             {
-                return (settings.ReadOnly.CaseFirst == CollationSettings.CASE_FIRST_AND_UPPER_MASK);
+                return (settings.ReadOnly.GetCaseFirst() == CollationSettings.CASE_FIRST_AND_UPPER_MASK);
             }
             set
             {
                 CheckNotFrozen();
                 if (value == IsUpperCaseFirst) { return; }
                 CollationSettings ownedSettings = GetOwnedSettings();
-                ownedSettings.CaseFirst = value ? CollationSettings.CASE_FIRST_AND_UPPER_MASK : 0;
+                ownedSettings.SetCaseFirst(value ? CollationSettings.CASE_FIRST_AND_UPPER_MASK : 0);
                 SetFastLatinOptions(ownedSettings);
             }
         }
@@ -384,14 +384,14 @@ namespace ICU4N.Text
         {
             get
             {
-                return (settings.ReadOnly.CaseFirst == CollationSettings.CASE_FIRST);
+                return (settings.ReadOnly.GetCaseFirst() == CollationSettings.CASE_FIRST);
             }
             set
             {
                 CheckNotFrozen();
                 if (value == IsLowerCaseFirst) { return; }
                 CollationSettings ownedSettings = GetOwnedSettings();
-                ownedSettings.CaseFirst = value ? CollationSettings.CASE_FIRST : 0;
+                ownedSettings.SetCaseFirst(value ? CollationSettings.CASE_FIRST : 0);
                 SetFastLatinOptions(ownedSettings);
             }
         }

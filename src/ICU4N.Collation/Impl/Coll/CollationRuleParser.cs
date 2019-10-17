@@ -745,7 +745,7 @@ namespace ICU4N.Impl.Coll
                     }
                     if (value != UCOL_DEFAULT)
                     {
-                        settings.CaseFirst=value;
+                        settings.SetCaseFirst(value);
                         ruleIndex = j;
                         return;
                     }
