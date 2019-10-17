@@ -133,6 +133,76 @@ namespace ICU4N.Text
         }
     }
 
+    /// <summary>
+    /// Internal class for customizing <see cref="UnicodeSet"/> parsing of properties.
+    /// </summary>
+    /// <author>medavis</author>
+    /// <draft>ICU3.8 (retain)</draft>
+    /// <provisional>This API might change or be removed in a future release.</provisional>
+    // TODO: extend to allow customizing of codepoint ranges
+    public abstract class XSymbolTable : ISymbolTable
+    {
+        ///// <summary>
+        ///// Default constructor.
+        ///// </summary>
+        ///// <draft>ICU3.8 (retain)</draft>
+        ///// <provisional>This API might change or be removed in a future release.</provisional>
+        //public XSymbolTable() { }
+
+        /// <summary>
+        /// Supplies default implementation for <see cref="ISymbolTable"/> (no action).
+        /// </summary>
+        /// <draft>ICU3.8 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual IUnicodeMatcher LookupMatcher(int i)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Override the interpretation of the sequence [:<paramref name="propertyName"/>=<paramref name="propertyValue"/>:] (and its negated and Perl-style
+        /// variant). The <paramref name="propertyName"/> and <paramref name="propertyValue"/> may be existing Unicode aliases, or may not be.
+        /// <para/>
+        /// This routine will be called whenever the parsing of a UnicodeSet pattern finds such a
+        /// <paramref name="propertyName"/>+<paramref name="propertyValue"/> combination.
+        /// </summary>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <param name="propertyValue">The name of the property value.</param>
+        /// <param name="result"><see cref="UnicodeSet"/> value to change
+        /// a set to which the characters having the <paramref name="propertyName"/>+<paramref name="propertyValue"/> are to be added.
+        /// </param>
+        /// <returns>true if the <paramref name="propertyName"/>+<paramref name="propertyValue"/> combination is to be overridden, and the characters
+        /// with that property have been added to the <see cref="UnicodeSet"/>, and returns false if the
+        /// <paramref name="propertyName"/>+<paramref name="propertyValue"/> combination is not recognized (in which case result is unaltered).
+        /// </returns>
+        /// <draft>ICU3.8 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual bool ApplyPropertyAlias(string propertyName, string propertyValue, UnicodeSet result)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Supplies default implementation for <see cref="ISymbolTable"/> (no action).
+        /// </summary>
+        /// <draft>ICU3.8 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual char[] Lookup(string s)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Supplies default implementation for <see cref="ISymbolTable"/> (no action).
+        /// </summary>
+        /// <draft>ICU3.8 (retain)</draft>
+        /// <provisional>This API might change or be removed in a future release.</provisional>
+        public virtual string ParseReference(string text, ParsePosition pos, int limit)
+        {
+            return null;
+        }
+    }
+
 
     /// <summary>
     /// A mutable set of Unicode characters and multicharacter strings.
@@ -4150,75 +4220,7 @@ namespace ICU4N.Text
             return this;
         }
 
-        /// <summary>
-        /// Internal class for customizing <see cref="UnicodeSet"/> parsing of properties.
-        /// </summary>
-        /// <author>medavis</author>
-        /// <draft>ICU3.8 (retain)</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        // TODO: extend to allow customizing of codepoint ranges
-        abstract public class XSymbolTable : ISymbolTable  // ICU4N TODO: API - de-nest ?
-        {
-            /// <summary>
-            /// Default constructor.
-            /// </summary>
-            /// <draft>ICU3.8 (retain)</draft>
-            /// <provisional>This API might change or be removed in a future release.</provisional>
-            public XSymbolTable() { }
-
-            /// <summary>
-            /// Supplies default implementation for <see cref="ISymbolTable"/> (no action).
-            /// </summary>
-            /// <draft>ICU3.8 (retain)</draft>
-            /// <provisional>This API might change or be removed in a future release.</provisional>
-            public virtual IUnicodeMatcher LookupMatcher(int i)
-            {
-                return null;
-            }
-
-            /// <summary>
-            /// Override the interpretation of the sequence [:<paramref name="propertyName"/>=<paramref name="propertyValue"/>:] (and its negated and Perl-style
-            /// variant). The <paramref name="propertyName"/> and <paramref name="propertyValue"/> may be existing Unicode aliases, or may not be.
-            /// <para/>
-            /// This routine will be called whenever the parsing of a UnicodeSet pattern finds such a
-            /// <paramref name="propertyName"/>+<paramref name="propertyValue"/> combination.
-            /// </summary>
-            /// <param name="propertyName">The name of the property.</param>
-            /// <param name="propertyValue">The name of the property value.</param>
-            /// <param name="result"><see cref="UnicodeSet"/> value to change
-            /// a set to which the characters having the <paramref name="propertyName"/>+<paramref name="propertyValue"/> are to be added.
-            /// </param>
-            /// <returns>true if the <paramref name="propertyName"/>+<paramref name="propertyValue"/> combination is to be overridden, and the characters
-            /// with that property have been added to the <see cref="UnicodeSet"/>, and returns false if the
-            /// <paramref name="propertyName"/>+<paramref name="propertyValue"/> combination is not recognized (in which case result is unaltered).
-            /// </returns>
-            /// <draft>ICU3.8 (retain)</draft>
-            /// <provisional>This API might change or be removed in a future release.</provisional>
-            public virtual bool ApplyPropertyAlias(string propertyName, string propertyValue, UnicodeSet result)
-            {
-                return false;
-            }
-
-            /// <summary>
-            /// Supplies default implementation for <see cref="ISymbolTable"/> (no action).
-            /// </summary>
-            /// <draft>ICU3.8 (retain)</draft>
-            /// <provisional>This API might change or be removed in a future release.</provisional>
-            public virtual char[] Lookup(string s)
-            {
-                return null;
-            }
-
-            /// <summary>
-            /// Supplies default implementation for <see cref="ISymbolTable"/> (no action).
-            /// </summary>
-            /// <draft>ICU3.8 (retain)</draft>
-            /// <provisional>This API might change or be removed in a future release.</provisional>
-            public virtual string ParseReference(string text, ParsePosition pos, int limit)
-            {
-                return null;
-            }
-        }
+        // ICU4N specific - de-nested XSymbolTable
 
         /// <summary>
         /// Is this frozen, according to the <see cref="IFreezable{T}"/> interface?

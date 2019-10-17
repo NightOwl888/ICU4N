@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using static ICU4N.Text.UnicodeSet; // ICU4N TODO: API De-nest?
 using StringBuffer = System.Text.StringBuilder;
 using System.Diagnostics;
 

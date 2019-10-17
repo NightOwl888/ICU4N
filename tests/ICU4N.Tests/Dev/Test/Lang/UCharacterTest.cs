@@ -3977,7 +3977,7 @@ namespace ICU4N.Dev.Test.Lang
                             " but got " + UChar.GetUnicodeCategory(cases[i]).ToInt32());
         }
 
-        private class MyXSymbolTable : UnicodeSet.XSymbolTable { }
+        private class MyXSymbolTable : XSymbolTable { }
 
         /* Tests the class
          *      abstract public static class XSymbolTable implements SymbolTable
