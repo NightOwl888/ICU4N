@@ -48,7 +48,11 @@ namespace ICU4N.Impl
         /// <summary>
         /// Gets or Sets the "strength" of value references for subsequent <see cref="GetInstance(V)"/> calls.
         /// </summary>
-        public static void SetStrength(CacheValueStrength strength) { CacheValue<V>.strength = strength; } // ICU4N TODO: API - make property Strength
+        public static CacheValueStrength Strength
+        {
+            get => strength;
+            set => strength = value;
+        }
 
         /// <summary>
         /// Returns true if the "strength" is set to <see cref="CacheValueStrength.Strong"/>.

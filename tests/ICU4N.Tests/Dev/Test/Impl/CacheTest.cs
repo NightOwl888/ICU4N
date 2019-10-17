@@ -32,7 +32,7 @@ namespace ICU4N.Dev.Test.Impl
         public void TestStrongCacheValue()
         {
             bool wasStrong = CacheValue<object>.FutureInstancesWillBeStrong;
-            CacheValue<object>.SetStrength(CacheValueStrength.Strong);
+            CacheValue<object>.Strength = CacheValueStrength.Strong;
             assertTrue("setStrength(STRONG).futureInstancesWillBeStrong()",
                     CacheValue<object>.FutureInstancesWillBeStrong);
             CacheValue<Object> sv = CacheValue<Object>.GetInstance(this);
@@ -44,7 +44,7 @@ namespace ICU4N.Dev.Test.Impl
             assertTrue("strong CacheValue reset==same", sv.ResetIfCleared("") == this);
             if (!wasStrong)
             {
-                CacheValue<object>.SetStrength(CacheValueStrength.Soft);
+                CacheValue<object>.Strength = CacheValueStrength.Soft;
             }
         }
 
@@ -53,7 +53,7 @@ namespace ICU4N.Dev.Test.Impl
         public void TestSoftCacheValue()
         {
             bool wasStrong = CacheValue<object>.FutureInstancesWillBeStrong;
-            CacheValue<object>.SetStrength(CacheValueStrength.Soft);
+            CacheValue<object>.Strength = CacheValueStrength.Soft;
             assertFalse("setStrength(SOFT).futureInstancesWillBeStrong()",
                     CacheValue<object>.FutureInstancesWillBeStrong);
             CacheValue<Object> sv = CacheValue<object>.GetInstance(this);
@@ -63,7 +63,7 @@ namespace ICU4N.Dev.Test.Impl
             assertTrue("soft CacheValue reset==same", sv.ResetIfCleared(this) == this);
             if (wasStrong)
             {
-                CacheValue<object>.SetStrength(CacheValueStrength.Strong);
+                CacheValue<object>.Strength = CacheValueStrength.Strong;
             }
         }
     }
