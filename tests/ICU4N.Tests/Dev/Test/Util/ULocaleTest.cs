@@ -12,7 +12,6 @@ using System.Text;
 using Builder = ICU4N.Util.ULocale.Builder; // ICU4N TODO: API - de-nest ?
 using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: API - de-nest ?
 using Minimize = ICU4N.Util.ULocale.Minimize; // ICU4N TODO: API - de-nest ?
-using DialectHandling = ICU4N.Text.LocaleDisplayNames.DialectHandling; // ICU4N TODO: API - de-nest ?
 using ICU4N.Support.Collections;
 
 namespace ICU4N.Dev.Test.Util
@@ -1298,7 +1297,7 @@ namespace ICU4N.Dev.Test.Util
                     DisplayContext dialectHandling = ldn.GetContext(DisplayContextType.DialectHandling);
                     assertEquals("consistent dialect handling",
                             dialectHandling == DisplayContext.DialectNames,
-                            ldn.GetDialectHandling() == LocaleDisplayNames.DialectHandling.DialectNames);
+                            ldn.GetDialectHandling() == DialectHandling.DialectNames);
                     DisplayContext capitalization = ldn.GetContext(DisplayContextType.Capitalization);
                     DisplayContext nameLength = ldn.GetContext(DisplayContextType.DisplayLength);
                     DisplayContext substituteHandling = ldn.GetContext(DisplayContextType.SubstituteHandling);

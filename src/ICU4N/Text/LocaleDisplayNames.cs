@@ -9,6 +9,164 @@ using System.Reflection;
 namespace ICU4N.Text
 {
     /// <summary>
+    /// Enumerator used in <see cref="LocaleDisplayNames.GetInstance(ULocale, DialectHandling)"/>.
+    /// </summary>
+    /// <stable>ICU 4.4</stable>
+    public enum DialectHandling
+    {
+        /// <summary>
+        /// Use standard names when generating a locale name,
+        /// e.g. en_GB displays as 'English (United Kingdom)'.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        StandardNames,
+
+        /// <summary>
+        /// Use dialect names when generating a locale name,
+        /// e.g. en_GB displays as 'British English'.
+        /// </summary>
+        /// <stable>ICU 4.4</stable>
+        DialectNames
+    }
+
+    /// <summary>
+    /// Struct-like class used to return information for constructing a UI list, each corresponding to a locale.
+    /// </summary>
+    /// <stable>ICU 55</stable>
+    public class UiListItem
+    {
+        /// <summary>
+        /// Returns the minimized locale for an input locale, such as sr-Cyrl → sr
+        /// </summary>
+        /// <stable>ICU 55</stable>
+        public ULocale Minimized { get; private set; }
+        /// <summary>
+        /// Returns the modified locale for an input locale, such as sr → sr-Cyrl, where there is also an sr-Latn in the list
+        /// </summary>
+        /// <stable>ICU 55</stable>
+        public ULocale Modified { get; private set; }
+        /// <summary>
+        /// Returns the name of the modified locale in the display locale, such as "Englisch (VS)" (for 'en-US', where the display locale is 'de').
+        /// </summary>
+        /// <stable>ICU 55</stable>
+        public string NameInDisplayLocale { get; private set; }
+        /// <summary>
+        /// Returns the name of the modified locale in itself, such as "English (US)" (for 'en-US').
+        /// </summary>
+        /// <stable>ICU 55</stable>
+        public string NameInSelf { get; private set; }
+
+        /// <summary>
+        /// Constructor, normally only called internally.
+        /// </summary>
+        /// <param name="minimized">Locale for an input locale.</param>
+        /// <param name="modified">Modified for an input locale.</param>
+        /// <param name="nameInDisplayLocale">Name of the modified locale in the display locale.</param>
+        /// <param name="nameInSelf">Name of the modified locale in itself.</param>
+        /// <stable>ICU 55</stable>
+        public UiListItem(ULocale minimized, ULocale modified, string nameInDisplayLocale, string nameInSelf)
+        {
+            this.Minimized = minimized;
+            this.Modified = modified;
+            this.NameInDisplayLocale = nameInDisplayLocale;
+            this.NameInSelf = nameInSelf;
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <stable>ICU 55</stable>
+        public override bool Equals(object obj)
+        {
+            if (this == obj)
+            {
+                return true;
+            }
+            if (obj == null || !(obj is UiListItem))
+            {
+                return false;
+            }
+            UiListItem other = (UiListItem)obj;
+            return NameInDisplayLocale.Equals(other.NameInDisplayLocale)
+                    && NameInSelf.Equals(other.NameInSelf)
+                    && Minimized.Equals(other.Minimized)
+                    && Modified.Equals(other.Modified);
+        }
+
+        /// <summary>
+        /// Gets the hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        /// <stable>ICU 55</stable>
+        public override int GetHashCode()
+        {
+            return Modified.GetHashCode() ^ NameInDisplayLocale.GetHashCode();
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        /// <stable>ICU 55</stable>
+        public override string ToString()
+        {
+            return "{" + Minimized + ", " + Modified + ", " + NameInDisplayLocale + ", " + NameInSelf + "}";
+        }
+
+        /// <summary>
+        /// Return a comparer that compares the locale names for the display locale or the in-self names,
+        /// depending on an input parameter.
+        /// </summary>
+        /// <param name="comparer">The string <see cref="IComparer{T}"/> to order the <see cref="UiListItem"/>s.</param>
+        /// <param name="inSelf">If true, compares the nameInSelf, otherwise the <see cref="NameInDisplayLocale"/>.</param>
+        /// <returns><see cref="UiListItem"/> comparer.</returns>
+        /// <stable>ICU 55</stable>
+        public static IComparer<UiListItem> GetComparer(IComparer<string> comparer, bool inSelf)
+        {
+            return new UiListItemComparer(comparer, inSelf);
+        }
+
+        /// <summary>
+        /// Return a comparator that compares the locale names for the display locale or the in-self names,
+        /// depending on an input parameter.
+        /// </summary>
+        /// <param name="comparer">The string <see cref="IComparer{T}"/> to order the <see cref="UiListItem"/>s.</param>
+        /// <param name="inSelf">If true, compares the nameInSelf, otherwise the <see cref="NameInDisplayLocale"/>.</param>
+        /// <returns><see cref="UiListItem"/> comparer.</returns>
+        /// <stable>ICU4N 60</stable>
+        public static IComparer<UiListItem> GetComparer(CompareInfo comparer, bool inSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
+        {
+            return new UiListItemComparer(comparer, inSelf);
+        }
+
+        private class UiListItemComparer : IComparer<UiListItem>
+        {
+            private readonly IComparer<string> collator;
+            private readonly bool useSelf;
+
+            internal UiListItemComparer(CompareInfo collator, bool useSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
+                : this(collator.ToComparer(), useSelf)
+            {
+            }
+
+            internal UiListItemComparer(IComparer<string> collator, bool useSelf)
+            {
+                this.collator = collator;
+                this.useSelf = useSelf;
+            }
+
+            public int Compare(UiListItem o1, UiListItem o2)
+            {
+                int result = useSelf ? collator.Compare(o1.NameInSelf, o2.NameInSelf)
+                        : collator.Compare(o1.NameInDisplayLocale, o2.NameInDisplayLocale);
+                return result != 0 ? result : o1.Modified.CompareTo(o2.Modified); // just in case
+            }
+        }
+    }
+
+    /// <summary>
     /// Returns display names of ULocales and components of ULocales. For
     /// more information on language, script, region, variant, key, and
     /// values, see <see cref="Util.ULocale"/>.
@@ -16,26 +174,7 @@ namespace ICU4N.Text
     /// <stable>ICU 4.4</stable>
     public abstract class LocaleDisplayNames
     {
-        /// <summary>
-        /// Enumerator used in <see cref="GetInstance(ULocale, DialectHandling)"/>.
-        /// </summary>
-        /// <stable>ICU 4.4</stable>
-        public enum DialectHandling
-        {
-            /// <summary>
-            /// Use standard names when generating a locale name,
-            /// e.g. en_GB displays as 'English (United Kingdom)'.
-            /// </summary>
-            /// <stable>ICU 4.4</stable>
-            StandardNames,
-
-            /// <summary>
-            /// Use dialect names when generating a locale name,
-            /// e.g. en_GB displays as 'British English'.
-            /// </summary>
-            /// <stable>ICU 4.4</stable>
-            DialectNames
-        }
+        // ICU4N specific - de-nested DialectHandling
 
         // factory methods
         /// <summary>
@@ -326,142 +465,7 @@ namespace ICU4N.Text
         /// <stable>ICU 55</stable>
         public abstract IList<UiListItem> GetUiListCompareWholeItems(ISet<ULocale> localeSet, IComparer<UiListItem> comparer);
 
-        /// <summary>
-        /// Struct-like class used to return information for constructing a UI list, each corresponding to a locale.
-        /// </summary>
-        /// <stable>ICU 55</stable>
-        public class UiListItem
-        {
-             /// <summary>
-            /// Returns the minimized locale for an input locale, such as sr-Cyrl → sr
-            /// </summary>
-            /// <stable>ICU 55</stable>
-            public ULocale Minimized { get; private set; }
-            /// <summary>
-            /// Returns the modified locale for an input locale, such as sr → sr-Cyrl, where there is also an sr-Latn in the list
-            /// </summary>
-            /// <stable>ICU 55</stable>
-            public ULocale Modified { get; private set; }
-            /// <summary>
-            /// Returns the name of the modified locale in the display locale, such as "Englisch (VS)" (for 'en-US', where the display locale is 'de').
-            /// </summary>
-            /// <stable>ICU 55</stable>
-            public string NameInDisplayLocale { get; private set; }
-            /// <summary>
-            /// Returns the name of the modified locale in itself, such as "English (US)" (for 'en-US').
-            /// </summary>
-            /// <stable>ICU 55</stable>
-            public string NameInSelf { get; private set; }
-
-            /// <summary>
-            /// Constructor, normally only called internally.
-            /// </summary>
-            /// <param name="minimized">Locale for an input locale.</param>
-            /// <param name="modified">Modified for an input locale.</param>
-            /// <param name="nameInDisplayLocale">Name of the modified locale in the display locale.</param>
-            /// <param name="nameInSelf">Name of the modified locale in itself.</param>
-            /// <stable>ICU 55</stable>
-            public UiListItem(ULocale minimized, ULocale modified, string nameInDisplayLocale, string nameInSelf)
-            {
-                this.Minimized = minimized;
-                this.Modified = modified;
-                this.NameInDisplayLocale = nameInDisplayLocale;
-                this.NameInSelf = nameInSelf;
-            }
-
-            /// <summary>
-            /// Determines whether the specified object is equal to the current object.
-            /// </summary>
-            /// <param name="obj">The object to compare with the current object.</param>
-            /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-            /// <stable>ICU 55</stable>
-            public override bool Equals(object obj)
-            {
-                if (this == obj)
-                {
-                    return true;
-                }
-                if (obj == null || !(obj is UiListItem))
-                {
-                    return false;
-                }
-                UiListItem other = (UiListItem)obj;
-                return NameInDisplayLocale.Equals(other.NameInDisplayLocale)
-                        && NameInSelf.Equals(other.NameInSelf)
-                        && Minimized.Equals(other.Minimized)
-                        && Modified.Equals(other.Modified);
-            }
-
-            /// <summary>
-            /// Gets the hash code for this instance.
-            /// </summary>
-            /// <returns>A hash code for the current object.</returns>
-            /// <stable>ICU 55</stable>
-            public override int GetHashCode()
-            {
-                return Modified.GetHashCode() ^ NameInDisplayLocale.GetHashCode();
-            }
-
-            /// <summary>
-            /// Returns a string that represents the current object.
-            /// </summary>
-            /// <returns>A string that represents the current object.</returns>
-            /// <stable>ICU 55</stable>
-            public override string ToString()
-            {
-                return "{" + Minimized + ", " + Modified + ", " + NameInDisplayLocale + ", " + NameInSelf + "}";
-            }
-
-            /// <summary>
-            /// Return a comparator that compares the locale names for the display locale or the in-self names,
-            /// depending on an input parameter.
-            /// </summary>
-            /// <param name="comparer">The string <see cref="IComparer{T}"/> to order the <see cref="UiListItem"/>s.</param>
-            /// <param name="inSelf">If true, compares the nameInSelf, otherwise the nameInDisplayLocale.</param>
-            /// <returns><see cref="UiListItem"/> comparer.</returns>
-            /// <stable>ICU 55</stable>
-            public static IComparer<UiListItem> GetComparer(IComparer<string> comparer, bool inSelf)
-            {
-                return new UiListItemComparer(comparer, inSelf);
-            }
-
-            /// <summary>
-            /// Return a comparator that compares the locale names for the display locale or the in-self names,
-            /// depending on an input parameter.
-            /// </summary>
-            /// <param name="comparer">The string <see cref="IComparer{T}"/> to order the <see cref="UiListItem"/>s.</param>
-            /// <param name="inSelf">If true, compares the nameInSelf, otherwise the nameInDisplayLocale.</param>
-            /// <returns><see cref="UiListItem"/> comparer.</returns>
-            /// <stable>ICU4N 60</stable>
-            public static IComparer<UiListItem> GetComparer(CompareInfo comparer, bool inSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
-            {
-                return new UiListItemComparer(comparer, inSelf);
-            }
-
-            private class UiListItemComparer : IComparer<UiListItem>
-            {
-                private readonly IComparer<string> collator;
-                private readonly bool useSelf;
-
-                internal UiListItemComparer(CompareInfo collator, bool useSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
-                    : this(collator.ToComparer(), useSelf)
-                {
-                }
-
-                internal UiListItemComparer(IComparer<string> collator, bool useSelf)
-                {
-                    this.collator = collator;
-                    this.useSelf = useSelf;
-                }
-
-                public int Compare(UiListItem o1, UiListItem o2)
-                {
-                    int result = useSelf ? collator.Compare(o1.NameInSelf, o2.NameInSelf)
-                            : collator.Compare(o1.NameInDisplayLocale, o2.NameInDisplayLocale);
-                    return result != 0 ? result : o1.Modified.CompareTo(o2.Modified); // just in case
-                }
-            }
-        }
+        // ICU4N specific - de-nested UiListItem
 
         /// <summary>
         /// Sole constructor.  (For invocation by subclass constructors,
