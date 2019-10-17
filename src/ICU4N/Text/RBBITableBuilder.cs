@@ -480,7 +480,7 @@ namespace ICU4N.Text
                     {
                         // c == -1 occurs with sets containing only the {eof} marker string.
                         int cLBProp = UChar.GetIntPropertyValue(c, UProperty.Line_Break);
-                        if (cLBProp == UChar.LineBreak.CombiningMark)
+                        if (cLBProp == LineBreak.CombiningMark)
                         {
                             continue;
                         }

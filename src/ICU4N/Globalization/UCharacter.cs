@@ -134,2480 +134,21 @@ namespace ICU4N
 
         // public inner classes ----------------------------------------------
 
-        /// <icu>_usage_</icu>
-        /// <summary>
-        /// A family of character subsets representing the character blocks in the
-        /// Unicode specification, generated from Unicode Data file Blocks.txt.
-        /// Character blocks generally define characters used for a specific script
-        /// or purpose. A character is contained by at most one Unicode block.
-        /// <para/>
-        /// <icunote>All fields named XXX_ID are specific to ICU.</icunote>
-        /// </summary>
-        /// <stable>ICU 2.4</stable>
-        public sealed class UnicodeBlock
-        {
-            // block id corresponding to icu4c -----------------------------------
-
-            /// <stable>ICU 2.4</stable>
-            public const int Invalid_Code_ID = -1;
-            /// <stable>ICU 2.4</stable>
-            public const int Basic_Latin_ID = 1;
-            /// <stable>ICU 2.4</stable>
-            public const int Latin_1_Supplement_ID = 2;
-            /// <stable>ICU 2.4</stable>
-            public const int Latin_Extended_A_ID = 3;
-            /// <stable>ICU 2.4</stable>
-            public const int Latin_Extended_B_ID = 4;
-            /// <stable>ICU 2.4</stable>
-            public const int IPA_Extensions_ID = 5;
-            /// <stable>ICU 2.4</stable>
-            public const int Spacing_Modifier_Letters_ID = 6;
-            /// <stable>ICU 2.4</stable>
-            public const int Combining_Diacritical_Marks_ID = 7;
-            /// <summary>
-            /// Unicode 3.2 renames this block to "Greek and Coptic".
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public const int Greek_ID = 8;
-            /// <stable>ICU 2.4</stable>
-            public const int Cyrillic_ID = 9;
-            /// <stable>ICU 2.4</stable>
-            public const int Armenian_ID = 10;
-            /// <stable>ICU 2.4</stable>
-            public const int Hebrew_ID = 11;
-            /// <stable>ICU 2.4</stable>
-            public const int Arabic_ID = 12;
-            /// <stable>ICU 2.4</stable>
-            public const int Syriac_ID = 13;
-            /// <stable>ICU 2.4</stable>
-            public const int Thaana_ID = 14;
-            /// <stable>ICU 2.4</stable>
-            public const int Devanagari_ID = 15;
-            /// <stable>ICU 2.4</stable>
-            public const int Bengali_ID = 16;
-            /// <stable>ICU 2.4</stable>
-            public const int Gurmukhi_ID = 17;
-            /// <stable>ICU 2.4</stable>
-            public const int Gujarati_ID = 18;
-            /// <stable>ICU 2.4</stable>
-            public const int Oriya_ID = 19;
-            /// <stable>ICU 2.4</stable>
-            public const int Tamil_ID = 20;
-            /// <stable>ICU 2.4</stable>
-            public const int Telugu_ID = 21;
-            /// <stable>ICU 2.4</stable>
-            public const int Kannada_ID = 22;
-            /// <stable>ICU 2.4</stable>
-            public const int Malayalam_ID = 23;
-            /// <stable>ICU 2.4</stable>
-            public const int Sinhala_ID = 24;
-            /// <stable>ICU 2.4</stable>
-            public const int Thai_ID = 25;
-            /// <stable>ICU 2.4</stable>
-            public const int Lao_ID = 26;
-            /// <stable>ICU 2.4</stable>
-            public const int Tibetan_ID = 27;
-            /// <stable>ICU 2.4</stable>
-            public const int Myanmar_ID = 28;
-            /// <stable>ICU 2.4</stable>
-            public const int Georgian_ID = 29;
-            /// <stable>ICU 2.4</stable>
-            public const int Hangul_Jamo_ID = 30;
-            /// <stable>ICU 2.4</stable>
-            public const int Ethiopic_ID = 31;
-            /// <stable>ICU 2.4</stable>
-            public const int Cherokee_ID = 32;
-            /// <stable>ICU 2.4</stable>
-            public const int Unified_Canadian_Aboriginal_Syllabics_ID = 33;
-            /// <stable>ICU 2.4</stable>
-            public const int Ogham_ID = 34;
-            /// <stable>ICU 2.4</stable>
-            public const int Runic_ID = 35;
-            /// <stable>ICU 2.4</stable>
-            public const int Khmer_ID = 36;
-            /// <stable>ICU 2.4</stable>
-            public const int Mongolian_ID = 37;
-            /// <stable>ICU 2.4</stable>
-            public const int Latin_Extended_Additional_ID = 38;
-            /// <stable>ICU 2.4</stable>
-            public const int Greek_Extended_ID = 39;
-            /// <stable>ICU 2.4</stable>
-            public const int General_Punctuation_ID = 40;
-            /// <stable>ICU 2.4</stable>
-            public const int Superscripts_And_Subscripts_ID = 41;
-            /// <stable>ICU 2.4</stable>
-            public const int Currency_Symbols_ID = 42;
-            /// <summary>
-            /// Unicode 3.2 renames this block to "Combining Diacritical Marks for
-            /// Symbols".
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public const int Combining_Marks_For_Symbols_ID = 43;
-            /// <stable>ICU 2.4</stable>
-            public const int Letterlike_Symbols_ID = 44;
-            /// <stable>ICU 2.4</stable>
-            public const int Number_Forms_ID = 45;
-            /// <stable>ICU 2.4</stable>
-            public const int Arrows_ID = 46;
-            /// <stable>ICU 2.4</stable>
-            public const int Mathematical_Operators_ID = 47;
-            /// <stable>ICU 2.4</stable>
-            public const int Miscellaneous_Technical_ID = 48;
-            /// <stable>ICU 2.4</stable>
-            public const int Control_Pictures_ID = 49;
-            /// <stable>ICU 2.4</stable>
-            public const int Optical_Character_Recognition_ID = 50;
-            /// <stable>ICU 2.4</stable>
-            public const int Enclosed_Alphanumerics_ID = 51;
-            /// <stable>ICU 2.4</stable>
-            public const int Box_Drawing_ID = 52;
-            /// <stable>ICU 2.4</stable>
-            public const int Block_Elements_ID = 53;
-            /// <stable>ICU 2.4</stable>
-            public const int Geometric_Shapes_ID = 54;
-            /// <stable>ICU 2.4</stable>
-            public const int Miscellaneous_Symbols_ID = 55;
-            /// <stable>ICU 2.4</stable>
-            public const int Dingbats_ID = 56;
-            /// <stable>ICU 2.4</stable>
-            public const int Braille_Patterns_ID = 57;
-            /// <stable>ICU 2.4</stable>
-            public const int CJK_Radicals_Supplement_ID = 58;
-            /// <stable>ICU 2.4</stable>
-            public const int Kangxi_Radicals_ID = 59;
-            /// <stable>ICU 2.4</stable>
-            public const int Ideographic_Description_Characters_ID = 60;
-            /// <stable>ICU 2.4</stable>
-            public const int CJK_Symbols_And_Punctuation_ID = 61;
-            /// <stable>ICU 2.4</stable>
-            public const int Hiragana_ID = 62;
-            /// <stable>ICU 2.4</stable>
-            public const int Katakana_ID = 63;
-            /// <stable>ICU 2.4</stable>
-            public const int Bopomofo_ID = 64;
-            /// <stable>ICU 2.4</stable>
-            public const int Hangul_Compatibility_Jamo_ID = 65;
-            /// <stable>ICU 2.4</stable>
-            public const int Kanbun_ID = 66;
-            /// <stable>ICU 2.4</stable>
-            public const int Bopomofo_Extended_ID = 67;
-            /// <stable>ICU 2.4</stable>
-            public const int Enclosed_CJK_Letters_And_Months_ID = 68;
-            /// <stable>ICU 2.4</stable>
-            public const int CJK_Compatibility_ID = 69;
-            /// <stable>ICU 2.4</stable>
-            public const int CJK_Unified_Ideographs_Extension_A_ID = 70;
-            /// <stable>ICU 2.4</stable>
-            public const int CJK_Unified_Ideographs_ID = 71;
-            /// <stable>ICU 2.4</stable>
-            public const int Yi_Syllables_ID = 72;
-            /// <stable>ICU 2.4</stable>
-            public const int Yi_Radicals_ID = 73;
-            /// <stable>ICU 2.4</stable>
-            public const int Hangul_Syllables_ID = 74;
-            /// <stable>ICU 2.4</stable>
-            public const int High_Surrogates_ID = 75;
-            /// <stable>ICU 2.4</stable>
-            public const int High_Private_Use_Surrogates_ID = 76;
-            /// <stable>ICU 2.4</stable>
-            public const int Low_Surrogates_ID = 77;
-            /// <summary>
-            /// Same as <see cref="Private_Use"/>.
-            /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
-            /// and multiple code point ranges had this block.
-            /// Unicode 3.2 renames the block for the BMP PUA to "Private Use Area"
-            /// and adds separate blocks for the supplementary PUAs.
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public const int Private_Use_Area_ID = 78;
-            /// <summary>
-            /// Same as <see cref="Private_Use_Area"/>.
-            /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
-            /// and multiple code point ranges had this block.
-            /// Unicode 3.2 renames the block for the BMP PUA to "Private Use Area"
-            /// and adds separate blocks for the supplementary PUAs.
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public const int Private_Use_ID = Private_Use_Area_ID;
-            /// <stable>ICU 2.4</stable>
-            public const int CJK_Compatibility_Ideographs_ID = 79;
-            /// <stable>ICU 2.4</stable>
-            public const int Alphabetic_Presentation_Forms_ID = 80;
-            /// <stable>ICU 2.4</stable>
-            public const int Arabic_Presentation_Forms_A_ID = 81;
-            /// <stable>ICU 2.4</stable>
-            public const int Combining_Half_Marks_ID = 82;
-            /// <stable>ICU 2.4</stable>
-            public const int CJK_Compatibility_Forms_ID = 83;
-            /// <stable>ICU 2.4</stable>
-            public const int Small_Form_Variants_ID = 84;
-            /// <stable>ICU 2.4</stable>
-            public const int Arabic_Presentation_Forms_B_ID = 85;
-            /// <stable>ICU 2.4</stable>
-            public const int Specials_ID = 86;
-            /// <stable>ICU 2.4</stable>
-            public const int HalfWidth_And_FullWidth_Forms_ID = 87;
-            /// <stable>ICU 2.4</stable>
-            public const int Old_Italic_ID = 88;
-            /// <stable>ICU 2.4</stable>
-            public const int Gothic_ID = 89;
-            /// <stable>ICU 2.4</stable>
-            public const int Deseret_ID = 90;
-            /// <stable>ICU 2.4</stable>
-            public const int Byzantine_Musical_Symbols_ID = 91;
-            /// <stable>ICU 2.4</stable>
-            public const int Musical_Symbols_ID = 92;
-            /// <stable>ICU 2.4</stable>
-            public const int Mathematical_Alphanumeric_Symbols_ID = 93;
-            /// <stable>ICU 2.4</stable>
-            public const int CJK_Unified_Ideographs_Extension_B_ID = 94;
-            /// <stable>ICU 2.4</stable>
-            public const int CJK_Compatibility_Ideographs_Supplement_ID = 95;
-            /// <stable>ICU 2.4</stable>
-            public const int Tags_ID = 96;
-
-            // New blocks in Unicode 3.2
-
-            /// <summary>
-            /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public const int Cyrillic_Supplementary_ID = 97;
-            /// <summary>
-            /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
-            /// </summary>
-            /// <stable>ICU 3.0</stable>
-            public const int Cyrillic_Supplement_ID = 97;
-            /// <stable>ICU 2.4</stable>
-            public const int Tagalog_ID = 98;
-            /// <stable>ICU 2.4</stable>
-            public const int Hanunoo_ID = 99;
-            /// <stable>ICU 2.4</stable>
-            public const int Buhid_ID = 100;
-            /// <stable>ICU 2.4</stable>
-            public const int Tagbanwa_ID = 101;
-            /// <stable>ICU 2.4</stable>
-            public const int Miscellaneous_Mathematical_Symbols_A_ID = 102;
-            /// <stable>ICU 2.4</stable>
-            public const int Supplemental_Arrows_A_ID = 103;
-            /// <stable>ICU 2.4</stable>
-            public const int Supplemental_Arrows_B_ID = 104;
-            /// <stable>ICU 2.4</stable>
-            public const int Miscellaneous_Mathematical_Symbols_B_ID = 105;
-            /// <stable>ICU 2.4</stable>
-            public const int Supplemental_Mathematical_Operators_ID = 106;
-            /// <stable>ICU 2.4</stable>
-            public const int Katakana_Phonetic_Extensions_ID = 107;
-            /// <stable>ICU 2.4</stable>
-            public const int Variation_Selectors_ID = 108;
-            /// <stable>ICU 2.4</stable>
-            public const int Supplementary_Private_Use_Area_A_ID = 109;
-            /// <stable>ICU 2.4</stable>
-            public const int Supplementary_Private_Use_Area_B_ID = 110;
-
-            /// <stable>ICU 2.6</stable>
-            public const int Limbu_ID = 111; /*[1900]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Tai_Le_ID = 112; /*[1950]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Khmer_Symbols_ID = 113; /*[19E0]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Phonetic_Extensions_ID = 114; /*[1D00]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Miscellaneous_Symbols_And_Arrows_ID = 115; /*[2B00]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Yijing_Hexagram_Symbols_ID = 116; /*[4DC0]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Linear_B_Syllabary_ID = 117; /*[10000]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Linear_B_Ideograms_ID = 118; /*[10080]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Aegean_Numbers_ID = 119; /*[10100]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Ugaritic_ID = 120; /*[10380]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Shavian_ID = 121; /*[10450]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Osmanya_ID = 122; /*[10480]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Cypriot_Syllabary_ID = 123; /*[10800]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Tai_Xuan_Jing_Symbols_ID = 124; /*[1D300]*/
-            /// <stable>ICU 2.6</stable>
-            public const int Variation_Selectors_Supplement_ID = 125; /*[E0100]*/
-
-            /* New blocks in Unicode 4.1 */
-
-            /// <stable>ICU 3.4</stable>
-            public const int Ancient_Greek_Musical_Notation_ID = 126; /*[1D200]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Ancient_Greek_Numbers_ID = 127; /*[10140]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Arabic_Supplement_ID = 128; /*[0750]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Buginese_ID = 129; /*[1A00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int CJK_Strokes_ID = 130; /*[31C0]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Combining_Diacritical_Marks_Supplement_ID = 131; /*[1DC0]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Coptic_ID = 132; /*[2C80]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Ethiopic_Extended_ID = 133; /*[2D80]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Ethiopic_Supplement_ID = 134; /*[1380]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Georgian_Supplement_ID = 135; /*[2D00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Glagolitic_ID = 136; /*[2C00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Kharoshthi_ID = 137; /*[10A00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Modifier_Tone_Letters_ID = 138; /*[A700]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int New_Tai_Lue_ID = 139; /*[1980]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Old_Persian_ID = 140; /*[103A0]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Phonetic_Extensions_Supplement_ID = 141; /*[1D80]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Supplemental_Punctuation_ID = 142; /*[2E00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Syloti_Nagri_ID = 143; /*[A800]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Tifinagh_ID = 144; /*[2D30]*/
-
-            /// <stable>ICU 3.4</stable>
-            public const int Vertical_Forms_ID = 145; /*[FE10]*/
-
-            /* New blocks in Unicode 5.0 */
-
-            /// <stable>ICU 3.6</stable>
-            public const int Nko_ID = 146; /*[07C0]*/
-            /// <stable>ICU 3.6</stable>
-            public const int Balinese_ID = 147; /*[1B00]*/
-            /// <stable>ICU 3.6</stable>
-            public const int Latin_Extended_C_ID = 148; /*[2C60]*/
-            /// <stable>ICU 3.6</stable>
-            public const int Latin_Extended_D_ID = 149; /*[A720]*/
-            /// <stable>ICU 3.6</stable>
-            public const int Phags_Pa_ID = 150; /*[A840]*/
-            /// <stable>ICU 3.6</stable>
-            public const int Phoenician_ID = 151; /*[10900]*/
-            /// <stable>ICU 3.6</stable>
-            public const int Cuneiform_ID = 152; /*[12000]*/
-            /// <stable>ICU 3.6</stable>
-            public const int Cuneiform_Numbers_And_Punctuation_ID = 153; /*[12400]*/
-            /// <stable>ICU 3.6</stable>
-            public const int Counting_Rod_Numerals_ID = 154; /*[1D360]*/
-
-            /// <stable>ICU 4.0</stable>
-            public const int Sundanese_ID = 155; /* [1B80] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Lepcha_ID = 156; /* [1C00] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Ol_Chiki_ID = 157; /* [1C50] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Cyrillic_Extended_A_ID = 158; /* [2DE0] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Vai_ID = 159; /* [A500] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Cyrillic_Extended_B_ID = 160; /* [A640] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Saurashtra_ID = 161; /* [A880] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Kayah_Li_ID = 162; /* [A900] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Rejang_ID = 163; /* [A930] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Cham_ID = 164; /* [AA00] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Ancient_Symbols_ID = 165; /* [10190] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Phaistos_Disc_ID = 166; /* [101D0] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Lycian_ID = 167; /* [10280] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Carian_ID = 168; /* [102A0] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Lydian_ID = 169; /* [10920] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Mahjong_Tiles_ID = 170; /* [1F000] */
-
-            /// <stable>ICU 4.0</stable>
-            public const int Domino_Tiles_ID = 171; /* [1F030] */
-
-            /* New blocks in Unicode 5.2 */
-
-            /// <stable>ICU 4.4</stable>
-            public const int Samaritan_ID = 172; /*[0800]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Unified_Canadian_Aboriginal_Syllabics_Extended_ID = 173; /*[18B0]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Tai_Tham_ID = 174; /*[1A20]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Vedic_Extensions_ID = 175; /*[1CD0]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Lisu_ID = 176; /*[A4D0]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Bamum_ID = 177; /*[A6A0]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Common_Indic_Number_Forms_ID = 178; /*[A830]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Devanagari_Extended_ID = 179; /*[A8E0]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Hangul_Jamo_Extended_A_ID = 180; /*[A960]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Javanese_ID = 181; /*[A980]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Myanmar_Extended_A_ID = 182; /*[AA60]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Tai_Viet_ID = 183; /*[AA80]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Meetei_Mayek_ID = 184; /*[ABC0]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Hangul_Jamo_Extended_B_ID = 185; /*[D7B0]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Imperial_Aramaic_ID = 186; /*[10840]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Old_South_Arabian_ID = 187; /*[10A60]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Avestan_ID = 188; /*[10B00]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Inscriptional_Parthian_ID = 189; /*[10B40]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Inscriptional_Pahlavi_ID = 190; /*[10B60]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Old_Turkic_ID = 191; /*[10C00]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Rumi_Numeral_Symbols_ID = 192; /*[10E60]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Kaithi_ID = 193; /*[11080]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Egyptian_Hieroglyphs_ID = 194; /*[13000]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Enclosed_Alphanumeric_Supplement_ID = 195; /*[1F100]*/
-            /// <stable>ICU 4.4</stable>
-            public const int Enclosed_Ideographic_Supplement_ID = 196; /*[1F200]*/
-            /// <stable>ICU 4.4</stable>
-            public const int CJK_Unified_Ideographs_Extension_C_ID = 197; /*[2A700]*/
-
-            /* New blocks in Unicode 6.0 */
-
-            /// <stable>ICU 4.6</stable>
-            public const int Mandaic_ID = 198; /*[0840]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Batak_ID = 199; /*[1BC0]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Ethiopic_Extended_A_ID = 200; /*[AB00]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Brahmi_ID = 201; /*[11000]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Bamum_Supplement_ID = 202; /*[16800]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Kana_Supplement_ID = 203; /*[1B000]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Playing_Cards_ID = 204; /*[1F0A0]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Miscellaneous_Symbols_And_Pictographs_ID = 205; /*[1F300]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Emoticons_ID = 206; /*[1F600]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Transport_And_Map_Symbols_ID = 207; /*[1F680]*/
-            /// <stable>ICU 4.6</stable>
-            public const int Alchemical_Symbols_ID = 208; /*[1F700]*/
-            /// <stable>ICU 4.6</stable>
-            public const int CJK_Unified_Ideographs_Extension_D_ID = 209; /*[2B740]*/
-
-            /* New blocks in Unicode 6.1 */
-
-            /// <stable>ICU 49</stable>
-            public const int Arabic_Extended_A_ID = 210; /*[08A0]*/
-            /// <stable>ICU 49</stable>
-            public const int Arabic_Mathematical_Alphabetic_Symbols_ID = 211; /*[1EE00]*/
-            /// <stable>ICU 49</stable>
-            public const int Chakma_ID = 212; /*[11100]*/
-            /// <stable>ICU 49</stable>
-            public const int Meetei_Mayek_Extensions_ID = 213; /*[AAE0]*/
-            /// <stable>ICU 49</stable>
-            public const int Meroitic_Cursive_ID = 214; /*[109A0]*/
-            /// <stable>ICU 49</stable>
-            public const int Meroitic_Hieroglyphs_ID = 215; /*[10980]*/
-            /// <stable>ICU 49</stable>
-            public const int Miao_ID = 216; /*[16F00]*/
-            /// <stable>ICU 49</stable>
-            public const int Sharada_ID = 217; /*[11180]*/
-            /// <stable>ICU 49</stable>
-            public const int Sora_Sompeng_ID = 218; /*[110D0]*/
-            /// <stable>ICU 49</stable>
-            public const int Sundanese_Supplement_ID = 219; /*[1CC0]*/
-            /// <stable>ICU 49</stable>
-            public const int Takri_ID = 220; /*[11680]*/
-
-            /* New blocks in Unicode 7.0 */
-
-            /// <stable>ICU 54</stable>
-            public const int Bassa_Vah_ID = 221; /*[16AD0]*/
-            /// <stable>ICU 54</stable>
-            public const int Caucasian_Albanian_ID = 222; /*[10530]*/
-            /// <stable>ICU 54</stable>
-            public const int Coptic_Epact_Numbers_ID = 223; /*[102E0]*/
-            /// <stable>ICU 54</stable>
-            public const int Combining_Diacritical_Marks_Extended_ID = 224; /*[1AB0]*/
-            /// <stable>ICU 54</stable>
-            public const int Duployan_ID = 225; /*[1BC00]*/
-            /// <stable>ICU 54</stable>
-            public const int Elbasan_ID = 226; /*[10500]*/
-            /// <stable>ICU 54</stable>
-            public const int Geometric_Shapes_Extended_ID = 227; /*[1F780]*/
-            /// <stable>ICU 54</stable>
-            public const int Grantha_ID = 228; /*[11300]*/
-            /// <stable>ICU 54</stable>
-            public const int Khojki_ID = 229; /*[11200]*/
-            /// <stable>ICU 54</stable>
-            public const int Khudawadi_ID = 230; /*[112B0]*/
-            /// <stable>ICU 54</stable>
-            public const int Latin_Extended_E_ID = 231; /*[AB30]*/
-            /// <stable>ICU 54</stable>
-            public const int Linear_A_ID = 232; /*[10600]*/
-            /// <stable>ICU 54</stable>
-            public const int Mahajani_ID = 233; /*[11150]*/
-            /// <stable>ICU 54</stable>
-            public const int Manichaean_ID = 234; /*[10AC0]*/
-            /// <stable>ICU 54</stable>
-            public const int Mende_Kikakui_ID = 235; /*[1E800]*/
-            /// <stable>ICU 54</stable>
-            public const int Modi_ID = 236; /*[11600]*/
-            /// <stable>ICU 54</stable>
-            public const int Mro_ID = 237; /*[16A40]*/
-            /// <stable>ICU 54</stable>
-            public const int Myanmar_Extended_B_ID = 238; /*[A9E0]*/
-            /// <stable>ICU 54</stable>
-            public const int Nabataean_ID = 239; /*[10880]*/
-            /// <stable>ICU 54</stable>
-            public const int Old_North_Arabian_ID = 240; /*[10A80]*/
-            /// <stable>ICU 54</stable>
-            public const int Old_Permic_ID = 241; /*[10350]*/
-            /// <stable>ICU 54</stable>
-            public const int Ornamental_Dingbats_ID = 242; /*[1F650]*/
-            /// <stable>ICU 54</stable>
-            public const int Pahawh_Hmong_ID = 243; /*[16B00]*/
-            /// <stable>ICU 54</stable>
-            public const int Palmyrene_ID = 244; /*[10860]*/
-            /// <stable>ICU 54</stable>
-            public const int Pau_Cin_Hau_ID = 245; /*[11AC0]*/
-            /// <stable>ICU 54</stable>
-            public const int Psalter_Pahlavi_ID = 246; /*[10B80]*/
-            /// <stable>ICU 54</stable>
-            public const int Shorthand_Format_Controls_ID = 247; /*[1BCA0]*/
-            /// <stable>ICU 54</stable>
-            public const int Siddham_ID = 248; /*[11580]*/
-            /// <stable>ICU 54</stable>
-            public const int Sinhala_Archaic_Numbers_ID = 249; /*[111E0]*/
-            /// <stable>ICU 54</stable>
-            public const int Supplemental_Arrows_C_ID = 250; /*[1F800]*/
-            /// <stable>ICU 54</stable>
-            public const int Tirhuta_ID = 251; /*[11480]*/
-            /// <stable>ICU 54</stable>
-            public const int Warang_Citi_ID = 252; /*[118A0]*/
-
-            /* New blocks in Unicode 8.0 */
-
-            /// <stable>ICU 56</stable>
-            public const int Ahom_ID = 253; /*[11700]*/
-            /// <stable>ICU 56</stable>
-            public const int Anatolian_Hieroglyphs_ID = 254; /*[14400]*/
-            /// <stable>ICU 56</stable>
-            public const int Cherokee_Supplement_ID = 255; /*[AB70]*/
-            /// <stable>ICU 56</stable>
-            public const int CJK_Unified_Ideographs_Extension_E_ID = 256; /*[2B820]*/
-            /// <stable>ICU 56</stable>
-            public const int Early_Dynastic_Cuneiform_ID = 257; /*[12480]*/
-            /// <stable>ICU 56</stable>
-            public const int Hatran_ID = 258; /*[108E0]*/
-            /// <stable>ICU 56</stable>
-            public const int Multani_ID = 259; /*[11280]*/
-            /// <stable>ICU 56</stable>
-            public const int Old_Hungarian_ID = 260; /*[10C80]*/
-            /// <stable>ICU 56</stable>
-            public const int Supplemental_Symbols_And_Pictographs_ID = 261; /*[1F900]*/
-            /// <stable>ICU 56</stable>
-            public const int Sutton_Signwriting_ID = 262; /*[1D800]*/
-
-            /* New blocks in Unicode 9.0 */
-
-            /// <stable>ICU 58</stable>
-            public const int Adlam_ID = 263; /*[1E900]*/
-            /// <stable>ICU 58</stable>
-            public const int Bhaiksuki_ID = 264; /*[11C00]*/
-            /// <stable>ICU 58</stable>
-            public const int Cyrillic_Extended_C_ID = 265; /*[1C80]*/
-            /// <stable>ICU 58</stable>
-            public const int Glagolitic_Supplement_ID = 266; /*[1E000]*/
-            /// <stable>ICU 58</stable>
-            public const int Ideographic_Symbols_And_Punctuation_ID = 267; /*[16FE0]*/
-            /// <stable>ICU 58</stable>
-            public const int Marchen_ID = 268; /*[11C70]*/
-            /// <stable>ICU 58</stable>
-            public const int Mongolian_Supplement_ID = 269; /*[11660]*/
-            /// <stable>ICU 58</stable>
-            public const int Newa_ID = 270; /*[11400]*/
-            /// <stable>ICU 58</stable>
-            public const int Osage_ID = 271; /*[104B0]*/
-            /// <stable>ICU 58</stable>
-            public const int Tangut_ID = 272; /*[17000]*/
-            /// <stable>ICU 58</stable>
-            public const int Tangut_Components_ID = 273; /*[18800]*/
-
-            // New blocks in Unicode 10.0
-
-            /// <stable>ICU 60</stable>
-            public const int CJK_Unified_Ideographs_Extension_F_ID = 274; /*[2CEB0]*/
-            /// <stable>ICU 60</stable>
-            public const int Kana_Extended_A_ID = 275; /*[1B100]*/
-            /// <stable>ICU 60</stable>
-            public const int Masaram_Gondi_ID = 276; /*[11D00]*/
-            /// <stable>ICU 60</stable>
-            public const int Nushu_ID = 277; /*[1B170]*/
-            /// <stable>ICU 60</stable>
-            public const int Soyombo_ID = 278; /*[11A50]*/
-            /// <stable>ICU 60</stable>
-            public const int Syriac_Supplement_ID = 279; /*[0860]*/
-            /// <stable>ICU 60</stable>
-            public const int Zanabazar_Square_ID = 280; /*[11A00]*/
-
-            /// <summary>
-            /// One more than the highest normal UnicodeBlock value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyValue(int, UProperty)"/> 
-            /// with parameter <see cref="UProperty.Block"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 281;
-
-            // blocks objects ---------------------------------------------------
-
-            /// <summary>
-            /// Array of <see cref="UnicodeBlock"/>s, for easy access in <see cref="GetInstance(int)"/>
-            /// </summary>
-#pragma warning disable 612, 618
-            private readonly static UnicodeBlock[] BLOCKS_ = new UnicodeBlock[Count];
-#pragma warning restore 612, 618
-
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock NoBlock
-                = new UnicodeBlock(nameof(NoBlock), 0);
-
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Basic_Latin
-                = new UnicodeBlock(nameof(Basic_Latin), Basic_Latin_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Latin_1_Supplement
-                = new UnicodeBlock(nameof(Latin_1_Supplement), Latin_1_Supplement_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Latin_Extended_A
-                = new UnicodeBlock(nameof(Latin_Extended_A), Latin_Extended_A_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Latin_Extended_B
-                = new UnicodeBlock(nameof(Latin_Extended_B), Latin_Extended_B_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock IPA_Extensions
-                = new UnicodeBlock(nameof(IPA_Extensions), IPA_Extensions_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Spacing_Modifier_Letters
-                = new UnicodeBlock(nameof(Spacing_Modifier_Letters), Spacing_Modifier_Letters_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Combining_Diacritical_Marks
-                = new UnicodeBlock(nameof(Combining_Diacritical_Marks), Combining_Diacritical_Marks_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Greek
-                = new UnicodeBlock(nameof(Greek), Greek_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Cyrillic
-                = new UnicodeBlock(nameof(Cyrillic), Cyrillic_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Armenian
-                = new UnicodeBlock(nameof(Armenian), Armenian_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Hebrew
-                = new UnicodeBlock(nameof(Hebrew), Hebrew_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Arabic
-                = new UnicodeBlock(nameof(Arabic), Arabic_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Syriac
-                = new UnicodeBlock(nameof(Syriac), Syriac_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Thaana
-                = new UnicodeBlock(nameof(Thaana), Thaana_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Devanagari
-                = new UnicodeBlock(nameof(Devanagari), Devanagari_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Bengali
-                = new UnicodeBlock(nameof(Bengali), Bengali_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Gurmukhi
-                = new UnicodeBlock(nameof(Gurmukhi), Gurmukhi_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Gujarati
-                = new UnicodeBlock(nameof(Gujarati), Gujarati_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Oriya
-                = new UnicodeBlock(nameof(Oriya), Oriya_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Tamil
-                = new UnicodeBlock(nameof(Tamil), Tamil_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Telugu
-                = new UnicodeBlock(nameof(Telugu), Telugu_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Kannada
-                = new UnicodeBlock(nameof(Kannada), Kannada_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Malayalam
-                = new UnicodeBlock(nameof(Malayalam), Malayalam_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Sinhala
-                = new UnicodeBlock(nameof(Sinhala), Sinhala_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Thai
-                = new UnicodeBlock(nameof(Thai), Thai_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Lao
-                = new UnicodeBlock(nameof(Lao), Lao_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Tibetan
-                = new UnicodeBlock(nameof(Tibetan), Tibetan_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Myanmar
-                = new UnicodeBlock(nameof(Myanmar), Myanmar_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Georgian
-                = new UnicodeBlock(nameof(Georgian), Georgian_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Hangul_Jamo
-                = new UnicodeBlock(nameof(Hangul_Jamo), Hangul_Jamo_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Ethiopic
-                = new UnicodeBlock(nameof(Ethiopic), Ethiopic_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Cherokee
-                = new UnicodeBlock(nameof(Cherokee), Cherokee_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Unified_Canadian_Aboriginal_Syllabics
-                = new UnicodeBlock(nameof(Unified_Canadian_Aboriginal_Syllabics),
-                    Unified_Canadian_Aboriginal_Syllabics_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Ogham
-                = new UnicodeBlock(nameof(Ogham), Ogham_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Runic
-                = new UnicodeBlock(nameof(Runic), Runic_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Khmer
-                = new UnicodeBlock(nameof(Khmer), Khmer_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Mongolian
-                = new UnicodeBlock(nameof(Mongolian), Mongolian_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Latin_Extended_Additional
-                = new UnicodeBlock(nameof(Latin_Extended_Additional), Latin_Extended_Additional_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Greek_Extended
-                = new UnicodeBlock(nameof(Greek_Extended), Greek_Extended_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock General_Punctuation
-                = new UnicodeBlock(nameof(General_Punctuation), General_Punctuation_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Superscripts_And_Subscripts
-                = new UnicodeBlock(nameof(Superscripts_And_Subscripts), Superscripts_And_Subscripts_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Currency_Symbols
-                = new UnicodeBlock(nameof(Currency_Symbols), Currency_Symbols_ID);
-            /// <summary>
-            /// Unicode 3.2 renames this block to "Combining Diacritical Marks for
-            /// Symbols".
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Combining_Marks_For_Symbols
-                = new UnicodeBlock(nameof(Combining_Marks_For_Symbols), Combining_Marks_For_Symbols_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Letterlike_Symbols
-                = new UnicodeBlock(nameof(Letterlike_Symbols), Letterlike_Symbols_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Number_Forms
-                = new UnicodeBlock(nameof(Number_Forms), Number_Forms_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Arrows
-                = new UnicodeBlock(nameof(Arrows), Arrows_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Mathematical_Operators
-                = new UnicodeBlock(nameof(Mathematical_Operators), Mathematical_Operators_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Miscellaneous_Technical
-                = new UnicodeBlock(nameof(Miscellaneous_Technical), Miscellaneous_Technical_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Control_Pictures
-                = new UnicodeBlock(nameof(Control_Pictures), Control_Pictures_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Optical_Character_Recognition
-                = new UnicodeBlock(nameof(Optical_Character_Recognition), Optical_Character_Recognition_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Enclosed_Alphanumerics
-                = new UnicodeBlock(nameof(Enclosed_Alphanumerics), Enclosed_Alphanumerics_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Box_Drawing
-                = new UnicodeBlock(nameof(Box_Drawing), Box_Drawing_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Block_Elements
-                = new UnicodeBlock(nameof(Block_Elements), Block_Elements_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Geometric_Shapes
-                = new UnicodeBlock(nameof(Geometric_Shapes), Geometric_Shapes_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Miscellaneous_Symbols
-                = new UnicodeBlock(nameof(Miscellaneous_Symbols), Miscellaneous_Symbols_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Dingbats
-                = new UnicodeBlock(nameof(Dingbats), Dingbats_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Braille_Patterns
-                = new UnicodeBlock(nameof(Braille_Patterns), Braille_Patterns_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock CJK_Radicals_Supplement
-                = new UnicodeBlock(nameof(CJK_Radicals_Supplement), CJK_Radicals_Supplement_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Kangxi_Radicals
-                = new UnicodeBlock(nameof(Kangxi_Radicals), Kangxi_Radicals_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Ideographic_Description_Characters
-                = new UnicodeBlock(nameof(Ideographic_Description_Characters),
-                    Ideographic_Description_Characters_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock CJK_Symbols_And_Punctuation
-                = new UnicodeBlock(nameof(CJK_Symbols_And_Punctuation), CJK_Symbols_And_Punctuation_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Hiragana
-                = new UnicodeBlock(nameof(Hiragana), Hiragana_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Katakana
-                = new UnicodeBlock(nameof(Katakana), Katakana_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Bopomofo
-                = new UnicodeBlock(nameof(Bopomofo), Bopomofo_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Hangul_Compatibility_Jamo
-                = new UnicodeBlock(nameof(Hangul_Compatibility_Jamo), Hangul_Compatibility_Jamo_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Kanbun
-                = new UnicodeBlock(nameof(Kanbun), Kanbun_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Bopomofo_Extended
-                = new UnicodeBlock(nameof(Bopomofo_Extended), Bopomofo_Extended_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Enclosed_CJK_Letters_And_Months
-                = new UnicodeBlock(nameof(Enclosed_CJK_Letters_And_Months),
-                    Enclosed_CJK_Letters_And_Months_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock CJK_Compatibility
-                = new UnicodeBlock(nameof(CJK_Compatibility), CJK_Compatibility_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_A
-                = new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_A),
-                    CJK_Unified_Ideographs_Extension_A_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock CJK_Unified_Ideographs
-                = new UnicodeBlock(nameof(CJK_Unified_Ideographs), CJK_Unified_Ideographs_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Yi_Syllables
-                = new UnicodeBlock(nameof(Yi_Syllables), Yi_Syllables_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Yi_Radicals
-                = new UnicodeBlock(nameof(Yi_Radicals), Yi_Radicals_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Hangul_Syllables
-                = new UnicodeBlock(nameof(Hangul_Syllables), Hangul_Syllables_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock High_Surrogates
-                = new UnicodeBlock(nameof(High_Surrogates), High_Surrogates_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock High_Private_Use_Surrogates
-                = new UnicodeBlock(nameof(High_Private_Use_Surrogates), High_Private_Use_Surrogates_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Low_Surrogates
-                = new UnicodeBlock(nameof(Low_Surrogates), Low_Surrogates_ID);
-            /// <summary>
-            /// Same as <see cref="Private_Use"/>.
-            /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
-            /// and multiple code point ranges had this block.
-            /// Unicode 3.2 renames the block for the BMP PUA to "Private Use Area"
-            /// and adds separate blocks for the supplementary PUAs.
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Private_Use_Area
-                = new UnicodeBlock(nameof(Private_Use_Area), 78);
-            /// <summary>
-            /// Same as <see cref="Private_Use_Area"/>.
-            /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
-            /// and multiple code point ranges had this block.
-            /// Unicode 3.2 renames the block for the BMP PUA to "Private Use Area"
-            /// and adds separate blocks for the supplementary PUAs.
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Private_Use
-                = Private_Use_Area;
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock CJK_Compatibility_Ideographs
-                = new UnicodeBlock(nameof(CJK_Compatibility_Ideographs), CJK_Compatibility_Ideographs_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Alphabetic_Presentation_Forms
-                = new UnicodeBlock(nameof(Alphabetic_Presentation_Forms), Alphabetic_Presentation_Forms_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Arabic_Presentation_Forms_A
-                = new UnicodeBlock(nameof(Arabic_Presentation_Forms_A), Arabic_Presentation_Forms_A_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Combining_Half_Marks
-                = new UnicodeBlock(nameof(Combining_Half_Marks), Combining_Half_Marks_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock CJK_Compatibility_Forms
-                = new UnicodeBlock(nameof(CJK_Compatibility_Forms), CJK_Compatibility_Forms_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Small_Form_Variants
-                = new UnicodeBlock(nameof(Small_Form_Variants), Small_Form_Variants_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Arabic_Presentation_Forms_B
-                = new UnicodeBlock(nameof(Arabic_Presentation_Forms_B), Arabic_Presentation_Forms_B_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Specials
-                = new UnicodeBlock(nameof(Specials), Specials_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock HalfWidth_And_FullWidth_Forms
-                = new UnicodeBlock(nameof(HalfWidth_And_FullWidth_Forms), HalfWidth_And_FullWidth_Forms_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Old_Italic
-                = new UnicodeBlock(nameof(Old_Italic), Old_Italic_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Gothic
-                = new UnicodeBlock(nameof(Gothic), Gothic_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Deseret
-                = new UnicodeBlock(nameof(Deseret), Deseret_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Byzantine_Musical_Symbols
-                = new UnicodeBlock(nameof(Byzantine_Musical_Symbols), Byzantine_Musical_Symbols_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Musical_Symbols
-                = new UnicodeBlock(nameof(Musical_Symbols), Musical_Symbols_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Mathematical_Alphanumeric_Symbols
-                = new UnicodeBlock(nameof(Mathematical_Alphanumeric_Symbols),
-                    Mathematical_Alphanumeric_Symbols_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_B
-                = new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_B),
-                    CJK_Unified_Ideographs_Extension_B_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock CJK_Compatibility_Ideographs_Supplement
-                = new UnicodeBlock(nameof(CJK_Compatibility_Ideographs_Supplement),
-                    CJK_Compatibility_Ideographs_Supplement_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Tags
-                = new UnicodeBlock(nameof(Tags), Tags_ID);
-
-            // New blocks in Unicode 3.2
-
-            /// <summary>
-            /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Cyrillic_Supplementary
-                = new UnicodeBlock(nameof(Cyrillic_Supplementary), Cyrillic_Supplementary_ID);
-            /// <summary>
-            /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
-            /// </summary>
-            /// <stable>ICU 3.0</stable>
-            public static readonly UnicodeBlock Cyrillic_Supplement
-                = new UnicodeBlock(nameof(Cyrillic_Supplement), Cyrillic_Supplement_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Tagalog
-                = new UnicodeBlock(nameof(Tagalog), Tagalog_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Hanunoo
-                = new UnicodeBlock(nameof(Hanunoo), Hanunoo_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Buhid
-                = new UnicodeBlock(nameof(Buhid), Buhid_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Tagbanwa
-                = new UnicodeBlock(nameof(Tagbanwa), Tagbanwa_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Miscellaneous_Mathematical_Symbols_A
-                = new UnicodeBlock(nameof(Miscellaneous_Mathematical_Symbols_A),
-                    Miscellaneous_Mathematical_Symbols_A_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Supplemental_Arrows_A
-                = new UnicodeBlock(nameof(Supplemental_Arrows_A), Supplemental_Arrows_A_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Supplemental_Arrows_B
-                = new UnicodeBlock(nameof(Supplemental_Arrows_B), Supplemental_Arrows_B_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Miscellaneous_Mathematical_Symbols_B
-                = new UnicodeBlock(nameof(Miscellaneous_Mathematical_Symbols_B),
-                    Miscellaneous_Mathematical_Symbols_B_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Supplemental_Mathematical_Operators
-                = new UnicodeBlock(nameof(Supplemental_Mathematical_Operators),
-                    Supplemental_Mathematical_Operators_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Katakana_Phonetic_Extensions
-                = new UnicodeBlock(nameof(Katakana_Phonetic_Extensions), Katakana_Phonetic_Extensions_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Variation_Selectors
-                = new UnicodeBlock(nameof(Variation_Selectors), Variation_Selectors_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Supplementary_Private_Use_Area_A
-                = new UnicodeBlock(nameof(Supplementary_Private_Use_Area_A),
-                    Supplementary_Private_Use_Area_A_ID);
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Supplementary_Private_Use_Area_B
-                = new UnicodeBlock(nameof(Supplementary_Private_Use_Area_B),
-                    Supplementary_Private_Use_Area_B_ID);
-
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Limbu
-                = new UnicodeBlock(nameof(Limbu), Limbu_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Tai_Le
-                = new UnicodeBlock(nameof(Tai_Le), Tai_Le_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Khmer_Symbols
-                = new UnicodeBlock(nameof(Khmer_Symbols), Khmer_Symbols_ID);
-
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Phonetic_Extensions
-                = new UnicodeBlock(nameof(Phonetic_Extensions), Phonetic_Extensions_ID);
-
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Miscellaneous_Symbols_And_Arrows
-                = new UnicodeBlock(nameof(Miscellaneous_Symbols_And_Arrows),
-                    Miscellaneous_Symbols_And_Arrows_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Yijing_Hexagram_Symbols
-                = new UnicodeBlock(nameof(Yijing_Hexagram_Symbols), Yijing_Hexagram_Symbols_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Linear_B_Syllabary
-                = new UnicodeBlock(nameof(Linear_B_Syllabary), Linear_B_Syllabary_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Linear_B_Ideograms
-                = new UnicodeBlock(nameof(Linear_B_Ideograms), Linear_B_Ideograms_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Aegean_Numbers
-                = new UnicodeBlock(nameof(Aegean_Numbers), Aegean_Numbers_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Ugaritic
-                = new UnicodeBlock(nameof(Ugaritic), Ugaritic_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Shavian
-                = new UnicodeBlock(nameof(Shavian), Shavian_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Osmanya
-                = new UnicodeBlock(nameof(Osmanya), Osmanya_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Cypriot_Syllabary
-                = new UnicodeBlock(nameof(Cypriot_Syllabary), Cypriot_Syllabary_ID);
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Tai_Xuan_Jing_Symbols
-                = new UnicodeBlock(nameof(Tai_Xuan_Jing_Symbols), Tai_Xuan_Jing_Symbols_ID);
-
-            /// <stable>ICU 2.6</stable>
-            public static readonly UnicodeBlock Variation_Selectors_Supplement
-                = new UnicodeBlock(nameof(Variation_Selectors_Supplement), Variation_Selectors_Supplement_ID);
-
-            /* New blocks in Unicode 4.1 */
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Ancient_Greek_Musical_Notation =
-                    new UnicodeBlock(nameof(Ancient_Greek_Musical_Notation),
-                            Ancient_Greek_Musical_Notation_ID); /*[1D200]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Ancient_Greek_Numbers =
-                    new UnicodeBlock(nameof(Ancient_Greek_Numbers), Ancient_Greek_Numbers_ID); /*[10140]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Arabic_Supplement =
-                    new UnicodeBlock(nameof(Arabic_Supplement), Arabic_Supplement_ID); /*[0750]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Buginese =
-                    new UnicodeBlock(nameof(Buginese), Buginese_ID); /*[1A00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock CJK_Strokes =
-                    new UnicodeBlock(nameof(CJK_Strokes), CJK_Strokes_ID); /*[31C0]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Combining_Diacritical_Marks_Supplement =
-                    new UnicodeBlock(nameof(Combining_Diacritical_Marks_Supplement),
-                            Combining_Diacritical_Marks_Supplement_ID); /*[1DC0]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Coptic = new UnicodeBlock(nameof(Coptic), Coptic_ID); /*[2C80]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Ethiopic_Extended =
-                    new UnicodeBlock(nameof(Ethiopic_Extended), Ethiopic_Extended_ID); /*[2D80]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Ethiopic_Supplement =
-                    new UnicodeBlock(nameof(Ethiopic_Supplement), Ethiopic_Supplement_ID); /*[1380]*/
-
-            /// <stable>ICU 3.4</stable>
-            public 
-                static readonly UnicodeBlock Georgian_Supplement =
-                    new UnicodeBlock(nameof(Georgian_Supplement), Georgian_Supplement_ID); /*[2D00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Glagolitic =
-                    new UnicodeBlock(nameof(Glagolitic), Glagolitic_ID); /*[2C00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Kharoshthi =
-                    new UnicodeBlock(nameof(Kharoshthi), Kharoshthi_ID); /*[10A00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Modifier_Tone_Letters =
-                    new UnicodeBlock(nameof(Modifier_Tone_Letters), Modifier_Tone_Letters_ID); /*[A700]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock New_Tai_Lue =
-                    new UnicodeBlock(nameof(New_Tai_Lue), New_Tai_Lue_ID); /*[1980]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Old_Persian =
-                    new UnicodeBlock(nameof(Old_Persian), Old_Persian_ID); /*[103A0]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Phonetic_Extensions_Supplement =
-                    new UnicodeBlock(nameof(Phonetic_Extensions_Supplement),
-                            Phonetic_Extensions_Supplement_ID); /*[1D80]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Supplemental_Punctuation =
-                    new UnicodeBlock(nameof(Supplemental_Punctuation), Supplemental_Punctuation_ID); /*[2E00]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Syloti_Nagri =
-                    new UnicodeBlock(nameof(Syloti_Nagri), Syloti_Nagri_ID); /*[A800]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Tifinagh =
-                    new UnicodeBlock(nameof(Tifinagh), Tifinagh_ID); /*[2D30]*/
-
-            /// <stable>ICU 3.4</stable>
-            public static readonly UnicodeBlock Vertical_Forms =
-                    new UnicodeBlock(nameof(Vertical_Forms), Vertical_Forms_ID); /*[FE10]*/
-
-            /// <stable>ICU 3.6</stable>
-            public static readonly UnicodeBlock Nko = new UnicodeBlock(nameof(Nko), Nko_ID); /*[07C0]*/
-            /// <stable>ICU 3.6</stable>
-            public static readonly UnicodeBlock Balinese =
-                    new UnicodeBlock(nameof(Balinese), Balinese_ID); /*[1B00]*/
-            /// <stable>ICU 3.6</stable>
-            public static readonly UnicodeBlock Latin_Extended_C =
-                    new UnicodeBlock(nameof(Latin_Extended_C), Latin_Extended_C_ID); /*[2C60]*/
-            /// <stable>ICU 3.6</stable>
-            public static readonly UnicodeBlock Latin_Extended_D =
-                    new UnicodeBlock(nameof(Latin_Extended_D), Latin_Extended_D_ID); /*[A720]*/
-            /// <stable>ICU 3.6</stable>
-            public static readonly UnicodeBlock Phags_Pa =
-                    new UnicodeBlock(nameof(Phags_Pa), Phags_Pa_ID); /*[A840]*/
-            /// <stable>ICU 3.6</stable>
-            public static readonly UnicodeBlock Phoenician =
-                    new UnicodeBlock(nameof(Phoenician), Phoenician_ID); /*[10900]*/
-            /// <stable>ICU 3.6</stable>
-            public static readonly UnicodeBlock Cuneiform =
-                    new UnicodeBlock(nameof(Cuneiform), Cuneiform_ID); /*[12000]*/
-            /// <stable>ICU 3.6</stable>
-            public static readonly UnicodeBlock Cuneiform_Numbers_And_Punctuation =
-                    new UnicodeBlock(nameof(Cuneiform_Numbers_And_Punctuation),
-                            Cuneiform_Numbers_And_Punctuation_ID); /*[12400]*/
-            /// <stable>ICU 3.6</stable>
-            public static readonly UnicodeBlock Counting_Rod_Numerals =
-                    new UnicodeBlock(nameof(Counting_Rod_Numerals), Counting_Rod_Numerals_ID); /*[1D360]*/
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Sundanese =
-                    new UnicodeBlock(nameof(Sundanese), Sundanese_ID); /* [1B80] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Lepcha =
-                    new UnicodeBlock(nameof(Lepcha), Lepcha_ID); /* [1C00] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Ol_Chiki =
-                    new UnicodeBlock(nameof(Ol_Chiki), Ol_Chiki_ID); /* [1C50] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Cyrillic_Extended_A =
-                    new UnicodeBlock(nameof(Cyrillic_Extended_A), Cyrillic_Extended_A_ID); /* [2DE0] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Vai = new UnicodeBlock(nameof(Vai), Vai_ID); /* [A500] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Cyrillic_Extended_B =
-                    new UnicodeBlock(nameof(Cyrillic_Extended_B), Cyrillic_Extended_B_ID); /* [A640] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Saurashtra =
-                    new UnicodeBlock(nameof(Saurashtra), Saurashtra_ID); /* [A880] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Kayah_Li =
-                    new UnicodeBlock(nameof(Kayah_Li), Kayah_Li_ID); /* [A900] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Rejang =
-                    new UnicodeBlock(nameof(Rejang), Rejang_ID); /* [A930] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Cham =
-                    new UnicodeBlock(nameof(Cham), Cham_ID); /* [AA00] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Ancient_Symbols =
-                    new UnicodeBlock(nameof(Ancient_Symbols), Ancient_Symbols_ID); /* [10190] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Phaistos_Disc =
-                    new UnicodeBlock(nameof(Phaistos_Disc), Phaistos_Disc_ID); /* [101D0] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Lycian =
-                    new UnicodeBlock(nameof(Lycian), Lycian_ID); /* [10280] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Carian =
-                    new UnicodeBlock(nameof(Carian), Carian_ID); /* [102A0] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Lydian =
-                    new UnicodeBlock(nameof(Lydian), Lydian_ID); /* [10920] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Mahjong_Tiles =
-                    new UnicodeBlock(nameof(Mahjong_Tiles), Mahjong_Tiles_ID); /* [1F000] */
-
-            /// <stable>ICU 4.0</stable>
-            public static readonly UnicodeBlock Domino_Tiles =
-                    new UnicodeBlock(nameof(Domino_Tiles), Domino_Tiles_ID); /* [1F030] */
-
-            /* New blocks in Unicode 5.2 */
-
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Samaritan =
-                    new UnicodeBlock(nameof(Samaritan), Samaritan_ID); /*[0800]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Unified_Canadian_Aboriginal_Syllabics_Extended =
-                    new UnicodeBlock(nameof(Unified_Canadian_Aboriginal_Syllabics_Extended),
-                            Unified_Canadian_Aboriginal_Syllabics_Extended_ID); /*[18B0]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Tai_Tham =
-                    new UnicodeBlock(nameof(Tai_Tham), Tai_Tham_ID); /*[1A20]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Vedic_Extensions =
-                    new UnicodeBlock(nameof(Vedic_Extensions), Vedic_Extensions_ID); /*[1CD0]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Lisu =
-                    new UnicodeBlock(nameof(Lisu), Lisu_ID); /*[A4D0]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Bamum =
-                    new UnicodeBlock(nameof(Bamum), Bamum_ID); /*[A6A0]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Common_Indic_Number_Forms =
-                    new UnicodeBlock(nameof(Common_Indic_Number_Forms), Common_Indic_Number_Forms_ID); /*[A830]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Devanagari_Extended =
-                    new UnicodeBlock(nameof(Devanagari_Extended), Devanagari_Extended_ID); /*[A8E0]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Hangul_Jamo_Extended_A =
-                    new UnicodeBlock(nameof(Hangul_Jamo_Extended_A), Hangul_Jamo_Extended_A_ID); /*[A960]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Javanese =
-                    new UnicodeBlock(nameof(Javanese), Javanese_ID); /*[A980]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Myanmar_Extended_A =
-                    new UnicodeBlock(nameof(Myanmar_Extended_A), Myanmar_Extended_A_ID); /*[AA60]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Tai_Viet =
-                    new UnicodeBlock(nameof(Tai_Viet), Tai_Viet_ID); /*[AA80]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Meetei_Mayek =
-                    new UnicodeBlock(nameof(Meetei_Mayek), Meetei_Mayek_ID); /*[ABC0]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Hangul_Jamo_Extended_B =
-                    new UnicodeBlock(nameof(Hangul_Jamo_Extended_B), Hangul_Jamo_Extended_B_ID); /*[D7B0]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Imperial_Aramaic =
-                    new UnicodeBlock(nameof(Imperial_Aramaic), Imperial_Aramaic_ID); /*[10840]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Old_South_Arabian =
-                    new UnicodeBlock(nameof(Old_South_Arabian), Old_South_Arabian_ID); /*[10A60]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Avestan =
-                    new UnicodeBlock(nameof(Avestan), Avestan_ID); /*[10B00]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Inscriptional_Parthian =
-                    new UnicodeBlock(nameof(Inscriptional_Parthian), Inscriptional_Parthian_ID); /*[10B40]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Inscriptional_Pahlavi =
-                    new UnicodeBlock(nameof(Inscriptional_Pahlavi), Inscriptional_Pahlavi_ID); /*[10B60]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Old_Turkic =
-                    new UnicodeBlock(nameof(Old_Turkic), Old_Turkic_ID); /*[10C00]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Rumi_Numeral_Symbols =
-                    new UnicodeBlock(nameof(Rumi_Numeral_Symbols), Rumi_Numeral_Symbols_ID); /*[10E60]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Kaithi =
-                    new UnicodeBlock(nameof(Kaithi), Kaithi_ID); /*[11080]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Egyptian_Hieroglyphs =
-                    new UnicodeBlock(nameof(Egyptian_Hieroglyphs), Egyptian_Hieroglyphs_ID); /*[13000]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Enclosed_Alphanumeric_Supplement =
-                    new UnicodeBlock(nameof(Enclosed_Alphanumeric_Supplement),
-                            Enclosed_Alphanumeric_Supplement_ID); /*[1F100]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock Enclosed_Ideographic_Supplement =
-                    new UnicodeBlock(nameof(Enclosed_Ideographic_Supplement),
-                            Enclosed_Ideographic_Supplement_ID); /*[1F200]*/
-            /// <stable>ICU 4.4</stable>
-            public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_C =
-                    new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_C),
-                            CJK_Unified_Ideographs_Extension_C_ID); /*[2A700]*/
-
-            /* New blocks in Unicode 6.0 */
-
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Mandaic =
-                    new UnicodeBlock(nameof(Mandaic), Mandaic_ID); /*[0840]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Batak =
-                    new UnicodeBlock(nameof(Batak), Batak_ID); /*[1BC0]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Ethiopic_Extended_A =
-                    new UnicodeBlock(nameof(Ethiopic_Extended_A), Ethiopic_Extended_A_ID); /*[AB00]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Brahmi =
-                    new UnicodeBlock(nameof(Brahmi), Brahmi_ID); /*[11000]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Bamum_Supplement =
-                    new UnicodeBlock(nameof(Bamum_Supplement), Bamum_Supplement_ID); /*[16800]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Kana_Supplement =
-                    new UnicodeBlock(nameof(Kana_Supplement), Kana_Supplement_ID); /*[1B000]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Playing_Cards =
-                    new UnicodeBlock(nameof(Playing_Cards), Playing_Cards_ID); /*[1F0A0]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Miscellaneous_Symbols_And_Pictographs =
-                    new UnicodeBlock(nameof(Miscellaneous_Symbols_And_Pictographs),
-                            Miscellaneous_Symbols_And_Pictographs_ID); /*[1F300]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Emoticons =
-                    new UnicodeBlock(nameof(Emoticons), Emoticons_ID); /*[1F600]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Transport_And_Map_Symbols =
-                    new UnicodeBlock(nameof(Transport_And_Map_Symbols), Transport_And_Map_Symbols_ID); /*[1F680]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock Alchemical_Symbols =
-                    new UnicodeBlock(nameof(Alchemical_Symbols), Alchemical_Symbols_ID); /*[1F700]*/
-            /// <stable>ICU 4.6</stable>
-            public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_D =
-                    new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_D),
-                            CJK_Unified_Ideographs_Extension_D_ID); /*[2B740]*/
-
-            /* New blocks in Unicode 6.1 */
-
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Arabic_Extended_A =
-                    new UnicodeBlock(nameof(Arabic_Extended_A), Arabic_Extended_A_ID); /*[08A0]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Arabic_Mathematical_Alphabetic_Symbols =
-                    new UnicodeBlock(nameof(Arabic_Mathematical_Alphabetic_Symbols), Arabic_Mathematical_Alphabetic_Symbols_ID); /*[1EE00]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Chakma = new UnicodeBlock(nameof(Chakma), Chakma_ID); /*[11100]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Meetei_Mayek_Extensions =
-                    new UnicodeBlock(nameof(Meetei_Mayek_Extensions), Meetei_Mayek_Extensions_ID); /*[AAE0]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Meroitic_Cursive =
-                    new UnicodeBlock(nameof(Meroitic_Cursive), Meroitic_Cursive_ID); /*[109A0]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Meroitic_Hieroglyphs =
-                    new UnicodeBlock(nameof(Meroitic_Hieroglyphs), Meroitic_Hieroglyphs_ID); /*[10980]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Miao = new UnicodeBlock(nameof(Miao), Miao_ID); /*[16F00]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Sharada = new UnicodeBlock(nameof(Sharada), Sharada_ID); /*[11180]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Sora_Sompeng =
-                    new UnicodeBlock(nameof(Sora_Sompeng), Sora_Sompeng_ID); /*[110D0]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Sundanese_Supplement =
-                    new UnicodeBlock(nameof(Sundanese_Supplement), Sundanese_Supplement_ID); /*[1CC0]*/
-            /// <stable>ICU 49</stable>
-            public static readonly UnicodeBlock Takri = new UnicodeBlock(nameof(Takri), Takri_ID); /*[11680]*/
-
-            /* New blocks in Unicode 7.0 */
-
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Bassa_Vah = new UnicodeBlock(nameof(Bassa_Vah), Bassa_Vah_ID); /*[16AD0]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Caucasian_Albanian =
-                    new UnicodeBlock(nameof(Caucasian_Albanian), Caucasian_Albanian_ID); /*[10530]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Coptic_Epact_Numbers =
-                    new UnicodeBlock(nameof(Coptic_Epact_Numbers), Coptic_Epact_Numbers_ID); /*[102E0]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Combining_Diacritical_Marks_Extended =
-                    new UnicodeBlock(nameof(Combining_Diacritical_Marks_Extended), Combining_Diacritical_Marks_Extended_ID); /*[1AB0]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Duployan = new UnicodeBlock(nameof(Duployan), Duployan_ID); /*[1BC00]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Elbasan = new UnicodeBlock(nameof(Elbasan), Elbasan_ID); /*[10500]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Geometric_Shapes_Extended =
-                    new UnicodeBlock(nameof(Geometric_Shapes_Extended), Geometric_Shapes_Extended_ID); /*[1F780]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Grantha = new UnicodeBlock(nameof(Grantha), Grantha_ID); /*[11300]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Khojki = new UnicodeBlock(nameof(Khojki), Khojki_ID); /*[11200]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Khudawadi = new UnicodeBlock(nameof(Khudawadi), Khudawadi_ID); /*[112B0]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Latin_Extended_E =
-                    new UnicodeBlock(nameof(Latin_Extended_E), Latin_Extended_E_ID); /*[AB30]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Linear_A = new UnicodeBlock(nameof(Linear_A), Linear_A_ID); /*[10600]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Mahajani = new UnicodeBlock(nameof(Mahajani), Mahajani_ID); /*[11150]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Manichaean = new UnicodeBlock(nameof(Manichaean), Manichaean_ID); /*[10AC0]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Mende_Kikakui =
-                    new UnicodeBlock(nameof(Mende_Kikakui), Mende_Kikakui_ID); /*[1E800]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Modi = new UnicodeBlock(nameof(Modi), Modi_ID); /*[11600]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Mro = new UnicodeBlock(nameof(Mro), Mro_ID); /*[16A40]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Myanmar_Extended_B =
-                    new UnicodeBlock(nameof(Myanmar_Extended_B), Myanmar_Extended_B_ID); /*[A9E0]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Nabataean = new UnicodeBlock(nameof(Nabataean), Nabataean_ID); /*[10880]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Old_North_Arabian =
-                    new UnicodeBlock(nameof(Old_North_Arabian), Old_North_Arabian_ID); /*[10A80]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Old_Permic = new UnicodeBlock(nameof(Old_Permic), Old_Permic_ID); /*[10350]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Ornamental_Dingbats =
-                    new UnicodeBlock(nameof(Ornamental_Dingbats), Ornamental_Dingbats_ID); /*[1F650]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Pahawh_Hmong = new UnicodeBlock(nameof(Pahawh_Hmong), Pahawh_Hmong_ID); /*[16B00]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Palmyrene = new UnicodeBlock(nameof(Palmyrene), Palmyrene_ID); /*[10860]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Pau_Cin_Hau = new UnicodeBlock(nameof(Pau_Cin_Hau), Pau_Cin_Hau_ID); /*[11AC0]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Psalter_Pahlavi =
-                    new UnicodeBlock(nameof(Psalter_Pahlavi), Psalter_Pahlavi_ID); /*[10B80]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Shorthand_Format_Controls =
-                    new UnicodeBlock(nameof(Shorthand_Format_Controls), Shorthand_Format_Controls_ID); /*[1BCA0]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Siddham = new UnicodeBlock(nameof(Siddham), Siddham_ID); /*[11580]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Sinhala_Archaic_Numbers =
-                    new UnicodeBlock(nameof(Sinhala_Archaic_Numbers), Sinhala_Archaic_Numbers_ID); /*[111E0]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Supplemental_Arrows_C =
-                    new UnicodeBlock(nameof(Supplemental_Arrows_C), Supplemental_Arrows_C_ID); /*[1F800]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Tirhuta = new UnicodeBlock(nameof(Tirhuta), Tirhuta_ID); /*[11480]*/
-            /// <stable>ICU 54</stable>
-            public static readonly UnicodeBlock Warang_Citi = new UnicodeBlock(nameof(Warang_Citi), Warang_Citi_ID); /*[118A0]*/
-
-            /* New blocks in Unicode 8.0 */
-
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock Ahom = new UnicodeBlock(nameof(Ahom), Ahom_ID); /*[11700]*/
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock Anatolian_Hieroglyphs =
-                    new UnicodeBlock(nameof(Anatolian_Hieroglyphs), Anatolian_Hieroglyphs_ID); /*[14400]*/
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock Cherokee_Supplement =
-                    new UnicodeBlock(nameof(Cherokee_Supplement), Cherokee_Supplement_ID); /*[AB70]*/
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_E =
-                    new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_E),
-                            CJK_Unified_Ideographs_Extension_E_ID); /*[2B820]*/
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock Early_Dynastic_Cuneiform =
-                    new UnicodeBlock(nameof(Early_Dynastic_Cuneiform), Early_Dynastic_Cuneiform_ID); /*[12480]*/
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock Hatran = new UnicodeBlock(nameof(Hatran), Hatran_ID); /*[108E0]*/
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock Multani = new UnicodeBlock(nameof(Multani), Multani_ID); /*[11280]*/
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock Old_Hungarian =
-                    new UnicodeBlock(nameof(Old_Hungarian), Old_Hungarian_ID); /*[10C80]*/
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock Supplemental_Symbols_And_Pictographs =
-                    new UnicodeBlock(nameof(Supplemental_Symbols_And_Pictographs),
-                            Supplemental_Symbols_And_Pictographs_ID); /*[1F900]*/
-            /// <stable>ICU 56</stable>
-            public static readonly UnicodeBlock Sutton_Signwriting =
-                    new UnicodeBlock(nameof(Sutton_Signwriting), Sutton_Signwriting_ID); /*[1D800]*/
-
-            /* New blocks in Unicode 9.0 */
-
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Adlam = new UnicodeBlock(nameof(Adlam), Adlam_ID); /*[1E900]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Bhaiksuki = new UnicodeBlock(nameof(Bhaiksuki), Bhaiksuki_ID); /*[11C00]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Cyrillic_Extended_C =
-                    new UnicodeBlock(nameof(Cyrillic_Extended_C), Cyrillic_Extended_C_ID); /*[1C80]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Glagolitic_Supplement =
-                    new UnicodeBlock(nameof(Glagolitic_Supplement), Glagolitic_Supplement_ID); /*[1E000]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Ideographic_Symbols_And_Punctuation =
-                    new UnicodeBlock(nameof(Ideographic_Symbols_And_Punctuation), Ideographic_Symbols_And_Punctuation_ID); /*[16FE0]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Marchen = new UnicodeBlock(nameof(Marchen), Marchen_ID); /*[11C70]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Mongolian_Supplement =
-                    new UnicodeBlock(nameof(Mongolian_Supplement), Mongolian_Supplement_ID); /*[11660]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Newa = new UnicodeBlock(nameof(Newa), Newa_ID); /*[11400]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Osage = new UnicodeBlock(nameof(Osage), Osage_ID); /*[104B0]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Tangut = new UnicodeBlock(nameof(Tangut), Tangut_ID); /*[17000]*/
-            /// <stable>ICU 58</stable>
-            public static readonly UnicodeBlock Tangut_Components =
-                    new UnicodeBlock(nameof(Tangut_Components), Tangut_Components_ID); /*[18800]*/
-
-            // New blocks in Unicode 10.0
-
-            /// <stable>ICU 60</stable>
-            public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_F =
-                    new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_F), CJK_Unified_Ideographs_Extension_F_ID); /*[2CEB0]*/
-            /// <stable>ICU 60</stable>
-            public static readonly UnicodeBlock Kana_Extended_A =
-                    new UnicodeBlock(nameof(Kana_Extended_A), Kana_Extended_A_ID); /*[1B100]*/
-            /// <stable>ICU 60</stable>
-            public static readonly UnicodeBlock Masaram_Gondi =
-                    new UnicodeBlock(nameof(Masaram_Gondi), Masaram_Gondi_ID); /*[11D00]*/
-            /// <stable>ICU 60</stable>
-            public static readonly UnicodeBlock Nushu = new UnicodeBlock(nameof(Nushu), Nushu_ID); /*[1B170]*/
-            /// <stable>ICU 60</stable>
-            public static readonly UnicodeBlock Soyombo = new UnicodeBlock(nameof(Soyombo), Soyombo_ID); /*[11A50]*/
-            /// <stable>ICU 60</stable>
-            public static readonly UnicodeBlock Syriac_Supplement =
-                    new UnicodeBlock(nameof(Syriac_Supplement), Syriac_Supplement_ID); /*[0860]*/
-            /// <stable>ICU 60</stable>
-            public static readonly UnicodeBlock Zanabazar_Square =
-                    new UnicodeBlock(nameof(Zanabazar_Square), Zanabazar_Square_ID); /*[11A00]*/
-
-            /// <stable>ICU 2.4</stable>
-            public static readonly UnicodeBlock Invalid_Code
-                = new UnicodeBlock(nameof(Invalid_Code), Invalid_Code_ID);
-
-            static UnicodeBlock()
-            {
-#pragma warning disable 612, 618
-                for (int blockId = 0; blockId < Count; ++blockId)
-#pragma warning restore 612, 618
-                {
-                    if (BLOCKS_[blockId] == null)
-                    {
-                        throw new InvalidOperationException(
-                                "UnicodeBlock.BLOCKS_[" + blockId + "] not initialized");
-                    }
-                }
-            }
-
-            // public methods --------------------------------------------------
-
-            /// <icu/>
-            /// <summary>
-            /// Returns the only instance of the <see cref="UnicodeBlock"/> with the argument ID.
-            /// If no such ID exists, a <see cref="Invalid_Code"/> <see cref="UnicodeBlock"/> will be returned.
-            /// </summary>
-            /// <param name="id"><see cref="UnicodeBlock"/> ID.</param>
-            /// <returns>the only instance of the <see cref="UnicodeBlock"/> with the argument ID
-            /// if it exists, otherwise a <see cref="Invalid_Code"/> <see cref="UnicodeBlock"/> will be
-            /// returned.
-            /// </returns>
-            /// <stable>ICU 2.4</stable>
-            public static UnicodeBlock GetInstance(int id)
-            {
-                if (id >= 0 && id < BLOCKS_.Length)
-                {
-                    return BLOCKS_[id];
-                }
-                return Invalid_Code;
-            }
-
-            /// <summary>
-            /// Returns the Unicode allocation block that contains the code point,
-            /// or null if the code point is not a member of a defined block.
-            /// </summary>
-            /// <param name="ch">Code point to be tested.</param>
-            /// <returns>The Unicode allocation block that contains the code point.</returns>
-            /// <stable>ICU 2.4</stable>
-            public static UnicodeBlock Of(int ch)
-            {
-                if (ch > MaxValue)
-                {
-                    return Invalid_Code;
-                }
-
-                return UnicodeBlock.GetInstance(
-                        UCharacterProperty.Instance.GetIntPropertyValue(ch, UProperty.Block));
-            }
-
-            /// <summary>
-            /// Returns the Unicode block with the given name. This matches
-            /// against the official UCD name (ignoring case).
-            /// </summary>
-            /// <param name="blockName">The name of the block to match.</param>
-            /// <returns>The <see cref="UnicodeBlock"/> with that name.</returns>
-            /// <exception cref="ArgumentException">If the blockName could not be matched.</exception>
-            /// <stable>ICU 3.0</stable>
-            public static UnicodeBlock ForName(string blockName) // ICU4N TODO: API - rename GetInstance() ? ForName is a Java-ism.
-            {
-                IDictionary<string, UnicodeBlock> m = null;
-                if (mref != null)
-                {
-                    //m = mref.Get();
-                    mref.TryGetTarget(out m);
-                }
-                if (m == null)
-                {
-                    m = new Dictionary<string, UnicodeBlock>(BLOCKS_.Length);
-                    for (int i = 0; i < BLOCKS_.Length; ++i)
-                    {
-                        UnicodeBlock b2 = BLOCKS_[i];
-                        string name = TrimBlockName(
-                                GetPropertyValueName(UProperty.Block, b2.ID,
-                                        NameChoice.Long));
-                        m[name] = b2;
-                    }
-                    mref = new WeakReference<IDictionary<string, UnicodeBlock>>(m);
-                }
-                UnicodeBlock b = m[TrimBlockName(blockName)];
-                if (b == null)
-                {
-                    throw new ArgumentException();
-                }
-                return b;
-            }
-            private static WeakReference<IDictionary<string, UnicodeBlock>> mref;
-
-            private static string TrimBlockName(string name)
-            {
-                string upper = name.ToUpperInvariant();
-                StringBuilder result = new StringBuilder(upper.Length);
-                for (int i = 0; i < upper.Length; i++)
-                {
-                    char c = upper[i];
-                    if (c != ' ' && c != '_' && c != '-')
-                    {
-                        result.Append(c);
-                    }
-                }
-                return result.ToString();
-            }
-
-            /// <icu/>
-            /// <summary>
-            /// Gets the type ID of this Unicode block.
-            /// </summary>
-            /// <stable>ICU 2.4</stable>
-            public int ID
-            {
-                get { return m_id_; }
-            }
-
-            /// <summary>
-            /// Returns the name of this <see cref="UnicodeBlock"/>.
-            /// </summary>
-            // ICU4N specific - we don't have a Character.Subset base class, so
-            // this functionality was moved here.
-            public override string ToString()
-            {
-                return name;
-            }
-
-            // private data members ---------------------------------------------
-
-            /// <summary>
-            /// Identification code for this <see cref="UnicodeBlock"/>
-            /// </summary>
-            private int m_id_;
-
-            /// <summary>
-            /// Name for this <see cref="UnicodeBlock"/>
-            /// </summary>
-            private string name;
-
-            // private constructor ----------------------------------------------
-
-            /// <summary>
-            /// <see cref="UnicodeBlock"/> constructor.
-            /// </summary>
-            /// <param name="name">Name of this <see cref="UnicodeBlock"/>.</param>
-            /// <param name="id">Unique id of this <see cref="UnicodeBlock"/>.</param>
-            /// <exception cref="ArgumentNullException">If name is <c>null</c>.</exception>
-            private UnicodeBlock(string name, int id)
-            {
-                if (name == null)
-                    throw new ArgumentNullException(nameof(name));
-                this.name = name;
-                m_id_ = id;
-                if (id >= 0)
-                {
-                    BLOCKS_[id] = this;
-                }
-            }
-        }
-
-        /// <summary>
-        /// East Asian Width constants.
-        /// </summary>
-        /// <seealso cref="UProperty.East_Asian_Width"/>
-        /// <seealso cref="UChar.GetIntPropertyValue(int, UProperty)"/>
-        /// <stable>ICU 2.4</stable>
-        public static class EastAsianWidth
-        {
-            /// <stable>ICU 2.4</stable>
-            public const int Neutral = 0;
-            /// <stable>ICU 2.4</stable>
-            public const int Ambiguous = 1;
-            /// <stable>ICU 2.4</stable>
-            public const int HalfWidth = 2;
-            /// <stable>ICU 2.4</stable>
-            public const int FullWidth = 3;
-            /// <stable>ICU 2.4</stable>
-            public const int Narrow = 4;
-            /// <stable>ICU 2.4</stable>
-            public const int Wide = 5;
-            /// <summary>
-            /// One more than the highest normal <see cref="EastAsianWidth"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.East_Asian_Width"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 6;
-        }
-
-        /// <summary>
-        /// Decomposition Type constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Decomposition_Type"/>
-        /// <stable>ICU 2.4</stable>
-        public static class DecompositionType
-        {
-            /// <stable>ICU 2.4</stable>
-            public const int None = 0;
-            /// <stable>ICU 2.4</stable>
-            public const int Canonical = 1;
-            /// <stable>ICU 2.4</stable>
-            public const int Compat = 2;
-            /// <stable>ICU 2.4</stable>
-            public const int Circle = 3;
-            /// <stable>ICU 2.4</stable>
-            public const int Final = 4;
-            /// <stable>ICU 2.4</stable>
-            public const int Font = 5;
-            /// <stable>ICU 2.4</stable>
-            public const int Fraction = 6;
-            /// <stable>ICU 2.4</stable>
-            public const int Initial = 7;
-            /// <stable>ICU 2.4</stable>
-            public const int Isolated = 8;
-            /// <stable>ICU 2.4</stable>
-            public const int Medial = 9;
-            /// <stable>ICU 2.4</stable>
-            public const int Narrow = 10;
-            /// <stable>ICU 2.4</stable>
-            public const int NoBreak = 11;
-            /// <stable>ICU 2.4</stable>
-            public const int Small = 12;
-            /// <stable>ICU 2.4</stable>
-            public const int Square = 13;
-            /// <stable>ICU 2.4</stable>
-            public const int Sub = 14;
-            /// <stable>ICU 2.4</stable>
-            public const int Super = 15;
-            /// <stable>ICU 2.4</stable>
-            public const int Vertical = 16;
-            /// <stable>ICU 2.4</stable>
-            public const int Wide = 17;
-            /// <summary>
-            /// One more than the highest normal <see cref="DecompositionType"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Decomposition_Type"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 18;
-        }
-
-        /// <summary>
-        /// Joining Type constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Joining_Type"/>
-        /// <stable>ICU 2.4</stable>
-        public static class JoiningType
-        {
-            /// <stable>ICU 2.4</stable>
-            public const int NonJoining = 0;
-            /// <stable>ICU 2.4</stable>
-            public const int JoinCausing = 1;
-            /// <stable>ICU 2.4</stable>
-            public const int DualJoining = 2;
-            /// <stable>ICU 2.4</stable>
-            public const int LeftJoining = 3;
-            /// <stable>ICU 2.4</stable>
-            public const int RightJoining = 4;
-            /// <stable>ICU 2.4</stable>
-            public const int Transparent = 5;
-            /// <summary>
-            /// One more than the highest normal <see cref="JoiningType"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Joining_Type"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 6;
-        }
-
-        /// <summary>
-        /// Joining Group constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Joining_Group"/>
-        /// <stable>ICU 2.4</stable>
-        public static class JoiningGroup
-        {
-            /// <stable>ICU 2.4</stable>
-            public const int NoJoiningGroup = 0;
-            /// <stable>ICU 2.4</stable>
-            public const int Ain = 1;
-            /// <stable>ICU 2.4</stable>
-            public const int Alaph = 2;
-            /// <stable>ICU 2.4</stable>
-            public const int Alef = 3;
-            /// <stable>ICU 2.4</stable>
-            public const int Beh = 4;
-            /// <stable>ICU 2.4</stable>
-            public const int Beth = 5;
-            /// <stable>ICU 2.4</stable>
-            public const int Dal = 6;
-            /// <stable>ICU 2.4</stable>
-            public const int DalathRish = 7;
-            /// <stable>ICU 2.4</stable>
-            public const int E = 8;
-            /// <stable>ICU 2.4</stable>
-            public const int Feh = 9;
-            /// <stable>ICU 2.4</stable>
-            public const int FinalSemkath = 10;
-            /// <stable>ICU 2.4</stable>
-            public const int Gaf = 11;
-            /// <stable>ICU 2.4</stable>
-            public const int Gamal = 12;
-            /// <stable>ICU 2.4</stable>
-            public const int Hah = 13;
-            /// <stable>ICU 4.6</stable>
-            public const int TehMarbutaGoal = 14;
-            /// <stable>ICU 2.4</stable>
-            public const int HamzaOnHehGoal = TehMarbutaGoal;
-            /// <stable>ICU 2.4</stable>
-            public const int He = 15;
-            /// <stable>ICU 2.4</stable>
-            public const int Heh = 16;
-            /// <stable>ICU 2.4</stable>
-            public const int HehGoal = 17;
-            /// <stable>ICU 2.4</stable>
-            public const int Heth = 18;
-            /// <stable>ICU 2.4</stable>
-            public const int Kaf = 19;
-            /// <stable>ICU 2.4</stable>
-            public const int Kaph = 20;
-            /// <stable>ICU 2.4</stable>
-            public const int KnottedHeh = 21;
-            /// <stable>ICU 2.4</stable>
-            public const int Lam = 22;
-            /// <stable>ICU 2.4</stable>
-            public const int Lamadh = 23;
-            /// <stable>ICU 2.4</stable>
-            public const int Meem = 24;
-            /// <stable>ICU 2.4</stable>
-            public const int Mim = 25;
-            /// <stable>ICU 2.4</stable>
-            public const int Noon = 26;
-            /// <stable>ICU 2.4</stable>
-            public const int Nun = 27;
-            /// <stable>ICU 2.4</stable>
-            public const int Pe = 28;
-            /// <stable>ICU 2.4</stable>
-            public const int Qaf = 29;
-            /// <stable>ICU 2.4</stable>
-            public const int Qaph = 30;
-            /// <stable>ICU 2.4</stable>
-            public const int Reh = 31;
-            /// <stable>ICU 2.4</stable>
-            public const int ReversedPe = 32;
-            /// <stable>ICU 2.4</stable>
-            public const int Sad = 33;
-            /// <stable>ICU 2.4</stable>
-            public const int Sadhe = 34;
-            /// <stable>ICU 2.4</stable>
-            public const int Seen = 35;
-            /// <stable>ICU 2.4</stable>
-            public const int Semkath = 36;
-            /// <stable>ICU 2.4</stable>
-            public const int Shin = 37;
-            /// <stable>ICU 2.4</stable>
-            public const int SwashKaf = 38;
-            /// <stable>ICU 2.4</stable>
-            public const int SyriacWaw = 39;
-            /// <stable>ICU 2.4</stable>
-            public const int Tah = 40;
-            /// <stable>ICU 2.4</stable>
-            public const int Taw = 41;
-            /// <stable>ICU 2.4</stable>
-            public const int TehMarbuta = 42;
-            /// <stable>ICU 2.4</stable>
-            public const int Teth = 43;
-            /// <stable>ICU 2.4</stable>
-            public const int Waw = 44;
-            /// <stable>ICU 2.4</stable>
-            public const int Yeh = 45;
-            /// <stable>ICU 2.4</stable>
-            public const int YehBarree = 46;
-            /// <stable>ICU 2.4</stable>
-            public const int YehWithTail = 47;
-            /// <stable>ICU 2.4</stable>
-            public const int Yudh = 48;
-            /// <stable>ICU 2.4</stable>
-            public const int YudhHe = 49;
-            /// <stable>ICU 2.4</stable>
-            public const int Zain = 50;
-            /// <stable>ICU 2.6</stable>
-            public const int Fe = 51;
-            /// <stable>ICU 2.6</stable>
-            public const int Khaph = 52;
-            /// <stable>ICU 2.6</stable>
-            public const int Zhain = 53;
-            /// <stable>ICU 4.0</stable>
-            public const int BurushaskiYehBarree = 54;
-            /// <stable>ICU 4.4</stable>
-            public const int FarsiYeh = 55;
-            /// <stable>ICU 4.4</stable>
-            public const int Nya = 56;
-            /// <stable>ICU 49</stable>
-            public const int RohingyaYeh = 57;
-
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanAleph = 58;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanAyin = 59;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanBeth = 60;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanDaleth = 61;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanDhamedh = 62;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanFive = 63;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanGimel = 64;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanHeth = 65;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanHundred = 66;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanKaph = 67;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanLamedh = 68;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanMem = 69;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanNun = 70;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanOne = 71;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanPe = 72;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanQoph = 73;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanResh = 74;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanSadhe = 75;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanSamekh = 76;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanTaw = 77;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanTen = 78;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanTeth = 79;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanThamedh = 80;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanTwenty = 81;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanWaw = 82;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanYodh = 83;
-            /// <stable>ICU 54</stable>
-            public const int ManichaeanZayin = 84;
-            /// <stable>ICU 54</stable>
-            public const int StraightWaw = 85;
-
-            /// <stable>ICU 58</stable>
-            public const int AfricanFeh = 86;
-            /// <stable>ICU 58</stable>
-            public const int AfricanNoon = 87;
-            /// <stable>ICU 58</stable>
-            public const int AfricanQaf = 88;
-
-            /// <stable>ICU 60</stable>
-            public const int MalayalamBha = 89;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamJa = 90;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamLla = 91;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamLlla = 92;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamNga = 93;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamNna = 94;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamNnna = 95;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamNya = 96;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamRa = 97;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamSsa = 98;
-            /// <stable>ICU 60</stable>
-            public const int MalayalamTta = 99;
-
-            /// <summary>
-            /// One more than the highest normal <see cref="JoiningGroup"/> value.
-            /// The highest value is available via <see cref="GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Joining_Group"/>
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 100;
-        }
-
-        /// <summary>
-        /// Grapheme Cluster Break constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Grapheme_Cluster_Break"/>
-        /// <stable>ICU 3.4</stable>
-        public static class GraphemeClusterBreak
-        {
-            /// <stable>ICU 3.4</stable>
-            public const int Other = 0;
-            /// <stable>ICU 3.4</stable>
-            public const int Control = 1;
-            /// <stable>ICU 3.4</stable>
-            public const int Cr = 2;
-            /// <stable>ICU 3.4</stable>
-            public const int Extend = 3;
-            /// <stable>ICU 3.4</stable>
-            public const int L = 4;
-            /// <stable>ICU 3.4</stable>
-            public const int Lf = 5;
-            /// <stable>ICU 3.4</stable>
-            public const int Lv = 6;
-            /// <stable>ICU 3.4</stable>
-            public const int Lvt = 7;
-            /// <stable>ICU 3.4</stable>
-            public const int T = 8;
-            /// <stable>ICU 3.4</stable>
-            public const int V = 9;
-            /// <stable>ICU 4.0</stable>
-            public const int SpacingMark = 10;
-            /// <stable>ICU 4.0</stable>
-            public const int Prepend = 11;
-            /// <stable>ICU 50</stable>
-            public const int RegionalIndicator = 12;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
-            /// <stable>ICU 58</stable>
-            public const int EBase = 13;          /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
-            /// <stable>ICU 58</stable>
-            public const int EBaseGaz = 14;      /*[EBG]*/
-            /// <stable>ICU 58</stable>
-            public const int EModifier = 15;      /*[EM]*/
-            /// <stable>ICU 58</stable>
-            public const int GlueAfterZwj = 16;  /*[GAZ]*/
-            /// <stable>ICU 58</stable>
-            public const int Zwj = 17;             /*[ZWJ]*/
-
-            /// <summary>
-            /// One more than the highest normal <see cref="GraphemeClusterBreak"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Grapheme_Cluster_Break"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 18;
-        }
-
-        /// <summary>
-        /// Word Break constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Word_Break"/>
-        /// <stable>ICU 3.4</stable>
-        public static class WordBreak
-        {
-            /// <stable>ICU 3.8</stable>
-            public const int Other = 0;
-            /// <stable>ICU 3.8</stable>
-            public const int ALetter = 1;
-            /// <stable>ICU 3.8</stable>
-            public const int Format = 2;
-            /// <stable>ICU 3.8</stable>
-            public const int Katakana = 3;
-            /// <stable>ICU 3.8</stable>
-            public const int MidLetter = 4;
-            /// <stable>ICU 3.8</stable>
-            public const int MidNum = 5;
-            /// <stable>ICU 3.8</stable>
-            public const int Numeric = 6;
-            /// <stable>ICU 3.8</stable>
-            public const int ExtendNumLet = 7;
-            /// <stable>ICU 4.0</stable>
-            public const int Cr = 8;
-            /// <stable>ICU 4.0</stable>
-            public const int Extend = 9;
-            /// <stable>ICU 4.0</stable>
-            public const int Lf = 10;
-            /// <stable>ICU 4.0</stable>
-            public const int MidNumLet = 11;
-            /// <stable>ICU 4.0</stable>
-            public const int Newline = 12;
-            /// <stable>ICU 50</stable>
-            public const int RegionalIndicator = 13;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
-            /// <stable>ICU 52</stable>
-            public const int HebrewLetter = 14;    /*[HL]*/ /* from here on: new in Unicode 6.3/ICU 52 */
-            /// <stable>ICU 52</stable>
-            public const int SingleQuote = 15;     /*[SQ]*/
-            /// <stable>ICU 52</stable>
-            public const int DoubleQuote = 16;     /*[DQ]*/
-            /// <stable>ICU 58</stable>
-            public const int EBase = 17;           /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
-            /// <stable>ICU 58</stable>
-            public const int EBaseGaz = 18;       /*[EBG]*/
-            /// <stable>ICU 58</stable>
-            public const int EModifier = 19;       /*[EM]*/
-            /// <stable>ICU 58</stable>
-            public const int GlueAfterZwj = 20;   /*[GAZ]*/
-            /// <stable>ICU 58</stable>
-            public const int Zwj = 21;              /*[ZWJ]*/
-
-            /// <summary>
-            /// One more than the highest normal <see cref="WordBreak"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Word_Break"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 22;
-        }
-
-        /// <summary>
-        /// Sentence Break constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Sentence_Break"/>
-        /// <stable>ICU 3.4</stable>
-        public static class SentenceBreak
-        {
-            /// <stable>ICU 3.8</stable>
-            public const int Other = 0;
-            /// <stable>ICU 3.8</stable>
-            public const int ATerm = 1;
-            /// <stable>ICU 3.8</stable>
-            public const int Close = 2;
-            /// <stable>ICU 3.8</stable>
-            public const int Format = 3;
-            /// <stable>ICU 3.8</stable>
-            public const int Lower = 4;
-            /// <stable>ICU 3.8</stable>
-            public const int Numeric = 5;
-            /// <stable>ICU 3.8</stable>
-            public const int OLetter = 6;
-            /// <stable>ICU 3.8</stable>
-            public const int Sep = 7;
-            /// <stable>ICU 3.8</stable>
-            public const int Sp = 8;
-            /// <stable>ICU 3.8</stable>
-            public const int STerm = 9;
-            /// <stable>ICU 3.8</stable>
-            public const int Upper = 10;
-            /// <stable>ICU 4.0</stable>
-            public const int Cr = 11;
-            /// <stable>ICU 4.0</stable>
-            public const int Extend = 12;
-            /// <stable>ICU 4.0</stable>
-            public const int Lf = 13;
-            /// <stable>ICU 4.0</stable>
-            public const int SContinue = 14;
-
-            /// <summary>
-            /// One more than the highest normal <see cref="SentenceBreak"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Sentence_Break"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 15;
-        }
-
-        /// <summary>
-        /// Line Break constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Line_Break"/>
-        /// <stable>ICU 2.4</stable>
-        public static class LineBreak
-        {
-            /// <stable>ICU 2.4</stable>
-            public const int Unknown = 0;
-            /// <stable>ICU 2.4</stable>
-            public const int Ambiguous = 1;
-            /// <stable>ICU 2.4</stable>
-            public const int Alphabetic = 2;
-            /// <stable>ICU 2.4</stable>
-            public const int BreakBoth = 3;
-            /// <stable>ICU 2.4</stable>
-            public const int BreakAfter = 4;
-            /// <stable>ICU 2.4</stable>
-            public const int BreakBefore = 5;
-            /// <stable>ICU 2.4</stable>
-            public const int MandatoryBreak = 6;
-            /// <stable>ICU 2.4</stable>
-            public const int ContingentBreak = 7;
-            /// <stable>ICU 2.4</stable>
-            public const int ClosePunctuation = 8;
-            /// <stable>ICU 2.4</stable>
-            public const int CombiningMark = 9;
-            /// <stable>ICU 2.4</stable>
-            public const int CarriageReturn = 10;
-            /// <stable>ICU 2.4</stable>
-            public const int Exclamation = 11;
-            /// <stable>ICU 2.4</stable>
-            public const int Glue = 12;
-            /// <stable>ICU 2.4</stable>
-            public const int Hyphen = 13;
-            /// <stable>ICU 2.4</stable>
-            public const int Ideographic = 14;
-            ///// <seealso cref="Inseparable"/>
-            ///// <stable>ICU 2.4</stable>
-            //public const int Inseperable = 15;
-            ///// <summary>
-            ///// Renamed from the misspelled "inseperable" in Unicode 4.0.1.
-            ///// </summary>
-            /// <stable>ICU 3.0</stable>
-            public const int Inseparable = 15;
-            /// <stable>ICU 2.4</stable>
-            public const int InfixNumeric = 16;
-            /// <stable>ICU 2.4</stable>
-            public const int LineFeed = 17;
-            /// <stable>ICU 2.4</stable>
-            public const int Nonstarter = 18;
-            /// <stable>ICU 2.4</stable>
-            public const int Numeric = 19;
-            /// <stable>ICU 2.4</stable>
-            public const int OpenPunctuation = 20;
-            /// <stable>ICU 2.4</stable>
-            public const int PostfixNumeric = 21;
-            /// <stable>ICU 2.4</stable>
-            public const int PrefixNumeric = 22;
-            /// <stable>ICU 2.4</stable>
-            public const int Quotation = 23;
-            /// <stable>ICU 2.4</stable>
-            public const int ComplexContext = 24;
-            /// <stable>ICU 2.4</stable>
-            public const int Surrogate = 25;
-            /// <stable>ICU 2.4</stable>
-            public const int Space = 26;
-            /// <stable>ICU 2.4</stable>
-            public const int BreakSymbols = 27;
-            /// <stable>ICU 2.4</stable>
-            public const int ZwSpace = 28;
-            /// <stable>ICU 2.6</stable>
-            public const int NextLine = 29;  /*[NL]*/ /* from here on: new in Unicode 4/ICU 2.6 */
-            /// <stable>ICU 2.6</stable>
-            public const int WordJoiner = 30;      /*[WJ]*/
-            /// <stable>ICU 3.4</stable>
-            public const int H2 = 31;  /* from here on: new in Unicode 4.1/ICU 3.4 */
-            /// <stable>ICU 3.4</stable>
-            public const int H3 = 32;
-            /// <stable>ICU 3.4</stable>
-            public const int Jl = 33;
-            /// <stable>ICU 3.4</stable>
-            public const int Jt = 34;
-            /// <stable>ICU 3.4</stable>
-            public const int Jv = 35;
-            /// <stable>ICU 4.4</stable>
-            public const int CloseParenthesis = 36; /*[CP]*/ /* new in Unicode 5.2/ICU 4.4 */
-            /// <stable>ICU 49</stable>
-            public const int ConditionalJapaneseStarter = 37;  /*[CJ]*/ /* new in Unicode 6.1/ICU 49 */
-            /// <stable>ICU 49</stable>
-            public const int HebrewLetter = 38;  /*[HL]*/ /* new in Unicode 6.1/ICU 49 */
-            /// <stable>ICU 50</stable>
-            public const int RegionalIndicator = 39;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
-            /// <stable>ICU 58</stable>
-            public const int EBase = 40;  /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
-            /// <stable>ICU 58</stable>
-            public const int EModifier = 41;  /*[EM]*/
-            /// <stable>ICU 58</stable>
-            public const int Zwj = 42;  /*[ZWJ]*/
-
-            /// <summary>
-            /// One more than the highest normal <see cref="LineBreak"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Line_Break"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 43;
-        }
-
-        /// <summary>
-        /// Numeric Type constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Numeric_Type"/>
-        /// <stable>ICU 2.4</stable>
-        public static class NumericType
-        {
-            /// <stable>ICU 2.4</stable>
-            public const int None = 0;
-            /// <stable>ICU 2.4</stable>
-            public const int Decimal = 1;
-            /// <stable>ICU 2.4</stable>
-            public const int Digit = 2;
-            /// <stable>ICU 2.4</stable>
-            public const int Numeric = 3;
-
-            /// <summary>
-            /// One more than the highest normal <see cref="NumericType"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Numeric_Type"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 4;
-        }
-
-        /// <summary>
-        /// Hangul Syllable Type constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Hangul_Syllable_Type"/>
-        /// <stable>ICU 2.6</stable>
-        public static class HangulSyllableType
-        {
-            /// <stable>ICU 2.6</stable>
-            public const int NotApplicable = 0;   /*[NA]*/ /*See note !!*/
-            /// <stable>ICU 2.6</stable>
-            public const int LeadingJamo = 1;   /*[L]*/
-            /// <stable>ICU 2.6</stable>
-            public const int VowelJamo = 2;   /*[V]*/
-            /// <stable>ICU 2.6</stable>
-            public const int TrailingJamo = 3;   /*[T]*/
-            /// <stable>ICU 2.6</stable>
-            public const int LvSyllable = 4;   /*[LV]*/
-            /// <stable>ICU 2.6</stable>
-            public const int LvtSyllable = 5;   /*[LVT]*/
-
-            /// <summary>
-            /// One more than the highest normal <see cref="HangulSyllableType"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Hangul_Syllable_Type"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 6;
-        }
-
-        /// <summary>
-        /// Bidi Paired Bracket Type constants.
-        /// </summary>
-        /// <seealso cref="UProperty.Bidi_Paired_Bracket_Type"/>
-        /// <stable>ICU 52</stable>
-        public static class BidiPairedBracketType
-        {
-            /// <summary>
-            /// Not a paired bracket.
-            /// </summary>
-            /// <stable>ICU 52</stable>
-            public const int None = 0;
-            /// <summary>
-            /// Open paired bracket.
-            /// </summary>
-            /// <stable>ICU 52</stable>
-            public const int Open = 1;
-            /// <summary>
-            /// Close paired bracket.
-            /// </summary>
-            /// <stable>ICU 52</stable>
-            public const int Close = 2;
-
-            /// <summary>
-            /// One more than the highest normal <see cref="BidiPairedBracketType"/> value.
-            /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
-            /// with parameter <see cref="UProperty.Bidi_Paired_Bracket_Type"/>.
-            /// </summary>
-            [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
-            public const int Count = 3;
-        }
+        // ICU4N specific - de-nested
+        // > UnicodeBlock (Moved to Text.Unicode namespace)
+
+        // The following moved to Globalization namespace
+        // > EastAsianWidth
+        // > DecompositionType
+        // > JoiningType
+        // > JoiningGroup
+        // > GraphemeClusterBreak
+        // > WordBreak
+        // > SentenceBreak
+        // > LineBreak
+        // > NumericType
+        // > HangulSyllableType
+        // > BidiPairedBracketType
 
         // public data members -----------------------------------------------
 
@@ -4703,7 +2244,7 @@ namespace ICU4N
         /// <list type="number">
         ///     <item><desription>
         ///         <see cref="UProperty.Block"/> values begin at the
-        ///         non-zero value <see cref="UChar.UnicodeBlock.Basic_Latin_ID"/>.
+        ///         non-zero value <see cref="Text.Unicode.UnicodeBlock.Basic_Latin_ID"/>.
         ///     </desription></item>
         ///     <item><desription>
         ///         <see cref="UProperty.Canonical_Combining_Class"/> values are not contiguous
@@ -4794,7 +2335,7 @@ namespace ICU4N
         /// <list type="number">
         ///     <item><desription>
         ///         <see cref="UProperty.Block"/> values begin at the
-        ///         non-zero value <see cref="UChar.UnicodeBlock.Basic_Latin_ID"/>.
+        ///         non-zero value <see cref="Text.Unicode.UnicodeBlock.Basic_Latin_ID"/>.
         ///     </desription></item>
         ///     <item><desription>
         ///         <see cref="UProperty.Canonical_Combining_Class"/> values are not contiguous
@@ -6619,5 +4160,2484 @@ namespace ICU4N
         // private constructor -----------------------------------------------
 
         // ICU4N spcicific - Made class static, so we cannot have constructors
+    }
+}
+
+namespace ICU4N.Text.Unicode
+{
+    /// <icu>_usage_</icu>
+    /// <summary>
+    /// A family of character subsets representing the character blocks in the
+    /// Unicode specification, generated from Unicode Data file Blocks.txt.
+    /// Character blocks generally define characters used for a specific script
+    /// or purpose. A character is contained by at most one Unicode block.
+    /// <para/>
+    /// <icunote>All fields named XXX_ID are specific to ICU.</icunote>
+    /// </summary>
+    /// <stable>ICU 2.4</stable>
+    public sealed class UnicodeBlock
+    {
+        // block id corresponding to icu4c -----------------------------------
+
+        /// <stable>ICU 2.4</stable>
+        public const int Invalid_Code_ID = -1;
+        /// <stable>ICU 2.4</stable>
+        public const int Basic_Latin_ID = 1;
+        /// <stable>ICU 2.4</stable>
+        public const int Latin_1_Supplement_ID = 2;
+        /// <stable>ICU 2.4</stable>
+        public const int Latin_Extended_A_ID = 3;
+        /// <stable>ICU 2.4</stable>
+        public const int Latin_Extended_B_ID = 4;
+        /// <stable>ICU 2.4</stable>
+        public const int IPA_Extensions_ID = 5;
+        /// <stable>ICU 2.4</stable>
+        public const int Spacing_Modifier_Letters_ID = 6;
+        /// <stable>ICU 2.4</stable>
+        public const int Combining_Diacritical_Marks_ID = 7;
+        /// <summary>
+        /// Unicode 3.2 renames this block to "Greek and Coptic".
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public const int Greek_ID = 8;
+        /// <stable>ICU 2.4</stable>
+        public const int Cyrillic_ID = 9;
+        /// <stable>ICU 2.4</stable>
+        public const int Armenian_ID = 10;
+        /// <stable>ICU 2.4</stable>
+        public const int Hebrew_ID = 11;
+        /// <stable>ICU 2.4</stable>
+        public const int Arabic_ID = 12;
+        /// <stable>ICU 2.4</stable>
+        public const int Syriac_ID = 13;
+        /// <stable>ICU 2.4</stable>
+        public const int Thaana_ID = 14;
+        /// <stable>ICU 2.4</stable>
+        public const int Devanagari_ID = 15;
+        /// <stable>ICU 2.4</stable>
+        public const int Bengali_ID = 16;
+        /// <stable>ICU 2.4</stable>
+        public const int Gurmukhi_ID = 17;
+        /// <stable>ICU 2.4</stable>
+        public const int Gujarati_ID = 18;
+        /// <stable>ICU 2.4</stable>
+        public const int Oriya_ID = 19;
+        /// <stable>ICU 2.4</stable>
+        public const int Tamil_ID = 20;
+        /// <stable>ICU 2.4</stable>
+        public const int Telugu_ID = 21;
+        /// <stable>ICU 2.4</stable>
+        public const int Kannada_ID = 22;
+        /// <stable>ICU 2.4</stable>
+        public const int Malayalam_ID = 23;
+        /// <stable>ICU 2.4</stable>
+        public const int Sinhala_ID = 24;
+        /// <stable>ICU 2.4</stable>
+        public const int Thai_ID = 25;
+        /// <stable>ICU 2.4</stable>
+        public const int Lao_ID = 26;
+        /// <stable>ICU 2.4</stable>
+        public const int Tibetan_ID = 27;
+        /// <stable>ICU 2.4</stable>
+        public const int Myanmar_ID = 28;
+        /// <stable>ICU 2.4</stable>
+        public const int Georgian_ID = 29;
+        /// <stable>ICU 2.4</stable>
+        public const int Hangul_Jamo_ID = 30;
+        /// <stable>ICU 2.4</stable>
+        public const int Ethiopic_ID = 31;
+        /// <stable>ICU 2.4</stable>
+        public const int Cherokee_ID = 32;
+        /// <stable>ICU 2.4</stable>
+        public const int Unified_Canadian_Aboriginal_Syllabics_ID = 33;
+        /// <stable>ICU 2.4</stable>
+        public const int Ogham_ID = 34;
+        /// <stable>ICU 2.4</stable>
+        public const int Runic_ID = 35;
+        /// <stable>ICU 2.4</stable>
+        public const int Khmer_ID = 36;
+        /// <stable>ICU 2.4</stable>
+        public const int Mongolian_ID = 37;
+        /// <stable>ICU 2.4</stable>
+        public const int Latin_Extended_Additional_ID = 38;
+        /// <stable>ICU 2.4</stable>
+        public const int Greek_Extended_ID = 39;
+        /// <stable>ICU 2.4</stable>
+        public const int General_Punctuation_ID = 40;
+        /// <stable>ICU 2.4</stable>
+        public const int Superscripts_And_Subscripts_ID = 41;
+        /// <stable>ICU 2.4</stable>
+        public const int Currency_Symbols_ID = 42;
+        /// <summary>
+        /// Unicode 3.2 renames this block to "Combining Diacritical Marks for
+        /// Symbols".
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public const int Combining_Marks_For_Symbols_ID = 43;
+        /// <stable>ICU 2.4</stable>
+        public const int Letterlike_Symbols_ID = 44;
+        /// <stable>ICU 2.4</stable>
+        public const int Number_Forms_ID = 45;
+        /// <stable>ICU 2.4</stable>
+        public const int Arrows_ID = 46;
+        /// <stable>ICU 2.4</stable>
+        public const int Mathematical_Operators_ID = 47;
+        /// <stable>ICU 2.4</stable>
+        public const int Miscellaneous_Technical_ID = 48;
+        /// <stable>ICU 2.4</stable>
+        public const int Control_Pictures_ID = 49;
+        /// <stable>ICU 2.4</stable>
+        public const int Optical_Character_Recognition_ID = 50;
+        /// <stable>ICU 2.4</stable>
+        public const int Enclosed_Alphanumerics_ID = 51;
+        /// <stable>ICU 2.4</stable>
+        public const int Box_Drawing_ID = 52;
+        /// <stable>ICU 2.4</stable>
+        public const int Block_Elements_ID = 53;
+        /// <stable>ICU 2.4</stable>
+        public const int Geometric_Shapes_ID = 54;
+        /// <stable>ICU 2.4</stable>
+        public const int Miscellaneous_Symbols_ID = 55;
+        /// <stable>ICU 2.4</stable>
+        public const int Dingbats_ID = 56;
+        /// <stable>ICU 2.4</stable>
+        public const int Braille_Patterns_ID = 57;
+        /// <stable>ICU 2.4</stable>
+        public const int CJK_Radicals_Supplement_ID = 58;
+        /// <stable>ICU 2.4</stable>
+        public const int Kangxi_Radicals_ID = 59;
+        /// <stable>ICU 2.4</stable>
+        public const int Ideographic_Description_Characters_ID = 60;
+        /// <stable>ICU 2.4</stable>
+        public const int CJK_Symbols_And_Punctuation_ID = 61;
+        /// <stable>ICU 2.4</stable>
+        public const int Hiragana_ID = 62;
+        /// <stable>ICU 2.4</stable>
+        public const int Katakana_ID = 63;
+        /// <stable>ICU 2.4</stable>
+        public const int Bopomofo_ID = 64;
+        /// <stable>ICU 2.4</stable>
+        public const int Hangul_Compatibility_Jamo_ID = 65;
+        /// <stable>ICU 2.4</stable>
+        public const int Kanbun_ID = 66;
+        /// <stable>ICU 2.4</stable>
+        public const int Bopomofo_Extended_ID = 67;
+        /// <stable>ICU 2.4</stable>
+        public const int Enclosed_CJK_Letters_And_Months_ID = 68;
+        /// <stable>ICU 2.4</stable>
+        public const int CJK_Compatibility_ID = 69;
+        /// <stable>ICU 2.4</stable>
+        public const int CJK_Unified_Ideographs_Extension_A_ID = 70;
+        /// <stable>ICU 2.4</stable>
+        public const int CJK_Unified_Ideographs_ID = 71;
+        /// <stable>ICU 2.4</stable>
+        public const int Yi_Syllables_ID = 72;
+        /// <stable>ICU 2.4</stable>
+        public const int Yi_Radicals_ID = 73;
+        /// <stable>ICU 2.4</stable>
+        public const int Hangul_Syllables_ID = 74;
+        /// <stable>ICU 2.4</stable>
+        public const int High_Surrogates_ID = 75;
+        /// <stable>ICU 2.4</stable>
+        public const int High_Private_Use_Surrogates_ID = 76;
+        /// <stable>ICU 2.4</stable>
+        public const int Low_Surrogates_ID = 77;
+        /// <summary>
+        /// Same as <see cref="Private_Use"/>.
+        /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
+        /// and multiple code point ranges had this block.
+        /// Unicode 3.2 renames the block for the BMP PUA to "Private Use Area"
+        /// and adds separate blocks for the supplementary PUAs.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public const int Private_Use_Area_ID = 78;
+        /// <summary>
+        /// Same as <see cref="Private_Use_Area"/>.
+        /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
+        /// and multiple code point ranges had this block.
+        /// Unicode 3.2 renames the block for the BMP PUA to "Private Use Area"
+        /// and adds separate blocks for the supplementary PUAs.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public const int Private_Use_ID = Private_Use_Area_ID;
+        /// <stable>ICU 2.4</stable>
+        public const int CJK_Compatibility_Ideographs_ID = 79;
+        /// <stable>ICU 2.4</stable>
+        public const int Alphabetic_Presentation_Forms_ID = 80;
+        /// <stable>ICU 2.4</stable>
+        public const int Arabic_Presentation_Forms_A_ID = 81;
+        /// <stable>ICU 2.4</stable>
+        public const int Combining_Half_Marks_ID = 82;
+        /// <stable>ICU 2.4</stable>
+        public const int CJK_Compatibility_Forms_ID = 83;
+        /// <stable>ICU 2.4</stable>
+        public const int Small_Form_Variants_ID = 84;
+        /// <stable>ICU 2.4</stable>
+        public const int Arabic_Presentation_Forms_B_ID = 85;
+        /// <stable>ICU 2.4</stable>
+        public const int Specials_ID = 86;
+        /// <stable>ICU 2.4</stable>
+        public const int HalfWidth_And_FullWidth_Forms_ID = 87;
+        /// <stable>ICU 2.4</stable>
+        public const int Old_Italic_ID = 88;
+        /// <stable>ICU 2.4</stable>
+        public const int Gothic_ID = 89;
+        /// <stable>ICU 2.4</stable>
+        public const int Deseret_ID = 90;
+        /// <stable>ICU 2.4</stable>
+        public const int Byzantine_Musical_Symbols_ID = 91;
+        /// <stable>ICU 2.4</stable>
+        public const int Musical_Symbols_ID = 92;
+        /// <stable>ICU 2.4</stable>
+        public const int Mathematical_Alphanumeric_Symbols_ID = 93;
+        /// <stable>ICU 2.4</stable>
+        public const int CJK_Unified_Ideographs_Extension_B_ID = 94;
+        /// <stable>ICU 2.4</stable>
+        public const int CJK_Compatibility_Ideographs_Supplement_ID = 95;
+        /// <stable>ICU 2.4</stable>
+        public const int Tags_ID = 96;
+
+        // New blocks in Unicode 3.2
+
+        /// <summary>
+        /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public const int Cyrillic_Supplementary_ID = 97;
+        /// <summary>
+        /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        public const int Cyrillic_Supplement_ID = 97;
+        /// <stable>ICU 2.4</stable>
+        public const int Tagalog_ID = 98;
+        /// <stable>ICU 2.4</stable>
+        public const int Hanunoo_ID = 99;
+        /// <stable>ICU 2.4</stable>
+        public const int Buhid_ID = 100;
+        /// <stable>ICU 2.4</stable>
+        public const int Tagbanwa_ID = 101;
+        /// <stable>ICU 2.4</stable>
+        public const int Miscellaneous_Mathematical_Symbols_A_ID = 102;
+        /// <stable>ICU 2.4</stable>
+        public const int Supplemental_Arrows_A_ID = 103;
+        /// <stable>ICU 2.4</stable>
+        public const int Supplemental_Arrows_B_ID = 104;
+        /// <stable>ICU 2.4</stable>
+        public const int Miscellaneous_Mathematical_Symbols_B_ID = 105;
+        /// <stable>ICU 2.4</stable>
+        public const int Supplemental_Mathematical_Operators_ID = 106;
+        /// <stable>ICU 2.4</stable>
+        public const int Katakana_Phonetic_Extensions_ID = 107;
+        /// <stable>ICU 2.4</stable>
+        public const int Variation_Selectors_ID = 108;
+        /// <stable>ICU 2.4</stable>
+        public const int Supplementary_Private_Use_Area_A_ID = 109;
+        /// <stable>ICU 2.4</stable>
+        public const int Supplementary_Private_Use_Area_B_ID = 110;
+
+        /// <stable>ICU 2.6</stable>
+        public const int Limbu_ID = 111; /*[1900]*/
+                                         /// <stable>ICU 2.6</stable>
+        public const int Tai_Le_ID = 112; /*[1950]*/
+                                          /// <stable>ICU 2.6</stable>
+        public const int Khmer_Symbols_ID = 113; /*[19E0]*/
+                                                 /// <stable>ICU 2.6</stable>
+        public const int Phonetic_Extensions_ID = 114; /*[1D00]*/
+                                                       /// <stable>ICU 2.6</stable>
+        public const int Miscellaneous_Symbols_And_Arrows_ID = 115; /*[2B00]*/
+                                                                    /// <stable>ICU 2.6</stable>
+        public const int Yijing_Hexagram_Symbols_ID = 116; /*[4DC0]*/
+                                                           /// <stable>ICU 2.6</stable>
+        public const int Linear_B_Syllabary_ID = 117; /*[10000]*/
+                                                      /// <stable>ICU 2.6</stable>
+        public const int Linear_B_Ideograms_ID = 118; /*[10080]*/
+                                                      /// <stable>ICU 2.6</stable>
+        public const int Aegean_Numbers_ID = 119; /*[10100]*/
+                                                  /// <stable>ICU 2.6</stable>
+        public const int Ugaritic_ID = 120; /*[10380]*/
+                                            /// <stable>ICU 2.6</stable>
+        public const int Shavian_ID = 121; /*[10450]*/
+                                           /// <stable>ICU 2.6</stable>
+        public const int Osmanya_ID = 122; /*[10480]*/
+                                           /// <stable>ICU 2.6</stable>
+        public const int Cypriot_Syllabary_ID = 123; /*[10800]*/
+                                                     /// <stable>ICU 2.6</stable>
+        public const int Tai_Xuan_Jing_Symbols_ID = 124; /*[1D300]*/
+                                                         /// <stable>ICU 2.6</stable>
+        public const int Variation_Selectors_Supplement_ID = 125; /*[E0100]*/
+
+        /* New blocks in Unicode 4.1 */
+
+        /// <stable>ICU 3.4</stable>
+        public const int Ancient_Greek_Musical_Notation_ID = 126; /*[1D200]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Ancient_Greek_Numbers_ID = 127; /*[10140]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Arabic_Supplement_ID = 128; /*[0750]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Buginese_ID = 129; /*[1A00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int CJK_Strokes_ID = 130; /*[31C0]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Combining_Diacritical_Marks_Supplement_ID = 131; /*[1DC0]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Coptic_ID = 132; /*[2C80]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Ethiopic_Extended_ID = 133; /*[2D80]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Ethiopic_Supplement_ID = 134; /*[1380]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Georgian_Supplement_ID = 135; /*[2D00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Glagolitic_ID = 136; /*[2C00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Kharoshthi_ID = 137; /*[10A00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Modifier_Tone_Letters_ID = 138; /*[A700]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int New_Tai_Lue_ID = 139; /*[1980]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Old_Persian_ID = 140; /*[103A0]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Phonetic_Extensions_Supplement_ID = 141; /*[1D80]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Supplemental_Punctuation_ID = 142; /*[2E00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Syloti_Nagri_ID = 143; /*[A800]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Tifinagh_ID = 144; /*[2D30]*/
+
+        /// <stable>ICU 3.4</stable>
+        public const int Vertical_Forms_ID = 145; /*[FE10]*/
+
+        /* New blocks in Unicode 5.0 */
+
+        /// <stable>ICU 3.6</stable>
+        public const int Nko_ID = 146; /*[07C0]*/
+                                       /// <stable>ICU 3.6</stable>
+        public const int Balinese_ID = 147; /*[1B00]*/
+                                            /// <stable>ICU 3.6</stable>
+        public const int Latin_Extended_C_ID = 148; /*[2C60]*/
+                                                    /// <stable>ICU 3.6</stable>
+        public const int Latin_Extended_D_ID = 149; /*[A720]*/
+                                                    /// <stable>ICU 3.6</stable>
+        public const int Phags_Pa_ID = 150; /*[A840]*/
+                                            /// <stable>ICU 3.6</stable>
+        public const int Phoenician_ID = 151; /*[10900]*/
+                                              /// <stable>ICU 3.6</stable>
+        public const int Cuneiform_ID = 152; /*[12000]*/
+                                             /// <stable>ICU 3.6</stable>
+        public const int Cuneiform_Numbers_And_Punctuation_ID = 153; /*[12400]*/
+                                                                     /// <stable>ICU 3.6</stable>
+        public const int Counting_Rod_Numerals_ID = 154; /*[1D360]*/
+
+        /// <stable>ICU 4.0</stable>
+        public const int Sundanese_ID = 155; /* [1B80] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Lepcha_ID = 156; /* [1C00] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Ol_Chiki_ID = 157; /* [1C50] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Cyrillic_Extended_A_ID = 158; /* [2DE0] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Vai_ID = 159; /* [A500] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Cyrillic_Extended_B_ID = 160; /* [A640] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Saurashtra_ID = 161; /* [A880] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Kayah_Li_ID = 162; /* [A900] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Rejang_ID = 163; /* [A930] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Cham_ID = 164; /* [AA00] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Ancient_Symbols_ID = 165; /* [10190] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Phaistos_Disc_ID = 166; /* [101D0] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Lycian_ID = 167; /* [10280] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Carian_ID = 168; /* [102A0] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Lydian_ID = 169; /* [10920] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Mahjong_Tiles_ID = 170; /* [1F000] */
+
+        /// <stable>ICU 4.0</stable>
+        public const int Domino_Tiles_ID = 171; /* [1F030] */
+
+        /* New blocks in Unicode 5.2 */
+
+        /// <stable>ICU 4.4</stable>
+        public const int Samaritan_ID = 172; /*[0800]*/
+                                             /// <stable>ICU 4.4</stable>
+        public const int Unified_Canadian_Aboriginal_Syllabics_Extended_ID = 173; /*[18B0]*/
+                                                                                  /// <stable>ICU 4.4</stable>
+        public const int Tai_Tham_ID = 174; /*[1A20]*/
+                                            /// <stable>ICU 4.4</stable>
+        public const int Vedic_Extensions_ID = 175; /*[1CD0]*/
+                                                    /// <stable>ICU 4.4</stable>
+        public const int Lisu_ID = 176; /*[A4D0]*/
+                                        /// <stable>ICU 4.4</stable>
+        public const int Bamum_ID = 177; /*[A6A0]*/
+                                         /// <stable>ICU 4.4</stable>
+        public const int Common_Indic_Number_Forms_ID = 178; /*[A830]*/
+                                                             /// <stable>ICU 4.4</stable>
+        public const int Devanagari_Extended_ID = 179; /*[A8E0]*/
+                                                       /// <stable>ICU 4.4</stable>
+        public const int Hangul_Jamo_Extended_A_ID = 180; /*[A960]*/
+                                                          /// <stable>ICU 4.4</stable>
+        public const int Javanese_ID = 181; /*[A980]*/
+                                            /// <stable>ICU 4.4</stable>
+        public const int Myanmar_Extended_A_ID = 182; /*[AA60]*/
+                                                      /// <stable>ICU 4.4</stable>
+        public const int Tai_Viet_ID = 183; /*[AA80]*/
+                                            /// <stable>ICU 4.4</stable>
+        public const int Meetei_Mayek_ID = 184; /*[ABC0]*/
+                                                /// <stable>ICU 4.4</stable>
+        public const int Hangul_Jamo_Extended_B_ID = 185; /*[D7B0]*/
+                                                          /// <stable>ICU 4.4</stable>
+        public const int Imperial_Aramaic_ID = 186; /*[10840]*/
+                                                    /// <stable>ICU 4.4</stable>
+        public const int Old_South_Arabian_ID = 187; /*[10A60]*/
+                                                     /// <stable>ICU 4.4</stable>
+        public const int Avestan_ID = 188; /*[10B00]*/
+                                           /// <stable>ICU 4.4</stable>
+        public const int Inscriptional_Parthian_ID = 189; /*[10B40]*/
+                                                          /// <stable>ICU 4.4</stable>
+        public const int Inscriptional_Pahlavi_ID = 190; /*[10B60]*/
+                                                         /// <stable>ICU 4.4</stable>
+        public const int Old_Turkic_ID = 191; /*[10C00]*/
+                                              /// <stable>ICU 4.4</stable>
+        public const int Rumi_Numeral_Symbols_ID = 192; /*[10E60]*/
+                                                        /// <stable>ICU 4.4</stable>
+        public const int Kaithi_ID = 193; /*[11080]*/
+                                          /// <stable>ICU 4.4</stable>
+        public const int Egyptian_Hieroglyphs_ID = 194; /*[13000]*/
+                                                        /// <stable>ICU 4.4</stable>
+        public const int Enclosed_Alphanumeric_Supplement_ID = 195; /*[1F100]*/
+                                                                    /// <stable>ICU 4.4</stable>
+        public const int Enclosed_Ideographic_Supplement_ID = 196; /*[1F200]*/
+                                                                   /// <stable>ICU 4.4</stable>
+        public const int CJK_Unified_Ideographs_Extension_C_ID = 197; /*[2A700]*/
+
+        /* New blocks in Unicode 6.0 */
+
+        /// <stable>ICU 4.6</stable>
+        public const int Mandaic_ID = 198; /*[0840]*/
+                                           /// <stable>ICU 4.6</stable>
+        public const int Batak_ID = 199; /*[1BC0]*/
+                                         /// <stable>ICU 4.6</stable>
+        public const int Ethiopic_Extended_A_ID = 200; /*[AB00]*/
+                                                       /// <stable>ICU 4.6</stable>
+        public const int Brahmi_ID = 201; /*[11000]*/
+                                          /// <stable>ICU 4.6</stable>
+        public const int Bamum_Supplement_ID = 202; /*[16800]*/
+                                                    /// <stable>ICU 4.6</stable>
+        public const int Kana_Supplement_ID = 203; /*[1B000]*/
+                                                   /// <stable>ICU 4.6</stable>
+        public const int Playing_Cards_ID = 204; /*[1F0A0]*/
+                                                 /// <stable>ICU 4.6</stable>
+        public const int Miscellaneous_Symbols_And_Pictographs_ID = 205; /*[1F300]*/
+                                                                         /// <stable>ICU 4.6</stable>
+        public const int Emoticons_ID = 206; /*[1F600]*/
+                                             /// <stable>ICU 4.6</stable>
+        public const int Transport_And_Map_Symbols_ID = 207; /*[1F680]*/
+                                                             /// <stable>ICU 4.6</stable>
+        public const int Alchemical_Symbols_ID = 208; /*[1F700]*/
+                                                      /// <stable>ICU 4.6</stable>
+        public const int CJK_Unified_Ideographs_Extension_D_ID = 209; /*[2B740]*/
+
+        /* New blocks in Unicode 6.1 */
+
+        /// <stable>ICU 49</stable>
+        public const int Arabic_Extended_A_ID = 210; /*[08A0]*/
+                                                     /// <stable>ICU 49</stable>
+        public const int Arabic_Mathematical_Alphabetic_Symbols_ID = 211; /*[1EE00]*/
+                                                                          /// <stable>ICU 49</stable>
+        public const int Chakma_ID = 212; /*[11100]*/
+                                          /// <stable>ICU 49</stable>
+        public const int Meetei_Mayek_Extensions_ID = 213; /*[AAE0]*/
+                                                           /// <stable>ICU 49</stable>
+        public const int Meroitic_Cursive_ID = 214; /*[109A0]*/
+                                                    /// <stable>ICU 49</stable>
+        public const int Meroitic_Hieroglyphs_ID = 215; /*[10980]*/
+                                                        /// <stable>ICU 49</stable>
+        public const int Miao_ID = 216; /*[16F00]*/
+                                        /// <stable>ICU 49</stable>
+        public const int Sharada_ID = 217; /*[11180]*/
+                                           /// <stable>ICU 49</stable>
+        public const int Sora_Sompeng_ID = 218; /*[110D0]*/
+                                                /// <stable>ICU 49</stable>
+        public const int Sundanese_Supplement_ID = 219; /*[1CC0]*/
+                                                        /// <stable>ICU 49</stable>
+        public const int Takri_ID = 220; /*[11680]*/
+
+        /* New blocks in Unicode 7.0 */
+
+        /// <stable>ICU 54</stable>
+        public const int Bassa_Vah_ID = 221; /*[16AD0]*/
+                                             /// <stable>ICU 54</stable>
+        public const int Caucasian_Albanian_ID = 222; /*[10530]*/
+                                                      /// <stable>ICU 54</stable>
+        public const int Coptic_Epact_Numbers_ID = 223; /*[102E0]*/
+                                                        /// <stable>ICU 54</stable>
+        public const int Combining_Diacritical_Marks_Extended_ID = 224; /*[1AB0]*/
+                                                                        /// <stable>ICU 54</stable>
+        public const int Duployan_ID = 225; /*[1BC00]*/
+                                            /// <stable>ICU 54</stable>
+        public const int Elbasan_ID = 226; /*[10500]*/
+                                           /// <stable>ICU 54</stable>
+        public const int Geometric_Shapes_Extended_ID = 227; /*[1F780]*/
+                                                             /// <stable>ICU 54</stable>
+        public const int Grantha_ID = 228; /*[11300]*/
+                                           /// <stable>ICU 54</stable>
+        public const int Khojki_ID = 229; /*[11200]*/
+                                          /// <stable>ICU 54</stable>
+        public const int Khudawadi_ID = 230; /*[112B0]*/
+                                             /// <stable>ICU 54</stable>
+        public const int Latin_Extended_E_ID = 231; /*[AB30]*/
+                                                    /// <stable>ICU 54</stable>
+        public const int Linear_A_ID = 232; /*[10600]*/
+                                            /// <stable>ICU 54</stable>
+        public const int Mahajani_ID = 233; /*[11150]*/
+                                            /// <stable>ICU 54</stable>
+        public const int Manichaean_ID = 234; /*[10AC0]*/
+                                              /// <stable>ICU 54</stable>
+        public const int Mende_Kikakui_ID = 235; /*[1E800]*/
+                                                 /// <stable>ICU 54</stable>
+        public const int Modi_ID = 236; /*[11600]*/
+                                        /// <stable>ICU 54</stable>
+        public const int Mro_ID = 237; /*[16A40]*/
+                                       /// <stable>ICU 54</stable>
+        public const int Myanmar_Extended_B_ID = 238; /*[A9E0]*/
+                                                      /// <stable>ICU 54</stable>
+        public const int Nabataean_ID = 239; /*[10880]*/
+                                             /// <stable>ICU 54</stable>
+        public const int Old_North_Arabian_ID = 240; /*[10A80]*/
+                                                     /// <stable>ICU 54</stable>
+        public const int Old_Permic_ID = 241; /*[10350]*/
+                                              /// <stable>ICU 54</stable>
+        public const int Ornamental_Dingbats_ID = 242; /*[1F650]*/
+                                                       /// <stable>ICU 54</stable>
+        public const int Pahawh_Hmong_ID = 243; /*[16B00]*/
+                                                /// <stable>ICU 54</stable>
+        public const int Palmyrene_ID = 244; /*[10860]*/
+                                             /// <stable>ICU 54</stable>
+        public const int Pau_Cin_Hau_ID = 245; /*[11AC0]*/
+                                               /// <stable>ICU 54</stable>
+        public const int Psalter_Pahlavi_ID = 246; /*[10B80]*/
+                                                   /// <stable>ICU 54</stable>
+        public const int Shorthand_Format_Controls_ID = 247; /*[1BCA0]*/
+                                                             /// <stable>ICU 54</stable>
+        public const int Siddham_ID = 248; /*[11580]*/
+                                           /// <stable>ICU 54</stable>
+        public const int Sinhala_Archaic_Numbers_ID = 249; /*[111E0]*/
+                                                           /// <stable>ICU 54</stable>
+        public const int Supplemental_Arrows_C_ID = 250; /*[1F800]*/
+                                                         /// <stable>ICU 54</stable>
+        public const int Tirhuta_ID = 251; /*[11480]*/
+                                           /// <stable>ICU 54</stable>
+        public const int Warang_Citi_ID = 252; /*[118A0]*/
+
+        /* New blocks in Unicode 8.0 */
+
+        /// <stable>ICU 56</stable>
+        public const int Ahom_ID = 253; /*[11700]*/
+                                        /// <stable>ICU 56</stable>
+        public const int Anatolian_Hieroglyphs_ID = 254; /*[14400]*/
+                                                         /// <stable>ICU 56</stable>
+        public const int Cherokee_Supplement_ID = 255; /*[AB70]*/
+                                                       /// <stable>ICU 56</stable>
+        public const int CJK_Unified_Ideographs_Extension_E_ID = 256; /*[2B820]*/
+                                                                      /// <stable>ICU 56</stable>
+        public const int Early_Dynastic_Cuneiform_ID = 257; /*[12480]*/
+                                                            /// <stable>ICU 56</stable>
+        public const int Hatran_ID = 258; /*[108E0]*/
+                                          /// <stable>ICU 56</stable>
+        public const int Multani_ID = 259; /*[11280]*/
+                                           /// <stable>ICU 56</stable>
+        public const int Old_Hungarian_ID = 260; /*[10C80]*/
+                                                 /// <stable>ICU 56</stable>
+        public const int Supplemental_Symbols_And_Pictographs_ID = 261; /*[1F900]*/
+                                                                        /// <stable>ICU 56</stable>
+        public const int Sutton_Signwriting_ID = 262; /*[1D800]*/
+
+        /* New blocks in Unicode 9.0 */
+
+        /// <stable>ICU 58</stable>
+        public const int Adlam_ID = 263; /*[1E900]*/
+                                         /// <stable>ICU 58</stable>
+        public const int Bhaiksuki_ID = 264; /*[11C00]*/
+                                             /// <stable>ICU 58</stable>
+        public const int Cyrillic_Extended_C_ID = 265; /*[1C80]*/
+                                                       /// <stable>ICU 58</stable>
+        public const int Glagolitic_Supplement_ID = 266; /*[1E000]*/
+                                                         /// <stable>ICU 58</stable>
+        public const int Ideographic_Symbols_And_Punctuation_ID = 267; /*[16FE0]*/
+                                                                       /// <stable>ICU 58</stable>
+        public const int Marchen_ID = 268; /*[11C70]*/
+                                           /// <stable>ICU 58</stable>
+        public const int Mongolian_Supplement_ID = 269; /*[11660]*/
+                                                        /// <stable>ICU 58</stable>
+        public const int Newa_ID = 270; /*[11400]*/
+                                        /// <stable>ICU 58</stable>
+        public const int Osage_ID = 271; /*[104B0]*/
+                                         /// <stable>ICU 58</stable>
+        public const int Tangut_ID = 272; /*[17000]*/
+                                          /// <stable>ICU 58</stable>
+        public const int Tangut_Components_ID = 273; /*[18800]*/
+
+        // New blocks in Unicode 10.0
+
+        /// <stable>ICU 60</stable>
+        public const int CJK_Unified_Ideographs_Extension_F_ID = 274; /*[2CEB0]*/
+                                                                      /// <stable>ICU 60</stable>
+        public const int Kana_Extended_A_ID = 275; /*[1B100]*/
+                                                   /// <stable>ICU 60</stable>
+        public const int Masaram_Gondi_ID = 276; /*[11D00]*/
+                                                 /// <stable>ICU 60</stable>
+        public const int Nushu_ID = 277; /*[1B170]*/
+                                         /// <stable>ICU 60</stable>
+        public const int Soyombo_ID = 278; /*[11A50]*/
+                                           /// <stable>ICU 60</stable>
+        public const int Syriac_Supplement_ID = 279; /*[0860]*/
+                                                     /// <stable>ICU 60</stable>
+        public const int Zanabazar_Square_ID = 280; /*[11A00]*/
+
+        /// <summary>
+        /// One more than the highest normal UnicodeBlock value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyValue(int, UProperty)"/> 
+        /// with parameter <see cref="UProperty.Block"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 281;
+
+        // blocks objects ---------------------------------------------------
+
+        /// <summary>
+        /// Array of <see cref="UnicodeBlock"/>s, for easy access in <see cref="GetInstance(int)"/>
+        /// </summary>
+#pragma warning disable 612, 618
+        private readonly static UnicodeBlock[] BLOCKS_ = new UnicodeBlock[Count];
+#pragma warning restore 612, 618
+
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock NoBlock
+            = new UnicodeBlock(nameof(NoBlock), 0);
+
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Basic_Latin
+            = new UnicodeBlock(nameof(Basic_Latin), Basic_Latin_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Latin_1_Supplement
+            = new UnicodeBlock(nameof(Latin_1_Supplement), Latin_1_Supplement_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Latin_Extended_A
+            = new UnicodeBlock(nameof(Latin_Extended_A), Latin_Extended_A_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Latin_Extended_B
+            = new UnicodeBlock(nameof(Latin_Extended_B), Latin_Extended_B_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock IPA_Extensions
+            = new UnicodeBlock(nameof(IPA_Extensions), IPA_Extensions_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Spacing_Modifier_Letters
+            = new UnicodeBlock(nameof(Spacing_Modifier_Letters), Spacing_Modifier_Letters_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Combining_Diacritical_Marks
+            = new UnicodeBlock(nameof(Combining_Diacritical_Marks), Combining_Diacritical_Marks_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Greek
+            = new UnicodeBlock(nameof(Greek), Greek_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Cyrillic
+            = new UnicodeBlock(nameof(Cyrillic), Cyrillic_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Armenian
+            = new UnicodeBlock(nameof(Armenian), Armenian_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Hebrew
+            = new UnicodeBlock(nameof(Hebrew), Hebrew_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Arabic
+            = new UnicodeBlock(nameof(Arabic), Arabic_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Syriac
+            = new UnicodeBlock(nameof(Syriac), Syriac_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Thaana
+            = new UnicodeBlock(nameof(Thaana), Thaana_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Devanagari
+            = new UnicodeBlock(nameof(Devanagari), Devanagari_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Bengali
+            = new UnicodeBlock(nameof(Bengali), Bengali_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Gurmukhi
+            = new UnicodeBlock(nameof(Gurmukhi), Gurmukhi_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Gujarati
+            = new UnicodeBlock(nameof(Gujarati), Gujarati_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Oriya
+            = new UnicodeBlock(nameof(Oriya), Oriya_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Tamil
+            = new UnicodeBlock(nameof(Tamil), Tamil_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Telugu
+            = new UnicodeBlock(nameof(Telugu), Telugu_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Kannada
+            = new UnicodeBlock(nameof(Kannada), Kannada_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Malayalam
+            = new UnicodeBlock(nameof(Malayalam), Malayalam_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Sinhala
+            = new UnicodeBlock(nameof(Sinhala), Sinhala_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Thai
+            = new UnicodeBlock(nameof(Thai), Thai_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Lao
+            = new UnicodeBlock(nameof(Lao), Lao_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Tibetan
+            = new UnicodeBlock(nameof(Tibetan), Tibetan_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Myanmar
+            = new UnicodeBlock(nameof(Myanmar), Myanmar_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Georgian
+            = new UnicodeBlock(nameof(Georgian), Georgian_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Hangul_Jamo
+            = new UnicodeBlock(nameof(Hangul_Jamo), Hangul_Jamo_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Ethiopic
+            = new UnicodeBlock(nameof(Ethiopic), Ethiopic_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Cherokee
+            = new UnicodeBlock(nameof(Cherokee), Cherokee_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Unified_Canadian_Aboriginal_Syllabics
+            = new UnicodeBlock(nameof(Unified_Canadian_Aboriginal_Syllabics),
+                Unified_Canadian_Aboriginal_Syllabics_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Ogham
+            = new UnicodeBlock(nameof(Ogham), Ogham_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Runic
+            = new UnicodeBlock(nameof(Runic), Runic_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Khmer
+            = new UnicodeBlock(nameof(Khmer), Khmer_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Mongolian
+            = new UnicodeBlock(nameof(Mongolian), Mongolian_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Latin_Extended_Additional
+            = new UnicodeBlock(nameof(Latin_Extended_Additional), Latin_Extended_Additional_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Greek_Extended
+            = new UnicodeBlock(nameof(Greek_Extended), Greek_Extended_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock General_Punctuation
+            = new UnicodeBlock(nameof(General_Punctuation), General_Punctuation_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Superscripts_And_Subscripts
+            = new UnicodeBlock(nameof(Superscripts_And_Subscripts), Superscripts_And_Subscripts_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Currency_Symbols
+            = new UnicodeBlock(nameof(Currency_Symbols), Currency_Symbols_ID);
+        /// <summary>
+        /// Unicode 3.2 renames this block to "Combining Diacritical Marks for
+        /// Symbols".
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Combining_Marks_For_Symbols
+            = new UnicodeBlock(nameof(Combining_Marks_For_Symbols), Combining_Marks_For_Symbols_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Letterlike_Symbols
+            = new UnicodeBlock(nameof(Letterlike_Symbols), Letterlike_Symbols_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Number_Forms
+            = new UnicodeBlock(nameof(Number_Forms), Number_Forms_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Arrows
+            = new UnicodeBlock(nameof(Arrows), Arrows_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Mathematical_Operators
+            = new UnicodeBlock(nameof(Mathematical_Operators), Mathematical_Operators_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Miscellaneous_Technical
+            = new UnicodeBlock(nameof(Miscellaneous_Technical), Miscellaneous_Technical_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Control_Pictures
+            = new UnicodeBlock(nameof(Control_Pictures), Control_Pictures_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Optical_Character_Recognition
+            = new UnicodeBlock(nameof(Optical_Character_Recognition), Optical_Character_Recognition_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Enclosed_Alphanumerics
+            = new UnicodeBlock(nameof(Enclosed_Alphanumerics), Enclosed_Alphanumerics_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Box_Drawing
+            = new UnicodeBlock(nameof(Box_Drawing), Box_Drawing_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Block_Elements
+            = new UnicodeBlock(nameof(Block_Elements), Block_Elements_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Geometric_Shapes
+            = new UnicodeBlock(nameof(Geometric_Shapes), Geometric_Shapes_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Miscellaneous_Symbols
+            = new UnicodeBlock(nameof(Miscellaneous_Symbols), Miscellaneous_Symbols_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Dingbats
+            = new UnicodeBlock(nameof(Dingbats), Dingbats_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Braille_Patterns
+            = new UnicodeBlock(nameof(Braille_Patterns), Braille_Patterns_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock CJK_Radicals_Supplement
+            = new UnicodeBlock(nameof(CJK_Radicals_Supplement), CJK_Radicals_Supplement_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Kangxi_Radicals
+            = new UnicodeBlock(nameof(Kangxi_Radicals), Kangxi_Radicals_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Ideographic_Description_Characters
+            = new UnicodeBlock(nameof(Ideographic_Description_Characters),
+                Ideographic_Description_Characters_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock CJK_Symbols_And_Punctuation
+            = new UnicodeBlock(nameof(CJK_Symbols_And_Punctuation), CJK_Symbols_And_Punctuation_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Hiragana
+            = new UnicodeBlock(nameof(Hiragana), Hiragana_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Katakana
+            = new UnicodeBlock(nameof(Katakana), Katakana_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Bopomofo
+            = new UnicodeBlock(nameof(Bopomofo), Bopomofo_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Hangul_Compatibility_Jamo
+            = new UnicodeBlock(nameof(Hangul_Compatibility_Jamo), Hangul_Compatibility_Jamo_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Kanbun
+            = new UnicodeBlock(nameof(Kanbun), Kanbun_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Bopomofo_Extended
+            = new UnicodeBlock(nameof(Bopomofo_Extended), Bopomofo_Extended_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Enclosed_CJK_Letters_And_Months
+            = new UnicodeBlock(nameof(Enclosed_CJK_Letters_And_Months),
+                Enclosed_CJK_Letters_And_Months_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock CJK_Compatibility
+            = new UnicodeBlock(nameof(CJK_Compatibility), CJK_Compatibility_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_A
+            = new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_A),
+                CJK_Unified_Ideographs_Extension_A_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock CJK_Unified_Ideographs
+            = new UnicodeBlock(nameof(CJK_Unified_Ideographs), CJK_Unified_Ideographs_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Yi_Syllables
+            = new UnicodeBlock(nameof(Yi_Syllables), Yi_Syllables_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Yi_Radicals
+            = new UnicodeBlock(nameof(Yi_Radicals), Yi_Radicals_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Hangul_Syllables
+            = new UnicodeBlock(nameof(Hangul_Syllables), Hangul_Syllables_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock High_Surrogates
+            = new UnicodeBlock(nameof(High_Surrogates), High_Surrogates_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock High_Private_Use_Surrogates
+            = new UnicodeBlock(nameof(High_Private_Use_Surrogates), High_Private_Use_Surrogates_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Low_Surrogates
+            = new UnicodeBlock(nameof(Low_Surrogates), Low_Surrogates_ID);
+        /// <summary>
+        /// Same as <see cref="Private_Use"/>.
+        /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
+        /// and multiple code point ranges had this block.
+        /// Unicode 3.2 renames the block for the BMP PUA to "Private Use Area"
+        /// and adds separate blocks for the supplementary PUAs.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Private_Use_Area
+            = new UnicodeBlock(nameof(Private_Use_Area), 78);
+        /// <summary>
+        /// Same as <see cref="Private_Use_Area"/>.
+        /// Until Unicode 3.1.1; the corresponding block name was "Private Use";
+        /// and multiple code point ranges had this block.
+        /// Unicode 3.2 renames the block for the BMP PUA to "Private Use Area"
+        /// and adds separate blocks for the supplementary PUAs.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Private_Use
+            = Private_Use_Area;
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock CJK_Compatibility_Ideographs
+            = new UnicodeBlock(nameof(CJK_Compatibility_Ideographs), CJK_Compatibility_Ideographs_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Alphabetic_Presentation_Forms
+            = new UnicodeBlock(nameof(Alphabetic_Presentation_Forms), Alphabetic_Presentation_Forms_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Arabic_Presentation_Forms_A
+            = new UnicodeBlock(nameof(Arabic_Presentation_Forms_A), Arabic_Presentation_Forms_A_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Combining_Half_Marks
+            = new UnicodeBlock(nameof(Combining_Half_Marks), Combining_Half_Marks_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock CJK_Compatibility_Forms
+            = new UnicodeBlock(nameof(CJK_Compatibility_Forms), CJK_Compatibility_Forms_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Small_Form_Variants
+            = new UnicodeBlock(nameof(Small_Form_Variants), Small_Form_Variants_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Arabic_Presentation_Forms_B
+            = new UnicodeBlock(nameof(Arabic_Presentation_Forms_B), Arabic_Presentation_Forms_B_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Specials
+            = new UnicodeBlock(nameof(Specials), Specials_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock HalfWidth_And_FullWidth_Forms
+            = new UnicodeBlock(nameof(HalfWidth_And_FullWidth_Forms), HalfWidth_And_FullWidth_Forms_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Old_Italic
+            = new UnicodeBlock(nameof(Old_Italic), Old_Italic_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Gothic
+            = new UnicodeBlock(nameof(Gothic), Gothic_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Deseret
+            = new UnicodeBlock(nameof(Deseret), Deseret_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Byzantine_Musical_Symbols
+            = new UnicodeBlock(nameof(Byzantine_Musical_Symbols), Byzantine_Musical_Symbols_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Musical_Symbols
+            = new UnicodeBlock(nameof(Musical_Symbols), Musical_Symbols_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Mathematical_Alphanumeric_Symbols
+            = new UnicodeBlock(nameof(Mathematical_Alphanumeric_Symbols),
+                Mathematical_Alphanumeric_Symbols_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_B
+            = new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_B),
+                CJK_Unified_Ideographs_Extension_B_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock CJK_Compatibility_Ideographs_Supplement
+            = new UnicodeBlock(nameof(CJK_Compatibility_Ideographs_Supplement),
+                CJK_Compatibility_Ideographs_Supplement_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Tags
+            = new UnicodeBlock(nameof(Tags), Tags_ID);
+
+        // New blocks in Unicode 3.2
+
+        /// <summary>
+        /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Cyrillic_Supplementary
+            = new UnicodeBlock(nameof(Cyrillic_Supplementary), Cyrillic_Supplementary_ID);
+        /// <summary>
+        /// Unicode 4.0.1 renames the "Cyrillic Supplementary" block to "Cyrillic Supplement".
+        /// </summary>
+        /// <stable>ICU 3.0</stable>
+        public static readonly UnicodeBlock Cyrillic_Supplement
+            = new UnicodeBlock(nameof(Cyrillic_Supplement), Cyrillic_Supplement_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Tagalog
+            = new UnicodeBlock(nameof(Tagalog), Tagalog_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Hanunoo
+            = new UnicodeBlock(nameof(Hanunoo), Hanunoo_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Buhid
+            = new UnicodeBlock(nameof(Buhid), Buhid_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Tagbanwa
+            = new UnicodeBlock(nameof(Tagbanwa), Tagbanwa_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Miscellaneous_Mathematical_Symbols_A
+            = new UnicodeBlock(nameof(Miscellaneous_Mathematical_Symbols_A),
+                Miscellaneous_Mathematical_Symbols_A_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Supplemental_Arrows_A
+            = new UnicodeBlock(nameof(Supplemental_Arrows_A), Supplemental_Arrows_A_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Supplemental_Arrows_B
+            = new UnicodeBlock(nameof(Supplemental_Arrows_B), Supplemental_Arrows_B_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Miscellaneous_Mathematical_Symbols_B
+            = new UnicodeBlock(nameof(Miscellaneous_Mathematical_Symbols_B),
+                Miscellaneous_Mathematical_Symbols_B_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Supplemental_Mathematical_Operators
+            = new UnicodeBlock(nameof(Supplemental_Mathematical_Operators),
+                Supplemental_Mathematical_Operators_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Katakana_Phonetic_Extensions
+            = new UnicodeBlock(nameof(Katakana_Phonetic_Extensions), Katakana_Phonetic_Extensions_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Variation_Selectors
+            = new UnicodeBlock(nameof(Variation_Selectors), Variation_Selectors_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Supplementary_Private_Use_Area_A
+            = new UnicodeBlock(nameof(Supplementary_Private_Use_Area_A),
+                Supplementary_Private_Use_Area_A_ID);
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Supplementary_Private_Use_Area_B
+            = new UnicodeBlock(nameof(Supplementary_Private_Use_Area_B),
+                Supplementary_Private_Use_Area_B_ID);
+
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Limbu
+            = new UnicodeBlock(nameof(Limbu), Limbu_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Tai_Le
+            = new UnicodeBlock(nameof(Tai_Le), Tai_Le_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Khmer_Symbols
+            = new UnicodeBlock(nameof(Khmer_Symbols), Khmer_Symbols_ID);
+
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Phonetic_Extensions
+            = new UnicodeBlock(nameof(Phonetic_Extensions), Phonetic_Extensions_ID);
+
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Miscellaneous_Symbols_And_Arrows
+            = new UnicodeBlock(nameof(Miscellaneous_Symbols_And_Arrows),
+                Miscellaneous_Symbols_And_Arrows_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Yijing_Hexagram_Symbols
+            = new UnicodeBlock(nameof(Yijing_Hexagram_Symbols), Yijing_Hexagram_Symbols_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Linear_B_Syllabary
+            = new UnicodeBlock(nameof(Linear_B_Syllabary), Linear_B_Syllabary_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Linear_B_Ideograms
+            = new UnicodeBlock(nameof(Linear_B_Ideograms), Linear_B_Ideograms_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Aegean_Numbers
+            = new UnicodeBlock(nameof(Aegean_Numbers), Aegean_Numbers_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Ugaritic
+            = new UnicodeBlock(nameof(Ugaritic), Ugaritic_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Shavian
+            = new UnicodeBlock(nameof(Shavian), Shavian_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Osmanya
+            = new UnicodeBlock(nameof(Osmanya), Osmanya_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Cypriot_Syllabary
+            = new UnicodeBlock(nameof(Cypriot_Syllabary), Cypriot_Syllabary_ID);
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Tai_Xuan_Jing_Symbols
+            = new UnicodeBlock(nameof(Tai_Xuan_Jing_Symbols), Tai_Xuan_Jing_Symbols_ID);
+
+        /// <stable>ICU 2.6</stable>
+        public static readonly UnicodeBlock Variation_Selectors_Supplement
+            = new UnicodeBlock(nameof(Variation_Selectors_Supplement), Variation_Selectors_Supplement_ID);
+
+        /* New blocks in Unicode 4.1 */
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Ancient_Greek_Musical_Notation =
+                new UnicodeBlock(nameof(Ancient_Greek_Musical_Notation),
+                        Ancient_Greek_Musical_Notation_ID); /*[1D200]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Ancient_Greek_Numbers =
+                new UnicodeBlock(nameof(Ancient_Greek_Numbers), Ancient_Greek_Numbers_ID); /*[10140]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Arabic_Supplement =
+                new UnicodeBlock(nameof(Arabic_Supplement), Arabic_Supplement_ID); /*[0750]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Buginese =
+                new UnicodeBlock(nameof(Buginese), Buginese_ID); /*[1A00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock CJK_Strokes =
+                new UnicodeBlock(nameof(CJK_Strokes), CJK_Strokes_ID); /*[31C0]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Combining_Diacritical_Marks_Supplement =
+                new UnicodeBlock(nameof(Combining_Diacritical_Marks_Supplement),
+                        Combining_Diacritical_Marks_Supplement_ID); /*[1DC0]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Coptic = new UnicodeBlock(nameof(Coptic), Coptic_ID); /*[2C80]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Ethiopic_Extended =
+                new UnicodeBlock(nameof(Ethiopic_Extended), Ethiopic_Extended_ID); /*[2D80]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Ethiopic_Supplement =
+                new UnicodeBlock(nameof(Ethiopic_Supplement), Ethiopic_Supplement_ID); /*[1380]*/
+
+        /// <stable>ICU 3.4</stable>
+        public
+            static readonly UnicodeBlock Georgian_Supplement =
+                new UnicodeBlock(nameof(Georgian_Supplement), Georgian_Supplement_ID); /*[2D00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Glagolitic =
+                new UnicodeBlock(nameof(Glagolitic), Glagolitic_ID); /*[2C00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Kharoshthi =
+                new UnicodeBlock(nameof(Kharoshthi), Kharoshthi_ID); /*[10A00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Modifier_Tone_Letters =
+                new UnicodeBlock(nameof(Modifier_Tone_Letters), Modifier_Tone_Letters_ID); /*[A700]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock New_Tai_Lue =
+                new UnicodeBlock(nameof(New_Tai_Lue), New_Tai_Lue_ID); /*[1980]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Old_Persian =
+                new UnicodeBlock(nameof(Old_Persian), Old_Persian_ID); /*[103A0]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Phonetic_Extensions_Supplement =
+                new UnicodeBlock(nameof(Phonetic_Extensions_Supplement),
+                        Phonetic_Extensions_Supplement_ID); /*[1D80]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Supplemental_Punctuation =
+                new UnicodeBlock(nameof(Supplemental_Punctuation), Supplemental_Punctuation_ID); /*[2E00]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Syloti_Nagri =
+                new UnicodeBlock(nameof(Syloti_Nagri), Syloti_Nagri_ID); /*[A800]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Tifinagh =
+                new UnicodeBlock(nameof(Tifinagh), Tifinagh_ID); /*[2D30]*/
+
+        /// <stable>ICU 3.4</stable>
+        public static readonly UnicodeBlock Vertical_Forms =
+                new UnicodeBlock(nameof(Vertical_Forms), Vertical_Forms_ID); /*[FE10]*/
+
+        /// <stable>ICU 3.6</stable>
+        public static readonly UnicodeBlock Nko = new UnicodeBlock(nameof(Nko), Nko_ID); /*[07C0]*/
+                                                                                         /// <stable>ICU 3.6</stable>
+        public static readonly UnicodeBlock Balinese =
+                new UnicodeBlock(nameof(Balinese), Balinese_ID); /*[1B00]*/
+                                                                 /// <stable>ICU 3.6</stable>
+        public static readonly UnicodeBlock Latin_Extended_C =
+                new UnicodeBlock(nameof(Latin_Extended_C), Latin_Extended_C_ID); /*[2C60]*/
+                                                                                 /// <stable>ICU 3.6</stable>
+        public static readonly UnicodeBlock Latin_Extended_D =
+                new UnicodeBlock(nameof(Latin_Extended_D), Latin_Extended_D_ID); /*[A720]*/
+                                                                                 /// <stable>ICU 3.6</stable>
+        public static readonly UnicodeBlock Phags_Pa =
+                new UnicodeBlock(nameof(Phags_Pa), Phags_Pa_ID); /*[A840]*/
+                                                                 /// <stable>ICU 3.6</stable>
+        public static readonly UnicodeBlock Phoenician =
+                new UnicodeBlock(nameof(Phoenician), Phoenician_ID); /*[10900]*/
+                                                                     /// <stable>ICU 3.6</stable>
+        public static readonly UnicodeBlock Cuneiform =
+                new UnicodeBlock(nameof(Cuneiform), Cuneiform_ID); /*[12000]*/
+                                                                   /// <stable>ICU 3.6</stable>
+        public static readonly UnicodeBlock Cuneiform_Numbers_And_Punctuation =
+                new UnicodeBlock(nameof(Cuneiform_Numbers_And_Punctuation),
+                        Cuneiform_Numbers_And_Punctuation_ID); /*[12400]*/
+                                                               /// <stable>ICU 3.6</stable>
+        public static readonly UnicodeBlock Counting_Rod_Numerals =
+                new UnicodeBlock(nameof(Counting_Rod_Numerals), Counting_Rod_Numerals_ID); /*[1D360]*/
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Sundanese =
+                new UnicodeBlock(nameof(Sundanese), Sundanese_ID); /* [1B80] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Lepcha =
+                new UnicodeBlock(nameof(Lepcha), Lepcha_ID); /* [1C00] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Ol_Chiki =
+                new UnicodeBlock(nameof(Ol_Chiki), Ol_Chiki_ID); /* [1C50] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Cyrillic_Extended_A =
+                new UnicodeBlock(nameof(Cyrillic_Extended_A), Cyrillic_Extended_A_ID); /* [2DE0] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Vai = new UnicodeBlock(nameof(Vai), Vai_ID); /* [A500] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Cyrillic_Extended_B =
+                new UnicodeBlock(nameof(Cyrillic_Extended_B), Cyrillic_Extended_B_ID); /* [A640] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Saurashtra =
+                new UnicodeBlock(nameof(Saurashtra), Saurashtra_ID); /* [A880] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Kayah_Li =
+                new UnicodeBlock(nameof(Kayah_Li), Kayah_Li_ID); /* [A900] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Rejang =
+                new UnicodeBlock(nameof(Rejang), Rejang_ID); /* [A930] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Cham =
+                new UnicodeBlock(nameof(Cham), Cham_ID); /* [AA00] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Ancient_Symbols =
+                new UnicodeBlock(nameof(Ancient_Symbols), Ancient_Symbols_ID); /* [10190] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Phaistos_Disc =
+                new UnicodeBlock(nameof(Phaistos_Disc), Phaistos_Disc_ID); /* [101D0] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Lycian =
+                new UnicodeBlock(nameof(Lycian), Lycian_ID); /* [10280] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Carian =
+                new UnicodeBlock(nameof(Carian), Carian_ID); /* [102A0] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Lydian =
+                new UnicodeBlock(nameof(Lydian), Lydian_ID); /* [10920] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Mahjong_Tiles =
+                new UnicodeBlock(nameof(Mahjong_Tiles), Mahjong_Tiles_ID); /* [1F000] */
+
+        /// <stable>ICU 4.0</stable>
+        public static readonly UnicodeBlock Domino_Tiles =
+                new UnicodeBlock(nameof(Domino_Tiles), Domino_Tiles_ID); /* [1F030] */
+
+        /* New blocks in Unicode 5.2 */
+
+        /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Samaritan =
+                new UnicodeBlock(nameof(Samaritan), Samaritan_ID); /*[0800]*/
+                                                                   /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Unified_Canadian_Aboriginal_Syllabics_Extended =
+                new UnicodeBlock(nameof(Unified_Canadian_Aboriginal_Syllabics_Extended),
+                        Unified_Canadian_Aboriginal_Syllabics_Extended_ID); /*[18B0]*/
+                                                                            /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Tai_Tham =
+                new UnicodeBlock(nameof(Tai_Tham), Tai_Tham_ID); /*[1A20]*/
+                                                                 /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Vedic_Extensions =
+                new UnicodeBlock(nameof(Vedic_Extensions), Vedic_Extensions_ID); /*[1CD0]*/
+                                                                                 /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Lisu =
+                new UnicodeBlock(nameof(Lisu), Lisu_ID); /*[A4D0]*/
+                                                         /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Bamum =
+                new UnicodeBlock(nameof(Bamum), Bamum_ID); /*[A6A0]*/
+                                                           /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Common_Indic_Number_Forms =
+                new UnicodeBlock(nameof(Common_Indic_Number_Forms), Common_Indic_Number_Forms_ID); /*[A830]*/
+                                                                                                   /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Devanagari_Extended =
+                new UnicodeBlock(nameof(Devanagari_Extended), Devanagari_Extended_ID); /*[A8E0]*/
+                                                                                       /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Hangul_Jamo_Extended_A =
+                new UnicodeBlock(nameof(Hangul_Jamo_Extended_A), Hangul_Jamo_Extended_A_ID); /*[A960]*/
+                                                                                             /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Javanese =
+                new UnicodeBlock(nameof(Javanese), Javanese_ID); /*[A980]*/
+                                                                 /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Myanmar_Extended_A =
+                new UnicodeBlock(nameof(Myanmar_Extended_A), Myanmar_Extended_A_ID); /*[AA60]*/
+                                                                                     /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Tai_Viet =
+                new UnicodeBlock(nameof(Tai_Viet), Tai_Viet_ID); /*[AA80]*/
+                                                                 /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Meetei_Mayek =
+                new UnicodeBlock(nameof(Meetei_Mayek), Meetei_Mayek_ID); /*[ABC0]*/
+                                                                         /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Hangul_Jamo_Extended_B =
+                new UnicodeBlock(nameof(Hangul_Jamo_Extended_B), Hangul_Jamo_Extended_B_ID); /*[D7B0]*/
+                                                                                             /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Imperial_Aramaic =
+                new UnicodeBlock(nameof(Imperial_Aramaic), Imperial_Aramaic_ID); /*[10840]*/
+                                                                                 /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Old_South_Arabian =
+                new UnicodeBlock(nameof(Old_South_Arabian), Old_South_Arabian_ID); /*[10A60]*/
+                                                                                   /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Avestan =
+                new UnicodeBlock(nameof(Avestan), Avestan_ID); /*[10B00]*/
+                                                               /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Inscriptional_Parthian =
+                new UnicodeBlock(nameof(Inscriptional_Parthian), Inscriptional_Parthian_ID); /*[10B40]*/
+                                                                                             /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Inscriptional_Pahlavi =
+                new UnicodeBlock(nameof(Inscriptional_Pahlavi), Inscriptional_Pahlavi_ID); /*[10B60]*/
+                                                                                           /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Old_Turkic =
+                new UnicodeBlock(nameof(Old_Turkic), Old_Turkic_ID); /*[10C00]*/
+                                                                     /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Rumi_Numeral_Symbols =
+                new UnicodeBlock(nameof(Rumi_Numeral_Symbols), Rumi_Numeral_Symbols_ID); /*[10E60]*/
+                                                                                         /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Kaithi =
+                new UnicodeBlock(nameof(Kaithi), Kaithi_ID); /*[11080]*/
+                                                             /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Egyptian_Hieroglyphs =
+                new UnicodeBlock(nameof(Egyptian_Hieroglyphs), Egyptian_Hieroglyphs_ID); /*[13000]*/
+                                                                                         /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Enclosed_Alphanumeric_Supplement =
+                new UnicodeBlock(nameof(Enclosed_Alphanumeric_Supplement),
+                        Enclosed_Alphanumeric_Supplement_ID); /*[1F100]*/
+                                                              /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock Enclosed_Ideographic_Supplement =
+                new UnicodeBlock(nameof(Enclosed_Ideographic_Supplement),
+                        Enclosed_Ideographic_Supplement_ID); /*[1F200]*/
+                                                             /// <stable>ICU 4.4</stable>
+        public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_C =
+                new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_C),
+                        CJK_Unified_Ideographs_Extension_C_ID); /*[2A700]*/
+
+        /* New blocks in Unicode 6.0 */
+
+        /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Mandaic =
+                new UnicodeBlock(nameof(Mandaic), Mandaic_ID); /*[0840]*/
+                                                               /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Batak =
+                new UnicodeBlock(nameof(Batak), Batak_ID); /*[1BC0]*/
+                                                           /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Ethiopic_Extended_A =
+                new UnicodeBlock(nameof(Ethiopic_Extended_A), Ethiopic_Extended_A_ID); /*[AB00]*/
+                                                                                       /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Brahmi =
+                new UnicodeBlock(nameof(Brahmi), Brahmi_ID); /*[11000]*/
+                                                             /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Bamum_Supplement =
+                new UnicodeBlock(nameof(Bamum_Supplement), Bamum_Supplement_ID); /*[16800]*/
+                                                                                 /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Kana_Supplement =
+                new UnicodeBlock(nameof(Kana_Supplement), Kana_Supplement_ID); /*[1B000]*/
+                                                                               /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Playing_Cards =
+                new UnicodeBlock(nameof(Playing_Cards), Playing_Cards_ID); /*[1F0A0]*/
+                                                                           /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Miscellaneous_Symbols_And_Pictographs =
+                new UnicodeBlock(nameof(Miscellaneous_Symbols_And_Pictographs),
+                        Miscellaneous_Symbols_And_Pictographs_ID); /*[1F300]*/
+                                                                   /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Emoticons =
+                new UnicodeBlock(nameof(Emoticons), Emoticons_ID); /*[1F600]*/
+                                                                   /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Transport_And_Map_Symbols =
+                new UnicodeBlock(nameof(Transport_And_Map_Symbols), Transport_And_Map_Symbols_ID); /*[1F680]*/
+                                                                                                   /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock Alchemical_Symbols =
+                new UnicodeBlock(nameof(Alchemical_Symbols), Alchemical_Symbols_ID); /*[1F700]*/
+                                                                                     /// <stable>ICU 4.6</stable>
+        public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_D =
+                new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_D),
+                        CJK_Unified_Ideographs_Extension_D_ID); /*[2B740]*/
+
+        /* New blocks in Unicode 6.1 */
+
+        /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Arabic_Extended_A =
+                new UnicodeBlock(nameof(Arabic_Extended_A), Arabic_Extended_A_ID); /*[08A0]*/
+                                                                                   /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Arabic_Mathematical_Alphabetic_Symbols =
+                new UnicodeBlock(nameof(Arabic_Mathematical_Alphabetic_Symbols), Arabic_Mathematical_Alphabetic_Symbols_ID); /*[1EE00]*/
+                                                                                                                             /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Chakma = new UnicodeBlock(nameof(Chakma), Chakma_ID); /*[11100]*/
+                                                                                                  /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Meetei_Mayek_Extensions =
+                new UnicodeBlock(nameof(Meetei_Mayek_Extensions), Meetei_Mayek_Extensions_ID); /*[AAE0]*/
+                                                                                               /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Meroitic_Cursive =
+                new UnicodeBlock(nameof(Meroitic_Cursive), Meroitic_Cursive_ID); /*[109A0]*/
+                                                                                 /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Meroitic_Hieroglyphs =
+                new UnicodeBlock(nameof(Meroitic_Hieroglyphs), Meroitic_Hieroglyphs_ID); /*[10980]*/
+                                                                                         /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Miao = new UnicodeBlock(nameof(Miao), Miao_ID); /*[16F00]*/
+                                                                                            /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Sharada = new UnicodeBlock(nameof(Sharada), Sharada_ID); /*[11180]*/
+                                                                                                     /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Sora_Sompeng =
+                new UnicodeBlock(nameof(Sora_Sompeng), Sora_Sompeng_ID); /*[110D0]*/
+                                                                         /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Sundanese_Supplement =
+                new UnicodeBlock(nameof(Sundanese_Supplement), Sundanese_Supplement_ID); /*[1CC0]*/
+                                                                                         /// <stable>ICU 49</stable>
+        public static readonly UnicodeBlock Takri = new UnicodeBlock(nameof(Takri), Takri_ID); /*[11680]*/
+
+        /* New blocks in Unicode 7.0 */
+
+        /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Bassa_Vah = new UnicodeBlock(nameof(Bassa_Vah), Bassa_Vah_ID); /*[16AD0]*/
+                                                                                                           /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Caucasian_Albanian =
+                new UnicodeBlock(nameof(Caucasian_Albanian), Caucasian_Albanian_ID); /*[10530]*/
+                                                                                     /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Coptic_Epact_Numbers =
+                new UnicodeBlock(nameof(Coptic_Epact_Numbers), Coptic_Epact_Numbers_ID); /*[102E0]*/
+                                                                                         /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Combining_Diacritical_Marks_Extended =
+                new UnicodeBlock(nameof(Combining_Diacritical_Marks_Extended), Combining_Diacritical_Marks_Extended_ID); /*[1AB0]*/
+                                                                                                                         /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Duployan = new UnicodeBlock(nameof(Duployan), Duployan_ID); /*[1BC00]*/
+                                                                                                        /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Elbasan = new UnicodeBlock(nameof(Elbasan), Elbasan_ID); /*[10500]*/
+                                                                                                     /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Geometric_Shapes_Extended =
+                new UnicodeBlock(nameof(Geometric_Shapes_Extended), Geometric_Shapes_Extended_ID); /*[1F780]*/
+                                                                                                   /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Grantha = new UnicodeBlock(nameof(Grantha), Grantha_ID); /*[11300]*/
+                                                                                                     /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Khojki = new UnicodeBlock(nameof(Khojki), Khojki_ID); /*[11200]*/
+                                                                                                  /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Khudawadi = new UnicodeBlock(nameof(Khudawadi), Khudawadi_ID); /*[112B0]*/
+                                                                                                           /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Latin_Extended_E =
+                new UnicodeBlock(nameof(Latin_Extended_E), Latin_Extended_E_ID); /*[AB30]*/
+                                                                                 /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Linear_A = new UnicodeBlock(nameof(Linear_A), Linear_A_ID); /*[10600]*/
+                                                                                                        /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Mahajani = new UnicodeBlock(nameof(Mahajani), Mahajani_ID); /*[11150]*/
+                                                                                                        /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Manichaean = new UnicodeBlock(nameof(Manichaean), Manichaean_ID); /*[10AC0]*/
+                                                                                                              /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Mende_Kikakui =
+                new UnicodeBlock(nameof(Mende_Kikakui), Mende_Kikakui_ID); /*[1E800]*/
+                                                                           /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Modi = new UnicodeBlock(nameof(Modi), Modi_ID); /*[11600]*/
+                                                                                            /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Mro = new UnicodeBlock(nameof(Mro), Mro_ID); /*[16A40]*/
+                                                                                         /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Myanmar_Extended_B =
+                new UnicodeBlock(nameof(Myanmar_Extended_B), Myanmar_Extended_B_ID); /*[A9E0]*/
+                                                                                     /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Nabataean = new UnicodeBlock(nameof(Nabataean), Nabataean_ID); /*[10880]*/
+                                                                                                           /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Old_North_Arabian =
+                new UnicodeBlock(nameof(Old_North_Arabian), Old_North_Arabian_ID); /*[10A80]*/
+                                                                                   /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Old_Permic = new UnicodeBlock(nameof(Old_Permic), Old_Permic_ID); /*[10350]*/
+                                                                                                              /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Ornamental_Dingbats =
+                new UnicodeBlock(nameof(Ornamental_Dingbats), Ornamental_Dingbats_ID); /*[1F650]*/
+                                                                                       /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Pahawh_Hmong = new UnicodeBlock(nameof(Pahawh_Hmong), Pahawh_Hmong_ID); /*[16B00]*/
+                                                                                                                    /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Palmyrene = new UnicodeBlock(nameof(Palmyrene), Palmyrene_ID); /*[10860]*/
+                                                                                                           /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Pau_Cin_Hau = new UnicodeBlock(nameof(Pau_Cin_Hau), Pau_Cin_Hau_ID); /*[11AC0]*/
+                                                                                                                 /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Psalter_Pahlavi =
+                new UnicodeBlock(nameof(Psalter_Pahlavi), Psalter_Pahlavi_ID); /*[10B80]*/
+                                                                               /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Shorthand_Format_Controls =
+                new UnicodeBlock(nameof(Shorthand_Format_Controls), Shorthand_Format_Controls_ID); /*[1BCA0]*/
+                                                                                                   /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Siddham = new UnicodeBlock(nameof(Siddham), Siddham_ID); /*[11580]*/
+                                                                                                     /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Sinhala_Archaic_Numbers =
+                new UnicodeBlock(nameof(Sinhala_Archaic_Numbers), Sinhala_Archaic_Numbers_ID); /*[111E0]*/
+                                                                                               /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Supplemental_Arrows_C =
+                new UnicodeBlock(nameof(Supplemental_Arrows_C), Supplemental_Arrows_C_ID); /*[1F800]*/
+                                                                                           /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Tirhuta = new UnicodeBlock(nameof(Tirhuta), Tirhuta_ID); /*[11480]*/
+                                                                                                     /// <stable>ICU 54</stable>
+        public static readonly UnicodeBlock Warang_Citi = new UnicodeBlock(nameof(Warang_Citi), Warang_Citi_ID); /*[118A0]*/
+
+        /* New blocks in Unicode 8.0 */
+
+        /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock Ahom = new UnicodeBlock(nameof(Ahom), Ahom_ID); /*[11700]*/
+                                                                                            /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock Anatolian_Hieroglyphs =
+                new UnicodeBlock(nameof(Anatolian_Hieroglyphs), Anatolian_Hieroglyphs_ID); /*[14400]*/
+                                                                                           /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock Cherokee_Supplement =
+                new UnicodeBlock(nameof(Cherokee_Supplement), Cherokee_Supplement_ID); /*[AB70]*/
+                                                                                       /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_E =
+                new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_E),
+                        CJK_Unified_Ideographs_Extension_E_ID); /*[2B820]*/
+                                                                /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock Early_Dynastic_Cuneiform =
+                new UnicodeBlock(nameof(Early_Dynastic_Cuneiform), Early_Dynastic_Cuneiform_ID); /*[12480]*/
+                                                                                                 /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock Hatran = new UnicodeBlock(nameof(Hatran), Hatran_ID); /*[108E0]*/
+                                                                                                  /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock Multani = new UnicodeBlock(nameof(Multani), Multani_ID); /*[11280]*/
+                                                                                                     /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock Old_Hungarian =
+                new UnicodeBlock(nameof(Old_Hungarian), Old_Hungarian_ID); /*[10C80]*/
+                                                                           /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock Supplemental_Symbols_And_Pictographs =
+                new UnicodeBlock(nameof(Supplemental_Symbols_And_Pictographs),
+                        Supplemental_Symbols_And_Pictographs_ID); /*[1F900]*/
+                                                                  /// <stable>ICU 56</stable>
+        public static readonly UnicodeBlock Sutton_Signwriting =
+                new UnicodeBlock(nameof(Sutton_Signwriting), Sutton_Signwriting_ID); /*[1D800]*/
+
+        /* New blocks in Unicode 9.0 */
+
+        /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Adlam = new UnicodeBlock(nameof(Adlam), Adlam_ID); /*[1E900]*/
+                                                                                               /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Bhaiksuki = new UnicodeBlock(nameof(Bhaiksuki), Bhaiksuki_ID); /*[11C00]*/
+                                                                                                           /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Cyrillic_Extended_C =
+                new UnicodeBlock(nameof(Cyrillic_Extended_C), Cyrillic_Extended_C_ID); /*[1C80]*/
+                                                                                       /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Glagolitic_Supplement =
+                new UnicodeBlock(nameof(Glagolitic_Supplement), Glagolitic_Supplement_ID); /*[1E000]*/
+                                                                                           /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Ideographic_Symbols_And_Punctuation =
+                new UnicodeBlock(nameof(Ideographic_Symbols_And_Punctuation), Ideographic_Symbols_And_Punctuation_ID); /*[16FE0]*/
+                                                                                                                       /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Marchen = new UnicodeBlock(nameof(Marchen), Marchen_ID); /*[11C70]*/
+                                                                                                     /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Mongolian_Supplement =
+                new UnicodeBlock(nameof(Mongolian_Supplement), Mongolian_Supplement_ID); /*[11660]*/
+                                                                                         /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Newa = new UnicodeBlock(nameof(Newa), Newa_ID); /*[11400]*/
+                                                                                            /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Osage = new UnicodeBlock(nameof(Osage), Osage_ID); /*[104B0]*/
+                                                                                               /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Tangut = new UnicodeBlock(nameof(Tangut), Tangut_ID); /*[17000]*/
+                                                                                                  /// <stable>ICU 58</stable>
+        public static readonly UnicodeBlock Tangut_Components =
+                new UnicodeBlock(nameof(Tangut_Components), Tangut_Components_ID); /*[18800]*/
+
+        // New blocks in Unicode 10.0
+
+        /// <stable>ICU 60</stable>
+        public static readonly UnicodeBlock CJK_Unified_Ideographs_Extension_F =
+                new UnicodeBlock(nameof(CJK_Unified_Ideographs_Extension_F), CJK_Unified_Ideographs_Extension_F_ID); /*[2CEB0]*/
+                                                                                                                     /// <stable>ICU 60</stable>
+        public static readonly UnicodeBlock Kana_Extended_A =
+                new UnicodeBlock(nameof(Kana_Extended_A), Kana_Extended_A_ID); /*[1B100]*/
+                                                                               /// <stable>ICU 60</stable>
+        public static readonly UnicodeBlock Masaram_Gondi =
+                new UnicodeBlock(nameof(Masaram_Gondi), Masaram_Gondi_ID); /*[11D00]*/
+                                                                           /// <stable>ICU 60</stable>
+        public static readonly UnicodeBlock Nushu = new UnicodeBlock(nameof(Nushu), Nushu_ID); /*[1B170]*/
+                                                                                               /// <stable>ICU 60</stable>
+        public static readonly UnicodeBlock Soyombo = new UnicodeBlock(nameof(Soyombo), Soyombo_ID); /*[11A50]*/
+                                                                                                     /// <stable>ICU 60</stable>
+        public static readonly UnicodeBlock Syriac_Supplement =
+                new UnicodeBlock(nameof(Syriac_Supplement), Syriac_Supplement_ID); /*[0860]*/
+                                                                                   /// <stable>ICU 60</stable>
+        public static readonly UnicodeBlock Zanabazar_Square =
+                new UnicodeBlock(nameof(Zanabazar_Square), Zanabazar_Square_ID); /*[11A00]*/
+
+        /// <stable>ICU 2.4</stable>
+        public static readonly UnicodeBlock Invalid_Code
+            = new UnicodeBlock(nameof(Invalid_Code), Invalid_Code_ID);
+
+        static UnicodeBlock()
+        {
+#pragma warning disable 612, 618
+            for (int blockId = 0; blockId < Count; ++blockId)
+#pragma warning restore 612, 618
+            {
+                if (BLOCKS_[blockId] == null)
+                {
+                    throw new InvalidOperationException(
+                            "UnicodeBlock.BLOCKS_[" + blockId + "] not initialized");
+                }
+            }
+        }
+
+        // public methods --------------------------------------------------
+
+        /// <icu/>
+        /// <summary>
+        /// Returns the only instance of the <see cref="UnicodeBlock"/> with the argument ID.
+        /// If no such ID exists, a <see cref="Invalid_Code"/> <see cref="UnicodeBlock"/> will be returned.
+        /// </summary>
+        /// <param name="id"><see cref="UnicodeBlock"/> ID.</param>
+        /// <returns>the only instance of the <see cref="UnicodeBlock"/> with the argument ID
+        /// if it exists, otherwise a <see cref="Invalid_Code"/> <see cref="UnicodeBlock"/> will be
+        /// returned.
+        /// </returns>
+        /// <stable>ICU 2.4</stable>
+        public static UnicodeBlock GetInstance(int id)
+        {
+            if (id >= 0 && id < BLOCKS_.Length)
+            {
+                return BLOCKS_[id];
+            }
+            return Invalid_Code;
+        }
+
+        /// <summary>
+        /// Returns the Unicode allocation block that contains the code point,
+        /// or null if the code point is not a member of a defined block.
+        /// </summary>
+        /// <param name="ch">Code point to be tested.</param>
+        /// <returns>The Unicode allocation block that contains the code point.</returns>
+        /// <stable>ICU 2.4</stable>
+        public static UnicodeBlock Of(int ch)
+        {
+            if (ch > UChar.MaxValue)
+            {
+                return Invalid_Code;
+            }
+
+            return UnicodeBlock.GetInstance(
+                    UCharacterProperty.Instance.GetIntPropertyValue(ch, UProperty.Block));
+        }
+
+        /// <summary>
+        /// Returns the Unicode block with the given name. This matches
+        /// against the official UCD name (ignoring case).
+        /// </summary>
+        /// <param name="blockName">The name of the block to match.</param>
+        /// <returns>The <see cref="UnicodeBlock"/> with that name.</returns>
+        /// <exception cref="ArgumentException">If the blockName could not be matched.</exception>
+        /// <stable>ICU 3.0</stable>
+        public static UnicodeBlock ForName(string blockName) // ICU4N TODO: API - rename GetInstance() ? ForName is a Java-ism.
+        {
+            IDictionary<string, UnicodeBlock> m = null;
+            if (mref != null)
+            {
+                //m = mref.Get();
+                mref.TryGetTarget(out m);
+            }
+            if (m == null)
+            {
+                m = new Dictionary<string, UnicodeBlock>(BLOCKS_.Length);
+                for (int i = 0; i < BLOCKS_.Length; ++i)
+                {
+                    UnicodeBlock b2 = BLOCKS_[i];
+                    string name = TrimBlockName(
+                            UChar.GetPropertyValueName(UProperty.Block, b2.ID,
+                                    NameChoice.Long));
+                    m[name] = b2;
+                }
+                mref = new WeakReference<IDictionary<string, UnicodeBlock>>(m);
+            }
+            UnicodeBlock b = m[TrimBlockName(blockName)];
+            if (b == null)
+            {
+                throw new ArgumentException();
+            }
+            return b;
+        }
+        private static WeakReference<IDictionary<string, UnicodeBlock>> mref;
+
+        private static string TrimBlockName(string name)
+        {
+            string upper = name.ToUpperInvariant();
+            StringBuilder result = new StringBuilder(upper.Length);
+            for (int i = 0; i < upper.Length; i++)
+            {
+                char c = upper[i];
+                if (c != ' ' && c != '_' && c != '-')
+                {
+                    result.Append(c);
+                }
+            }
+            return result.ToString();
+        }
+
+        /// <icu/>
+        /// <summary>
+        /// Gets the type ID of this Unicode block.
+        /// </summary>
+        /// <stable>ICU 2.4</stable>
+        public int ID
+        {
+            get { return m_id_; }
+        }
+
+        /// <summary>
+        /// Returns the name of this <see cref="UnicodeBlock"/>.
+        /// </summary>
+        // ICU4N specific - we don't have a Character.Subset base class, so
+        // this functionality was moved here.
+        public override string ToString()
+        {
+            return name;
+        }
+
+        // private data members ---------------------------------------------
+
+        /// <summary>
+        /// Identification code for this <see cref="UnicodeBlock"/>
+        /// </summary>
+        private readonly int m_id_;
+
+        /// <summary>
+        /// Name for this <see cref="UnicodeBlock"/>
+        /// </summary>
+        private readonly string name;
+
+        // private constructor ----------------------------------------------
+
+        /// <summary>
+        /// <see cref="UnicodeBlock"/> constructor.
+        /// </summary>
+        /// <param name="name">Name of this <see cref="UnicodeBlock"/>.</param>
+        /// <param name="id">Unique id of this <see cref="UnicodeBlock"/>.</param>
+        /// <exception cref="ArgumentNullException">If name is <c>null</c>.</exception>
+        private UnicodeBlock(string name, int id)
+        {
+            this.name = name ?? throw new ArgumentNullException(nameof(name));
+            m_id_ = id;
+            if (id >= 0)
+            {
+                BLOCKS_[id] = this;
+            }
+        }
+    }
+}
+
+namespace ICU4N.Globalization
+{
+    /// <summary>
+    /// East Asian Width constants.
+    /// </summary>
+    /// <seealso cref="UProperty.East_Asian_Width"/>
+    /// <seealso cref="UChar.GetIntPropertyValue(int, UProperty)"/>
+    /// <stable>ICU 2.4</stable>
+    public static class EastAsianWidth
+    {
+        /// <stable>ICU 2.4</stable>
+        public const int Neutral = 0;
+        /// <stable>ICU 2.4</stable>
+        public const int Ambiguous = 1;
+        /// <stable>ICU 2.4</stable>
+        public const int HalfWidth = 2;
+        /// <stable>ICU 2.4</stable>
+        public const int FullWidth = 3;
+        /// <stable>ICU 2.4</stable>
+        public const int Narrow = 4;
+        /// <stable>ICU 2.4</stable>
+        public const int Wide = 5;
+        /// <summary>
+        /// One more than the highest normal <see cref="EastAsianWidth"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.East_Asian_Width"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 6;
+    }
+
+    /// <summary>
+    /// Decomposition Type constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Decomposition_Type"/>
+    /// <stable>ICU 2.4</stable>
+    public static class DecompositionType
+    {
+        /// <stable>ICU 2.4</stable>
+        public const int None = 0;
+        /// <stable>ICU 2.4</stable>
+        public const int Canonical = 1;
+        /// <stable>ICU 2.4</stable>
+        public const int Compat = 2;
+        /// <stable>ICU 2.4</stable>
+        public const int Circle = 3;
+        /// <stable>ICU 2.4</stable>
+        public const int Final = 4;
+        /// <stable>ICU 2.4</stable>
+        public const int Font = 5;
+        /// <stable>ICU 2.4</stable>
+        public const int Fraction = 6;
+        /// <stable>ICU 2.4</stable>
+        public const int Initial = 7;
+        /// <stable>ICU 2.4</stable>
+        public const int Isolated = 8;
+        /// <stable>ICU 2.4</stable>
+        public const int Medial = 9;
+        /// <stable>ICU 2.4</stable>
+        public const int Narrow = 10;
+        /// <stable>ICU 2.4</stable>
+        public const int NoBreak = 11;
+        /// <stable>ICU 2.4</stable>
+        public const int Small = 12;
+        /// <stable>ICU 2.4</stable>
+        public const int Square = 13;
+        /// <stable>ICU 2.4</stable>
+        public const int Sub = 14;
+        /// <stable>ICU 2.4</stable>
+        public const int Super = 15;
+        /// <stable>ICU 2.4</stable>
+        public const int Vertical = 16;
+        /// <stable>ICU 2.4</stable>
+        public const int Wide = 17;
+        /// <summary>
+        /// One more than the highest normal <see cref="DecompositionType"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Decomposition_Type"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 18;
+    }
+
+    /// <summary>
+    /// Joining Type constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Joining_Type"/>
+    /// <stable>ICU 2.4</stable>
+    public static class JoiningType
+    {
+        /// <stable>ICU 2.4</stable>
+        public const int NonJoining = 0;
+        /// <stable>ICU 2.4</stable>
+        public const int JoinCausing = 1;
+        /// <stable>ICU 2.4</stable>
+        public const int DualJoining = 2;
+        /// <stable>ICU 2.4</stable>
+        public const int LeftJoining = 3;
+        /// <stable>ICU 2.4</stable>
+        public const int RightJoining = 4;
+        /// <stable>ICU 2.4</stable>
+        public const int Transparent = 5;
+        /// <summary>
+        /// One more than the highest normal <see cref="JoiningType"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Joining_Type"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 6;
+    }
+
+    /// <summary>
+    /// Joining Group constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Joining_Group"/>
+    /// <stable>ICU 2.4</stable>
+    public static class JoiningGroup
+    {
+        /// <stable>ICU 2.4</stable>
+        public const int NoJoiningGroup = 0;
+        /// <stable>ICU 2.4</stable>
+        public const int Ain = 1;
+        /// <stable>ICU 2.4</stable>
+        public const int Alaph = 2;
+        /// <stable>ICU 2.4</stable>
+        public const int Alef = 3;
+        /// <stable>ICU 2.4</stable>
+        public const int Beh = 4;
+        /// <stable>ICU 2.4</stable>
+        public const int Beth = 5;
+        /// <stable>ICU 2.4</stable>
+        public const int Dal = 6;
+        /// <stable>ICU 2.4</stable>
+        public const int DalathRish = 7;
+        /// <stable>ICU 2.4</stable>
+        public const int E = 8;
+        /// <stable>ICU 2.4</stable>
+        public const int Feh = 9;
+        /// <stable>ICU 2.4</stable>
+        public const int FinalSemkath = 10;
+        /// <stable>ICU 2.4</stable>
+        public const int Gaf = 11;
+        /// <stable>ICU 2.4</stable>
+        public const int Gamal = 12;
+        /// <stable>ICU 2.4</stable>
+        public const int Hah = 13;
+        /// <stable>ICU 4.6</stable>
+        public const int TehMarbutaGoal = 14;
+        /// <stable>ICU 2.4</stable>
+        public const int HamzaOnHehGoal = TehMarbutaGoal;
+        /// <stable>ICU 2.4</stable>
+        public const int He = 15;
+        /// <stable>ICU 2.4</stable>
+        public const int Heh = 16;
+        /// <stable>ICU 2.4</stable>
+        public const int HehGoal = 17;
+        /// <stable>ICU 2.4</stable>
+        public const int Heth = 18;
+        /// <stable>ICU 2.4</stable>
+        public const int Kaf = 19;
+        /// <stable>ICU 2.4</stable>
+        public const int Kaph = 20;
+        /// <stable>ICU 2.4</stable>
+        public const int KnottedHeh = 21;
+        /// <stable>ICU 2.4</stable>
+        public const int Lam = 22;
+        /// <stable>ICU 2.4</stable>
+        public const int Lamadh = 23;
+        /// <stable>ICU 2.4</stable>
+        public const int Meem = 24;
+        /// <stable>ICU 2.4</stable>
+        public const int Mim = 25;
+        /// <stable>ICU 2.4</stable>
+        public const int Noon = 26;
+        /// <stable>ICU 2.4</stable>
+        public const int Nun = 27;
+        /// <stable>ICU 2.4</stable>
+        public const int Pe = 28;
+        /// <stable>ICU 2.4</stable>
+        public const int Qaf = 29;
+        /// <stable>ICU 2.4</stable>
+        public const int Qaph = 30;
+        /// <stable>ICU 2.4</stable>
+        public const int Reh = 31;
+        /// <stable>ICU 2.4</stable>
+        public const int ReversedPe = 32;
+        /// <stable>ICU 2.4</stable>
+        public const int Sad = 33;
+        /// <stable>ICU 2.4</stable>
+        public const int Sadhe = 34;
+        /// <stable>ICU 2.4</stable>
+        public const int Seen = 35;
+        /// <stable>ICU 2.4</stable>
+        public const int Semkath = 36;
+        /// <stable>ICU 2.4</stable>
+        public const int Shin = 37;
+        /// <stable>ICU 2.4</stable>
+        public const int SwashKaf = 38;
+        /// <stable>ICU 2.4</stable>
+        public const int SyriacWaw = 39;
+        /// <stable>ICU 2.4</stable>
+        public const int Tah = 40;
+        /// <stable>ICU 2.4</stable>
+        public const int Taw = 41;
+        /// <stable>ICU 2.4</stable>
+        public const int TehMarbuta = 42;
+        /// <stable>ICU 2.4</stable>
+        public const int Teth = 43;
+        /// <stable>ICU 2.4</stable>
+        public const int Waw = 44;
+        /// <stable>ICU 2.4</stable>
+        public const int Yeh = 45;
+        /// <stable>ICU 2.4</stable>
+        public const int YehBarree = 46;
+        /// <stable>ICU 2.4</stable>
+        public const int YehWithTail = 47;
+        /// <stable>ICU 2.4</stable>
+        public const int Yudh = 48;
+        /// <stable>ICU 2.4</stable>
+        public const int YudhHe = 49;
+        /// <stable>ICU 2.4</stable>
+        public const int Zain = 50;
+        /// <stable>ICU 2.6</stable>
+        public const int Fe = 51;
+        /// <stable>ICU 2.6</stable>
+        public const int Khaph = 52;
+        /// <stable>ICU 2.6</stable>
+        public const int Zhain = 53;
+        /// <stable>ICU 4.0</stable>
+        public const int BurushaskiYehBarree = 54;
+        /// <stable>ICU 4.4</stable>
+        public const int FarsiYeh = 55;
+        /// <stable>ICU 4.4</stable>
+        public const int Nya = 56;
+        /// <stable>ICU 49</stable>
+        public const int RohingyaYeh = 57;
+
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanAleph = 58;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanAyin = 59;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanBeth = 60;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanDaleth = 61;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanDhamedh = 62;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanFive = 63;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanGimel = 64;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanHeth = 65;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanHundred = 66;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanKaph = 67;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanLamedh = 68;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanMem = 69;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanNun = 70;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanOne = 71;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanPe = 72;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanQoph = 73;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanResh = 74;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanSadhe = 75;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanSamekh = 76;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanTaw = 77;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanTen = 78;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanTeth = 79;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanThamedh = 80;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanTwenty = 81;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanWaw = 82;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanYodh = 83;
+        /// <stable>ICU 54</stable>
+        public const int ManichaeanZayin = 84;
+        /// <stable>ICU 54</stable>
+        public const int StraightWaw = 85;
+
+        /// <stable>ICU 58</stable>
+        public const int AfricanFeh = 86;
+        /// <stable>ICU 58</stable>
+        public const int AfricanNoon = 87;
+        /// <stable>ICU 58</stable>
+        public const int AfricanQaf = 88;
+
+        /// <stable>ICU 60</stable>
+        public const int MalayalamBha = 89;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamJa = 90;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamLla = 91;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamLlla = 92;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamNga = 93;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamNna = 94;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamNnna = 95;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamNya = 96;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamRa = 97;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamSsa = 98;
+        /// <stable>ICU 60</stable>
+        public const int MalayalamTta = 99;
+
+        /// <summary>
+        /// One more than the highest normal <see cref="JoiningGroup"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Joining_Group"/>
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 100;
+    }
+
+    /// <summary>
+    /// Grapheme Cluster Break constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Grapheme_Cluster_Break"/>
+    /// <stable>ICU 3.4</stable>
+    public static class GraphemeClusterBreak
+    {
+        /// <stable>ICU 3.4</stable>
+        public const int Other = 0;
+        /// <stable>ICU 3.4</stable>
+        public const int Control = 1;
+        /// <stable>ICU 3.4</stable>
+        public const int Cr = 2;
+        /// <stable>ICU 3.4</stable>
+        public const int Extend = 3;
+        /// <stable>ICU 3.4</stable>
+        public const int L = 4;
+        /// <stable>ICU 3.4</stable>
+        public const int Lf = 5;
+        /// <stable>ICU 3.4</stable>
+        public const int Lv = 6;
+        /// <stable>ICU 3.4</stable>
+        public const int Lvt = 7;
+        /// <stable>ICU 3.4</stable>
+        public const int T = 8;
+        /// <stable>ICU 3.4</stable>
+        public const int V = 9;
+        /// <stable>ICU 4.0</stable>
+        public const int SpacingMark = 10;
+        /// <stable>ICU 4.0</stable>
+        public const int Prepend = 11;
+        /// <stable>ICU 50</stable>
+        public const int RegionalIndicator = 12;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
+                                                           /// <stable>ICU 58</stable>
+        public const int EBase = 13;          /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
+                                                       /// <stable>ICU 58</stable>
+        public const int EBaseGaz = 14;      /*[EBG]*/
+                                             /// <stable>ICU 58</stable>
+        public const int EModifier = 15;      /*[EM]*/
+                                              /// <stable>ICU 58</stable>
+        public const int GlueAfterZwj = 16;  /*[GAZ]*/
+                                             /// <stable>ICU 58</stable>
+        public const int Zwj = 17;             /*[ZWJ]*/
+
+        /// <summary>
+        /// One more than the highest normal <see cref="GraphemeClusterBreak"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Grapheme_Cluster_Break"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 18;
+    }
+
+    /// <summary>
+    /// Word Break constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Word_Break"/>
+    /// <stable>ICU 3.4</stable>
+    public static class WordBreak
+    {
+        /// <stable>ICU 3.8</stable>
+        public const int Other = 0;
+        /// <stable>ICU 3.8</stable>
+        public const int ALetter = 1;
+        /// <stable>ICU 3.8</stable>
+        public const int Format = 2;
+        /// <stable>ICU 3.8</stable>
+        public const int Katakana = 3;
+        /// <stable>ICU 3.8</stable>
+        public const int MidLetter = 4;
+        /// <stable>ICU 3.8</stable>
+        public const int MidNum = 5;
+        /// <stable>ICU 3.8</stable>
+        public const int Numeric = 6;
+        /// <stable>ICU 3.8</stable>
+        public const int ExtendNumLet = 7;
+        /// <stable>ICU 4.0</stable>
+        public const int Cr = 8;
+        /// <stable>ICU 4.0</stable>
+        public const int Extend = 9;
+        /// <stable>ICU 4.0</stable>
+        public const int Lf = 10;
+        /// <stable>ICU 4.0</stable>
+        public const int MidNumLet = 11;
+        /// <stable>ICU 4.0</stable>
+        public const int Newline = 12;
+        /// <stable>ICU 50</stable>
+        public const int RegionalIndicator = 13;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
+                                                           /// <stable>ICU 52</stable>
+        public const int HebrewLetter = 14;    /*[HL]*/ /* from here on: new in Unicode 6.3/ICU 52 */
+                                                        /// <stable>ICU 52</stable>
+        public const int SingleQuote = 15;     /*[SQ]*/
+                                               /// <stable>ICU 52</stable>
+        public const int DoubleQuote = 16;     /*[DQ]*/
+                                               /// <stable>ICU 58</stable>
+        public const int EBase = 17;           /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
+                                                        /// <stable>ICU 58</stable>
+        public const int EBaseGaz = 18;       /*[EBG]*/
+                                              /// <stable>ICU 58</stable>
+        public const int EModifier = 19;       /*[EM]*/
+                                               /// <stable>ICU 58</stable>
+        public const int GlueAfterZwj = 20;   /*[GAZ]*/
+                                              /// <stable>ICU 58</stable>
+        public const int Zwj = 21;              /*[ZWJ]*/
+
+        /// <summary>
+        /// One more than the highest normal <see cref="WordBreak"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Word_Break"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 22;
+    }
+
+    /// <summary>
+    /// Sentence Break constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Sentence_Break"/>
+    /// <stable>ICU 3.4</stable>
+    public static class SentenceBreak
+    {
+        /// <stable>ICU 3.8</stable>
+        public const int Other = 0;
+        /// <stable>ICU 3.8</stable>
+        public const int ATerm = 1;
+        /// <stable>ICU 3.8</stable>
+        public const int Close = 2;
+        /// <stable>ICU 3.8</stable>
+        public const int Format = 3;
+        /// <stable>ICU 3.8</stable>
+        public const int Lower = 4;
+        /// <stable>ICU 3.8</stable>
+        public const int Numeric = 5;
+        /// <stable>ICU 3.8</stable>
+        public const int OLetter = 6;
+        /// <stable>ICU 3.8</stable>
+        public const int Sep = 7;
+        /// <stable>ICU 3.8</stable>
+        public const int Sp = 8;
+        /// <stable>ICU 3.8</stable>
+        public const int STerm = 9;
+        /// <stable>ICU 3.8</stable>
+        public const int Upper = 10;
+        /// <stable>ICU 4.0</stable>
+        public const int Cr = 11;
+        /// <stable>ICU 4.0</stable>
+        public const int Extend = 12;
+        /// <stable>ICU 4.0</stable>
+        public const int Lf = 13;
+        /// <stable>ICU 4.0</stable>
+        public const int SContinue = 14;
+
+        /// <summary>
+        /// One more than the highest normal <see cref="SentenceBreak"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Sentence_Break"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 15;
+    }
+
+    /// <summary>
+    /// Line Break constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Line_Break"/>
+    /// <stable>ICU 2.4</stable>
+    public static class LineBreak
+    {
+        /// <stable>ICU 2.4</stable>
+        public const int Unknown = 0;
+        /// <stable>ICU 2.4</stable>
+        public const int Ambiguous = 1;
+        /// <stable>ICU 2.4</stable>
+        public const int Alphabetic = 2;
+        /// <stable>ICU 2.4</stable>
+        public const int BreakBoth = 3;
+        /// <stable>ICU 2.4</stable>
+        public const int BreakAfter = 4;
+        /// <stable>ICU 2.4</stable>
+        public const int BreakBefore = 5;
+        /// <stable>ICU 2.4</stable>
+        public const int MandatoryBreak = 6;
+        /// <stable>ICU 2.4</stable>
+        public const int ContingentBreak = 7;
+        /// <stable>ICU 2.4</stable>
+        public const int ClosePunctuation = 8;
+        /// <stable>ICU 2.4</stable>
+        public const int CombiningMark = 9;
+        /// <stable>ICU 2.4</stable>
+        public const int CarriageReturn = 10;
+        /// <stable>ICU 2.4</stable>
+        public const int Exclamation = 11;
+        /// <stable>ICU 2.4</stable>
+        public const int Glue = 12;
+        /// <stable>ICU 2.4</stable>
+        public const int Hyphen = 13;
+        /// <stable>ICU 2.4</stable>
+        public const int Ideographic = 14;
+        ///// <seealso cref="Inseparable"/>
+        ///// <stable>ICU 2.4</stable>
+        //public const int Inseperable = 15;
+        ///// <summary>
+        ///// Renamed from the misspelled "inseperable" in Unicode 4.0.1.
+        ///// </summary>
+        /// <stable>ICU 3.0</stable>
+        public const int Inseparable = 15;
+        /// <stable>ICU 2.4</stable>
+        public const int InfixNumeric = 16;
+        /// <stable>ICU 2.4</stable>
+        public const int LineFeed = 17;
+        /// <stable>ICU 2.4</stable>
+        public const int Nonstarter = 18;
+        /// <stable>ICU 2.4</stable>
+        public const int Numeric = 19;
+        /// <stable>ICU 2.4</stable>
+        public const int OpenPunctuation = 20;
+        /// <stable>ICU 2.4</stable>
+        public const int PostfixNumeric = 21;
+        /// <stable>ICU 2.4</stable>
+        public const int PrefixNumeric = 22;
+        /// <stable>ICU 2.4</stable>
+        public const int Quotation = 23;
+        /// <stable>ICU 2.4</stable>
+        public const int ComplexContext = 24;
+        /// <stable>ICU 2.4</stable>
+        public const int Surrogate = 25;
+        /// <stable>ICU 2.4</stable>
+        public const int Space = 26;
+        /// <stable>ICU 2.4</stable>
+        public const int BreakSymbols = 27;
+        /// <stable>ICU 2.4</stable>
+        public const int ZwSpace = 28;
+        /// <stable>ICU 2.6</stable>
+        public const int NextLine = 29;  /*[NL]*/ /* from here on: new in Unicode 4/ICU 2.6 */
+                                                  /// <stable>ICU 2.6</stable>
+        public const int WordJoiner = 30;      /*[WJ]*/
+                                               /// <stable>ICU 3.4</stable>
+        public const int H2 = 31;  /* from here on: new in Unicode 4.1/ICU 3.4 */
+                                   /// <stable>ICU 3.4</stable>
+        public const int H3 = 32;
+        /// <stable>ICU 3.4</stable>
+        public const int Jl = 33;
+        /// <stable>ICU 3.4</stable>
+        public const int Jt = 34;
+        /// <stable>ICU 3.4</stable>
+        public const int Jv = 35;
+        /// <stable>ICU 4.4</stable>
+        public const int CloseParenthesis = 36; /*[CP]*/ /* new in Unicode 5.2/ICU 4.4 */
+                                                         /// <stable>ICU 49</stable>
+        public const int ConditionalJapaneseStarter = 37;  /*[CJ]*/ /* new in Unicode 6.1/ICU 49 */
+                                                                    /// <stable>ICU 49</stable>
+        public const int HebrewLetter = 38;  /*[HL]*/ /* new in Unicode 6.1/ICU 49 */
+                                                      /// <stable>ICU 50</stable>
+        public const int RegionalIndicator = 39;  /*[RI]*/ /* new in Unicode 6.2/ICU 50 */
+                                                           /// <stable>ICU 58</stable>
+        public const int EBase = 40;  /*[EB]*/ /* from here on: new in Unicode 9.0/ICU 58 */
+                                               /// <stable>ICU 58</stable>
+        public const int EModifier = 41;  /*[EM]*/
+                                          /// <stable>ICU 58</stable>
+        public const int Zwj = 42;  /*[ZWJ]*/
+
+        /// <summary>
+        /// One more than the highest normal <see cref="LineBreak"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Line_Break"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 43;
+    }
+
+    /// <summary>
+    /// Numeric Type constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Numeric_Type"/>
+    /// <stable>ICU 2.4</stable>
+    public static class NumericType
+    {
+        /// <stable>ICU 2.4</stable>
+        public const int None = 0;
+        /// <stable>ICU 2.4</stable>
+        public const int Decimal = 1;
+        /// <stable>ICU 2.4</stable>
+        public const int Digit = 2;
+        /// <stable>ICU 2.4</stable>
+        public const int Numeric = 3;
+
+        /// <summary>
+        /// One more than the highest normal <see cref="NumericType"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Numeric_Type"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 4;
+    }
+
+    /// <summary>
+    /// Hangul Syllable Type constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Hangul_Syllable_Type"/>
+    /// <stable>ICU 2.6</stable>
+    public static class HangulSyllableType
+    {
+        /// <stable>ICU 2.6</stable>
+        public const int NotApplicable = 0;   /*[NA]*/ /*See note !!*/
+                                                       /// <stable>ICU 2.6</stable>
+        public const int LeadingJamo = 1;   /*[L]*/
+                                            /// <stable>ICU 2.6</stable>
+        public const int VowelJamo = 2;   /*[V]*/
+                                          /// <stable>ICU 2.6</stable>
+        public const int TrailingJamo = 3;   /*[T]*/
+                                             /// <stable>ICU 2.6</stable>
+        public const int LvSyllable = 4;   /*[LV]*/
+                                           /// <stable>ICU 2.6</stable>
+        public const int LvtSyllable = 5;   /*[LVT]*/
+
+        /// <summary>
+        /// One more than the highest normal <see cref="HangulSyllableType"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Hangul_Syllable_Type"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 6;
+    }
+
+    /// <summary>
+    /// Bidi Paired Bracket Type constants.
+    /// </summary>
+    /// <seealso cref="UProperty.Bidi_Paired_Bracket_Type"/>
+    /// <stable>ICU 52</stable>
+    public static class BidiPairedBracketType
+    {
+        /// <summary>
+        /// Not a paired bracket.
+        /// </summary>
+        /// <stable>ICU 52</stable>
+        public const int None = 0;
+        /// <summary>
+        /// Open paired bracket.
+        /// </summary>
+        /// <stable>ICU 52</stable>
+        public const int Open = 1;
+        /// <summary>
+        /// Close paired bracket.
+        /// </summary>
+        /// <stable>ICU 52</stable>
+        public const int Close = 2;
+
+        /// <summary>
+        /// One more than the highest normal <see cref="BidiPairedBracketType"/> value.
+        /// The highest value is available via <see cref="UChar.GetIntPropertyMaxValue(UProperty)"/>
+        /// with parameter <see cref="UProperty.Bidi_Paired_Bracket_Type"/>.
+        /// </summary>
+        [Obsolete("ICU 58 The numeric value may change over time, see ICU ticket #12420.")]
+        public const int Count = 3;
     }
 }

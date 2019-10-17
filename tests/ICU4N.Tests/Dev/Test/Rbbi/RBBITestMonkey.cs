@@ -1390,23 +1390,23 @@ namespace ICU4N.Dev.Test.Rbbi
                     switch (matchState)
                     {
                         case 0:
-                            if (cLBType == UChar.LineBreak.PrefixNumeric ||
-                            cLBType == UChar.LineBreak.PostfixNumeric)
+                            if (cLBType == LineBreak.PrefixNumeric ||
+                            cLBType == LineBreak.PostfixNumeric)
                             {
                                 matchState = 1;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.OpenPunctuation)
+                            if (cLBType == LineBreak.OpenPunctuation)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.Hyphen)
+                            if (cLBType == LineBreak.Hyphen)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.Numeric)
+                            if (cLBType == LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
@@ -1414,22 +1414,22 @@ namespace ICU4N.Dev.Test.Rbbi
                             goto matchLoop_break;   /* No Match  */
 
                         case 1:
-                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
+                            if (cLBType == LineBreak.CombiningMark || cLBType == LineBreak.Zwj)
                             {
                                 matchState = 1;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.OpenPunctuation)
+                            if (cLBType == LineBreak.OpenPunctuation)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.Hyphen)
+                            if (cLBType == LineBreak.Hyphen)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.Numeric)
+                            if (cLBType == LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
@@ -1438,12 +1438,12 @@ namespace ICU4N.Dev.Test.Rbbi
 
 
                         case 4:
-                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
+                            if (cLBType == LineBreak.CombiningMark || cLBType == LineBreak.Zwj)
                             {
                                 matchState = 4;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.Numeric)
+                            if (cLBType == LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
@@ -1453,42 +1453,42 @@ namespace ICU4N.Dev.Test.Rbbi
                                                     //      0    0   1       3    3    4              7    7    7    7      9   9     11   11    (match states)
 
                         case 7:
-                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
+                            if (cLBType == LineBreak.CombiningMark || cLBType == LineBreak.Zwj)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.Numeric)
+                            if (cLBType == LineBreak.Numeric)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.InfixNumeric)
+                            if (cLBType == LineBreak.InfixNumeric)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.BreakSymbols)
+                            if (cLBType == LineBreak.BreakSymbols)
                             {
                                 matchState = 7;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.ClosePunctuation)
+                            if (cLBType == LineBreak.ClosePunctuation)
                             {
                                 matchState = 9;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.CloseParenthesis)
+                            if (cLBType == LineBreak.CloseParenthesis)
                             {
                                 matchState = 9;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.PostfixNumeric)
+                            if (cLBType == LineBreak.PostfixNumeric)
                             {
                                 matchState = 11;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.PrefixNumeric)
+                            if (cLBType == LineBreak.PrefixNumeric)
                             {
                                 matchState = 11;
                                 break;
@@ -1496,24 +1496,24 @@ namespace ICU4N.Dev.Test.Rbbi
 
                             goto matchLoop_break;    // Match Complete.
                         case 9:
-                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
+                            if (cLBType == LineBreak.CombiningMark || cLBType == LineBreak.Zwj)
                             {
                                 matchState = 9;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.PostfixNumeric)
+                            if (cLBType == LineBreak.PostfixNumeric)
                             {
                                 matchState = 11;
                                 break;
                             }
-                            if (cLBType == UChar.LineBreak.PrefixNumeric)
+                            if (cLBType == LineBreak.PrefixNumeric)
                             {
                                 matchState = 11;
                                 break;
                             }
                             goto matchLoop_break;    // Match Complete.
                         case 11:
-                            if (cLBType == UChar.LineBreak.CombiningMark || cLBType == UChar.LineBreak.Zwj)
+                            if (cLBType == LineBreak.CombiningMark || cLBType == LineBreak.Zwj)
                             {
                                 matchState = 11;
                                 break;

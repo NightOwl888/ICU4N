@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support;
 using ICU4N.Text;
+using ICU4N.Text.Unicode;
 using NUnit.Framework;
 using System;
 using System.Reflection;
@@ -29,7 +30,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 try
                 {
-                    UChar.UnicodeBlock b = UChar.UnicodeBlock
+                    UnicodeBlock b = UnicodeBlock
                             .ForName(names[i]);
                     Logln("found: " + b + " for name: " + names[i]);
                 }

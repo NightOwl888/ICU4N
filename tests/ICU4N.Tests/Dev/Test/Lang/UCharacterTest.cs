@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using StringBuffer = System.Text.StringBuilder;
+using ICU4N.Text.Unicode;
 
 namespace ICU4N.Dev.Test.Lang
 {
@@ -556,7 +557,7 @@ namespace ICU4N.Dev.Test.Lang
                         Errln("getMirror() does not roundtrip: U+" + Hex(start) + "->U+" + Hex(c2) + "->U+" + Hex(c3));
                     }
                     c3 = UChar.GetBidiPairedBracket(start);
-                    if (UChar.GetIntPropertyValue(start, UProperty.Bidi_Paired_Bracket_Type) == UChar.BidiPairedBracketType.None)
+                    if (UChar.GetIntPropertyValue(start, UProperty.Bidi_Paired_Bracket_Type) == BidiPairedBracketType.None)
                     {
                         if (c3 != start)
                         {
@@ -814,11 +815,11 @@ namespace ICU4N.Dev.Test.Lang
                         /* no decomposition, except UnicodeData.txt omits Hangul syllable decompositions */
                         if (ch == 0xac00 || ch == 0xd7a3)
                         {
-                            dt = UChar.DecompositionType.Canonical;
+                            dt = DecompositionType.Canonical;
                         }
                         else
                         {
-                            dt = UChar.DecompositionType.None;
+                            dt = DecompositionType.None;
                         }
                     }
                     else
@@ -837,11 +838,11 @@ namespace ICU4N.Dev.Test.Lang
                         }
                         else
                         {
-                            dt = UChar.DecompositionType.Canonical;
+                            dt = DecompositionType.Canonical;
                         }
                     }
                     String dm;
-                    if (dt > UChar.DecompositionType.None)
+                    if (dt > DecompositionType.None)
                     {
                         if (ch == 0xac00)
                         {
@@ -881,7 +882,7 @@ namespace ICU4N.Dev.Test.Lang
                             String.Format("error: nfkc.getRawDecomposition(U+{0:X4}) is wrong", ch),
                             dm, mapping);
                     /* For canonical decompositions only, expect Decomposition_Mapping=nfc.getRawDecomposition(c). */
-                    if (dt != UChar.DecompositionType.Canonical)
+                    if (dt != DecompositionType.Canonical)
                     {
                         dm = null;
                     }
@@ -890,7 +891,7 @@ namespace ICU4N.Dev.Test.Lang
                             String.Format("error: nfc.getRawDecomposition(U+{0:X4}) is wrong", ch),
                             dm, mapping);
                     /* recompose */
-                    if (dt == UChar.DecompositionType.Canonical
+                    if (dt == DecompositionType.Canonical
                             && !UChar.HasBinaryProperty(ch, UProperty.Full_Composition_Exclusion))
                     {
                         int a = dm.CodePointAt(0);
@@ -1006,15 +1007,15 @@ namespace ICU4N.Dev.Test.Lang
                 }
             }
 
-            if (UChar.UnicodeBlock.Of(0x0041)
-                                            != UChar.UnicodeBlock.Basic_Latin
+            if (UnicodeBlock.Of(0x0041)
+                                            != UnicodeBlock.Basic_Latin
                 || UChar.GetIntPropertyValue(0x41, UProperty.Block)
-                                  != UChar.UnicodeBlock.Basic_Latin.ID)
+                                  != UnicodeBlock.Basic_Latin.ID)
             {
                 Errln("UCharacter.UnicodeBlock.of(\\u0041) property failed! "
                         + "Expected : "
-                        + UChar.UnicodeBlock.Basic_Latin.ID + " got "
-                        + UChar.UnicodeBlock.Of(0x0041));
+                        + UnicodeBlock.Basic_Latin.ID + " got "
+                        + UnicodeBlock.Of(0x0041));
             }
 
             // sanity check on repeated properties
@@ -2099,157 +2100,157 @@ namespace ICU4N.Dev.Test.Lang
 
                 /* enum/integer type properties */
                 /* test default Bidi classes for unassigned code points */
-                new int[] { 0x0590, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x05cf, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x05ed, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x07f2, (int)UProperty.Bidi_Class, UCharacterDirection.DirNonSpacingMark.ToInt32() }, /* Nko, new in Unicode 5.0 */
-                new int[] { 0x07fe, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() }, /* unassigned R */
-                new int[] { 0x089f, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0xfb37, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0xfb42, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x10806, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x10909, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x10fe4, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x0590, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
+                new int[] { 0x05cf, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
+                new int[] { 0x05ed, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
+                new int[] { 0x07f2, (int)UProperty.Bidi_Class, (int)UCharacterDirection.DirNonSpacingMark }, /* Nko, new in Unicode 5.0 */
+                new int[] { 0x07fe, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft }, /* unassigned R */
+                new int[] { 0x089f, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
+                new int[] { 0xfb37, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
+                new int[] { 0xfb42, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
+                new int[] { 0x10806, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
+                new int[] { 0x10909, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
+                new int[] { 0x10fe4, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
 
-                new int[] { 0x061d, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0x063f, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0x070e, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0x0775, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0xfbc2, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0xfd90, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0xfefe, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x061d, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeftArabic },
+                new int[] { 0x063f, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeftArabic },
+                new int[] { 0x070e, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeftArabic },
+                new int[] { 0x0775, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeftArabic },
+                new int[] { 0xfbc2, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeftArabic },
+                new int[] { 0xfd90, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeftArabic },
+                new int[] { 0xfefe, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeftArabic },
 
-                new int[] { 0x02AF, (int)UProperty.Block, UChar.UnicodeBlock.IPA_Extensions.ID },
-                new int[] { 0x0C4E, (int)UProperty.Block, UChar.UnicodeBlock.Telugu.ID },
-                new int[] { 0x155A, (int)UProperty.Block, UChar.UnicodeBlock.Unified_Canadian_Aboriginal_Syllabics.ID },
-                new int[] { 0x1717, (int)UProperty.Block, UChar.UnicodeBlock.Tagalog.ID },
-                new int[] { 0x1900, (int)UProperty.Block, UChar.UnicodeBlock.Limbu.ID },
-                new int[] { 0x1CBF, (int)UProperty.Block, UChar.UnicodeBlock.NoBlock.ID},
-                new int[] { 0x3040, (int)UProperty.Block, UChar.UnicodeBlock.Hiragana.ID},
-                new int[] { 0x1D0FF, (int)UProperty.Block, UChar.UnicodeBlock.Byzantine_Musical_Symbols.ID},
-                new int[] { 0x50000, (int)UProperty.Block, UChar.UnicodeBlock.NoBlock.ID },
-                new int[] { 0xEFFFF, (int)UProperty.Block, UChar.UnicodeBlock.NoBlock.ID },
-                new int[] { 0x10D0FF, (int)UProperty.Block, UChar.UnicodeBlock.Supplementary_Private_Use_Area_B.ID },
+                new int[] { 0x02AF, (int)UProperty.Block, UnicodeBlock.IPA_Extensions.ID },
+                new int[] { 0x0C4E, (int)UProperty.Block, UnicodeBlock.Telugu.ID },
+                new int[] { 0x155A, (int)UProperty.Block, UnicodeBlock.Unified_Canadian_Aboriginal_Syllabics.ID },
+                new int[] { 0x1717, (int)UProperty.Block, UnicodeBlock.Tagalog.ID },
+                new int[] { 0x1900, (int)UProperty.Block, UnicodeBlock.Limbu.ID },
+                new int[] { 0x1CBF, (int)UProperty.Block, UnicodeBlock.NoBlock.ID},
+                new int[] { 0x3040, (int)UProperty.Block, UnicodeBlock.Hiragana.ID},
+                new int[] { 0x1D0FF, (int)UProperty.Block, UnicodeBlock.Byzantine_Musical_Symbols.ID},
+                new int[] { 0x50000, (int)UProperty.Block, UnicodeBlock.NoBlock.ID },
+                new int[] { 0xEFFFF, (int)UProperty.Block, UnicodeBlock.NoBlock.ID },
+                new int[] { 0x10D0FF, (int)UProperty.Block, UnicodeBlock.Supplementary_Private_Use_Area_B.ID },
 
                 /* (int)UProperty.CANONICAL_COMBINING_CLASS tested for assigned characters in TestUnicodeData() */
                 new int[] { 0xd7d7, (int)UProperty.Canonical_Combining_Class, 0 },
 
-                new int[] { 0x00A0, (int)UProperty.Decomposition_Type, UChar.DecompositionType.NoBreak },
-                new int[] { 0x00A8, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Compat },
-                new int[] { 0x00bf, (int)UProperty.Decomposition_Type, UChar.DecompositionType.None },
-                new int[] { 0x00c0, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Canonical },
-                new int[] { 0x1E9B, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Canonical },
-                new int[] { 0xBCDE, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Canonical },
-                new int[] { 0xFB5D, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Medial },
-                new int[] { 0x1D736, (int)UProperty.Decomposition_Type, UChar.DecompositionType.Font },
-                new int[] { 0xe0033, (int)UProperty.Decomposition_Type, UChar.DecompositionType.None },
+                new int[] { 0x00A0, (int)UProperty.Decomposition_Type, DecompositionType.NoBreak },
+                new int[] { 0x00A8, (int)UProperty.Decomposition_Type, DecompositionType.Compat },
+                new int[] { 0x00bf, (int)UProperty.Decomposition_Type, DecompositionType.None },
+                new int[] { 0x00c0, (int)UProperty.Decomposition_Type, DecompositionType.Canonical },
+                new int[] { 0x1E9B, (int)UProperty.Decomposition_Type, DecompositionType.Canonical },
+                new int[] { 0xBCDE, (int)UProperty.Decomposition_Type, DecompositionType.Canonical },
+                new int[] { 0xFB5D, (int)UProperty.Decomposition_Type, DecompositionType.Medial },
+                new int[] { 0x1D736, (int)UProperty.Decomposition_Type, DecompositionType.Font },
+                new int[] { 0xe0033, (int)UProperty.Decomposition_Type, DecompositionType.None },
 
-                new int[] { 0x0009, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Neutral },
-                new int[] { 0x0020, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Narrow },
-                new int[] { 0x00B1, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Ambiguous },
-                new int[] { 0x20A9, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.HalfWidth },
-                new int[] { 0x2FFB, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
-                new int[] { 0x3000, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.FullWidth },
-                new int[] { 0x35bb, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
-                new int[] { 0x58bd, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
-                new int[] { 0xD7A3, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
-                new int[] { 0xEEEE, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Ambiguous },
-                new int[] { 0x1D198, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Neutral },
-                new int[] { 0x20000, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
-                new int[] { 0x2F8C7, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
-                new int[] { 0x3a5bd, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Wide },
-                new int[] { 0x5a5bd, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Neutral },
-                new int[] { 0xFEEEE, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Ambiguous },
-                new int[] { 0x10EEEE, (int)UProperty.East_Asian_Width, UChar.EastAsianWidth.Ambiguous },
+                new int[] { 0x0009, (int)UProperty.East_Asian_Width, EastAsianWidth.Neutral },
+                new int[] { 0x0020, (int)UProperty.East_Asian_Width, EastAsianWidth.Narrow },
+                new int[] { 0x00B1, (int)UProperty.East_Asian_Width, EastAsianWidth.Ambiguous },
+                new int[] { 0x20A9, (int)UProperty.East_Asian_Width, EastAsianWidth.HalfWidth },
+                new int[] { 0x2FFB, (int)UProperty.East_Asian_Width, EastAsianWidth.Wide },
+                new int[] { 0x3000, (int)UProperty.East_Asian_Width, EastAsianWidth.FullWidth },
+                new int[] { 0x35bb, (int)UProperty.East_Asian_Width, EastAsianWidth.Wide },
+                new int[] { 0x58bd, (int)UProperty.East_Asian_Width, EastAsianWidth.Wide },
+                new int[] { 0xD7A3, (int)UProperty.East_Asian_Width, EastAsianWidth.Wide },
+                new int[] { 0xEEEE, (int)UProperty.East_Asian_Width, EastAsianWidth.Ambiguous },
+                new int[] { 0x1D198, (int)UProperty.East_Asian_Width, EastAsianWidth.Neutral },
+                new int[] { 0x20000, (int)UProperty.East_Asian_Width, EastAsianWidth.Wide },
+                new int[] { 0x2F8C7, (int)UProperty.East_Asian_Width, EastAsianWidth.Wide },
+                new int[] { 0x3a5bd, (int)UProperty.East_Asian_Width, EastAsianWidth.Wide },
+                new int[] { 0x5a5bd, (int)UProperty.East_Asian_Width, EastAsianWidth.Neutral },
+                new int[] { 0xFEEEE, (int)UProperty.East_Asian_Width, EastAsianWidth.Ambiguous },
+                new int[] { 0x10EEEE, (int)UProperty.East_Asian_Width, EastAsianWidth.Ambiguous },
 
                 /* (int)UProperty.GENERAL_CATEGORY tested for assigned characters in TestUnicodeData() */
                 new int[] { 0xd7c7, (int)UProperty.General_Category, 0 },
                 new int[] { 0xd7d7, (int)UProperty.General_Category, UUnicodeCategory.OtherLetter.ToInt32() },     /* changed in Unicode 5.2 */
 
-                new int[] { 0x0444, (int)UProperty.Joining_Group, UChar.JoiningGroup.NoJoiningGroup },
-                new int[] { 0x0639, (int)UProperty.Joining_Group, UChar.JoiningGroup.Ain },
-                new int[] { 0x072A, (int)UProperty.Joining_Group, UChar.JoiningGroup.DalathRish },
-                new int[] { 0x0647, (int)UProperty.Joining_Group, UChar.JoiningGroup.Heh },
-                new int[] { 0x06C1, (int)UProperty.Joining_Group, UChar.JoiningGroup.HehGoal },
+                new int[] { 0x0444, (int)UProperty.Joining_Group, JoiningGroup.NoJoiningGroup },
+                new int[] { 0x0639, (int)UProperty.Joining_Group, JoiningGroup.Ain },
+                new int[] { 0x072A, (int)UProperty.Joining_Group, JoiningGroup.DalathRish },
+                new int[] { 0x0647, (int)UProperty.Joining_Group, JoiningGroup.Heh },
+                new int[] { 0x06C1, (int)UProperty.Joining_Group, JoiningGroup.HehGoal },
 
-                new int[] { 0x200C, (int)UProperty.Joining_Type, UChar.JoiningType.NonJoining },
-                new int[] { 0x200D, (int)UProperty.Joining_Type, UChar.JoiningType.JoinCausing },
-                new int[] { 0x0639, (int)UProperty.Joining_Type, UChar.JoiningType.DualJoining },
-                new int[] { 0x0640, (int)UProperty.Joining_Type, UChar.JoiningType.JoinCausing },
-                new int[] { 0x06C3, (int)UProperty.Joining_Type, UChar.JoiningType.RightJoining },
-                new int[] { 0x0300, (int)UProperty.Joining_Type, UChar.JoiningType.Transparent },
-                new int[] { 0x070F, (int)UProperty.Joining_Type, UChar.JoiningType.Transparent },
-                new int[] { 0xe0033, (int)UProperty.Joining_Type, UChar.JoiningType.Transparent },
+                new int[] { 0x200C, (int)UProperty.Joining_Type, JoiningType.NonJoining },
+                new int[] { 0x200D, (int)UProperty.Joining_Type, JoiningType.JoinCausing },
+                new int[] { 0x0639, (int)UProperty.Joining_Type, JoiningType.DualJoining },
+                new int[] { 0x0640, (int)UProperty.Joining_Type, JoiningType.JoinCausing },
+                new int[] { 0x06C3, (int)UProperty.Joining_Type, JoiningType.RightJoining },
+                new int[] { 0x0300, (int)UProperty.Joining_Type, JoiningType.Transparent },
+                new int[] { 0x070F, (int)UProperty.Joining_Type, JoiningType.Transparent },
+                new int[] { 0xe0033, (int)UProperty.Joining_Type, JoiningType.Transparent },
 
                 /* TestUnicodeData() verifies that no assigned character has "XX" (unknown) */
-                new int[] { 0xe7e7, (int)UProperty.Line_Break, UChar.LineBreak.Unknown },
-                new int[] { 0x10fffd, (int)UProperty.Line_Break, UChar.LineBreak.Unknown },
-                new int[] { 0x0028, (int)UProperty.Line_Break, UChar.LineBreak.OpenPunctuation },
-                new int[] { 0x232A, (int)UProperty.Line_Break, UChar.LineBreak.ClosePunctuation },
-                new int[] { 0x3401, (int)UProperty.Line_Break, UChar.LineBreak.Ideographic },
-                new int[] { 0x4e02, (int)UProperty.Line_Break, UChar.LineBreak.Ideographic },
-                new int[] { 0x20004, (int)UProperty.Line_Break, UChar.LineBreak.Ideographic },
-                new int[] { 0xf905, (int)UProperty.Line_Break, UChar.LineBreak.Ideographic },
-                new int[] { 0xdb7e, (int)UProperty.Line_Break, UChar.LineBreak.Surrogate },
-                new int[] { 0xdbfd, (int)UProperty.Line_Break, UChar.LineBreak.Surrogate },
-                new int[] { 0xdffc, (int)UProperty.Line_Break, UChar.LineBreak.Surrogate },
-                new int[] { 0x2762, (int)UProperty.Line_Break, UChar.LineBreak.Exclamation },
-                new int[] { 0x002F, (int)UProperty.Line_Break, UChar.LineBreak.BreakSymbols },
-                new int[] { 0x1D49C, (int)UProperty.Line_Break, UChar.LineBreak.Alphabetic },
-                new int[] { 0x1731, (int)UProperty.Line_Break, UChar.LineBreak.Alphabetic },
+                new int[] { 0xe7e7, (int)UProperty.Line_Break, LineBreak.Unknown },
+                new int[] { 0x10fffd, (int)UProperty.Line_Break, LineBreak.Unknown },
+                new int[] { 0x0028, (int)UProperty.Line_Break, LineBreak.OpenPunctuation },
+                new int[] { 0x232A, (int)UProperty.Line_Break, LineBreak.ClosePunctuation },
+                new int[] { 0x3401, (int)UProperty.Line_Break, LineBreak.Ideographic },
+                new int[] { 0x4e02, (int)UProperty.Line_Break, LineBreak.Ideographic },
+                new int[] { 0x20004, (int)UProperty.Line_Break, LineBreak.Ideographic },
+                new int[] { 0xf905, (int)UProperty.Line_Break, LineBreak.Ideographic },
+                new int[] { 0xdb7e, (int)UProperty.Line_Break, LineBreak.Surrogate },
+                new int[] { 0xdbfd, (int)UProperty.Line_Break, LineBreak.Surrogate },
+                new int[] { 0xdffc, (int)UProperty.Line_Break, LineBreak.Surrogate },
+                new int[] { 0x2762, (int)UProperty.Line_Break, LineBreak.Exclamation },
+                new int[] { 0x002F, (int)UProperty.Line_Break, LineBreak.BreakSymbols },
+                new int[] { 0x1D49C, (int)UProperty.Line_Break, LineBreak.Alphabetic },
+                new int[] { 0x1731, (int)UProperty.Line_Break, LineBreak.Alphabetic },
 
                 /* (int)UProperty.NUMERIC_TYPE tested in TestNumericProperties() */
 
                 /* (int)UProperty.SCRIPT tested in TestUScriptCodeAPI() */
 
                 new int[] { 0x10ff, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0x1100, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },
-                new int[] { 0x1111, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },
-                new int[] { 0x1159, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },
-                new int[] { 0x115a, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
-                new int[] { 0x115e, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
-                new int[] { 0x115f, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },
+                new int[] { 0x1100, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LeadingJamo },
+                new int[] { 0x1111, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LeadingJamo },
+                new int[] { 0x1159, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LeadingJamo },
+                new int[] { 0x115a, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0x115e, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0x115f, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LeadingJamo },
 
                 new int[] { 0xa95f, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0xa960, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
-                new int[] { 0xa97c, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0xa960, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
+                new int[] { 0xa97c, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LeadingJamo },     /* changed in Unicode 5.2 */
                 new int[] { 0xa97d, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0x1160, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },
-                new int[] { 0x1161, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },
-                new int[] { 0x1172, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },
-                new int[] { 0x11a2, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },
-                new int[] { 0x11a3, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
-                new int[] { 0x11a7, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0x1160, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.VowelJamo },
+                new int[] { 0x1161, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.VowelJamo },
+                new int[] { 0x1172, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.VowelJamo },
+                new int[] { 0x11a2, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.VowelJamo },
+                new int[] { 0x11a3, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0x11a7, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
 
                 new int[] { 0xd7af, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0xd7b0, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
-                new int[] { 0xd7c6, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0xd7b0, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
+                new int[] { 0xd7c6, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.VowelJamo },       /* changed in Unicode 5.2 */
                 new int[] { 0xd7c7, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0x11a8, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },
-                new int[] { 0x11b8, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },
-                new int[] { 0x11c8, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },
-                new int[] { 0x11f9, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },
-                new int[] { 0x11fa, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
-                new int[] { 0x11ff, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0x11a8, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.TrailingJamo },
+                new int[] { 0x11b8, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.TrailingJamo },
+                new int[] { 0x11c8, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.TrailingJamo },
+                new int[] { 0x11f9, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.TrailingJamo },
+                new int[] { 0x11fa, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0x11ff, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
                 new int[] { 0x1200, (int)UProperty.Hangul_Syllable_Type, 0 },
 
                 new int[] { 0xd7ca, (int)UProperty.Hangul_Syllable_Type, 0 },
-                new int[] { 0xd7cb, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
-                new int[] { 0xd7fb, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0xd7cb, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
+                new int[] { 0xd7fb, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.TrailingJamo },    /* changed in Unicode 5.2 */
                 new int[] { 0xd7fc, (int)UProperty.Hangul_Syllable_Type, 0 },
 
-                new int[] { 0xac00, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvSyllable },
-                new int[] { 0xac1c, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvSyllable },
-                new int[] { 0xc5ec, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvSyllable },
-                new int[] { 0xd788, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvSyllable },
+                new int[] { 0xac00, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LvSyllable },
+                new int[] { 0xac1c, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LvSyllable },
+                new int[] { 0xc5ec, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LvSyllable },
+                new int[] { 0xd788, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LvSyllable },
 
-                new int[] { 0xac01, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
-                new int[] { 0xac1b, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
-                new int[] { 0xac1d, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
-                new int[] { 0xc5ee, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
-                new int[] { 0xd7a3, (int)UProperty.Hangul_Syllable_Type, UChar.HangulSyllableType.LvtSyllable },
+                new int[] { 0xac01, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LvtSyllable },
+                new int[] { 0xac1b, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LvtSyllable },
+                new int[] { 0xac1d, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LvtSyllable },
+                new int[] { 0xc5ee, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LvtSyllable },
+                new int[] { 0xd7a3, (int)UProperty.Hangul_Syllable_Type, HangulSyllableType.LvtSyllable },
 
                 new int[] { 0xd7a4, (int)UProperty.Hangul_Syllable_Type, 0 },
 
@@ -2265,42 +2266,42 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { 0x00a0, (int)UProperty.Pattern_White_Space, 0 },
                 new int[] { 0x3000, (int)UProperty.Pattern_White_Space, 0 },
 
-                new int[] { 0x1d200, (int)UProperty.Block, UChar.UnicodeBlock.Ancient_Greek_Musical_Notation_ID },
-                new int[] { 0x2c8e,  (int)UProperty.Block, UChar.UnicodeBlock.Coptic_ID },
-                new int[] { 0xfe17,  (int)UProperty.Block, UChar.UnicodeBlock.Vertical_Forms_ID },
+                new int[] { 0x1d200, (int)UProperty.Block, UnicodeBlock.Ancient_Greek_Musical_Notation_ID },
+                new int[] { 0x2c8e,  (int)UProperty.Block, UnicodeBlock.Coptic_ID },
+                new int[] { 0xfe17,  (int)UProperty.Block, UnicodeBlock.Vertical_Forms_ID },
 
                 new int[] { 0x1a00,  (int)UProperty.Script, UScript.Buginese },
                 new int[] { 0x2cea,  (int)UProperty.Script, UScript.Coptic },
                 new int[] { 0xa82b,  (int)UProperty.Script, UScript.SylotiNagri },
                 new int[] { 0x103d0, (int)UProperty.Script, UScript.OldPersian },
 
-                new int[] { 0xcc28, (int)UProperty.Line_Break, UChar.LineBreak.H2 },
-                new int[] { 0xcc29, (int)UProperty.Line_Break, UChar.LineBreak.H3 },
-                new int[] { 0xac03, (int)UProperty.Line_Break, UChar.LineBreak.H3 },
-                new int[] { 0x115f, (int)UProperty.Line_Break, UChar.LineBreak.Jl },
-                new int[] { 0x11aa, (int)UProperty.Line_Break, UChar.LineBreak.Jt },
-                new int[] { 0x11a1, (int)UProperty.Line_Break, UChar.LineBreak.Jv },
+                new int[] { 0xcc28, (int)UProperty.Line_Break, LineBreak.H2 },
+                new int[] { 0xcc29, (int)UProperty.Line_Break, LineBreak.H3 },
+                new int[] { 0xac03, (int)UProperty.Line_Break, LineBreak.H3 },
+                new int[] { 0x115f, (int)UProperty.Line_Break, LineBreak.Jl },
+                new int[] { 0x11aa, (int)UProperty.Line_Break, LineBreak.Jt },
+                new int[] { 0x11a1, (int)UProperty.Line_Break, LineBreak.Jv },
 
-                new int[] { 0xb2c9, (int)UProperty.Grapheme_Cluster_Break, UChar.GraphemeClusterBreak.Lvt },
-                new int[] { 0x036f, (int)UProperty.Grapheme_Cluster_Break, UChar.GraphemeClusterBreak.Extend },
-                new int[] { 0x0000, (int)UProperty.Grapheme_Cluster_Break, UChar.GraphemeClusterBreak.Control },
-                new int[] { 0x1160, (int)UProperty.Grapheme_Cluster_Break, UChar.GraphemeClusterBreak.V },
+                new int[] { 0xb2c9, (int)UProperty.Grapheme_Cluster_Break, GraphemeClusterBreak.Lvt },
+                new int[] { 0x036f, (int)UProperty.Grapheme_Cluster_Break, GraphemeClusterBreak.Extend },
+                new int[] { 0x0000, (int)UProperty.Grapheme_Cluster_Break, GraphemeClusterBreak.Control },
+                new int[] { 0x1160, (int)UProperty.Grapheme_Cluster_Break, GraphemeClusterBreak.V },
 
-                new int[] { 0x05f4, (int)UProperty.Word_Break, UChar.WordBreak.MidLetter },
-                new int[] { 0x4ef0, (int)UProperty.Word_Break, UChar.WordBreak.Other },
-                new int[] { 0x19d9, (int)UProperty.Word_Break, UChar.WordBreak.Numeric },
-                new int[] { 0x2044, (int)UProperty.Word_Break, UChar.WordBreak.MidNum },
+                new int[] { 0x05f4, (int)UProperty.Word_Break, WordBreak.MidLetter },
+                new int[] { 0x4ef0, (int)UProperty.Word_Break, WordBreak.Other },
+                new int[] { 0x19d9, (int)UProperty.Word_Break, WordBreak.Numeric },
+                new int[] { 0x2044, (int)UProperty.Word_Break, WordBreak.MidNum },
 
-                new int[] { 0xfffd, (int)UProperty.Sentence_Break, UChar.SentenceBreak.Other },
-                new int[] { 0x1ffc, (int)UProperty.Sentence_Break, UChar.SentenceBreak.Upper },
-                new int[] { 0xff63, (int)UProperty.Sentence_Break, UChar.SentenceBreak.Close },
-                new int[] { 0x2028, (int)UProperty.Sentence_Break, UChar.SentenceBreak.Sep },
+                new int[] { 0xfffd, (int)UProperty.Sentence_Break, SentenceBreak.Other },
+                new int[] { 0x1ffc, (int)UProperty.Sentence_Break, SentenceBreak.Upper },
+                new int[] { 0xff63, (int)UProperty.Sentence_Break, SentenceBreak.Close },
+                new int[] { 0x2028, (int)UProperty.Sentence_Break, SentenceBreak.Sep },
 
                 new int[] { -1, 0x520, 0 }, /* version break for Unicode 5.2 */
 
                 /* unassigned code points in new default Bidi R blocks */
-                new int[] { 0x1ede4, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
-                new int[] { 0x1efe4, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeft.ToInt32() },
+                new int[] { 0x1ede4, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
+                new int[] { 0x1efe4, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeft },
 
                 /* test some script codes >127 */
                 new int[] { 0xa6e6,  (int)UProperty.Script, UScript.Bamum },
@@ -2310,36 +2311,36 @@ namespace ICU4N.Dev.Test.Lang
                 new int[] { -1, 0x600, 0 }, /* version break for Unicode 6.0 */
 
                 /* value changed in Unicode 6.0 */
-                new int[] { 0x06C3, (int)UProperty.Joining_Group, UChar.JoiningGroup.TehMarbutaGoal },
+                new int[] { 0x06C3, (int)UProperty.Joining_Group, JoiningGroup.TehMarbutaGoal },
 
                 new int[] { -1, 0x610, 0 }, /* version break for Unicode 6.1 */
 
                 /* unassigned code points in new/changed default Bidi AL blocks */
-                new int[] { 0x08ba, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
-                new int[] { 0x1eee4, (int)UProperty.Bidi_Class, UCharacterDirection.RightToLeftArabic.ToInt32() },
+                new int[] { 0x08ba, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeftArabic },
+                new int[] { 0x1eee4, (int)UProperty.Bidi_Class, (int)UCharacterDirection.RightToLeftArabic },
 
                 new int[] { -1, 0x630, 0 }, /* version break for Unicode 6.3 */
 
                 /* unassigned code points in the currency symbols block now default to ET */
-                new int[] { 0x20C0, (int)UProperty.Bidi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
-                new int[] { 0x20CF, (int)UProperty.Bidi_Class, UCharacterDirection.EuropeanNumberTerminator.ToInt32() },
+                new int[] { 0x20C0, (int)UProperty.Bidi_Class, (int)UCharacterDirection.EuropeanNumberTerminator },
+                new int[] { 0x20CF, (int)UProperty.Bidi_Class, (int)UCharacterDirection.EuropeanNumberTerminator },
 
                 /* new property in Unicode 6.3 */
-                new int[] { 0x0027, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.None },
-                new int[] { 0x0028, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.Open },
-                new int[] { 0x0029, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.Close },
-                new int[] { 0xFF5C, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.None },
-                new int[] { 0xFF5B, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.Open },
-                new int[] { 0xFF5D, (int)UProperty.Bidi_Paired_Bracket_Type, UChar.BidiPairedBracketType.Close },
+                new int[] { 0x0027, (int)UProperty.Bidi_Paired_Bracket_Type, BidiPairedBracketType.None },
+                new int[] { 0x0028, (int)UProperty.Bidi_Paired_Bracket_Type, BidiPairedBracketType.Open },
+                new int[] { 0x0029, (int)UProperty.Bidi_Paired_Bracket_Type, BidiPairedBracketType.Close },
+                new int[] { 0xFF5C, (int)UProperty.Bidi_Paired_Bracket_Type, BidiPairedBracketType.None },
+                new int[] { 0xFF5B, (int)UProperty.Bidi_Paired_Bracket_Type, BidiPairedBracketType.Open },
+                new int[] { 0xFF5D, (int)UProperty.Bidi_Paired_Bracket_Type, BidiPairedBracketType.Close },
 
                 new int[] { -1, 0x700, 0 }, /* version break for Unicode 7.0 */
 
                 /* new character range with Joining_Group values */
-                new int[] { 0x10ABF, (int)UProperty.Joining_Group, UChar.JoiningGroup.NoJoiningGroup },
-                new int[] { 0x10AC0, (int)UProperty.Joining_Group, UChar.JoiningGroup.ManichaeanAleph },
-                new int[] { 0x10AC1, (int)UProperty.Joining_Group, UChar.JoiningGroup.ManichaeanBeth },
-                new int[] { 0x10AEF, (int)UProperty.Joining_Group, UChar.JoiningGroup.ManichaeanHundred },
-                new int[] { 0x10AF0, (int)UProperty.Joining_Group, UChar.JoiningGroup.NoJoiningGroup },
+                new int[] { 0x10ABF, (int)UProperty.Joining_Group, JoiningGroup.NoJoiningGroup },
+                new int[] { 0x10AC0, (int)UProperty.Joining_Group, JoiningGroup.ManichaeanAleph },
+                new int[] { 0x10AC1, (int)UProperty.Joining_Group, JoiningGroup.ManichaeanBeth },
+                new int[] { 0x10AEF, (int)UProperty.Joining_Group, JoiningGroup.ManichaeanHundred },
+                new int[] { 0x10AF0, (int)UProperty.Joining_Group, JoiningGroup.NoJoiningGroup },
 
                 new int[] { -1, 0xa00, 0 },  // version break for Unicode 10
 
@@ -2384,11 +2385,11 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_CLASS) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Block) != UChar.UnicodeBlock.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Block) != UnicodeBlock.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BLOCK) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Line_Break) != UChar.LineBreak.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Line_Break) != LineBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.LINE_BREAK) wrong\n");
             }
@@ -2396,7 +2397,7 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.SCRIPT) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Numeric_Type) != UChar.NumericType.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Numeric_Type) != NumericType.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.NUMERIC_TYPE) wrong\n");
             }
@@ -2404,23 +2405,23 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.GENERAL_CATEGORY) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Hangul_Syllable_Type) != UChar.HangulSyllableType.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Hangul_Syllable_Type) != HangulSyllableType.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.HANGUL_SYLLABLE_TYPE) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Grapheme_Cluster_Break) != UChar.GraphemeClusterBreak.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Grapheme_Cluster_Break) != GraphemeClusterBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.GRAPHEME_CLUSTER_BREAK) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Sentence_Break) != UChar.SentenceBreak.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Sentence_Break) != SentenceBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.SENTENCE_BREAK) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Word_Break) != UChar.WordBreak.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Word_Break) != WordBreak.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.WORD_BREAK) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Bidi_Paired_Bracket_Type) != UChar.BidiPairedBracketType.Count - 1)
+            if (UChar.GetIntPropertyMaxValue(UProperty.Bidi_Paired_Bracket_Type) != BidiPairedBracketType.Count - 1)
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.BIDI_PAIRED_BRACKET_TYPE) wrong\n");
             }
@@ -2429,19 +2430,19 @@ namespace ICU4N.Dev.Test.Lang
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(0x2345) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Decomposition_Type) != (UChar.DecompositionType.Count - 1))
+            if (UChar.GetIntPropertyMaxValue(UProperty.Decomposition_Type) != (DecompositionType.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.DECOMPOSITION_TYPE) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Joining_Group) != (UChar.JoiningGroup.Count - 1))
+            if (UChar.GetIntPropertyMaxValue(UProperty.Joining_Group) != (JoiningGroup.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.JOINING_GROUP) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.Joining_Type) != (UChar.JoiningType.Count - 1))
+            if (UChar.GetIntPropertyMaxValue(UProperty.Joining_Type) != (JoiningType.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.JOINING_TYPE) wrong\n");
             }
-            if (UChar.GetIntPropertyMaxValue(UProperty.East_Asian_Width) != (UChar.EastAsianWidth.Count - 1))
+            if (UChar.GetIntPropertyMaxValue(UProperty.East_Asian_Width) != (EastAsianWidth.Count - 1))
             {
                 Errln("error: UCharacter.getIntPropertyMaxValue(UProperty.EAST_ASIAN_WIDTH) wrong\n");
             }
@@ -2551,62 +2552,62 @@ namespace ICU4N.Dev.Test.Lang
                 // where UCharacter.NO_NUMERIC_VALUE is turned into -1.
                 // getNumericValue() returns -2 if the code point has a value
                 // which is not a non-negative integer. (This is mostly auto-converted to -2.)
-                new double[] { 0x0F33, UChar.NumericType.Numeric, -1.0 / 2.0 },
-                new double[] { 0x0C66, UChar.NumericType.Decimal, 0 },
-                new double[] { 0x96f6, UChar.NumericType.Numeric, 0 },
-                new double[] { 0xa833, UChar.NumericType.Numeric, 1.0 / 16.0 },
-                new double[] { 0x2152, UChar.NumericType.Numeric, 1.0 / 10.0 },
-                new double[] { 0x2151, UChar.NumericType.Numeric, 1.0 / 9.0 },
-                new double[] { 0x1245f, UChar.NumericType.Numeric, 1.0 / 8.0 },
-                new double[] { 0x2150, UChar.NumericType.Numeric, 1.0 / 7.0 },
-                new double[] { 0x2159, UChar.NumericType.Numeric, 1.0 / 6.0 },
-                new double[] { 0x09f6, UChar.NumericType.Numeric, 3.0 / 16.0 },
-                new double[] { 0x2155, UChar.NumericType.Numeric, 1.0 / 5.0 },
-                new double[] { 0x00BD, UChar.NumericType.Numeric, 1.0 / 2.0 },
-                new double[] { 0x0031, UChar.NumericType.Decimal, 1.0 },
-                new double[] { 0x4e00, UChar.NumericType.Numeric, 1.0 },
-                new double[] { 0x58f1, UChar.NumericType.Numeric, 1.0 },
-                new double[] { 0x10320, UChar.NumericType.Numeric, 1.0 },
-                new double[] { 0x0F2B, UChar.NumericType.Numeric, 3.0 / 2.0 },
-                new double[] { 0x00B2, UChar.NumericType.Digit, 2.0 }, /* Unicode 4.0 change */
-                new double[] { 0x5f10, UChar.NumericType.Numeric, 2.0 },
-                new double[] { 0x1813, UChar.NumericType.Decimal, 3.0 },
-                new double[] { 0x5f0e, UChar.NumericType.Numeric, 3.0 },
-                new double[] { 0x2173, UChar.NumericType.Numeric, 4.0 },
-                new double[] { 0x8086, UChar.NumericType.Numeric, 4.0 },
-                new double[] { 0x278E, UChar.NumericType.Digit, 5.0 },
-                new double[] { 0x1D7F2, UChar.NumericType.Decimal, 6.0 },
-                new double[] { 0x247A, UChar.NumericType.Digit, 7.0 },
-                new double[] { 0x7396, UChar.NumericType.Numeric, 9.0 },
-                new double[] { 0x1372, UChar.NumericType.Numeric, 10.0 },
-                new double[] { 0x216B, UChar.NumericType.Numeric, 12.0 },
-                new double[] { 0x16EE, UChar.NumericType.Numeric, 17.0 },
-                new double[] { 0x249A, UChar.NumericType.Numeric, 19.0 },
-                new double[] { 0x303A, UChar.NumericType.Numeric, 30.0 },
-                new double[] { 0x5345, UChar.NumericType.Numeric, 30.0 },
-                new double[] { 0x32B2, UChar.NumericType.Numeric, 37.0 },
-                new double[] { 0x1375, UChar.NumericType.Numeric, 40.0 },
-                new double[] { 0x10323, UChar.NumericType.Numeric, 50.0 },
-                new double[] { 0x0BF1, UChar.NumericType.Numeric, 100.0 },
-                new double[] { 0x964c, UChar.NumericType.Numeric, 100.0 },
-                new double[] { 0x217E, UChar.NumericType.Numeric, 500.0 },
-                new double[] { 0x2180, UChar.NumericType.Numeric, 1000.0 },
-                new double[] { 0x4edf, UChar.NumericType.Numeric, 1000.0 },
-                new double[] { 0x2181, UChar.NumericType.Numeric, 5000.0 },
-                new double[] { 0x137C, UChar.NumericType.Numeric, 10000.0 },
-                new double[] { 0x4e07, UChar.NumericType.Numeric, 10000.0 },
-                new double[] { 0x12432, UChar.NumericType.Numeric, 216000.0 },
-                new double[] { 0x12433, UChar.NumericType.Numeric, 432000.0 },
-                new double[] { 0x4ebf, UChar.NumericType.Numeric, 100000000.0 },
-                new double[] { 0x5146, UChar.NumericType.Numeric, 1000000000000.0 },
-                new double[] { -1, UChar.NumericType.None, UChar.NoNumericValue },
-                new double[] { 0x61, UChar.NumericType.None, UChar.NoNumericValue, 10.0 },
-                new double[] { 0x3000, UChar.NumericType.None, UChar.NoNumericValue },
-                new double[] { 0xfffe, UChar.NumericType.None, UChar.NoNumericValue },
-                new double[] { 0x10301, UChar.NumericType.None, UChar.NoNumericValue },
-                new double[] { 0xe0033, UChar.NumericType.None, UChar.NoNumericValue },
-                new double[] { 0x10ffff, UChar.NumericType.None, UChar.NoNumericValue },
-                new double[] { 0x110000, UChar.NumericType.None, UChar.NoNumericValue }
+                new double[] { 0x0F33, NumericType.Numeric, -1.0 / 2.0 },
+                new double[] { 0x0C66, NumericType.Decimal, 0 },
+                new double[] { 0x96f6, NumericType.Numeric, 0 },
+                new double[] { 0xa833, NumericType.Numeric, 1.0 / 16.0 },
+                new double[] { 0x2152, NumericType.Numeric, 1.0 / 10.0 },
+                new double[] { 0x2151, NumericType.Numeric, 1.0 / 9.0 },
+                new double[] { 0x1245f, NumericType.Numeric, 1.0 / 8.0 },
+                new double[] { 0x2150, NumericType.Numeric, 1.0 / 7.0 },
+                new double[] { 0x2159, NumericType.Numeric, 1.0 / 6.0 },
+                new double[] { 0x09f6, NumericType.Numeric, 3.0 / 16.0 },
+                new double[] { 0x2155, NumericType.Numeric, 1.0 / 5.0 },
+                new double[] { 0x00BD, NumericType.Numeric, 1.0 / 2.0 },
+                new double[] { 0x0031, NumericType.Decimal, 1.0 },
+                new double[] { 0x4e00, NumericType.Numeric, 1.0 },
+                new double[] { 0x58f1, NumericType.Numeric, 1.0 },
+                new double[] { 0x10320, NumericType.Numeric, 1.0 },
+                new double[] { 0x0F2B, NumericType.Numeric, 3.0 / 2.0 },
+                new double[] { 0x00B2, NumericType.Digit, 2.0 }, /* Unicode 4.0 change */
+                new double[] { 0x5f10, NumericType.Numeric, 2.0 },
+                new double[] { 0x1813, NumericType.Decimal, 3.0 },
+                new double[] { 0x5f0e, NumericType.Numeric, 3.0 },
+                new double[] { 0x2173, NumericType.Numeric, 4.0 },
+                new double[] { 0x8086, NumericType.Numeric, 4.0 },
+                new double[] { 0x278E, NumericType.Digit, 5.0 },
+                new double[] { 0x1D7F2, NumericType.Decimal, 6.0 },
+                new double[] { 0x247A, NumericType.Digit, 7.0 },
+                new double[] { 0x7396, NumericType.Numeric, 9.0 },
+                new double[] { 0x1372, NumericType.Numeric, 10.0 },
+                new double[] { 0x216B, NumericType.Numeric, 12.0 },
+                new double[] { 0x16EE, NumericType.Numeric, 17.0 },
+                new double[] { 0x249A, NumericType.Numeric, 19.0 },
+                new double[] { 0x303A, NumericType.Numeric, 30.0 },
+                new double[] { 0x5345, NumericType.Numeric, 30.0 },
+                new double[] { 0x32B2, NumericType.Numeric, 37.0 },
+                new double[] { 0x1375, NumericType.Numeric, 40.0 },
+                new double[] { 0x10323, NumericType.Numeric, 50.0 },
+                new double[] { 0x0BF1, NumericType.Numeric, 100.0 },
+                new double[] { 0x964c, NumericType.Numeric, 100.0 },
+                new double[] { 0x217E, NumericType.Numeric, 500.0 },
+                new double[] { 0x2180, NumericType.Numeric, 1000.0 },
+                new double[] { 0x4edf, NumericType.Numeric, 1000.0 },
+                new double[] { 0x2181, NumericType.Numeric, 5000.0 },
+                new double[] { 0x137C, NumericType.Numeric, 10000.0 },
+                new double[] { 0x4e07, NumericType.Numeric, 10000.0 },
+                new double[] { 0x12432, NumericType.Numeric, 216000.0 },
+                new double[] { 0x12433, NumericType.Numeric, 432000.0 },
+                new double[] { 0x4ebf, NumericType.Numeric, 100000000.0 },
+                new double[] { 0x5146, NumericType.Numeric, 1000000000000.0 },
+                new double[] { -1, NumericType.None, UChar.NoNumericValue },
+                new double[] { 0x61, NumericType.None, UChar.NoNumericValue, 10.0 },
+                new double[] { 0x3000, NumericType.None, UChar.NoNumericValue },
+                new double[] { 0xfffe, NumericType.None, UChar.NoNumericValue },
+                new double[] { 0x10301, NumericType.None, UChar.NoNumericValue },
+                new double[] { 0xe0033, NumericType.None, UChar.NoNumericValue },
+                new double[] { 0x10ffff, NumericType.None, UChar.NoNumericValue },
+                new double[] { 0x110000, NumericType.None, UChar.NoNumericValue }
             };
 
             for (int i = 0; i < values.Length; ++i)
@@ -3015,11 +3016,11 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestBlockData()
         {
-            Type ubc = typeof(UChar.UnicodeBlock);
+            Type ubc = typeof(UnicodeBlock);
 
-            for (int b = 1; b < UChar.UnicodeBlock.Count; b += 1)
+            for (int b = 1; b < UnicodeBlock.Count; b += 1)
             {
-                UChar.UnicodeBlock blk = UChar.UnicodeBlock.GetInstance(b);
+                UnicodeBlock blk = UnicodeBlock.GetInstance(b);
                 int id = blk.ID;
                 String name = blk.ToString();
 
@@ -3054,12 +3055,12 @@ namespace ICU4N.Dev.Test.Lang
             int[] invalid_test = { -1, -10, -100 };
             for (int i = 0; i < invalid_test.Length; i++)
             {
-                if (UChar.UnicodeBlock.Invalid_Code != UChar.UnicodeBlock.GetInstance(invalid_test[i]))
+                if (UnicodeBlock.Invalid_Code != UnicodeBlock.GetInstance(invalid_test[i]))
                 {
                     Errln("UCharacter.UnicodeBlock.GetInstance(invalid_test[i]) was " +
                             "suppose to return UCharacter.UnicodeBlock.INVALID_CODE. Got " +
-                            UChar.UnicodeBlock.GetInstance(invalid_test[i]) + ". Expected " +
-                            UChar.UnicodeBlock.Invalid_Code);
+                            UnicodeBlock.GetInstance(invalid_test[i]) + ". Expected " +
+                            UnicodeBlock.Invalid_Code);
                 }
             }
         }
@@ -3071,12 +3072,12 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestOf()
         {
-            if (UChar.UnicodeBlock.Invalid_Code != UChar.UnicodeBlock.Of(UTF16.CodePointMaxValue + 1))
+            if (UnicodeBlock.Invalid_Code != UnicodeBlock.Of(UTF16.CodePointMaxValue + 1))
             {
                 Errln("UCharacter.UnicodeBlock.of(UTF16.CODEPOINT_MAX_VALUE+1) was " +
                         "suppose to return UCharacter.UnicodeBlock.INVALID_CODE. Got " +
-                        UChar.UnicodeBlock.Of(UTF16.CodePointMaxValue + 1) + ". Expected " +
-                        UChar.UnicodeBlock.Invalid_Code);
+                        UnicodeBlock.Of(UTF16.CodePointMaxValue + 1) + ". Expected " +
+                        UnicodeBlock.Invalid_Code);
             }
         }
 

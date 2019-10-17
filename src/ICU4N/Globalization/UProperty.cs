@@ -622,7 +622,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Enumerated property Block.
-        /// Same as <see cref="UChar.UnicodeBlock.Of(int)"/>, returns <see cref="UChar.UnicodeBlock"/>
+        /// Same as <see cref="Text.Unicode.UnicodeBlock.Of(int)"/>, returns <see cref="Text.Unicode.UnicodeBlock"/>
         /// values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
@@ -637,7 +637,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Enumerated property Decomposition_Type.
-        /// Returns <see cref="UChar.DecompositionType"/> values.
+        /// Returns <see cref="DecompositionType"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Decomposition_Type = 0x1003,
@@ -645,7 +645,7 @@ namespace ICU4N.Globalization
         /// <summary>
         /// Enumerated property East_Asian_Width.
         /// See <a href="http://www.unicode.org/reports/tr11/">http://www.unicode.org/reports/tr11/</a>.
-        /// Returns <see cref="UChar.EastAsianWidth"/> values.
+        /// Returns <see cref="EastAsianWidth"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         East_Asian_Width = 0x1004,
@@ -659,28 +659,28 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Enumerated property Joining_Group.
-        /// Returns <see cref="UChar.JoiningGroup"/> values.
+        /// Returns <see cref="JoiningGroup"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Joining_Group = 0x1006,
 
         /// <summary>
         /// Enumerated property Joining_Type.
-        /// Returns <see cref="UChar.JoiningType"/> values.
+        /// Returns <see cref="JoiningType"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Joining_Type = 0x1007,
 
         /// <summary>
         /// Enumerated property Line_Break.
-        /// Returns <see cref="UChar.LineBreak"/> values.
+        /// Returns <see cref="LineBreak"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Line_Break = 0x1008,
 
         /// <summary>
         /// Enumerated property Numeric_Type.
-        /// Returns <see cref="UChar.NumericType"/> values.
+        /// Returns <see cref="NumericType"/> values.
         /// </summary>
         /// <stable>ICU 2.4</stable>
         Numeric_Type = 0x1009,
@@ -694,7 +694,7 @@ namespace ICU4N.Globalization
 
         /// <summary>
         /// Enumerated property Hangul_Syllable_Type, new in Unicode 4.
-        /// Returns <see cref="UChar.HangulSyllableType"/> values.
+        /// Returns <see cref="HangulSyllableType"/> values.
         /// </summary>
         /// <stable>ICU 2.6</stable>
         Hangul_Syllable_Type = 0x100B,
@@ -755,7 +755,7 @@ namespace ICU4N.Globalization
         /// Enumerated property Grapheme_Cluster_Break (new in Unicode 4.1).
         /// Used in UAX #29: Text Boundaries
         /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>).
-        /// Returns <see cref="UChar.GraphemeClusterBreak"/> values.
+        /// Returns <see cref="GraphemeClusterBreak"/> values.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         Grapheme_Cluster_Break = 0x1012,
@@ -764,7 +764,7 @@ namespace ICU4N.Globalization
         /// Enumerated property Sentence_Break (new in Unicode 4.1).
         /// Used in UAX #29: Text Boundaries
         /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>).
-        /// Returns <see cref="UChar.SentenceBreak"/> values.
+        /// Returns <see cref="SentenceBreak"/> values.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         Sentence_Break = 0x1013,
@@ -773,7 +773,7 @@ namespace ICU4N.Globalization
         /// Enumerated property Word_Break (new in Unicode 4.1).
         /// Used in UAX #29: Text Boundaries
         /// (<a href="http://www.unicode.org/reports/tr29/">http://www.unicode.org/reports/tr29/</a>).
-        /// Returns <see cref="UChar.WordBreak"/> values.
+        /// Returns <see cref="WordBreak"/> values.
         /// </summary>
         /// <stable>ICU 3.4</stable>
         Word_Break = 0x1014,
@@ -782,7 +782,7 @@ namespace ICU4N.Globalization
         /// Enumerated property Bidi_Paired_Bracket_Type (new in Unicode 6.3).
         /// Used in UAX #9: Unicode Bidirectional Algorithm
         /// (<a href="http://www.unicode.org/reports/tr9/">http://www.unicode.org/reports/tr9/</a>).
-        /// Returns <see cref="UChar.BidiPairedBracketType"/> values.
+        /// Returns <see cref="BidiPairedBracketType"/> values.
         /// </summary>
         /// <stable>ICU 52</stable>
         Bidi_Paired_Bracket_Type = 0x1015,
