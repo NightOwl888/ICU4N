@@ -431,7 +431,7 @@ namespace ICU4N.Text
         /// and any fields or methods should not be called or overridden by users.
         /// </summary>
         [Obsolete("ICU 56 Use Normalizer2 instead.")]
-        public abstract class Mode // ICU4N TODO: API - de-nest?
+        private abstract class Mode // ICU4N specific - changed from public to private because it is obsolete and all subclasses are private.
         {
             internal NormalizerMode NormalizerMode { get; private set; }
 
