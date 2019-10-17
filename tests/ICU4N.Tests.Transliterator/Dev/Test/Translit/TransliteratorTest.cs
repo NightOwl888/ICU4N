@@ -3344,7 +3344,7 @@ namespace ICU4N.Dev.Test.Translit
             UnicodeMap<UnicodeSet> leadToTrail = new UnicodeMap<UnicodeSet>();
             UnicodeMap<UnicodeSet> leadToSources = new UnicodeMap<UnicodeSet>();
             UnicodeSet nonStarters = new UnicodeSet("[:^ccc=0:]").Freeze();
-            CanonicalIterator can = new CanonicalIterator("");
+            CanonicalEnumerator can = new CanonicalEnumerator("");
 
             UnicodeSet disorderedMarks = new UnicodeSet();
 
@@ -3357,10 +3357,12 @@ namespace ICU4N.Dev.Test.Translit
                 }
 
                 can.SetSource(s);
-                for (String t = can.Next(); t != null; t = can.Next())
-                {
-                    disorderedMarks.Add(t);
-                }
+                while (can.MoveNext())
+                    disorderedMarks.Add(can.Current);
+                //for (String t = can.Next(); t != null; t = can.Next())
+                //{
+                //    disorderedMarks.Add(t);
+                //}
 
                 // if s has two code points, (or more), add the lead/trail information
                 int first = s.CodePointAt(0);
@@ -3400,8 +3402,10 @@ namespace ICU4N.Dev.Test.Translit
                     foreach (String trail in trailSet)
                     {
                         can.SetSource(source + trail);
-                        for (String t = can.Next(); t != null; t = can.Next())
+                        //for (String t = can.Next(); t != null; t = can.Next())
+                        while (can.MoveNext())
                         {
+                            string t = can.Current;
                             if (t.EndsWith(trail, StringComparison.Ordinal)) continue;
                             disorderedMarks.Add(t);
                         }

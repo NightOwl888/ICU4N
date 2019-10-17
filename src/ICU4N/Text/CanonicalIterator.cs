@@ -35,14 +35,14 @@ namespace ICU4N.Text
     /// </remarks>
     /// <author>M. Davis</author>
     /// <stable>ICU 2.4</stable>
-    public sealed class CanonicalIterator // ICU4N TODO: API - rename CanonicalEnumerator
+    public sealed class CanonicalEnumerator // ICU4N specific - renamed from CanonicalIterator
     {
         /// <summary>
-        /// Construct a <see cref="CanonicalIterator"/> object.
+        /// Construct a <see cref="CanonicalEnumerator"/> object.
         /// </summary>
         /// <param name="source">String to get results for.</param>
         /// <stable>ICU 2.4</stable>
-        public CanonicalIterator(string source)
+        public CanonicalEnumerator(string source)
         {
             Norm2AllModes allModes = Norm2AllModes.GetNFCInstance();
             nfd = allModes.Decomp;
@@ -74,6 +74,26 @@ namespace ICU4N.Text
         }
 
         /// <summary>
+        /// Gets the current canonically equivalent string.
+        /// </summary>
+        public string Current { get; private set; }
+
+        /// <summary>
+        /// Move to the next canonically equivalent string.
+        /// <para/>
+        /// <b>Warning: The strings are not guaranteed to be in any particular order.</b>
+        /// </summary>
+        /// <returns><b>true</b> if the enumerator was advancet to the next canonically equivalent element; <b>false</b> if the enumerator has passed the end of the collection.</returns>
+        /// <stable>ICU4N 60.1</stable>
+        public bool MoveNext()
+        {
+            if (done)
+                return false;
+            Current = Next();
+            return Current != null;
+        }
+
+        /// <summary>
         /// Get the next canonically equivalent string.
         /// <para/>
         /// <b>Warning: The strings are not guaranteed to be in any particular order.</b>
@@ -81,7 +101,7 @@ namespace ICU4N.Text
         /// <returns>The next string that is canonically equivalent. The value null is returned when
         /// the iteration is done.</returns>
         /// <stable>ICU 2.4</stable>
-        public string Next() // ICU4N TODO: API - change to MoveNext(), Current
+        private string Next()
         {
             if (done) return null;
 

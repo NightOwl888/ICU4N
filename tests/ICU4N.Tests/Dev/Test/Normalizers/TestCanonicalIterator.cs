@@ -27,7 +27,7 @@ namespace ICU4N.Dev.Test.Normalizers
         public void TestExhaustive()
         {
             int counter = 0;
-            CanonicalIterator it = new CanonicalIterator("");
+            CanonicalEnumerator it = new CanonicalEnumerator("");
             /*
             CanonicalIterator slowIt = new CanonicalIterator("");
             slowIt.SKIP_ZEROS = false;
@@ -61,7 +61,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
             string s = "\uAC01\u0345";
 
-            CanonicalIterator it = new CanonicalIterator(s);
+            CanonicalEnumerator it = new CanonicalEnumerator(s);
             double start, end;
             int x = 0; // just to keep code from optimizing away.
             int iterations = 10000;
@@ -89,10 +89,9 @@ namespace ICU4N.Dev.Test.Normalizers
             for (int i = 0; i < iterations; ++i)
             {
                 it.SetSource(s);
-                while (true)
+                while (it.MoveNext())
                 {
-                    string item = it.Next();
-                    if (item == null) break;
+                    string item = it.Current;
                     x += item.Length;
                 }
             }
@@ -123,7 +122,7 @@ namespace ICU4N.Dev.Test.Normalizers
             // NOTE: we use a TreeSet below to sort the output, which is not guaranteed to be sorted!
 
             ISet<string> results = new SortedSet<string>(StringComparer.Ordinal);
-            CanonicalIterator.Permute("ABC", false, results);
+            CanonicalEnumerator.Permute("ABC", false, results);
             expectEqual("Simple permutation ", "", CollectionToString(results), "ABC, ACB, BAC, BCA, CAB, CBA");
 
             // try samples
@@ -131,25 +130,37 @@ namespace ICU4N.Dev.Test.Normalizers
             for (int i = 0; i < testArray.Length; ++i)
             {
                 //Logln("Results for: " + name.transliterate(testArray[i]));
-                CanonicalIterator it = new CanonicalIterator(testArray[i][0]);
+                CanonicalEnumerator it = new CanonicalEnumerator(testArray[i][0]);
                 // int counter = 0;
                 set.Clear();
                 string first = null;
-                while (true)
+                while (it.MoveNext())
                 {
-                    String result = it.Next();
+                    string result = it.Current;
                     if (first == null)
                     {
                         first = result;
                     }
-                    if (result == null) break;
                     set.Add(result); // sort them
                                      //Logln(++counter + ": " + hex.transliterate(result));
                                      //Logln(" = " + name.transliterate(result));
                 }
+                //while (true)
+                //{
+                //    String result = it.Next();
+                //    if (first == null)
+                //    {
+                //        first = result;
+                //    }
+                //    if (result == null) break;
+                //    set.Add(result); // sort them
+                //                     //Logln(++counter + ": " + hex.transliterate(result));
+                //                     //Logln(" = " + name.transliterate(result));
+                //}
                 expectEqual(i + ": ", testArray[i][0], CollectionToString(set), testArray[i][1]);
                 it.Reset();
-                if (!it.Next().Equals(first))
+                it.MoveNext();
+                if (!it.Current.Equals(first))
                 {
                     Errln("CanonicalIterator.reset() failed");
                 }
@@ -190,7 +201,7 @@ namespace ICU4N.Dev.Test.Normalizers
             return "[" + (SHOW_NAMES ? Hex(s) + "; " : "") + Hex(s) + "]";
         }
 
-        private void CharacterTest(string s, int ch, CanonicalIterator it)
+        private void CharacterTest(string s, int ch, CanonicalEnumerator it)
         {
             int mixedCounter = 0;
             int lastMixedCounter = -1;
@@ -206,10 +217,10 @@ namespace ICU4N.Dev.Test.Normalizers
 
             it.SetSource(s);
 
-            while (true)
+            while (it.MoveNext())
             {
-                string item = it.Next();
-                if (item == null) break;
+                string item = it.Current;
+                //if (item == null) break;
                 if (item.Equals(s)) gotSource = true;
                 if (item.Equals(decomp)) gotDecomp = true;
                 if (item.Equals(comp)) gotComp = true;
@@ -257,8 +268,10 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 Errln("FAIL CanonicalIterator: " + s + " decomp: " + decomp + " comp: " + comp);
                 it.Reset();
-                for (string item = it.Next(); item != null; item = it.Next())
+                //for (string item = it.Next(); item != null; item = it.Next())
+                while (it.MoveNext())
                 {
+                    string item = it.Current;
                     Err(item + "    ");
                 }
                 Errln("");

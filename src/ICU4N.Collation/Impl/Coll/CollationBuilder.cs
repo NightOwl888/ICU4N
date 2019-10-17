@@ -996,31 +996,28 @@ namespace ICU4N.Impl.Coll
             // TODO: make CanonicalIterator work with CharSequence, or maybe change arguments here to String
             if (nfdPrefix.Length == 0)
             {
-                CanonicalIterator stringIter = new CanonicalIterator(nfdString.ToString());
+                CanonicalEnumerator stringIter = new CanonicalEnumerator(nfdString.ToString());
                 ICharSequence prefix = new StringCharSequence("");
-                for (; ; )
+                while (stringIter.MoveNext())
                 {
-                    string str = stringIter.Next();
-                    if (str == null) { break; }
+                    string str = stringIter.Current;
                     if (IgnoreString(str) || str.ContentEquals(nfdString)) { continue; }
                     ce32 = AddIfDifferent(prefix, str.ToCharSequence(), newCEs, newCEsLength, ce32);
                 }
             }
             else
             {
-                CanonicalIterator prefixIter = new CanonicalIterator(nfdPrefix.ToString());
-                CanonicalIterator stringIter = new CanonicalIterator(nfdString.ToString());
-                for (; ; )
+                CanonicalEnumerator prefixIter = new CanonicalEnumerator(nfdPrefix.ToString());
+                CanonicalEnumerator stringIter = new CanonicalEnumerator(nfdString.ToString());
+                while(prefixIter.MoveNext())
                 {
-                    string prefix = prefixIter.Next();
-                    if (prefix == null) { break; }
+                    string prefix = prefixIter.Current;
                     if (IgnorePrefix(prefix)) { continue; }
                     bool samePrefix = prefix.ContentEquals(nfdPrefix);
                     ICharSequence prefixCharSequence = prefix.ToCharSequence();
-                    for (; ; )
+                    while (stringIter.MoveNext())
                     {
-                        string str = stringIter.Next();
-                        if (str == null) { break; }
+                        string str = stringIter.Current;
                         if (IgnoreString(str) || (samePrefix && str.ContentEquals(nfdString))) { continue; }
                         ce32 = AddIfDifferent(prefixCharSequence, str.ToCharSequence(), newCEs, newCEsLength, ce32);
                     }
