@@ -1165,7 +1165,7 @@ namespace ICU4N.Text
                 ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
                 if (doNormalize)
                 {
-                    Normalize(rest, first.ToAppendable(), SpanCondition.NotContained);
+                    Normalize(rest, first, SpanCondition.NotContained);
                 }
                 else
                 {
@@ -1230,7 +1230,7 @@ namespace ICU4N.Text
                 ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
                 if (doNormalize)
                 {
-                    Normalize(rest, first.ToAppendable(), SpanCondition.NotContained);
+                    Normalize(rest, first, SpanCondition.NotContained);
                 }
                 else
                 {
@@ -1291,7 +1291,7 @@ namespace ICU4N.Text
                 ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
                 if (doNormalize)
                 {
-                    Normalize(rest, first.ToAppendable(), SpanCondition.NotContained);
+                    Normalize(rest, first, SpanCondition.NotContained);
                 }
                 else
                 {
@@ -1356,7 +1356,7 @@ namespace ICU4N.Text
                 ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
                 if (doNormalize)
                 {
-                    Normalize(rest, first.ToAppendable(), SpanCondition.NotContained);
+                    Normalize(rest, first, SpanCondition.NotContained);
                 }
                 else
                 {
