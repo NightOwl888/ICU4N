@@ -250,9 +250,9 @@ namespace ICU4N.Impl
                 CurrencySpacingInfo spacingInfo = FetchSpacingInfo();
 
                 // Fall back to DEFAULT
-                if ((!spacingInfo.hasBeforeCurrency || !spacingInfo.hasAfterCurrency) && fallback)
+                if ((!spacingInfo.HasBeforeCurrency || !spacingInfo.HasAfterCurrency) && fallback)
                 {
-                    return CurrencySpacingInfo.DEFAULT;
+                    return CurrencySpacingInfo.Default;
                 }
                 return spacingInfo;
             }
@@ -625,12 +625,12 @@ namespace ICU4N.Impl
                         if (key.ContentEquals("beforeCurrency"))
                         {
                             type = CurrencySpacingInfo.SpacingType.Before;
-                            spacingInfo.hasBeforeCurrency = true;
+                            spacingInfo.HasBeforeCurrency = true;
                         }
                         else if (key.ContentEquals("afterCurrency"))
                         {
                             type = CurrencySpacingInfo.SpacingType.After;
-                            spacingInfo.hasAfterCurrency = true;
+                            spacingInfo.HasAfterCurrency = true;
                         }
                         else
                         {

@@ -51,8 +51,8 @@ namespace ICU4N.Impl
         private static readonly int SpacingPatternCount = Enum.GetNames(typeof(SpacingPattern)).Length;
         private readonly string[][] symbols = Arrays.NewRectangularArray<string>(SpacingTypeCount, SpacingTypeCount); ///new String[SpacingType.COUNT.ordinal()][SpacingPattern.COUNT.ordinal()];
 
-        public bool hasBeforeCurrency = false;
-        public bool hasAfterCurrency = false;
+        public bool HasBeforeCurrency { get; set; } = false;
+        public bool HasAfterCurrency { get; set; } = false;
 
         public enum SpacingType { Before, After }; // ICU4N TODO: API de-nest
 
@@ -104,9 +104,9 @@ namespace ICU4N.Impl
         private const string DEFAULT_CTX_MATCH = "[:digit:]";
         private const string DEFAULT_INSERT = " ";
 
-        public static readonly CurrencySpacingInfo DEFAULT = new CurrencySpacingInfo(
+        public static readonly CurrencySpacingInfo Default = new CurrencySpacingInfo(
                 DEFAULT_CUR_MATCH, DEFAULT_CTX_MATCH, DEFAULT_INSERT,
-                DEFAULT_CUR_MATCH, DEFAULT_CTX_MATCH, DEFAULT_INSERT); // ICU4N TODO: API - rename to follow .NET Conventions
+                DEFAULT_CUR_MATCH, DEFAULT_CTX_MATCH, DEFAULT_INSERT);
     }
 
     public class DefaultCurrencyDisplayInfo : CurrencyDisplayInfo // ICU4N: Renamed from DefaultInfo
@@ -174,7 +174,7 @@ namespace ICU4N.Impl
 
         public override CurrencySpacingInfo GetSpacingInfo()
         {
-            return fallback ? CurrencySpacingInfo.DEFAULT : null;
+            return fallback ? CurrencySpacingInfo.Default : null;
         }
 
         private static readonly CurrencyDisplayInfo FALLBACK_INSTANCE = new DefaultCurrencyDisplayInfo(true);
