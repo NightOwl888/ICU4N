@@ -106,7 +106,7 @@ namespace ICU4N.Impl
         /// to allow multiple threads to read concurrently, but keep
         /// changes to the factory list atomic with respect to all readers.
         /// </summary>
-        private readonly ICURWLock factoryLock = new ICURWLock();
+        private readonly ICUReaderWriterLock factoryLock = new ICUReaderWriterLock();
 
         /// <summary>
         /// All the factories registered with this service.
@@ -853,7 +853,7 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual string Stats()
         {
-            ICURWLock.Stats stats = factoryLock.ResetStats();
+            ICUReaderWriterLockStats stats = factoryLock.ResetStats();
             if (stats != null)
             {
                 return stats.ToString();

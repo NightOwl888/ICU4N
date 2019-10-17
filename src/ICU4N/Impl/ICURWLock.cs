@@ -3,6 +3,67 @@
 namespace ICU4N.Impl
 {
     /// <summary>
+    /// Internal class used to gather statistics on the <see cref="ICUReaderWriterLock"/>.
+    /// </summary>
+    public sealed class ICUReaderWriterLockStats
+    {
+        /// <summary>
+        /// Number of times read access granted (read count).
+        /// </summary>
+        public int ReadCount { get; internal set; }
+
+        /// <summary>
+        /// Number of times concurrent read access granted (multiple read count).
+        /// </summary>
+        public int MultipleReadCount { get; internal set; }
+
+        /// <summary>
+        /// Number of times blocked for read (waiting reader count).
+        /// </summary>
+        public int WaitingReadCount { get; internal set; } // wait for read
+
+        /// <summary>
+        /// Number of times write access granted (writer count).
+        /// </summary>
+        public int WriterCount { get; internal set; }
+
+        /// <summary>
+        /// Number of times blocked for write (waiting writer count).
+        /// </summary>
+        public int WaitingWriterCount { get; internal set; }
+
+        internal ICUReaderWriterLockStats()
+        {
+        }
+
+        internal ICUReaderWriterLockStats(int rc, int mrc, int wrc, int wc, int wwc)
+        {
+            this.ReadCount = rc;
+            this.MultipleReadCount = mrc;
+            this.WaitingReadCount = wrc;
+            this.WriterCount = wc;
+            this.WaitingWriterCount = wwc;
+        }
+
+        internal ICUReaderWriterLockStats(ICUReaderWriterLockStats rhs)
+            : this(rhs.ReadCount, rhs.MultipleReadCount, rhs.WaitingReadCount, rhs.WriterCount, rhs.WaitingWriterCount)
+        {
+        }
+
+        /// <summary>
+        /// Return a string listing all the stats.
+        /// </summary>
+        public override string ToString()
+        {
+            return " rc: " + ReadCount +
+                " mrc: " + MultipleReadCount +
+                " wrc: " + WaitingReadCount +
+                " wc: " + WriterCount +
+                " wwc: " + WaitingWriterCount;
+        }
+    }
+
+    /// <summary>
     /// A Reader/Writer lock originally written for ICU service
     /// implementation. The internal implementation was replaced
     /// with .NET's stock read write lock <see cref="ReaderWriterLockSlim"/>
@@ -31,82 +92,23 @@ namespace ICU4N.Impl
     /// The lock provides utility methods <see cref="GetStats()"/> and <see cref="ClearStats()"/>
     /// to return statistics on the use of the lock.
     /// </remarks>
-    public class ICURWLock
+    public class ICUReaderWriterLock
     {
-        private ReaderWriterLockSlim rwl = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private readonly ReaderWriterLockSlim rwl = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
 
-        private Stats stats = null;
+        private ICUReaderWriterLockStats stats = null;
 
-        /// <summary>
-        /// Internal class used to gather statistics on the <see cref="ICURWLock"/>.
-        /// </summary>
-        public sealed class Stats
-        {
-            /// <summary>
-            /// Number of times read access granted (read count).
-            /// </summary>
-            public int ReadCount { get; internal set; }
-
-            /// <summary>
-            /// Number of times concurrent read access granted (multiple read count).
-            /// </summary>
-            public int MultipleReadCount { get; internal set; }
-
-            /// <summary>
-            /// Number of times blocked for read (waiting reader count).
-            /// </summary>
-            public int WaitingReadCount { get; internal set; } // wait for read
-
-            /// <summary>
-            /// Number of times write access granted (writer count).
-            /// </summary>
-            public int WriterCount { get; internal set; }
-
-            /// <summary>
-            /// Number of times blocked for write (waiting writer count).
-            /// </summary>
-            public int WaitingWriterCount { get; internal set; }
-
-            internal Stats()
-            {
-            }
-
-            internal Stats(int rc, int mrc, int wrc, int wc, int wwc)
-            {
-                this.ReadCount = rc;
-                this.MultipleReadCount = mrc;
-                this.WaitingReadCount = wrc;
-                this.WriterCount = wc;
-                this.WaitingWriterCount = wwc;
-            }
-
-            internal Stats(Stats rhs)
-                : this(rhs.ReadCount, rhs.MultipleReadCount, rhs.WaitingReadCount, rhs.WriterCount, rhs.WaitingWriterCount)
-            {
-            }
-
-            /// <summary>
-            /// Return a string listing all the stats.
-            /// </summary>
-            public override string ToString()
-            {
-                return " rc: " + ReadCount +
-                    " mrc: " + MultipleReadCount +
-                    " wrc: " + WaitingReadCount +
-                    " wc: " + WriterCount +
-                    " wwc: " + WaitingWriterCount;
-            }
-        }
+        // ICU4N specific - de-nested Stats and renamed ICUReaderWriterLockStats
 
         /// <summary>
         /// Reset the stats.  Returns existing stats, if any.
         /// </summary>
-        public virtual Stats ResetStats()
+        public virtual ICUReaderWriterLockStats ResetStats()
         {
             lock (this)
             {
-                Stats result = stats;
-                stats = new Stats();
+                ICUReaderWriterLockStats result = stats;
+                stats = new ICUReaderWriterLockStats();
                 return result;
             }
         }
@@ -114,11 +116,11 @@ namespace ICU4N.Impl
         /// <summary>
         /// Clear the stats (stop collecting stats).  Returns existing stats, if any.
         /// </summary>
-        public virtual Stats ClearStats()
+        public virtual ICUReaderWriterLockStats ClearStats()
         {
             lock (this)
             {
-                Stats result = stats;
+                ICUReaderWriterLockStats result = stats;
                 stats = null;
                 return result;
             }
@@ -127,11 +129,11 @@ namespace ICU4N.Impl
         /// <summary>
         /// Return a snapshot of the current stats.  This does not reset the stats.
         /// </summary>
-        public virtual Stats GetStats()
+        public virtual ICUReaderWriterLockStats GetStats()
         {
             lock (this)
             {
-                return stats == null ? null : new Stats(stats);
+                return stats == null ? null : new ICUReaderWriterLockStats(stats);
             }
         }
 

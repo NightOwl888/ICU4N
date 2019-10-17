@@ -1045,7 +1045,7 @@ namespace ICU4N.Dev.Test.Util
 
             // ICURWLock
 
-            ICURWLock rwlock = new ICURWLock();
+            ICUReaderWriterLock rwlock = new ICUReaderWriterLock();
             rwlock.ResetStats();
 
             rwlock.AcquireRead();
