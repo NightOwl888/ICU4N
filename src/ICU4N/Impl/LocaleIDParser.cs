@@ -691,7 +691,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private IComparer<string> GetKeyComparator() // ICU4N TODO: API - rename GetKeyComparer
+        private IComparer<string> GetKeyComparer()
         {
             return new KeyComparer();
         }
@@ -735,7 +735,7 @@ namespace ICU4N.Impl
                         }
                         if (m == null)
                         {
-                            m = new SortedDictionary<string, string>(GetKeyComparator());
+                            m = new SortedDictionary<string, string>(GetKeyComparer());
                         }
                         else if (m.ContainsKey(key))
                         {
@@ -852,7 +852,7 @@ namespace ICU4N.Impl
                     if (value != null)
                     {
                         // force new map
-                        keywords = new SortedDictionary<string, string>(GetKeyComparator());
+                        keywords = new SortedDictionary<string, string>(GetKeyComparer());
                         keywords[keywordName] = value.Trim();
                     }
                 }
