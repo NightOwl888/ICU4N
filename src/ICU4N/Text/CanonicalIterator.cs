@@ -484,11 +484,7 @@ namespace ICU4N.Text
         // TODO: Flatten this data so it doesn't have to be reconstructed each time!
 
         //private static final UnicodeSet EMPTY = new UnicodeSet(); // constant, don't change
-        private static readonly ISet<string> SET_WITH_NULL_STRING = new HashSet<string>(); // constant, don't change
-        static CanonicalIterator()
-        {
-            SET_WITH_NULL_STRING.Add("");
-        }
+        private static readonly ISet<string> SET_WITH_NULL_STRING = new HashSet<string> { string.Empty }; // constant, don't change
 
         //  private static UnicodeSet SAFE_START = new UnicodeSet();
         //  private static CharMap AT_START = new CharMap();
