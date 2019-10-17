@@ -35,7 +35,6 @@ namespace ICU4N.Globalization
     /// may be added at any time.
     /// </remarks>
     /// <stable>ICU 2.2</stable>
-    // ICU4N TODO: API - move to Globalization namespace
     public static class UScript // ICU4N specific - made static since there are no instance members
     {
         /// <summary>
