@@ -77,6 +77,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Norm2AllModesExtension.tt</DependentUpon>
     </None>
+    <None Include="Text\Normalizer2Extension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Normalizer2Extension.tt</DependentUpon>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -189,6 +194,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>IDNAExtension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Text\Normalizer2Extension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Normalizer2Extension.tt</DependentUpon>
     </Compile>
     <Compile Update="Text\NormalizerExtension.cs">
       <DesignTime>True</DesignTime>
@@ -313,6 +323,10 @@
     <None Update="Text\IDNAExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>IDNAExtension.cs</LastGenOutput>
+    </None>
+    <None Update="Text\Normalizer2Extension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Normalizer2Extension.cs</LastGenOutput>
     </None>
     <None Update="Text\NormalizerExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

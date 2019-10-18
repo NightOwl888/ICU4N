@@ -106,7 +106,9 @@ namespace ICU4N.Text
     /// complete: There may be more boundaries that could be returned.
     /// Different functions may return different boundaries.
     /// </remarks>
-    public abstract class Normalizer2
+    /// <stable>ICU 4.4</stable>
+    /// <author>Markus W. Scherer</author>
+    public abstract partial class Normalizer2
     {
         internal IntPtr normalizerReference;
 
@@ -122,10 +124,11 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance for Unicode NFC normalization.
-        /// Same as GetInstance(null, "nfc", UNormalization2Mode.UNORM2_COMPOSE).
+        /// Same as GetInstance(null, "nfc", Normalizer2Mode.Compose).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
+        /// <stable>ICU 49</stable>
         public static Normalizer2 GetNFCInstance()
         {
             return Norm2AllModes.GetNFCInstance().Comp;
@@ -133,10 +136,11 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance for Unicode NFD normalization.
-        /// Same as GetInstance(null, "nfc", UNormalization2Mode.UNORM2_DECOMPOSE).
+        /// Same as GetInstance(null, "nfc", Normalizer2Mode.Decompose).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
+        /// <stable>ICU 49</stable>
         public static Normalizer2 GetNFDInstance()
         {
             return Norm2AllModes.GetNFCInstance().Decomp;
@@ -144,10 +148,11 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance for Unicode NFKC normalization.
-        /// Same as GetInstance(null, "nfkc", UNormalization2Mode.UNORM2_COMPOSE).
+        /// Same as GetInstance(null, "nfkc", Normalizer2Mode.Compose).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
+        /// <stable>ICU 49</stable>
         public static Normalizer2 GetNFKCInstance()
         {
             return Norm2AllModes.GetNFKCInstance().Comp;
@@ -155,10 +160,11 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance for Unicode NFKD normalization.
-        /// Same as GetInstance(null, "nfkc", UNormalization2Mode.UNORM2_DECOMPOSE).
+        /// Same as GetInstance(null, "nfkc", Normalizer2Mode.Decompose).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
+        /// <stable>ICU 49</stable>
         public static Normalizer2 GetNFKDInstance()
         {
             return Norm2AllModes.GetNFKCInstance().Decomp;
@@ -166,10 +172,11 @@ namespace ICU4N.Text
 
         /// <summary>
         /// Returns a <see cref="Normalizer2"/> instance for Unicode NFKC_Casefold normalization.
-        /// Same as GetInstance(null, "nfkc_cf", UNormalization2Mode.UNORM2_COMPOSE).
+        /// Same as GetInstance(null, "nfkc_cf", Normalizer2Mode.Compose).
         /// Returns an unmodifiable singleton instance.
         /// </summary>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
+        /// <stable>ICU 49</stable>
         public static Normalizer2 GetNFKCCasefoldInstance()
         {
             return Norm2AllModes.GetNFKC_CFInstance().Comp;
@@ -181,10 +188,10 @@ namespace ICU4N.Text
         /// and which composes or decomposes text according to the specified mode.
         /// Returns an unmodifiable singleton instance.
         /// <list type="bullet">
-        ///		<item><description>Use data=null for data files that are part of ICU's own data.</description></item>
-        ///		<item><description>Use name="nfc" and COMPOSE/DECOMPOSE for Unicode standard NFC/NFD.</description></item>
-        ///		<item><description>Use name="nfkc" and COMPOSE/DECOMPOSE for Unicode standard NFKC/NFKD.</description></item>
-        ///		<item><description>Use name="nfkc_cf" and COMPOSE for Unicode standard NFKC_CF=NFKC_Casefold.</description></item>
+        ///     <item><description>Use data=null for data files that are part of ICU's own data.</description></item>
+        ///     <item><description>Use name="nfc" and COMPOSE/DECOMPOSE for Unicode standard NFC/NFD.</description></item>
+        ///     <item><description>Use name="nfkc" and COMPOSE/DECOMPOSE for Unicode standard NFKC/NFKD.</description></item>
+        ///     <item><description>Use name="nfkc_cf" and COMPOSE for Unicode standard NFKC_CF=NFKC_Casefold.</description></item>
         /// </list>
         /// <para/>
         /// If data!=null, then the binary data is read once and cached using the provided
@@ -196,6 +203,7 @@ namespace ICU4N.Text
         /// <param name="name">"nfc" or "nfkc" or "nfkc_cf" or name of custom data file.</param>
         /// <param name="mode">Normalization mode (compose or decompose etc.)</param>
         /// <returns>The requested <see cref="Normalizer2"/>, if successful.</returns>
+        /// <stable>ICU 4.4</stable>
         public static Normalizer2 GetInstance(Stream data, string name, Normalizer2Mode mode)
         {
             ByteBuffer bytes = null;
@@ -225,7 +233,8 @@ namespace ICU4N.Text
         /// Returns the normalized form of the source string.
         /// </summary>
         /// <param name="src">Source string.</param>
-        /// <returns>Normalized src.</returns>
+        /// <returns>Normalized <paramref name="src"/>.</returns>
+        /// <stable>ICU 4.4</stable>
         public virtual string Normalize(string src)
         {
             int spanLength = SpanQuickCheckYes(src);
@@ -241,7 +250,8 @@ namespace ICU4N.Text
         /// Returns the normalized form of the source <see cref="StringBuilder"/>.
         /// </summary>
         /// <param name="src">Source <see cref="StringBuilder"/>.</param>
-        /// <returns>Normalized src.</returns>
+        /// <returns>Normalized <paramref name="src"/>.</returns>
+        /// <stable>ICU 4.4</stable>
         public virtual string Normalize(StringBuilder src)
         {
             return Normalize(src, new StringBuilder(src.Length)).ToString();
@@ -251,7 +261,8 @@ namespace ICU4N.Text
         /// Returns the normalized form of the source <see cref="T:char[]"/>.
         /// </summary>
         /// <param name="src">Source <see cref="T:char[]"/>.</param>
-        /// <returns>Normalized src.</returns>
+        /// <returns>Normalized <paramref name="src"/>.</returns>
+        /// <stable>ICU 4.4</stable>
         public virtual string Normalize(char[] src)
         {
             return Normalize(src, new StringBuilder(src.Length)).ToString();
@@ -261,7 +272,8 @@ namespace ICU4N.Text
         /// Returns the normalized form of the source <see cref="ICharSequence"/>.
         /// </summary>
         /// <param name="src">Source <see cref="ICharSequence"/>.</param>
-        /// <returns>Normalized src.</returns>
+        /// <returns>Normalized <paramref name="src"/>.</returns>
+        /// <stable>ICU 4.4</stable>
         internal virtual string Normalize(ICharSequence src)
         {
             if (src is StringCharSequence)
@@ -273,169 +285,13 @@ namespace ICU4N.Text
             return Normalize(src, new StringBuilder(src.Length)).ToString();
         }
 
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        public abstract StringBuilder Normalize(string src, StringBuilder dest);
+        // ICU4N specific - Moved Normalize(ICharSequence src, StringBuilder dest) to Normalizer2Extension.tt
 
-        /// <summary>
-        /// Writes the normalized form of the source <see cref="StringBuilder"/> to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// The source and destination strings must be different objects.
-        /// </summary>
-        /// <param name="src">Source <see cref="StringBuilder"/>.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        public abstract StringBuilder Normalize(StringBuilder src, StringBuilder dest);
+        // ICU4N specific - Moved Normalize(ICharSequence src, IAppendable dest) to Normalizer2Extension.tt
 
-        /// <summary>
-        /// Writes the normalized form of the source <see cref="T:char[]"/> to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// The source and destination strings must be different objects.
-        /// </summary>
-        /// <param name="src">Source <see cref="T:char[]"/>.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        public abstract StringBuilder Normalize(char[] src, StringBuilder dest);
+        // ICU4N specific - Moved NormalizeSecondAndAppend(StringBuilder first, ICharSequence second) to Normalizer2Extension.tt
 
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        internal abstract StringBuilder Normalize(ICharSequence src, StringBuilder dest);
-
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        internal abstract IAppendable Normalize(string src, IAppendable dest);
-
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        internal abstract IAppendable Normalize(StringBuilder src, IAppendable dest);
-
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        internal abstract IAppendable Normalize(char[] src, IAppendable dest);
-
-        /// <summary>
-        /// Writes the normalized form of the source string to the destination string
-        /// (replacing its contents) and returns the destination string.
-        /// </summary>
-        /// <param name="src">Source string.</param>
-        /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
-        /// <returns><paramref name="dest"/></returns>
-        internal abstract IAppendable Normalize(ICharSequence src, IAppendable dest);
-
-        /// <summary>
-        /// Appends the normalized form of the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if the first string was normalized.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, will be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        public abstract StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, string second);
-
-        /// <summary>
-        /// Appends the normalized form of the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if the first string was normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, will be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        public abstract StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, StringBuilder second);
-
-        /// <summary>
-        /// Appends the normalized form of the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if the first string was normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, will be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        public abstract StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, char[] second);
-
-        /// <summary>
-        /// Appends the normalized form of the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if the first string was normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, will be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        internal abstract StringBuilder NormalizeSecondAndAppend(
-            StringBuilder first, ICharSequence second);
-
-        /// <summary>
-        /// Appends the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if both the strings were normalized.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, should be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        public abstract StringBuilder Append(StringBuilder first, string second);
-
-        /// <summary>
-        /// Appends the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if both the strings were normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, should be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        public abstract StringBuilder Append(StringBuilder first, StringBuilder second);
-
-        /// <summary>
-        /// Appends the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if both the strings were normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, should be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        public abstract StringBuilder Append(StringBuilder first, char[] second);
-
-        /// <summary>
-        /// Appends the second string to the first string
-        /// (merging them at the boundary) and returns the first string.
-        /// The result is normalized if both the strings were normalized.
-        /// The first and second strings must be different objects.
-        /// </summary>
-        /// <param name="first">First string, should be normalized.</param>
-        /// <param name="second">Second string, should be normalized.</param>
-        /// <returns><paramref name="first"/></returns>
-        internal abstract StringBuilder Append(StringBuilder first, ICharSequence second);
+        // ICU4N specific - Moved Append(StringBuilder first, ICharSequence second) to Normalizer2Extension.tt
 
         /// <summary>
         /// Gets the decomposition mapping of <paramref name="codePoint"/>.
@@ -446,6 +302,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s decomposition mapping, if any; otherwise null.</returns>
+        /// <stable>ICU 4.6</stable>
         public abstract string GetDecomposition(int codePoint);
 
         /// <summary>
@@ -470,6 +327,7 @@ namespace ICU4N.Text
         /// </remarks>
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s raw decomposition mapping, if any; otherwise null.</returns>
+        /// <stable>ICU 49</stable>
         public virtual string GetRawDecomposition(int codePoint) { return null; }
 
         /// <summary>
@@ -487,6 +345,7 @@ namespace ICU4N.Text
         /// <param name="a">A (normalization starter) code point.</param>
         /// <param name="b">Another code point.</param>
         /// <returns>The non-negative composite code point if there is one; otherwise a negative value.</returns>
+        /// <stable>ICU 49</stable>
         public virtual int ComposePair(int a, int b) { return -1; }
 
         /// <summary>
@@ -496,183 +355,15 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="codePoint">Code point.</param>
         /// <returns><paramref name="codePoint"/>'s combining class.</returns>
+        /// <stable>ICU 49</stable>
         public virtual int GetCombiningClass(int codePoint) { return 0; }
 
-        /// <summary>
-        /// Tests if the string is normalized.
-        /// Internally, in cases where the <see cref="QuickCheck(string)"/> method would return "maybe"
-        /// (which is only possible for the two COMPOSE modes) this method
-        /// resolves to "yes" or "no" to provide a definitive result,
-        /// at the cost of doing more work in those cases.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>true if s is normalized.</returns>
-        public abstract bool IsNormalized(string s); // ICU4N TODO: API Generate overloads
+        // ICU4N specific - Moved IsNormalized(ICharSequence s) to Normalizer2Extension.tt
 
-        /// <summary>
-        /// Tests if the <see cref="StringBuilder"/> is normalized.
-        /// Internally, in cases where the <see cref="QuickCheck(StringBuilder)"/> method would return "maybe"
-        /// (which is only possible for the two COMPOSE modes) this method
-        /// resolves to "yes" or "no" to provide a definitive result,
-        /// at the cost of doing more work in those cases.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>true if s is normalized.</returns>
-        public abstract bool IsNormalized(StringBuilder s);
+        // ICU4N specific - Moved QuickCheck(ICharSequence s) to Normalizer2Extension.tt
 
-        /// <summary>
-        /// Tests if the <see cref="T:char[]"/> is normalized.
-        /// Internally, in cases where the <see cref="QuickCheck(char[])"/> method would return "maybe"
-        /// (which is only possible for the two COMPOSE modes) this method
-        /// resolves to "yes" or "no" to provide a definitive result,
-        /// at the cost of doing more work in those cases.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>true if s is normalized.</returns>
-        public abstract bool IsNormalized(char[] s);
+        // ICU4N specific - Moved SpanQuickCheckYes(ICharSequence s) to Normalizer2Extension.tt
 
-        /// <summary>
-        /// Tests if the string is normalized.
-        /// Internally, in cases where the <see cref="QuickCheck(ICharSequence)"/> method would return "maybe"
-        /// (which is only possible for the two COMPOSE modes) this method
-        /// resolves to "yes" or "no" to provide a definitive result,
-        /// at the cost of doing more work in those cases.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>true if s is normalized.</returns>
-        internal abstract bool IsNormalized(ICharSequence s);
-
-        /// <summary>
-        /// Tests if the string is normalized.
-        /// For the two COMPOSE modes, the result could be "maybe" in cases that
-        /// would take a little more work to resolve definitively.
-        /// Use <see cref="SpanQuickCheckYes(string)"/> and
-        /// <see cref="NormalizeSecondAndAppend(StringBuilder, string)"/> for a faster
-        /// combination of quick check + normalization, to avoid
-        /// re-checking the "yes" prefix.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>The quick check result.</returns>
-        public abstract QuickCheckResult QuickCheck(string s); // ICU4N TODO: API Generate overloads
-
-        /// <summary>
-        /// Tests if the string is normalized.
-        /// For the two COMPOSE modes, the result could be "maybe" in cases that
-        /// would take a little more work to resolve definitively.
-        /// Use <see cref="SpanQuickCheckYes(StringBuilder)"/> and
-        /// <see cref="NormalizeSecondAndAppend(StringBuilder, StringBuilder)"/> for a faster
-        /// combination of quick check + normalization, to avoid
-        /// re-checking the "yes" prefix.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>The quick check result.</returns>
-        public abstract QuickCheckResult QuickCheck(StringBuilder s);
-
-        /// <summary>
-        /// Tests if the string is normalized.
-        /// For the two COMPOSE modes, the result could be "maybe" in cases that
-        /// would take a little more work to resolve definitively.
-        /// Use <see cref="SpanQuickCheckYes(char[])"/> and
-        /// <see cref="NormalizeSecondAndAppend(StringBuilder, char[])"/> for a faster
-        /// combination of quick check + normalization, to avoid
-        /// re-checking the "yes" prefix.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>The quick check result.</returns>
-        public abstract QuickCheckResult QuickCheck(char[] s);
-
-        /// <summary>
-        /// Tests if the string is normalized.
-        /// For the two COMPOSE modes, the result could be "maybe" in cases that
-        /// would take a little more work to resolve definitively.
-        /// Use <see cref="SpanQuickCheckYes(ICharSequence)"/> and
-        /// <see cref="NormalizeSecondAndAppend(StringBuilder, ICharSequence)"/> for a faster
-        /// combination of quick check + normalization, to avoid
-        /// re-checking the "yes" prefix.
-        /// </summary>
-        /// <param name="s">Input string.</param>
-        /// <returns>The quick check result.</returns>
-        internal abstract QuickCheckResult QuickCheck(ICharSequence s);
-
-        /// <summary>
-        /// Returns the end of the normalized substring of the input string.
-        /// In other words, with <c>end=SpanQuickCheckYes(s);</c>
-        /// the substring <c>s.SubString(0, end)</c>
-        /// will pass the quick check with a "yes" result.
-        /// </summary>
-        /// <remarks>
-        /// The returned end index is usually one or more characters before the
-        /// "no" or "maybe" character: The end index is at a normalization boundary.
-        /// (See the class documentation for more about normalization boundaries.)
-        /// <para/>
-        /// When the goal is a normalized string and most input strings are expected
-        /// to be normalized already, then call this method,
-        /// and if it returns a prefix shorter than the input string,
-        /// copy that prefix and use <see cref="NormalizeSecondAndAppend(StringBuilder, string)"/> for the remainder.
-        /// </remarks>
-        /// <param name="s">Input string.</param>
-        /// <returns>"yes" span end index.</returns>
-        public abstract int SpanQuickCheckYes(string s); // ICU4N TODO: API Generate overloads
-
-        /// <summary>
-        /// Returns the end of the normalized substring of the input string.
-        /// In other words, with <c>end=SpanQuickCheckYes(s);</c>
-        /// the substring <c>s.SubString(0, end)</c>
-        /// will pass the quick check with a "yes" result.
-        /// </summary>
-        /// <remarks>
-        /// The returned end index is usually one or more characters before the
-        /// "no" or "maybe" character: The end index is at a normalization boundary.
-        /// (See the class documentation for more about normalization boundaries.)
-        /// <para/>
-        /// When the goal is a normalized string and most input strings are expected
-        /// to be normalized already, then call this method,
-        /// and if it returns a prefix shorter than the input string,
-        /// copy that prefix and use <see cref="NormalizeSecondAndAppend(StringBuilder, StringBuilder)"/> for the remainder.
-        /// </remarks>
-        /// <param name="s">Input string.</param>
-        /// <returns>"yes" span end index.</returns>
-        public abstract int SpanQuickCheckYes(StringBuilder s);
-
-        /// <summary>
-        /// Returns the end of the normalized substring of the input string.
-        /// In other words, with <c>end=SpanQuickCheckYes(s);</c>
-        /// the substring <c>s.SubString(0, end)</c>
-        /// will pass the quick check with a "yes" result.
-        /// </summary>
-        /// <remarks>
-        /// The returned end index is usually one or more characters before the
-        /// "no" or "maybe" character: The end index is at a normalization boundary.
-        /// (See the class documentation for more about normalization boundaries.)
-        /// <para/>
-        /// When the goal is a normalized string and most input strings are expected
-        /// to be normalized already, then call this method,
-        /// and if it returns a prefix shorter than the input string,
-        /// copy that prefix and use <see cref="NormalizeSecondAndAppend(StringBuilder, char[])"/> for the remainder.
-        /// </remarks>
-        /// <param name="s">Input string.</param>
-        /// <returns>"yes" span end index.</returns>
-        public abstract int SpanQuickCheckYes(char[] s);
-
-        /// <summary>
-        /// Returns the end of the normalized substring of the input string.
-        /// In other words, with <c>end=SpanQuickCheckYes(s);</c>
-        /// the substring <c>s.SubString(0, end)</c>
-        /// will pass the quick check with a "yes" result.
-        /// </summary>
-        /// <remarks>
-        /// The returned end index is usually one or more characters before the
-        /// "no" or "maybe" character: The end index is at a normalization boundary.
-        /// (See the class documentation for more about normalization boundaries.)
-        /// <para/>
-        /// When the goal is a normalized string and most input strings are expected
-        /// to be normalized already, then call this method,
-        /// and if it returns a prefix shorter than the input string,
-        /// copy that prefix and use <see cref="NormalizeSecondAndAppend(StringBuilder, ICharSequence)"/> for the remainder.
-        /// </remarks>
-        /// <param name="s">Input string.</param>
-        /// <returns>"yes" span end index.</returns>
-        internal abstract int SpanQuickCheckYes(ICharSequence s);
 
         /// <summary>
         /// Tests if the character always has a normalization boundary before it,
@@ -686,6 +377,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> has a normalization boundary before it.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract bool HasBoundaryBefore(int character);
 
         /// <summary>
@@ -702,6 +394,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> has a normalization boundary after it.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract bool HasBoundaryAfter(int character);
 
         /// <summary>
@@ -717,6 +410,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <param name="character">Character to test.</param>
         /// <returns>true if <paramref name="character"/> is normalization-inert.</returns>
+        /// <stable>ICU 4.4</stable>
         public abstract bool IsInert(int character);
     }
 }
