@@ -14,7 +14,7 @@ namespace ICU4N.Text
     /// always return <see cref="RuleStatus.WordNone"/>
     /// </summary>
     /// <draft>ICU4N 60.1</draft>
-    public enum RuleStatus
+    public enum RuleStatus // ICU4N TODO: API - These are not specific status values, but lower and upper limits of possible values. These should be moved back to constants unless there is actually a list of the specific values somewhere.
     {
         /// <summary>
         /// Tag value for "words" that do not fit into any of other categories.
