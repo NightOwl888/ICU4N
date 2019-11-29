@@ -1,13 +1,16 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Impl.Coll;
-using ICU4N.Support;
-using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using ICU4N.Support.Threading;
 using ICU4N.Util;
+using J2N;
+using J2N.Collections;
+using J2N.Numerics;
+using J2N.Text;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Text;
+using System.Threading;
 
 namespace ICU4N.Text
 {
@@ -264,7 +267,7 @@ namespace ICU4N.Text
         {
             if (!IsFrozen)
             {
-                frozenLock = new ReentrantLock();
+                frozenLock = new object(); // ICU4N: Using object/Monitor to replace ReentrantLock
                 if (collationBuffer == null)
                 {
                     collationBuffer = new CollationBuffer(data);
@@ -1242,8 +1245,8 @@ namespace ICU4N.Text
             if (nfdQCYesLimit < s.Length)
             {
                 int destLengthEstimate = s.Length - nfdQCYesLimit;
-                StringBuilderCharSequence nfd = new StringBuilderCharSequence();
-                data.NfcImpl.Decompose(s, nfdQCYesLimit, s.Length, nfd.StringBuilder, destLengthEstimate);
+                StringBuilderCharSequence nfd = new StringBuilderCharSequence(new StringBuilder());
+                data.NfcImpl.Decompose(s, nfdQCYesLimit, s.Length, nfd.Value, destLengthEstimate);
                 BOCSU.WriteIdenticalLevelRun(prev, nfd, 0, nfd.Length, sink.Key);
             }
             // Sync the key with the buffer again which got bytes appended and may have been reallocated.
@@ -1505,14 +1508,14 @@ namespace ICU4N.Text
                 {
                     if (str == null)
                     {
-                        str = new StringBuilderCharSequence();
+                        str = new StringBuilderCharSequence(new StringBuilder());
                     }
                     else
                     {
-                        str.StringBuilder.Length = 0;
+                        str.Value.Length = 0;
                     }
-                    str.StringBuilder.Append(seq, start, spanLimit);
-                    ReorderingBuffer buffer = new ReorderingBuffer(nfcImpl, str.StringBuilder, seq.Length - start);
+                    str.Value.Append(seq, start, spanLimit - start); // ICU4N: Corrected 3rd parameter
+                    ReorderingBuffer buffer = new ReorderingBuffer(nfcImpl, str.Value, seq.Length - start);
                     nfcImpl.MakeFCD(seq, spanLimit, seq.Length, buffer);
                     s = str;
                     pos = 0;
@@ -1727,7 +1730,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Frozen state of the collator.
         /// </summary>
-        private ReentrantLock frozenLock;
+        private object frozenLock; // ICU4N: Using object/Monitor to replace ReentrantLock
 
         private sealed class CollationBuffer
         {
@@ -1796,7 +1799,7 @@ namespace ICU4N.Text
         {
             if (IsFrozen)
             {
-                frozenLock.Lock();
+                Monitor.Enter(frozenLock); // ICU4N: Using object/Monitor to replace ReentrantLock
             }
             else if (collationBuffer == null)
             {
@@ -1809,7 +1812,7 @@ namespace ICU4N.Text
         {
             if (IsFrozen)
             {
-                frozenLock.Unlock();
+                Monitor.Exit(frozenLock); // ICU4N: Using object/Monitor to replace ReentrantLock
             }
         }
 

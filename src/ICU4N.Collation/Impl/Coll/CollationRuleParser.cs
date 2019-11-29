@@ -2,6 +2,8 @@
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -128,7 +130,7 @@ namespace ICU4N.Impl.Coll
 
         // In C++, we parse into temporary UnicodeString objects named "raw" or "str".
         // In Java, we reuse this StringBuilder.
-        private readonly StringBuilderCharSequence rawBuilder = new StringBuilderCharSequence();
+        private readonly StringBuilderCharSequence rawBuilder = new StringBuilderCharSequence(new StringBuilder());
 
         private void Parse(string ruleString)
         {
@@ -231,7 +233,7 @@ namespace ICU4N.Impl.Coll
             int j;
             char c;
             CollationStrength resetStrength;
-            if (rules.RegionMatches(i, BEFORE, 0, BEFORE.Length) &&
+            if (rules.RegionMatches(i, BEFORE, 0, BEFORE.Length, StringComparison.Ordinal) &&
                     (j = i + BEFORE.Length) < rules.Length &&
                     PatternProps.IsWhiteSpace(rules[j]) &&
                     ((j = SkipWhiteSpace(j + 1)) + 1) < rules.Length &&
@@ -253,11 +255,11 @@ namespace ICU4N.Impl.Coll
             }
             if (rules[i] == 0x5b)
             {  // '['
-                i = ParseSpecialPosition(i, rawBuilder.StringBuilder);
+                i = ParseSpecialPosition(i, rawBuilder.Value);
             }
             else
             {
-                i = ParseTailoringString(i, rawBuilder.StringBuilder);
+                i = ParseTailoringString(i, rawBuilder.Value);
             }
             try
             {
@@ -340,12 +342,12 @@ namespace ICU4N.Impl.Coll
             // where prefix and extension are optional.
             StringCharSequence prefix = new StringCharSequence("");
             string extension = "";
-            i = ParseTailoringString(i, rawBuilder.StringBuilder);
+            i = ParseTailoringString(i, rawBuilder.Value);
             char next = (i < rules.Length) ? rules[i] : (char)0;
             if (next == 0x7c)
             {  // '|' separates the context prefix from the string.
                 prefix = new StringCharSequence(rawBuilder.ToString());
-                i = ParseTailoringString(i + 1, rawBuilder.StringBuilder);
+                i = ParseTailoringString(i + 1, rawBuilder.Value);
                 next = (i < rules.Length) ? rules[i] : (char)0;
             }
             // str = rawBuilder (do not modify rawBuilder any more in this function)
@@ -357,8 +359,8 @@ namespace ICU4N.Impl.Coll
             }
             if (prefix.Length != 0)
             {
-                int prefix0 = prefix.String.CodePointAt(0);
-                int c = rawBuilder.StringBuilder.CodePointAt(0);
+                int prefix0 = prefix.Value.CodePointAt(0);
+                int c = rawBuilder.Value.CodePointAt(0);
                 if (!nfc.HasBoundaryBefore(prefix0) || !nfc.HasBoundaryBefore(c))
                 {
                     SetParseError("in 'prefix|str', prefix and str must each start with an NFC boundary");
@@ -380,7 +382,7 @@ namespace ICU4N.Impl.Coll
         private void ParseStarredCharacters(CollationStrength strength, int i)
         {
             StringCharSequence empty = new StringCharSequence("");
-            i = ParseString(SkipWhiteSpace(i), rawBuilder.StringBuilder);
+            i = ParseString(SkipWhiteSpace(i), rawBuilder.Value);
             if (rawBuilder.Length == 0)
             {
                 SetParseError("missing starred-relation string");
@@ -392,7 +394,7 @@ namespace ICU4N.Impl.Coll
             {
                 while (j < rawBuilder.Length)
                 {
-                    int cp = rawBuilder.StringBuilder.CodePointAt(j);
+                    int cp = rawBuilder.Value.CodePointAt(j);
                     if (!nfd.IsInert(cp))
                     {
                         SetParseError("starred-relation string is not all NFD-inert");
@@ -400,7 +402,7 @@ namespace ICU4N.Impl.Coll
                     }
                     try
                     {
-                        sink.AddRelation(strength, empty, UTF16.ValueOf(cp).ToCharSequence(), empty.String);
+                        sink.AddRelation(strength, empty, UTF16.ValueOf(cp).ToCharSequence(), empty.Value);
                     }
                     catch (Exception e)
                     {
@@ -419,13 +421,13 @@ namespace ICU4N.Impl.Coll
                     SetParseError("range without start in starred-relation string");
                     return;
                 }
-                i = ParseString(i + 1, rawBuilder.StringBuilder);
+                i = ParseString(i + 1, rawBuilder.Value);
                 if (rawBuilder.Length == 0)
                 {
                     SetParseError("range without end in starred-relation string");
                     return;
                 }
-                int c = rawBuilder.StringBuilder.CodePointAt(0);
+                int c = rawBuilder.Value.CodePointAt(0);
                 if (c < prev)
                 {
                     SetParseError("range start greater than end in starred-relation string");
@@ -451,7 +453,7 @@ namespace ICU4N.Impl.Coll
                     }
                     try
                     {
-                        sink.AddRelation(strength, empty, UTF16.ValueOf(prev).ToCharSequence(), empty.String);
+                        sink.AddRelation(strength, empty, UTF16.ValueOf(prev).ToCharSequence(), empty.Value);
                     }
                     catch (Exception e)
                     {
@@ -596,7 +598,7 @@ namespace ICU4N.Impl.Coll
         /// <exception cref="FormatException"/>
         private int ParseSpecialPosition(int i, StringBuilder str)
         {
-            int j = ReadWords(i + 1, rawBuilder.StringBuilder);
+            int j = ReadWords(i + 1, rawBuilder.Value);
             if (j > i && rules[j] == 0x5d && rawBuilder.Length != 0)
             {  // words end with ]
                 ++j;
@@ -628,7 +630,7 @@ namespace ICU4N.Impl.Coll
         private void ParseSetting()
         {
             int i = ruleIndex + 1;
-            int j = ReadWords(i, rawBuilder.StringBuilder);
+            int j = ReadWords(i, rawBuilder.Value);
             if (j <= i || rawBuilder.Length == 0)
             {
                 SetParseError("expected a setting/option at '['");
@@ -895,7 +897,7 @@ namespace ICU4N.Impl.Coll
                 ++i;  // skip the word-separating space
                 int limit = i;
                 while (limit < raw.Length && raw[limit] != ' ') { ++limit; }
-                string word = raw.SubSequence(i, limit).ToString();
+                string word = raw.Substring(i, limit - i); // ICU4N: Corrected 2nd parameter
                 int code = GetReorderCode(word);
                 if (code < 0)
                 {

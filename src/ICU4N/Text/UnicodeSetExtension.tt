@@ -27,9 +27,9 @@
 //------------------------------------------------------------------------------
 using ICU4N.Impl;
 using ICU4N.Globalization;
-using ICU4N.Support.Text;
-using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1101,7 +1101,7 @@ namespace ICU4N.Text
             for (int pos = 0; pos < source.Length;)
             {
                 int inside = FindIn(source, pos, !matches);
-                result.Append(source.SubSequence(pos, inside));
+                result.Append(source.Subsequence(pos, inside - pos)); // ICU4N: Corrected 2nd parameter
                 pos = FindIn(source, inside, matches); // get next start
             }
             return result.ToString();

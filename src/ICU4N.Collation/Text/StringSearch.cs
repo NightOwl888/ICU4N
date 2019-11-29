@@ -1,6 +1,7 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.Text;
+﻿using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Numerics;
 using System;
 using System.Diagnostics;
 using System.Globalization;

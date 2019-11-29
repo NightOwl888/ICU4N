@@ -1,5 +1,4 @@
-﻿using ICU4N.Support.Collections;
-using ICU4N.Support.IO;
+﻿using J2N.IO;
 using System;
 using System.Diagnostics;
 
@@ -228,8 +227,7 @@ namespace ICU4N.Text
             {
                 throw new BufferOverflowException();
             }
-            //array = Arrays.copyOf(array, newCapacity);
-            array = array.CopyOf(newCapacity);
+            Array.Resize(ref array, newCapacity);
             return true;
         }
 

@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using ICU4N.Support.Text;
+using J2N.Text;
 using System;
 using System.Diagnostics;
 using System.Text;
@@ -118,7 +119,7 @@ namespace ICU4N.Impl
                             throw new ArgumentException(
                                     "Argument syntax error in pattern \"" + pattern +
                                     "\" at index " + argStart +
-                                    ": " + pattern.SubSequence(argStart, i));
+                                    ": " + pattern.Subsequence(argStart, i - argStart)); // ICU4N: Corrected 2nd parameter
                         }
                     }
                     if (argNumber > maxArg)
@@ -261,7 +262,7 @@ namespace ICU4N.Impl
                             throw new ArgumentException(
                                     "Argument syntax error in pattern \"" + pattern +
                                     "\" at index " + argStart +
-                                    ": " + pattern.SubSequence(argStart, i));
+                                    ": " + pattern.Subsequence(argStart, i - argStart)); // ICU4N: Corrected 2nd parameter
                         }
                     }
                     if (argNumber > maxArg)
@@ -404,7 +405,7 @@ namespace ICU4N.Impl
                             throw new ArgumentException(
                                     "Argument syntax error in pattern \"" + pattern +
                                     "\" at index " + argStart +
-                                    ": " + pattern.SubSequence(argStart, i));
+                                    ": " + pattern.Subsequence(argStart, i - argStart)); // ICU4N: Corrected 2nd parameter
                         }
                     }
                     if (argNumber > maxArg)
@@ -547,7 +548,7 @@ namespace ICU4N.Impl
                             throw new ArgumentException(
                                     "Argument syntax error in pattern \"" + pattern +
                                     "\" at index " + argStart +
-                                    ": " + pattern.SubSequence(argStart, i));
+                                    ": " + pattern.Subsequence(argStart, i - argStart)); // ICU4N: Corrected 2nd parameter
                         }
                     }
                     if (argNumber > maxArg)
@@ -1050,7 +1051,7 @@ namespace ICU4N.Impl
                         i += n - ARG_NUM_LIMIT;
                         
                     }
-                    else if (values[n] is StringBuilderCharSequence && ((StringBuilderCharSequence)values[n]).StringBuilder == result)
+                    else if (values[n] is StringBuilderCharSequence && ((StringBuilderCharSequence)values[n]).Value == result)
                     {
                         if (i == 2)
                         {
@@ -1240,7 +1241,7 @@ namespace ICU4N.Impl
                 if (n < ARG_NUM_LIMIT)
                 {
                     var value = values[n];
-                    if (value is StringBuilderCharSequence && ((StringBuilderCharSequence)value).StringBuilder == result)
+                    if (value is StringBuilderCharSequence && ((StringBuilderCharSequence)value).Value == result)
                     {
                         if (forbidResultAsValue)
                         {

@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 using ICU4N.Impl;
 using ICU4N.Support.Text;
+using J2N.Text;
 using System;
 using System.Text;
 using static ICU4N.Text.UnicodeSet;
@@ -917,7 +918,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -978,7 +979,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1039,7 +1040,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1100,7 +1101,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1161,7 +1162,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1222,7 +1223,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1283,7 +1284,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1344,7 +1345,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1405,7 +1406,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1466,7 +1467,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1527,7 +1528,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1588,7 +1589,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1649,7 +1650,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1710,7 +1711,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1771,7 +1772,7 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
@@ -1832,13 +1833,13 @@ namespace ICU4N.Text
                     break;
                 }
                 endCopy = unicodeSet.Span(sequence, endModify, copySpan);
-                result.Append(sequence.SubSequence(endModify, endCopy));
+                result.Append(sequence.Subsequence(endModify, endCopy - endModify)); // ICU4N: Corrected 2nd parameter
             }
             return result.ToString();
         }
     
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start and
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start and
         /// end of the string, using <see cref="TrimOption.Both"/> and <see cref="SpanCondition.Simple"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab")
@@ -1854,7 +1855,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start and
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start and
         /// end of the string, using <see cref="TrimOption.Both"/> and <see cref="SpanCondition.Simple"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab")
@@ -1870,7 +1871,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start and
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start and
         /// end of the string, using <see cref="TrimOption.Both"/> and <see cref="SpanCondition.Simple"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab")
@@ -1886,7 +1887,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start and
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start and
         /// end of the string, using <see cref="TrimOption.Both"/> and <see cref="SpanCondition.Simple"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab")
@@ -1902,7 +1903,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, using the <paramref name="trimOption"/> and <see cref="SpanCondition.Simple"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading)
@@ -1920,7 +1921,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, using the <paramref name="trimOption"/> and <see cref="SpanCondition.Simple"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading)
@@ -1938,7 +1939,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, using the <paramref name="trimOption"/> and <see cref="SpanCondition.Simple"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading)
@@ -1956,7 +1957,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, using the <paramref name="trimOption"/> and <see cref="SpanCondition.Simple"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading)
@@ -1974,7 +1975,7 @@ namespace ICU4N.Text
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.Simple)
@@ -2012,12 +2013,13 @@ namespace ICU4N.Text
             {
                 startTrailContained = length;
             }
-            return endLeadContained == 0 && startTrailContained == length ? sequence.ToCharSequence() : sequence.SubSequence(
-                    endLeadContained, startTrailContained);
+            return endLeadContained == 0 && startTrailContained == length ?
+                sequence.ToCharSequence() :
+                sequence.Subsequence(endLeadContained, startTrailContained - endLeadContained); // ICU4N: Corrected 2nd parameter
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.Simple)
@@ -2055,12 +2057,13 @@ namespace ICU4N.Text
             {
                 startTrailContained = length;
             }
-            return endLeadContained == 0 && startTrailContained == length ? sequence.ToCharSequence() : sequence.SubSequence(
-                    endLeadContained, startTrailContained);
+            return endLeadContained == 0 && startTrailContained == length ?
+                sequence.ToCharSequence() :
+                sequence.Subsequence(endLeadContained, startTrailContained - endLeadContained); // ICU4N: Corrected 2nd parameter
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.Simple)
@@ -2098,12 +2101,13 @@ namespace ICU4N.Text
             {
                 startTrailContained = length;
             }
-            return endLeadContained == 0 && startTrailContained == length ? sequence.ToCharSequence() : sequence.SubSequence(
-                    endLeadContained, startTrailContained);
+            return endLeadContained == 0 && startTrailContained == length ?
+                sequence.ToCharSequence() :
+                sequence.Subsequence(endLeadContained, startTrailContained - endLeadContained); // ICU4N: Corrected 2nd parameter
         }
 
         /// <summary>
-        /// Returns a trimmed sequence (using <see cref="ICharSequence.SubSequence(int, int)"/>), that omits matching elements at the start or
+        /// Returns a trimmed sequence (using <see cref="ICharSequence.Subsequence(int, int)"/>), that omits matching elements at the start or
         /// end of the string, depending on the <paramref name="trimOption"/> and <paramref name="spanCondition"/>. For example:
         /// <code>
         ///     new UnicodeSet("[ab]").Trim("abacatbab", TrimOption.Leading, SpanCondition.Simple)
@@ -2141,8 +2145,9 @@ namespace ICU4N.Text
             {
                 startTrailContained = length;
             }
-            return endLeadContained == 0 && startTrailContained == length ? sequence.ToCharSequence() : sequence.SubSequence(
-                    endLeadContained, startTrailContained);
+            return endLeadContained == 0 && startTrailContained == length ?
+                sequence :
+                sequence.Subsequence(endLeadContained, startTrailContained - endLeadContained); // ICU4N: Corrected 2nd parameter
         }
 
     }

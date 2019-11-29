@@ -26,10 +26,10 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Support;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.IO;
 using System.Text;
@@ -47,7 +47,7 @@ namespace ICU4N.Impl
 <# if (charSequence=="StringBuilder") { #>
             if (dest == src)
 <# } else if (charSequence=="ICharSequence") { #>
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).StringBuilder == dest)
+            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
 <# } #>
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
@@ -63,10 +63,10 @@ namespace ICU4N.Impl
         {
 <# if (charSequence=="ICharSequence" || charSequence=="StringBuilder") { #>
 <# if (charSequence=="StringBuilder") { #>
-            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).StringBuilder == src)
+            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
 <# } else if (charSequence=="ICharSequence") { #>
             if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
-                && ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
+                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
 <# } #>
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
@@ -90,7 +90,7 @@ namespace ICU4N.Impl
 <# if (charSequence=="StringBuilder") { #>
             if (first == second)
 <# } else if (charSequence=="ICharSequence") { #>
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).StringBuilder == first)
+            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
 <# } #>
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
@@ -107,7 +107,7 @@ namespace ICU4N.Impl
 <# if (charSequence=="StringBuilder") { #>
             if (first == second)
 <# } else if (charSequence=="ICharSequence") { #>
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).StringBuilder == first)
+            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
 <# } #>
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
@@ -141,7 +141,7 @@ namespace ICU4N.Impl
 <# if (charSequence=="StringBuilder") { #>
             if (dest == src)
 <# } else if (charSequence=="ICharSequence") { #>
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).StringBuilder == dest)
+            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
 <# } #>
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
@@ -158,10 +158,10 @@ namespace ICU4N.Impl
         {
 <# if (charSequence=="ICharSequence" || charSequence=="StringBuilder") { #>
 <# if (charSequence=="StringBuilder") { #>
-            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).StringBuilder == src)
+            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
 <# } else if (charSequence=="ICharSequence") { #>
             if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
-                && ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
+                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
 <# } #>
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
@@ -199,7 +199,7 @@ namespace ICU4N.Impl
 <# if (charSequence=="StringBuilder") { #>
             if (first == second)
 <# } else if (charSequence=="ICharSequence") { #>
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).StringBuilder == first)
+            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
 <# } #>
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");

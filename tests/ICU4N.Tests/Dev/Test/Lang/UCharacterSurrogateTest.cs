@@ -1,10 +1,9 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support;
 using ICU4N.Text;
 using ICU4N.Text.Unicode;
+using J2N;
 using NUnit.Framework;
 using System;
-using System.Reflection;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Lang

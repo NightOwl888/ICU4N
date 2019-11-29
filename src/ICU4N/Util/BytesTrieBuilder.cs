@@ -1,5 +1,5 @@
-﻿using ICU4N.Support.IO;
-using ICU4N.Support.Text;
+﻿using J2N.IO;
+using J2N.Text;
 using System;
 using System.Diagnostics;
 
@@ -34,7 +34,9 @@ namespace ICU4N.Util
             }
             public char this[int i] { get { return (char)(s[i] & 0xff); } }
             public int Length { get { return len; } }
-            public ICharSequence SubSequence(int start, int end) { return null; }
+            public ICharSequence Subsequence(int startIndex, int length) { return null; }
+
+            bool ICharSequence.HasValue => true;
 
             private byte[] s;
             private int len;

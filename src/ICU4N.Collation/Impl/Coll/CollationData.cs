@@ -1,14 +1,14 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
-using System.Text;
 
 namespace ICU4N.Impl.Coll
 {

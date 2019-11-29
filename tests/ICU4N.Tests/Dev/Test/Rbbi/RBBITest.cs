@@ -1,7 +1,8 @@
 ﻿using ICU4N.Support.Text;
-using ICU4N.Support.Threading;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N.Text;
+using J2N.Threading;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -419,7 +420,7 @@ namespace ICU4N.Dev.Test.Rbbi
             assertEquals("Rule chaining test", 3, bi.Next());
         }
 
-        internal class WorkerThread : ThreadWrapper
+        internal class WorkerThread : ThreadJob
         {
             private readonly string dataToBreak;
             private readonly RuleBasedBreakIterator bi;
@@ -475,16 +476,16 @@ namespace ICU4N.Dev.Test.Rbbi
 
 
 
-            List<ThreadWrapper> threads = new List<ThreadWrapper>();
+            List<ThreadJob> threads = new List<ThreadJob>();
             for (int n = 0; n < 4; ++n)
             {
                 threads.Add(new WorkerThread(dataToBreak, bi, assertErr));
             }
-            foreach (ThreadWrapper thread in threads)
+            foreach (var thread in threads)
             {
                 thread.Start();
             }
-            foreach (ThreadWrapper thread in threads)
+            foreach (var thread in threads)
             {
 #if !NETCOREAPP1_0
                 try {

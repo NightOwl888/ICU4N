@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using StringBuffer = System.Text.StringBuilder;
+using J2N.Collections;
 
 namespace ICU4N.Dev.Test.Util
 {

@@ -1,10 +1,8 @@
-﻿using ICU4N.Support.IO;
+﻿using J2N.IO;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Resources;
-using System.Text;
 
 namespace ICU4N.Impl.Coll
 {

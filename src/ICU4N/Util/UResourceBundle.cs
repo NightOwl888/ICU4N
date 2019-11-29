@@ -1,14 +1,14 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Collections;
-using ICU4N.Support.IO;
+using J2N.Collections;
+using J2N.IO;
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
-using System.Text;
-using System.Collections;
 
 namespace ICU4N.Util
 {

@@ -1,18 +1,17 @@
-﻿using ICU4N.Globalization;
-using ICU4N.Support.Text;
+﻿using ICU4N.Support.Collections;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N.Collections;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Builder = ICU4N.Util.ULocale.Builder; // ICU4N TODO: API - de-nest ?
 using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: API - de-nest ?
 using Minimize = ICU4N.Util.ULocale.Minimize; // ICU4N TODO: API - de-nest ?
-using ICU4N.Support.Collections;
 
 namespace ICU4N.Dev.Test.Util
 {

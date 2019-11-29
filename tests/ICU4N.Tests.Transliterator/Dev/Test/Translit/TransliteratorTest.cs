@@ -1,10 +1,10 @@
 ﻿using ICU4N.Dev.Util;
-using ICU4N.Impl;
 using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -4464,10 +4464,10 @@ namespace ICU4N.Dev.Test.Translit
                 // must be the same after we finalize (see below).
                 List<String> v = new List<String>();
                 v.Add(source);
-                rsource.Replace(0, rsource.Length, "");
+                rsource.Replace(0, rsource.Length - 0, ""); // ICU4N: Corrected 2nd parameter
                 if (pos != null)
                 {
-                    rsource.Replace(0, 0, source);
+                    rsource.Replace(0, 0 - 0, source); // ICU4N: Corrected 2nd parameter
                     v.Add(UtilityExtensions.FormatInput(rsource, index));
                     t.Transliterate(rsource, index);
                     v.Add(UtilityExtensions.FormatInput(rsource, index));

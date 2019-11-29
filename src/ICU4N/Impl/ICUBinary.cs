@@ -1,7 +1,10 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.IO;
-using ICU4N.Support.Text;
+﻿using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.IO;
+using J2N.IO.MemoryMappedFiles;
+using J2N.Numerics;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -184,7 +187,7 @@ namespace ICU4N.Impl
 
             private static int GetDataOffset(ByteBuffer bytes, int index)
             {
-                int @base = bytes.position;
+                int @base = bytes.Position;
                 int count = bytes.GetInt32(@base);
                 if (index == count)
                 {
@@ -232,7 +235,7 @@ namespace ICU4N.Impl
                     sb.Append(c);
                 }
                 int nameLimit = sb.Length - suffix.Length;
-                if (sb.LastIndexOf(suffix, nameLimit) >= 0)
+                if (sb.LastIndexOf(suffix, nameLimit, StringComparison.Ordinal) >= 0)
                 {
                     names.Add(sb.ToString(0, nameLimit - 0));
                 }
@@ -611,20 +614,15 @@ namespace ICU4N.Impl
             MemoryMappedFile file;
             try
             {
-                //file = new FileStream(path.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 file = MemoryMappedFile.CreateFromFile(path.FullName);
-                var channel = file.CreateViewAccessor();
-                //FileChannel channel = file.getChannel();
                 ByteBuffer bytes = null;
                 try
                 {
-                    //bytes = channel.map(FileChannel.MapMode.READ_ONLY, 0, channel.size());
-                    bytes = new MemoryMappedFileByteBuffer(channel, 0, 0);
+                    bytes = file.CreateViewByteBuffer();
                 }
                 finally
                 {
                     file.Dispose();
-                    channel.Dispose();
                 }
                 return bytes;
             }
@@ -738,9 +736,9 @@ namespace ICU4N.Impl
         /// <param name="dataVersion"></param>
         /// <param name="dos"></param>
         /// <returns>The length of the header (number of bytes written).</returns>
-        /// <exception cref="IOException">From the <see cref="DataOutputStream"/>.</exception>
+        /// <exception cref="IOException">From the <see cref="J2N.IO.DataOutputStream"/>.</exception>
         public static int WriteHeader(int dataFormat, int formatVersion, int dataVersion,
-            DataOutputStream dos)
+            J2N.IO.DataOutputStream dos)
         {
             // ucmndata.h MappedData
             dos.WriteChar(32);  // headerSize
@@ -773,7 +771,7 @@ namespace ICU4N.Impl
         public static string GetString(ByteBuffer bytes, int length, int additionalSkipLength)
         {
             ICharSequence cs = bytes.AsCharBuffer();
-            string s = cs.SubSequence(0, length).ToString();
+            string s = cs.Subsequence(0, length - 0).ToString(); // ICU4N: Checked 2nd parameter math
             SkipBytes(bytes, length * 2 + additionalSkipLength);
             return s;
         }

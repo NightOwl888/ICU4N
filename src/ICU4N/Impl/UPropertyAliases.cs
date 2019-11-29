@@ -1,6 +1,6 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support.IO;
-using ICU4N.Support.Text;
+using J2N.IO;
+using J2N.Text;
 using System;
 using System.IO;
 using System.Resources;

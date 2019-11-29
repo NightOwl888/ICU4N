@@ -1,4 +1,4 @@
-﻿using ICU4N.Support.Threading;
+﻿using J2N.Threading;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -118,8 +118,10 @@ namespace ICU4N.Impl
                 {
                     if (notifyThread == null)
                     {
-                        notifyThread = new NotifyThread(this);
-                        notifyThread.SetDaemon(true);
+                        notifyThread = new NotifyThread(this)
+                        {
+                            IsBackground = true
+                        };
                         notifyThread.Start();
                     }
                     notifyThread.Queue(listeners.ToArray());
@@ -130,7 +132,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// The notification thread.
         /// </summary>
-        private class NotifyThread : ThreadWrapper
+        private class NotifyThread : ThreadJob
         {
             private readonly ICUNotifier notifier;
             private readonly List<IEventListener[]> queue = new List<IEventListener[]>();

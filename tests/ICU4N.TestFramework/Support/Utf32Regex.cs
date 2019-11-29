@@ -1,4 +1,5 @@
 ﻿using ICU4N.Support.Text;
+using J2N.Text;
 using System;
 using System.Globalization;
 using System.Text;
@@ -128,7 +129,7 @@ namespace ICU4N.Support
             // Special case - if we have removed all of the contents of the
             // character class, we need to remove the square brackets and the
             // alternation character |
-            int emptyCharClass = result.IndexOf("[]");
+            int emptyCharClass = result.IndexOf("[]", StringComparison.Ordinal);
             if (emptyCharClass >= 0)
             {
                 result.Remove(emptyCharClass, 2);
@@ -154,13 +155,13 @@ namespace ICU4N.Support
         {
             while (true)
             {
-                int where = result.IndexOf("\\U00");
+                int where = result.IndexOf("\\U00", StringComparison.Ordinal);
                 if (where < 0)
                 {
                     break;
                 }
                 string cp = UTF32ToUTF16Chars(result.ToString(where + 2, 8));
-                result.Replace(where, where + 10, cp);
+                result.Replace(where, 10, cp); // ICU4N: Corrected 2nd parameter
             }
         }
 

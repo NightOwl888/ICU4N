@@ -1,6 +1,8 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
+using J2N;
+using J2N.Text;
 using System.Collections.Generic;
 using System.Text;
 
@@ -105,7 +107,7 @@ namespace ICU4N.Text
                 if (!UTF16Plus.Equal(segment, normalized))
                 {
                     // replace the input chunk with its normalized form
-                    text.Replace(prev, start, normalized.ToString());
+                    text.Replace(prev, start - prev, normalized.ToString()); // ICU4N: Corrected 2nd parameter
 
                     // update all necessary indexes accordingly
                     int delta = normalized.Length - (start - prev);

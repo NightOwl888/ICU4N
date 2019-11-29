@@ -1,6 +1,8 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -56,7 +58,7 @@ namespace ICU4N.Impl
                 {
                     if (start != null)
                     { // We have something queued up
-                        if (s.RegionMatches(0, start, 0, prefixLen))
+                        if (s.RegionMatches(0, start, 0, prefixLen, StringComparison.Ordinal))
                         {
                             int currentCp = s.CodePointAt(prefixLen);
                             if (currentCp == 1 + lastCp && s.Length == prefixLen + Character.CharCount(currentCp))

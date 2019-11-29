@@ -1,9 +1,10 @@
-﻿using ICU4N.Globalization;
-using ICU4N.Support;
-using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
+﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Collections;
+using J2N.Numerics;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -240,7 +241,7 @@ namespace ICU4N.Impl.Coll
                     cond = GetConditionalCE32ForCE32(oldCE32);
                     cond.BuiltCE32 = Collation.NO_CE32;
                 }
-                ICharSequence suffix = s.SubSequence(cLength, s.Length);
+                ICharSequence suffix = s.Subsequence(cLength, s.Length - cLength); // ICU4N: Corrected 2nd parameter
                 string context = new StringBuilder().Append((char)prefix.Length).
                         Append(prefix).Append(suffix).ToString();
                 unsafeBackwardSet.AddAll(suffix);
@@ -1283,7 +1284,7 @@ namespace ICU4N.Impl.Coll
                             if (length == prefixLength) { break; }
                             if (cond.DefaultCE32 != Collation.NO_CE32 &&
                                     (length == 0 || prefixString.RegionMatches(
-                                            prefix.Length - length, cond.Context, 1, length)
+                                            prefix.Length - length, cond.Context, 1, length, StringComparison.Ordinal)
                                             /* C++: prefix.endsWith(cond.context, 1, length) */))
                             {
                                 emptySuffixCE32 = cond.DefaultCE32;
@@ -1335,7 +1336,7 @@ namespace ICU4N.Impl.Coll
                 }
                 else
                 {
-                    prefix.Delete(0, 1);  // Remove the length unit.
+                    prefix.Delete(0, 1 - 0);  // Remove the length unit. // ICU4N: Corrected 2nd parameter
                     prefix.Reverse();
                     prefixBuilder.Add(prefix, ce32);
                     if (cond.Next < 0) { break; }
@@ -1360,7 +1361,7 @@ namespace ICU4N.Impl.Coll
             StringBuilder context = new StringBuilder();
             context.Append((char)(defaultCE32 >> 16)).Append((char)defaultCE32);
             context.Append(trieBuilder.BuildCharSequence(TrieBuilderOption.Small));
-            int index = contexts.IndexOf(context.ToString());
+            int index = contexts.IndexOf(context.ToString(), StringComparison.Ordinal);
             if (index < 0)
             {
                 index = contexts.Length;

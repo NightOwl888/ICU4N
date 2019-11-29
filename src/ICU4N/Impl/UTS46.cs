@@ -2,6 +2,8 @@
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -177,7 +179,7 @@ namespace ICU4N.Impl
                     case 0x200c:  // Ignore/remove ZWNJ.
                     case 0x200d:  // Ignore/remove ZWJ.
                         didMapDevChars = true;
-                        dest.Delete(i, i + 1);
+                        dest.Delete(i, 1); // ICU4N: Corrected 2nd parameter
                         --length;
                         break;
                     default:
@@ -190,8 +192,8 @@ namespace ICU4N.Impl
                 // Mapping deviation characters might have resulted in an un-NFC string.
                 // We could use either the NFC or the UTS #46 normalizer.
                 // By using the UTS #46 normalizer again, we avoid having to load a second .nrm data file.
-                string normalized = uts46Norm2.Normalize(dest.SubSequence(labelStart, dest.Length));
-                dest.Replace(labelStart, 0x7fffffff, normalized);
+                string normalized = uts46Norm2.Normalize(dest.Subsequence(labelStart, dest.Length - labelStart)); // ICU4N: Corrected 2nd parameter
+                dest.Replace(labelStart, 0x7fffffff - labelStart, normalized); // ICU4N: Corrected 2nd parameter
                 return dest.Length;
             }
             return length;
@@ -227,7 +229,7 @@ namespace ICU4N.Impl
                 wasPunycode = true;
                 try
                 {
-                    fromPunycode = Punycode.Decode(dest.SubSequence(labelStart + 4, labelStart + labelLength), null);
+                    fromPunycode = Punycode.Decode(dest.Subsequence(labelStart + 4, labelLength - 4), null); // ICU4N: (labelStart + labelLength) - (labelStart + 4) == (labelLength - 4)
                 }
                 catch (StringPrepParseException)
                 {
@@ -403,7 +405,7 @@ namespace ICU4N.Impl
                         StringBuilder punycode;
                         try
                         {
-                            punycode = Punycode.Encode(labelString.SubSequence(labelStart, labelStart + labelLength), null);
+                            punycode = Punycode.Encode(labelString.Subsequence(labelStart, labelLength), null); // ICU4N: (labelStart + labelLength) - labelStart == labelLength
                         }
                         catch (StringPrepParseException e)
                         {

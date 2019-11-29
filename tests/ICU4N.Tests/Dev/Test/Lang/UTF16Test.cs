@@ -1,8 +1,8 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Globalization;
 using ICU4N.Support;
-using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Globalization;
@@ -1947,8 +1947,8 @@ namespace ICU4N.Dev.Test.Lang
                 foreach (String item2 in tests)
                 {
                     String nonNull2 = item2 ?? "";
-                    int scValue = Number.Signum(sc.Compare(nonNull1, nonNull2));
-                    int fValue = Number.Signum(UTF16.CompareCodePoint(expected, item2));
+                    int scValue = sc.Compare(nonNull1, nonNull2).Signum();
+                    int fValue = UTF16.CompareCodePoint(expected, item2).Signum();
                     assertEquals("comparison " + Utility.Hex(nonNull1) + ", " + Utility.Hex(nonNull2), scValue, fValue);
                 }
             }

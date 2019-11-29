@@ -12,6 +12,7 @@ using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: De-nest ?
 using StringBuffer = System.Text.StringBuilder;
 using System.Collections.Concurrent;
 using SingleID = ICU4N.Text.TransliteratorIDParser.SingleID;
+using J2N.Text;
 
 namespace ICU4N.Text
 {
@@ -644,7 +645,7 @@ namespace ICU4N.Text
             //        int originalStart = index.contextStart;
             if (insertion != null)
             {
-                text.Replace(index.Limit, index.Limit, insertion);
+                text.Replace(index.Limit, index.Limit - index.Limit, insertion); // ICU4N: Corrected 2nd parameter
                 index.Limit += insertion.Length;
                 index.ContextLimit += insertion.Length;
             }
@@ -997,7 +998,7 @@ namespace ICU4N.Text
 
                     // Make a rollback copy at the end of the string
                     int rollbackOrigin = text.Length;
-                    text.Copy(runStart, runLimit, rollbackOrigin);
+                    text.Copy(runStart, runLength, rollbackOrigin); // ICU4N: Corrected 2nd parameter
 
                     // Variables reflecting the commitment of completely
                     // transliterated text.  passStart is the runStart, advanced
@@ -1066,10 +1067,10 @@ namespace ICU4N.Text
                             int rs = rollbackStart + delta - (index.Limit - passStart);
 
                             // Delete the partially transliterated text
-                            text.Replace(passStart, index.Limit, "");
+                            text.Replace(passStart, index.Limit - passStart, ""); // ICU4N: Corrected 2nd parameter
 
                             // Copy the rollback text back
-                            text.Copy(rs, rs + uncommittedLength, passStart);
+                            text.Copy(rs, uncommittedLength, passStart); // ICU4N: Corrected 2nd parameter
 
                             // Restore indices to their original values
                             index.Start = passStart;
@@ -1115,7 +1116,7 @@ namespace ICU4N.Text
                     globalLimit += totalDelta;
 
                     // Delete the rollback copy
-                    text.Replace(rollbackOrigin, rollbackOrigin + runLength, "");
+                    text.Replace(rollbackOrigin, runLength, ""); // ICU4N: Corrected 2nd parameter
 
                     // Move start past committed text
                     index.Start = passStart;
@@ -1449,7 +1450,7 @@ namespace ICU4N.Text
 
             // assert(list.size() > 0);
             Transliterator t = null;
-            if (list.Count > 1 || canonID.IndexOf(";") >= 0)
+            if (list.Count > 1 || canonID.IndexOf(";", StringComparison.Ordinal) >= 0)
             {
                 // [NOTE: If it's a compoundID, we instantiate a CompoundTransliterator even if it only
                 // has one child transliterator.  This is so that toRules() will return the right thing

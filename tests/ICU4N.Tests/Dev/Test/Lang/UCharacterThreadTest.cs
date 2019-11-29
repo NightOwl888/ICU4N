@@ -1,5 +1,4 @@
-﻿using ICU4N.Globalization;
-using ICU4N.Support.Threading;
+﻿using J2N.Threading;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -46,7 +45,7 @@ namespace ICU4N.Dev.Test.Lang
             }
         }
 
-        private class GetNameThread : ThreadWrapper
+        private class GetNameThread : ThreadJob
         {
             internal readonly int codePoint;
             internal readonly String correctName;

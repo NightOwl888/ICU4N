@@ -1,9 +1,10 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
 using NUnit.Framework;
 using System;
+using System.Collections;
 
 namespace ICU4N.Dev.Test.Lang
 {
@@ -88,7 +89,7 @@ namespace ICU4N.Dev.Test.Lang
         [Test]
         public void TestGetScriptExtensions()
         {
-            BitSet scripts = new BitSet(UScript.CodeLimit);
+            BitArray scripts = new BitArray(UScript.CodeLimit);
 
             /* invalid code points */
             if (UScript.GetScriptExtensions(-1, scripts) != UScript.Unknown || scripts.Cardinality() != 1 ||

@@ -123,7 +123,7 @@ namespace ICU4N.Text
             // Simple (no nested replacers) Processing Code :
             if (!isComplex)
             {
-                text.Replace(start, limit, output);
+                text.Replace(start, limit - start, output); // ICU4N: Corrected 2nd parameter
                 outLen = output.Length;
 
                 // Setup default cursor position (for cursorPos within output)
@@ -157,12 +157,12 @@ namespace ICU4N.Text
                 if (start > 0)
                 {
                     int len = UTF16.GetCharCount(text.Char32At(start - 1));
-                    text.Copy(start - len, start, tempStart);
+                    text.Copy(start - len, len, tempStart); // ICU4N: Corrected 2nd parameter
                     destStart += len;
                 }
                 else
                 {
-                    text.Replace(tempStart, tempStart, "\uFFFF");
+                    text.Replace(tempStart, tempStart - tempStart, "\uFFFF"); // ICU4N: Corrected 2nd parameter
                     destStart++;
                 }
                 int destLimit = destStart;
@@ -190,7 +190,7 @@ namespace ICU4N.Text
                     if (nextIndex == output.Length)
                     {
                         tempExtra = UTF16.GetCharCount(text.Char32At(limit));
-                        text.Copy(limit, limit + tempExtra, destLimit);
+                        text.Copy(limit, tempExtra, destLimit); // ICU4N: Corrected 2nd parameter
                     }
 
                     IUnicodeReplacer r = data.LookupReplacer(c);
@@ -206,7 +206,7 @@ namespace ICU4N.Text
                         // Insert any accumulated straight text.
                         if (buf.Length > 0)
                         {
-                            text.Replace(destLimit, destLimit, buf.ToString());
+                            text.Replace(destLimit, destLimit - destLimit, buf.ToString()); // ICU4N: Corrected 2nd parameter
                             destLimit += buf.Length;
                             buf.Length = 0;
                         }
@@ -220,7 +220,7 @@ namespace ICU4N.Text
                 // Insert any accumulated straight text.
                 if (buf.Length > 0)
                 {
-                    text.Replace(destLimit, destLimit, buf.ToString());
+                    text.Replace(destLimit, destLimit - destLimit, buf.ToString()); // ICU4N: Corrected 2nd parameter
                     destLimit += buf.Length;
                 }
                 if (oOutput == cursorPos)
@@ -232,11 +232,11 @@ namespace ICU4N.Text
                 outLen = destLimit - destStart;
 
                 // Copy new text to start, and delete it
-                text.Copy(destStart, destLimit, start);
-                text.Replace(tempStart + outLen, destLimit + tempExtra + outLen, "");
+                text.Copy(destStart, destLimit - destStart, start); // ICU4N: Corrected 2nd parameter
+                text.Replace(tempStart + outLen, (destLimit + tempExtra + outLen) - (tempStart + outLen), ""); // ICU4N: Corrected 2nd parameter
 
                 // Delete the old text (the key)
-                text.Replace(start + outLen, limit + outLen, "");
+                text.Replace(start + outLen, (limit + outLen) - (start + outLen), ""); // ICU4N: Corrected 2nd parameter
             }
 
             if (hasCursor)

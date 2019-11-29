@@ -1,12 +1,12 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.Text;
+﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Character = ICU4N.Support.Text.Character;
+using Character = J2N.Character;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Rbbi

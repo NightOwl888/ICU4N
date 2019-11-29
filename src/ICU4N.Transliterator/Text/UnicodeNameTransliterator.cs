@@ -60,7 +60,7 @@ namespace ICU4N.Text
                     str.Append(name).Append(CLOSE_DELIM);
 
                     int clen = UTF16.GetCharCount(c);
-                    text.Replace(cursor, cursor + clen, str.ToString());
+                    text.Replace(cursor, clen, str.ToString()); // ICU4N: Corrected 2nd parameter
                     len = str.Length;
                     cursor += len; // advance cursor by 1 and adjust for new text
                     limit += len - clen; // change in length

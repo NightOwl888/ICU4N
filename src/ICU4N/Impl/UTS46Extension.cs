@@ -9,6 +9,8 @@
 using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Text;
 using System;
 using System.Text;
 
@@ -195,7 +197,7 @@ namespace ICU4N.Impl
             IDNAInfo info)
         {
             // Arguments are fine, reset output values.
-            dest.Delete(0, 0x7fffffff);
+            dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter
 #pragma warning disable 612, 618
             ResetInfo(info);
 #pragma warning restore 612, 618
@@ -323,7 +325,7 @@ namespace ICU4N.Impl
                 throw new ArgumentException();
             }
             // Arguments are fine, reset output values.
-            dest.Delete(0, 0x7fffffff);
+            dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter
 #pragma warning disable 612, 618
             ResetInfo(info);
 #pragma warning restore 612, 618
@@ -444,7 +446,7 @@ namespace ICU4N.Impl
             IDNAInfo info)
         {
             // Arguments are fine, reset output values.
-            dest.Delete(0, 0x7fffffff);
+            dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter
 #pragma warning disable 612, 618
             ResetInfo(info);
 #pragma warning restore 612, 618
@@ -567,12 +569,12 @@ namespace ICU4N.Impl
             // uts46Norm2.Normalize() would do all of this error checking and setup,
             // but with the ASCII fastpath we do not always call it, and do not
             // call it first.
-			if (src is StringBuilderCharSequence && dest == ((StringBuilderCharSequence)src).StringBuilder)
+            if (src is StringBuilderCharSequence && dest == ((StringBuilderCharSequence)src).Value)
             {
                 throw new ArgumentException();
             }
             // Arguments are fine, reset output values.
-            dest.Delete(0, 0x7fffffff);
+            dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter
 #pragma warning disable 612, 618
             ResetInfo(info);
 #pragma warning restore 612, 618
@@ -699,7 +701,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
+                uts46Norm2.NormalizeSecondAndAppend(dest, src.Subsequence(mappingStart, src.Length - mappingStart)); // ICU4N: Corrected 2nd parameter
             }
             bool doMapDevChars =
                 toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
@@ -767,7 +769,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
+                uts46Norm2.NormalizeSecondAndAppend(dest, src.Subsequence(mappingStart, src.Length - mappingStart)); // ICU4N: Corrected 2nd parameter
             }
             bool doMapDevChars =
                 toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
@@ -835,7 +837,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
+                uts46Norm2.NormalizeSecondAndAppend(dest, src.Subsequence(mappingStart, src.Length - mappingStart)); // ICU4N: Corrected 2nd parameter
             }
             bool doMapDevChars =
                 toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
@@ -903,7 +905,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
+                uts46Norm2.NormalizeSecondAndAppend(dest, src.Subsequence(mappingStart, src.Length - mappingStart)); // ICU4N: Corrected 2nd parameter
             }
             bool doMapDevChars =
                 toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
@@ -968,8 +970,8 @@ namespace ICU4N.Impl
             string label, int labelLength)
         {
             {
-                dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
-                // or dest.Replace(destLabelStart, destLabelStart+destLabelLength, label.ToString());
+                dest.Delete(destLabelStart, destLabelLength).Insert(destLabelStart, label); // ICU4N: Corrected 2nd parameter of Delete
+                // or dest.Replace(destLabelStart, destLabelLength, label.ToString());
                 // which would create a String rather than moving characters in the StringBuilder.
             }
             return labelLength;
@@ -985,8 +987,8 @@ namespace ICU4N.Impl
         {
             if (label != dest)
             {
-                dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
-                // or dest.Replace(destLabelStart, destLabelStart+destLabelLength, label.ToString());
+                dest.Delete(destLabelStart, destLabelLength).Insert(destLabelStart, label); // ICU4N: Corrected 2nd parameter of Delete
+                // or dest.Replace(destLabelStart, destLabelLength, label.ToString());
                 // which would create a String rather than moving characters in the StringBuilder.
             }
             return labelLength;
@@ -1001,8 +1003,8 @@ namespace ICU4N.Impl
             char[] label, int labelLength)
         {
             {
-                dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
-                // or dest.Replace(destLabelStart, destLabelStart+destLabelLength, label.ToString());
+                dest.Delete(destLabelStart, destLabelLength).Insert(destLabelStart, label); // ICU4N: Corrected 2nd parameter of Delete
+                // or dest.Replace(destLabelStart, destLabelLength, label.ToString());
                 // which would create a String rather than moving characters in the StringBuilder.
             }
             return labelLength;
@@ -1016,10 +1018,10 @@ namespace ICU4N.Impl
         private static int ReplaceLabel(StringBuilder dest, int destLabelStart, int destLabelLength,
             ICharSequence label, int labelLength)
         {
-			if (label is StringBuilderCharSequence && dest != ((StringBuilderCharSequence)label).StringBuilder)
+            if (label is StringBuilderCharSequence && dest != ((StringBuilderCharSequence)label).Value)
             {
-                dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
-                // or dest.Replace(destLabelStart, destLabelStart+destLabelLength, label.ToString());
+                dest.Delete(destLabelStart, destLabelLength).Insert(destLabelStart, label); // ICU4N: Corrected 2nd parameter of Delete
+                // or dest.Replace(destLabelStart, destLabelLength, label.ToString());
                 // which would create a String rather than moving characters in the StringBuilder.
             }
             return labelLength;

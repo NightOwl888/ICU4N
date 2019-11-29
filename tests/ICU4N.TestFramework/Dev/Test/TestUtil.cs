@@ -1,4 +1,4 @@
-﻿using ICU4N.Support.Threading;
+﻿using J2N.Threading;
 using System;
 using System.IO;
 using System.Reflection;
@@ -186,7 +186,7 @@ namespace ICU4N.Dev.Test
             }
         }
 
-        internal class TestThread : ThreadWrapper
+        internal class TestThread : ThreadJob
         {
             Lock @lock;
             Action target;

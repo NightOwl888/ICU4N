@@ -1,12 +1,12 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support;
-using ICU4N.Support.IO;
+using J2N;
+using J2N.IO;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Character = ICU4N.Support.Text.Character;
+using Character = J2N.Character;
 
 namespace ICU4N.Dev.Test.Util
 {

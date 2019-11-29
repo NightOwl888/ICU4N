@@ -1,10 +1,12 @@
-﻿using ICU4N.Impl;
-using ICU4N.Globalization;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
-using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Collections;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -1424,9 +1426,9 @@ namespace ICU4N.Dev.Test.Collate
 
                 for (sLen = 1000; sLen < 1001; sLen++)
                 {
-                    strA.Delete(0, strA.Length);
+                    strA.Delete(0, strA.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
                     strA.Append(baseA);
-                    strB.Delete(0, strB.Length);
+                    strB.Delete(0, strB.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
                     strB.Append(baseA);
                     for (i = 1; i < sLen; i++)
                     {

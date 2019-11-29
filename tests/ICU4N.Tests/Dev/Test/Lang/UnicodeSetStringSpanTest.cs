@@ -1,6 +1,8 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -862,7 +864,7 @@ namespace ICU4N.Dev.Test.Lang
                     {
                         break;
                     }
-                    s.Delete(0, s.Length);
+                    s.Delete(0, s.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
                     first = c;
                 }
                 UTF16.Append(s, c);

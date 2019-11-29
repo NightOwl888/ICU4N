@@ -1,13 +1,14 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Collections;
+using J2N.Numerics;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using StringBuffer = System.Text.StringBuilder;
 using System.Collections;
+using System.Collections.Generic;
+using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Util
 {

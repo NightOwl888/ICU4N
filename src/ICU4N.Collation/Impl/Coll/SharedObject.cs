@@ -1,4 +1,4 @@
-﻿using ICU4N.Support;
+﻿using System.Threading;
 
 namespace ICU4N.Impl.Coll
 {
@@ -115,16 +115,7 @@ namespace ICU4N.Impl.Coll
 
             public object Clone()
             {
-                Reference<T> c;
-                //try
-                //{
-                c = (Reference<T>)base.MemberwiseClone();
-                //}
-                //catch (CloneNotSupportedException e)
-                //{
-                //    // Should never happen.
-                //    throw new ICUCloneNotSupportedException(e);
-                //}
+                Reference<T> c = (Reference<T>)base.MemberwiseClone();
                 if (@ref != null)
                 {
                     @ref.AddRef();
@@ -160,12 +151,6 @@ namespace ICU4N.Impl.Coll
                 }
             }
 
-            //    protected override void Finalize()
-            //    {
-            //        super.finalize();
-            //        clear();
-            //}
-
             ~Reference()
             {
                 Clear();
@@ -178,44 +163,33 @@ namespace ICU4N.Impl.Coll
         /// <summary>Initializes refCount to 0.</summary>
         public virtual object Clone()
         {
-            SharedObject c;
-            //try
-            //{
-            c = (SharedObject)base.MemberwiseClone();
-            //}
-            //catch (CloneNotSupportedException e)
-            //{
-            //    // Should never happen.
-            //    throw new ICUCloneNotSupportedException(e);
-            //}
-            c.refCount = new AtomicInt32();
+            SharedObject c = (SharedObject)base.MemberwiseClone();
+            c.refCount = 0;
             return c;
         }
 
         /// <summary>
         /// Increments the number of references to this object. Thread-safe.
         /// </summary>
-        public void AddRef() { refCount.IncrementAndGet(); }
+        public void AddRef() => Interlocked.Increment(ref refCount); // ICU4N: using Interlocked instead of AtomicInt32
+
         /// <summary>
         /// Decrements the number of references to this object,
         /// and auto-deletes "this" if the number becomes 0. Thread-safe.
         /// </summary>
-        public void RemoveRef()
-        {
-            // Deletion in .NET is up to the garbage collector.
-            refCount.DecrementAndGet();
-        }
+        // Deletion in .NET is up to the garbage collector.
+        public void RemoveRef() => Interlocked.Decrement(ref refCount); // ICU4N: using Interlocked instead of AtomicInt32
 
         /// <summary>
         /// Returns the reference counter. Uses a memory barrier.
         /// </summary>
-        public int RefCount { get { return refCount.Get(); } }
+        public int RefCount => Interlocked.CompareExchange(ref refCount, 0, 0); // ICU4N: using Interlocked instead of AtomicInt32
 
         public void DeleteIfZeroRefCount()
         {
             // Deletion in .NET is up to the garbage collector.
         }
 
-        private AtomicInt32 refCount = new AtomicInt32();
+        private int refCount; // ICU4N: using Interlocked instead of AtomicInt32
     }
 }

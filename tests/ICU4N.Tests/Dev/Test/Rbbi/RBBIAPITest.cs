@@ -1,12 +1,12 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 namespace ICU4N.Dev.Test.Rbbi
 {

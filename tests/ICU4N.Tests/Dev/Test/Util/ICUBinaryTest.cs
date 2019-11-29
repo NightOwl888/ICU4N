@@ -1,5 +1,5 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.IO;
+using J2N.IO;
 using NUnit.Framework;
 using System.IO;
 

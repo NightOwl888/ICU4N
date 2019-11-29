@@ -6,9 +6,10 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Support;
-using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Numerics;
+using J2N.Text;
 using System;
 using System.IO;
 using System.Text;
@@ -18,12 +19,12 @@ namespace ICU4N.Impl
     public static partial class Utility
     {
 
-	    /// <summary>
+        /// <summary>
         /// Encode a run, possibly a degenerate run (of &lt; 4 values).
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="value"></param>
-        /// <param name="length">The length of the run; must be &gt; 0 &amp;&amp; &lt;= 0xFFFF.</param>
+        /// <param name="length">The length of the run; must be > 0 &amp;&amp; &lt;= 0xFFFF.</param>
         private static void EncodeRun(StringBuilder buffer, int value, int length)
         {
             if (length < 4)
@@ -54,7 +55,7 @@ namespace ICU4N.Impl
             }
         }
 
-	    /// <summary>
+        /// <summary>
         /// Encode a run, possibly a degenerate run (of &lt; 4 values).
         /// </summary>
         /// <param name="buffer"></param>
@@ -369,7 +370,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, 4, ",", true, new StringBuilder()).ToString();
         }
-			
+            
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -409,8 +410,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -450,8 +451,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -491,8 +492,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -532,8 +533,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-					
+        }
+                    
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -573,8 +574,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -614,8 +615,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -655,8 +656,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -696,8 +697,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-					
+        }
+                    
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -737,8 +738,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -778,8 +779,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -819,8 +820,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -860,8 +861,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-					
+        }
+                    
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -901,8 +902,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -942,8 +943,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -983,8 +984,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1024,8 +1025,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-						
+        }
+                        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1065,8 +1066,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1106,8 +1107,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1147,8 +1148,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1188,8 +1189,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-					
+        }
+                    
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1229,8 +1230,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1270,8 +1271,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1311,8 +1312,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1352,8 +1353,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-					
+        }
+                    
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1393,8 +1394,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1434,8 +1435,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1475,8 +1476,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1516,8 +1517,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-					
+        }
+                    
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1557,8 +1558,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1598,8 +1599,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1639,8 +1640,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-		
+        }
+        
         /// <summary>
         /// Convert a string to separated groups of hex uppercase
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
@@ -1680,8 +1681,8 @@ namespace ICU4N.Impl
             {
                 throw new IcuArgumentException(e);
             }
-		}
-				
+        }
+                
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1690,7 +1691,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1699,7 +1700,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1708,7 +1709,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1717,7 +1718,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-		
+        
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1726,7 +1727,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1735,7 +1736,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1744,7 +1745,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1753,7 +1754,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-		
+        
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1762,7 +1763,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1771,7 +1772,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1780,7 +1781,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1789,7 +1790,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-		
+        
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1798,7 +1799,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1807,7 +1808,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1816,7 +1817,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
@@ -1825,7 +1826,7 @@ namespace ICU4N.Impl
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
-	
+    
         /// <summary>
         /// Append the digits of a positive integer to the given
         /// <see cref="StringBuilder"/> in the given radix. This is
@@ -2049,5 +2050,5 @@ namespace ICU4N.Impl
                 throw new IcuArgumentException(e);
             }
         }
-	}
+    }
 }

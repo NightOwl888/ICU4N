@@ -192,7 +192,7 @@ namespace ICU4N.Text
                     buf.Append(suffix);
                 }
 
-                text.Replace(start, start + charLen, buf.ToString());
+                text.Replace(start, charLen, buf.ToString()); // ICU4N: Corrected 2nd parameter
                 start += buf.Length;
                 limit += buf.Length - charLen;
             }

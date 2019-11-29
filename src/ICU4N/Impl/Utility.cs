@@ -1,7 +1,9 @@
-﻿using ICU4N.Globalization;
-using ICU4N.Support.Collections;
+﻿using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Collections;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -210,7 +212,7 @@ namespace ICU4N.Impl
 
         // ICU4N specific - overload to ensure culture insensitive comparison when comparing strings
         /// <summary>
-        /// Convenience utility. Does null checks on objects, then calls <see cref="StringExtensions.CompareToOrdinal(string, string)"/>.
+        /// Convenience utility. Does null checks on objects, then calls <see cref="J2N.Text.StringExtensions.CompareToOrdinal(string, string)"/>.
         /// </summary>
         public static int CheckCompare(string a, string b)
         {
@@ -1368,7 +1370,7 @@ namespace ICU4N.Impl
             int p = pos[0];
             int radix = 10;
 
-            if (rule.RegionMatches(/*true,*/ p, "0x", 0, 2))
+            if (rule.RegionMatches(/*true,*/ p, "0x", 0, 2, StringComparison.Ordinal))
             {
                 p += 2;
                 radix = 16;
@@ -1609,7 +1611,7 @@ namespace ICU4N.Impl
                             quoteBuf[1] == APOSTROPHE)
                     {
                         rule.Append(BACKSLASH).Append(APOSTROPHE);
-                        quoteBuf.Delete(0, 2);
+                        quoteBuf.Delete(0, 2 - 0); // ICU4N: Corrected 2nd parameter
                     }
                     // If the last thing in the quoteBuf is APOSTROPHE
                     // (doubled) then remove and count it and add it after.

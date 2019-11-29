@@ -140,7 +140,7 @@ namespace ICU4N.Text
         public virtual int Replace(string text)
         {
             int delta = text.Length - (cpLimit - cpStart);
-            rep.Replace(cpStart, cpLimit, text);
+            rep.Replace(cpStart, cpLimit - cpStart, text); // ICU4N: Corrected 2nd parameter
             cpLimit += delta;
             limit += delta;
             contextLimit += delta;

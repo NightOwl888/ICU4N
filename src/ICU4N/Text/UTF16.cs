@@ -1,5 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Text;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -1089,7 +1091,7 @@ namespace ICU4N.Text
                     }
                 }
             }
-            target.Replace(offset16, offset16 + count, ValueOf(char32));
+            target.Replace(offset16, count, ValueOf(char32)); // ICU4N: Corrected 2nd parameter
         }
 
         /// <summary>
@@ -1475,7 +1477,7 @@ namespace ICU4N.Text
                     offset16--;
                     break;
             }
-            target.Delete(offset16, offset16 + count);
+            target.Delete(offset16, count); // ICU4N: Corrected 2nd parameter of Delete
             return target;
         }
 
@@ -2240,8 +2242,8 @@ namespace ICU4N.Text
 
             while (index != -1)
             {
-                int endResultIndex = resultIndex + oldChar32Size;
-                result.Replace(resultIndex, endResultIndex, newChar32Str);
+                //int endResultIndex = resultIndex + oldChar32Size;
+                result.Replace(resultIndex, oldChar32Size, newChar32Str); // ICU4N: Corrected 2nd parameter
                 int lastEndIndex = index + oldChar32Size;
                 index = IndexOf(source, oldChar32, lastEndIndex);
                 resultIndex += newChar32Size + index - lastEndIndex;
@@ -2292,8 +2294,8 @@ namespace ICU4N.Text
 
             while (index != -1)
             {
-                int endResultIndex = resultIndex + oldStrSize;
-                result.Replace(resultIndex, endResultIndex, newStr);
+                //int endResultIndex = resultIndex + oldStrSize;
+                result.Replace(resultIndex, oldStrSize, newStr); // ICU4N: Corrected 2nd parameter
                 int lastEndIndex = index + oldStrSize;
                 index = IndexOf(source, oldStr, lastEndIndex);
                 resultIndex += newStrSize + index - lastEndIndex;

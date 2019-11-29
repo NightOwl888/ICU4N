@@ -1,7 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Globalization;
-using ICU4N.Support;
 using ICU4N.Support.Text;
+using J2N.Threading.Atomic;
 
 namespace ICU4N.Text
 {

@@ -1,7 +1,9 @@
-﻿using ICU4N.Support.IO;
-using ICU4N.Support.Text;
+﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.IO;
+using J2N.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -92,7 +94,7 @@ namespace ICU4N.Impl
             if (app is StringBuilderCharSequence)
             {
                 appIsStringBuilder = true;
-                str = ((StringBuilderCharSequence)dest).StringBuilder;
+                str = ((StringBuilderCharSequence)dest).Value;
                 // In Java, the constructor subsumes public void init(int destCapacity) {
                 str.EnsureCapacity(destCapacity);
                 reorderStart = 0;
@@ -208,7 +210,7 @@ namespace ICU4N.Impl
         public void RemoveSuffix(int suffixLength)
         {
             int oldLength = str.Length;
-            str.Delete(oldLength - suffixLength, oldLength);
+            str.Delete(oldLength - suffixLength, suffixLength); // ICU4N: Corrected 2nd parameter
             lastCC = 0;
             reorderStart = str.Length;
         }
@@ -1485,7 +1487,7 @@ namespace ICU4N.Impl
                                 //sb.setCharAt(starter, syllable);
                                 sb[starter] = syllable;
                                 // remove the Jamo V/T
-                                sb.Delete(pRemove, p);
+                                sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                                 p = pRemove;
                             }
                         }
@@ -1509,7 +1511,7 @@ namespace ICU4N.Impl
 
                         // Remove the combining mark.
                         pRemove = p - Character.CharCount(c);  // pRemove & p: start & limit of the combining mark
-                        sb.Delete(pRemove, p);
+                        sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                         p = pRemove;
                         // Replace the starter with the composite.
                         if (starterIsSupplementary)

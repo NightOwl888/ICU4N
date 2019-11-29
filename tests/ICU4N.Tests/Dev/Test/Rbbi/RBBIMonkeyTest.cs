@@ -1,15 +1,14 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Globalization;
 using ICU4N.Support;
-using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using ICU4N.Support.Threading;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
+using J2N.Threading;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
@@ -130,8 +129,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     do
                     {
                         string sname = match.Groups[/*"ClassName"*/ 1].Value;
-                        CharClass snameClass = fCharClasses.Get(sname);
-                        string expansionForName = snameClass != null ? snameClass.fExpandedDef : sname;
+                        string expansionForName = fCharClasses.TryGetValue(sname, out CharClass snameClass) && snameClass != null ? snameClass.fExpandedDef : sname;
 
                         expandedDef.Append(definition.Substring(lastEnd, match.Index - lastEnd)); // Append replacement
                         expandedDef.Append(expansionForName);
@@ -258,7 +256,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 int idx = 0;
                 while (idx < expandedRule.Length)
                 {
-                    int setOpenPos = expandedRule.IndexOf("[^", idx);
+                    int setOpenPos = expandedRule.IndexOf("[^", idx, StringComparison.Ordinal);
                     if (setOpenPos < 0)
                     {
                         break;
@@ -826,7 +824,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             internal void ClearActualBreaks()
             {
-                Arrays.Fill(fActualBreaks, false);
+                J2N.Collections.Arrays.Fill(fActualBreaks, false);
             }
 
 
@@ -849,7 +847,7 @@ namespace ICU4N.Dev.Test.Rbbi
         //                          test for one set of break rules.
         //
 
-        internal class RBBIMonkeyImpl : ThreadWrapper
+        internal class RBBIMonkeyImpl : ThreadJob
         {
 
             internal void Setup(String ruleFile)

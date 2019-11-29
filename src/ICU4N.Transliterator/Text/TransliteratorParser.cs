@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Text;
 using Data = ICU4N.Text.RuleBasedTransliterator.Data;
 using StringBuffer = System.Text.StringBuilder;
+using J2N.Collections;
+using J2N.Text;
 
 namespace ICU4N.Text
 {
@@ -1074,7 +1076,7 @@ namespace ICU4N.Text
                         // Look for an ID token.  Must have at least ID_TOKEN_LEN + 1
                         // chars left.
                         if ((pos + ID_TOKEN_LEN + 1) <= limit &&
-                                rule.RegionMatches(pos, ID_TOKEN, 0, ID_TOKEN_LEN))
+                                rule.RegionMatches(pos, ID_TOKEN, 0, ID_TOKEN_LEN, StringComparison.Ordinal))
                         {
                             pos += ID_TOKEN_LEN;
                             c = rule[pos];
@@ -1152,7 +1154,7 @@ namespace ICU4N.Text
                                     IdBlockVector.Add(idBlockResult.ToString());
                                 else
                                     IdBlockVector.Insert(0, idBlockResult.ToString());
-                                idBlockResult.Delete(0, idBlockResult.Length);
+                                idBlockResult.Delete(0, idBlockResult.Length - 0); // ICU4N: Corrected 2nd parameter
                                 parsingIDs = false;
 #pragma warning disable 612, 618
                                 curData = new RuleBasedTransliterator.Data();

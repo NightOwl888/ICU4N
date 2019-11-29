@@ -1,9 +1,12 @@
-﻿using ICU4N.Impl;
-using ICU4N.Globalization;
-using ICU4N.Support;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Collections;
+using J2N.Numerics;
+using J2N.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -3857,9 +3860,12 @@ namespace ICU4N.Text
             }
 
             // Look for an opening [:, [:^, \p, or \P
-            return pattern.RegionMatches(pos, "[:", 0, 2) ||
-                    pattern.RegionMatches(true, pos, "\\p", 0, 2) ||
-                    pattern.RegionMatches(pos, "\\N", 0, 2);
+            //return pattern.RegionMatches(pos, "[:", 0, 2) ||
+            //        pattern.RegionMatches(true, pos, "\\p", 0, 2) ||
+            //        pattern.RegionMatches(pos, "\\N", 0, 2);
+            return pattern.IndexOf("[:", pos, 2, StringComparison.Ordinal) == pos ||
+                pattern.IndexOf("\\p", pos, 2, StringComparison.OrdinalIgnoreCase) == pos ||
+                pattern.IndexOf("\\N", pos, 2, StringComparison.Ordinal) == pos;
         }
 
         /// <summary>
@@ -3907,7 +3913,8 @@ namespace ICU4N.Text
             bool invert = false;
 
             // Look for an opening [:, [:^, \p, or \P
-            if (pattern.RegionMatches(pos, "[:", 0, 2))
+            //if (pattern.RegionMatches(pos, "[:", 0, 2))
+            if (pattern.IndexOf("[:", pos, 2, StringComparison.Ordinal) == pos)
             {
                 posix = true;
                 pos = PatternProps.SkipWhiteSpace(pattern, (pos + 2));
@@ -3917,8 +3924,10 @@ namespace ICU4N.Text
                     invert = true;
                 }
             }
-            else if (pattern.RegionMatches(true, pos, "\\p", 0, 2) ||
-                  pattern.RegionMatches(pos, "\\N", 0, 2))
+            //else if (pattern.RegionMatches(true, pos, "\\p", 0, 2) ||
+            //      pattern.RegionMatches(pos, "\\N", 0, 2))
+            else if (pattern.IndexOf("\\p", pos, 2, StringComparison.OrdinalIgnoreCase) == pos ||
+                  pattern.IndexOf("\\N", pos, 2, StringComparison.Ordinal) == pos)
             {
                 char c = pattern[pos + 1];
                 invert = (c == 'P');

@@ -42,8 +42,8 @@
         {
             // Our caller (filteredTransliterate) has already narrowed us
             // to an unfiltered run.  Delete it.
-            text.Replace(index.Start, index.Limit, "");
             int len = index.Limit - index.Start;
+            text.Replace(index.Start, len, ""); // ICU4N: Corrected 2nd parameter
             index.ContextLimit -= len;
             index.Limit -= len;
         }

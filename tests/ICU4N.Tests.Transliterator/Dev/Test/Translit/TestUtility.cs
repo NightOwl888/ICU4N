@@ -42,7 +42,8 @@ namespace ICU4N.Dev.Test.Translit
             int len = toBeReplaced.Length;
             for (int i = 0; i < source.Length; ++i)
             {
-                if (source.RegionMatches(false, i, toBeReplaced, 0, len))
+                //if (source.RegionMatches(false, i, toBeReplaced, 0, len))
+                if (source.IndexOf(toBeReplaced, i, len, StringComparison.OrdinalIgnoreCase) == i)
                 {
                     results.Append(replacement);
                     i += len - 1; // minus one, since we will increment

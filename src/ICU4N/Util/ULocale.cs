@@ -1,18 +1,15 @@
-﻿using ICU4N.Impl;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Impl.Locale;
-using ICU4N.Globalization;
-using ICU4N.Support.Globalization;
-using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
-using static ICU4N.Text.LocaleDisplayNames;
 
 namespace ICU4N.Util
 {

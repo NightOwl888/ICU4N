@@ -2,7 +2,9 @@
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.Text;
 using System;
+using System.Collections;
 using System.Globalization;
 using System.Text;
 
@@ -1494,7 +1496,7 @@ namespace ICU4N.Globalization
         }
 
         /// <summary>
-        /// Sets code point <paramref name="c"/>'s Script_Extensions as script code integers into the output <see cref="BitSet"/>.
+        /// Sets code point <paramref name="c"/>'s Script_Extensions as script code integers into the output <see cref="BitArray"/>.
         /// </summary>
         /// <remarks>
         /// <list type="bullet">
@@ -1526,13 +1528,13 @@ namespace ICU4N.Globalization
         /// <returns>Negative number of script codes in c's Script_Extensions,
         /// or the non-negative single Script value.</returns>
         /// <stable>ICU 49</stable>
-        public static int GetScriptExtensions(int c, BitSet set) // ICU4N TODO: API - can we put these in BitArray?
+        public static int GetScriptExtensions(int c, BitArray set)
         {
-            set.Clear();
+            set.SetAll(false);
             int scriptX = UCharacterProperty.Instance.GetAdditional(c, 0) & UCharacterProperty.ScriptXMask;
             if (scriptX < UCharacterProperty.ScriptXWithCommon)
             {
-                set.Set(scriptX);
+                set.Set(scriptX, true);
                 return scriptX;
             }
 
@@ -1547,7 +1549,7 @@ namespace ICU4N.Globalization
             do
             {
                 sx = scriptExtensions[scx++];
-                set.Set(sx & 0x7fff);
+                set.Set(sx & 0x7fff, true);
                 ++length;
             } while (sx < 0x8000);
             // length==set.cardinality()

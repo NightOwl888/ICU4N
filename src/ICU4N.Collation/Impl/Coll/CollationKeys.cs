@@ -1,5 +1,6 @@
-﻿using ICU4N.Support;
-using ICU4N.Text;
+﻿using ICU4N.Text;
+using J2N;
+using J2N.Numerics;
 using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll

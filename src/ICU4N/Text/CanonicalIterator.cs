@@ -1,6 +1,5 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Globalization;
-using ICU4N.Support.Text;
+using J2N;
 using System;
 using System.Collections.Generic;
 using System.Text;

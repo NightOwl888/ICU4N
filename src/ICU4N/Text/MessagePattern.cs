@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -895,7 +896,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.8</stable>
         public bool PartSubstringMatches(MessagePatternPart part, string s)
         {
-            return part.Length == s.Length && msg.RegionMatches(part.Index, s, 0, part.Length);
+            return part.Length == s.Length && msg.RegionMatches(part.Index, s, 0, part.Length, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -1481,7 +1482,7 @@ namespace ICU4N.Text
                     }
                     // Note: The ':' in "offset:" is just beyond the skipIdentifier() range.
                     if (argType.HasPluralStyle() && length == 6 && index < msg.Length &&
-                        msg.RegionMatches(selectorIndex, "offset:", 0, 7)
+                        msg.RegionMatches(selectorIndex, "offset:", 0, 7, StringComparison.Ordinal)
                     )
                     {
                         // plural offset, not a selector
@@ -1517,7 +1518,7 @@ namespace ICU4N.Text
                                 "Argument selector too long: " + Prefix(selectorIndex));
                         }
                         AddPart(MessagePatternPartType.ArgSelector, selectorIndex, length, 0);
-                        if (msg.RegionMatches(selectorIndex, "other", 0, length))
+                        if (msg.RegionMatches(selectorIndex, "other", 0, length, StringComparison.Ordinal))
                         {
                             hasOther = true;
                         }

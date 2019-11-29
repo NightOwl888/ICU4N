@@ -1,5 +1,7 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -172,7 +174,7 @@ namespace ICU4N.Impl.Coll
                 // Note: UnicodeString.replace() pins pos to at most length().
                 int oldLength = oldBuffer.Length;
                 if (pos > oldLength) { pos = oldLength; }
-                oldBuffer.Delete(0, pos).Insert(0, newBuffer, 0, Math.Max(Math.Min(skipLengthAtMatch, newBuffer.Length), 0)); // ICU4N: Corrected 4th parameter
+                oldBuffer.Delete(0, pos - 0).Insert(0, newBuffer, 0, Math.Max(Math.Min(skipLengthAtMatch, newBuffer.Length), 0)); // ICU4N: Corrected 4th parameter of Insert and 2nd parameter of Delete
                 pos = 0;
             }
 
@@ -1170,7 +1172,7 @@ namespace ICU4N.Impl.Coll
                 // Write a sequence of CEs for at most 254 digits at a time.
                 int segmentLength = digits.Length - pos;
                 if (segmentLength > 254) { segmentLength = 254; }
-                AppendNumericSegmentCEs(digits.SubSequence(pos, pos + segmentLength));
+                AppendNumericSegmentCEs(digits.Subsequence(pos, /*pos +*/ segmentLength)); // ICU4N: Corrected Subsequence math
                 pos += segmentLength;
             } while (pos < digits.Length);
         }

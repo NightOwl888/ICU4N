@@ -283,12 +283,12 @@ namespace ICU4N.Text
             {
                 if (matchStart != matchLimit)
                 {
-                    text.Copy(matchStart, matchLimit, dest);
+                    text.Copy(matchStart, matchLimit - matchStart, dest); // J2N: Corrected 2nd parameter
                     outLen = matchLimit - matchStart;
                 }
             }
 
-            text.Replace(start, limit, ""); // delete original text
+            text.Replace(start, limit - start, ""); // delete original text // ICU4N: Corrected 2nd parameter
 
             return outLen;
         }

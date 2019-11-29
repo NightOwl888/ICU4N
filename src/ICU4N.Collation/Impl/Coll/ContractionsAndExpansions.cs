@@ -1,6 +1,7 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -237,8 +238,8 @@ namespace ICU4N.Impl.Coll
                             StringBuilderCharSequence hangul = new StringBuilderCharSequence(new StringBuilder(1));
                             for (int c = start; c <= end; ++c)
                             {
-                                hangul.StringBuilder.Length=0;
-                                hangul.StringBuilder.AppendCodePoint(c);
+                                hangul.Value.Length=0;
+                                hangul.Value.AppendCodePoint(c);
                                 iter.SetText(false, hangul, 0);
                                 int length = iter.FetchCEs();
                                 // Ignore the terminating non-CE.

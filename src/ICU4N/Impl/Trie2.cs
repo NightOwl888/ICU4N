@@ -1,10 +1,11 @@
-﻿using ICU4N.Support.IO;
-using ICU4N.Support.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Collections;
+using J2N.Text;
+using J2N.IO;
+using J2N;
 
 namespace ICU4N.Impl
 {
@@ -466,12 +467,12 @@ namespace ICU4N.Impl
         // ICU4N specific - de-nested IValueMapper
 
         /// <summary>
-        /// Serialize a <see cref="Trie2"/> Header and Index onto a <see cref="DataOutputStream"/>.  This is
+        /// Serialize a <see cref="Trie2"/> Header and Index onto a <see cref="J2N.IO.DataOutputStream"/>.  This is
         /// common code used for both the <see cref="Trie2_16"/> and <see cref="Trie2_32"/> serialize functions.
         /// </summary>
         /// <param name="dos">The stream to which the serialized <see cref="Trie2"/> data will be written.</param>
         /// <returns>The number of bytes written.</returns>
-        protected virtual int SerializeHeader(DataOutputStream dos) // ICU4N TODO: API Can this be converted to BinaryWriter or Stream (as was Trie2_16)?
+        protected virtual int SerializeHeader(J2N.IO.DataOutputStream dos) // ICU4N TODO: API Can this be converted to BinaryWriter or Stream (as was Trie2_16)?
         {
             // Write the header.  It is already set and ready to use, having been
             //  created when the Trie2 was unserialized or when it was frozen.

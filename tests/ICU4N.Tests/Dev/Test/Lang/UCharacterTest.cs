@@ -1,21 +1,21 @@
-﻿using ICU4N.Impl;
-using ICU4N.Globalization;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
-using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using ICU4N.Text.Unicode;
 using ICU4N.Util;
+using J2N;
+using J2N.Collections;
+using J2N.Text;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using StringBuffer = System.Text.StringBuilder;
-using ICU4N.Text.Unicode;
 
 namespace ICU4N.Dev.Test.Lang
 {
@@ -216,7 +216,7 @@ namespace ICU4N.Dev.Test.Lang
             }
             for (char c = (char)0; c <= 0xff; ++c)
             {
-                bool j = ICU4N.Support.Text.Character.IsSpace(c);
+                bool j = J2N.Character.IsSpace(c);
                 bool i = UChar.IsSpace(c);
                 bool z = (UChar.GetIntPropertyValue(c, UProperty.General_Category_Mask) &
                              GC_Z_MASK) != 0;

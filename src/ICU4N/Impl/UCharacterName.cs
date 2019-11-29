@@ -1,8 +1,9 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support;
-using ICU4N.Support.IO;
-using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.IO;
+using J2N.Numerics;
+using J2N.Text;
 using System;
 using System.Globalization;
 using System.IO;

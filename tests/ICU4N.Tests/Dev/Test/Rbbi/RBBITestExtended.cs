@@ -1,9 +1,10 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Globalization;
-using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Collections;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.IO;
@@ -161,38 +162,38 @@ namespace ICU4N.Dev.Test.Rbbi
                             {
                                 break;
                             }
-                            if (testString.StartsWith("<word>", charIdx - 1))
+                            if (testString.StartsWith("<word>", charIdx - 1, StringComparison.Ordinal))
                             {
                                 tp.bi = BreakIterator.GetWordInstance(tp.currentLocale);
                                 charIdx += 5;
                                 break;
                             }
-                            if (testString.StartsWith("<char>", charIdx - 1))
+                            if (testString.StartsWith("<char>", charIdx - 1, StringComparison.Ordinal))
                             {
                                 tp.bi = BreakIterator.GetCharacterInstance(tp.currentLocale);
                                 charIdx += 5;
                                 break;
                             }
-                            if (testString.StartsWith("<line>", charIdx - 1))
+                            if (testString.StartsWith("<line>", charIdx - 1, StringComparison.Ordinal))
                             {
                                 tp.bi = BreakIterator.GetLineInstance(tp.currentLocale);
                                 charIdx += 5;
                                 break;
                             }
-                            if (testString.StartsWith("<sent>", charIdx - 1))
+                            if (testString.StartsWith("<sent>", charIdx - 1, StringComparison.Ordinal))
                             {
                                 tp.bi = BreakIterator.GetSentenceInstance(tp.currentLocale);
                                 charIdx += 5;
                                 break;
                             }
-                            if (testString.StartsWith("<title>", charIdx - 1))
+                            if (testString.StartsWith("<title>", charIdx - 1, StringComparison.Ordinal))
                             {
                                 tp.bi = BreakIterator.GetTitleInstance(tp.currentLocale);
                                 charIdx += 6;
                                 break;
                             }
-                            if (testString.StartsWith("<rules>", charIdx - 1) ||
-                                    testString.StartsWith("<badrules>", charIdx - 1))
+                            if (testString.StartsWith("<rules>", charIdx - 1, StringComparison.Ordinal) ||
+                                    testString.StartsWith("<badrules>", charIdx - 1, StringComparison.Ordinal))
                             {
                                 charIdx = testString.IndexOf('>', charIdx) + 1;
                                 parseState = PARSE_RULES;
@@ -201,7 +202,7 @@ namespace ICU4N.Dev.Test.Rbbi
                                 break;
                             }
 
-                            if (testString.StartsWith("<locale ", charIdx - 1))
+                            if (testString.StartsWith("<locale ", charIdx - 1, StringComparison.Ordinal))
                             {
                                 int closeIndex = testString.IndexOf('>', charIdx);
                                 if (closeIndex < 0)
@@ -215,7 +216,7 @@ namespace ICU4N.Dev.Test.Rbbi
                                 charIdx = closeIndex + 1;
                                 break;
                             }
-                            if (testString.StartsWith("<data>", charIdx - 1))
+                            if (testString.StartsWith("<data>", charIdx - 1, StringComparison.Ordinal))
                             {
                                 parseState = PARSE_DATA;
                                 charIdx += 5;
@@ -233,7 +234,7 @@ namespace ICU4N.Dev.Test.Rbbi
                         }
 
                     case PARSE_RULES:
-                        if (testString.StartsWith("</rules>", charIdx - 1))
+                        if (testString.StartsWith("</rules>", charIdx - 1, StringComparison.Ordinal))
                         {
                             charIdx += 7;
                             parseState = PARSE_TAG;
@@ -246,7 +247,7 @@ namespace ICU4N.Dev.Test.Rbbi
                                 Errln(String.Format("rbbitst.txt:{0}  Error creating break iterator from rules.  {1}", lineNum, e));
                             }
                         }
-                        else if (testString.StartsWith("</badrules>", charIdx - 1))
+                        else if (testString.StartsWith("</badrules>", charIdx - 1, StringComparison.Ordinal))
                         {
                             charIdx += 10;
                             parseState = PARSE_TAG;
@@ -282,7 +283,7 @@ namespace ICU4N.Dev.Test.Rbbi
                             break;
                         }
 
-                        if (testString.StartsWith("</data>", charIdx - 1))
+                        if (testString.StartsWith("</data>", charIdx - 1, StringComparison.Ordinal))
                         {
                             // Add final entry to mappings from break location to source file position.
                             //  Need one extra because last break position returned is after the
@@ -299,7 +300,7 @@ namespace ICU4N.Dev.Test.Rbbi
                             break;
                         }
 
-                        if (testString.StartsWith("\\N{", charIdx - 1))
+                        if (testString.StartsWith("\\N{", charIdx - 1, StringComparison.Ordinal))
                         {
                             int nameEndIdx = testString.IndexOf('}', charIdx);
                             if (nameEndIdx == -1)
@@ -335,7 +336,7 @@ namespace ICU4N.Dev.Test.Rbbi
                             break;
                         }
 
-                        if (testString.StartsWith("<>", charIdx - 1))
+                        if (testString.StartsWith("<>", charIdx - 1, StringComparison.Ordinal))
                         {
                             charIdx++;
                             int breakIdx = tp.dataToBreak.Length;

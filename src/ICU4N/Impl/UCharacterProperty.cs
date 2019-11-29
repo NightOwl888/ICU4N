@@ -1,16 +1,14 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support;
-using ICU4N.Support.IO;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.IO;
+using J2N.Numerics;
 using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Resources;
 using System.Text;
-using static ICU4N.UChar;
 
 namespace ICU4N.Impl
 {

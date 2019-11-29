@@ -1,7 +1,8 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Numerics;
 using NUnit.Framework;
 using StringBuffer = System.Text.StringBuilder;
 

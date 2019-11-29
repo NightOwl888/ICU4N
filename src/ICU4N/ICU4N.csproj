@@ -11,6 +11,10 @@
     <PackageTags>$(PackageTags);icu;international;unicode</PackageTags>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="J2N" Version="$(J2NPackageReferenceVersion)" />
+  </ItemGroup>
+  
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Microsoft.CSharp" Version="$(MicrosoftCSharpPackageReferenceVersion)" />
   </ItemGroup>
