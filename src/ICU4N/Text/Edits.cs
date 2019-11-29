@@ -228,8 +228,7 @@ namespace ICU4N.Text
             {
                 throw new BufferOverflowException();
             }
-            //array = Arrays.copyOf(array, newCapacity);
-            array = array.CopyOf(newCapacity);
+            Array.Resize(ref array, newCapacity);
             return true;
         }
 
