@@ -8,6 +8,7 @@ using ICU4N.Util;
 using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 
 namespace ICU4N.Text
 {
@@ -264,7 +265,7 @@ namespace ICU4N.Text
         {
             if (!IsFrozen)
             {
-                frozenLock = new ReentrantLock();
+                frozenLock = new object(); // ICU4N: Using object/Monitor to replace ReentrantLock
                 if (collationBuffer == null)
                 {
                     collationBuffer = new CollationBuffer(data);
@@ -1727,7 +1728,7 @@ namespace ICU4N.Text
         /// <summary>
         /// Frozen state of the collator.
         /// </summary>
-        private ReentrantLock frozenLock;
+        private object frozenLock; // ICU4N: Using object/Monitor to replace ReentrantLock
 
         private sealed class CollationBuffer
         {
@@ -1796,7 +1797,7 @@ namespace ICU4N.Text
         {
             if (IsFrozen)
             {
-                frozenLock.Lock();
+                Monitor.Enter(frozenLock); // ICU4N: Using object/Monitor to replace ReentrantLock
             }
             else if (collationBuffer == null)
             {
@@ -1809,7 +1810,7 @@ namespace ICU4N.Text
         {
             if (IsFrozen)
             {
-                frozenLock.Unlock();
+                Monitor.Exit(frozenLock); // ICU4N: Using object/Monitor to replace ReentrantLock
             }
         }
 
