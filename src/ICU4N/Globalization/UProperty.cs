@@ -952,7 +952,7 @@ namespace ICU4N.Globalization
         /// Miscellaneous property Script_Extensions (new in Unicode 6.0).
         /// Some characters are commonly used in multiple scripts.
         /// For more information, see UAX #24: <a href="http://www.unicode.org/reports/tr24/">http://www.unicode.org/reports/tr24/</a>.
-        /// Corresponds to <see cref="UScript.HasScript(int, int)"/> and <see cref="UScript.GetScriptExtensions(int, Support.Collections.BitSet)"/>.
+        /// Corresponds to <see cref="UScript.HasScript(int, int)"/> and <see cref="UScript.GetScriptExtensions(int, System.Collections.BitArray)"/>.
         /// </summary>
         /// <stable>ICU 4.6</stable>
         Script_Extensions = 0x7000,

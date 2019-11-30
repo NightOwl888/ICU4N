@@ -58,21 +58,21 @@ namespace ICU4N.Dev.Test.Normalizers
                 IntHashtable canonicalClass = new IntHashtable(0);
                 IntStringHashtable decompose = new IntStringHashtable(null);
                 LongHashtable compose = new LongHashtable(NormalizerData.NOT_COMPOSITE);
-                BitSet isCompatibility = new BitSet();
-                BitSet isExcluded = new BitSet();
+                BitArray isCompatibility = new BitArray(1);
+                BitArray isExcluded = new BitArray(1);
                 if (fullData)
                 {
                     //Console.Out.WriteLine("Building Normalizer Data from file.");
                     ReadExclusionList(isExcluded);
                     //Console.Out.WriteLine(isExcluded.get(0x00C0));
                     BuildDecompositionTables(canonicalClass, decompose, compose,
-                      isCompatibility, isExcluded);
+                        isCompatibility, isExcluded);
                 }
                 else
                 {    // for use in Applets
                      //Console.Out.WriteLine("Building abridged data.");
                     SetMinimalDecomp(canonicalClass, decompose, compose,
-                      isCompatibility, isExcluded);
+                        isCompatibility, isExcluded);
                 }
                 return new NormalizerData(canonicalClass, decompose, compose,
                       isCompatibility, isExcluded);
@@ -91,7 +91,7 @@ namespace ICU4N.Dev.Test.Normalizers
         /**
          * Reads exclusion list and stores the data
          */
-        private static void ReadExclusionList(BitSet isExcluded)
+        private static void ReadExclusionList(BitArray isExcluded)
         {
             if (DEBUG) Console.Out.WriteLine("Reading Exclusions");
 
@@ -101,7 +101,7 @@ namespace ICU4N.Dev.Test.Normalizers
             {
                 // read a line, discarding comments and blank lines
 
-                String line = @in.ReadLine();
+                string line = @in.ReadLine();
                 if (line == null) break;
                 int comment = line.IndexOf('#');                    // strip comments
                 if (comment != -1) line = line.Substring(0, comment - 0); // ICU4N: Checked 2nd parameter
@@ -113,7 +113,7 @@ namespace ICU4N.Dev.Test.Normalizers
                 // store -1 in the excluded table for each character hit
 
                 int value = int.Parse(line, NumberStyles.HexNumber);
-                isExcluded.Set(value);
+                isExcluded.SafeSet(value, true);
                 //Console.Out.WriteLine("Excluding " + hex(value));
             }
             @in.Dispose();
@@ -124,8 +124,8 @@ namespace ICU4N.Dev.Test.Normalizers
          * Builds a decomposition table from a UnicodeData file
          */
         private static void BuildDecompositionTables(
-          IntHashtable canonicalClass, IntStringHashtable decompose,
-          LongHashtable compose, BitSet isCompatibility, BitSet isExcluded)
+            IntHashtable canonicalClass, IntStringHashtable decompose,
+            LongHashtable compose, BitArray isCompatibility, BitArray isExcluded)
         {
             if (DEBUG) Console.Out.WriteLine("Reading Unicode Character Database");
             //BufferedReader in = new BufferedReader(new FileReader(UNICODE_DATA), 64*1024);
@@ -148,7 +148,7 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 // read a line, discarding comments and blank lines
 
-                String line = @in.ReadLine();
+                string line = @in.ReadLine();
                 if (line == null) break;
                 int comment = line.IndexOf('#');                    // strip comments
                 if (comment != -1) line = line.Substring(0, comment - 0); // ICU4N: Checked 2nd substring parameter
@@ -188,10 +188,10 @@ namespace ICU4N.Dev.Test.Normalizers
 
                 if (start != end)
                 {
-                    String segment = line.Substring(start, end - start); // ICU4N: Corrected 2nd parameter
+                    string segment = line.Substring(start, end - start); // ICU4N: Corrected 2nd parameter
                     bool compat = segment[0] == '<';
-                    if (compat) isCompatibility.Set(value);
-                    String decomp = fromHex(segment);
+                    if (compat) isCompatibility.SafeSet(value, true);
+                    string decomp = FromHex(segment);
 
                     // a small snippet of code to generate the Applet data
 
@@ -216,7 +216,7 @@ namespace ICU4N.Dev.Test.Normalizers
                     // only compositions are canonical pairs
                     // skip if script exclusion
 
-                    if (!compat && !isExcluded.Get(value))
+                    if (!compat && !isExcluded.SafeGet(value))
                     {
                         int first = '\u0000';
                         int second = UTF16Util.NextCodePoint(decomp, 0);
@@ -286,159 +286,159 @@ namespace ICU4N.Dev.Test.Normalizers
          * For use in an applet: just load a minimal set of data.
          */
         private static void SetMinimalDecomp(IntHashtable canonicalClass, IntStringHashtable decompose,
-          LongHashtable compose, BitSet isCompatibility, BitSet isExcluded)
+            LongHashtable compose, BitArray isCompatibility, BitArray isExcluded)
         {
-            String[] decomposeData = {
-            "\u005E", "\u0020\u0302", "K",
-            "\u005F", "\u0020\u0332", "K",
-            "\u0060", "\u0020\u0300", "K",
-            "\u00A0", "\u0020", "K",
-            "\u00A8", "\u0020\u0308", "K",
-            "\u00AA", "\u0061", "K",
-            "\u00AF", "\u0020\u0304", "K",
-            "\u00B2", "\u0032", "K",
-            "\u00B3", "\u0033", "K",
-            "\u00B4", "\u0020\u0301", "K",
-            "\u00B5", "\u03BC", "K",
-            "\u00B8", "\u0020\u0327", "K",
-            "\u00B9", "\u0031", "K",
-            "\u00BA", "\u006F", "K",
-            "\u00BC", "\u0031\u2044\u0034", "K",
-            "\u00BD", "\u0031\u2044\u0032", "K",
-            "\u00BE", "\u0033\u2044\u0034", "K",
-            "\u00C0", "\u0041\u0300", "",
-            "\u00C1", "\u0041\u0301", "",
-            "\u00C2", "\u0041\u0302", "",
-            "\u00C3", "\u0041\u0303", "",
-            "\u00C4", "\u0041\u0308", "",
-            "\u00C5", "\u0041\u030A", "",
-            "\u00C7", "\u0043\u0327", "",
-            "\u00C8", "\u0045\u0300", "",
-            "\u00C9", "\u0045\u0301", "",
-            "\u00CA", "\u0045\u0302", "",
-            "\u00CB", "\u0045\u0308", "",
-            "\u00CC", "\u0049\u0300", "",
-            "\u00CD", "\u0049\u0301", "",
-            "\u00CE", "\u0049\u0302", "",
-            "\u00CF", "\u0049\u0308", "",
-            "\u00D1", "\u004E\u0303", "",
-            "\u00D2", "\u004F\u0300", "",
-            "\u00D3", "\u004F\u0301", "",
-            "\u00D4", "\u004F\u0302", "",
-            "\u00D5", "\u004F\u0303", "",
-            "\u00D6", "\u004F\u0308", "",
-            "\u00D9", "\u0055\u0300", "",
-            "\u00DA", "\u0055\u0301", "",
-            "\u00DB", "\u0055\u0302", "",
-            "\u00DC", "\u0055\u0308", "",
-            "\u00DD", "\u0059\u0301", "",
-            "\u00E0", "\u0061\u0300", "",
-            "\u00E1", "\u0061\u0301", "",
-            "\u00E2", "\u0061\u0302", "",
-            "\u00E3", "\u0061\u0303", "",
-            "\u00E4", "\u0061\u0308", "",
-            "\u00E5", "\u0061\u030A", "",
-            "\u00E7", "\u0063\u0327", "",
-            "\u00E8", "\u0065\u0300", "",
-            "\u00E9", "\u0065\u0301", "",
-            "\u00EA", "\u0065\u0302", "",
-            "\u00EB", "\u0065\u0308", "",
-            "\u00EC", "\u0069\u0300", "",
-            "\u00ED", "\u0069\u0301", "",
-            "\u00EE", "\u0069\u0302", "",
-            "\u00EF", "\u0069\u0308", "",
-            "\u00F1", "\u006E\u0303", "",
-            "\u00F2", "\u006F\u0300", "",
-            "\u00F3", "\u006F\u0301", "",
-            "\u00F4", "\u006F\u0302", "",
-            "\u00F5", "\u006F\u0303", "",
-            "\u00F6", "\u006F\u0308", "",
-            "\u00F9", "\u0075\u0300", "",
-            "\u00FA", "\u0075\u0301", "",
-            "\u00FB", "\u0075\u0302", "",
-            "\u00FC", "\u0075\u0308", "",
-            "\u00FD", "\u0079\u0301", "",
-// EXTRAS, outside of Latin 1
-            "\u1EA4", "\u00C2\u0301", "",
-            "\u1EA5", "\u00E2\u0301", "",
-            "\u1EA6", "\u00C2\u0300", "",
-            "\u1EA7", "\u00E2\u0300", "",
-        };
+            string[] decomposeData = {
+                "\u005E", "\u0020\u0302", "K",
+                "\u005F", "\u0020\u0332", "K",
+                "\u0060", "\u0020\u0300", "K",
+                "\u00A0", "\u0020", "K",
+                "\u00A8", "\u0020\u0308", "K",
+                "\u00AA", "\u0061", "K",
+                "\u00AF", "\u0020\u0304", "K",
+                "\u00B2", "\u0032", "K",
+                "\u00B3", "\u0033", "K",
+                "\u00B4", "\u0020\u0301", "K",
+                "\u00B5", "\u03BC", "K",
+                "\u00B8", "\u0020\u0327", "K",
+                "\u00B9", "\u0031", "K",
+                "\u00BA", "\u006F", "K",
+                "\u00BC", "\u0031\u2044\u0034", "K",
+                "\u00BD", "\u0031\u2044\u0032", "K",
+                "\u00BE", "\u0033\u2044\u0034", "K",
+                "\u00C0", "\u0041\u0300", "",
+                "\u00C1", "\u0041\u0301", "",
+                "\u00C2", "\u0041\u0302", "",
+                "\u00C3", "\u0041\u0303", "",
+                "\u00C4", "\u0041\u0308", "",
+                "\u00C5", "\u0041\u030A", "",
+                "\u00C7", "\u0043\u0327", "",
+                "\u00C8", "\u0045\u0300", "",
+                "\u00C9", "\u0045\u0301", "",
+                "\u00CA", "\u0045\u0302", "",
+                "\u00CB", "\u0045\u0308", "",
+                "\u00CC", "\u0049\u0300", "",
+                "\u00CD", "\u0049\u0301", "",
+                "\u00CE", "\u0049\u0302", "",
+                "\u00CF", "\u0049\u0308", "",
+                "\u00D1", "\u004E\u0303", "",
+                "\u00D2", "\u004F\u0300", "",
+                "\u00D3", "\u004F\u0301", "",
+                "\u00D4", "\u004F\u0302", "",
+                "\u00D5", "\u004F\u0303", "",
+                "\u00D6", "\u004F\u0308", "",
+                "\u00D9", "\u0055\u0300", "",
+                "\u00DA", "\u0055\u0301", "",
+                "\u00DB", "\u0055\u0302", "",
+                "\u00DC", "\u0055\u0308", "",
+                "\u00DD", "\u0059\u0301", "",
+                "\u00E0", "\u0061\u0300", "",
+                "\u00E1", "\u0061\u0301", "",
+                "\u00E2", "\u0061\u0302", "",
+                "\u00E3", "\u0061\u0303", "",
+                "\u00E4", "\u0061\u0308", "",
+                "\u00E5", "\u0061\u030A", "",
+                "\u00E7", "\u0063\u0327", "",
+                "\u00E8", "\u0065\u0300", "",
+                "\u00E9", "\u0065\u0301", "",
+                "\u00EA", "\u0065\u0302", "",
+                "\u00EB", "\u0065\u0308", "",
+                "\u00EC", "\u0069\u0300", "",
+                "\u00ED", "\u0069\u0301", "",
+                "\u00EE", "\u0069\u0302", "",
+                "\u00EF", "\u0069\u0308", "",
+                "\u00F1", "\u006E\u0303", "",
+                "\u00F2", "\u006F\u0300", "",
+                "\u00F3", "\u006F\u0301", "",
+                "\u00F4", "\u006F\u0302", "",
+                "\u00F5", "\u006F\u0303", "",
+                "\u00F6", "\u006F\u0308", "",
+                "\u00F9", "\u0075\u0300", "",
+                "\u00FA", "\u0075\u0301", "",
+                "\u00FB", "\u0075\u0302", "",
+                "\u00FC", "\u0075\u0308", "",
+                "\u00FD", "\u0079\u0301", "",
+    // EXTRAS, outside of Latin 1
+                "\u1EA4", "\u00C2\u0301", "",
+                "\u1EA5", "\u00E2\u0301", "",
+                "\u1EA6", "\u00C2\u0300", "",
+                "\u1EA7", "\u00E2\u0300", "",
+            };
 
             int[] classData = {
-            0x0300, 230,
-            0x0301, 230,
-            0x0302, 230,
-            0x0303, 230,
-            0x0304, 230,
-            0x0305, 230,
-            0x0306, 230,
-            0x0307, 230,
-            0x0308, 230,
-            0x0309, 230,
-            0x030A, 230,
-            0x030B, 230,
-            0x030C, 230,
-            0x030D, 230,
-            0x030E, 230,
-            0x030F, 230,
-            0x0310, 230,
-            0x0311, 230,
-            0x0312, 230,
-            0x0313, 230,
-            0x0314, 230,
-            0x0315, 232,
-            0x0316, 220,
-            0x0317, 220,
-            0x0318, 220,
-            0x0319, 220,
-            0x031A, 232,
-            0x031B, 216,
-            0x031C, 220,
-            0x031D, 220,
-            0x031E, 220,
-            0x031F, 220,
-            0x0320, 220,
-            0x0321, 202,
-            0x0322, 202,
-            0x0323, 220,
-            0x0324, 220,
-            0x0325, 220,
-            0x0326, 220,
-            0x0327, 202,
-            0x0328, 202,
-            0x0329, 220,
-            0x032A, 220,
-            0x032B, 220,
-            0x032C, 220,
-            0x032D, 220,
-            0x032E, 220,
-            0x032F, 220,
-            0x0330, 220,
-            0x0331, 220,
-            0x0332, 220,
-            0x0333, 220,
-            0x0334, 1,
-            0x0335, 1,
-            0x0336, 1,
-            0x0337, 1,
-            0x0338, 1,
-            0x0339, 220,
-            0x033A, 220,
-            0x033B, 220,
-            0x033C, 220,
-            0x033D, 230,
-            0x033E, 230,
-            0x033F, 230,
-            0x0340, 230,
-            0x0341, 230,
-            0x0342, 230,
-            0x0343, 230,
-            0x0344, 230,
-            0x0345, 240,
-            0x0360, 234,
-            0x0361, 234
-        };
+                0x0300, 230,
+                0x0301, 230,
+                0x0302, 230,
+                0x0303, 230,
+                0x0304, 230,
+                0x0305, 230,
+                0x0306, 230,
+                0x0307, 230,
+                0x0308, 230,
+                0x0309, 230,
+                0x030A, 230,
+                0x030B, 230,
+                0x030C, 230,
+                0x030D, 230,
+                0x030E, 230,
+                0x030F, 230,
+                0x0310, 230,
+                0x0311, 230,
+                0x0312, 230,
+                0x0313, 230,
+                0x0314, 230,
+                0x0315, 232,
+                0x0316, 220,
+                0x0317, 220,
+                0x0318, 220,
+                0x0319, 220,
+                0x031A, 232,
+                0x031B, 216,
+                0x031C, 220,
+                0x031D, 220,
+                0x031E, 220,
+                0x031F, 220,
+                0x0320, 220,
+                0x0321, 202,
+                0x0322, 202,
+                0x0323, 220,
+                0x0324, 220,
+                0x0325, 220,
+                0x0326, 220,
+                0x0327, 202,
+                0x0328, 202,
+                0x0329, 220,
+                0x032A, 220,
+                0x032B, 220,
+                0x032C, 220,
+                0x032D, 220,
+                0x032E, 220,
+                0x032F, 220,
+                0x0330, 220,
+                0x0331, 220,
+                0x0332, 220,
+                0x0333, 220,
+                0x0334, 1,
+                0x0335, 1,
+                0x0336, 1,
+                0x0337, 1,
+                0x0338, 1,
+                0x0339, 220,
+                0x033A, 220,
+                0x033B, 220,
+                0x033C, 220,
+                0x033D, 230,
+                0x033E, 230,
+                0x033F, 230,
+                0x0340, 230,
+                0x0341, 230,
+                0x0342, 230,
+                0x0343, 230,
+                0x0344, 230,
+                0x0345, 240,
+                0x0360, 234,
+                0x0361, 234
+            };
 
             // build the same tables we would otherwise get from the
             // Unicode Character Database, just with limited data
@@ -446,9 +446,9 @@ namespace ICU4N.Dev.Test.Normalizers
             for (int i = 0; i < decomposeData.Length; i += 3)
             {
                 char value = decomposeData[i][0];
-                String decomp = decomposeData[i + 1];
+                string decomp = decomposeData[i + 1];
                 bool compat = decomposeData[i + 2].Equals("K");
-                if (compat) isCompatibility.Set(value);
+                if (compat) isCompatibility.SafeSet(value, true);
                 decompose.Put(value, decomp);
                 if (!compat)
                 {
@@ -474,7 +474,7 @@ namespace ICU4N.Dev.Test.Normalizers
         /**
          * Utility: Parses a sequence of hex Unicode characters separated by spaces
          */
-        static public String fromHex(String source)
+        static public string FromHex(string source)
         {
             StringBuffer result = new StringBuffer();
             for (int i = 0; i < source.Length; ++i)
@@ -545,31 +545,31 @@ namespace ICU4N.Dev.Test.Normalizers
         /**
          * Utility: Supplies a zero-padded hex representation of an integer (without 0x)
          */
-        static public String hex(int i)
+        static public string Hex(int i)
         {
-            String result = Convert.ToString(i & 0xFFFFFFFFL, 16).ToUpperInvariant(); // ICU4N TODO: Check this conversion (16)
+            string result = Convert.ToString(i & 0xFFFFFFFFL, 16).ToUpperInvariant(); // ICU4N TODO: Check this conversion (16)
             return "00000000".Substring(result.Length, 8 - result.Length) + result; // ICU4N: Corrected 2nd parameter
         }
 
         /**
          * Utility: Supplies a zero-padded hex representation of a Unicode character (without 0x, \\u)
          */
-        static public String hex(char i)
+        static public string Hex(char i)
         {
-            String result = Convert.ToString(i, 16).ToUpperInvariant(); // ICU4N TODO: Check this conversion (16)
+            string result = Convert.ToString(i, 16).ToUpperInvariant(); // ICU4N TODO: Check this conversion (16)
             return "0000".Substring(result.Length, 4 - result.Length) + result; // ICU4N: Corrected 2nd parameter
         }
 
         /**
          * Utility: Supplies a zero-padded hex representation of a Unicode character (without 0x, \\u)
          */
-        public static String hex(String s, String sep)
+        public static string Hex(string s, string sep)
         {
             StringBuffer result = new StringBuffer();
             for (int i = 0; i < s.Length; ++i)
             {
                 if (i != 0) result.Append(sep);
-                result.Append(hex(s[i]));
+                result.Append(Hex(s[i]));
             }
             return result.ToString();
         }

@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
+using System.Collections;
 using System.Diagnostics;
 
 namespace ICU4N.Text
@@ -192,7 +193,7 @@ namespace ICU4N.Text
         }
 
         internal UnicodeSet fSet = new UnicodeSet();
-        private BitSet fTypes = new BitSet(32);
+        private BitArray fTypes = new BitArray(32);
 
         /// <param name="breakTypes">The types of break iterators that can use this engine.
         /// For example, <see cref="BreakIterator.KIND_LINE"/>.</param>
@@ -200,13 +201,13 @@ namespace ICU4N.Text
         {
             foreach (int type in breakTypes)
             {
-                fTypes.Set(type);
+                fTypes.SafeSet(type, true);
             }
         }
 
         public virtual bool Handles(int c, int breakType)
         {
-            return fTypes.Get(breakType) &&  // this type can use us
+            return fTypes.SafeGet(breakType) &&  // this type can use us
                     fSet.Contains(c);        // we recognize the character
         }
 
