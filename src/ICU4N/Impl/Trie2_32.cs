@@ -142,7 +142,7 @@ namespace ICU4N.Impl
         /// <exception cref="IOException">On an error writing to the <see cref="Stream"/>.</exception>
         public int Serialize(Stream os)
         {
-            DataOutputStream dos = new DataOutputStream(os);
+            J2N.IO.DataOutputStream dos = new J2N.IO.DataOutputStream(os);
             int bytesWritten = 0;
 
             bytesWritten += SerializeHeader(dos);

@@ -738,9 +738,9 @@ namespace ICU4N.Impl
         /// <param name="dataVersion"></param>
         /// <param name="dos"></param>
         /// <returns>The length of the header (number of bytes written).</returns>
-        /// <exception cref="IOException">From the <see cref="DataOutputStream"/>.</exception>
+        /// <exception cref="IOException">From the <see cref="J2N.IO.DataOutputStream"/>.</exception>
         public static int WriteHeader(int dataFormat, int formatVersion, int dataVersion,
-            DataOutputStream dos)
+            J2N.IO.DataOutputStream dos)
         {
             // ucmndata.h MappedData
             dos.WriteChar(32);  // headerSize
