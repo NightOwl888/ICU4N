@@ -1,6 +1,6 @@
-﻿using ICU4N.Support.Collections;
-using ICU4N.Text;
+﻿using ICU4N.Text;
 using ICU4N.Util;
+using J2N.Collections;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -142,12 +142,12 @@ namespace ICU4N.Dev.Test.Collate
                 this.displayNames = displayNames;
             }
 
-            internal String GetDisplayName(ULocale displayLocale)
+            internal string GetDisplayName(ULocale displayLocale)
             {
-                String name = null;
+                string name = null;
                 if (displayNames != null)
                 {
-                    name = (String)displayNames.Get(displayLocale);
+                    name = displayNames.TryGetValue(displayLocale, out object val) ? (string)val : null;
                 }
                 if (name == null)
                 {
@@ -174,22 +174,22 @@ namespace ICU4N.Dev.Test.Collate
 
             public override Collator CreateCollator(ULocale loc)
             {
-                CollatorInfo ci = (CollatorInfo)map.Get(loc);
-                if (ci != null)
-                {
+                if (map.TryGetValue(loc, out object cio) && cio is CollatorInfo ci && ci != null)
                     return ci.collator;
-                }
                 return null;
             }
 
             public override String GetDisplayName(ULocale objectLocale, ULocale displayLocale)
             {
-                CollatorInfo ci = (CollatorInfo)map.Get(objectLocale);
-                if (ci != null)
-                {
+                if (map.TryGetValue(objectLocale, out object cio) && cio is CollatorInfo ci && ci != null)
                     return ci.GetDisplayName(displayLocale);
-                }
                 return null;
+                //CollatorInfo ci = (CollatorInfo)map.Get(objectLocale);
+                //if (ci != null)
+                //{
+                //    return ci.GetDisplayName(displayLocale);
+                //}
+                //return null;
             }
 
             public override ICollection<string> GetSupportedLocaleIDs()

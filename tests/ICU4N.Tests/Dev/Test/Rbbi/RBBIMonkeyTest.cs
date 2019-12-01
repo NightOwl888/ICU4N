@@ -1,6 +1,5 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support;
-using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
@@ -129,8 +128,7 @@ namespace ICU4N.Dev.Test.Rbbi
                     do
                     {
                         string sname = match.Groups[/*"ClassName"*/ 1].Value;
-                        CharClass snameClass = fCharClasses.Get(sname);
-                        string expansionForName = snameClass != null ? snameClass.fExpandedDef : sname;
+                        string expansionForName = fCharClasses.TryGetValue(sname, out CharClass snameClass) && snameClass != null ? snameClass.fExpandedDef : sname;
 
                         expandedDef.Append(definition.Substring(lastEnd, match.Index - lastEnd)); // Append replacement
                         expandedDef.Append(expansionForName);
@@ -825,7 +823,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             internal void ClearActualBreaks()
             {
-                Arrays.Fill(fActualBreaks, false);
+                J2N.Collections.Arrays.Fill(fActualBreaks, false);
             }
 
 

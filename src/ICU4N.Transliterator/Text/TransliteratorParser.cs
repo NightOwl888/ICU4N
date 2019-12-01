@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Data = ICU4N.Text.RuleBasedTransliterator.Data;
 using StringBuffer = System.Text.StringBuilder;
+using J2N.Collections;
 
 namespace ICU4N.Text
 {

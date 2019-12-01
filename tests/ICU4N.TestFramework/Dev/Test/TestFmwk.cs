@@ -1,7 +1,6 @@
-﻿using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
-using ICU4N.Util;
+﻿using ICU4N.Util;
 using J2N;
+using J2N.Collections;
 using J2N.Text;
 using NUnit.Framework;
 using System;
@@ -11,8 +10,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using StringBuffer = System.Text.StringBuilder;
 using Random = System.Random;
+using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test
 {
@@ -228,8 +227,7 @@ namespace ICU4N.Dev.Test
             {
                 GetParams().knownIssues = new SortedDictionary<string, List<string>>();
             }
-            List<string> lines = GetParams().knownIssues.Get(ticketLink);
-            if (lines == null)
+            if (!GetParams().knownIssues.TryGetValue(ticketLink, out List<string> lines) || lines == null)
             {
                 lines = new List<string>();
                 GetParams().knownIssues[ticketLink] = lines;

@@ -4,6 +4,7 @@ using ICU4N.Util;
 using J2N;
 using J2N.IO;
 using System.Diagnostics;
+using Arrays = J2N.Collections.Arrays;
 
 namespace ICU4N.Impl.Coll
 {

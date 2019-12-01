@@ -1,5 +1,4 @@
-﻿using ICU4N.Globalization;
-using ICU4N.Support.Collections;
+﻿using J2N.Collections;
 using System;
 
 namespace ICU4N.Impl

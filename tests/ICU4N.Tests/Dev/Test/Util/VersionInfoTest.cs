@@ -1,5 +1,5 @@
-﻿using ICU4N.Support.Collections;
-using ICU4N.Util;
+﻿using ICU4N.Util;
+using J2N.Collections;
 using J2N.Threading;
 using NUnit.Framework;
 using System;
@@ -396,7 +396,7 @@ namespace ICU4N.Dev.Test.Util
         {
             int numThreads = 20;
             GetInstanceWorker[] workers = new GetInstanceWorker[numThreads];
-            VersionInfo[][] results = Arrays.NewRectangularArray<VersionInfo>(numThreads, 255);// VersionInfo[numThreads][255];
+            VersionInfo[][] results = Support.Collections.Arrays.NewRectangularArray<VersionInfo>(numThreads, 255);// VersionInfo[numThreads][255];
 
             // Create workers
             for (int i = 0; i < workers.Length; i++)

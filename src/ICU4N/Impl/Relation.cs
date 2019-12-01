@@ -1,5 +1,6 @@
 ﻿using ICU4N.Support.Collections;
 using ICU4N.Util;
+using J2N.Collections;
 using System;
 using System.Collections;
 using System.Collections.Generic;

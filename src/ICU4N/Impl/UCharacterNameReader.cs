@@ -1,4 +1,4 @@
-﻿using ICU4N.Support.Collections;
+﻿using J2N.Collections;
 using J2N.IO;
 using System.IO;
 using System.Text;
