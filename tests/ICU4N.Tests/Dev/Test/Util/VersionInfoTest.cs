@@ -1,6 +1,6 @@
 ﻿using ICU4N.Support.Collections;
-using ICU4N.Support.Threading;
 using ICU4N.Util;
+using J2N.Threading;
 using NUnit.Framework;
 using System;
 #if !NETCOREAPP1_0
@@ -441,7 +441,7 @@ namespace ICU4N.Dev.Test.Util
             }
         }
 
-        private class GetInstanceWorker : ThreadWrapper
+        private class GetInstanceWorker : ThreadJob
         {
             private VersionInfo[] results;
 

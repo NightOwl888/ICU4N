@@ -2,10 +2,10 @@
 using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
-using ICU4N.Support.Threading;
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
+using J2N.Threading;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -848,7 +848,7 @@ namespace ICU4N.Dev.Test.Rbbi
         //                          test for one set of break rules.
         //
 
-        internal class RBBIMonkeyImpl : ThreadWrapper
+        internal class RBBIMonkeyImpl : ThreadJob
         {
 
             internal void Setup(String ruleFile)

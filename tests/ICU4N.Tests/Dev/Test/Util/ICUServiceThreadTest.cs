@@ -1,8 +1,8 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Support;
-using ICU4N.Support.Threading;
 using ICU4N.Util;
 using J2N.Text;
+using J2N.Threading;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -132,7 +132,7 @@ namespace ICU4N.Dev.Test.Util
 #endif
         }
 
-        internal class TestThread : ThreadWrapper
+        internal class TestThread : ThreadJob
         {
             //private final string name;
             protected ICUService service;
@@ -143,7 +143,7 @@ namespace ICU4N.Dev.Test.Util
                 //this.name = name + " ";
                 this.service = service;
                 this.delay = delay;
-                this.SetDaemon(true);
+                this.IsBackground = (true);
             }
 
             public override void Run()

@@ -1,5 +1,5 @@
-﻿using ICU4N.Support.Threading;
-using ICU4N.Text;
+﻿using ICU4N.Text;
+using J2N.Threading;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -62,7 +62,7 @@ namespace ICU4N.Dev.Test.Translit
 
         private static readonly String[] WORDS = { "edgar", "allen", "poe" };
 
-        private class Worker : ThreadWrapper
+        private class Worker : ThreadJob
         {
             public long count = 0;
             private readonly ThreadTest outerInstance;
