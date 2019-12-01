@@ -1,17 +1,19 @@
-﻿using ICU4N.Impl;
-using ICU4N.Globalization;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
-using System.Diagnostics;
 
 namespace ICU4N.Dev.Test.Lang
 {
@@ -364,7 +366,7 @@ namespace ICU4N.Dev.Test.Lang
                     //c = UTF16.CharAt(s, offset);
                     //dig = UCharacter.Digit(c, (bitsPerDigit == 3) ? 8 : 16);
                     c = s[offset];
-                    dig = ICU4N.Support.Text.Character.Digit((char)c, (bitsPerDigit == 3) ? 8 : 16);
+                    dig = J2N.Character.Digit((char)c, (bitsPerDigit == 3) ? 8 : 16);
                     if (dig < 0)
                     {
                         break;
@@ -1838,8 +1840,8 @@ namespace ICU4N.Dev.Test.Lang
             {
                 foreach (String curr in target)
                 {
-                    int lastCount = ICU4N.Support.Text.Character.CodePointCount(last, 0, last.Length);
-                    int currCount = ICU4N.Support.Text.Character.CodePointCount(curr, 0, curr.Length);
+                    int lastCount = J2N.Character.CodePointCount(last, 0, last.Length);
+                    int currCount = J2N.Character.CodePointCount(curr, 0, curr.Length);
                     int comparison;
                     if (lastCount == 1)
                     {

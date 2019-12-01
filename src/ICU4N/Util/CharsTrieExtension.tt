@@ -25,7 +25,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Support.Text;
+using J2N.Text;
 using System.Text;
 
 namespace ICU4N.Util
@@ -52,7 +52,11 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> CharsTrie(<#=charSequence#> trieChars, int offset) 
         {
+<# if (charSequence=="ICharSequence") { #>
+            chars_ = trieChars;
+<# } else { #>
             chars_ = trieChars.ToCharSequence();
+<# } #>
             pos_ = root_ = offset;
             remainingMatchLength_ = -1;
         }

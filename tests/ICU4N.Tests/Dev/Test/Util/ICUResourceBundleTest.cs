@@ -1,14 +1,13 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.IO;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N.IO;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 using System.Resources;
-using System.Text;
 
 namespace ICU4N.Dev.Test.Util
 {

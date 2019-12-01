@@ -1,9 +1,10 @@
-﻿using ICU4N.Support;
-using ICU4N.Text;
+﻿using ICU4N.Text;
+using J2N;
 using NUnit.Framework;
 using System;
 using System.Globalization;
 using System.Threading;
+using Random = System.Random;
 
 namespace ICU4N.Dev.Test.Collate
 {
@@ -127,7 +128,7 @@ namespace ICU4N.Dev.Test.Collate
             return temporaryData;
         }
 
-        private static void Scramble(String[] data, Random r)
+        private static void Scramble(String[] data, System.Random r)
         {
             for (int i = 0; i < data.Length; ++i)
             {
@@ -196,9 +197,9 @@ namespace ICU4N.Dev.Test.Collate
             private Collator collator;
             private String name;
             private Control control;
-            private Random r;
+            private System.Random r;
 
-            internal Test(String name, String[] data, Collator collator, Random r, Control control)
+            internal Test(String name, String[] data, Collator collator, System.Random r, Control control)
             {
                 this.name = name;
                 this.data = data;

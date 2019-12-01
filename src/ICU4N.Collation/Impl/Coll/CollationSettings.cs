@@ -1,6 +1,6 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.Collections;
+﻿using ICU4N.Support.Collections;
 using ICU4N.Text;
+using J2N;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

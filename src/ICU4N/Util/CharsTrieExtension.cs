@@ -6,7 +6,7 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Support.Text;
+using J2N.Text;
 using System.Text;
 
 namespace ICU4N.Util
@@ -101,7 +101,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         internal CharsTrie(ICharSequence trieChars, int offset) 
         {
-            chars_ = trieChars.ToCharSequence();
+            chars_ = trieChars;
             pos_ = root_ = offset;
             remainingMatchLength_ = -1;
         }

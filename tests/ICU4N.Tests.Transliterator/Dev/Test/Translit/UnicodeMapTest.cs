@@ -1,9 +1,9 @@
 ﻿using ICU4N.Dev.Util;
-using ICU4N.Impl;
 using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,6 @@ using System.Text;
 using Character = ICU4N.Support.Character;
 using Double = ICU4N.Support.Double;
 using Integer = ICU4N.Support.Integer;
-using ICU4N.Support;
 
 namespace ICU4N.Dev.Test.Translit
 {
@@ -474,18 +473,59 @@ namespace ICU4N.Dev.Test.Translit
             var fii = foo.StringKeys(); // make sure doesn't NPE
         }
 
+        // ICU4N specific helper to make char into a reference type
+        // so it can be used in UnicodeMap
+        private class Char : IComparable<Char>, IEquatable<Char>
+        {
+            private readonly char value;
+            public Char(char value)
+            {
+                this.value = value;
+            }
+
+            public int CompareTo(Char other)
+            {
+                return value.CompareTo(other.value);
+            }
+
+            public bool Equals(Char other)
+            {
+                return value.Equals(other.value);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj is Char c1)
+                    return value.Equals(c1.value);
+                if (obj is char c2)
+                    return value.Equals(c2);
+
+                return false;
+            }
+
+            public static implicit operator char(Char c)
+            {
+                return c.value;
+            }
+
+            public static implicit operator Char(char c)
+            {
+                return new Char(c);
+            }
+        }
+
         [Test]
         public void TestAUnicodeMapInverse()
         {
-            UnicodeMap<Character> foo1 = new UnicodeMap<Character>()
+            UnicodeMap<Char> foo1 = new UnicodeMap<Char>()
                     .PutAll('a', 'z', 'b')
                     .Put("ab", 'c')
                     .Put('x', 'b')
                     .Put("xy", 'c')
                     ;
-            IDictionary<Character, UnicodeSet> target = new Dictionary<Character, UnicodeSet>();
+            IDictionary<Char, UnicodeSet> target = new Dictionary<Char, UnicodeSet>();
             foo1.AddInverseTo(target);
-            UnicodeMap<Character> reverse = new UnicodeMap<Character>().PutAllInverse(target);
+            UnicodeMap<Char> reverse = new UnicodeMap<Char>().PutAllInverse(target);
             assertEquals("", foo1, reverse);
         }
 

@@ -1,8 +1,10 @@
-﻿using ICU4N.Impl;
-using ICU4N.Globalization;
+﻿using ICU4N.Globalization;
+using ICU4N.Impl;
 using ICU4N.Support;
-using ICU4N.Support.IO;
 using ICU4N.Support.Text;
+using J2N;
+using J2N.IO;
+using J2N.Text;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
@@ -2856,12 +2858,13 @@ namespace ICU4N.Text
                 if (spanQCYes1 < s1.Length)
                 {
                     StringBuilder fcd1 = new StringBuilder(s1.Length + 16).Append(s1, 0, spanQCYes1 - 0); // ICU4N: Checked 3rd parameter math
-                    s1 = n2.NormalizeSecondAndAppend(fcd1, s1.SubSequence(spanQCYes1, s1.Length)).ToCharSequence();
+                    s1 = n2.NormalizeSecondAndAppend(fcd1, s1.Subsequence(spanQCYes1, s1.Length - spanQCYes1)).ToCharSequence(); // ICU4N: Checked 2nd parameter math
+
                 }
                 if (spanQCYes2 < s2.Length)
                 {
                     StringBuilder fcd2 = new StringBuilder(s2.Length + 16).Append(s2, 0, spanQCYes2 - 0); // ICU4N: Checked 3rd parameter math
-                    s2 = n2.NormalizeSecondAndAppend(fcd2, s2.SubSequence(spanQCYes2, s2.Length)).ToCharSequence();
+                    s2 = n2.NormalizeSecondAndAppend(fcd2, s2.Subsequence(spanQCYes2, s2.Length - spanQCYes2)).ToCharSequence(); // ICU4N: Corrected 2nd parameter math
                 }
             }
 

@@ -1,11 +1,6 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.IO;
-using ICU4N.Support.Text;
-using ICU4N.Text;
-using ICU4N.Util;
+﻿using ICU4N.Text;
+using J2N.IO;
 using System;
-using System.IO;
-using System.Text;
 
 namespace ICU4N.Impl
 {

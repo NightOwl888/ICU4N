@@ -9,6 +9,8 @@
 using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Text;
 using System;
 using System.Text;
 
@@ -567,7 +569,7 @@ namespace ICU4N.Impl
             // uts46Norm2.Normalize() would do all of this error checking and setup,
             // but with the ASCII fastpath we do not always call it, and do not
             // call it first.
-			if (src is StringBuilderCharSequence && dest == ((StringBuilderCharSequence)src).StringBuilder)
+            if (src is StringBuilderCharSequence && dest == ((StringBuilderCharSequence)src).Value)
             {
                 throw new ArgumentException();
             }
@@ -699,7 +701,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
+                uts46Norm2.NormalizeSecondAndAppend(dest, src.Subsequence(mappingStart, src.Length - mappingStart)); // ICU4N: Corrected 2nd parameter
             }
             bool doMapDevChars =
                 toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
@@ -767,7 +769,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
+                uts46Norm2.NormalizeSecondAndAppend(dest, src.Subsequence(mappingStart, src.Length - mappingStart)); // ICU4N: Corrected 2nd parameter
             }
             bool doMapDevChars =
                 toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
@@ -835,7 +837,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
+                uts46Norm2.NormalizeSecondAndAppend(dest, src.Subsequence(mappingStart, src.Length - mappingStart)); // ICU4N: Corrected 2nd parameter
             }
             bool doMapDevChars =
                 toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
@@ -903,7 +905,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
+                uts46Norm2.NormalizeSecondAndAppend(dest, src.Subsequence(mappingStart, src.Length - mappingStart)); // ICU4N: Corrected 2nd parameter
             }
             bool doMapDevChars =
                 toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
@@ -1016,7 +1018,7 @@ namespace ICU4N.Impl
         private static int ReplaceLabel(StringBuilder dest, int destLabelStart, int destLabelLength,
             ICharSequence label, int labelLength)
         {
-			if (label is StringBuilderCharSequence && dest != ((StringBuilderCharSequence)label).StringBuilder)
+            if (label is StringBuilderCharSequence && dest != ((StringBuilderCharSequence)label).Value)
             {
                 dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
                 // or dest.Replace(destLabelStart, destLabelStart+destLabelLength, label.ToString());

@@ -1,5 +1,5 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.IO;
+﻿using J2N;
+using J2N.IO;
 using System;
 using System.Collections;
 using System.Collections.Generic;

@@ -1,6 +1,6 @@
-﻿using ICU4N.Support.IO;
-using ICU4N.Support.Text;
-using ICU4N.Util;
+﻿using ICU4N.Util;
+using J2N.IO;
+using J2N.Text;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -137,17 +137,16 @@ namespace ICU4N.Impl
             }
         }
 
-        public int Length
+        public int Length => length;
+
+        public ICharSequence Subsequence(int startIndex, int length)
         {
-            get { return length; }
+            Debug.Assert(0 <= startIndex); // ICU4N: Changed to using length instead of end index
+            Debug.Assert(0 <= length);
+            return new ResourceKey(bytes, offset + startIndex, length);
         }
 
-        public ICharSequence SubSequence(int start, int end)
-        {
-            Debug.Assert(0 <= start && start < length);
-            Debug.Assert(start <= end && end <= length);
-            return new ResourceKey(bytes, offset + start, end - start);
-        }
+        bool ICharSequence.HasValue => s != string.Empty;
 
         /// <summary>
         /// Creates/caches/returns this resource key string as a .NET <see cref="string"/>.

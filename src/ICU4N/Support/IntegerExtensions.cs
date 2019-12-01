@@ -7,11 +7,6 @@ namespace ICU4N.Support
 {
     public static class IntegerExtensions
     {
-        public static string ToHexString(this int codePoint)
-        {
-            return codePoint.ToString("x4");
-        }
-
         /// <summary>
         /// Converts an <see cref="int"/> into an <see cref="Enum"/> of type <typeparamref name="T"/>.
         /// If the <see cref="Enum"/> defines the <see cref="FlagsAttribute"/>, the <see cref="int"/>

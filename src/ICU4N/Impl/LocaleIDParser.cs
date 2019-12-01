@@ -1,6 +1,7 @@
 ﻿using ICU4N.Impl.Locale;
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Linq;

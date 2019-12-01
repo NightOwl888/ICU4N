@@ -1,5 +1,7 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1170,7 +1172,7 @@ namespace ICU4N.Impl.Coll
                 // Write a sequence of CEs for at most 254 digits at a time.
                 int segmentLength = digits.Length - pos;
                 if (segmentLength > 254) { segmentLength = 254; }
-                AppendNumericSegmentCEs(digits.SubSequence(pos, pos + segmentLength));
+                AppendNumericSegmentCEs(digits.Subsequence(pos, /*pos +*/ segmentLength)); // ICU4N: Corrected Subsequence math
                 pos += segmentLength;
             } while (pos < digits.Length);
         }

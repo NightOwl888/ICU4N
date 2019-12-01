@@ -1,5 +1,6 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.Text;
 using System.Text;
 
 namespace ICU4N.Text

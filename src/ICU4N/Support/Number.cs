@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using J2N;
+using System;
 using System.Globalization;
-using System.Text;
 
 namespace ICU4N.Support
 {
@@ -429,35 +428,35 @@ namespace ICU4N.Support
             return BitConverter.DoubleToInt64Bits(value);
         }
 
-        /// <summary>
-        /// Replacement for Java triple shift (>>>) operator.
-        /// </summary>
-        public static long TripleShift(this long number, int shift)
-        {
-            return (long)((ulong)number >> shift);
-        }
+        ///// <summary>
+        ///// Replacement for Java triple shift (>>>) operator.
+        ///// </summary>
+        //public static long TripleShift(this long number, int shift)
+        //{
+        //    return (long)((ulong)number >> shift);
+        //}
 
-        /// <summary>
-        /// Replacement for Java triple shift (>>>) operator.
-        /// See http://stackoverflow.com/a/6625912
-        /// </summary>
-        public static int TripleShift(this int number, int shift)
-        {
-            if (number >= 0)
-                return number >> shift;
-            return (number >> shift) + (2 << ~shift);
-        }
+        ///// <summary>
+        ///// Replacement for Java triple shift (>>>) operator.
+        ///// See http://stackoverflow.com/a/6625912
+        ///// </summary>
+        //public static int TripleShift(this int number, int shift)
+        //{
+        //    if (number >= 0)
+        //        return number >> shift;
+        //    return (number >> shift) + (2 << ~shift);
+        //}
 
-        /// <summary>
-        /// Replacement for Java triple shift (>>>) operator.
-        /// See http://stackoverflow.com/a/6625912
-        /// </summary>
-        public static int TripleShift(this char number, int shift)
-        {
-            if (number >= 0)
-                return number >> shift;
-            return (number >> shift) + (2 << ~shift);
-        }
+        ///// <summary>
+        ///// Replacement for Java triple shift (>>>) operator.
+        ///// See http://stackoverflow.com/a/6625912
+        ///// </summary>
+        //public static int TripleShift(this char number, int shift)
+        //{
+        //    if (number >= 0)
+        //        return number >> shift;
+        //    return (number >> shift) + (2 << ~shift);
+        //}
 
 
 

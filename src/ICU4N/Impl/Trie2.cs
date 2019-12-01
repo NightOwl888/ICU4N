@@ -1,10 +1,11 @@
-﻿using ICU4N.Support.IO;
-using ICU4N.Support.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Collections;
+using J2N.Text;
+using J2N.IO;
+using J2N;
 
 namespace ICU4N.Impl
 {

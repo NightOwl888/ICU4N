@@ -4,6 +4,8 @@ using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -311,7 +313,6 @@ namespace ICU4N.Dev.Test.Collate
             int prev = 0;
             long prevPrimary = 0;
             UTF16CollationIterator ci = new UTF16CollationIterator(cd, false, "".ToCharSequence(), 0);
-            StringCharSequence buffer = new StringCharSequence("");
             for (int i = 0; i < sets.Length; ++i)
             {
                 UnicodeSetIterator iter = new UnicodeSetIterator(sets[i]);
@@ -319,8 +320,7 @@ namespace ICU4N.Dev.Test.Collate
                 {
                     String s = iter.GetString();
                     int c = s.CodePointAt(0);
-                    buffer.String = s;
-                    ci.SetText(false, buffer, 0);
+                    ci.SetText(false, s.ToCharSequence(), 0);
                     long ce = ci.NextCE();
                     long ce2 = ci.NextCE();
                     if (ce == Collation.NoCE || ce2 != Collation.NoCE)
@@ -1132,12 +1132,10 @@ namespace ICU4N.Dev.Test.Collate
                     // then we get CEs(ps)+CEs(t), rather than CEs(p|st).
                     UnicodeSet tailored = coll.GetTailoredSet();
                     UnicodeSetIterator iter = new UnicodeSetIterator(tailored);
-                    StringCharSequence buffer = new StringCharSequence("");
                     while (iter.Next())
                     {
                         String s = iter.GetString();
-                        buffer.String = s;
-                        ces = rbc.InternalGetCEs(buffer);
+                        ces = rbc.InternalGetCEs(s.ToCharSequence());
                         for (int i = 0; i < ces.Length; ++i)
                         {
                             long ce = ces[i];

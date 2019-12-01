@@ -1,5 +1,5 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support;
+using J2N;
 using NUnit.Framework;
 using System;
 

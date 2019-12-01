@@ -5,7 +5,7 @@ namespace ICU4N.Globalization
     /// <summary>
     /// <see cref="Enum"/> for the CharacterDirection constants. Some constants are
     /// compatible in name <b>but not in value</b> with those defined in
-    /// <see cref="Support.Text.Character"/>.
+    /// <see cref="J2N.Character"/>.
     /// </summary>
     /// <seealso cref="UCharacterDirectionExtensions"/>
     public enum UCharacterDirection

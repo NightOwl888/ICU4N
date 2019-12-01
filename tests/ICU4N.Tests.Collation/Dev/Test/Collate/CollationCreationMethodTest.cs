@@ -1,9 +1,10 @@
-﻿using ICU4N.Support;
-using ICU4N.Text;
+﻿using ICU4N.Text;
+using J2N;
 using NUnit.Framework;
 using System;
 using System.Globalization;
 using System.Text;
+using Random = System.Random;
 
 namespace ICU4N.Dev.Test.Collate
 {

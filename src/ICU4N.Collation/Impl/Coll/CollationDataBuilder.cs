@@ -1,9 +1,9 @@
-﻿using ICU4N.Globalization;
-using ICU4N.Support;
-using ICU4N.Support.Collections;
+﻿using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -240,7 +240,7 @@ namespace ICU4N.Impl.Coll
                     cond = GetConditionalCE32ForCE32(oldCE32);
                     cond.BuiltCE32 = Collation.NO_CE32;
                 }
-                ICharSequence suffix = s.SubSequence(cLength, s.Length);
+                ICharSequence suffix = s.Subsequence(cLength, s.Length - cLength); // ICU4N: Corrected 2nd parameter
                 string context = new StringBuilder().Append((char)prefix.Length).
                         Append(prefix).Append(suffix).ToString();
                 unsafeBackwardSet.AddAll(suffix);

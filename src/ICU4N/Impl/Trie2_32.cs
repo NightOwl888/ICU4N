@@ -1,4 +1,4 @@
-﻿using ICU4N.Support.IO;
+﻿using J2N.IO;
 using System.IO;
 
 namespace ICU4N.Impl

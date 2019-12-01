@@ -1,7 +1,8 @@
-﻿using ICU4N.Globalization;
-using ICU4N.Support.Collections;
+﻿using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -210,7 +211,7 @@ namespace ICU4N.Impl
 
         // ICU4N specific - overload to ensure culture insensitive comparison when comparing strings
         /// <summary>
-        /// Convenience utility. Does null checks on objects, then calls <see cref="StringExtensions.CompareToOrdinal(string, string)"/>.
+        /// Convenience utility. Does null checks on objects, then calls <see cref="J2N.Text.StringExtensions.CompareToOrdinal(string, string)"/>.
         /// </summary>
         public static int CheckCompare(string a, string b)
         {

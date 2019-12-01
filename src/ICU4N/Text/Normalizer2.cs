@@ -1,7 +1,7 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.IO;
-using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.IO;
+using J2N.Text;
 using System;
 using System.IO;
 using System.Text;
@@ -280,7 +280,7 @@ namespace ICU4N.Text
             {
                 // Fastpath: Do not construct a new string if the src is a string
                 // and is already normalized.
-                return Normalize(((StringCharSequence)src).String);
+                return Normalize(((StringCharSequence)src).Value);
             }
             return Normalize(src, new StringBuilder(src.Length)).ToString();
         }

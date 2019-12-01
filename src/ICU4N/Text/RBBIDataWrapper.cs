@@ -1,6 +1,6 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support;
-using ICU4N.Support.IO;
+using J2N;
+using J2N.IO;
 using System;
 using System.IO;
 using System.Text;

@@ -1,7 +1,9 @@
-﻿using ICU4N.Support.IO;
-using ICU4N.Support.Text;
+﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.IO;
+using J2N.Text;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -92,7 +94,7 @@ namespace ICU4N.Impl
             if (app is StringBuilderCharSequence)
             {
                 appIsStringBuilder = true;
-                str = ((StringBuilderCharSequence)dest).StringBuilder;
+                str = ((StringBuilderCharSequence)dest).Value;
                 // In Java, the constructor subsumes public void init(int destCapacity) {
                 str.EnsureCapacity(destCapacity);
                 reorderStart = 0;

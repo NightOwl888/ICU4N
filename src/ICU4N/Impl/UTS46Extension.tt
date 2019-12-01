@@ -28,6 +28,8 @@
 using ICU4N.Globalization;
 using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Text;
 using System;
 using System.Text;
 
@@ -102,7 +104,7 @@ namespace ICU4N.Impl
 <# if (charSequence=="StringBuilder") { #>
             if (dest == src)
 <# } else { #>
-			if (src is StringBuilderCharSequence && dest == ((StringBuilderCharSequence)src).StringBuilder)
+            if (src is StringBuilderCharSequence && dest == ((StringBuilderCharSequence)src).Value)
 <# } #>
             {
                 throw new ArgumentException();
@@ -238,7 +240,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                uts46Norm2.NormalizeSecondAndAppend(dest, src.SubSequence(mappingStart, src.Length));
+                uts46Norm2.NormalizeSecondAndAppend(dest, src.Subsequence(mappingStart, src.Length - mappingStart)); // ICU4N: Corrected 2nd parameter
             }
             bool doMapDevChars =
                 toASCII ? (options & UTS46Options.NontransitionalToASCII) == 0 :
@@ -307,7 +309,7 @@ namespace ICU4N.Impl
 <# if (charSequence=="StringBuilder") { #>
             if (label != dest)
 <# } else if (charSequence=="ICharSequence") { #>
-			if (label is StringBuilderCharSequence && dest != ((StringBuilderCharSequence)label).StringBuilder)
+            if (label is StringBuilderCharSequence && dest != ((StringBuilderCharSequence)label).Value)
 <# } #>
             {
                 dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
@@ -516,7 +518,7 @@ namespace ICU4N.Impl
                     {
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UChar.JoiningType.Transparent)
+                        if (type == JoiningType.Transparent)
                         {
                             if (j == 0)
                             {
@@ -525,7 +527,7 @@ namespace ICU4N.Impl
                             c = Character.CodePointBefore(label, j);
                             j -= Character.CharCount(c);
                         }
-                        else if (type == UChar.JoiningType.LeftJoining || type == UChar.JoiningType.DualJoining)
+                        else if (type == JoiningType.LeftJoining || type == JoiningType.DualJoining)
                         {
                             break;  // precontext fulfilled
                         }
@@ -545,11 +547,11 @@ namespace ICU4N.Impl
                         j += Character.CharCount(c);
                         /* UJoiningType */
                         int type = UBiDiProps.Instance.GetJoiningType(c);
-                        if (type == UChar.JoiningType.Transparent)
+                        if (type == JoiningType.Transparent)
                         {
                             // just skip this character
                         }
-                        else if (type == UChar.JoiningType.RightJoining || type == UChar.JoiningType.DualJoining)
+                        else if (type == JoiningType.RightJoining || type == JoiningType.DualJoining)
                         {
                             break;  // postcontext fulfilled
                         }

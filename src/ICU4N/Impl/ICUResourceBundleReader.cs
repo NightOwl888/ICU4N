@@ -1,7 +1,8 @@
 ﻿using ICU4N.Support;
-using ICU4N.Support.IO;
-using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.IO;
+using J2N.Text;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -250,7 +251,7 @@ namespace ICU4N.Impl
             bytes = ICUBinary.SliceWithOrder(inBytes);
             int dataLength = bytes.Remaining;
 
-            if (DEBUG) Console.Out.WriteLine("The ByteBuffer is direct (memory-mapped): " + bytes.IsDirect);
+            //if (DEBUG) Console.Out.WriteLine("The ByteBuffer is direct (memory-mapped): " + bytes.IsDirect); // ICU4N: IsDirect not supported by J2N
             if (DEBUG) Console.Out.WriteLine("The available bytes in the buffer before reading the data: " + dataLength);
 
             rootRes = bytes.GetInt32(0);
@@ -635,7 +636,7 @@ namespace ICU4N.Impl
                 }
                 // Cast up to CharSequence to insulate against the CharBuffer.subSequence() return type change
                 // which makes code compiled for a newer JDK (7 and up) not run on an older one (6 and below).
-                s = ((ICharSequence)b16BitUnits).SubSequence(offset, offset + length).ToString();
+                s = ((ICharSequence)b16BitUnits).Subsequence(offset, length).ToString(); // ICU4N: Corrected 2nd parameter
             }
             return (string)resourceCache.PutIfAbsent(res, s, s.Length * 2);
         }
@@ -655,7 +656,7 @@ namespace ICU4N.Impl
             {
                 ICharSequence cs = bytes.AsCharBuffer();
                 offset /= 2;
-                return cs.SubSequence(offset, offset + length).ToString();
+                return cs.Subsequence(offset, length).ToString(); // ICU4N: Corrected 2nd parameter
             }
         }
 

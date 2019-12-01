@@ -2,6 +2,7 @@
 using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -1794,7 +1795,7 @@ namespace ICU4N.Text
                 MessagePatternPart part = msgPattern.GetPart(i);
                 MessagePatternPartType type = part.Type;
                 int index = part.Index;
-                dest.Append(msgString, prevIndex, index);
+                dest.Append(msgString, prevIndex, index - prevIndex); // ICU4N: Fixed 3rd parameter
                 if (type == MessagePatternPartType.MsgLimit)
                 {
                     return;
@@ -2963,12 +2964,12 @@ namespace ICU4N.Text
                 }
             }
 
-            public void Append(string s, int start, int limit)
+            public void Append(string s, int startIndex, int count) // ICU4N: Changed 3rd parameter to count
             {
                 try
                 {
-                    app.Append(s, start, limit);
-                    length += limit - start;
+                    app.Append(s, startIndex, count);
+                    length += count;
                 }
                 catch (IOException e)
                 {
@@ -3002,12 +3003,12 @@ namespace ICU4N.Text
                 }
             }
 
-            public void Append(char[] s, int start, int limit)
+            public void Append(char[] s, int startIndex, int count) // ICU4N: Changed 3rd parameter to count
             {
                 try
                 {
-                    app.Append(s, start, limit);
-                    length += limit - start;
+                    app.Append(s, startIndex, count);
+                    length += count;
                 }
                 catch (IOException e)
                 {
@@ -3015,12 +3016,12 @@ namespace ICU4N.Text
                 }
             }
 
-            public void Append(StringBuilder s, int start, int limit)
+            public void Append(StringBuilder s, int startIndex, int count) // ICU4N: Changed 3rd parameter to count
             {
                 try
                 {
-                    app.Append(s, start, limit);
-                    length += limit - start;
+                    app.Append(s, startIndex, count);
+                    length += count;
                 }
                 catch (IOException e)
                 {
@@ -3041,12 +3042,12 @@ namespace ICU4N.Text
                 }
             }
 
-            public void Append(ICharSequence s, int start, int limit)
+            public void Append(ICharSequence s, int startIndex, int count) // ICU4N: Changed 3rd parameter to count
             {
                 try
                 {
-                    app.Append(s, start, limit);
-                    length += limit - start;
+                    app.Append(s, startIndex, count);
+                    length += count;
                 }
                 catch (IOException e)
                 {

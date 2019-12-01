@@ -1,12 +1,13 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.Text;
+﻿using ICU4N.Support.Text;
 using ICU4N.Text;
+using J2N;
+using J2N.Text;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Collections;
 
 namespace ICU4N.Util
 {

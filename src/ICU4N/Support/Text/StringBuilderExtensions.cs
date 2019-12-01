@@ -1,4 +1,6 @@
-﻿using System;
+﻿using J2N;
+using J2N.Text;
+using System;
 using System.Text;
 
 namespace ICU4N.Support.Text
@@ -63,56 +65,6 @@ namespace ICU4N.Support.Text
             }
 
             return text;
-        }
-
-        /// <summary>
-        /// Returns the number of Unicode code points in the specified text
-        /// range of this <see cref="StringBuilder"/>. The text range begins at the specified
-        /// <paramref name="beginIndex"/> and extends to the <see cref="char"/> at
-        /// index <c>endIndex - 1</c>. Thus the length (in
-        /// <see cref="char"/>s) of the text range is
-        /// <c>endIndex-beginIndex</c>. Unpaired surrogates within
-        /// this sequence count as one code point each.
-        /// </summary>
-        /// <param name="text">this <see cref="StringBuilder"/></param>
-        /// <param name="beginIndex">the index to the first <see cref="char"/> of the text range.</param>
-        /// <param name="endIndex">the index after the last <see cref="char"/> of the text range.</param>
-        /// <returns>the number of Unicode code points in the specified text range.</returns>
-        /// <exception cref="IndexOutOfRangeException">
-        /// if the <paramref name="beginIndex"/> is negative, or <paramref name="endIndex"/>
-        /// is larger than the length of this sequence, or
-        /// <paramref name="beginIndex"/> is larger than <paramref name="endIndex"/>.
-        /// </exception>
-        public static int CodePointCount(this StringBuilder text, int beginIndex, int endIndex)
-        {
-            if (beginIndex < 0 || endIndex > text.Length || beginIndex > endIndex)
-            {
-                throw new IndexOutOfRangeException();
-            }
-            return Character.CodePointCountImpl(text.GetChars(), beginIndex, endIndex - beginIndex);
-        }
-
-        /// <summary>
-        /// Returns the character (Unicode code point) at the specified index. 
-        /// The index refers to char values (Unicode code units) and ranges from 0 to Length - 1.
-        /// <para/>
-        /// If the char value specified at the given index is in the high-surrogate range, 
-        /// the following index is less than the length of this sequence, and the char value 
-        /// at the following index is in the low-surrogate range, then the 
-        /// supplementary code point corresponding to this surrogate pair is returned. 
-        /// Otherwise, the char value at the given index is returned.
-        /// </summary>
-        /// <param name="text">this <see cref="StringBuilder"/></param>
-        /// <param name="index">the index to the char values</param>
-        /// <returns>the code point value of the character at the index</returns>
-        /// <exception cref="IndexOutOfRangeException">if the index argument is negative or not less than the length of this sequence.</exception>
-        public static int CodePointAt(this StringBuilder text, int index)
-        {
-            if ((index < 0) || (index >= text.Length))
-            {
-                throw new IndexOutOfRangeException();
-            }
-            return Character.CodePointAt(text.ToString(), index);
         }
 
         /// <summary>
@@ -311,52 +263,52 @@ namespace ICU4N.Support.Text
             return -1;
         }
 
-        /// <summary>
-        /// Convenience method to wrap a string in a <see cref="StringBuilderCharSequence"/>
-        /// so a <see cref="StringBuilder"/> can be used as <see cref="ICharSequence"/> in .NET.
-        /// </summary>
-        internal static ICharSequence ToCharSequence(this StringBuilder text)
-        {
-            return new StringBuilderCharSequence(text);
-        }
+        ///// <summary>
+        ///// Convenience method to wrap a string in a <see cref="StringBuilderCharSequence"/>
+        ///// so a <see cref="StringBuilder"/> can be used as <see cref="ICharSequence"/> in .NET.
+        ///// </summary>
+        //internal static ICharSequence ToCharSequence(this StringBuilder text)
+        //{
+        //    return new StringBuilderCharSequence(text);
+        //}
 
-        /// <summary>
-        /// Appends the give <see cref="ICharSequence"/> to this <see cref="StringBuilder"/>.
-        /// </summary>
-        internal static StringBuilder Append(this StringBuilder text, ICharSequence csq)
-        {
-            if (csq is StringCharSequence)
-                text.Append(((StringCharSequence)csq).Value);
-            else if (csq is StringBuilderCharSequence)
-                text.Append(((StringBuilderCharSequence)csq).Value);
-            else if (csq is CharArrayCharSequence)
-                text.Append(((CharArrayCharSequence)csq).Value);
-            else
-                text.Append(csq.ToString());
-            return text;
-        }
+        ///// <summary>
+        ///// Appends the give <see cref="ICharSequence"/> to this <see cref="StringBuilder"/>.
+        ///// </summary>
+        //internal static StringBuilder Append(this StringBuilder text, ICharSequence csq)
+        //{
+        //    if (csq is StringCharSequence)
+        //        text.Append(((StringCharSequence)csq).Value);
+        //    else if (csq is StringBuilderCharSequence)
+        //        text.Append(((StringBuilderCharSequence)csq).Value);
+        //    else if (csq is CharArrayCharSequence)
+        //        text.Append(((CharArrayCharSequence)csq).Value);
+        //    else
+        //        text.Append(csq.ToString());
+        //    return text;
+        //}
 
-        /// <summary>
-        /// Appends the given <see cref="ICharSequence"/> to this <see cref="StringBuilder"/>.
-        /// </summary>
-        // .NET Port note: This uses the .NET style length as the 3rd parameter. All callers need to account for this by subtracting (end - start).
-        internal static StringBuilder Append(this StringBuilder text, ICharSequence csq, int start, int count)
-        {
-            if (csq == null)
-            {
-                text.Append("null");
-                return text;
-            }
+        ///// <summary>
+        ///// Appends the given <see cref="ICharSequence"/> to this <see cref="StringBuilder"/>.
+        ///// </summary>
+        //// .NET Port note: This uses the .NET style length as the 3rd parameter. All callers need to account for this by subtracting (end - start).
+        //internal static StringBuilder Append(this StringBuilder text, ICharSequence csq, int start, int count)
+        //{
+        //    if (csq == null)
+        //    {
+        //        text.Append("null");
+        //        return text;
+        //    }
 
-            if ((start < 0) || (start + count > csq.Length))
-                throw new IndexOutOfRangeException(
-                    "start " + start + ", length " + count + ", csq.Length "
-                    + csq.Length);
-            int end = start + count;
-            for (int i = start; i < end; i++)
-                text.Append(csq[i]);
-            return text;
-        }
+        //    if ((start < 0) || (start + count > csq.Length))
+        //        throw new IndexOutOfRangeException(
+        //            "start " + start + ", length " + count + ", csq.Length "
+        //            + csq.Length);
+        //    int end = start + count;
+        //    for (int i = start; i < end; i++)
+        //        text.Append(csq[i]);
+        //    return text;
+        //}
 
         ///// <summary>
         ///// Appends the given <see cref="ICharSequence"/> to this <see cref="StringBuilder"/>.
@@ -443,29 +395,6 @@ namespace ICU4N.Support.Text
             return text;
         }
 
-        internal static ICharSequence SubSequence(this StringBuilder text, int start, int end)
-        {
-            // From Apache Harmony String class
-            if (start == 0 && end == text.Length)
-            {
-                return text.ToCharSequence();
-            }
-            if (start < 0)
-            {
-                throw new IndexOutOfRangeException(nameof(start));
-            }
-            else if (start > end)
-            {
-                throw new IndexOutOfRangeException("end - start");
-            }
-            else if (end > text.Length)
-            {
-                throw new IndexOutOfRangeException(nameof(end));
-            }
-
-            return text.ToString(start, end - start).ToCharSequence();
-        }
-
         /// <summary>
         /// Replaces the specified subsequence in this builder with the specified
         /// string.
@@ -520,40 +449,6 @@ namespace ICU4N.Support.Text
                 }
             }
             throw new IndexOutOfRangeException();
-        }
-
-        /// <summary>
-        /// Returns the index that is offset <paramref name="codePointOffset"/> code points from
-        /// <paramref name="index"/>.
-        /// </summary>
-        /// <param name="text">This <see cref="StringBuilder"/>.</param>
-        /// <param name="index">The index to calculate the offset from.</param>
-        /// <param name="codePointOffset">The number of code points to count.</param>
-        /// <returns>The index that is <paramref name="codePointOffset"/> code points away from <paramref name="index"/>.</returns>
-        /// <seealso cref="Character"/>
-        /// <seealso cref="Character.OffsetByCodePoints(char[], int, int, int, int)"/>
-        public static int OffsetByCodePoints(this StringBuilder text, int index, int codePointOffset)
-        {
-            var chars = text.GetChars();
-            return Character.OffsetByCodePoints(chars, 0, chars.Length, index,
-                codePointOffset);
-        }
-
-        /// <summary>
-        /// Retrieves the Unicode code point value that precedes the <paramref name="index"/>.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="index">The index to the <see cref="char"/> code unit within this object.</param>
-        /// <returns>The Unicode code point value.</returns>
-        /// <seealso cref="Character"/>
-        /// <seealso cref="Character.CodePointBefore(char[], int)"/>
-        public static int CodePointBefore(this StringBuilder text, int index)
-        {
-            if (index < 1 || index > text.Length)
-            {
-                throw new IndexOutOfRangeException(nameof(index));
-            }
-            return Character.CodePointBefore(text, index);
         }
 
         /// <summary>

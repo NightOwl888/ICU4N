@@ -1,4 +1,4 @@
-﻿using ICU4N.Support;
+﻿using J2N;
 using System.Diagnostics;
 
 namespace ICU4N.Impl.Coll

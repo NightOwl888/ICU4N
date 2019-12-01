@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N.Text;
 using System;
 using System.IO;
 using System.Text;
@@ -76,7 +77,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         internal override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
         {
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).StringBuilder == dest)
+            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
@@ -108,7 +109,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.6</stable>
         internal override IAppendable Normalize(StringBuilder src, IAppendable dest)
         {
-            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).StringBuilder == src)
+            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
@@ -139,7 +140,7 @@ namespace ICU4N.Text
         internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
         {
             if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
-                && ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
+                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
@@ -288,7 +289,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    if (!norm2.IsNormalized(s.SubSequence(prevSpanLimit, spanLimit)))
+                    if (!norm2.IsNormalized(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit))) // ICU4N: Corrected 2nd parameter
                     {
                         return false;
                     }
@@ -321,7 +322,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    if (!norm2.IsNormalized(s.SubSequence(prevSpanLimit, spanLimit)))
+                    if (!norm2.IsNormalized(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit))) // ICU4N: Corrected 2nd parameter
                     {
                         return false;
                     }
@@ -354,7 +355,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    if (!norm2.IsNormalized(s.SubSequence(prevSpanLimit, spanLimit)))
+                    if (!norm2.IsNormalized(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit))) // ICU4N: Corrected 2nd parameter
                     {
                         return false;
                     }
@@ -387,7 +388,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    if (!norm2.IsNormalized(s.SubSequence(prevSpanLimit, spanLimit)))
+                    if (!norm2.IsNormalized(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit))) // ICU4N: Corrected 2nd parameter
                     {
                         return false;
                     }
@@ -424,7 +425,7 @@ namespace ICU4N.Text
                 else
                 {
                     QuickCheckResult qcResult =
-                        norm2.QuickCheck(s.SubSequence(prevSpanLimit, spanLimit));
+                        norm2.QuickCheck(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
                     if (qcResult == QuickCheckResult.No)
                     {
                         return qcResult;
@@ -466,7 +467,7 @@ namespace ICU4N.Text
                 else
                 {
                     QuickCheckResult qcResult =
-                        norm2.QuickCheck(s.SubSequence(prevSpanLimit, spanLimit));
+                        norm2.QuickCheck(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
                     if (qcResult == QuickCheckResult.No)
                     {
                         return qcResult;
@@ -508,7 +509,7 @@ namespace ICU4N.Text
                 else
                 {
                     QuickCheckResult qcResult =
-                        norm2.QuickCheck(s.SubSequence(prevSpanLimit, spanLimit));
+                        norm2.QuickCheck(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
                     if (qcResult == QuickCheckResult.No)
                     {
                         return qcResult;
@@ -550,7 +551,7 @@ namespace ICU4N.Text
                 else
                 {
                     QuickCheckResult qcResult =
-                        norm2.QuickCheck(s.SubSequence(prevSpanLimit, spanLimit));
+                        norm2.QuickCheck(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
                     if (qcResult == QuickCheckResult.No)
                     {
                         return qcResult;
@@ -599,7 +600,7 @@ namespace ICU4N.Text
                 {
                     int yesLimit =
                         prevSpanLimit +
-                        norm2.SpanQuickCheckYes(s.SubSequence(prevSpanLimit, spanLimit));
+                        norm2.SpanQuickCheckYes(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
                     if (yesLimit < spanLimit)
                     {
                         return yesLimit;
@@ -644,7 +645,7 @@ namespace ICU4N.Text
                 {
                     int yesLimit =
                         prevSpanLimit +
-                        norm2.SpanQuickCheckYes(s.SubSequence(prevSpanLimit, spanLimit));
+                        norm2.SpanQuickCheckYes(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
                     if (yesLimit < spanLimit)
                     {
                         return yesLimit;
@@ -689,7 +690,7 @@ namespace ICU4N.Text
                 {
                     int yesLimit =
                         prevSpanLimit +
-                        norm2.SpanQuickCheckYes(s.SubSequence(prevSpanLimit, spanLimit));
+                        norm2.SpanQuickCheckYes(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
                     if (yesLimit < spanLimit)
                     {
                         return yesLimit;
@@ -734,7 +735,7 @@ namespace ICU4N.Text
                 {
                     int yesLimit =
                         prevSpanLimit +
-                        norm2.SpanQuickCheckYes(s.SubSequence(prevSpanLimit, spanLimit));
+                        norm2.SpanQuickCheckYes(s.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit)); // ICU4N: Corrected 2nd parameter
                     if (yesLimit < spanLimit)
                     {
                         return yesLimit;
@@ -778,7 +779,7 @@ namespace ICU4N.Text
                         {
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
-                            dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
+                            dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -824,7 +825,7 @@ namespace ICU4N.Text
                         {
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
-                            dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
+                            dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -870,7 +871,7 @@ namespace ICU4N.Text
                         {
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
-                            dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
+                            dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -916,7 +917,7 @@ namespace ICU4N.Text
                         {
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
-                            dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
+                            dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -952,7 +953,7 @@ namespace ICU4N.Text
                     {
                         if (spanLength != 0)
                         {
-                            dest.Append(src, prevSpanLimit, spanLimit);
+                            dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
                         }
                         spanCondition = SpanCondition.Simple;
                     }
@@ -962,7 +963,7 @@ namespace ICU4N.Text
                         {
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
-                            dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
+                            dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -998,7 +999,7 @@ namespace ICU4N.Text
                     {
                         if (spanLength != 0)
                         {
-                            dest.Append(src, prevSpanLimit, spanLimit);
+                            dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
                         }
                         spanCondition = SpanCondition.Simple;
                     }
@@ -1008,7 +1009,7 @@ namespace ICU4N.Text
                         {
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
-                            dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
+                            dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -1044,7 +1045,7 @@ namespace ICU4N.Text
                     {
                         if (spanLength != 0)
                         {
-                            dest.Append(src, prevSpanLimit, spanLimit);
+                            dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
                         }
                         spanCondition = SpanCondition.Simple;
                     }
@@ -1054,7 +1055,7 @@ namespace ICU4N.Text
                         {
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
-                            dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
+                            dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -1090,7 +1091,7 @@ namespace ICU4N.Text
                     {
                         if (spanLength != 0)
                         {
-                            dest.Append(src, prevSpanLimit, spanLimit);
+                            dest.Append(src, prevSpanLimit, spanLimit - prevSpanLimit); // ICU4N: Changed 3rd parameter
                         }
                         spanCondition = SpanCondition.Simple;
                     }
@@ -1100,7 +1101,7 @@ namespace ICU4N.Text
                         {
                             // Not norm2.normalizeSecondAndAppend() because we do not want
                             // to modify the non-filter part of dest.
-                            dest.Append(norm2.Normalize(src.SubSequence(prevSpanLimit, spanLimit), tempDest));
+                            dest.Append(norm2.Normalize(src.Subsequence(prevSpanLimit, spanLimit - prevSpanLimit), tempDest)); // ICU4N: Changed 2nd parameter
                         }
                         spanCondition = SpanCondition.NotContained;
                     }
@@ -1132,7 +1133,7 @@ namespace ICU4N.Text
             int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
             if (prefixLimit != 0)
             {
-                ICharSequence prefix = second.SubSequence(0, prefixLimit);
+                ICharSequence prefix = second.Subsequence(0, prefixLimit - 0); // ICU4N: Checked 2nd parameter
                 int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
                 if (suffixStart == 0)
                 {
@@ -1148,7 +1149,7 @@ namespace ICU4N.Text
                 else
                 {
                     StringBuilder middle = new StringBuilder(
-                            first.ToString(suffixStart, first.Length - suffixStart));
+                            first.ToString(suffixStart, first.Length - suffixStart)); // ICU4N: Changed 2nd parameter
                     if (doNormalize)
                     {
                         norm2.NormalizeSecondAndAppend(middle, prefix);
@@ -1162,7 +1163,7 @@ namespace ICU4N.Text
             }
             if (prefixLimit < second.Length)
             {
-                ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
+                ICharSequence rest = second.Subsequence(prefixLimit, second.Length - prefixLimit); // ICU4N: Corrected 2nd parameter
                 if (doNormalize)
                 {
                     Normalize(rest, first, SpanCondition.NotContained);
@@ -1197,7 +1198,7 @@ namespace ICU4N.Text
             int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
             if (prefixLimit != 0)
             {
-                ICharSequence prefix = second.SubSequence(0, prefixLimit);
+                ICharSequence prefix = second.Subsequence(0, prefixLimit - 0); // ICU4N: Checked 2nd parameter
                 int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
                 if (suffixStart == 0)
                 {
@@ -1213,7 +1214,7 @@ namespace ICU4N.Text
                 else
                 {
                     StringBuilder middle = new StringBuilder(
-                            first.ToString(suffixStart, first.Length - suffixStart));
+                            first.ToString(suffixStart, first.Length - suffixStart)); // ICU4N: Changed 2nd parameter
                     if (doNormalize)
                     {
                         norm2.NormalizeSecondAndAppend(middle, prefix);
@@ -1227,7 +1228,7 @@ namespace ICU4N.Text
             }
             if (prefixLimit < second.Length)
             {
-                ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
+                ICharSequence rest = second.Subsequence(prefixLimit, second.Length - prefixLimit); // ICU4N: Corrected 2nd parameter
                 if (doNormalize)
                 {
                     Normalize(rest, first, SpanCondition.NotContained);
@@ -1258,7 +1259,7 @@ namespace ICU4N.Text
             int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
             if (prefixLimit != 0)
             {
-                ICharSequence prefix = second.SubSequence(0, prefixLimit);
+                ICharSequence prefix = second.Subsequence(0, prefixLimit - 0); // ICU4N: Checked 2nd parameter
                 int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
                 if (suffixStart == 0)
                 {
@@ -1274,7 +1275,7 @@ namespace ICU4N.Text
                 else
                 {
                     StringBuilder middle = new StringBuilder(
-                            first.ToString(suffixStart, first.Length - suffixStart));
+                            first.ToString(suffixStart, first.Length - suffixStart)); // ICU4N: Changed 2nd parameter
                     if (doNormalize)
                     {
                         norm2.NormalizeSecondAndAppend(middle, prefix);
@@ -1288,7 +1289,7 @@ namespace ICU4N.Text
             }
             if (prefixLimit < second.Length)
             {
-                ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
+                ICharSequence rest = second.Subsequence(prefixLimit, second.Length - prefixLimit); // ICU4N: Corrected 2nd parameter
                 if (doNormalize)
                 {
                     Normalize(rest, first, SpanCondition.NotContained);
@@ -1304,7 +1305,7 @@ namespace ICU4N.Text
         private StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second,
                                                        bool doNormalize)
         {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).StringBuilder == first)
+            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
             {
                 throw new ArgumentException("'first' cannot be the same StringBuilder instance as 'second'");
             }
@@ -1323,7 +1324,7 @@ namespace ICU4N.Text
             int prefixLimit = set.Span(second, 0, SpanCondition.Simple);
             if (prefixLimit != 0)
             {
-                ICharSequence prefix = second.SubSequence(0, prefixLimit);
+                ICharSequence prefix = second.Subsequence(0, prefixLimit - 0); // ICU4N: Checked 2nd parameter
                 int suffixStart = set.SpanBack(first, 0x7fffffff, SpanCondition.Simple);
                 if (suffixStart == 0)
                 {
@@ -1339,7 +1340,7 @@ namespace ICU4N.Text
                 else
                 {
                     StringBuilder middle = new StringBuilder(
-                            first.ToString(suffixStart, first.Length - suffixStart));
+                            first.ToString(suffixStart, first.Length - suffixStart)); // ICU4N: Changed 2nd parameter
                     if (doNormalize)
                     {
                         norm2.NormalizeSecondAndAppend(middle, prefix);
@@ -1353,7 +1354,7 @@ namespace ICU4N.Text
             }
             if (prefixLimit < second.Length)
             {
-                ICharSequence rest = second.SubSequence(prefixLimit, second.Length);
+                ICharSequence rest = second.Subsequence(prefixLimit, second.Length - prefixLimit); // ICU4N: Corrected 2nd parameter
                 if (doNormalize)
                 {
                     Normalize(rest, first, SpanCondition.NotContained);

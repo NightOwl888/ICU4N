@@ -1,16 +1,18 @@
 ﻿using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using StringBuffer = System.Text.StringBuilder;
+using Random = System.Random;
 
 namespace ICU4N.Dev.Test
 {

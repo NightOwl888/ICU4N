@@ -6,10 +6,10 @@
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-using ICU4N.Support;
-using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.IO;
 using System.Text;
@@ -44,7 +44,7 @@ namespace ICU4N.Impl
 
         internal override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
         {
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).StringBuilder == dest)
+            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
@@ -66,7 +66,7 @@ namespace ICU4N.Impl
 
         internal override IAppendable Normalize(StringBuilder src, IAppendable dest)
         {
-            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).StringBuilder == src)
+            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
@@ -95,7 +95,7 @@ namespace ICU4N.Impl
         internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
         {
             if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
-                && ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
+                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
@@ -130,7 +130,7 @@ namespace ICU4N.Impl
 
         internal override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second)
         {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).StringBuilder == first)
+            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
             }
@@ -158,7 +158,7 @@ namespace ICU4N.Impl
 
         internal override StringBuilder Append(StringBuilder first, ICharSequence second)
         {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).StringBuilder == first)
+            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
             }
@@ -221,7 +221,7 @@ namespace ICU4N.Impl
 
         internal override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
         {
-            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).StringBuilder == dest)
+            if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
@@ -240,7 +240,7 @@ namespace ICU4N.Impl
 
         internal override IAppendable Normalize(StringBuilder src, IAppendable dest)
         {
-            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).StringBuilder == src)
+            if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
@@ -261,7 +261,7 @@ namespace ICU4N.Impl
         internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
         {
             if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
-                && ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
+                && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
             {
                 throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
             }
@@ -349,7 +349,7 @@ namespace ICU4N.Impl
 
         internal virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second, bool doNormalize)
         {
-            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).StringBuilder == first)
+            if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
             {
                 throw new ArgumentException($"'{nameof(first)}' cannot be the same instance as '{nameof(second)}'");
             }

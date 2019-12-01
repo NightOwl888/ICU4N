@@ -1,8 +1,9 @@
 ﻿using ICU4N.Globalization;
-using ICU4N.Support;
 using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N;
+using J2N.Text;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -578,7 +579,7 @@ namespace ICU4N.Impl.Coll
                 }
             }
             int ce32 = Collation.UNASSIGNED_CE32;
-            if ((!nfdPrefix.String.ContentEquals(prefix) || !nfdString.String.ContentEquals(str)) &&
+            if ((!nfdPrefix.Value.ContentEquals(prefix) || !nfdString.Value.ContentEquals(str)) &&
                     !IgnorePrefix(prefix) && !IgnoreString(str))
             {
                 // Map from the original input to the CEs.
@@ -1048,7 +1049,7 @@ namespace ICU4N.Impl.Coll
             UnicodeSet composites = new UnicodeSet();
             if (!nfcImpl.GetCanonStartSet(lastStarter, composites)) { return; }
 
-            StringBuilderCharSequence newNFDString = new StringBuilderCharSequence(), newString = new StringBuilderCharSequence();
+            StringBuilderCharSequence newNFDString = new StringBuilderCharSequence(new StringBuilder()), newString = new StringBuilderCharSequence(new StringBuilder());
             long[] newCEs = new long[Collation.MAX_EXPANSION_LENGTH];
             UnicodeSetIterator iter = new UnicodeSetIterator(composites);
             while (iter.Next())
@@ -1057,7 +1058,7 @@ namespace ICU4N.Impl.Coll
                 int composite = iter.Codepoint;
                 string decomp = nfd.GetDecomposition(composite);
                 if (!MergeCompositeIntoString(nfdString, indexAfterLastStarter, composite, decomp,
-                        newNFDString.StringBuilder, newString.StringBuilder))
+                        newNFDString.Value, newString.Value))
                 {
                     continue;
                 }
@@ -1256,14 +1257,11 @@ namespace ICU4N.Impl.Coll
         {
             ICharSequence prefix = new StringCharSequence("");  // empty
             UnicodeSetIterator iter = new UnicodeSetIterator(COMPOSITES);
-            // ICU4N: reusable ICharSequence wrapper to pass strings as ICharSequence 
-            StringCharSequence wrapper = new StringCharSequence("");
             while (iter.Next())
             {
                 Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 string nfdString = nfd.GetDecomposition(iter.Codepoint);
-                wrapper.String = nfdString;
-                cesLength = dataBuilder.GetCEs(wrapper, ces, 0);
+                cesLength = dataBuilder.GetCEs(nfdString.ToCharSequence(), ces, 0);
                 if (cesLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     // Too many CEs from the decomposition (unusual), ignore this composite.
@@ -1272,8 +1270,7 @@ namespace ICU4N.Impl.Coll
                     continue;
                 }
                 string composite = iter.GetString();
-                wrapper.String = composite;
-                AddIfDifferent(prefix, wrapper, ces, cesLength, Collation.UNASSIGNED_CE32);
+                AddIfDifferent(prefix, composite.ToCharSequence(), ces, cesLength, Collation.UNASSIGNED_CE32);
             }
         }
 
