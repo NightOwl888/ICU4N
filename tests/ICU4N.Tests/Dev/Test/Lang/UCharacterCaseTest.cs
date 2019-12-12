@@ -1403,7 +1403,7 @@ namespace ICU4N.Dev.Test.Lang
                     edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     lowerExpectedChanges, true);
 
-            sb.Delete(0, sb.Length);
+            sb.Delete(0, sb.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
             edits.Reset();
             sb = CaseMap.ToUpper().OmitUnchangedText().Apply(GREEK_LOCALE_, "Πατάτα", sb, edits);
             assertEquals("toUpper(Πατάτα)", "ΑΤΑΤΑ", sb.ToString());
@@ -1419,7 +1419,7 @@ namespace ICU4N.Dev.Test.Lang
                     edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     upperExpectedChanges, true);
 
-            sb.Delete(0, sb.Length);
+            sb.Delete(0, sb.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
             edits.Reset();
             sb = CaseMap.ToTitle().OmitUnchangedText().NoBreakAdjustment().NoLowercase().Apply(
                     DUTCH_LOCALE_, null, "IjssEL IglOo", sb, edits);
@@ -1433,7 +1433,7 @@ namespace ICU4N.Dev.Test.Lang
                     edits.GetFineEnumerator(), edits.GetFineEnumerator(),
                     titleExpectedChanges, true);
 
-            sb.Delete(0, sb.Length);
+            sb.Delete(0, sb.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
             edits.Reset();
             sb = CaseMap.ToFold().OmitUnchangedText().Turkic().Apply("IßtanBul", sb, edits);
             assertEquals("fold(IßtanBul)", "ıssb", sb.ToString());

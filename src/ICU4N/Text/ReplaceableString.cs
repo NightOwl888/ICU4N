@@ -144,29 +144,29 @@ namespace ICU4N.Text
         /// Replace zero or more characters with new characters.
         /// <see cref="IReplaceable"/> API.
         /// </summary>
-        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
-        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
-        /// <param name="text">The text to replace characters <c><paramref name="start"/></c> to <c><paramref name="limit"/> - 1</c>.</param>
+        /// <param name="startIndex">The beginning index, inclusive; <c>0 &lt;= <paramref name="startIndex"/></c>.</param>
+        /// <param name="count">The number of characters to replace; <c>0 &lt;= <paramref name="count"/></c>.</param>
+        /// <param name="text">The text to replace characters beginning at <paramref name="startIndex"/>.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual void Replace(int start, int limit, string text)
+        public virtual void Replace(int startIndex, int count, string text) // ICU4N: Made 2nd parameter into count rather than limit
         {
-            buf.Replace(start, limit, text);
+            buf.Replace(startIndex, count, text);
         }
 
         /// <summary>
         /// Replace a substring of this object with the given text.
         /// </summary>
-        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
-        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
-        /// <param name="chars">The text to replace characters <paramref name="start"/> to <c><paramref name="limit"/> - 1</c></param>
-        /// <param name="charsStart">The beginning index into <paramref name="chars"/>, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="startIndex">The beginning index, inclusive; <c>0 &lt;= <paramref name="startIndex"/></c>.</param>
+        /// <param name="count">The number of characters to replace; <c>0 &lt;= <paramref name="count"/></c>.</param>
+        /// <param name="chars">The text to replace characters <paramref name="startIndex"/> to <c><paramref name="count"/> - 1</c></param>
+        /// <param name="charsStart">The beginning index into <paramref name="chars"/>, inclusive; <c>0 &lt;= <paramref name="startIndex"/></c>.</param>
         /// <param name="charsLen">The number of characters of <paramref name="chars"/>.</param>
         /// <stable>ICU 2.0</stable>
-        public virtual void Replace(int start, int limit, char[] chars,
-                        int charsStart, int charsLen)
+        public virtual void Replace(int startIndex, int count, char[] chars,
+                        int charsStart, int charsLen) // ICU4N: Made 2nd parameter into count rather than limit
         {
-            buf.Delete(start, limit);
-            buf.Insert(start, chars, charsStart, charsLen);
+            buf.Delete(startIndex, count);
+            buf.Insert(startIndex, chars, charsStart, charsLen);
         }
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace ICU4N.Text
             char[] text = new char[limit - start];
             //getChars(start, limit, text, 0);
             CopyTo(start, text, 0, limit - start);
-            Replace(dest, dest, text, 0, limit - start);
+            Replace(dest, dest - dest, text, 0, limit - start); // ICU4N: Corrected 2nd Replace parameter
         }
 
         /// <summary>

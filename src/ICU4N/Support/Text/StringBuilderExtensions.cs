@@ -371,84 +371,170 @@ namespace ICU4N.Support.Text
                 throw new IndexOutOfRangeException(
                     "start " + start + ", length " + count + ", csq.Length "
                     + csq.Length);
-            int end = start + count;
-            for (int i = start; i < end; i++)
-                text.Append(csq[i]);
-            return text;
-        }
+            //int end = start + count;
+            text.Append(csq.ToString(start, count));
 
-        internal static StringBuilder Delete(this StringBuilder text, int start, int end)
-        {
-            if (start < 0)
-                throw new IndexOutOfRangeException(nameof(start));
-
-            int length = end - start;
-            if (start + length > text.Length)
-            {
-                length = text.Length - start;
-            }
-            if (length > 0)
-            {
-                text.Remove(start, length);
-            }
-
+            //for (int i = start; i < end; i++)
+            //    text.Append(csq[i]);
             return text;
         }
 
         /// <summary>
-        /// Replaces the specified subsequence in this builder with the specified
-        /// string.
+        /// Deletes a sequence of characters specified by <paramref name="startIndex"/> and <paramref name="count"/>.
+        /// Shifts any remaining characters to the left.
         /// </summary>
-        /// <param name="text">this builder.</param>
-        /// <param name="start">the inclusive begin index.</param>
-        /// <param name="end">the exclusive end index.</param>
-        /// <param name="str">the replacement string.</param>
-        /// <returns>this builder.</returns>
-        /// <exception cref="IndexOutOfRangeException">
-        /// if <paramref name="start"/> is negative, greater than the current
-        /// <see cref="StringBuilder.Length"/> or greater than <paramref name="end"/>.
+        /// <param name="text">This <see cref="StringBuilder"/>.</param>
+        /// <param name="startIndex">The start index in <paramref name="text"/>.</param>
+        /// <param name="count">The number of characters to delete in <paramref name="text"/>.</param>
+        /// <returns>This <see cref="StringBuilder"/>, for chaining.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="startIndex"/> or <paramref name="count"/> is less than zero.
         /// </exception>
-        /// <exception cref="ArgumentNullException">if <paramref name="str"/> is <c>null</c>.</exception>
-        public static StringBuilder Replace(this StringBuilder text, int start, int end, string str)
+        /// <exception cref="ArgumentNullException">If <paramref name="text"/> is <c>null</c>.</exception>
+        public static StringBuilder Delete(this StringBuilder text, int startIndex, int count) // ICU4N TODO: Replace with Remove(int, int) and calculate end
         {
-            if (str == null)
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+            if (startIndex < 0)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+
+            //int length = end - start;
+            if (startIndex + count > text.Length)
             {
-                throw new ArgumentNullException(nameof(str));
+                count = text.Length - startIndex;
             }
-            if (start >= 0)
+            if (count > 0)
             {
-                if (end > text.Length)
-                {
-                    end = text.Length;
-                }
-                if (end > start)
-                {
-                    int stringLength = str.Length;
-                    int diff = end - start - stringLength;
-                    if (diff > 0)
-                    { // replacing with fewer characters
-                        text.Remove(start, diff);
-                    }
-                    else if (diff < 0)
-                    {
-                        // replacing with more characters...need some room
-                        text.Insert(start, new char[-diff]);
-                    }
-                    // copy the chars based on the new length
-                    for (int i = 0; i < stringLength; i++)
-                    {
-                        text[i + start] = str[i];
-                    }
-                    return text;
-                }
-                if (start == end)
-                {
-                    
-                    text.Insert(start, str);
-                    return text;
-                }
+                text.Remove(startIndex, count);
             }
-            throw new IndexOutOfRangeException();
+
+            return text;
+        }
+
+        ///// <summary>
+        ///// Replaces the specified subsequence in this builder with the specified
+        ///// string.
+        ///// </summary>
+        ///// <param name="text">this builder.</param>
+        ///// <param name="start">the inclusive begin index.</param>
+        ///// <param name="end">the exclusive end index.</param>
+        ///// <param name="str">the replacement string.</param>
+        ///// <returns>this builder.</returns>
+        ///// <exception cref="IndexOutOfRangeException">
+        ///// if <paramref name="start"/> is negative, greater than the current
+        ///// <see cref="StringBuilder.Length"/> or greater than <paramref name="end"/>.
+        ///// </exception>
+        ///// <exception cref="ArgumentNullException">if <paramref name="str"/> is <c>null</c>.</exception>
+        //public static StringBuilder Replace(this StringBuilder text, int start, int end, string str) // ICU4N TODO: Use the built-in replace, change the parameter order, and calculate end 
+        //{
+        //    if (str == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(str));
+        //    }
+        //    if (start >= 0)
+        //    {
+        //        if (end > text.Length)
+        //        {
+        //            end = text.Length;
+        //        }
+        //        if (end > start)
+        //        {
+        //            int stringLength = str.Length;
+        //            int diff = end - start - stringLength;
+        //            if (diff > 0)
+        //            { // replacing with fewer characters
+        //                text.Remove(start, diff);
+        //            }
+        //            else if (diff < 0)
+        //            {
+        //                // replacing with more characters...need some room
+        //                text.Insert(start, new char[-diff]);
+        //            }
+        //            // copy the chars based on the new length
+        //            for (int i = 0; i < stringLength; i++)
+        //            {
+        //                text[i + start] = str[i];
+        //            }
+        //            return text;
+        //        }
+        //        if (start == end)
+        //        {
+
+        //            text.Insert(start, str);
+        //            return text;
+        //        }
+        //    }
+        //    throw new IndexOutOfRangeException();
+        //}
+
+        /// <summary>
+        /// Replaces the specified subsequence in this builder with the specified
+        /// string, <paramref name="newValue"/>. The substring begins at the specified
+        /// <paramref name="startIndex"/> and ends to the character at 
+        /// <c><paramref name="count"/> - <paramref name="startIndex"/></c> or
+        /// to the end of the sequence if no such character exists. First the
+        /// characters in the substring ar removed and then the specified 
+        /// <paramref name="newValue"/> is inserted at <paramref name="startIndex"/>.
+        /// This <see cref="StringBuilder"/> will be lengthened to accommodate the
+        /// specified <paramref name="newValue"/> if necessary.
+        /// <para/>
+        /// IMPORTANT: This method has .NET semantics. That is, the third parameter is a count
+        /// rather than an exclusive end index. To translate from Java, use <c>end - start</c>
+        /// to resolve the <paramref name="count"/> parameter.
+        /// </summary>
+        /// <param name="text">This <see cref="StringBuilder"/>.</param>
+        /// <param name="startIndex">The inclusive begin index in <paramref name="text"/>.</param>
+        /// <param name="count">The number of characters to replace.</param>
+        /// <param name="newValue">The replacement string.</param>
+        /// <returns>This <see cref="StringBuilder"/> builder.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="startIndex"/> or <paramref name="count"/> is less than zero.
+        /// </exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="text"/> or <paramref name="newValue"/> is <c>null</c>.</exception>
+        public static StringBuilder Replace(this StringBuilder text, int startIndex, int count, string newValue)
+        {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+            if (newValue == null)
+                throw new ArgumentNullException(nameof(newValue));
+            if (startIndex < 0)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            if (count < 0)
+                throw new ArgumentOutOfRangeException(nameof(count));
+
+            int end = startIndex + count;
+            if (end > text.Length)
+            {
+                end = text.Length;
+            }
+            if (end > startIndex)
+            {
+                int stringLength = newValue.Length;
+                int diff = end - startIndex - stringLength;
+                if (diff > 0)
+                { // replacing with fewer characters
+                    text.Remove(startIndex, diff);
+                }
+                else if (diff < 0)
+                {
+                    // replacing with more characters...need some room
+                    text.Insert(startIndex, new char[-diff]);
+                }
+                // copy the chars based on the new length
+                for (int i = 0; i < stringLength; i++)
+                {
+                    text[i + startIndex] = newValue[i];
+                }
+                return text;
+            }
+            if (startIndex == end)
+            {
+                text.Insert(startIndex, newValue);
+                return text;
+            }
+            return text;
         }
 
         /// <summary>

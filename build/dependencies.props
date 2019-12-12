@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup Label="NuGet Package Reference Versions">
-    <J2NPackageReferenceVersion>1.0.0-alpha-0015</J2NPackageReferenceVersion>
+    <J2NPackageReferenceVersion>1.0.0-alpha-0017</J2NPackageReferenceVersion>
     <MicrosoftCSharpPackageReferenceVersion>4.4.0</MicrosoftCSharpPackageReferenceVersion>
     <MicrosoftNETTestSdkPackageReferenceVersion>16.1.1</MicrosoftNETTestSdkPackageReferenceVersion>
     <NerdBankGitVersioningPackageReferenceVersion>[2.3.183]</NerdBankGitVersioningPackageReferenceVersion>

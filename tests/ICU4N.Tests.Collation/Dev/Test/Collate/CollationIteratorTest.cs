@@ -544,7 +544,7 @@ namespace ICU4N.Dev.Test.Collate
             CollationTest.BackAndForth(this, iter);
             for (codepoint = (char)1; codepoint < 0xFFFE;)
             {
-                source.Delete(0, source.Length);
+                source.Delete(0, source.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
                 while (codepoint % 0xFF != 0)
                 {
                     if (UChar.IsDefined(codepoint))
@@ -605,7 +605,7 @@ namespace ICU4N.Dev.Test.Collate
             CollationTest.BackAndForth(this, iter);
             for (char codepoint = (char)0x1; codepoint < 0xfffe;)
             {
-                source.Delete(0, source.Length);
+                source.Delete(0, source.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
                 while (codepoint % 0xFF != 0)
                 {
                     if (UChar.IsDefined(codepoint))

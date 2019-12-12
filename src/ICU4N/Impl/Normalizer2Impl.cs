@@ -210,7 +210,7 @@ namespace ICU4N.Impl
         public void RemoveSuffix(int suffixLength)
         {
             int oldLength = str.Length;
-            str.Delete(oldLength - suffixLength, oldLength);
+            str.Delete(oldLength - suffixLength, suffixLength); // ICU4N: Corrected 2nd parameter
             lastCC = 0;
             reorderStart = str.Length;
         }
@@ -1487,7 +1487,7 @@ namespace ICU4N.Impl
                                 //sb.setCharAt(starter, syllable);
                                 sb[starter] = syllable;
                                 // remove the Jamo V/T
-                                sb.Delete(pRemove, p);
+                                sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                                 p = pRemove;
                             }
                         }
@@ -1511,7 +1511,7 @@ namespace ICU4N.Impl
 
                         // Remove the combining mark.
                         pRemove = p - Character.CharCount(c);  // pRemove & p: start & limit of the combining mark
-                        sb.Delete(pRemove, p);
+                        sb.Delete(pRemove, p - pRemove); // ICU4N: Corrected 2nd parameter
                         p = pRemove;
                         // Replace the starter with the composite.
                         if (starterIsSupplementary)

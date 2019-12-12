@@ -197,7 +197,7 @@ namespace ICU4N.Impl
             IDNAInfo info)
         {
             // Arguments are fine, reset output values.
-            dest.Delete(0, 0x7fffffff);
+            dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter
 #pragma warning disable 612, 618
             ResetInfo(info);
 #pragma warning restore 612, 618
@@ -325,7 +325,7 @@ namespace ICU4N.Impl
                 throw new ArgumentException();
             }
             // Arguments are fine, reset output values.
-            dest.Delete(0, 0x7fffffff);
+            dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter
 #pragma warning disable 612, 618
             ResetInfo(info);
 #pragma warning restore 612, 618
@@ -446,7 +446,7 @@ namespace ICU4N.Impl
             IDNAInfo info)
         {
             // Arguments are fine, reset output values.
-            dest.Delete(0, 0x7fffffff);
+            dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter
 #pragma warning disable 612, 618
             ResetInfo(info);
 #pragma warning restore 612, 618
@@ -574,7 +574,7 @@ namespace ICU4N.Impl
                 throw new ArgumentException();
             }
             // Arguments are fine, reset output values.
-            dest.Delete(0, 0x7fffffff);
+            dest.Delete(0, 0x7fffffff - 0); // ICU4N: Corrected 2nd parameter
 #pragma warning disable 612, 618
             ResetInfo(info);
 #pragma warning restore 612, 618
@@ -970,8 +970,8 @@ namespace ICU4N.Impl
             string label, int labelLength)
         {
             {
-                dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
-                // or dest.Replace(destLabelStart, destLabelStart+destLabelLength, label.ToString());
+                dest.Delete(destLabelStart, destLabelLength).Insert(destLabelStart, label); // ICU4N: Corrected 2nd parameter of Delete
+                // or dest.Replace(destLabelStart, destLabelLength, label.ToString());
                 // which would create a String rather than moving characters in the StringBuilder.
             }
             return labelLength;
@@ -987,8 +987,8 @@ namespace ICU4N.Impl
         {
             if (label != dest)
             {
-                dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
-                // or dest.Replace(destLabelStart, destLabelStart+destLabelLength, label.ToString());
+                dest.Delete(destLabelStart, destLabelLength).Insert(destLabelStart, label); // ICU4N: Corrected 2nd parameter of Delete
+                // or dest.Replace(destLabelStart, destLabelLength, label.ToString());
                 // which would create a String rather than moving characters in the StringBuilder.
             }
             return labelLength;
@@ -1003,8 +1003,8 @@ namespace ICU4N.Impl
             char[] label, int labelLength)
         {
             {
-                dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
-                // or dest.Replace(destLabelStart, destLabelStart+destLabelLength, label.ToString());
+                dest.Delete(destLabelStart, destLabelLength).Insert(destLabelStart, label); // ICU4N: Corrected 2nd parameter of Delete
+                // or dest.Replace(destLabelStart, destLabelLength, label.ToString());
                 // which would create a String rather than moving characters in the StringBuilder.
             }
             return labelLength;
@@ -1020,8 +1020,8 @@ namespace ICU4N.Impl
         {
             if (label is StringBuilderCharSequence && dest != ((StringBuilderCharSequence)label).Value)
             {
-                dest.Delete(destLabelStart, destLabelStart + destLabelLength).Insert(destLabelStart, label);
-                // or dest.Replace(destLabelStart, destLabelStart+destLabelLength, label.ToString());
+                dest.Delete(destLabelStart, destLabelLength).Insert(destLabelStart, label); // ICU4N: Corrected 2nd parameter of Delete
+                // or dest.Replace(destLabelStart, destLabelLength, label.ToString());
                 // which would create a String rather than moving characters in the StringBuilder.
             }
             return labelLength;

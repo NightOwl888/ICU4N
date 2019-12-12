@@ -233,7 +233,7 @@ namespace ICU4N.Text
                             {
                                 // At this point, we have a match
                                 string str = UTF16.ValueOf(u);
-                                text.Replace(start, s, str);
+                                text.Replace(start, s - start, str); // ICU4N: Corrected 2nd parameter
                                 limit -= s - start - str.Length;
                                 // The following break statement leaves the
                                 // loop that is traversing the forms in

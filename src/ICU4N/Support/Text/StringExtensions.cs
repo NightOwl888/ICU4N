@@ -153,10 +153,12 @@ namespace ICU4N.Support.Text
         /// <param name="start">the starting offset in the specified string.</param>
         /// <param name="length">the number of characters to compare.</param>
         /// <returns><c>true</c> if the ranges of characters are equal, <c>false</c> otherwise.</returns>
-        /// <exception cref="ArgumentNullException">if <paramref name="str"/> is <c>null</c></exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="seq"/> or <paramref name="str"/> is <c>null</c></exception>
         internal static bool RegionMatches(this string seq, int thisStart, string str, int start,
             int length)
         {
+            if (seq == null)
+                throw new ArgumentNullException(nameof(seq));
             if (str == null)
                 throw new ArgumentNullException(nameof(str));
 
@@ -172,15 +174,18 @@ namespace ICU4N.Support.Text
             {
                 return true;
             }
-            int o1 = /*offset +*/ thisStart, o2 = /*str.offset +*/ start;
-            for (int i = 0; i < length; ++i)
-            {
-                if (seq[o1 + i] != str[o2 + i])
-                {
-                    return false;
-                }
-            }
-            return true;
+            string sub2 = str.Substring(start, length);
+            return seq.IndexOf(sub2, thisStart, length, StringComparison.Ordinal) == thisStart;
+
+            //int o1 = /*offset +*/ thisStart, o2 = /*str.offset +*/ start;
+            //for (int i = 0; i < length; ++i)
+            //{
+            //    if (seq[o1 + i] != str[o2 + i])
+            //    {
+            //        return false;
+            //    }
+            //}
+            //return true;
         }
 
         /// <summary>
@@ -259,12 +264,17 @@ namespace ICU4N.Support.Text
         /// offset, to determine if the specified string is a prefix.
         /// </summary>
         /// <param name="text">This string.</param>
-        /// <param name="prefix">the string to look for.</param>
-        /// <param name="start">the starting offset.</param>
+        /// <param name="prefix">The string to look for.</param>
+        /// <param name="start">The starting offset.</param>
         /// <returns><c>true</c> if the specified string occurs in this string at the specified offset, <c>false</c> otherwise.</returns>
-        /// <exception cref="ArgumentNullException">If <paramref name="prefix"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">If <paramref name="text"/> or <paramref name="prefix"/> is <c>null</c>.</exception>
         public static bool StartsWith(this string text, string prefix, int start)
         {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+            if (prefix == null)
+                throw new ArgumentNullException(nameof(prefix));
+
             return RegionMatches(text, start, prefix, 0, prefix.Length);
         }
 

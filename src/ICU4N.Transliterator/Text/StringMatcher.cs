@@ -288,7 +288,7 @@ namespace ICU4N.Text
                 }
             }
 
-            text.Replace(start, limit, ""); // delete original text
+            text.Replace(start, limit - start, ""); // delete original text // ICU4N: Corrected 2nd parameter
 
             return outLen;
         }

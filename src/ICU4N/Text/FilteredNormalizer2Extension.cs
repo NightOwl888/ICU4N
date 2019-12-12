@@ -1158,7 +1158,7 @@ namespace ICU4N.Text
                     {
                         norm2.Append(middle, prefix);
                     }
-                    first.Delete(suffixStart, 0x7fffffff).Append(middle);
+                    first.Delete(suffixStart, 0x7fffffff - suffixStart).Append(middle); // ICU4N: Corrected 2nd parameter of Delete
                 }
             }
             if (prefixLimit < second.Length)
@@ -1223,7 +1223,7 @@ namespace ICU4N.Text
                     {
                         norm2.Append(middle, prefix);
                     }
-                    first.Delete(suffixStart, 0x7fffffff).Append(middle);
+                    first.Delete(suffixStart, 0x7fffffff - suffixStart).Append(middle); // ICU4N: Corrected 2nd parameter of Delete
                 }
             }
             if (prefixLimit < second.Length)
@@ -1284,7 +1284,7 @@ namespace ICU4N.Text
                     {
                         norm2.Append(middle, prefix);
                     }
-                    first.Delete(suffixStart, 0x7fffffff).Append(middle);
+                    first.Delete(suffixStart, 0x7fffffff - suffixStart).Append(middle); // ICU4N: Corrected 2nd parameter of Delete
                 }
             }
             if (prefixLimit < second.Length)
@@ -1349,7 +1349,7 @@ namespace ICU4N.Text
                     {
                         norm2.Append(middle, prefix);
                     }
-                    first.Delete(suffixStart, 0x7fffffff).Append(middle);
+                    first.Delete(suffixStart, 0x7fffffff - suffixStart).Append(middle); // ICU4N: Corrected 2nd parameter of Delete
                 }
             }
             if (prefixLimit < second.Length)

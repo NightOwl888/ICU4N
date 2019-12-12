@@ -133,7 +133,7 @@ namespace ICU4N.Text
                                 cursor++; // advance over CLOSE_DELIM
 
                                 string str = UTF16.ValueOf(c);
-                                text.Replace(openPos, cursor, str);
+                                text.Replace(openPos, cursor - openPos, str); // ICU4N: Corrected 2nd parameter
 
                                 // Adjust indices for the change in the length of
                                 // the string.  Do not assume that str.length() ==

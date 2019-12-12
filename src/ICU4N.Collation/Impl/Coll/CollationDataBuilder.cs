@@ -1335,7 +1335,7 @@ namespace ICU4N.Impl.Coll
                 }
                 else
                 {
-                    prefix.Delete(0, 1);  // Remove the length unit.
+                    prefix.Delete(0, 1 - 0);  // Remove the length unit. // ICU4N: Corrected 2nd parameter
                     prefix.Reverse();
                     prefixBuilder.Add(prefix, ce32);
                     if (cond.Next < 0) { break; }

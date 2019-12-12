@@ -1611,7 +1611,7 @@ namespace ICU4N.Impl
                             quoteBuf[1] == APOSTROPHE)
                     {
                         rule.Append(BACKSLASH).Append(APOSTROPHE);
-                        quoteBuf.Delete(0, 2);
+                        quoteBuf.Delete(0, 2 - 0); // ICU4N: Corrected 2nd parameter
                     }
                     // If the last thing in the quoteBuf is APOSTROPHE
                     // (doubled) then remove and count it and add it after.

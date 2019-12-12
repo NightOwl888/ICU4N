@@ -179,7 +179,7 @@ namespace ICU4N.Impl
                     case 0x200c:  // Ignore/remove ZWNJ.
                     case 0x200d:  // Ignore/remove ZWJ.
                         didMapDevChars = true;
-                        dest.Delete(i, i + 1);
+                        dest.Delete(i, 1); // ICU4N: Corrected 2nd parameter
                         --length;
                         break;
                     default:
@@ -193,7 +193,7 @@ namespace ICU4N.Impl
                 // We could use either the NFC or the UTS #46 normalizer.
                 // By using the UTS #46 normalizer again, we avoid having to load a second .nrm data file.
                 string normalized = uts46Norm2.Normalize(dest.Subsequence(labelStart, dest.Length - labelStart)); // ICU4N: Corrected 2nd parameter
-                dest.Replace(labelStart, 0x7fffffff, normalized);
+                dest.Replace(labelStart, 0x7fffffff - labelStart, normalized); // ICU4N: Corrected 2nd parameter
                 return dest.Length;
             }
             return length;

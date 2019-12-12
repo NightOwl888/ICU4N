@@ -174,7 +174,7 @@ namespace ICU4N.Impl.Coll
                 // Note: UnicodeString.replace() pins pos to at most length().
                 int oldLength = oldBuffer.Length;
                 if (pos > oldLength) { pos = oldLength; }
-                oldBuffer.Delete(0, pos).Insert(0, newBuffer, 0, Math.Max(Math.Min(skipLengthAtMatch, newBuffer.Length), 0)); // ICU4N: Corrected 4th parameter
+                oldBuffer.Delete(0, pos - 0).Insert(0, newBuffer, 0, Math.Max(Math.Min(skipLengthAtMatch, newBuffer.Length), 0)); // ICU4N: Corrected 4th parameter of Insert and 2nd parameter of Delete
                 pos = 0;
             }
 

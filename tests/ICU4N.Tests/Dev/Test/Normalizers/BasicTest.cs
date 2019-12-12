@@ -2676,7 +2676,7 @@ namespace ICU4N.Dev.Test.Normalizers
             while (iter.Next())
             {
                 int c = iter.Codepoint;
-                s.Delete(0, 0x7fffffff).AppendCodePoint(c);
+                s.Delete(0, 0x7fffffff - 0).AppendCodePoint(c); // ICU4N: Corrected 2nd parameter of Delete
                 int cLength = s.Length;
                 int tccc = UChar.GetIntPropertyValue(c, UProperty.Trail_Canonical_Combining_Class);
                 for (int i = 0; i < numCombineBack; ++i)
@@ -2695,7 +2695,7 @@ namespace ICU4N.Dev.Test.Normalizers
                             skipSets[KC].Remove(c);
                             break;
                         }
-                        s.Delete(cLength, 0x7fffffff);
+                        s.Delete(cLength, 0x7fffffff - cLength); // ICU4N: Corrected 2nd parameter of Delete
                     }
                 }
             }
@@ -2756,13 +2756,13 @@ namespace ICU4N.Dev.Test.Normalizers
                     pattern = new StringBuilder(((UnicodeSet)skipSets[i].Clone()).RemoveAll(expectSets[i]).ToPattern(true));
                     s.Append(pattern);
 
-                    pattern.Delete(0, pattern.Length);
+                    pattern.Delete(0, pattern.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
                     s.Append("\n\nexpect-skip=");
                     pattern = new StringBuilder(((UnicodeSet)expectSets[i].Clone()).RemoveAll(skipSets[i]).ToPattern(true));
                     s.Append(pattern);
                     s.Append("\n\n");
 
-                    pattern.Delete(0, pattern.Length);
+                    pattern.Delete(0, pattern.Length - 0); // ICU4N: Corrected 2nd parameter of Delete
                     s.Append("\n\nintersection(expect,skip)=");
                     UnicodeSet intersection = ((UnicodeSet)expectSets[i].Clone()).RetainAll(skipSets[i]);
                     pattern = new StringBuilder(intersection.ToPattern(true));
@@ -3080,7 +3080,7 @@ namespace ICU4N.Dev.Test.Normalizers
             assertEquals("append()", "a\u0313á\u0313", fn2.Append(sb, second).ToString());
 
             // Same, and also normalize the second string.
-            sb.Replace(0, 0x7fffffff, "a\u0313a");
+            sb.Replace(0, 0x7fffffff - 0, "a\u0313a"); // ICU4N: Checked 2nd parameter
             assertEquals(
                 "normalizeSecondAndAppend()",
                 "a\u0313á\u0313", fn2.NormalizeSecondAndAppend(sb, second).ToString());

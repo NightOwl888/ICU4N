@@ -152,26 +152,27 @@ namespace ICU4N.Dev.Test.Translit
                 Chars.CopyTo(sourceIndex, destination, destinationIndex, count);
             }
 
-            public void Replace(int start, int limit, string text)
+            public void Replace(int startIndex, int count, string text)
             {
-                if (Substring(start, limit - start).Equals(text)) return; // NO ACTION! // ICU4N: Corrected 2nd substring parameter
-                if (DEBUG) Console.Out.Write(Utility.Escape(ToString() + " -> replace(" + start +
-                                                "," + limit + "," + text) + ") -> ");
-                Chars.Replace(start, limit, text);
-                fixStyles(start, limit, text.Length);
+                if (Substring(startIndex, count).Equals(text)) return; // NO ACTION! // ICU4N: Corrected 2nd substring parameter (but since we changed to count, we are back to the original)
+                if (DEBUG) Console.Out.Write(Utility.Escape(ToString() + " -> replace(" + startIndex +
+                                                "," + count + "," + text) + ") -> ");
+                Chars.Replace(startIndex, count, text);
+                fixStyles(startIndex, count, text.Length); // ICU4N: Corrected 2nd parameter
                 if (DEBUG) Console.Out.Write(Utility.Escape(ToString()));
             }
 
-            public void Replace(int start, int limit, char[] charArray,
+            public void Replace(int startIndex, int count, char[] charArray,
                                 int charsStart, int charsLen)
             {
-                if (Substring(start, limit - start).Equals(new String(charArray, charsStart, charsLen - charsStart))) return; // NO ACTION! // ICU4N: Corrected 2nd substring parameter
-                this.Chars.Replace(start, limit, charArray, charsStart, charsLen);
-                fixStyles(start, limit, charsLen);
+                if (Substring(startIndex, count).Equals(new String(charArray, charsStart, charsLen - charsStart))) return; // NO ACTION! // ICU4N: Corrected 2nd substring parameter (but since we changed to count, we are back to the original)
+                this.Chars.Replace(startIndex, count, charArray, charsStart, charsLen);
+                fixStyles(startIndex, count, charsLen); // ICU4N: Corrected 2nd parameter
             }
 
-            void fixStyles(int start, int limit, int newLen)
+            void fixStyles(int start, int count, int newLen)
             {
+                int limit = start + count;
                 char newStyle = NO_STYLE;
                 if (start != limit && Styles[start] != NO_STYLE)
                 {
@@ -201,7 +202,7 @@ namespace ICU4N.Dev.Test.Translit
                         s.Append(newStyle);
                     }
                 }
-                Styles.Replace(start, limit, s.ToString());
+                Styles.Replace(start, count, s.ToString()); // ICU4N: Corrected 2nd parameter
             }
 
             public void Copy(int start, int limit, int dest)

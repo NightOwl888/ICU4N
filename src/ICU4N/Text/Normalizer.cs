@@ -3227,7 +3227,7 @@ namespace ICU4N.Text
                     /* Java: the buffer was probably not empty, remove the old contents */
                     if (length <= UCaseProperties.MaxStringLength)
                     {
-                        fold1.Delete(0, fold1.Length - length);
+                        fold1.Delete(0, (fold1.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
                     }
                     else
                     {
@@ -3284,7 +3284,7 @@ namespace ICU4N.Text
                     /* Java: the buffer was probably not empty, remove the old contents */
                     if (length <= UCaseProperties.MaxStringLength)
                     {
-                        fold2.Delete(0, fold2.Length - length);
+                        fold2.Delete(0, (fold2.Length - length) - 0); // ICU4N: Corrected 2nd parameter of Delete
                     }
                     else
                     {

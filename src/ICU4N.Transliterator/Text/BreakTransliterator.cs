@@ -130,7 +130,7 @@ namespace ICU4N.Text
                     while (boundaryCount > 0)
                     {
                         boundary = boundaries[--boundaryCount];
-                        text.Replace(boundary, boundary, insertion);
+                        text.Replace(boundary, boundary - boundary, insertion); // ICU4N: Corrected 2nd parameter
                     }
                 }
 

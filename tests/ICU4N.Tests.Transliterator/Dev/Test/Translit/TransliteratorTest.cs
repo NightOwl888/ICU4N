@@ -4464,10 +4464,10 @@ namespace ICU4N.Dev.Test.Translit
                 // must be the same after we finalize (see below).
                 List<String> v = new List<String>();
                 v.Add(source);
-                rsource.Replace(0, rsource.Length, "");
+                rsource.Replace(0, rsource.Length - 0, ""); // ICU4N: Corrected 2nd parameter
                 if (pos != null)
                 {
-                    rsource.Replace(0, 0, source);
+                    rsource.Replace(0, 0 - 0, source); // ICU4N: Corrected 2nd parameter
                     v.Add(UtilityExtensions.FormatInput(rsource, index));
                     t.Transliterate(rsource, index);
                     v.Add(UtilityExtensions.FormatInput(rsource, index));

@@ -160,7 +160,7 @@ namespace ICU4N.Support
                     break;
                 }
                 string cp = UTF32ToUTF16Chars(result.ToString(where + 2, 8));
-                result.Replace(where, where + 10, cp);
+                result.Replace(where, 10, cp); // ICU4N: Corrected 2nd parameter
             }
         }
 

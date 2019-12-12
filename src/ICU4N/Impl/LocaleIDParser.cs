@@ -95,7 +95,7 @@ namespace ICU4N.Impl
         /// </summary>
         private void Set(int pos, string s)
         {
-            buffer.Delete(pos, buffer.Length);
+            buffer.Delete(pos, buffer.Length - pos); // ICU4N: Corrected 2nd parameter
             buffer.Insert(pos, s);
         }
 
@@ -286,7 +286,7 @@ namespace ICU4N.Impl
                 if (index - oldIndex != 5)
                 { // +1 to account for separator
                     index = oldIndex;
-                    buffer.Delete(oldBlen, buffer.Length);
+                    buffer.Delete(oldBlen, buffer.Length - oldBlen); // ICU4N: Corrected 2nd parameter
                 }
                 else
                 {
@@ -364,7 +364,7 @@ namespace ICU4N.Impl
                     // their previous values.
                     index = oldIndex;
                     --oldBlen;
-                    buffer.Delete(oldBlen, buffer.Length);
+                    buffer.Delete(oldBlen, buffer.Length - oldBlen); // ICU4N: Corrected 2nd parameter
                     hadCountry = false;
                 }
                 else if (charsAppended == 3)

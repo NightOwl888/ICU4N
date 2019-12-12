@@ -285,7 +285,8 @@ namespace ICU4N.Impl
             else
             {
                 int idx = canonicalPrimaryID.IndexOf('@');
-                if (idx == 4 && canonicalPrimaryID.RegionMatches(true, 0, "root", 0, 4))
+                //if (idx == 4 && canonicalPrimaryID.RegionMatches(true, 0, "root", 0, 4))
+                if (idx == 4 && canonicalPrimaryID.IndexOf("root", 0, 4, StringComparison.OrdinalIgnoreCase) == 0)
                 {
                     this.primaryID = canonicalPrimaryID.Substring(4);
                     this.varstart = 0;

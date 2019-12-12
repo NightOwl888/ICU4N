@@ -106,7 +106,7 @@ namespace ICU4N.Text
                 if (!UTF16Plus.Equal(segment, normalized))
                 {
                     // replace the input chunk with its normalized form
-                    text.Replace(prev, start, normalized.ToString());
+                    text.Replace(prev, start - prev, normalized.ToString()); // ICU4N: Corrected 2nd parameter
 
                     // update all necessary indexes accordingly
                     int delta = normalized.Length - (start - prev);

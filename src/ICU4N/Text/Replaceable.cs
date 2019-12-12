@@ -119,12 +119,15 @@
         /// check for initial and trailing identical characters, and make a
         /// smaller replacement if possible. This will preserve as much
         /// metadata as possible.
+        /// <para/>
+        /// NOTE: The 2nd parameter differs from ICU4J in that it is a count rather than an exclusive
+        /// end index. To translate from Java, use <c>limit - start</c> to resolve <paramref name="count"/>.
         /// </summary>
-        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
-        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
-        /// <param name="text">The text to replace characters <c><paramref name="start"/></c> to <c><paramref name="limit"/> - 1</c>.</param>
+        /// <param name="startIndex">The beginning index, inclusive; <c>0 &lt;= <paramref name="startIndex"/></c>.</param>
+        /// <param name="count">The ending index, exclusive; <c>0 &lt;= <paramref name="count"/></c>.</param>
+        /// <param name="text">The text to replace characters beginning at <paramref name="startIndex"/>.</param>
         /// <stable>ICU 2.0</stable>
-        void Replace(int start, int limit, string text);
+        void Replace(int startIndex, int count, string text);
 
         /// <summary>
         /// Replaces a substring of this object with the given text.
@@ -136,14 +139,17 @@
         /// check for initial and trailing identical characters, and make a
         /// smaller replacement if possible. This will preserve as much
         /// metadata as possible.
+        /// <para/>
+        /// NOTE: The 2nd parameter differs from ICU4J in that it is a count rather than an exclusive
+        /// end index. To translate from Java, use <c>limit - start</c> to resolve <paramref name="count"/>.
         /// </summary>
-        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
-        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
-        /// <param name="chars">The text to replace characters <paramref name="start"/> to <c><paramref name="limit"/> - 1</c></param>
-        /// <param name="charsStart">The beginning index into <paramref name="chars"/>, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
+        /// <param name="startIndex">The beginning index, inclusive; <c>0 &lt;= <paramref name="startIndex"/></c>.</param>
+        /// <param name="count">The number of characters to replace; <c>0 &lt;= <paramref name="count"/></c>.</param>
+        /// <param name="chars">The text to replace characters beginning at <paramref name="startIndex"/>.</param>
+        /// <param name="charsStart">The beginning index into <paramref name="chars"/>, inclusive; <c>0 &lt;= <paramref name="startIndex"/> &lt;= <paramref name="count"/></c>.</param>
         /// <param name="charsLen">The number of characters of <paramref name="chars"/>.</param>
         /// <stable>ICU 2.0</stable>
-        void Replace(int start, int limit, char[] chars,
+        void Replace(int startIndex, int count, char[] chars,
                      int charsStart, int charsLen);
         // Note: We use length rather than limit to conform to StringBuffer
         // and System.arraycopy.
@@ -171,7 +177,7 @@
         /// <paramref name="dest"/> &gt;= <paramref name="limit"/></c>.
         /// </param>
         /// <stable>ICU 2.0</stable>
-        void Copy(int start, int limit, int dest);
+        void Copy(int start, int limit, int dest); // ICU4N TODO: API - Change to length rather than limit to match .NET
 
         /// <summary>
         /// Returns true if this object contains metadata.  If a

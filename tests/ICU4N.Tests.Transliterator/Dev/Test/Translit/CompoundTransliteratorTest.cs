@@ -254,7 +254,7 @@ namespace ICU4N.Dev.Test.Translit
 
             // Test keyboard (incremental) transliteration -- this result
             // must be the same after we finalize (see below).
-            rsource.Replace(0, rsource.Length, "");
+            rsource.Replace(0, rsource.Length - 0, ""); // ICU4N: Corrected 2nd parameter
             TransliterationPosition index = new TransliterationPosition();
             StringBuffer log = new StringBuffer();
 

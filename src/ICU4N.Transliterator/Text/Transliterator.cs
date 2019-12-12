@@ -644,7 +644,7 @@ namespace ICU4N.Text
             //        int originalStart = index.contextStart;
             if (insertion != null)
             {
-                text.Replace(index.Limit, index.Limit, insertion);
+                text.Replace(index.Limit, index.Limit - index.Limit, insertion); // ICU4N: Corrected 2nd parameter
                 index.Limit += insertion.Length;
                 index.ContextLimit += insertion.Length;
             }
@@ -1066,7 +1066,7 @@ namespace ICU4N.Text
                             int rs = rollbackStart + delta - (index.Limit - passStart);
 
                             // Delete the partially transliterated text
-                            text.Replace(passStart, index.Limit, "");
+                            text.Replace(passStart, index.Limit - passStart, ""); // ICU4N: Corrected 2nd parameter
 
                             // Copy the rollback text back
                             text.Copy(rs, rs + uncommittedLength, passStart);
@@ -1115,7 +1115,7 @@ namespace ICU4N.Text
                     globalLimit += totalDelta;
 
                     // Delete the rollback copy
-                    text.Replace(rollbackOrigin, rollbackOrigin + runLength, "");
+                    text.Replace(rollbackOrigin, runLength, ""); // ICU4N: Corrected 2nd parameter
 
                     // Move start past committed text
                     index.Start = passStart;
