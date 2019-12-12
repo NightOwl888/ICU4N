@@ -174,24 +174,24 @@ namespace ICU4N.Text
         /// information.  This method is used to duplicate or reorder substrings.
         /// The destination index must not overlap the source range.
         /// </summary>
-        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
-        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
-        /// <param name="dest">The destination index.  The characters from
-        /// <c><paramref name="start"/>..<paramref name="limit"/>-1</c> will be copied to <paramref name="dest"/>.
-        /// Implementations of this method may assume that <c><paramref name="dest"/> &lt;= <paramref name="start"/> ||
-        /// <paramref name="dest"/> &gt;= <paramref name="limit"/></c>.
+        /// <param name="startIndex">The beginning index, inclusive; <c>0 &lt;= <paramref name="startIndex"/></c>.</param>
+        /// <param name="length">The length; <c><paramref name="startIndex"/> + <paramref name="length"/> &lt;= <see cref="Length"/></c>.</param>
+        /// <param name="destinationIndex">The destination index. <paramref name="length"/> characters from
+        /// <paramref name="startIndex"/> will be copied to <paramref name="destinationIndex"/>.
+        /// Implementations of this method may assume that <c><paramref name="destinationIndex"/> &lt;= <paramref name="startIndex"/> ||
+        /// <paramref name="destinationIndex"/> &gt;= <paramref name="startIndex"/> + <paramref name="length"/></c>.
         /// </param>
         /// <stable>ICU 2.0</stable>
-        public virtual void Copy(int start, int limit, int dest)
+        public virtual void Copy(int startIndex, int length, int destinationIndex)
         {
-            if (start == limit && start >= 0 && start <= buf.Length)
+            if (0 == length && startIndex >= 0 && startIndex + length <= buf.Length)
             {
                 return;
             }
-            char[] text = new char[limit - start];
+            char[] text = new char[length]; // ICU4N: Corrected length
             //getChars(start, limit, text, 0);
-            CopyTo(start, text, 0, limit - start);
-            Replace(dest, dest - dest, text, 0, limit - start); // ICU4N: Corrected 2nd Replace parameter
+            CopyTo(startIndex, text, 0, length); // ICU4N: Corrected 4th parameter
+            Replace(destinationIndex, destinationIndex - destinationIndex, text, 0, length); // ICU4N: Corrected 2nd and 5th Replace parameters
         }
 
         /// <summary>

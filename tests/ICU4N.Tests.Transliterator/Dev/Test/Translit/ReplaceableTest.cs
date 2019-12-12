@@ -205,10 +205,10 @@ namespace ICU4N.Dev.Test.Translit
                 Styles.Replace(start, count, s.ToString()); // ICU4N: Corrected 2nd parameter
             }
 
-            public void Copy(int start, int limit, int dest)
+            public void Copy(int startIndex, int length, int destinationIndex)
             {
-                Chars.Copy(start, limit, dest);
-                Styles.Copy(start, limit, dest);
+                Chars.Copy(startIndex, length, destinationIndex);
+                Styles.Copy(startIndex, length, destinationIndex);
             }
 
             public bool HasMetaData

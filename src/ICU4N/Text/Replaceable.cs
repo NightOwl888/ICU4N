@@ -164,20 +164,20 @@
         /// may use the naive implementation:
         /// 
         /// <code>
-        /// char[] text = new char[limit - start];
-        /// CopyTo(start, text, 0, limit - start);
-        /// Replace(dest, dest, text, 0, limit - start);
+        /// char[] text = new char[length];
+        /// CopyTo(startIndex, text, 0, length);
+        /// Replace(destinationIndex, destinationIndex, text, 0, length);
         /// </code>
         /// </remarks>
-        /// <param name="start">The beginning index, inclusive; <c>0 &lt;= <paramref name="start"/> &lt;= <paramref name="limit"/></c>.</param>
-        /// <param name="limit">The ending index, exclusive; <c><paramref name="start"/> &lt;= <paramref name="limit"/> &lt;= <see cref="Length"/></c>.</param>
-        /// <param name="dest">The destination index.  The characters from
-        /// <c><paramref name="start"/>..<paramref name="limit"/>-1</c> will be copied to <paramref name="dest"/>.
-        /// Implementations of this method may assume that <c><paramref name="dest"/> &lt;= <paramref name="start"/> ||
-        /// <paramref name="dest"/> &gt;= <paramref name="limit"/></c>.
+        /// <param name="startIndex">The beginning index, inclusive; <c>0 &lt;= <paramref name="startIndex"/></c>.</param>
+        /// <param name="length">The length; <c><paramref name="startIndex"/> + <paramref name="length"/> &lt;= <see cref="Length"/></c>.</param>
+        /// <param name="destinationIndex">The destination index.  <paramref name="length"/> characters from
+        /// <paramref name="startIndex"/> will be copied to <paramref name="destinationIndex"/>.
+        /// Implementations of this method may assume that <c><paramref name="destinationIndex"/> &lt;= <paramref name="startIndex"/> ||
+        /// <paramref name="destinationIndex"/> &gt;= <paramref name="startIndex"/> + <paramref name="length"/></c>.
         /// </param>
         /// <stable>ICU 2.0</stable>
-        void Copy(int start, int limit, int dest); // ICU4N TODO: API - Change to length rather than limit to match .NET
+        void Copy(int startIndex, int length, int destinationIndex); // ICU4N: Changed 2nd parameter from limit to length (.NET convention)
 
         /// <summary>
         /// Returns true if this object contains metadata.  If a

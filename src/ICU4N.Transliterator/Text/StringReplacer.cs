@@ -157,7 +157,7 @@ namespace ICU4N.Text
                 if (start > 0)
                 {
                     int len = UTF16.GetCharCount(text.Char32At(start - 1));
-                    text.Copy(start - len, start, tempStart);
+                    text.Copy(start - len, len, tempStart); // ICU4N: Corrected 2nd parameter
                     destStart += len;
                 }
                 else
@@ -190,7 +190,7 @@ namespace ICU4N.Text
                     if (nextIndex == output.Length)
                     {
                         tempExtra = UTF16.GetCharCount(text.Char32At(limit));
-                        text.Copy(limit, limit + tempExtra, destLimit);
+                        text.Copy(limit, tempExtra, destLimit); // ICU4N: Corrected 2nd parameter
                     }
 
                     IUnicodeReplacer r = data.LookupReplacer(c);
@@ -232,7 +232,7 @@ namespace ICU4N.Text
                 outLen = destLimit - destStart;
 
                 // Copy new text to start, and delete it
-                text.Copy(destStart, destLimit, start);
+                text.Copy(destStart, destLimit - destStart, start); // ICU4N: Corrected 2nd parameter
                 text.Replace(tempStart + outLen, (destLimit + tempExtra + outLen) - (tempStart + outLen), ""); // ICU4N: Corrected 2nd parameter
 
                 // Delete the old text (the key)

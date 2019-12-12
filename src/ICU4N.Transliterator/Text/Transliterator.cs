@@ -997,7 +997,7 @@ namespace ICU4N.Text
 
                     // Make a rollback copy at the end of the string
                     int rollbackOrigin = text.Length;
-                    text.Copy(runStart, runLimit, rollbackOrigin);
+                    text.Copy(runStart, runLength, rollbackOrigin); // ICU4N: Corrected 2nd parameter
 
                     // Variables reflecting the commitment of completely
                     // transliterated text.  passStart is the runStart, advanced
@@ -1069,7 +1069,7 @@ namespace ICU4N.Text
                             text.Replace(passStart, index.Limit - passStart, ""); // ICU4N: Corrected 2nd parameter
 
                             // Copy the rollback text back
-                            text.Copy(rs, rs + uncommittedLength, passStart);
+                            text.Copy(rs, uncommittedLength, passStart); // ICU4N: Corrected 2nd parameter
 
                             // Restore indices to their original values
                             index.Start = passStart;
