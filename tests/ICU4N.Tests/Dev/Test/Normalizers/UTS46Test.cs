@@ -648,7 +648,7 @@ namespace ICU4N.Dev.Test.Normalizers
                                         i, testCase.o, testCase.s, e));
                     continue;
                 }
-                if (aN.IndexOf(".") < 0)
+                if (aN.IndexOf(".", StringComparison.Ordinal) < 0)
                 {
                     if (!UTF16Plus.Equal(aN, aNL) || !sameErrors(aNInfo, aNLInfo))
                     {
@@ -668,7 +668,7 @@ namespace ICU4N.Dev.Test.Normalizers
                         continue;
                     }
                 }
-                if (aT.IndexOf(".") < 0)
+                if (aT.IndexOf(".", StringComparison.Ordinal) < 0)
                 {
                     if (!UTF16Plus.Equal(aT, aTL) || !sameErrors(aTInfo, aTLInfo))
                     {
@@ -688,7 +688,7 @@ namespace ICU4N.Dev.Test.Normalizers
                         continue;
                     }
                 }
-                if (uN.IndexOf(".") < 0)
+                if (uN.IndexOf(".", StringComparison.Ordinal) < 0)
                 {
                     if (!UTF16Plus.Equal(uN, uNL) || !sameErrors(uNInfo, uNLInfo))
                     {
@@ -708,7 +708,7 @@ namespace ICU4N.Dev.Test.Normalizers
                         continue;
                     }
                 }
-                if (uT.IndexOf(".") < 0)
+                if (uT.IndexOf(".", StringComparison.Ordinal) < 0)
                 {
                     if (!UTF16Plus.Equal(uT, uTL) || !sameErrors(uTInfo, uTLInfo))
                     {

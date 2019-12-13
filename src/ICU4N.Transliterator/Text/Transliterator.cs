@@ -12,6 +12,7 @@ using Category = ICU4N.Util.ULocale.Category; // ICU4N TODO: De-nest ?
 using StringBuffer = System.Text.StringBuilder;
 using System.Collections.Concurrent;
 using SingleID = ICU4N.Text.TransliteratorIDParser.SingleID;
+using J2N.Text;
 
 namespace ICU4N.Text
 {
@@ -1449,7 +1450,7 @@ namespace ICU4N.Text
 
             // assert(list.size() > 0);
             Transliterator t = null;
-            if (list.Count > 1 || canonID.IndexOf(";") >= 0)
+            if (list.Count > 1 || canonID.IndexOf(";", StringComparison.Ordinal) >= 0)
             {
                 // [NOTE: If it's a compoundID, we instantiate a CompoundTransliterator even if it only
                 // has one child transliterator.  This is so that toRules() will return the right thing

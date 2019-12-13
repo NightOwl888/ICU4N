@@ -256,7 +256,7 @@ namespace ICU4N.Dev.Test.Rbbi
                 int idx = 0;
                 while (idx < expandedRule.Length)
                 {
-                    int setOpenPos = expandedRule.IndexOf("[^", idx);
+                    int setOpenPos = expandedRule.IndexOf("[^", idx, StringComparison.Ordinal);
                     if (setOpenPos < 0)
                     {
                         break;

@@ -129,7 +129,7 @@ namespace ICU4N.Support
             // Special case - if we have removed all of the contents of the
             // character class, we need to remove the square brackets and the
             // alternation character |
-            int emptyCharClass = result.IndexOf("[]");
+            int emptyCharClass = result.IndexOf("[]", StringComparison.Ordinal);
             if (emptyCharClass >= 0)
             {
                 result.Remove(emptyCharClass, 2);
@@ -155,7 +155,7 @@ namespace ICU4N.Support
         {
             while (true)
             {
-                int where = result.IndexOf("\\U00");
+                int where = result.IndexOf("\\U00", StringComparison.Ordinal);
                 if (where < 0)
                 {
                     break;

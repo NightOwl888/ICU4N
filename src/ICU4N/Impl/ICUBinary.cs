@@ -235,7 +235,7 @@ namespace ICU4N.Impl
                     sb.Append(c);
                 }
                 int nameLimit = sb.Length - suffix.Length;
-                if (sb.LastIndexOf(suffix, nameLimit) >= 0)
+                if (sb.LastIndexOf(suffix, nameLimit, StringComparison.Ordinal) >= 0)
                 {
                     names.Add(sb.ToString(0, nameLimit - 0));
                 }
