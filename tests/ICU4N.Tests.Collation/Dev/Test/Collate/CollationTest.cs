@@ -1351,7 +1351,7 @@ namespace ICU4N.Dev.Test.Collate
             int equalPos = fileLine.IndexOf('=');
             if (equalPos < 0)
             {
-                if (fileLine.RegionMatches(start, "reorder", 0, 7))
+                if (fileLine.RegionMatches(start, "reorder", 0, 7, StringComparison.Ordinal))
                 {
                     ParseAndSetReorderCodes(start + 7);
                     return;

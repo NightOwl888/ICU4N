@@ -1402,7 +1402,7 @@ namespace ICU4N.Text
                 int index = part.Index;
                 // Make sure the literal string matches.
                 int len = index - prevIndex;
-                if (len == 0 || msgString.RegionMatches(prevIndex, source, sourceOffset, len))
+                if (len == 0 || msgString.RegionMatches(prevIndex, source, sourceOffset, len, StringComparison.Ordinal))
                 {
                     sourceOffset += len;
                     prevIndex += len;
@@ -2252,7 +2252,7 @@ namespace ICU4N.Text
                 {
                     int index = part.Index;
                     int length = index - prevIndex;
-                    if (length != 0 && !source.RegionMatches(sourceOffset, msgString, prevIndex, length))
+                    if (length != 0 && !source.RegionMatches(sourceOffset, msgString, prevIndex, length, StringComparison.Ordinal))
                     {
                         return -1;  // mismatch
                     }

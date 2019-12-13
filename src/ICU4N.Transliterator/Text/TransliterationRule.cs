@@ -1,5 +1,5 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.Text;
+using J2N.Text;
 using System;
 using StringBuffer = System.Text.StringBuilder;
 
@@ -338,7 +338,7 @@ namespace ICU4N.Text
             // Test for anchor masking
             if (left == left2 && right == right2 &&
                 keyLength <= r2.keyLength &&
-                r2.pattern.RegionMatches(0, pattern, 0, len))
+                r2.pattern.RegionMatches(0, pattern, 0, len, StringComparison.Ordinal))
             {
                 // The following boolean logic implements the table above
                 return (flags == r2.flags) ||
@@ -349,7 +349,7 @@ namespace ICU4N.Text
             return left <= left2 &&
                 (right < right2 ||
                  (right == right2 && keyLength <= r2.keyLength)) &&
-                r2.pattern.RegionMatches(left2 - left, pattern, 0, len);
+                r2.pattern.RegionMatches(left2 - left, pattern, 0, len, StringComparison.Ordinal);
         }
 
         internal static int PosBefore(IReplaceable str, int pos)

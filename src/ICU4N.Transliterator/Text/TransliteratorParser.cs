@@ -1076,7 +1076,7 @@ namespace ICU4N.Text
                         // Look for an ID token.  Must have at least ID_TOKEN_LEN + 1
                         // chars left.
                         if ((pos + ID_TOKEN_LEN + 1) <= limit &&
-                                rule.RegionMatches(pos, ID_TOKEN, 0, ID_TOKEN_LEN))
+                                rule.RegionMatches(pos, ID_TOKEN, 0, ID_TOKEN_LEN, StringComparison.Ordinal))
                         {
                             pos += ID_TOKEN_LEN;
                             c = rule[pos];

@@ -2,6 +2,7 @@
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Text;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -382,7 +383,7 @@ namespace ICU4N.Impl
                     {
                         if (j == i)
                             continue;
-                        if (thisStr.RegionMatches(0, ustrs[j].ToString() /* TODO */, 0, nn + 1))
+                        if (thisStr.RegionMatches(0, ustrs[j].ToString() /* TODO */, 0, nn + 1, StringComparison.Ordinal))
                         {
                             if (partials[j] == 0)
                             { // hasn't been processed yet

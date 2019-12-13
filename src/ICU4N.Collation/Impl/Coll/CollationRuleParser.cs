@@ -233,7 +233,7 @@ namespace ICU4N.Impl.Coll
             int j;
             char c;
             CollationStrength resetStrength;
-            if (rules.RegionMatches(i, BEFORE, 0, BEFORE.Length) &&
+            if (rules.RegionMatches(i, BEFORE, 0, BEFORE.Length, StringComparison.Ordinal) &&
                     (j = i + BEFORE.Length) < rules.Length &&
                     PatternProps.IsWhiteSpace(rules[j]) &&
                     ((j = SkipWhiteSpace(j + 1)) + 1) < rules.Length &&

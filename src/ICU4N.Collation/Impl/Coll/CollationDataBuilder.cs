@@ -1284,7 +1284,7 @@ namespace ICU4N.Impl.Coll
                             if (length == prefixLength) { break; }
                             if (cond.DefaultCE32 != Collation.NO_CE32 &&
                                     (length == 0 || prefixString.RegionMatches(
-                                            prefix.Length - length, cond.Context, 1, length)
+                                            prefix.Length - length, cond.Context, 1, length, StringComparison.Ordinal)
                                             /* C++: prefix.endsWith(cond.context, 1, length) */))
                             {
                                 emptySuffixCE32 = cond.DefaultCE32;

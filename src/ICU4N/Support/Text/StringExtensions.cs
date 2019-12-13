@@ -143,121 +143,121 @@ namespace ICU4N.Support.Text
         //    return -1;
         //}
 
-        /// <summary>
-        /// Compares the specified string to this string and compares the specified
-        /// range of characters to determine if they are the same.
-        /// </summary>
-        /// <param name="seq">This string.</param>
-        /// <param name="thisStart">the starting offset in this string.</param>
-        /// <param name="str">the string to compare.</param>
-        /// <param name="start">the starting offset in the specified string.</param>
-        /// <param name="length">the number of characters to compare.</param>
-        /// <returns><c>true</c> if the ranges of characters are equal, <c>false</c> otherwise.</returns>
-        /// <exception cref="ArgumentNullException">If <paramref name="seq"/> or <paramref name="str"/> is <c>null</c></exception>
-        internal static bool RegionMatches(this string seq, int thisStart, string str, int start,
-            int length)
-        {
-            if (seq == null)
-                throw new ArgumentNullException(nameof(seq));
-            if (str == null)
-                throw new ArgumentNullException(nameof(str));
+        ///// <summary>
+        ///// Compares the specified string to this string and compares the specified
+        ///// range of characters to determine if they are the same.
+        ///// </summary>
+        ///// <param name="seq">This string.</param>
+        ///// <param name="thisStart">the starting offset in this string.</param>
+        ///// <param name="str">the string to compare.</param>
+        ///// <param name="start">the starting offset in the specified string.</param>
+        ///// <param name="length">the number of characters to compare.</param>
+        ///// <returns><c>true</c> if the ranges of characters are equal, <c>false</c> otherwise.</returns>
+        ///// <exception cref="ArgumentNullException">If <paramref name="seq"/> or <paramref name="str"/> is <c>null</c></exception>
+        //internal static bool RegionMatches(this string seq, int thisStart, string str, int start,
+        //    int length)
+        //{
+        //    if (seq == null)
+        //        throw new ArgumentNullException(nameof(seq));
+        //    if (str == null)
+        //        throw new ArgumentNullException(nameof(str));
 
-            if (str.Length - start < length || start < 0)
-            {
-                return false;
-            }
-            if (thisStart < 0 || seq.Length - thisStart < length)
-            {
-                return false;
-            }
-            if (length <= 0)
-            {
-                return true;
-            }
-            string sub2 = str.Substring(start, length);
-            return seq.IndexOf(sub2, thisStart, length, StringComparison.Ordinal) == thisStart;
+        //    if (str.Length - start < length || start < 0)
+        //    {
+        //        return false;
+        //    }
+        //    if (thisStart < 0 || seq.Length - thisStart < length)
+        //    {
+        //        return false;
+        //    }
+        //    if (length <= 0)
+        //    {
+        //        return true;
+        //    }
+        //    string sub2 = str.Substring(start, length);
+        //    return seq.IndexOf(sub2, thisStart, length, StringComparison.Ordinal) == thisStart;
 
-            //int o1 = /*offset +*/ thisStart, o2 = /*str.offset +*/ start;
-            //for (int i = 0; i < length; ++i)
-            //{
-            //    if (seq[o1 + i] != str[o2 + i])
-            //    {
-            //        return false;
-            //    }
-            //}
-            //return true;
-        }
+        //    //int o1 = /*offset +*/ thisStart, o2 = /*str.offset +*/ start;
+        //    //for (int i = 0; i < length; ++i)
+        //    //{
+        //    //    if (seq[o1 + i] != str[o2 + i])
+        //    //    {
+        //    //        return false;
+        //    //    }
+        //    //}
+        //    //return true;
+        //}
 
-        /// <summary>
-        /// Compares the specified string to this string and compares the specified
-        /// range of characters to determine if they are the same. When ignoreCase is
-        /// true, the case of the characters is ignored during the comparison.
-        /// </summary>
-        /// <param name="seq">This string.</param>
-        /// <param name="ignoreCase">Specifies if case should be ignored.</param>
-        /// <param name="thisStart">The starting offset in this string.</param>
-        /// <param name="str">The string to compare.</param>
-        /// <param name="start">The starting offset in the specified string.</param>
-        /// <param name="length">The number of characters to compare.</param>
-        /// <returns><c>true</c> if the ranges of characters are equal, <c>false</c> otherwise.</returns>
-        /// <exception cref="ArgumentNullException">if <paramref name="str"/> is <c>null</c>.</exception>
-        public static bool RegionMatches(this string seq, bool ignoreCase, int thisStart,
-            string str, int start, int length)
-        {
-            return RegionMatches(seq, null, ignoreCase, thisStart, str, start, length);
-        }
+        ///// <summary>
+        ///// Compares the specified string to this string and compares the specified
+        ///// range of characters to determine if they are the same. When ignoreCase is
+        ///// true, the case of the characters is ignored during the comparison.
+        ///// </summary>
+        ///// <param name="seq">This string.</param>
+        ///// <param name="ignoreCase">Specifies if case should be ignored.</param>
+        ///// <param name="thisStart">The starting offset in this string.</param>
+        ///// <param name="str">The string to compare.</param>
+        ///// <param name="start">The starting offset in the specified string.</param>
+        ///// <param name="length">The number of characters to compare.</param>
+        ///// <returns><c>true</c> if the ranges of characters are equal, <c>false</c> otherwise.</returns>
+        ///// <exception cref="ArgumentNullException">if <paramref name="str"/> is <c>null</c>.</exception>
+        //public static bool RegionMatches(this string seq, bool ignoreCase, int thisStart,
+        //    string str, int start, int length)
+        //{
+        //    return RegionMatches(seq, null, ignoreCase, thisStart, str, start, length);
+        //}
 
-        /// <summary>
-        /// Compares the specified string to this string and compares the specified
-        /// range of characters to determine if they are the same. When ignoreCase is
-        /// true, the case of the characters is ignored during the comparison.
-        /// </summary>
-        /// <param name="seq">This string.</param>
-        /// <param name="culture">The culture to use when correcting case for comparison (only applies if <paramref name="ignoreCase"/> is true).</param>
-        /// <param name="ignoreCase">Specifies if case should be ignored.</param>
-        /// <param name="thisStart">The starting offset in this string.</param>
-        /// <param name="str">The string to compare.</param>
-        /// <param name="start">The starting offset in the specified string.</param>
-        /// <param name="length">The number of characters to compare.</param>
-        /// <returns><c>true</c> if the ranges of characters are equal, <c>false</c> otherwise.</returns>
-        /// <exception cref="ArgumentNullException">if <paramref name="str"/> is <c>null</c>.</exception>
-        public static bool RegionMatches(this string seq, CultureInfo culture, bool ignoreCase, int thisStart,
-            string str, int start, int length)
-        {
-            if (!ignoreCase)
-            {
-                return RegionMatches(seq, thisStart, str, start, length);
-            }
+        ///// <summary>
+        ///// Compares the specified string to this string and compares the specified
+        ///// range of characters to determine if they are the same. When ignoreCase is
+        ///// true, the case of the characters is ignored during the comparison.
+        ///// </summary>
+        ///// <param name="seq">This string.</param>
+        ///// <param name="culture">The culture to use when correcting case for comparison (only applies if <paramref name="ignoreCase"/> is true).</param>
+        ///// <param name="ignoreCase">Specifies if case should be ignored.</param>
+        ///// <param name="thisStart">The starting offset in this string.</param>
+        ///// <param name="str">The string to compare.</param>
+        ///// <param name="start">The starting offset in the specified string.</param>
+        ///// <param name="length">The number of characters to compare.</param>
+        ///// <returns><c>true</c> if the ranges of characters are equal, <c>false</c> otherwise.</returns>
+        ///// <exception cref="ArgumentNullException">if <paramref name="str"/> is <c>null</c>.</exception>
+        //public static bool RegionMatches(this string seq, CultureInfo culture, bool ignoreCase, int thisStart,
+        //    string str, int start, int length)
+        //{
+        //    if (!ignoreCase)
+        //    {
+        //        return RegionMatches(seq, thisStart, str, start, length);
+        //    }
 
-            if (str != null)
-            {
-                if (thisStart < 0 || length > seq.Length - thisStart)
-                {
-                    return false;
-                }
-                if (start < 0 || length > str.Length - start)
-                {
-                    return false;
-                }
+        //    if (str != null)
+        //    {
+        //        if (thisStart < 0 || length > seq.Length - thisStart)
+        //        {
+        //            return false;
+        //        }
+        //        if (start < 0 || length > str.Length - start)
+        //        {
+        //            return false;
+        //        }
 
-                int end = thisStart + length;
-                char c1, c2;
-                string target = str;
-                var textInfo = culture == null ? CultureInfo.CurrentCulture.TextInfo : culture.TextInfo;
-                while (thisStart < end)
-                {
-                    if ((c1 = seq[thisStart++]) != (c2 = target[start++])
-                            && textInfo.ToUpper(c1) != textInfo.ToUpper(c2)
-                            // Required for unicode that we test both cases
-                            && textInfo.ToLower(c1) != textInfo.ToLower(c2))
-                    {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            throw new ArgumentNullException();
-        }
+        //        int end = thisStart + length;
+        //        char c1, c2;
+        //        string target = str;
+        //        var textInfo = culture == null ? CultureInfo.CurrentCulture.TextInfo : culture.TextInfo;
+        //        while (thisStart < end)
+        //        {
+        //            if ((c1 = seq[thisStart++]) != (c2 = target[start++])
+        //                    && textInfo.ToUpper(c1) != textInfo.ToUpper(c2)
+        //                    // Required for unicode that we test both cases
+        //                    && textInfo.ToLower(c1) != textInfo.ToLower(c2))
+        //            {
+        //                return false;
+        //            }
+        //        }
+        //        return true;
+        //    }
+        //    throw new ArgumentNullException();
+        //}
 
         ///// <summary>
         ///// Compares the specified string to this string, starting at the specified
