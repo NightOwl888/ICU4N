@@ -1947,8 +1947,8 @@ namespace ICU4N.Dev.Test.Lang
                 foreach (String item2 in tests)
                 {
                     String nonNull2 = item2 ?? "";
-                    int scValue = Number.Signum(sc.Compare(nonNull1, nonNull2));
-                    int fValue = Number.Signum(UTF16.CompareCodePoint(expected, item2));
+                    int scValue = sc.Compare(nonNull1, nonNull2).Signum();
+                    int fValue = UTF16.CompareCodePoint(expected, item2).Signum();
                     assertEquals("comparison " + Utility.Hex(nonNull1) + ", " + Utility.Hex(nonNull2), scValue, fValue);
                 }
             }

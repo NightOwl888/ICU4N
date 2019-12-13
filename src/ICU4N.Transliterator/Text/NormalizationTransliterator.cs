@@ -2,6 +2,7 @@
 using ICU4N.Support.Collections;
 using ICU4N.Support.Text;
 using J2N;
+using J2N.Text;
 using System.Collections.Generic;
 using System.Text;
 

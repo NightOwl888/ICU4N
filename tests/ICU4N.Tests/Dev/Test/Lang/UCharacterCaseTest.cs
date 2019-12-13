@@ -12,6 +12,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using StringBuffer = System.Text.StringBuilder;
+using J2N.Text;
 
 namespace ICU4N.Dev.Test.Lang
 {

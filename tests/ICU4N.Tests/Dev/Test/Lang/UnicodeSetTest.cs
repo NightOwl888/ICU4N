@@ -1857,8 +1857,8 @@ namespace ICU4N.Dev.Test.Lang
                     }
                     // ICU4N specific - CompareTo implementations are not guaranteed to return the
                     // same number, only the same sign. So, we must normalize the values to -1, 0, and 1
-                    // using Number.Signum() in order to compare them correctly.
-                    if (Number.Signum(comparison) != Number.Signum(last.CompareToOrdinal(curr)))
+                    // using .Signum() in order to compare them correctly.
+                    if (comparison.Signum() != last.CompareToOrdinal(curr).Signum())
                     {
                         // repeat for debugging
                         if (lastCount == 1)

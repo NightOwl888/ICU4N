@@ -9,10 +9,10 @@ namespace ICU4N.Support.Text
 {
     internal static class StringExtensions
     {
-        public static byte[] GetBytes(this string str, Encoding enc)
-        {
-            return enc.GetBytes(str);
-        }
+        //public static byte[] GetBytes(this string str, Encoding enc)
+        //{
+        //    return enc.GetBytes(str);
+        //}
 
         public static int CompareToOrdinalIgnoreCase(this string str, string value)
         {
@@ -278,123 +278,123 @@ namespace ICU4N.Support.Text
             return RegionMatches(text, start, prefix, 0, prefix.Length);
         }
 
-        /// <summary>
-        /// Compares a <see cref="string"/> to this <see cref="string"/> to determine if
-        /// their contents are equal.
-        /// </summary>
-        /// <param name="text">This <see cref="string"/>.</param>
-        /// <param name="cs">The character sequence to compare to.</param>
-        /// <returns></returns>
-        public static bool ContentEquals(this string text, string cs)
-        {
-            int len = cs.Length;
+        ///// <summary>
+        ///// Compares a <see cref="string"/> to this <see cref="string"/> to determine if
+        ///// their contents are equal.
+        ///// </summary>
+        ///// <param name="text">This <see cref="string"/>.</param>
+        ///// <param name="cs">The character sequence to compare to.</param>
+        ///// <returns></returns>
+        //public static bool ContentEquals(this string text, string cs)
+        //{
+        //    int len = cs.Length;
 
-            if (len != text.Length)
-            {
-                return false;
-            }
+        //    if (len != text.Length)
+        //    {
+        //        return false;
+        //    }
 
-            if (len == 0 && text.Length == 0)
-            {
-                return true; // since both are empty strings
-            }
+        //    if (len == 0 && text.Length == 0)
+        //    {
+        //        return true; // since both are empty strings
+        //    }
 
-            return RegionMatches(text, 0, cs.ToString(), 0, len);
-        }
+        //    return RegionMatches(text, 0, cs.ToString(), 0, len);
+        //}
 
-        /// <summary>
-        /// Compares a <see cref="StringBuilder"/> to this <see cref="string"/> to determine if
-        /// their contents are equal.
-        /// </summary>
-        /// <param name="text">This <see cref="string"/>.</param>
-        /// <param name="cs">The character sequence to compare to.</param>
-        /// <returns></returns>
-        public static bool ContentEquals(this string text, StringBuilder cs)
-        {
-            int len = cs.Length;
+        ///// <summary>
+        ///// Compares a <see cref="StringBuilder"/> to this <see cref="string"/> to determine if
+        ///// their contents are equal.
+        ///// </summary>
+        ///// <param name="text">This <see cref="string"/>.</param>
+        ///// <param name="cs">The character sequence to compare to.</param>
+        ///// <returns></returns>
+        //public static bool ContentEquals(this string text, StringBuilder cs)
+        //{
+        //    int len = cs.Length;
 
-            if (len != text.Length)
-            {
-                return false;
-            }
+        //    if (len != text.Length)
+        //    {
+        //        return false;
+        //    }
 
-            if (len == 0 && text.Length == 0)
-            {
-                return true; // since both are empty strings
-            }
+        //    if (len == 0 && text.Length == 0)
+        //    {
+        //        return true; // since both are empty strings
+        //    }
 
-            return RegionMatches(text, 0, cs.ToString(), 0, len);
-        }
+        //    return RegionMatches(text, 0, cs.ToString(), 0, len);
+        //}
 
-        /// <summary>
-        /// Compares a <see cref="T:char[]"/> to this <see cref="string"/> to determine if
-        /// their contents are equal.
-        /// </summary>
-        /// <param name="text">This <see cref="string"/>.</param>
-        /// <param name="cs">The character sequence to compare to.</param>
-        /// <returns></returns>
-        public static bool ContentEquals(this string text, char[] cs)
-        {
-            int len = cs.Length;
+        ///// <summary>
+        ///// Compares a <see cref="T:char[]"/> to this <see cref="string"/> to determine if
+        ///// their contents are equal.
+        ///// </summary>
+        ///// <param name="text">This <see cref="string"/>.</param>
+        ///// <param name="cs">The character sequence to compare to.</param>
+        ///// <returns></returns>
+        //public static bool ContentEquals(this string text, char[] cs)
+        //{
+        //    int len = cs.Length;
 
-            if (len != text.Length)
-            {
-                return false;
-            }
+        //    if (len != text.Length)
+        //    {
+        //        return false;
+        //    }
 
-            if (len == 0 && text.Length == 0)
-            {
-                return true; // since both are empty strings
-            }
+        //    if (len == 0 && text.Length == 0)
+        //    {
+        //        return true; // since both are empty strings
+        //    }
 
-            return RegionMatches(text, 0, cs.ToString(), 0, len);
-        }
+        //    return RegionMatches(text, 0, cs.ToString(), 0, len);
+        //}
 
-        /// <summary>
-        /// Compares a <see cref="ICharSequence"/> to this <see cref="string"/> to determine if
-        /// their contents are equal.
-        /// </summary>
-        /// <param name="text">This <see cref="string"/>.</param>
-        /// <param name="cs">The character sequence to compare to.</param>
-        /// <returns></returns>
-        public static bool ContentEquals(this string text, ICharSequence cs)
-        {
-            int len = cs.Length;
+        ///// <summary>
+        ///// Compares a <see cref="ICharSequence"/> to this <see cref="string"/> to determine if
+        ///// their contents are equal.
+        ///// </summary>
+        ///// <param name="text">This <see cref="string"/>.</param>
+        ///// <param name="cs">The character sequence to compare to.</param>
+        ///// <returns></returns>
+        //public static bool ContentEquals(this string text, ICharSequence cs)
+        //{
+        //    int len = cs.Length;
 
-            if (len != text.Length)
-            {
-                return false;
-            }
+        //    if (len != text.Length)
+        //    {
+        //        return false;
+        //    }
 
-            if (len == 0 && text.Length == 0)
-            {
-                return true; // since both are empty strings
-            }
+        //    if (len == 0 && text.Length == 0)
+        //    {
+        //        return true; // since both are empty strings
+        //    }
 
-            return RegionMatches(text, 0, cs.ToString(), 0, len);
-        }
+        //    return RegionMatches(text, 0, cs.ToString(), 0, len);
+        //}
 
-        /// <summary> Expert:
-        /// A string interner cache.
-        /// This shouldn't be changed to an incompatible implementation after other APIs have been used.
-        /// </summary>
-        private static StringInterner interner =
-#if NETSTANDARD1_3
-            new SimpleStringInterner(1024, 8);
-#else
-            new StringInterner();
-#endif
+//        /// <summary> Expert:
+//        /// A string interner cache.
+//        /// This shouldn't be changed to an incompatible implementation after other APIs have been used.
+//        /// </summary>
+//        private static StringInterner interner =
+//#if NETSTANDARD1_3
+//            new SimpleStringInterner(1024, 8);
+//#else
+//            new StringInterner();
+//#endif
 
-        /// <summary>
-        /// Searches an internal table of strings for a string equal to this string.
-        /// If the string is not in the table, it is added. Returns the string
-        /// contained in the table which is equal to this string. The same string
-        /// object is always returned for strings which are equal.
-        /// </summary>
-        /// <returns>The interned string equal to this string.</returns>
-        public static string Intern(this string s)
-        {
-            return interner.Intern(s);
-        }
+//        /// <summary>
+//        /// Searches an internal table of strings for a string equal to this string.
+//        /// If the string is not in the table, it is added. Returns the string
+//        /// contained in the table which is equal to this string. The same string
+//        /// object is always returned for strings which are equal.
+//        /// </summary>
+//        /// <returns>The interned string equal to this string.</returns>
+//        public static string Intern(this string s)
+//        {
+//            return interner.Intern(s);
+//        }
     }
 }

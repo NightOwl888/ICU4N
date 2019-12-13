@@ -7,133 +7,133 @@ namespace ICU4N.Support.Text
 {
     public static class StringBuilderExtensions
     {
-        /// <summary>
-        /// Causes this character sequence to be replaced by the reverse of
-        /// the sequence. If there are any surrogate pairs included in the
-        /// sequence, these are treated as single characters for the
-        /// reverse operation. Thus, the order of the high-low surrogates
-        /// is never reversed.
-        /// <para/>
-        /// Let <c>n</c> be the character length of this character sequence
-        /// (not the length in <see cref="char"/> values) just prior to
-        /// execution of the <see cref="Reverse"/> method. Then the
-        /// character at index <c>k</c> in the new character sequence is
-        /// equal to the character at index <c>n-k-1</c> in the old
-        /// character sequence.
-        /// <para/>
-        /// Note that the reverse operation may result in producing
-        /// surrogate pairs that were unpaired low-surrogates and
-        /// high-surrogates before the operation. For example, reversing
-        /// "&#92;uDC00&#92;uD800" produces "&#92;uD800&#92;uDC00" which is
-        /// a valid surrogate pair.
-        /// </summary>
-        /// <param name="text">this <see cref="StringBuilder"/></param>
-        /// <returns>a reference to this <see cref="StringBuilder"/>.</returns>
-        public static StringBuilder Reverse(this StringBuilder text)
-        {
-            bool hasSurrogate = false;
-            int codePointCount = text.Length;
-            int n = text.Length - 1;
-            for (int j = (n - 1) >> 1; j >= 0; --j)
-            {
-                char temp = text[j];
-                char temp2 = text[n - j];
-                if (!hasSurrogate)
-                {
-                    hasSurrogate = (temp >= Character.MinSurrogate && temp <= Character.MaxSurrogate)
-                        || (temp2 >= Character.MinSurrogate && temp2 <= Character.MaxSurrogate);
-                }
-                text[j] = temp2;
-                text[n - j] = temp;
-            }
-            if (hasSurrogate)
-            {
-                // Reverse back all valid surrogate pairs
-                for (int i = 0; i < text.Length - 1; i++)
-                {
-                    char c2 = text[i];
-                    if (char.IsLowSurrogate(c2))
-                    {
-                        char c1 = text[i + 1];
-                        if (char.IsHighSurrogate(c1))
-                        {
-                            text[i++] = c1;
-                            text[i] = c2;
-                        }
-                    }
-                }
-            }
+        ///// <summary>
+        ///// Causes this character sequence to be replaced by the reverse of
+        ///// the sequence. If there are any surrogate pairs included in the
+        ///// sequence, these are treated as single characters for the
+        ///// reverse operation. Thus, the order of the high-low surrogates
+        ///// is never reversed.
+        ///// <para/>
+        ///// Let <c>n</c> be the character length of this character sequence
+        ///// (not the length in <see cref="char"/> values) just prior to
+        ///// execution of the <see cref="Reverse"/> method. Then the
+        ///// character at index <c>k</c> in the new character sequence is
+        ///// equal to the character at index <c>n-k-1</c> in the old
+        ///// character sequence.
+        ///// <para/>
+        ///// Note that the reverse operation may result in producing
+        ///// surrogate pairs that were unpaired low-surrogates and
+        ///// high-surrogates before the operation. For example, reversing
+        ///// "&#92;uDC00&#92;uD800" produces "&#92;uD800&#92;uDC00" which is
+        ///// a valid surrogate pair.
+        ///// </summary>
+        ///// <param name="text">this <see cref="StringBuilder"/></param>
+        ///// <returns>a reference to this <see cref="StringBuilder"/>.</returns>
+        //public static StringBuilder Reverse(this StringBuilder text)
+        //{
+        //    bool hasSurrogate = false;
+        //    int codePointCount = text.Length;
+        //    int n = text.Length - 1;
+        //    for (int j = (n - 1) >> 1; j >= 0; --j)
+        //    {
+        //        char temp = text[j];
+        //        char temp2 = text[n - j];
+        //        if (!hasSurrogate)
+        //        {
+        //            hasSurrogate = (temp >= Character.MinSurrogate && temp <= Character.MaxSurrogate)
+        //                || (temp2 >= Character.MinSurrogate && temp2 <= Character.MaxSurrogate);
+        //        }
+        //        text[j] = temp2;
+        //        text[n - j] = temp;
+        //    }
+        //    if (hasSurrogate)
+        //    {
+        //        // Reverse back all valid surrogate pairs
+        //        for (int i = 0; i < text.Length - 1; i++)
+        //        {
+        //            char c2 = text[i];
+        //            if (char.IsLowSurrogate(c2))
+        //            {
+        //                char c1 = text[i + 1];
+        //                if (char.IsHighSurrogate(c1))
+        //                {
+        //                    text[i++] = c1;
+        //                    text[i] = c2;
+        //                }
+        //            }
+        //        }
+        //    }
 
-            return text;
-        }
+        //    return text;
+        //}
 
-        /// <summary>
-        /// Copies the array from the <see cref="StringBuilder"/> into a new array
-        /// and returns it.
-        /// </summary>
-        /// <param name="text">this <see cref="StringBuilder"/></param>
-        /// <returns></returns>
-        public static char[] GetChars(this StringBuilder text)
-        {
-            char[] chars = new char[text.Length];
-            text.CopyTo(0, chars, 0, text.Length);
-            return chars;
-        }
+        ///// <summary>
+        ///// Copies the array from the <see cref="StringBuilder"/> into a new array
+        ///// and returns it.
+        ///// </summary>
+        ///// <param name="text">this <see cref="StringBuilder"/></param>
+        ///// <returns></returns>
+        //public static char[] GetChars(this StringBuilder text)
+        //{
+        //    char[] chars = new char[text.Length];
+        //    text.CopyTo(0, chars, 0, text.Length);
+        //    return chars;
+        //}
 
-        /// <summary>
-        /// Appends the string representation of the <paramref name="codePoint"/>
-        /// argument to this sequence.
-        /// 
-        /// <para>
-        /// The argument is appended to the contents of this sequence.
-        /// The length of this sequence increases by <see cref="Character.CharCount(int)"/>.
-        /// </para>
-        /// <para>
-        /// The overall effect is exactly as if the argument were
-        /// converted to a <see cref="char"/> array by the method
-        /// <see cref="Character.ToChars(int)"/> and the character in that array
-        /// were then <see cref="StringBuilder.Append(char[])">appended</see> to this 
-        /// <see cref="StringBuilder"/>.
-        /// </para>
-        /// </summary>
-        /// <param name="text">This <see cref="StringBuilder"/>.</param>
-        /// <param name="codePoint">a Unicode code point</param>
-        /// <returns>a reference to this object.</returns>
-        public static StringBuilder AppendCodePoint(this StringBuilder text, int codePoint)
-        {
-            text.Append(Character.ToChars(codePoint));
-            return text;
-        }
+        ///// <summary>
+        ///// Appends the string representation of the <paramref name="codePoint"/>
+        ///// argument to this sequence.
+        ///// 
+        ///// <para>
+        ///// The argument is appended to the contents of this sequence.
+        ///// The length of this sequence increases by <see cref="Character.CharCount(int)"/>.
+        ///// </para>
+        ///// <para>
+        ///// The overall effect is exactly as if the argument were
+        ///// converted to a <see cref="char"/> array by the method
+        ///// <see cref="Character.ToChars(int)"/> and the character in that array
+        ///// were then <see cref="StringBuilder.Append(char[])">appended</see> to this 
+        ///// <see cref="StringBuilder"/>.
+        ///// </para>
+        ///// </summary>
+        ///// <param name="text">This <see cref="StringBuilder"/>.</param>
+        ///// <param name="codePoint">a Unicode code point</param>
+        ///// <returns>a reference to this object.</returns>
+        //public static StringBuilder AppendCodePoint(this StringBuilder text, int codePoint)
+        //{
+        //    text.Append(Character.ToChars(codePoint));
+        //    return text;
+        //}
 
-        /// <summary>
-        /// Inserts the string representation of the specified subsequence of the
-        /// <see cref="StringBuilder"/> at the specified <paramref name="index"/>.
-        /// If the <see cref="StringBuilder"/> is <c>null</c>, then the string "null"
-        /// is used to determine the subsequence.
-        /// </summary>
-        /// <param name="text">This <see cref="StringBuilder"/>.</param>
-        /// <param name="index">The index to insert at.</param>
-        /// <param name="value">The <see cref="StringBuilder"/> to insert.</param>
-        /// <param name="startIndex">The start of the subsequence of <paramref name="value"/>.</param>
-        /// <param name="length">The number of characters to insert from <paramref name="value"/>.</param>
-        /// <returns>This <see cref="StringBuilder"/>.</returns>
-        /// <exception cref="IndexOutOfRangeException">If <paramref name="index"/> is negative or greater than the current length,
-        /// or <paramref name="startIndex"/> and <paramref name="length"/> do not specify a valid subsequence.</exception>
-        public static StringBuilder Insert(this StringBuilder text, int index, StringBuilder value, int startIndex, int length)
-        {
-            if (value == null)
-            {
-                //value = "null"; //$NON-NLS-1$
-                text.Insert(index, "null".Substring(startIndex, length));
-                return text;
-            }
-            if (index < 0 || index > text.Length || startIndex < 0 || length < 0 || startIndex + length > value.Length)
-            {
-                throw new IndexOutOfRangeException();
-            }
-            text.Insert(index, value.ToString(startIndex, length));
-            return text;
-        }
+        ///// <summary>
+        ///// Inserts the string representation of the specified subsequence of the
+        ///// <see cref="StringBuilder"/> at the specified <paramref name="index"/>.
+        ///// If the <see cref="StringBuilder"/> is <c>null</c>, then the string "null"
+        ///// is used to determine the subsequence.
+        ///// </summary>
+        ///// <param name="text">This <see cref="StringBuilder"/>.</param>
+        ///// <param name="index">The index to insert at.</param>
+        ///// <param name="value">The <see cref="StringBuilder"/> to insert.</param>
+        ///// <param name="startIndex">The start of the subsequence of <paramref name="value"/>.</param>
+        ///// <param name="length">The number of characters to insert from <paramref name="value"/>.</param>
+        ///// <returns>This <see cref="StringBuilder"/>.</returns>
+        ///// <exception cref="IndexOutOfRangeException">If <paramref name="index"/> is negative or greater than the current length,
+        ///// or <paramref name="startIndex"/> and <paramref name="length"/> do not specify a valid subsequence.</exception>
+        //public static StringBuilder Insert(this StringBuilder text, int index, StringBuilder value, int startIndex, int length)
+        //{
+        //    if (value == null)
+        //    {
+        //        //value = "null"; //$NON-NLS-1$
+        //        text.Insert(index, "null".Substring(startIndex, length));
+        //        return text;
+        //    }
+        //    if (index < 0 || index > text.Length || startIndex < 0 || length < 0 || startIndex + length > value.Length)
+        //    {
+        //        throw new IndexOutOfRangeException();
+        //    }
+        //    text.Insert(index, value.ToString(startIndex, length));
+        //    return text;
+        //}
 
 
         /// <summary>
@@ -356,62 +356,62 @@ namespace ICU4N.Support.Text
         //    return text;
         //}
 
-        /// <summary>
-        /// Appends the given <see cref="StringBuilder"/> to this <see cref="StringBuilder"/>.
-        /// </summary>
-        internal static StringBuilder Append(this StringBuilder text, StringBuilder csq, int start, int count)
-        {
-            if (csq == null)
-            {
-                text.Append("null");
-                return text;
-            }
+        ///// <summary>
+        ///// Appends the given <see cref="StringBuilder"/> to this <see cref="StringBuilder"/>.
+        ///// </summary>
+        //internal static StringBuilder Append(this StringBuilder text, StringBuilder csq, int start, int count)
+        //{
+        //    if (csq == null)
+        //    {
+        //        text.Append("null");
+        //        return text;
+        //    }
 
-            if ((start < 0) || (start + count > csq.Length))
-                throw new IndexOutOfRangeException(
-                    "start " + start + ", length " + count + ", csq.Length "
-                    + csq.Length);
-            //int end = start + count;
-            text.Append(csq.ToString(start, count));
+        //    if ((start < 0) || (start + count > csq.Length))
+        //        throw new IndexOutOfRangeException(
+        //            "start " + start + ", length " + count + ", csq.Length "
+        //            + csq.Length);
+        //    //int end = start + count;
+        //    text.Append(csq.ToString(start, count));
 
-            //for (int i = start; i < end; i++)
-            //    text.Append(csq[i]);
-            return text;
-        }
+        //    //for (int i = start; i < end; i++)
+        //    //    text.Append(csq[i]);
+        //    return text;
+        //}
 
-        /// <summary>
-        /// Deletes a sequence of characters specified by <paramref name="startIndex"/> and <paramref name="count"/>.
-        /// Shifts any remaining characters to the left.
-        /// </summary>
-        /// <param name="text">This <see cref="StringBuilder"/>.</param>
-        /// <param name="startIndex">The start index in <paramref name="text"/>.</param>
-        /// <param name="count">The number of characters to delete in <paramref name="text"/>.</param>
-        /// <returns>This <see cref="StringBuilder"/>, for chaining.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="startIndex"/> or <paramref name="count"/> is less than zero.
-        /// </exception>
-        /// <exception cref="ArgumentNullException">If <paramref name="text"/> is <c>null</c>.</exception>
-        public static StringBuilder Delete(this StringBuilder text, int startIndex, int count) // ICU4N TODO: Replace with Remove(int, int) and calculate end
-        {
-            if (text == null)
-                throw new ArgumentNullException(nameof(text));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+        ///// <summary>
+        ///// Deletes a sequence of characters specified by <paramref name="startIndex"/> and <paramref name="count"/>.
+        ///// Shifts any remaining characters to the left.
+        ///// </summary>
+        ///// <param name="text">This <see cref="StringBuilder"/>.</param>
+        ///// <param name="startIndex">The start index in <paramref name="text"/>.</param>
+        ///// <param name="count">The number of characters to delete in <paramref name="text"/>.</param>
+        ///// <returns>This <see cref="StringBuilder"/>, for chaining.</returns>
+        ///// <exception cref="ArgumentOutOfRangeException">
+        ///// <paramref name="startIndex"/> or <paramref name="count"/> is less than zero.
+        ///// </exception>
+        ///// <exception cref="ArgumentNullException">If <paramref name="text"/> is <c>null</c>.</exception>
+        //public static StringBuilder Delete(this StringBuilder text, int startIndex, int count) // ICU4N TODO: Replace with Remove(int, int) and calculate end
+        //{
+        //    if (text == null)
+        //        throw new ArgumentNullException(nameof(text));
+        //    if (startIndex < 0)
+        //        throw new ArgumentOutOfRangeException(nameof(startIndex));
+        //    if (count < 0)
+        //        throw new ArgumentOutOfRangeException(nameof(count));
 
-            //int length = end - start;
-            if (startIndex + count > text.Length)
-            {
-                count = text.Length - startIndex;
-            }
-            if (count > 0)
-            {
-                text.Remove(startIndex, count);
-            }
+        //    //int length = end - start;
+        //    if (startIndex + count > text.Length)
+        //    {
+        //        count = text.Length - startIndex;
+        //    }
+        //    if (count > 0)
+        //    {
+        //        text.Remove(startIndex, count);
+        //    }
 
-            return text;
-        }
+        //    return text;
+        //}
 
         ///// <summary>
         ///// Replaces the specified subsequence in this builder with the specified
@@ -469,73 +469,73 @@ namespace ICU4N.Support.Text
         //    throw new IndexOutOfRangeException();
         //}
 
-        /// <summary>
-        /// Replaces the specified subsequence in this builder with the specified
-        /// string, <paramref name="newValue"/>. The substring begins at the specified
-        /// <paramref name="startIndex"/> and ends to the character at 
-        /// <c><paramref name="count"/> - <paramref name="startIndex"/></c> or
-        /// to the end of the sequence if no such character exists. First the
-        /// characters in the substring ar removed and then the specified 
-        /// <paramref name="newValue"/> is inserted at <paramref name="startIndex"/>.
-        /// This <see cref="StringBuilder"/> will be lengthened to accommodate the
-        /// specified <paramref name="newValue"/> if necessary.
-        /// <para/>
-        /// IMPORTANT: This method has .NET semantics. That is, the third parameter is a count
-        /// rather than an exclusive end index. To translate from Java, use <c>end - start</c>
-        /// to resolve the <paramref name="count"/> parameter.
-        /// </summary>
-        /// <param name="text">This <see cref="StringBuilder"/>.</param>
-        /// <param name="startIndex">The inclusive begin index in <paramref name="text"/>.</param>
-        /// <param name="count">The number of characters to replace.</param>
-        /// <param name="newValue">The replacement string.</param>
-        /// <returns>This <see cref="StringBuilder"/> builder.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        /// <paramref name="startIndex"/> or <paramref name="count"/> is less than zero.
-        /// </exception>
-        /// <exception cref="ArgumentNullException">If <paramref name="text"/> or <paramref name="newValue"/> is <c>null</c>.</exception>
-        public static StringBuilder Replace(this StringBuilder text, int startIndex, int count, string newValue)
-        {
-            if (text == null)
-                throw new ArgumentNullException(nameof(text));
-            if (newValue == null)
-                throw new ArgumentNullException(nameof(newValue));
-            if (startIndex < 0)
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            if (count < 0)
-                throw new ArgumentOutOfRangeException(nameof(count));
+        ///// <summary>
+        ///// Replaces the specified subsequence in this builder with the specified
+        ///// string, <paramref name="newValue"/>. The substring begins at the specified
+        ///// <paramref name="startIndex"/> and ends to the character at 
+        ///// <c><paramref name="count"/> - <paramref name="startIndex"/></c> or
+        ///// to the end of the sequence if no such character exists. First the
+        ///// characters in the substring ar removed and then the specified 
+        ///// <paramref name="newValue"/> is inserted at <paramref name="startIndex"/>.
+        ///// This <see cref="StringBuilder"/> will be lengthened to accommodate the
+        ///// specified <paramref name="newValue"/> if necessary.
+        ///// <para/>
+        ///// IMPORTANT: This method has .NET semantics. That is, the third parameter is a count
+        ///// rather than an exclusive end index. To translate from Java, use <c>end - start</c>
+        ///// to resolve the <paramref name="count"/> parameter.
+        ///// </summary>
+        ///// <param name="text">This <see cref="StringBuilder"/>.</param>
+        ///// <param name="startIndex">The inclusive begin index in <paramref name="text"/>.</param>
+        ///// <param name="count">The number of characters to replace.</param>
+        ///// <param name="newValue">The replacement string.</param>
+        ///// <returns>This <see cref="StringBuilder"/> builder.</returns>
+        ///// <exception cref="ArgumentOutOfRangeException">
+        ///// <paramref name="startIndex"/> or <paramref name="count"/> is less than zero.
+        ///// </exception>
+        ///// <exception cref="ArgumentNullException">If <paramref name="text"/> or <paramref name="newValue"/> is <c>null</c>.</exception>
+        //public static StringBuilder Replace(this StringBuilder text, int startIndex, int count, string newValue)
+        //{
+        //    if (text == null)
+        //        throw new ArgumentNullException(nameof(text));
+        //    if (newValue == null)
+        //        throw new ArgumentNullException(nameof(newValue));
+        //    if (startIndex < 0)
+        //        throw new ArgumentOutOfRangeException(nameof(startIndex));
+        //    if (count < 0)
+        //        throw new ArgumentOutOfRangeException(nameof(count));
 
-            int end = startIndex + count;
-            if (end > text.Length)
-            {
-                end = text.Length;
-            }
-            if (end > startIndex)
-            {
-                int stringLength = newValue.Length;
-                int diff = end - startIndex - stringLength;
-                if (diff > 0)
-                { // replacing with fewer characters
-                    text.Remove(startIndex, diff);
-                }
-                else if (diff < 0)
-                {
-                    // replacing with more characters...need some room
-                    text.Insert(startIndex, new char[-diff]);
-                }
-                // copy the chars based on the new length
-                for (int i = 0; i < stringLength; i++)
-                {
-                    text[i + startIndex] = newValue[i];
-                }
-                return text;
-            }
-            if (startIndex == end)
-            {
-                text.Insert(startIndex, newValue);
-                return text;
-            }
-            return text;
-        }
+        //    int end = startIndex + count;
+        //    if (end > text.Length)
+        //    {
+        //        end = text.Length;
+        //    }
+        //    if (end > startIndex)
+        //    {
+        //        int stringLength = newValue.Length;
+        //        int diff = end - startIndex - stringLength;
+        //        if (diff > 0)
+        //        { // replacing with fewer characters
+        //            text.Remove(startIndex, diff);
+        //        }
+        //        else if (diff < 0)
+        //        {
+        //            // replacing with more characters...need some room
+        //            text.Insert(startIndex, new char[-diff]);
+        //        }
+        //        // copy the chars based on the new length
+        //        for (int i = 0; i < stringLength; i++)
+        //        {
+        //            text[i + startIndex] = newValue[i];
+        //        }
+        //        return text;
+        //    }
+        //    if (startIndex == end)
+        //    {
+        //        text.Insert(startIndex, newValue);
+        //        return text;
+        //    }
+        //    return text;
+        //}
 
         /// <summary>
         /// Convenience method to wrap a <see cref="StringBuilder"/> in an

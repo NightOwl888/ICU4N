@@ -1,6 +1,7 @@
 ﻿using ICU4N.Support.Text;
 using ICU4N.Text;
 using ICU4N.Util;
+using J2N.Text;
 using J2N.Threading;
 using NUnit.Framework;
 using System;

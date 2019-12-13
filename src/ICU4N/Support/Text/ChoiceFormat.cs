@@ -1,5 +1,6 @@
 ﻿using ICU4N.Text;
 using J2N;
+using J2N.Numerics;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -229,7 +230,7 @@ namespace ICU4N.Support.Text
             int hashCode = 0;
             for (int i = 0; i < choiceLimits.Length; i++)
             {
-                long v = BitConverter.DoubleToInt64Bits(choiceLimits[i]);
+                long v = BitConversion.DoubleToInt64Bits(choiceLimits[i]);
                 hashCode += (int)(v ^ (v.TripleShift(32))) + choiceFormats[i].GetHashCode();
             }
             return hashCode;

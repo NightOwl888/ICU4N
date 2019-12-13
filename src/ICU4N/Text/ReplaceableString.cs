@@ -1,4 +1,5 @@
 ﻿using ICU4N.Support.Text;
+using J2N.Text;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Text

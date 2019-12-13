@@ -3,6 +3,7 @@ using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.IO;
+using J2N.Numerics;
 using System.Diagnostics;
 using Arrays = J2N.Collections.Arrays;
 

@@ -9,6 +9,7 @@
 using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
+using J2N.Numerics;
 using J2N.Text;
 using System;
 using System.IO;

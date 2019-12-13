@@ -2,6 +2,7 @@
 using ICU4N.Text;
 using J2N;
 using J2N.Collections;
+using J2N.Numerics;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
