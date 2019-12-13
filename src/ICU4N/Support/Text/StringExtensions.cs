@@ -19,129 +19,129 @@ namespace ICU4N.Support.Text
             return StringComparer.OrdinalIgnoreCase.Compare(str, value);
         }
 
-        /// <summary>
-        /// Returns the index within this string of the first occurrence of
-        /// the specified character. If a character with value
-        /// <paramref name="ch"/> occurs in the character sequence represented by
-        /// this <see cref="string"/> object, then the index (in Unicode
-        /// code units) of the first such occurrence is returned. For
-        /// values of <paramref name="ch"/> in the range from 0 to 0xFFFF
-        /// (inclusive), this is the smallest value <i>k</i> such that:
-        /// <code>
-        ///     this[(<i>k</i>] == ch
-        /// </code>
-        /// is true. For other values of <paramref name="ch"/>, it is the
-        /// smallest value <i>k</i> such that:
-        /// <code>
-        ///     this.CodePointAt(<i>k</i>) == ch
-        /// </code>
-        /// is true. In either case, if no such character occurs in this
-        /// string, then <c>-1</c> is returned.
-        /// </summary>
-        /// <param name="text">This <see cref="string"/>.</param>
-        /// <param name="ch">A character (Unicode code point).</param>
-        /// <returns>The index of the first occurrence of the character in the
-        /// character sequence represented by this object, or
-        /// <c>-1</c> if the character does not occur.
-        /// </returns>
-        public static int IndexOf(this string text, int ch)
-        {
-            return IndexOf(text, ch, 0);
-        }
+        ///// <summary>
+        ///// Returns the index within this string of the first occurrence of
+        ///// the specified character. If a character with value
+        ///// <paramref name="ch"/> occurs in the character sequence represented by
+        ///// this <see cref="string"/> object, then the index (in Unicode
+        ///// code units) of the first such occurrence is returned. For
+        ///// values of <paramref name="ch"/> in the range from 0 to 0xFFFF
+        ///// (inclusive), this is the smallest value <i>k</i> such that:
+        ///// <code>
+        /////     this[(<i>k</i>] == ch
+        ///// </code>
+        ///// is true. For other values of <paramref name="ch"/>, it is the
+        ///// smallest value <i>k</i> such that:
+        ///// <code>
+        /////     this.CodePointAt(<i>k</i>) == ch
+        ///// </code>
+        ///// is true. In either case, if no such character occurs in this
+        ///// string, then <c>-1</c> is returned.
+        ///// </summary>
+        ///// <param name="text">This <see cref="string"/>.</param>
+        ///// <param name="ch">A character (Unicode code point).</param>
+        ///// <returns>The index of the first occurrence of the character in the
+        ///// character sequence represented by this object, or
+        ///// <c>-1</c> if the character does not occur.
+        ///// </returns>
+        //public static int IndexOf(this string text, int ch)
+        //{
+        //    return IndexOf(text, ch, 0);
+        //}
 
-        /// <summary>
-        /// Returns the index within this string of the first occurrence of the
-        /// specified character, starting the search at the specified index.
-        /// </summary>
-        /// <remarks>
-        /// If a character with value <paramref name="ch"/> occurs in the
-        /// character sequence represented by this <see cref="string"/>
-        /// object at an index no smaller than <paramref name="fromIndex"/>, then
-        /// the index of the first such occurrence is returned. For values
-        /// of <paramref name="ch"/> in the range from 0 to 0xFFFF (inclusive),
-        /// this is the smallest value <i>k</i> such that:
-        /// <code>
-        ///     (this[<i>k</i>] == ch) &amp;&amp; (<i>k</i> &gt;= fromIndex)
-        /// </code>
-        /// is true. For other values of <code>ch</code>, it is the
-        /// smallest value <i>k</i> such that:
-        /// <code>
-        ///     (this.CodePointAt(<i>k</i>) == ch) &amp;&amp; (<i>k</i> &gt;= fromIndex)
-        /// </code>
-        /// is true. In either case, if no such character occurs in this
-        /// string at or after position <paramref name="fromIndex"/>, then
-        /// <c>-1</c> is returned.
-        /// <para/>
-        /// There is no restriction on the value of <paramref name="fromIndex"/>. If it
-        /// is negative, it has the same effect as if it were zero: this entire
-        /// string may be searched. If it is greater than the length of this
-        /// string, it has the same effect as if it were equal to the length of
-        /// this string: <c>-1</c> is returned.
-        /// <para/>
-        /// All indices are specified in <c>char</c> values
-        /// (Unicode code units).
-        /// </remarks>
-        /// <param name="text">This <see cref="string"/>.</param>
-        /// <param name="ch">A character (Unicode code point).</param>
-        /// <param name="fromIndex">The index to start the search from.</param>
-        /// <returns>The index of the first occurrence of the character in the
-        /// character sequence represented by this object that is greater
-        /// than or equal to <paramref name="fromIndex"/>, or <c>-1</c>
-        /// if the character does not occur.
-        /// </returns>
-        public static int IndexOf(this string text, int ch, int fromIndex)
-        {
-            if (fromIndex < 0)
-            {
-                fromIndex = 0;
-            }
-            else if (fromIndex >= text.Length)
-            {
-                // Note: fromIndex might be near -1>>>1.
-                return -1;
-            }
+        ///// <summary>
+        ///// Returns the index within this string of the first occurrence of the
+        ///// specified character, starting the search at the specified index.
+        ///// </summary>
+        ///// <remarks>
+        ///// If a character with value <paramref name="ch"/> occurs in the
+        ///// character sequence represented by this <see cref="string"/>
+        ///// object at an index no smaller than <paramref name="fromIndex"/>, then
+        ///// the index of the first such occurrence is returned. For values
+        ///// of <paramref name="ch"/> in the range from 0 to 0xFFFF (inclusive),
+        ///// this is the smallest value <i>k</i> such that:
+        ///// <code>
+        /////     (this[<i>k</i>] == ch) &amp;&amp; (<i>k</i> &gt;= fromIndex)
+        ///// </code>
+        ///// is true. For other values of <code>ch</code>, it is the
+        ///// smallest value <i>k</i> such that:
+        ///// <code>
+        /////     (this.CodePointAt(<i>k</i>) == ch) &amp;&amp; (<i>k</i> &gt;= fromIndex)
+        ///// </code>
+        ///// is true. In either case, if no such character occurs in this
+        ///// string at or after position <paramref name="fromIndex"/>, then
+        ///// <c>-1</c> is returned.
+        ///// <para/>
+        ///// There is no restriction on the value of <paramref name="fromIndex"/>. If it
+        ///// is negative, it has the same effect as if it were zero: this entire
+        ///// string may be searched. If it is greater than the length of this
+        ///// string, it has the same effect as if it were equal to the length of
+        ///// this string: <c>-1</c> is returned.
+        ///// <para/>
+        ///// All indices are specified in <c>char</c> values
+        ///// (Unicode code units).
+        ///// </remarks>
+        ///// <param name="text">This <see cref="string"/>.</param>
+        ///// <param name="ch">A character (Unicode code point).</param>
+        ///// <param name="fromIndex">The index to start the search from.</param>
+        ///// <returns>The index of the first occurrence of the character in the
+        ///// character sequence represented by this object that is greater
+        ///// than or equal to <paramref name="fromIndex"/>, or <c>-1</c>
+        ///// if the character does not occur.
+        ///// </returns>
+        //public static int IndexOf(this string text, int ch, int fromIndex)
+        //{
+        //    if (fromIndex < 0)
+        //    {
+        //        fromIndex = 0;
+        //    }
+        //    else if (fromIndex >= text.Length)
+        //    {
+        //        // Note: fromIndex might be near -1>>>1.
+        //        return -1;
+        //    }
 
-            if (ch < Character.MinSupplementaryCodePoint)
-            {
-                // handle most cases here (ch is a BMP code point or a
-                // negative value (invalid code point))
-                int max = text.Length;
-                for (int i = fromIndex; i < max; i++)
-                {
-                    if (text[i] == ch)
-                    {
-                        return i;
-                    }
-                }
-                return -1;
-            }
-            else
-            {
-                return IndexOfSupplementary(text, ch, fromIndex);
-            }
-        }
+        //    if (ch < Character.MinSupplementaryCodePoint)
+        //    {
+        //        // handle most cases here (ch is a BMP code point or a
+        //        // negative value (invalid code point))
+        //        int max = text.Length;
+        //        for (int i = fromIndex; i < max; i++)
+        //        {
+        //            if (text[i] == ch)
+        //            {
+        //                return i;
+        //            }
+        //        }
+        //        return -1;
+        //    }
+        //    else
+        //    {
+        //        return IndexOfSupplementary(text, ch, fromIndex);
+        //    }
+        //}
 
-        /// <summary>
-        /// Handles (rare) calls of indexOf with a supplementary character.
-        /// </summary>
-        private static int IndexOfSupplementary(this string text, int ch, int fromIndex)
-        {
-            if (Character.IsValidCodePoint(ch))
-            {
-                string pair = char.ConvertFromUtf32(ch);
-                char hi = pair[0];
-                char lo = pair[1];
-                int max = text.Length - 1;
-                for (int i = fromIndex; i < max; i++)
-                {
-                    if (text[i] == hi && text[i + 1] == lo)
-                    {
-                        return i;
-                    }
-                }
-            }
-            return -1;
-        }
+        ///// <summary>
+        ///// Handles (rare) calls of indexOf with a supplementary character.
+        ///// </summary>
+        //private static int IndexOfSupplementary(this string text, int ch, int fromIndex)
+        //{
+        //    if (Character.IsValidCodePoint(ch))
+        //    {
+        //        string pair = char.ConvertFromUtf32(ch);
+        //        char hi = pair[0];
+        //        char lo = pair[1];
+        //        int max = text.Length - 1;
+        //        for (int i = fromIndex; i < max; i++)
+        //        {
+        //            if (text[i] == hi && text[i + 1] == lo)
+        //            {
+        //                return i;
+        //            }
+        //        }
+        //    }
+        //    return -1;
+        //}
 
         /// <summary>
         /// Compares the specified string to this string and compares the specified
