@@ -4,6 +4,7 @@ using ICU4N.Text.Unicode;
 using J2N;
 using NUnit.Framework;
 using System;
+using System.Reflection;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Dev.Test.Lang
@@ -279,7 +280,7 @@ namespace ICU4N.Dev.Test.Lang
                 catch (Exception e)
                 {
                     //if (!exc.GetTypeInfo().isInstance(e))
-                    if (!exc.IsAssignableFrom(e.GetType()))
+                    if (!exc.GetTypeInfo().IsAssignableFrom(e.GetType()))
                     {
                         Warnln("bad exception " + Str(s, start, limit)
                                 + e.GetType().Name);
@@ -391,7 +392,7 @@ namespace ICU4N.Dev.Test.Lang
                 catch (Exception e)
                 {
                     //if (!exc.isInstance(e))
-                    if (!exc.IsAssignableFrom(e.GetType()))
+                    if (!exc.GetTypeInfo().IsAssignableFrom(e.GetType()))
                     {
                         Errln("bad exception "
                                 + Str(new String(text), start, count, index,
@@ -411,7 +412,7 @@ namespace ICU4N.Dev.Test.Lang
                 catch (Exception e)
                 {
                     //if (!exc.isInstance(e))
-                    if (!exc.IsAssignableFrom(e.GetType()))
+                    if (!exc.GetTypeInfo().IsAssignableFrom(e.GetType()))
                     {
                         Errln("bad exception "
                                 + Str(text, 0, text.Length, index, offset)

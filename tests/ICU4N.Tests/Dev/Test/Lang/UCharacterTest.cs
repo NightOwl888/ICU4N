@@ -13,6 +13,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using StringBuffer = System.Text.StringBuilder;
@@ -3031,7 +3032,7 @@ namespace ICU4N.Dev.Test.Lang
 
                 try
                 {
-                    if ((int)ubc.GetField(name + "_ID").GetValue(blk) != b)
+                    if ((int)ubc.GetTypeInfo().GetField(name + "_ID").GetValue(blk) != b)
                     {
                         Errln("UCharacter.UnicodeBlock.GetInstance(" + b + ") returned a block with a name of " + name +
                               " which does not match the block id.");
