@@ -9,78 +9,6 @@ using System.Text;
 namespace ICU4N.Text
 {
     /// <summary>
-    /// For <see cref="RuleBasedBreakIterator"/>s, the status tag from the
-    /// break rule that determined the most recently
-    /// returned break position. Other <see cref="BreakIterator"/> types
-    /// always return <see cref="RuleStatus.WordNone"/>
-    /// </summary>
-    /// <draft>ICU4N 60.1</draft>
-    public enum RuleStatus // ICU4N TODO: API - These are not specific status values, but lower and upper limits of possible values. These should be moved back to constants unless there is actually a list of the specific values somewhere.
-    {
-        /// <summary>
-        /// Tag value for "words" that do not fit into any of other categories.
-        /// Includes spaces and most punctuation.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordNone = 0,
-
-        /// <summary>
-        /// Upper bound for tags for uncategorized words.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordNoneLimit = 100,
-
-        /// <summary>
-        /// Tag value for words that appear to be numbers, lower limit.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordNumber = 100,
-
-        /// <summary>
-        /// Tag value for words that appear to be numbers, upper limit.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordNumberLimit = 200,
-
-        /// <summary>
-        /// Tag value for words that contain letters, excluding
-        /// hiragana, katakana or ideographic characters, lower limit.
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordLetter = 200,
-
-        /// <summary>
-        /// Tag value for words containing letters, upper limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordLetterLimit = 300,
-
-        /// <summary>
-        /// Tag value for words containing kana characters, lower limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordKana = 300,
-
-        /// <summary>
-        /// Tag value for words containing kana characters, upper limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordKanaLimit = 400,
-
-        /// <summary>
-        /// Tag value for words containing ideographic characters, lower limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordIdeo = 400,
-
-        /// <summary>
-        /// Tag value for words containing ideographic characters, upper limit
-        /// </summary>
-        /// <stable>ICU 53</stable>
-        WordIdeoLimit = 500,
-    }
-
-    /// <summary>
     /// A class that locates boundaries in text.  This class defines a protocol for
     /// objects that break up a piece of natural-language text according to a set
     /// of criteria.  Instances or subclasses of <see cref="BreakIterator"/> can be provided, for
@@ -469,62 +397,62 @@ namespace ICU4N.Text
         /// Includes spaces and most punctuation.
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordNone = RuleStatus.WordNone;
+        public const int WordNone = 0;
 
         /// <summary>
         /// Upper bound for tags for uncategorized words.
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordNoneLimit = RuleStatus.WordNoneLimit;
+        public const int WordNoneLimit = 100;
 
         /// <summary>
         /// Tag value for words that appear to be numbers, lower limit.
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordNumber = RuleStatus.WordNumber;
+        public const int WordNumber = 100;
 
         /// <summary>
         /// Tag value for words that appear to be numbers, upper limit.
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordNumberLimit = RuleStatus.WordNumberLimit;
+        public const int WordNumberLimit = 200;
 
         /// <summary>
         /// Tag value for words that contain letters, excluding
         /// hiragana, katakana or ideographic characters, lower limit.
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordLetter = RuleStatus.WordLetter;
+        public const int WordLetter = 200;
 
         /// <summary>
         /// Tag value for words containing letters, upper limit
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordLetterLimit = RuleStatus.WordLetterLimit;
+        public const int WordLetterLimit = 300;
 
         /// <summary>
         /// Tag value for words containing kana characters, lower limit
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordKana = RuleStatus.WordKana;
+        public const int WordKana = 300;
 
         /// <summary>
         /// Tag value for words containing kana characters, upper limit
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordKanaLimit = RuleStatus.WordKanaLimit;
+        public const int WordKanaLimit = 400;
 
         /// <summary>
         /// Tag value for words containing ideographic characters, lower limit
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordIdeo = RuleStatus.WordIdeo;
+        public const int WordIdeo = 400;
 
         /// <summary>
         /// Tag value for words containing ideographic characters, upper limit
         /// </summary>
         /// <stable>ICU 53</stable>
-        public const RuleStatus WordIdeoLimit = RuleStatus.WordIdeoLimit;
+        public const int WordIdeoLimit = 500;
 
         /// <summary>
         /// For <see cref="RuleBasedBreakIterator"/>s, return the status tag from the
@@ -535,10 +463,7 @@ namespace ICU4N.Text
         /// a default value of 0 is returned.
         /// </summary>
         /// <stable>ICU 52</stable>
-        public virtual RuleStatus RuleStatus
-        {
-            get { return RuleStatus.WordNone; } // ICU4N: RuleStatus.WordNone == 0
-        }
+        public virtual int RuleStatus => WordNone;
 
         /// <summary>
         /// For <see cref="RuleBasedBreakIterator"/>s, get the status (tag) values from the break rule(s)

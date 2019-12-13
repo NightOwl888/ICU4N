@@ -387,31 +387,31 @@ namespace ICU4N.Dev.Test.Rbbi
 
             bi.SetText("# ");
             assertEquals(null, bi.Next(), 1);
-            assertTrue(null, bi.RuleStatus >= RuleStatus.WordNone);
-            assertTrue(null, bi.RuleStatus < RuleStatus.WordNoneLimit);
+            assertTrue(null, bi.RuleStatus >= BreakIterator.WordNone);
+            assertTrue(null, bi.RuleStatus < BreakIterator.WordNoneLimit);
 
             bi.SetText("3 ");
             assertEquals(null, bi.Next(), 1);
-            assertTrue(null, bi.RuleStatus >= RuleStatus.WordNumber);
-            assertTrue(null, bi.RuleStatus < RuleStatus.WordNumberLimit);
+            assertTrue(null, bi.RuleStatus >= BreakIterator.WordNumber);
+            assertTrue(null, bi.RuleStatus < BreakIterator.WordNumberLimit);
 
             bi.SetText("a ");
             assertEquals(null, bi.Next(), 1);
-            assertTrue(null, bi.RuleStatus >= RuleStatus.WordLetter);
-            assertTrue(null, bi.RuleStatus < RuleStatus.WordLetterLimit);
+            assertTrue(null, bi.RuleStatus >= BreakIterator.WordLetter);
+            assertTrue(null, bi.RuleStatus < BreakIterator.WordLetterLimit);
 
 
             bi.SetText("イ  ");
             assertEquals(null, bi.Next(), 1);
-            assertTrue(null, bi.RuleStatus >= RuleStatus.WordKana);
+            assertTrue(null, bi.RuleStatus >= BreakIterator.WordKana);
             // TODO: ticket #10261, Kana is not returning the correct status.
-            // assertTrue(null, bi.getRuleStatus() < RuleStatus.WordKanaLimit);
-            // System.out.println("\n" + bi.getRuleStatus());
+            // assertTrue(null, bi.RuleStatus < RuleStatus.WordKanaLimit);
+            // Console.Out.WriteLine("\n" + bi.RuleStatus);
 
             bi.SetText("退 ");
             assertEquals(null, bi.Next(), 1);
-            assertTrue(null, bi.RuleStatus >= RuleStatus.WordIdeo);
-            assertTrue(null, bi.RuleStatus < RuleStatus.WordIdeoLimit);
+            assertTrue(null, bi.RuleStatus >= BreakIterator.WordIdeo);
+            assertTrue(null, bi.RuleStatus < BreakIterator.WordIdeoLimit);
         }
 
         /**
