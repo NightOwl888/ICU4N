@@ -259,24 +259,24 @@ namespace ICU4N.Support.Text
             throw new ArgumentNullException();
         }
 
-        /// <summary>
-        /// Compares the specified string to this string, starting at the specified
-        /// offset, to determine if the specified string is a prefix.
-        /// </summary>
-        /// <param name="text">This string.</param>
-        /// <param name="prefix">The string to look for.</param>
-        /// <param name="start">The starting offset.</param>
-        /// <returns><c>true</c> if the specified string occurs in this string at the specified offset, <c>false</c> otherwise.</returns>
-        /// <exception cref="ArgumentNullException">If <paramref name="text"/> or <paramref name="prefix"/> is <c>null</c>.</exception>
-        public static bool StartsWith(this string text, string prefix, int start)
-        {
-            if (text == null)
-                throw new ArgumentNullException(nameof(text));
-            if (prefix == null)
-                throw new ArgumentNullException(nameof(prefix));
+        ///// <summary>
+        ///// Compares the specified string to this string, starting at the specified
+        ///// offset, to determine if the specified string is a prefix.
+        ///// </summary>
+        ///// <param name="text">This string.</param>
+        ///// <param name="prefix">The string to look for.</param>
+        ///// <param name="start">The starting offset.</param>
+        ///// <returns><c>true</c> if the specified string occurs in this string at the specified offset, <c>false</c> otherwise.</returns>
+        ///// <exception cref="ArgumentNullException">If <paramref name="text"/> or <paramref name="prefix"/> is <c>null</c>.</exception>
+        //public static bool StartsWith(this string text, string prefix, int start)
+        //{
+        //    if (text == null)
+        //        throw new ArgumentNullException(nameof(text));
+        //    if (prefix == null)
+        //        throw new ArgumentNullException(nameof(prefix));
 
-            return RegionMatches(text, start, prefix, 0, prefix.Length);
-        }
+        //    return RegionMatches(text, start, prefix, 0, prefix.Length);
+        //}
 
         ///// <summary>
         ///// Compares a <see cref="string"/> to this <see cref="string"/> to determine if

@@ -1,5 +1,6 @@
 ﻿using ICU4N.Text;
 using J2N;
+using J2N.Text;
 using J2N.Numerics;
 using System;
 using System.Collections.Generic;
@@ -324,7 +325,7 @@ namespace ICU4N.Support.Text
             int offset = position.Index;
             for (int i = 0; i < choiceFormats.Length; i++)
             {
-                if (str.StartsWith(choiceFormats[i], offset))
+                if (str.StartsWith(choiceFormats[i], offset, StringComparison.Ordinal))
                 {
                     position.Index = offset + choiceFormats[i].Length;
                     return choiceLimits[i];
