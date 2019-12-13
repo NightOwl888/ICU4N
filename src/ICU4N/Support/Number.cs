@@ -35,21 +35,6 @@ namespace ICU4N.Support
             }
         }
 
-        ///// <summary>
-        ///// Returns the signum function of the specified <see cref="int"/> value.  (The
-        ///// return value is -1 if the specified value is negative; 0 if the
-        ///// specified value is zero; and 1 if the specified value is positive.)
-        ///// <para/>
-        ///// This can be useful for testing the results of two <see cref="IComparable{T}.CompareTo(T)"/>
-        ///// methods against each other, since only the sign is guaranteed to be the same between impementations.
-        ///// </summary>
-        ///// <returns>the signum function of the specified <see cref="int"/> value.</returns>
-        //public static int Signum(int i)
-        //{
-        //    // HD, Section 2-7
-        //    return (i >> 31) | (-i.TripleShift(31));
-        //}
-
         public static bool IsNumber(this object value)
         {
             return value is sbyte
