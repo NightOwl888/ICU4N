@@ -1937,7 +1937,7 @@ namespace ICU4N.Impl
         /// Note this takes into consideration the values in any nested collections.
         /// </summary>
         /// <param name="o">An object.</param>
-        /// <returns>the result of calling <see cref="Support.Collections.CollectionUtil.ToString(object)"/> for a non-null argument and "null" for a
+        /// <returns>the result of calling <see cref="CollectionUtil.ToString(object)"/> for a non-null argument and "null" for a
         /// null argument.</returns>
         public static string ToString(object o)
         {
