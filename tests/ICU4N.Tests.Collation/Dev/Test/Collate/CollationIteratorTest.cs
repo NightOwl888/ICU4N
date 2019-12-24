@@ -304,7 +304,7 @@ namespace ICU4N.Dev.Test.Collate
             int[] order = CollationTest.GetOrders(iter);
             iter.SetOffset(1); // sets offset in the middle of ch
             int[] order2 = CollationTest.GetOrders(iter);
-            if (!Arrays.Equals(order, order2))
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(order, order2))
             {
                 Errln("Error: setting offset in the middle of a contraction should be the same as setting it to the start of the contraction");
             }
@@ -314,7 +314,7 @@ namespace ICU4N.Dev.Test.Collate
             order = CollationTest.GetOrders(iter);
             iter.SetOffset(4); // sets offset in the middle of ch
             order2 = CollationTest.GetOrders(iter);
-            if (!Arrays.Equals(order, order2))
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(order, order2))
             {
                 Errln("Error: setting offset in the middle of a contraction should be the same as setting it to the start of the contraction");
             }
@@ -324,7 +324,7 @@ namespace ICU4N.Dev.Test.Collate
             order = CollationTest.GetOrders(iter);
             iter.SetOffset(1); // sets offset in the middle of surrogate
             order2 = CollationTest.GetOrders(iter);
-            if (!Arrays.Equals(order, order2))
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(order, order2))
             {
                 Errln("Error: setting offset in the middle of a surrogate pair should be the same as setting it to the start of the surrogate pair");
             }
@@ -334,7 +334,7 @@ namespace ICU4N.Dev.Test.Collate
             order = CollationTest.GetOrders(iter);
             iter.SetOffset(7); // sets offset in the middle of surrogate
             order2 = CollationTest.GetOrders(iter);
-            if (!Arrays.Equals(order, order2))
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(order, order2))
             {
                 Errln("Error: setting offset in the middle of a surrogate pair should be the same as setting it to the start of the surrogate pair");
             }

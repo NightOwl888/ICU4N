@@ -40,8 +40,8 @@ namespace ICU4N.Dev.Test.Normalizers
             trans.NameToASCII(input, result, info);
             if (info.HasErrors || !UTF16Plus.Equal(result, expected))
             {
-                Errln(String.Format("T.nameToASCII(www.example.com) info.errors={0} result matches={1}",
-                                    CollectionUtil.ToString(info.Errors), UTF16Plus.Equal(result, expected)));
+                Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII(www.example.com) info.errors={0} result matches={1}",
+                                    info.Errors, UTF16Plus.Equal(result, expected)));
             }
             input = "xn--bcher.de-65a";
             expected = "xn--bcher\uFFFDde-65a";
@@ -50,16 +50,16 @@ namespace ICU4N.Dev.Test.Normalizers
                 !UTF16Plus.Equal(result, expected)
             )
             {
-                Errln(String.Format("N.labelToASCII(label-with-dot) failed with errors {0}",
-                                    CollectionUtil.ToString(info.Errors)));
+                Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToASCII(label-with-dot) failed with errors {0}",
+                                    info.Errors));
             }
             // Java API tests that are not parallel to C++ tests
             // because the C++ specifics (error codes etc.) do not apply here.
             String resultString = trans.NameToUnicode("fA\u00DF.de", result, info).ToString();
             if (info.HasErrors || !resultString.Equals("fass.de"))
             {
-                Errln(String.Format("T.nameToUnicode(fA\u00DF.de) info.errors={0} result matches={1}",
-                                    CollectionUtil.ToString(info.Errors), resultString.Equals("fass.de")));
+                Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode(fA\u00DF.de) info.errors={0} result matches={1}",
+                                    info.Errors, resultString.Equals("fass.de")));
             }
             try
             {
@@ -83,8 +83,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 info.HasErrors
             )
             {
-                Errln(String.Format("notSTD3.nameToUnicode(non-LDH ASCII) unexpected errors {0} string {1}",
-                                    CollectionUtil.ToString(info.Errors), Prettify(result.ToString())));
+                Errln(String.Format(StringFormatter.CurrentCulture, "notSTD3.nameToUnicode(non-LDH ASCII) unexpected errors {0} string {1}",
+                                    info.Errors, Prettify(result.ToString())));
             }
             // A space (BiDi class WS) is not allowed in a BiDi domain name.
             input = "a z.xn--4db.edu";
@@ -98,8 +98,8 @@ namespace ICU4N.Dev.Test.Normalizers
             not3.NameToUnicode(input, result, info);
             if (!UTF16Plus.Equal(result, input) || info.HasErrors)
             {
-                Errln(String.Format("notSTD3.nameToUnicode(equiv to non-LDH ASCII) unexpected errors {0} string {1}",
-                                    CollectionUtil.ToString(info.Errors), Prettify(result.ToString())));
+                Errln(String.Format(StringFormatter.CurrentCulture, "notSTD3.nameToUnicode(equiv to non-LDH ASCII) unexpected errors {0} string {1}",
+                                    info.Errors, Prettify(result.ToString())));
             }
         }
 
@@ -527,8 +527,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     if (!sameErrors(uNInfo, uniErrors))
                     {
-                        Errln(String.Format("N.nameToUnicode([{0}] {1}) unexpected errors {2}",
-                                            i, testCase.s, CollectionUtil.ToString(uNInfo.Errors)));
+                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1}) unexpected errors {2}",
+                                            i, testCase.s, uNInfo.Errors));
                         continue;
                     }
                     if (!UTF16Plus.Equal(uN, expected))
@@ -605,32 +605,32 @@ namespace ICU4N.Dev.Test.Normalizers
                 }
                 if (!UTF16Plus.Equal(aN, uNaN))
                 {
-                    Errln(String.Format("N.nameToASCII([{0}] {1})!=N.nameToUnicode().N.nameToASCII() " +
+                    Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToASCII([{0}] {1})!=N.nameToUnicode().N.nameToASCII() " +
                                         "(errors {2}) {3} vs. {4}",
-                                        i, testCase.s, CollectionUtil.ToString(aNInfo.Errors),
+                                        i, testCase.s, aNInfo.Errors,
                                         Prettify(aN.ToString()), Prettify(uNaN.ToString())));
                     continue;
                 }
                 if (!UTF16Plus.Equal(aT, uTaN))
                 {
-                    Errln(String.Format("T.nameToASCII([{0}] {1})!=T.nameToUnicode().N.nameToASCII() " +
+                    Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII([{0}] {1})!=T.nameToUnicode().N.nameToASCII() " +
                                         "(errors {2}) {3} vs. {4}",
-                                        i, testCase.s, CollectionUtil.ToString(aNInfo.Errors),
+                                        i, testCase.s, aNInfo.Errors,
                                         Prettify(aT.ToString()), Prettify(uTaN.ToString())));
                     continue;
                 }
                 if (!UTF16Plus.Equal(uN, aNuN))
                 {
-                    Errln(String.Format("N.nameToUnicode([{0}] {1})!=N.nameToASCII().N.nameToUnicode() " +
+                    Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1})!=N.nameToASCII().N.nameToUnicode() " +
                                         "(errors {2}) {3} vs. {4}",
-                                        i, testCase.s, CollectionUtil.ToString(uNInfo.Errors), Prettify(uN.ToString()), Prettify(aNuN.ToString())));
+                                        i, testCase.s, uNInfo.Errors, Prettify(uN.ToString()), Prettify(aNuN.ToString())));
                     continue;
                 }
                 if (!UTF16Plus.Equal(uT, aTuN))
                 {
-                    Errln(String.Format("T.nameToUnicode([{0}] {1})!=T.nameToASCII().N.nameToUnicode() " +
+                    Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode([{0}] {1})!=T.nameToASCII().N.nameToUnicode() " +
                                         "(errors {2}) {3} vs. {4}",
-                                        i, testCase.s, CollectionUtil.ToString(uNInfo.Errors),
+                                        i, testCase.s, uNInfo.Errors,
                                         Prettify(uT.ToString()), Prettify(aTuN.ToString())));
                     continue;
                 }
@@ -652,9 +652,9 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     if (!UTF16Plus.Equal(aN, aNL) || !sameErrors(aNInfo, aNLInfo))
                     {
-                        Errln(String.Format("N.nameToASCII([{0}] {1})!=N.labelToASCII() " +
+                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToASCII([{0}] {1})!=N.labelToASCII() " +
                                             "(errors {2} vs {3}) {4} vs. {5}",
-                                            i, testCase.s, CollectionUtil.ToString(aNInfo.Errors), CollectionUtil.ToString(aNLInfo.Errors),
+                                            i, testCase.s, aNInfo.Errors, aNLInfo.Errors,
                                             Prettify(aN.ToString()), Prettify(aNL.ToString())));
                         continue;
                     }
@@ -663,8 +663,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     if (!hasError(aNLInfo, IDNAError.LabelHasDot))
                     {
-                        Errln(String.Format("N.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
-                                            i, testCase.s, CollectionUtil.ToString(aNLInfo.Errors)));
+                        Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                            i, testCase.s, aNLInfo.Errors));
                         continue;
                     }
                 }
@@ -672,9 +672,9 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     if (!UTF16Plus.Equal(aT, aTL) || !sameErrors(aTInfo, aTLInfo))
                     {
-                        Errln(String.Format("T.nameToASCII([{0}] {1})!=T.labelToASCII() " +
+                        Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToASCII([{0}] {1})!=T.labelToASCII() " +
                                             "(errors {2} vs {3}) {4} vs. {5}",
-                                            i, testCase.s, CollectionUtil.ToString(aTInfo.Errors), CollectionUtil.ToString(aTLInfo.Errors),
+                                            i, testCase.s, aTInfo.Errors, aTLInfo.Errors,
                                             Prettify(aT.ToString()), Prettify(aTL.ToString())));
                         continue;
                     }
@@ -683,8 +683,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     if (!hasError(aTLInfo, IDNAError.LabelHasDot))
                     {
-                        Errln(String.Format("T.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
-                                            i, testCase.s, CollectionUtil.ToString(aTLInfo.Errors)));
+                        Errln(String.Format(StringFormatter.CurrentCulture, "T.labelToASCII([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                            i, testCase.s, aTLInfo.Errors));
                         continue;
                     }
                 }
@@ -692,9 +692,9 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     if (!UTF16Plus.Equal(uN, uNL) || !sameErrors(uNInfo, uNLInfo))
                     {
-                        Errln(String.Format("N.nameToUnicode([{0}] {1})!=N.labelToUnicode() " +
+                        Errln(String.Format(StringFormatter.CurrentCulture, "N.nameToUnicode([{0}] {1})!=N.labelToUnicode() " +
                                             "(errors {2} vs {3}) {4} vs. {5}",
-                                            i, testCase.s, CollectionUtil.ToString(uNInfo.Errors), CollectionUtil.ToString(uNLInfo.Errors),
+                                            i, testCase.s, uNInfo.Errors, uNLInfo.Errors,
                                             Prettify(uN.ToString()), Prettify(uNL.ToString())));
                         continue;
                     }
@@ -703,8 +703,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     if (!hasError(uNLInfo, IDNAError.LabelHasDot))
                     {
-                        Errln(String.Format("N.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
-                                            i, testCase.s, CollectionUtil.ToString(uNLInfo.Errors)));
+                        Errln(String.Format(StringFormatter.CurrentCulture, "N.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                            i, testCase.s, uNLInfo.Errors));
                         continue;
                     }
                 }
@@ -712,9 +712,9 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     if (!UTF16Plus.Equal(uT, uTL) || !sameErrors(uTInfo, uTLInfo))
                     {
-                        Errln(String.Format("T.nameToUnicode([{0}] {1})!=T.labelToUnicode() " +
+                        Errln(String.Format(StringFormatter.CurrentCulture, "T.nameToUnicode([{0}] {1})!=T.labelToUnicode() " +
                                             "(errors {2} vs {3}) {4} vs. {5}",
-                                            i, testCase.s, CollectionUtil.ToString(uTInfo.Errors), CollectionUtil.ToString(uTLInfo.Errors),
+                                            i, testCase.s, uTInfo.Errors, uTLInfo.Errors,
                                             Prettify(uT.ToString()), Prettify(uTL.ToString())));
                         continue;
                     }
@@ -723,8 +723,8 @@ namespace ICU4N.Dev.Test.Normalizers
                 {
                     if (!hasError(uTLInfo, IDNAError.LabelHasDot))
                     {
-                        Errln(String.Format("T.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
-                                            i, testCase.s, CollectionUtil.ToString(uTLInfo.Errors)));
+                        Errln(String.Format(StringFormatter.CurrentCulture, "T.labelToUnicode([{0}] {1}) errors {2} missing UIDNA_ERROR_LABEL_HAS_DOT",
+                                            i, testCase.s, uTLInfo.Errors));
                         continue;
                     }
                 }
@@ -791,9 +791,9 @@ namespace ICU4N.Dev.Test.Normalizers
             bool expectedHasErrors = !string.IsNullOrEmpty(expected) && expected[0] == '[';
             if (expectedHasErrors != info.HasErrors)
             {
-                Errln(String.Format(
+                Errln(String.Format(StringFormatter.CurrentCulture,
                         "{0}  expected errors {1} != {2} = actual has errors: {3}\n    {4}",
-                        type, expectedHasErrors, info.HasErrors, CollectionUtil.ToString(info.Errors), line));
+                        type, expectedHasErrors, info.HasErrors, info.Errors, line));
             }
             if (!expectedHasErrors && !UTF16Plus.Equal(expected, result))
             {

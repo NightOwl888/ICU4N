@@ -1,6 +1,5 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.Collections;
-using J2N.Collections;
+using J2N.Collections.Generic;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -251,7 +250,7 @@ namespace ICU4N.Text
             {
                 for (rlSearchRange = fRangeList; rlSearchRange != rlRange; rlSearchRange = rlSearchRange.fNext)
                 {
-                    if (CollectionUtil.Equals(rlRange.fIncludesSets, rlSearchRange.fIncludesSets))
+                    if (ListEqualityComparer<RBBINode>.Default.Equals(rlRange.fIncludesSets, rlSearchRange.fIncludesSets))
                     {
                         rlRange.fNum = rlSearchRange.fNum;
                         break;

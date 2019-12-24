@@ -2141,13 +2141,13 @@ namespace ICU4N.Dev.Test.Rbbi
                     Console.Out.WriteLine();
                 }
 
-                Arrays.Fill(expected, 0);
-                Arrays.Fill(expectedBreaks, false);
-                Arrays.Fill(forwardBreaks, false);
-                Arrays.Fill(reverseBreaks, false);
-                Arrays.Fill(isBoundaryBreaks, false);
-                Arrays.Fill(followingBreaks, false);
-                Arrays.Fill(precedingBreaks, false);
+                ArrayExtensions.Fill(expected, 0);
+                ArrayExtensions.Fill(expectedBreaks, false);
+                ArrayExtensions.Fill(forwardBreaks, false);
+                ArrayExtensions.Fill(reverseBreaks, false);
+                ArrayExtensions.Fill(isBoundaryBreaks, false);
+                ArrayExtensions.Fill(followingBreaks, false);
+                ArrayExtensions.Fill(precedingBreaks, false);
 
                 // Calculate the expected results for this test string.
                 mk.SetText(testText);

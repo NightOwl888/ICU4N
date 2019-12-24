@@ -226,7 +226,7 @@ namespace ICU4N.Impl
             {
                 Int32Trie othertrie = (Int32Trie)other;
                 if (m_initialValue_ != othertrie.m_initialValue_
-                    || !Arrays.Equals(m_data_, othertrie.m_data_))
+                    || !ArrayEqualityComparer<int>.OneDimensional.Equals(m_data_, othertrie.m_data_))
                 {
                     return false;
                 }

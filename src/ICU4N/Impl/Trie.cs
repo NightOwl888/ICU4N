@@ -110,7 +110,7 @@ namespace ICU4N.Impl
             return m_isLatin1Linear_ == othertrie.m_isLatin1Linear_
                    && m_options_ == othertrie.m_options_
                    && m_dataLength == othertrie.m_dataLength
-                   && Arrays.Equals(m_index, othertrie.m_index);
+                   && ArrayEqualityComparer<char>.OneDimensional.Equals(m_index, othertrie.m_index);
         }
 
         public override int GetHashCode()

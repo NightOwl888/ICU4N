@@ -106,7 +106,7 @@ namespace ICU4N.Impl.Coll
             CollationSettings o = (CollationSettings)other;
             if (options != o.options) { return false; }
             if ((options & AlternateMask) != 0 && variableTop != o.variableTop) { return false; }
-            if (!Arrays.Equals(reorderCodes, o.reorderCodes)) { return false; }
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(reorderCodes, o.reorderCodes)) { return false; }
             return true;
         }
 

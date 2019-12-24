@@ -1,5 +1,6 @@
 ﻿using ICU4N.Util;
 using J2N.Collections;
+using J2N.Text;
 using J2N.Threading;
 using NUnit.Framework;
 using System;
@@ -68,7 +69,7 @@ namespace ICU4N.Dev.Test.Util
                 }
                 catch (Exception e)
                 {
-                    Logln("PASS: \"" + Arrays.ToString(INSTANCE_INVALID_INT_[i]) +
+                    Logln("PASS: \"" + String.Format(StringFormatter.CurrentCulture, "{0}", (object)INSTANCE_INVALID_INT_[i]) +
                           "\" failed as expected");
                 }
             }
@@ -109,8 +110,8 @@ namespace ICU4N.Dev.Test.Util
                 VersionInfo v2 = GetInstance(COMPARE_NOT_EQUAL_INT_[i + 1]);
                 if (v1.CompareTo(v2) == 0)
                 {
-                    Errln(Arrays.ToString(COMPARE_NOT_EQUAL_INT_[i]) + " should not equal " +
-                          Arrays.ToString(COMPARE_NOT_EQUAL_INT_[i + 1]));
+                    Errln(string.Format(StringFormatter.CurrentCulture, "{0} should not equal {1}", (object)COMPARE_NOT_EQUAL_INT_[i],
+                          (object)COMPARE_NOT_EQUAL_INT_[i + 1]));
                 }
             }
             for (int i = 0; i < COMPARE_EQUAL_STRING_.Length - 1; i++)
@@ -131,8 +132,8 @@ namespace ICU4N.Dev.Test.Util
                 VersionInfo v2 = GetInstance(COMPARE_EQUAL_INT_[i + 1]);
                 if (v1.CompareTo(v2) != 0)
                 {
-                    Errln(Arrays.ToString(COMPARE_EQUAL_INT_[i]) + " should equal " +
-                            Arrays.ToString(COMPARE_EQUAL_INT_[i + 1]));
+                    Errln(string.Format(StringFormatter.CurrentCulture, "{0} should equal {1}", (object)COMPARE_EQUAL_INT_[i],
+                            (object)COMPARE_EQUAL_INT_[i + 1]));
                 }
             }
             for (int i = 0; i < COMPARE_LESS_.Length - 1; i++)
@@ -204,8 +205,8 @@ namespace ICU4N.Dev.Test.Util
                 v = GetInstance(TOSTRING_INT_[i]);
                 if (!v.ToString().Equals(TOSTRING_RESULT_[i]))
                 {
-                    Errln("toString() for " + Arrays.ToString(TOSTRING_INT_[i]) +
-                          " should produce " + TOSTRING_RESULT_[i]);
+                    Errln(string.Format(StringFormatter.CurrentCulture, "toString() for {0} should produce {1}", (object)TOSTRING_INT_[i],
+                          (object)TOSTRING_RESULT_[i]));
                 }
             }
         }

@@ -824,7 +824,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             internal void ClearActualBreaks()
             {
-                J2N.Collections.Arrays.Fill(fActualBreaks, false);
+                fActualBreaks.Fill(false);
             }
 
 

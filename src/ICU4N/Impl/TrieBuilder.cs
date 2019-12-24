@@ -1,4 +1,4 @@
-﻿using J2N.Collections;
+﻿using J2N;
 using System;
 
 namespace ICU4N.Impl
@@ -220,7 +220,7 @@ namespace ICU4N.Impl
         protected virtual void FindUnusedBlocks()
         {
             // fill the entire map with "not used" 
-            Arrays.Fill(m_map_, 0xff);
+            m_map_.Fill(0xff);
 
             // mark each block that _is_ used with 0
             for (int i = 0; i < m_indexLength_; ++i)

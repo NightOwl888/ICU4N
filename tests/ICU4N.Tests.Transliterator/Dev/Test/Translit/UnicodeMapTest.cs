@@ -4,6 +4,7 @@ using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Text;
 using J2N.Collections;
+using J2N.Collections.Generic;
 using J2N.Text;
 using NUnit.Framework;
 using System;
@@ -423,6 +424,7 @@ namespace ICU4N.Dev.Test.Translit
         private const UProperty propEnum = UProperty.General_Category;
 
         [Test]
+        [Timeout(120000)] // ICU4N: This test can take awhile because of the slowness of adding items to SortedSet
         public void TestUnicodeMapGeneralCategory()
         {
             Logln("Setting General Category");
@@ -582,7 +584,7 @@ namespace ICU4N.Dev.Test.Translit
 
         internal void checkMap(IDictionary<Integer, string> m1, IDictionary<Integer, string> m2)
         {
-            if (CollectionUtil.Equals(m1, m2)) return;
+            if (DictionaryEqualityComparer<Integer, string>.Default.Equals(m1, m2)) return;
             StringBuilder buffer = new StringBuilder();
             ICollection<KeyValuePair<Integer, string>> m1entries = m1;
             ICollection<KeyValuePair<Integer, string>> m2entries = m2;

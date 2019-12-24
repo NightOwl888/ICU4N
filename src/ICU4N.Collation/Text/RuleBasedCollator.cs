@@ -935,7 +935,7 @@ namespace ICU4N.Text
             }
             if (length == 0 ?
                     settings.ReadOnly.ReorderCodes.Length == 0 :
-                    Arrays.Equals(order, settings.ReadOnly.ReorderCodes))
+                    ArrayEqualityComparer<int>.OneDimensional.Equals(order, settings.ReadOnly.ReorderCodes))
             {
                 return;
             }

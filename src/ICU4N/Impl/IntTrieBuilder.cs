@@ -93,7 +93,7 @@ namespace ICU4N.Impl
 
             m_dataLength_ = j;
             // reset the initially allocated blocks to the initial value
-            Arrays.Fill(m_data_, 0, m_dataLength_, initialvalue);
+            m_data_.Fill(0, m_dataLength_ - 0, initialvalue); // ICU4N: Corrected length
             m_initialValue_ = initialvalue;
             m_leadUnitValue_ = leadunitvalue;
             m_dataCapacity_ = maxdatalength;

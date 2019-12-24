@@ -5,7 +5,6 @@ using J2N;
 using J2N.IO;
 using J2N.Numerics;
 using System.Diagnostics;
-using Arrays = J2N.Collections.Arrays;
 
 namespace ICU4N.Impl.Coll
 {

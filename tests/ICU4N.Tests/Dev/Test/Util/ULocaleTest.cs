@@ -1989,9 +1989,9 @@ namespace ICU4N.Dev.Test.Util
                 ULocale source = new ULocale(test[0]);
                 ULocale expectedFavorRegion = new ULocale(test[1]);
                 ULocale expectedFavorScript = new ULocale(test[2]);
-                assertEquals("favor region:\t" + CollectionUtil.ToString(test), expectedFavorRegion,
+                assertEquals(string.Format(StringFormatter.CurrentCulture, "favor region:\t{0}", (object)test), expectedFavorRegion,
                         ULocale.MinimizeSubtags(source, Minimize.FAVOR_REGION));
-                assertEquals("favor script:\t" + CollectionUtil.ToString(test), expectedFavorScript,
+                assertEquals(string.Format(StringFormatter.CurrentCulture, "favor script:\t{0}", (object)test), expectedFavorScript,
                         ULocale.MinimizeSubtags(source, Minimize.FAVOR_SCRIPT));
             }
         }

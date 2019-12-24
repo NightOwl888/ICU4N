@@ -1380,8 +1380,8 @@ namespace ICU4N.Impl.Coll
                 char[] header = fastLatinBuilder.GetHeader();
                 char[] table = fastLatinBuilder.GetTable();
                 if (base_ != null &&
-                        Arrays.Equals(header, base_.fastLatinTableHeader) &&
-                        Arrays.Equals(table, base_.FastLatinTable))
+                        ArrayEqualityComparer<char>.OneDimensional.Equals(header, base_.fastLatinTableHeader) &&
+                        ArrayEqualityComparer<char>.OneDimensional.Equals(table, base_.FastLatinTable))
                 {
                     // Same fast Latin table as in the base, use that one instead.
                     fastLatinBuilder = null;

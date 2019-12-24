@@ -1246,7 +1246,7 @@ namespace ICU4N.Dev.Test.Lang
                     UCharacterName.Instance.GetCharNameCharacters(set);
 
                     // build set the dumb (but sure-fire) way
-                    Arrays.Fill(map, false);
+                    map.Fill(false);
 
                     int maxLength = 0;
                     for (int cp = 0; cp < 0x110000; ++cp)

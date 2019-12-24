@@ -1,6 +1,7 @@
 ﻿using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Collections;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -585,8 +586,8 @@ namespace ICU4N.Dev.Test.Collate
                 }
                 if (!matchAll)
                 {
-                    Errln("FAIL: All values for locale " + loc
-                            + " got:" + Arrays.ToString(all) + " expected:" + Arrays.ToString(pref));
+                    Errln(string.Format(StringFormatter.CurrentCulture, "FAIL: All values for locale {0} got:{1} expected:{2}", loc,
+                            all, pref));
                 }
             }
         }

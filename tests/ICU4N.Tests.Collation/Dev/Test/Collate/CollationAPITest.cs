@@ -116,7 +116,7 @@ namespace ICU4N.Dev.Test.Collate
             byte[] subkey2compat = new byte[tempkey.Length];
             System.Array.Copy(key2identical, 0, subkey2compat, 0, tempkey.Length);
             subkey2compat[subkey2compat.Length - 1] = 0;
-            DoAssert(Arrays.Equals(tempkey, subkey2compat),
+            DoAssert(ArrayEqualityComparer<byte>.OneDimensional.Equals(tempkey, subkey2compat),
                      "Binary format for 'abcda' sortkey different for secondary strength!");
 
             Logln("testing sortkey ends...");
@@ -913,7 +913,7 @@ namespace ICU4N.Dev.Test.Collate
             byte[] temp2 = new byte[temp1.Length + 1];
             System.Array.Copy(temp1, 0, temp2, 0, temp1.Length);
             temp2[temp1.Length] = 0;
-            if (!Arrays.Equals(key.ToByteArray(), temp2)
+            if (!ArrayEqualityComparer<byte>.OneDimensional.Equals(key.ToByteArray(), temp2)
                     || !key.SourceString.Equals(abc))
             {
                 Errln("TestCollator collationkey API is returning wrong values");
@@ -1477,7 +1477,7 @@ namespace ICU4N.Dev.Test.Collate
             for (int i = 0; i < list.Length; ++i)
             {
                 Log("Locale name: ");
-                Log(CollectionUtil.ToString(list[i]));
+                Log(string.Format(StringFormatter.CurrentCulture, "{0}", list[i]));
                 Log(" , the display name is : ");
                 Logln(list[i].DisplayName);
                 try
