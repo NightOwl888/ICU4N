@@ -1,6 +1,8 @@
 ﻿using ICU4N.Support.Collections;
 using ICU4N.Util;
 using J2N.Collections;
+using J2N.Collections.Generic;
+using J2N.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,7 +36,7 @@ namespace ICU4N.Impl
     /// <typeparam name="TKey">Type of key.</typeparam>
     /// <typeparam name="TValue">Type of value.</typeparam>
     /// <author>medavis</author>
-    public class Relation<TKey, TValue> : IFreezable<Relation<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>
+    public class Relation<TKey, TValue> : IFreezable<Relation<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IStructuralEquatable
         where TValue : class // ICU4N specific - using only reference types so we don't have to change from null to default(TValue)
     {
         private IDictionary<TKey, ISet<TValue>> data;
@@ -42,13 +44,23 @@ namespace ICU4N.Impl
         ConstructorInfo setCreator;
         object[] setComparerParam;
 
+        private readonly DictionaryEqualityComparer<TKey, ISet<TValue>> structuralEqualityComparer;
+
         public Relation(IDictionary<TKey, ISet<TValue>> map, Type setCreator)
-            : this(map, setCreator, null)
-        {
-        }
+            : this(map, setCreator, null, DictionaryEqualityComparer<TKey, ISet<TValue>>.Aggressive) // ICU4N TODO: Factor out Aggressive mode
+        { }
+
+        public Relation(IDictionary<TKey, ISet<TValue>> map, Type setCreator, DictionaryEqualityComparer<TKey, ISet<TValue>> structuralEqualityComparer)
+            : this(map, setCreator, null, structuralEqualityComparer)
+        { }
 
         public Relation(IDictionary<TKey, ISet<TValue>> map, Type setCreator, IComparer<TValue> setComparator)
+            : this(map, setCreator, null, DictionaryEqualityComparer<TKey, ISet<TValue>>.Aggressive) // ICU4N TODO: Factor out Aggressive mode
+        { }
+
+        public Relation(IDictionary<TKey, ISet<TValue>> map, Type setCreator, IComparer<TValue> setComparator, DictionaryEqualityComparer<TKey, ISet<TValue>> structuralEqualityComparer)
         {
+            this.structuralEqualityComparer = structuralEqualityComparer ?? throw new ArgumentNullException(nameof(structuralEqualityComparer));
             try
             {
                 setComparerParam = setComparator == null ? null : new object[] { setComparator };
@@ -178,9 +190,9 @@ namespace ICU4N.Impl
         {
             if (o == null)
                 return false;
-            if (o.GetType() != this.GetType())
-                return false;
-            return data.Equals(((Relation<TKey, TValue>)o).data);
+            if (o is Relation<TKey, TValue> otherRelation)
+                return structuralEqualityComparer.Equals(this.data, otherRelation.data);
+            return false;
         }
 
         //  public V get(Object key) {
@@ -202,8 +214,24 @@ namespace ICU4N.Impl
 
         public override int GetHashCode()
         {
-            return CollectionUtil.GetHashCode(data);
+            return structuralEqualityComparer.GetHashCode(data);
         }
+
+        #region IStructualEquatable Members
+
+        public bool Equals(object other, IEqualityComparer comparer)
+        {
+            if (other is Relation<TKey, TValue> otherRelation)
+                return structuralEqualityComparer.Equals(this.data, otherRelation.data);
+            return false;
+        }
+
+        public int GetHashCode(IEqualityComparer comparer)
+        {
+            return structuralEqualityComparer.GetHashCode(data);
+        }
+
+        #endregion
 
         //public virtual bool IsEmpty // ICU4N specific - removed because this is not .NET-like
         //{
@@ -347,7 +375,7 @@ namespace ICU4N.Impl
 
         public override string ToString()
         {
-            return CollectionUtil.ToString(data);
+            return string.Format(StringFormatter.CurrentCulture, "{0}", data);
         }
 
         // ICU4N specific - SimpleEntry class not needed, since we have implemented IEnumerator.

@@ -1276,7 +1276,7 @@ namespace ICU4N.Text
 
                 // ICU4N: Catch blocks are using ArgumentException, and we need to 
                 // aggregate our error messages in order for the tests to pass.
-                throw new ArgumentException(CollectionUtil.ToString(errors));
+                throw new ArgumentException(string.Format(StringFormatter.CurrentCulture, "{0}", errors));
             }
         }
 

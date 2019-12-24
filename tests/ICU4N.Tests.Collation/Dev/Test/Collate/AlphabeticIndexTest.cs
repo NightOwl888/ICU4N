@@ -5,6 +5,7 @@ using ICU4N.Text;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -196,7 +197,7 @@ namespace ICU4N.Dev.Test.Collate
                 String expectedLabel = test[2];
                 alphabeticIndex.AddRecord(probe, 1);
                 IList<string> labels = alphabeticIndex.GetBucketLabels();
-                Logln(CollectionUtil.ToString(labels));
+                Logln(string.Format(StringFormatter.CurrentCulture, "{0}", labels));
                 var bucket = Find(alphabeticIndex, probe);
                 assertEquals("locale " + test[0] + " name=" + probe + " in bucket",
                         expectedLabel, bucket.Label);
@@ -370,7 +371,7 @@ namespace ICU4N.Dev.Test.Collate
                     var labelType = bucket.LabelType;
                     counter.Add(labelType, 1);
                 }
-                String printList = CollectionUtil.ToString(test);
+                String printList = string.Format(StringFormatter.CurrentCulture, "{0}", (object)test);
                 assertEquals(BucketLabelType.Underflow + "\t" + printList, 1, counter.Get(BucketLabelType.Underflow));
                 assertEquals(BucketLabelType.Inflow + "\t" + printList, expected, counter.Get(BucketLabelType.Inflow));
                 if (expected != counter.Get(BucketLabelType.Inflow))

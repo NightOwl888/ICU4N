@@ -1,6 +1,4 @@
-﻿using ICU4N.Support.Collections;
-using ICU4N.Support.Text;
-using ICU4N.Text;
+﻿using ICU4N.Text;
 using J2N;
 using J2N.Collections;
 using J2N.Text;
@@ -19,71 +17,17 @@ namespace ICU4N.Impl
         private const char BACKSLASH = '\\';
         private const int MAGIC_UNSIGNED = unchecked((int)0x80000000);
 
-        /// <summary>
-        /// Convenience utility to compare two <see cref="T:object[]"/>s.
-        /// Ought to be in System.
-        /// </summary>
-        public static bool ArrayEquals(object[] source, object target)
-        {
-            if (source == null) return (target == null);
-            if (!(target is object[])) return false;
-            object[] targ = (object[])target;
-            return (source.Length == targ.Length
-                    && ArrayRegionMatches(source, 0, targ, 0, source.Length));
-        }
-
-        /// <summary>
-        /// Convenience utility to compare two <see cref="T:int[]"/>s.
-        /// Ought to be in System.
-        /// </summary>
-        public static bool ArrayEquals(int[] source, object target)
-        {
-            if (source == null) return (target == null);
-            if (!(target is int[])) return false;
-            int[] targ = (int[])target;
-            return (source.Length == targ.Length
-                    && ArrayRegionMatches(source, 0, targ, 0, source.Length));
-        }
-
-        /// <summary>
-        /// Convenience utility to compare two <see cref="T:double[]"/>s.
-        /// Ought to be in System.
-        /// </summary>
-        public static bool ArrayEquals(double[] source, object target)
-        {
-            if (source == null) return (target == null);
-            if (!(target is double[])) return false;
-            double[] targ = (double[])target;
-            return (source.Length == targ.Length
-                    && ArrayRegionMatches(source, 0, targ, 0, source.Length));
-        }
-        public static bool ArrayEquals(byte[] source, object target)
-        {
-            if (source == null) return (target == null);
-            if (!(target is byte[])) return false;
-            byte[] targ = (byte[])target;
-            return (source.Length == targ.Length
-                    && ArrayRegionMatches(source, 0, targ, 0, source.Length));
-        }
+        // ICU4N: No need for ArrayEquals overloads because in .NET we have
+        // strongly typed generics that aren't just syntactic sugar for object.
 
         /// <summary>
         /// Convenience utility to compare two <see cref="T:object[]"/>s.
         /// Ought to be in System.
         /// </summary>
-        public static bool ArrayEquals(object source, object target)
+        public static bool ArrayEquals<T>(T[] source, T[] target)
         {
-            if (source == null) return (target == null);
-            // for some reason, the correct arrayEquals is not being called
-            // so do it by hand for now.
-            if (source is Object[])
-                return (ArrayEquals((Object[])source, target));
-            if (source is int[])
-                return (ArrayEquals((int[])source, target));
-            if (source is double[])
-                return (ArrayEquals((double[])source, target));
-            if (source is byte[])
-                return (ArrayEquals((byte[])source, target));
-            return source.Equals(target);
+            // ICU4N: Using generics and a comparer is much faster in .NET
+            return ArrayEqualityComparer<T>.OneDimensional.Equals(source, target);
         }
 
         /// <summary>
@@ -95,107 +39,30 @@ namespace ICU4N.Impl
         /// <param name="target"></param>
         /// <param name="targetStart"></param>
         /// <param name="len">The length to compare. The start indices and start+len must be valid.</param>
-        public static bool ArrayRegionMatches(object[] source, int sourceStart,
-                object[] target, int targetStart,
+        public static bool ArrayRegionMatches<T>(T[] source, int sourceStart,
+                T[] target, int targetStart,
                 int len)
         {
             int sourceEnd = sourceStart + len;
             int delta = targetStart - sourceStart;
             for (int i = sourceStart; i < sourceEnd; i++)
             {
-                if (!ArrayEquals(source[i], target[i + delta]))
+                //if (!ArrayEquals(source[i], target[i + delta]))
+                if (!J2N.EqualityComparer<T>.Default.Equals(source[i], target[i + delta]))
                     return false;
             }
             return true;
         }
 
-        /// <summary>
-        /// Convenience utility to compare two <see cref="T:char[]"/>s.
-        /// Ought to be in System.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="sourceStart"></param>
-        /// <param name="target"></param>
-        /// <param name="targetStart"></param>
-        /// <param name="len">The length to compare. The start indices and start+len must be valid.</param>
-        public static bool ArrayRegionMatches(char[] source, int sourceStart,
-                char[] target, int targetStart,
-                int len)
-        {
-            int sourceEnd = sourceStart + len;
-            int delta = targetStart - sourceStart;
-            for (int i = sourceStart; i < sourceEnd; i++)
-            {
-                if (source[i] != target[i + delta])
-                    return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Convenience utility to compare two <see cref="T:int[]"/>s.
-        /// Ought to be in System.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="sourceStart"></param>
-        /// <param name="target"></param>
-        /// <param name="targetStart"></param>
-        /// <param name="len">The length to compare. The start indices and start+len must be valid.</param>
-        public static bool ArrayRegionMatches(int[] source, int sourceStart,
-                int[] target, int targetStart,
-                int len)
-        {
-            int sourceEnd = sourceStart + len;
-            int delta = targetStart - sourceStart;
-            for (int i = sourceStart; i < sourceEnd; i++)
-            {
-                if (source[i] != target[i + delta])
-                    return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Convenience utility to compare two <see cref="T:double[]"/>s.
-        /// Ought to be in System.
-        /// </summary>
-        /// <param name="source"></param>
-        /// <param name="sourceStart"></param>
-        /// <param name="target"></param>
-        /// <param name="targetStart"></param>
-        /// <param name="len">The length to compare. The start indices and start+len must be valid.</param>
-        public static bool ArrayRegionMatches(double[] source, int sourceStart,
-                double[] target, int targetStart,
-                int len)
-        {
-            int sourceEnd = sourceStart + len;
-            int delta = targetStart - sourceStart;
-            for (int i = sourceStart; i < sourceEnd; i++)
-            {
-                if (source[i] != target[i + delta])
-                    return false;
-            }
-            return true;
-        }
-        public static bool ArrayRegionMatches(byte[] source, int sourceStart,
-                byte[] target, int targetStart, int len)
-        {
-            int sourceEnd = sourceStart + len;
-            int delta = targetStart - sourceStart;
-            for (int i = sourceStart; i < sourceEnd; i++)
-            {
-                if (source[i] != target[i + delta])
-                    return false;
-            }
-            return true;
-        }
+        // ICU4N: No need for ArrayRegionMatches overloads because in .NET we have
+        // strongly typed generics that aren't just syntactic sugar for object.
 
         /// <summary>
         /// Trivial reference equality.
-        /// This method should help document that we really want == not <see cref="Equals(object, object)"/>
+        /// This method should help document that we really want == not <see cref="object.Equals(object, object)"/>
         /// and to have a single place to suppress warnings from static analysis tools.
         /// </summary>
-        public static bool SameObjects(object a, object b)
+        public static bool SameObjects(object a, object b) // ICU4N: Factor out and use object.ReferenceEquals()
         {
             return a == b;
         }
@@ -1877,71 +1744,71 @@ namespace ICU4N.Impl
             return buffer.ToString();
         }
 
-        /// <summary>
-        /// This implementation is equivalent to Java 7+ Objects.equals(Object a, Object b).
-        /// Note this compares the values in any nested collections.
-        /// </summary>
-        /// <param name="a">An object.</param>
-        /// <param name="b">An object to be compared with a for equality.</param>
-        /// <returns>true if the arguments are equal to each other and false otherwise.</returns>
-        new public static bool Equals(object a, object b)
-        {
-            return (a == b)
-                    || (a != null && b != null && CollectionUtil.Equals(a, b));
-        }
+        ///// <summary>
+        ///// This implementation is equivalent to Java 7+ Objects.equals(Object a, Object b).
+        ///// Note this compares the values in any nested collections.
+        ///// </summary>
+        ///// <param name="a">An object.</param>
+        ///// <param name="b">An object to be compared with a for equality.</param>
+        ///// <returns>true if the arguments are equal to each other and false otherwise.</returns>
+        //new public static bool Equals(object a, object b) // ICU4N TODO: Fix every collection so we don't need aggressive mode.
+        //{
+        //    return (a == b)
+        //            || (a != null && b != null && StructuralEqualityComparer.Aggressive.Equals(a, b));
+        //}
 
-        /// <summary>
-        /// This implementation is equivalent to Java 7+ Objects.hash(Object... values).
-        /// Note this takes into consideration the values in any nested collections.
-        /// </summary>
-        /// <param name="values">The values to be hashed.</param>
-        /// <returns>A hash value of the sequence of input values.</returns>
-        public static int Hash(params object[] values)
-        {
-            //return Arrays.hashCode(values);
-            if (values == null)
-            {
-                return 0;
-            }
-            int hashCode = 1;
-            foreach (object element in values)
-            {
-                int elementHashCode;
+        ///// <summary>
+        ///// This implementation is equivalent to Java 7+ Objects.hash(Object... values).
+        ///// Note this takes into consideration the values in any nested collections.
+        ///// </summary>
+        ///// <param name="values">The values to be hashed.</param>
+        ///// <returns>A hash value of the sequence of input values.</returns>
+        //public static int Hash(params object[] values) // ICU4N TODO: Fix every collection so we don't need aggressive mode.
+        //{
+        //    //return Arrays.hashCode(values);
+        //    if (values == null)
+        //    {
+        //        return 0;
+        //    }
+        //    int hashCode = 1;
+        //    foreach (object element in values)
+        //    {
+        //        int elementHashCode;
 
-                if (element == null)
-                {
-                    elementHashCode = 0;
-                }
-                else
-                {
-                    elementHashCode = CollectionUtil.GetHashCode(element);
-                }
-                hashCode = 31 * hashCode + elementHashCode;
-            }
-            return hashCode;
-        }
+        //        if (element == null)
+        //        {
+        //            elementHashCode = 0;
+        //        }
+        //        else
+        //        {
+        //            elementHashCode = StructuralEqualityComparer.Aggressive.GetHashCode(element);
+        //        }
+        //        hashCode = 31 * hashCode + elementHashCode;
+        //    }
+        //    return hashCode;
+        //}
 
-        /// <summary>
-        /// This implementation is equivalent to Java 7+ Objects.hashCode(Object o).
-        /// Note this takes into consideration the values in any nested collections.
-        /// </summary>
-        /// <param name="o">An object.</param>
-        /// <returns>A hash value of a non-null argument and 0 for null argument.</returns>
-        public static int GetHashCode(object o)
-        {
-            return o == null ? 0 : CollectionUtil.GetHashCode(o);
-        }
+        //    /// <summary>
+        //    /// This implementation is equivalent to Java 7+ Objects.hashCode(Object o).
+        //    /// Note this takes into consideration the values in any nested collections.
+        //    /// </summary>
+        //    /// <param name="o">An object.</param>
+        //    /// <returns>A hash value of a non-null argument and 0 for null argument.</returns>
+        //    public static int GetHashCode(object o) // ICU4N TODO: Fix every collection so we don't need aggressive mode (or eliminate this method)
+        //    {
+        //        return o == null ? 0 : StructuralEqualityComparer.Aggressive.GetHashCode(o);
+        //    }
 
-        /// <summary>
-        /// This implementation is equivalent to Java 7+ Objects.toString(Object o).
-        /// Note this takes into consideration the values in any nested collections.
-        /// </summary>
-        /// <param name="o">An object.</param>
-        /// <returns>the result of calling <see cref="CollectionUtil.ToString(object)"/> for a non-null argument and "null" for a
-        /// null argument.</returns>
-        public static string ToString(object o)
-        {
-            return o == null ? "null" : CollectionUtil.ToString(o);
-        }
+        //    /// <summary>
+        //    /// This implementation is equivalent to Java 7+ Objects.toString(Object o).
+        //    /// Note this takes into consideration the values in any nested collections.
+        //    /// </summary>
+        //    /// <param name="o">An object.</param>
+        //    /// <returns>the result of calling <see cref="Support.Collections.CollectionUtil.ToString(object)"/> for a non-null argument and "null" for a
+        //    /// null argument.</returns>
+        //    public static string ToString(object o)
+        //    {
+        //        return o == null ? "null" : string.Format(StringFormatter.CurrentCulture, "{0}", o);
+        //    }
     }
 }

@@ -104,7 +104,7 @@ namespace ICU4N.Impl
         private bool Authenticate(byte[] dataformatid,
                                        byte[] dataformatversion)
         {
-            return Arrays.Equals(
+            return ArrayEqualityComparer<byte>.OneDimensional.Equals(
                     ICUBinary.GetVersionByteArrayFromCompactInt32(DATA_FORMAT_ID_),
                     dataformatid) &&
                    IsDataVersionAcceptable(dataformatversion);

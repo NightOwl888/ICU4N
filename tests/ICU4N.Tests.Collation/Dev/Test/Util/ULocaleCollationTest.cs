@@ -1,6 +1,7 @@
 ﻿using ICU4N.Text;
 using ICU4N.Util;
 using J2N.Collections;
+using J2N.Text;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -359,11 +360,11 @@ namespace ICU4N.Dev.Test.Util
                 {
                     if (expected.Count != newList.Count)
                     {
-                        Errln(CollectionUtil.ToString(list) + ": wrong size" + expected + ", " + newList);
+                        Errln(string.Format(StringFormatter.CurrentCulture, "{0}", list) + ": wrong size" + expected + ", " + newList);
                     }
                     else
                     {
-                        Errln(CollectionUtil.ToString(list));
+                        Errln(string.Format(StringFormatter.CurrentCulture, "{0}", list));
                         for (int i = 0; i < expected.Count; ++i)
                         {
                             assertEquals(i + "", expected[i], newList[i]);
@@ -372,7 +373,7 @@ namespace ICU4N.Dev.Test.Util
                 }
                 else
                 {
-                    assertEquals(CollectionUtil.ToString(list), expected, newList);
+                    assertEquals(string.Format(StringFormatter.CurrentCulture, "{0}", list), expected, newList);
                 }
             }
         }

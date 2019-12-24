@@ -221,9 +221,9 @@ namespace ICU4N.Dev.Test.Rbbi
                                 parseState = PARSE_DATA;
                                 charIdx += 5;
                                 tp.dataToBreak.Length = (0);
-                                Arrays.Fill(tp.expectedBreaks, 0);
-                                Arrays.Fill(tp.srcCol, 0);
-                                Arrays.Fill(tp.srcLine, 0);
+                                tp.expectedBreaks.Fill(0);
+                                tp.srcCol.Fill(0);
+                                tp.srcLine.Fill(0);
                                 break;
                             }
 

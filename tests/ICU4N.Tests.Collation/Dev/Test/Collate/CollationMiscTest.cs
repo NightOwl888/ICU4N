@@ -3630,7 +3630,7 @@ namespace ICU4N.Dev.Test.Collate
             myCollation.SetReorderCodes(reorderCodes);
 
             retrievedReorderCodes = myCollation.GetReorderCodes();
-            if (!Arrays.Equals(reorderCodes, retrievedReorderCodes))
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(reorderCodes, retrievedReorderCodes))
             {
                 Errln("ERROR: retrieved reorder codes do not match set reorder codes.");
             }
@@ -3658,7 +3658,7 @@ namespace ICU4N.Dev.Test.Collate
             myCollation.SetReorderCodes(reorderCodes);
 
             retrievedReorderCodes = myCollation.GetReorderCodes();
-            if (!Arrays.Equals(reorderCodes, retrievedReorderCodes))
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(reorderCodes, retrievedReorderCodes))
             {
                 Errln("ERROR: retrieved reorder codes do not match set reorder codes.");
             }
@@ -3738,7 +3738,7 @@ namespace ICU4N.Dev.Test.Collate
             myCollation.Strength = (Collator.Tertiary);
 
             retrievedReorderCodes = myCollation.GetReorderCodes();
-            if (!Arrays.Equals(rulesReorderCodes, retrievedReorderCodes))
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(rulesReorderCodes, retrievedReorderCodes))
             {
                 Errln("ERROR: retrieved reorder codes do not match set reorder codes.");
             }
@@ -3755,7 +3755,7 @@ namespace ICU4N.Dev.Test.Collate
             myCollation.SetReorderCodes(reorderCodes);
 
             retrievedReorderCodes = myCollation.GetReorderCodes();
-            if (!Arrays.Equals(reorderCodes, retrievedReorderCodes))
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(reorderCodes, retrievedReorderCodes))
             {
                 Errln("ERROR: retrieved reorder codes do not match set reorder codes.");
             }
@@ -3763,7 +3763,7 @@ namespace ICU4N.Dev.Test.Collate
             /* reset the reordering */
             myCollation.SetReorderCodes(ReorderCodes.Default);
             retrievedReorderCodes = myCollation.GetReorderCodes();
-            if (!Arrays.Equals(rulesReorderCodes, retrievedReorderCodes))
+            if (!ArrayEqualityComparer<int>.OneDimensional.Equals(rulesReorderCodes, retrievedReorderCodes))
             {
                 Errln("ERROR: retrieved reorder codes do not match set reorder codes.");
             }

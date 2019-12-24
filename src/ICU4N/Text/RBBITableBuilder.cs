@@ -3,6 +3,7 @@ using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using J2N;
 using J2N.Collections;
+using J2N.Collections.Generic;
 using J2N.Numerics;
 using System;
 using System.Collections.Generic;
@@ -643,7 +644,7 @@ namespace ICU4N.Text
                         {
                             RBBIStateDescriptor temp2;
                             temp2 = fDStates[ix];
-                            if (CollectionUtil.Equals(U, temp2.fPositions))
+                            if (SetEqualityComparer<RBBINode>.Default.Equals(U, temp2.fPositions))
                             {
                                 U = temp2.fPositions;
                                 ux = ix;

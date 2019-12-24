@@ -724,15 +724,15 @@ namespace ICU4N.Dev.Test
         protected static bool assertEquals<T>(string message, T[] expected, T[] actual)
         {
             // Use toString on a List to get useful, readable messages
-            string expectedString = expected == null ? "null" : Arrays.ToString(expected);
-            string actualString = actual == null ? "null" : Arrays.ToString(actual);
+            string expectedString = expected == null ? "null" : string.Format(StringFormatter.CurrentCulture, "{0}", (object)expected);
+            string actualString = actual == null ? "null" : string.Format(StringFormatter.CurrentCulture, "{0}", (object)actual);
             return assertEquals(message, expectedString, actualString);
         }
 
         // ICU4N specific overload for optimizing ICollection<T> comparisons
         protected static bool assertEquals<T>(string message, ICollection<T> expected, ICollection<T> actual)
         {
-            bool result = expected == null ? actual == null : CollectionUtil.Equals(expected, actual);
+            bool result = expected == null ? actual == null : StructuralEqualityComparer.Aggressive.Equals(expected, actual);
             return handleAssert(result, message, StringFor(expected),
                     StringFor(actual));
         }
@@ -760,7 +760,7 @@ namespace ICU4N.Dev.Test
             if (actual is ICharSequence)
                 return assertEquals(message, expected, (ICharSequence)actual);
 
-            bool result = expected == null ? actual == null : CollectionUtil.Equals(expected, actual);
+            bool result = expected == null ? actual == null : StructuralEqualityComparer.Aggressive.Equals(expected, actual);
             return handleAssert(result, message, StringFor(expected),
                     StringFor(actual));
         }
@@ -769,7 +769,7 @@ namespace ICU4N.Dev.Test
         protected static bool assertNotEquals<T>(string message, ICollection<T> expected,
             ICollection<T> actual)
         {
-            bool result = !(expected == null ? actual == null : CollectionUtil.Equals(expected, actual));
+            bool result = !(expected == null ? actual == null : StructuralEqualityComparer.Aggressive.Equals(expected, actual));
             return handleAssert(result, message, StringFor(expected),
                     StringFor(actual), "not equal to", true);
         }
@@ -796,7 +796,7 @@ namespace ICU4N.Dev.Test
         protected static bool assertNotEquals(string message, object expected,
                 object actual)
         {
-            bool result = !(expected == null ? actual == null : CollectionUtil.Equals(expected, actual));
+            bool result = !(expected == null ? actual == null : StructuralEqualityComparer.Aggressive.Equals(expected, actual));
             return handleAssert(result, message, StringFor(expected),
                     StringFor(actual), "not equal to", true);
         }
@@ -916,7 +916,7 @@ namespace ICU4N.Dev.Test
                 return "\"" + obj + '"';
             }
             // ICU4N: Handle deep collection strings for nested collection types
-            return obj.GetType().Name + "<" + CollectionUtil.ToString(obj) + ">";
+            return obj.GetType().Name + string.Format(StringFormatter.CurrentCulture, "<{0}>", obj); //    "<" + CollectionUtil.ToString(obj) + ">";
             //return obj.GetUnicodeCategory().Name + "<" + obj + ">";
         }
 
