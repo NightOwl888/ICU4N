@@ -1,7 +1,7 @@
 ﻿using ICU4N.Support.Collections;
 using ICU4N.Support.Globalization;
 using ICU4N.Util;
-using J2N.Collections;
+using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

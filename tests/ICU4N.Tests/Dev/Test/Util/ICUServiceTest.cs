@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Threading;
 using StringBuffer = System.Text.StringBuilder;
 using J2N.Collections;
+using J2N.Collections.Generic.Extensions;
 
 namespace ICU4N.Dev.Test.Util
 {

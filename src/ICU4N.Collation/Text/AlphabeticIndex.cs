@@ -3,6 +3,7 @@ using ICU4N.Support.Collections;
 using ICU4N.Util;
 using J2N;
 using J2N.Collections;
+using J2N.Collections.Generic.Extensions;
 using J2N.Numerics;
 using J2N.Text;
 using System;
@@ -1086,7 +1087,7 @@ namespace ICU4N.Text
 
         internal class BucketList : IEnumerable<Bucket<T>>
         {
-            private readonly List<Bucket<T>> bucketList;
+            private readonly IList<Bucket<T>> bucketList;
             private readonly IList<Bucket<T>> immutableVisibleList;
 
             public IList<Bucket<T>> ImmutableVisibleList
@@ -1094,7 +1095,7 @@ namespace ICU4N.Text
                 get { return immutableVisibleList; }
             }
 
-            internal BucketList(List<Bucket<T>> bucketList, List<Bucket<T>> publicBucketList)
+            internal BucketList(IList<Bucket<T>> bucketList, IList<Bucket<T>> publicBucketList)
             {
                 this.bucketList = bucketList;
 

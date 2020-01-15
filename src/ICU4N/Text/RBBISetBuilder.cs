@@ -3,6 +3,7 @@ using J2N.Collections.Generic;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Text
 {
@@ -33,14 +34,14 @@ namespace ICU4N.Text
             internal int fStartChar;      // Start of range, unicode 32 bit value.
             internal int fEndChar;        // End of range, unicode 32 bit value.
             internal int fNum;            // runtime-mapped input value for this range.
-            internal List<RBBINode> fIncludesSets;    // vector of the the original
+            internal IList<RBBINode> fIncludesSets;    // vector of the the original
                                                       //   Unicode sets that include this range.
                                                       //    (Contains ptrs to uset nodes)
             internal RangeDescriptor fNext;           // Next RangeDescriptor in the linked list.
 
             internal RangeDescriptor()
             {
-                fIncludesSets = new List<RBBINode>();
+                fIncludesSets = new JCG.List<RBBINode>();
             }
 
             internal RangeDescriptor(RangeDescriptor other)
@@ -48,7 +49,7 @@ namespace ICU4N.Text
                 fStartChar = other.fStartChar;
                 fEndChar = other.fEndChar;
                 fNum = other.fNum;
-                fIncludesSets = new List<RBBINode>(other.fIncludesSets);
+                fIncludesSets = new JCG.List<RBBINode>(other.fIncludesSets);
             }
 
             //-------------------------------------------------------------------------------------

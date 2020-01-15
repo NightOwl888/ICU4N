@@ -279,7 +279,7 @@ namespace ICU4N.Text
         //                       at the specified root.
         //
         //-------------------------------------------------------------------------
-        internal virtual void FindNodes(List<RBBINode> dest, int kind)
+        internal virtual void FindNodes(IList<RBBINode> dest, int kind)
         {
             if (fType == kind)
             {

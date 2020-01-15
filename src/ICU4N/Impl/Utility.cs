@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using JCG = J2N.Collections.Generic;
 using StringBuffer = System.Text.StringBuilder;
 
 namespace ICU4N.Impl
@@ -33,6 +34,9 @@ namespace ICU4N.Impl
         /// <summary>
         /// Convenience utility to compare two <see cref="T:object[]"/>s.
         /// Ought to be in System.
+        /// <para/>
+        /// Note that if <typeparamref name="T"/> is a nested collection
+        /// type, its contents will not be compared.
         /// </summary>
         /// <param name="source"></param>
         /// <param name="sourceStart"></param>
@@ -47,8 +51,7 @@ namespace ICU4N.Impl
             int delta = targetStart - sourceStart;
             for (int i = sourceStart; i < sourceEnd; i++)
             {
-                //if (!ArrayEquals(source[i], target[i + delta]))
-                if (!J2N.EqualityComparer<T>.Default.Equals(source[i], target[i + delta]))
+                if (!JCG.EqualityComparer<T>.Default.Equals(source[i], target[i + delta]))
                     return false;
             }
             return true;

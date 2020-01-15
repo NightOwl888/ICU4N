@@ -1,12 +1,11 @@
 ﻿using ICU4N.Globalization;
 using ICU4N.Impl;
 using ICU4N.Support.Collections;
-using J2N;
-using J2N.Collections;
 using J2N.Collections.Generic;
 using J2N.Numerics;
 using System;
 using System.Collections.Generic;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Text
 {
@@ -30,7 +29,7 @@ namespace ICU4N.Text
             internal bool fMarked;
             internal int fAccepting;
             internal int fLookAhead;
-            internal SortedSet<int> fTagVals;
+            internal JCG.SortedSet<int> fTagVals;
             internal int fTagsIdx;
             internal ISet<RBBINode> fPositions;                 // Set of parse tree positions associated
                                                                 //   with this state.  Unordered (it's a set).
@@ -43,8 +42,8 @@ namespace ICU4N.Text
 
             internal RBBIStateDescriptor(int maxInputSymbol)
             {
-                fTagVals = new SortedSet<int>();
-                fPositions = new HashSet<RBBINode>();
+                fTagVals = new JCG.SortedSet<int>();
+                fPositions = new JCG.HashSet<RBBINode>();
                 fDtran = new int[maxInputSymbol + 1];    // fDtran needs to be pre-sized.
                                                          //   It is indexed by input symbols, and will
                                                          //   hold  the next state number for each
@@ -73,7 +72,7 @@ namespace ICU4N.Text
         {
             fRootIx = rootNodeIx;
             fRB = rb;
-            fDStates = new List<RBBIStateDescriptor>();
+            fDStates = new JCG.List<RBBIStateDescriptor>();
         }
 
 
@@ -397,7 +396,7 @@ namespace ICU4N.Text
         //                               as roots of a rule to a destination vector.
         //
         //-----------------------------------------------------------------------------
-        internal virtual void AddRuleRootNodes(List<RBBINode> dest, RBBINode node)
+        internal virtual void AddRuleRootNodes(IList<RBBINode> dest, RBBINode node)
         {
             if (node == null)
             {
@@ -423,8 +422,8 @@ namespace ICU4N.Text
         internal virtual void CalcChainedFollowPos(RBBINode tree)
         {
 
-            List<RBBINode> endMarkerNodes = new List<RBBINode>();
-            List<RBBINode> leafNodes = new List<RBBINode>();
+            IList<RBBINode> endMarkerNodes = new JCG.List<RBBINode>();
+            IList<RBBINode> leafNodes = new JCG.List<RBBINode>();
 
             // get a list of all endmarker nodes.
             tree.FindNodes(endMarkerNodes, RBBINode.endMark);
@@ -436,10 +435,10 @@ namespace ICU4N.Text
             // with inbound chaining enabled, which is the union of the
             // firstPosition sets from each of the rule root nodes.
 
-            List<RBBINode> ruleRootNodes = new List<RBBINode>();
+            IList<RBBINode> ruleRootNodes = new JCG.List<RBBINode>();
             AddRuleRootNodes(ruleRootNodes, tree);
 
-            ISet<RBBINode> matchStartNodes = new HashSet<RBBINode>();
+            ISet<RBBINode> matchStartNodes = new JCG.HashSet<RBBINode>();
             foreach (RBBINode node in ruleRootNodes)
             {
                 if (node.fChainIn)
@@ -627,7 +626,7 @@ namespace ICU4N.Text
                         {
                             if (U == null)
                             {
-                                U = new HashSet<RBBINode>();
+                                U = new JCG.HashSet<RBBINode>();
                             }
                             U.UnionWith(p.fFollowPos);
                         }
@@ -682,7 +681,7 @@ namespace ICU4N.Text
         //-----------------------------------------------------------------------------
         internal virtual void FlagAcceptingStates()
         {
-            List<RBBINode> endMarkerNodes = new List<RBBINode>();
+            IList<RBBINode> endMarkerNodes = new JCG.List<RBBINode>();
             RBBINode endMarker;
             int i;
             int n;
@@ -743,7 +742,7 @@ namespace ICU4N.Text
         //-----------------------------------------------------------------------------
         internal virtual void FlagLookAheadStates()
         {
-            List<RBBINode> lookAheadNodes = new List<RBBINode>();
+            IList<RBBINode> lookAheadNodes = new JCG.List<RBBINode>();
             RBBINode lookAheadNode;
             int i;
             int n;
@@ -774,7 +773,7 @@ namespace ICU4N.Text
         //-----------------------------------------------------------------------------
         internal virtual void FlagTaggedStates()
         {
-            List<RBBINode> tagNodes = new List<RBBINode>();
+            IList<RBBINode> tagNodes = new JCG.List<RBBINode>();
             RBBINode tagNode;
             int i;
             int n;
@@ -842,10 +841,10 @@ namespace ICU4N.Text
                 fRB.fRuleStatusVals.Add(1);    // Num of statuses in group
                 fRB.fRuleStatusVals.Add(0);    //   and our single status of zero
 
-                SortedSet<int> s0 = new SortedSet<int>();
+                ISet<int> s0 = new JCG.SortedSet<int>();
                 int izero = 0;
                 fRB.fStatusSets[s0] = izero;
-                SortedSet<int> s1 = new SortedSet<int>();
+                ISet<int> s1 = new JCG.SortedSet<int>();
                 s1.Add(izero);
                 fRB.fStatusSets[s0] = izero;
             }
@@ -855,7 +854,7 @@ namespace ICU4N.Text
             for (n = 0; n < fDStates.Count; n++)
             {
                 RBBIStateDescriptor sd = fDStates[n];
-                SortedSet<int> statusVals = sd.fTagVals;
+                ISet<int> statusVals = sd.fTagVals;
                 int? arrayIndexI = fRB.fStatusSets.Get(statusVals);
                 if (arrayIndexI == null)
                 {
@@ -1114,7 +1113,7 @@ namespace ICU4N.Text
             int thisRecord = 0;
             int nextRecord = 0;
             int i;
-            List<int> tbl = fRB.fRuleStatusVals;
+            IList<int> tbl = fRB.fRuleStatusVals;
 
             Console.Out.Write("index |  tags \n");
             Console.Out.Write("-------------------\n");

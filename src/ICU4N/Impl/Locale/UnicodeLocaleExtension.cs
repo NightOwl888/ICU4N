@@ -1,8 +1,8 @@
-﻿using ICU4N.Support.Collections;
-using J2N.Collections;
+﻿using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Impl.Locale
 {
@@ -10,11 +10,11 @@ namespace ICU4N.Impl.Locale
     {
         public const char Singleton = 'u';
 
-        private static readonly SortedSet<string> EMPTY_SORTED_SET = new SortedSet<string>(StringComparer.Ordinal);
-        private static readonly SortedDictionary<string, string> EMPTY_SORTED_MAP = new SortedDictionary<string, string>(StringComparer.Ordinal);
+        private static readonly JCG.SortedSet<string> EMPTY_SORTED_SET = new JCG.SortedSet<string>(StringComparer.Ordinal);
+        private static readonly JCG.SortedDictionary<string, string> EMPTY_SORTED_MAP = new JCG.SortedDictionary<string, string>(StringComparer.Ordinal);
 
-        private SortedSet<string> _attributes = EMPTY_SORTED_SET;
-        private SortedDictionary<string, string> _keywords = EMPTY_SORTED_MAP;
+        private JCG.SortedSet<string> _attributes = EMPTY_SORTED_SET;
+        private JCG.SortedDictionary<string, string> _keywords = EMPTY_SORTED_MAP;
 
         public static readonly UnicodeLocaleExtension CalendarJapanese = LoadCalendarJapanese();
         public static readonly UnicodeLocaleExtension NumberThai = LoadNumberThai();
@@ -23,7 +23,7 @@ namespace ICU4N.Impl.Locale
         {
             return new UnicodeLocaleExtension
             {
-                _keywords = new SortedDictionary<string, string>(StringComparer.Ordinal)
+                _keywords = new JCG.SortedDictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["ca"] = "japanese"
                 },
@@ -34,7 +34,7 @@ namespace ICU4N.Impl.Locale
         {
             return new UnicodeLocaleExtension
             {
-                _keywords = new SortedDictionary<string, string>(StringComparer.Ordinal)
+                _keywords = new JCG.SortedDictionary<string, string>(StringComparer.Ordinal)
                 {
                     ["nu"] = "thai"
                 },
@@ -47,7 +47,7 @@ namespace ICU4N.Impl.Locale
         {
         }
 
-        internal UnicodeLocaleExtension(SortedSet<string> attributes, SortedDictionary<string, string> keywords)
+        internal UnicodeLocaleExtension(JCG.SortedSet<string> attributes, JCG.SortedDictionary<string, string> keywords)
             : this()
         {
 

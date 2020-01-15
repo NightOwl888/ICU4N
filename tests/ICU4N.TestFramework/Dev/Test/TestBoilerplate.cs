@@ -1,13 +1,13 @@
 ﻿using ICU4N.Support;
 using ICU4N.Support.Collections;
 using ICU4N.Text;
-using J2N.Collections;
 using J2N.Collections.Generic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Dev.Test
 {
@@ -32,7 +32,7 @@ namespace ICU4N.Dev.Test
 
         public virtual void Test()
         {
-            IList<T> list = new List<T>();
+            IList<T> list = new JCG.List<T>();
             while (AddTestObject(list))
             {
             }
@@ -183,11 +183,11 @@ namespace ICU4N.Dev.Test
             ISet<T> temp;
             TestFmwk.Errln("Values differ:");
             TestFmwk.Errln("UnicodeMap - HashMap");
-            temp = new SortedSet<T>(values1, GenericComparer.NaturalComparer<T>());
+            temp = new JCG.SortedSet<T>(values1, GenericComparer.NaturalComparer<T>() /*JCG.Comparer<T>.Default*/);
             temp.ExceptWith(values2);
             TestFmwk.Errln(Show(temp));
             TestFmwk.Errln("HashMap - UnicodeMap");
-            temp = new SortedSet<T>(values2, GenericComparer.NaturalComparer<T>());
+            temp = new JCG.SortedSet<T>(values2, GenericComparer.NaturalComparer<T>() /*JCG.Comparer<T>.Default*/);
             temp.ExceptWith(values1);
             TestFmwk.Errln(Show(temp));
             return false;

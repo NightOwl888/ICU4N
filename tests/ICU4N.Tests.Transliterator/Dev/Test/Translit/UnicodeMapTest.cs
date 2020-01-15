@@ -3,7 +3,6 @@ using ICU4N.Globalization;
 using ICU4N.Impl;
 using ICU4N.Support.Collections;
 using ICU4N.Text;
-using J2N.Collections;
 using J2N.Collections.Generic;
 using J2N.Text;
 using NUnit.Framework;
@@ -11,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using JCG = J2N.Collections.Generic;
 using Character = ICU4N.Support.Character;
 using Double = ICU4N.Support.Double;
 using Integer = ICU4N.Support.Integer;
@@ -141,7 +141,7 @@ namespace ICU4N.Dev.Test.Translit
         [Test]
         public void TestAMonkey()
         {
-            SortedDictionary<String, Integer> stayWithMe = new SortedDictionary<String, Integer>(OneFirstComparator);
+            JCG.SortedDictionary<String, Integer> stayWithMe = new JCG.SortedDictionary<String, Integer>(OneFirstComparator);
 
             UnicodeMap<Integer> me = new UnicodeMap<Integer>().PutAll(stayWithMe);
             // check one special case, removal near end
@@ -149,7 +149,7 @@ namespace ICU4N.Dev.Test.Translit
             me.Remove(0x10FFFF);
 
             int iterations = 100000;
-            SortedDictionary<String, Integer> test = new SortedDictionary<string, Integer>(StringComparer.Ordinal);
+            JCG.SortedDictionary<String, Integer> test = new JCG.SortedDictionary<string, Integer>(StringComparer.Ordinal);
 
             Random rand = new Random(0);
             String other;
@@ -212,7 +212,7 @@ namespace ICU4N.Dev.Test.Translit
          * @param test
          * @return
          */
-        private SortedDictionary<String, Integer> fillRandomMap(Random rand, int max, SortedDictionary<String, Integer> test)
+        private JCG.SortedDictionary<String, Integer> fillRandomMap(Random rand, int max, JCG.SortedDictionary<String, Integer> test)
         {
             test.Clear();
             max = rand.Next(max);
@@ -223,19 +223,19 @@ namespace ICU4N.Dev.Test.Translit
             return test;
         }
 
-        ISet<KeyValuePair<string, Integer>> temp = new HashSet<KeyValuePair<string, Integer>>();
+        ISet<KeyValuePair<string, Integer>> temp = new JCG.HashSet<KeyValuePair<string, Integer>>();
         /**
          * @param me
          * @param stayWithMe
          */
-        private void checkEquals(UnicodeMap<Integer> me, SortedDictionary<String, Integer> stayWithMe)
+        private void checkEquals(UnicodeMap<Integer> me, JCG.SortedDictionary<String, Integer> stayWithMe)
         {
             temp.Clear();
             foreach (var e in me.EntrySet())
             {
                 temp.Add(e);
             }
-            ISet<KeyValuePair<String, Integer>> entrySet = new HashSet<KeyValuePair<string, Integer>>(stayWithMe);
+            ISet<KeyValuePair<String, Integer>> entrySet = new JCG.HashSet<KeyValuePair<string, Integer>>(stayWithMe);
             if (!entrySet.SetEquals(temp))
             {
                 Logln(me.EntrySet().ToString());
@@ -263,8 +263,8 @@ namespace ICU4N.Dev.Test.Translit
             //if (nonCodePointStrings.Count == 0) nonCodePointStrings = null; // for parallel api
             //assertEquals("getNonRangeStrings", nonCodePointStrings, me.GetNonRangeStrings());
 
-            SortedSet<Integer> values = new SortedSet<Integer>(stayWithMe.Values);
-            SortedSet<Integer> myValues = new SortedSet<Integer>(me.Values());
+            ISet<Integer> values = new JCG.SortedSet<Integer>(stayWithMe.Values);
+            ISet<Integer> myValues = new JCG.SortedSet<Integer>(me.Values());
             assertEquals("values", myValues, values);
 
             foreach (String key in stayWithMe.Keys)
@@ -324,7 +324,7 @@ namespace ICU4N.Dev.Test.Translit
         {
             Random random = new Random(0);
             UnicodeMap<string> unicodeMap = new UnicodeMap<string>();
-            Dictionary<int, string> hashMap = new Dictionary<int, string>();
+            JCG.Dictionary<int, string> hashMap = new JCG.Dictionary<int, string>();
             String[] values = { null, "the", "quick", "brown", "fox" };
             for (int count = 1; count <= MODIFY_TEST_ITERATIONS; ++count)
             {
@@ -390,7 +390,7 @@ namespace ICU4N.Dev.Test.Translit
         private const bool SHOW_PROGRESS = false;
         private const bool DEBUG = false;
 
-        SortedSet<string> log = new SortedSet<string>();
+        JCG.SortedSet<string> log = new JCG.SortedSet<string>();
         static string[] TEST_VALUES = { "A", "B", "C", "D", "E", "F" };
         static Random random = new Random(12345);
 
@@ -401,7 +401,7 @@ namespace ICU4N.Dev.Test.Translit
             var random = new Random(12345); // reproducible results
             Logln("Comparing against HashMap");
             UnicodeMap<string> map1 = new UnicodeMap<string>();
-            IDictionary<Integer, string> map2 = new Dictionary<Integer, string>();
+            IDictionary<Integer, string> map2 = new JCG.Dictionary<Integer, string>();
             for (int counter = 0; counter < ITERATIONS; ++counter)
             {
                 int start = random.Next(LIMIT);
@@ -429,10 +429,10 @@ namespace ICU4N.Dev.Test.Translit
         {
             Logln("Setting General Category");
             UnicodeMap<String> map1 = new UnicodeMap<string>();
-            IDictionary<Integer, String> map2 = new Dictionary<Integer, String>();
+            IDictionary<Integer, String> map2 = new JCG.Dictionary<Integer, String>();
             //Map<Integer, String> map3 = new TreeMap<Integer, String>();
             map1 = new UnicodeMap<String>();
-            map2 = new SortedDictionary<Integer, String>();
+            map2 = new JCG.SortedDictionary<Integer, String>();
 
             for (int cp = 0; cp <= SET_LIMIT; ++cp)
             {
@@ -447,8 +447,8 @@ namespace ICU4N.Dev.Test.Translit
             Logln("Comparing General Category");
             check(map1, map2, -1);
             Logln("Comparing Values");
-            ISet<String> values1 = new SortedSet<String>(StringComparer.Ordinal); map1.GetAvailableValues(values1);
-            ISet<String> values2 = new SortedSet<String>(map2.Values.Distinct(), StringComparer.Ordinal); // ICU4N NOTE: Added Distinct()
+            ISet<String> values1 = new JCG.SortedSet<String>(StringComparer.Ordinal); map1.GetAvailableValues(values1);
+            ISet<String> values2 = new JCG.SortedSet<String>(map2.Values.Distinct(), StringComparer.Ordinal); // ICU4N NOTE: Added Distinct()
             if (!TestBoilerplate<string>.VerifySetsIdentical(this, values1, values2))
             {
                 throw new ArgumentException("Halting");
@@ -526,7 +526,7 @@ namespace ICU4N.Dev.Test.Translit
                     .Put('x', 'b')
                     .Put("xy", 'c')
                     ;
-            IDictionary<Char, UnicodeSet> target = new Dictionary<Char, UnicodeSet>();
+            IDictionary<Char, UnicodeSet> target = new JCG.Dictionary<Char, UnicodeSet>();
             foo1.AddInverseTo(target);
             UnicodeMap<Char> reverse = new UnicodeMap<Char>().PutAllInverse(target);
             assertEquals("", foo1, reverse);
@@ -535,7 +535,7 @@ namespace ICU4N.Dev.Test.Translit
         private void checkNext(UnicodeMap<String> map1, IDictionary<Integer, string> map2, int limit)
         {
             Logln("Comparing nextRange");
-            IDictionary<Integer, string> localMap = new SortedDictionary<Integer, string>();
+            IDictionary<Integer, string> localMap = new JCG.SortedDictionary<Integer, string>();
             UnicodeMapIterator<String> mi = new UnicodeMapIterator<String>(map1);
             while (mi.NextRange())
             {
@@ -550,7 +550,7 @@ namespace ICU4N.Dev.Test.Translit
 
             Logln("Comparing next");
             mi.Reset();
-            localMap = new SortedDictionary<Integer, string>();
+            localMap = new JCG.SortedDictionary<Integer, string>();
             //        String lastValue = null;
             while (mi.Next())
             {
@@ -630,7 +630,7 @@ namespace ICU4N.Dev.Test.Translit
 
         private void getEntries(String title, ICollection<KeyValuePair<Integer, String>> m1entries, ICollection<KeyValuePair<Integer, String>> m2entries, StringBuilder buffer, int limit)
         {
-            ISet<KeyValuePair<Integer, String>> m1_m2 = new SortedSet<KeyValuePair<Integer, String>>(ENTRY_COMPARATOR);
+            ISet<KeyValuePair<Integer, String>> m1_m2 = new JCG.SortedSet<KeyValuePair<Integer, String>>(ENTRY_COMPARATOR);
             m1_m2.UnionWith(m1entries);
             m1_m2.ExceptWith(m2entries);
             buffer.Append(title + ": " + m1_m2.Count + "\r\n");

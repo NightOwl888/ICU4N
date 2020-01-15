@@ -1,13 +1,14 @@
 ﻿using ICU4N.Support.Collections;
 using ICU4N.Util;
-using J2N.Collections;
 using J2N.Collections.Generic;
+using J2N.Collections.Generic.Extensions;
 using J2N.Text;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using JCG =J2N.Collections.Generic;
 
 namespace ICU4N.Impl
 {
@@ -74,7 +75,7 @@ namespace ICU4N.Impl
                     this.setCreator = ((Type)setCreator).GetConstructor(new Type[] { typeof(IComparer<TValue>) });
                     this.setCreator.Invoke(setComparerParam); // check to make sure compiles
                 }
-                data = map == null ? new Dictionary<TKey, ISet<TValue>>() : map;
+                data = map == null ? new JCG.Dictionary<TKey, ISet<TValue>>() : map;
             }
             catch (Exception e)
             {
@@ -357,7 +358,7 @@ namespace ICU4N.Impl
 
         public virtual ISet<TValue> Values
         {
-            get { return GetValues(new HashSet<TValue>()); }
+            get { return GetValues(new JCG.HashSet<TValue>()); }
         }
 
         public virtual C GetValues<C>(C result)
@@ -471,7 +472,7 @@ namespace ICU4N.Impl
 
         public virtual ISet<TValue> RemoveAll(ICollection<TKey> toBeRemoved)
         {
-            ISet<TValue> result = new HashSet<TValue>();
+            ISet<TValue> result = new JCG.HashSet<TValue>();
             foreach (var key in toBeRemoved)
             {
                 try
