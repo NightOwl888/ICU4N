@@ -422,7 +422,7 @@ namespace ICU4N.Impl
                             f.UpdateVisibleIDs(mutableMap);
                         }
 
-                        this.idcache = mutableMap.ToUnmodifiableDictionary();
+                        this.idcache = mutableMap.AsReadOnly();
                     }
                     finally
                     {

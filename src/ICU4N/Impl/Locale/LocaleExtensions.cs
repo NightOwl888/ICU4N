@@ -16,7 +16,7 @@ namespace ICU4N.Impl.Locale
         private string _id;
 
         private static readonly IDictionary<char, Extension> EmptyMap =
-            new JCG.SortedDictionary<char, Extension>().ToUnmodifiableDictionary();
+            new JCG.SortedDictionary<char, Extension>().AsReadOnly();
 
         public static readonly LocaleExtensions EmptyExtensions = LoadEmptyExtensions();
         public static readonly LocaleExtensions CalendarJapanese = LoadCalendarJapanese();
@@ -140,7 +140,7 @@ namespace ICU4N.Impl.Locale
 
         public virtual ICollection<char> Keys
         {
-            get { return _map.Keys.ToUnmodifiableCollection(); }
+            get { return _map.Keys.AsReadOnly(); }
         }
 
         public virtual Extension GetExtension(char key)

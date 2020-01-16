@@ -82,9 +82,9 @@ namespace ICU4N.Impl.Locale
             }
         }
 
-        public virtual ISet<string> UnicodeLocaleAttributes => _attributes.ToUnmodifiableSet();
+        public virtual ISet<string> UnicodeLocaleAttributes => _attributes.AsReadOnly();
 
-        public virtual ICollection<string> UnicodeLocaleKeys => _keywords.Keys.ToUnmodifiableCollection();
+        public virtual ICollection<string> UnicodeLocaleKeys => _keywords.Keys.AsReadOnly();
 
 
         public virtual string GetUnicodeLocaleType(string unicodeLocaleKey)

@@ -419,10 +419,10 @@ namespace ICU4N.Impl
                 // does not handle one level down, so we do that on a case-by-case basis
                 foreach (var key in data.Keys)
                 {
-                    data[key] = data.Get(key).ToUnmodifiableSet();
+                    data[key] = data.Get(key).AsReadOnly();
                 }
                 // now do top level
-                data = data.ToUnmodifiableDictionary();
+                data = data.AsReadOnly();
                 frozen = true;
             }
             return this;

@@ -649,7 +649,7 @@ namespace ICU4N.Dev.Test.Util
             public TestLocaleKeyFactory(string[] ids, string factoryID)
                 : base(Visible, factoryID)
             {
-                this.ids = new HashSet<string>(ids).ToUnmodifiableSet();
+                this.ids = new HashSet<string>(ids).AsReadOnly();
                 this.factoryID = factoryID + ": ";
             }
 
@@ -729,7 +729,7 @@ namespace ICU4N.Dev.Test.Util
                 result.Add(valley);
                 result.Add(surfer);
                 result.Add(geek);
-                return result.ToUnmodifiableSet();
+                return result.AsReadOnly();
             }
 
             protected override ICollection<string> GetSupportedIDs()

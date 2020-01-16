@@ -279,7 +279,7 @@ namespace ICU4N.Text
         }
         internal MessageNode Freeze()
         {
-            list = list.ToUnmodifiableList(); //Collections.unmodifiableList(list);
+            list = list.AsReadOnly();
             return this;
         }
 
@@ -608,7 +608,7 @@ namespace ICU4N.Text
         }
         internal ComplexArgStyleNode Freeze()
         {
-            list = list.ToUnmodifiableList(); //Collections.unmodifiableList(list);
+            list = list.AsReadOnly();
             return this;
         }
 

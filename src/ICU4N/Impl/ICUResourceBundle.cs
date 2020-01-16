@@ -795,14 +795,14 @@ namespace ICU4N.Impl
             // We need to have the root locale in the set, but not as "root".
             set.Remove("root");
             set.Add(ULocale.ROOT.ToString());  // ""
-            return (set).ToUnmodifiableSet();
+            return (set).AsReadOnly();
         }
 
         private static ISet<string> CreateLocaleNameSet(string baseName, Assembly assembly)
         {
             HashSet<string> set = new HashSet<string>();
             AddLocaleIDsFromIndexBundle(baseName, assembly, set);
-            return (set).ToUnmodifiableSet();
+            return (set).AsReadOnly();
         }
 
         /// <summary>

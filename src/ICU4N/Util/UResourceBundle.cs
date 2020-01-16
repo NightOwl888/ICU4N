@@ -705,7 +705,7 @@ namespace ICU4N.Util
                         }
                     }
                     newKeySet.UnionWith(HandleKeySet());
-                    keys = (newKeySet).ToUnmodifiableSet();
+                    keys = (newKeySet).AsReadOnly();
                     if (icurb != null)
                     {
                         icurb.TopLevelKeySet = keys;

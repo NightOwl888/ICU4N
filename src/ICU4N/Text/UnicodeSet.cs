@@ -4747,7 +4747,7 @@ namespace ICU4N.Text
         /// <stable>ICU 4.4</stable>
         public virtual ICollection<string> Strings
         {
-            get { return strings.ToUnmodifiableSet(); }
+            get { return strings.AsReadOnly(); }
         }
 
         // ICU4N specific - GetSingleCodePoint(ICharSequence s) moved to UnicodeSetExtension.tt

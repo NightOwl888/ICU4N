@@ -1104,7 +1104,7 @@ namespace ICU4N.Text
                 {
                     bucket.DisplayIndex = displayIndex++;
                 }
-                immutableVisibleList = publicBucketList.ToUnmodifiableList();
+                immutableVisibleList = publicBucketList.AsReadOnly();
             }
 
             internal int BucketCount

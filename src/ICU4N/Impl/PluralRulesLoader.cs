@@ -579,7 +579,7 @@ namespace ICU4N.Impl
                 tempLocaleIdToPluralRanges[locale] = pr;
             }
             // now make whole thing immutable
-            return tempLocaleIdToPluralRanges.ToUnmodifiableDictionary();
+            return tempLocaleIdToPluralRanges.AsReadOnly();
         }
     }
 }

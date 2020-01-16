@@ -633,7 +633,7 @@ namespace ICU4N.Impl.Locale
 
         public virtual IList<string> Extlangs
         {
-            get { return _extlangs.ToUnmodifiableList(); }
+            get { return _extlangs.AsReadOnly(); }
         }
 
         public virtual string Script
@@ -648,12 +648,12 @@ namespace ICU4N.Impl.Locale
 
         public virtual IList<string> Variants
         {
-            get { return _variants.ToUnmodifiableList(); }
+            get { return _variants.AsReadOnly(); }
         }
 
         public virtual IList<string> Extensions
         {
-            get { return _extensions.ToUnmodifiableList(); }
+            get { return _extensions.AsReadOnly(); }
         }
 
         public virtual string PrivateUse

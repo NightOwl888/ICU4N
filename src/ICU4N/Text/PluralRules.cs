@@ -1012,7 +1012,7 @@ namespace ICU4N.Text
                         default: throw new ArgumentException("Ill-formed number range: " + range);
                     }
                 }
-                return new FixedDecimalSamples(sampleType2, samples2.ToUnmodifiableCollection(), bounded2);
+                return new FixedDecimalSamples(sampleType2, samples2.AsReadOnly(), bounded2);
             }
 
             private static void CheckDecimal(PluralRulesSampleType sampleType2, FixedDecimal sample)
@@ -2150,7 +2150,7 @@ namespace ICU4N.Text
         private PluralRules(RuleList rules)
         {
             this.rules = rules;
-            this.keywords = rules.GetKeywords().ToUnmodifiableCollection();
+            this.keywords = rules.GetKeywords().AsReadOnly();
         }
 
         /// <internal/>
@@ -2276,7 +2276,7 @@ namespace ICU4N.Text
                 return null;
             }
             ICollection<Double> samples = GetSamples(keyword, type);
-            return samples == null ? null : samples.ToUnmodifiableCollection();
+            return samples == null ? null : samples.AsReadOnly();
         }
 
         /// <summary>
@@ -2325,8 +2325,8 @@ namespace ICU4N.Text
             if (rules.HasExplicitBoundingInfo)
             {
                 FixedDecimalSamples samples = rules.GetDecimalSamples(keyword, sampleType);
-                return samples == null ? result.ToUnmodifiableSet()
-                        : samples.AddSamples(result).ToUnmodifiableSet();
+                return samples == null ? result.AsReadOnly()
+                        : samples.AddSamples(result).AsReadOnly();
             }
 
             // hack in case the rule is created without explicit samples
@@ -2355,7 +2355,7 @@ namespace ICU4N.Text
                     AddSample(keyword, new FixedDecimal(1000000d, 1), maxCount, result); // hack for Welsh
                     break;
             }
-            return result.Count == 0 ? null : result.ToUnmodifiableSet();
+            return result.Count == 0 ? null : result.AsReadOnly();
         }
 
         /// <internal/>

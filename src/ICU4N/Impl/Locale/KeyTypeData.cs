@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Resources;
 using System.Text.RegularExpressions;
+using JCG = J2N.Collections.Generic;
 
 namespace ICU4N.Impl.Locale
 {
@@ -261,7 +262,7 @@ namespace ICU4N.Impl.Locale
             // iterate through keyMap resource
             using (UResourceBundleEnumerator keyMapItr = keyMapRes.GetEnumerator())
             {
-                IDictionary<string, IList<string>> _Bcp47Keys = new Dictionary<string, IList<string>>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
+                IDictionary<string, ISet<string>> _Bcp47Keys = new JCG.LinkedDictionary<string, ISet<string>>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
 
                 while (keyMapItr.MoveNext())
                 {
@@ -276,8 +277,8 @@ namespace ICU4N.Impl.Locale
                         bcpKeyId = legacyKeyId;
                         hasSameKey = true;
                     }
-                    IList<string> _bcp47Types = new List<string>(); // ICU4N: Mimic LinkedHashSet with List by ensuring no duplicates are added
-                    _Bcp47Keys[bcpKeyId] = _bcp47Types.ToUnmodifiableList();
+                    ISet<string> _bcp47Types = new JCG.LinkedHashSet<string>();
+                    _Bcp47Keys[bcpKeyId] = _bcp47Types.AsReadOnly();
 
                     bool isTZ = legacyKeyId.Equals("timezone");
 
@@ -388,8 +389,7 @@ namespace ICU4N.Impl.Locale
                                         specialTypeSet = new HashSet<SpecialType>();
                                     }
                                     specialTypeSet.Add((SpecialType)Enum.Parse(typeof(SpecialType), legacyTypeId, true));
-                                    if (!_bcp47Types.Contains(legacyTypeId)) // ICU4N: Mimic LinkedHashSet with a List by not allowing duplicates
-                                        _bcp47Types.Add(legacyTypeId);
+                                    _bcp47Types.Add(legacyTypeId);
                                     continue;
                                 }
 
@@ -407,8 +407,7 @@ namespace ICU4N.Impl.Locale
                                     bcpTypeId = legacyTypeId;
                                     hasSameType = true;
                                 }
-                                if (!_bcp47Types.Contains(legacyTypeId)) // ICU4N: Mimic LinkedHashSet with a List by not allowing duplicates
-                                    _bcp47Types.Add(bcpTypeId);
+                                _bcp47Types.Add(bcpTypeId);
 
                                 // Note: legacy type value should never be
                                 // equivalent to bcp type value of a different
@@ -456,7 +455,7 @@ namespace ICU4N.Impl.Locale
                     }
                 }
             
-                BCP47_KEYS = _Bcp47Keys.ToUnmodifiableDictionary();
+                BCP47_KEYS = _Bcp47Keys.AsReadOnly();
             }
         }
 
@@ -485,7 +484,7 @@ namespace ICU4N.Impl.Locale
         private static void GetKeyInfo(UResourceBundle keyInfoRes)
         {
             ISet<string> _deprecatedKeys = new HashSet<string>();
-            IDictionary<string, KeyTypeDataValueType> _valueTypes = new Dictionary<string, KeyTypeDataValueType>(); // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
+            IDictionary<string, KeyTypeDataValueType> _valueTypes = new JCG.LinkedDictionary<string, KeyTypeDataValueType>();
             foreach (var keyInfoEntry in keyInfoRes)
             {
                 string key = keyInfoEntry.Key;
@@ -505,8 +504,8 @@ namespace ICU4N.Impl.Locale
                     }
                 }
             }
-            DEPRECATED_KEYS = _deprecatedKeys.ToUnmodifiableSet();
-            VALUE_TYPES = _valueTypes.ToUnmodifiableDictionary();
+            DEPRECATED_KEYS = _deprecatedKeys.AsReadOnly();
+            VALUE_TYPES = _valueTypes.AsReadOnly();
         }
 
         /** Reads:
@@ -523,7 +522,7 @@ namespace ICU4N.Impl.Locale
          */
         private static void GetTypeInfo(UResourceBundle typeInfoRes)
         {
-            IDictionary<string, ISet<string>> _deprecatedKeyTypes = new Dictionary<string, ISet<string>>();  // ICU4N NOTE: As long as we don't delete, Dictionary keeps insertion order the same as LinkedHashMap
+            IDictionary<string, ISet<string>> _deprecatedKeyTypes = new JCG.LinkedDictionary<string, ISet<string>>();
             foreach (var keyInfoEntry in typeInfoRes)
             {
                 string key = keyInfoEntry.Key;
@@ -531,7 +530,7 @@ namespace ICU4N.Impl.Locale
                 foreach (var keyInfoEntry2 in keyInfoEntry)
                 {
                     string key2 = keyInfoEntry2.Key;
-                    ISet<string> _deprecatedTypes = new HashSet<string>(); // ICU4N TODO: LinkedHashSet...?
+                    ISet<string> _deprecatedTypes = new JCG.LinkedHashSet<string>();
                     foreach (var keyInfoEntry3 in keyInfoEntry2)
                     {
                         string key3 = keyInfoEntry3.Key;
@@ -542,10 +541,10 @@ namespace ICU4N.Impl.Locale
                                 break;
                         }
                     }
-                    _deprecatedKeyTypes[key2] = _deprecatedTypes.ToUnmodifiableSet();
+                    _deprecatedKeyTypes[key2] = _deprecatedTypes.AsReadOnly();
                 }
             }
-            DEPRECATED_KEY_TYPES = _deprecatedKeyTypes.ToUnmodifiableDictionary();
+            DEPRECATED_KEY_TYPES = _deprecatedKeyTypes.AsReadOnly();
         }
 
 
@@ -745,7 +744,7 @@ namespace ICU4N.Impl.Locale
         }
 
         private static readonly IDictionary<string, KeyData> KEYMAP = new Dictionary<string, KeyData>();
-        private static IDictionary<string, IList<string>> BCP47_KEYS;
+        private static IDictionary<string, ISet<string>> BCP47_KEYS;
 
         static KeyTypeData()
         {
@@ -758,7 +757,7 @@ namespace ICU4N.Impl.Locale
             return BCP47_KEYS.Keys;
         }
 
-        public static IList<string> GetBcp47KeyTypes(string key)
+        public static ISet<string> GetBcp47KeyTypes(string key)
         {
             return BCP47_KEYS.Get(key);
         }

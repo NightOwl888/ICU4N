@@ -1007,7 +1007,7 @@ namespace ICU4N.Dev.Util
             {
                 return null;
             }
-            return stringMap.Keys.ToUnmodifiableCollection();
+            return stringMap.Keys.AsReadOnly();
         }
 
         internal const bool DEBUG_WRITE = false;
@@ -1650,7 +1650,7 @@ namespace ICU4N.Dev.Util
             {
                 entry.Freeze();
             }
-            return target.ToUnmodifiableDictionary();
+            return target.AsReadOnly();
         }
 
         /**

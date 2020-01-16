@@ -207,7 +207,7 @@ namespace ICU4N.Dev.Test.Collate
                             String id = locale.ToString();
                             set.Add(id);
                         }
-                        ids = (set).ToUnmodifiableSet();
+                        ids = (set).AsReadOnly();
                     }
                 }
                 return ids;
