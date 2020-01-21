@@ -15,7 +15,7 @@ namespace ICU4N.Dev.Test.Impl
         {
             String text = "Hello, World";
 
-            ICharSequence cs = text.ToCharSequence();
+            ICharSequence cs = text.AsCharSequence();
             CharacterIterator csci = new CharSequenceCharacterIterator(cs);
             CharacterIterator sci = new StringCharacterIterator(text);
 

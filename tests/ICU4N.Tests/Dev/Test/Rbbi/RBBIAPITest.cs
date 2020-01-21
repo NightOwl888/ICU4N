@@ -133,7 +133,7 @@ namespace ICU4N.Dev.Test.Rbbi
 
             // Test the CharSequence overload of setText() for a simple case.
             BreakIterator lineIter = BreakIterator.GetLineInstance(new CultureInfo("en"));
-            ICharSequence csText = "Hello, World. ".ToCharSequence();
+            ICharSequence csText = "Hello, World. ".AsCharSequence();
             // Expected Line Brks  ^      ^      ^
             //                     0123456789012345
             List<int> expected = new List<int>();

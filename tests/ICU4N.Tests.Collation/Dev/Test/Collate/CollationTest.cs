@@ -258,7 +258,7 @@ namespace ICU4N.Dev.Test.Collate
             String s = "\uFFFE\uFFFF";
             long[] ces;
 
-            ces = rbc.InternalGetCEs(s.ToCharSequence());
+            ces = rbc.InternalGetCEs(s.AsCharSequence());
             if (ces.Length != 2)
             {
                 Errln("expected 2 CEs for <FFFE, FFFF>, got " + ces.Length);
@@ -313,7 +313,7 @@ namespace ICU4N.Dev.Test.Collate
             UnicodeSet[] sets = { coreHan, otherHan, unassigned };
             int prev = 0;
             long prevPrimary = 0;
-            UTF16CollationIterator ci = new UTF16CollationIterator(cd, false, "".ToCharSequence(), 0);
+            UTF16CollationIterator ci = new UTF16CollationIterator(cd, false, "".AsCharSequence(), 0);
             for (int i = 0; i < sets.Length; ++i)
             {
                 UnicodeSetIterator iter = new UnicodeSetIterator(sets[i]);
@@ -321,7 +321,7 @@ namespace ICU4N.Dev.Test.Collate
                 {
                     String s = iter.GetString();
                     int c = s.CodePointAt(0);
-                    ci.SetText(false, s.ToCharSequence(), 0);
+                    ci.SetText(false, s.AsCharSequence(), 0);
                     long ce = ci.NextCE();
                     long ce2 = ci.NextCE();
                     if (ce == Collation.NoCE || ce2 != Collation.NoCE)
@@ -358,8 +358,8 @@ namespace ICU4N.Dev.Test.Collate
             CollationData data = CollationRoot.Data;
             string s = "abab"; // { 0x61, 0x62, 0x61, 0x62 }
 
-            UTF16CollationIterator ci1 = new UTF16CollationIterator(data, false, s.ToCharSequence(), 0);
-            UTF16CollationIterator ci2 = new UTF16CollationIterator(data, false, s.ToCharSequence(), 2);
+            UTF16CollationIterator ci1 = new UTF16CollationIterator(data, false, s.AsCharSequence(), 0);
+            UTF16CollationIterator ci2 = new UTF16CollationIterator(data, false, s.AsCharSequence(), 2);
 
             for (int i = 0; i < 2; ++i)
             {
@@ -585,7 +585,7 @@ namespace ICU4N.Dev.Test.Collate
             0x4e00, 0xf71, 0xf80
         };
 
-            FCDUTF16CollationIterator u16ci = new FCDUTF16CollationIterator(data, false, s.ToCharSequence(), 0);
+            FCDUTF16CollationIterator u16ci = new FCDUTF16CollationIterator(data, false, s.AsCharSequence(), 0);
             CodePointIterator cpi = new CodePointIterator(cp);
             CheckFCD("FCDUTF16CollationIterator", u16ci, cpi);
 
@@ -1136,7 +1136,7 @@ namespace ICU4N.Dev.Test.Collate
                     while (iter.Next())
                     {
                         String s = iter.GetString();
-                        ces = rbc.InternalGetCEs(s.ToCharSequence());
+                        ces = rbc.InternalGetCEs(s.AsCharSequence());
                         for (int i = 0; i < ces.Length; ++i)
                         {
                             long ce = ces[i];

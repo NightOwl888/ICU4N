@@ -1890,8 +1890,8 @@ namespace ICU4N.Dev.Test.Lang
                 test2.Add("a" + (max - i)); // add in reverse order
             }
             assertNotEquals("compare iterable test", test1, test2);
-            SortedSet<ICharSequence> sortedTest1 = new SortedSet<ICharSequence>(test1.Select((s) => s.ToCharSequence()));
-            SortedSet<ICharSequence> sortedTest2 = new SortedSet<ICharSequence>(test2.Select((s) => s.ToCharSequence()));
+            SortedSet<ICharSequence> sortedTest1 = new SortedSet<ICharSequence>(test1.Select((s) => s.AsCharSequence()));
+            SortedSet<ICharSequence> sortedTest2 = new SortedSet<ICharSequence>(test2.Select((s) => s.AsCharSequence()));
             assertEquals("compare iterable test", sortedTest1, sortedTest2);
         }
 
@@ -3098,7 +3098,7 @@ namespace ICU4N.Dev.Test.Lang
             assertEquals("Wrong UnicodeSet pattern", "[ab]", unicodeSet.ToPattern(true));
             unicodeSet.AddAll("b", "x");
             assertEquals("Wrong UnicodeSet pattern", "[abx]", unicodeSet.ToPattern(true));
-            unicodeSet.AddAll(new ICharSequence[] { new StringBuilder("foo").ToCharSequence(), new StringBuffer("bar").ToCharSequence() });
+            unicodeSet.AddAll(new ICharSequence[] { new StringBuilder("foo").AsCharSequence(), new StringBuffer("bar").AsCharSequence() });
             assertEquals("Wrong UnicodeSet pattern", "[abx{bar}{foo}]", unicodeSet.ToPattern(true));
         }
 

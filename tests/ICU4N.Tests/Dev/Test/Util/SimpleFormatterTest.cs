@@ -92,7 +92,7 @@ namespace ICU4N.Dev.Test.Util
             SimpleFormatter fmt = SimpleFormatter.Compile("a{20}c");
             assertEquals("{20} count", 21, fmt.ArgumentLimit);
             ICharSequence[] values = new ICharSequence[21];
-            values[20] = "b".ToCharSequence();
+            values[20] = "b".AsCharSequence();
             assertEquals("{20}=b", "abc", fmt.Format(values));
         }
 
@@ -176,7 +176,7 @@ namespace ICU4N.Dev.Test.Util
             StringBuilder appendTo = new StringBuilder("previous:");
             try
             {
-                fmt.FormatAndAppend(appendTo, null, appendTo.ToCharSequence(), "frog".ToCharSequence());
+                fmt.FormatAndAppend(appendTo, null, appendTo.AsCharSequence(), "frog".AsCharSequence());
                 fail("IllegalArgumentException expected.");
             }
             catch (ArgumentException e)

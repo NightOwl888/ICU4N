@@ -365,12 +365,12 @@ namespace ICU4N.Dev.Test
 
         protected static string Prettify(string s)
         {
-            return Prettify(s.ToCharSequence());
+            return Prettify(s.AsCharSequence());
         }
 
         protected static string Prettify(StringBuffer s)
         {
-            return Prettify(s.ToCharSequence());
+            return Prettify(s.AsCharSequence());
         }
 
         internal static string Prettify(ICharSequence s)

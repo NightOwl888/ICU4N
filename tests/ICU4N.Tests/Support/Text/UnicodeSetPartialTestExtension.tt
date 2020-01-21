@@ -58,11 +58,11 @@ namespace ICU4N.Text
             var nonEquiv1 = "CDEAZF".ToCharArray();
             var nonEquiv2 = "ABCDEFG".ToCharArray();
 <# } else if (charSequence == "ICharSequence") { #>
-            var empty = "".ToCharSequence();
-            var equiv1 = "ABCDEF".ToCharSequence();
-            var equiv2 = "BDEFAC".ToCharSequence();
-            var nonEquiv1 = "CDEAZF".ToCharSequence();
-            var nonEquiv2 = "ABCDEFG".ToCharSequence();
+            var empty = "".AsCharSequence();
+            var equiv1 = "ABCDEF".AsCharSequence();
+            var equiv2 = "BDEFAC".AsCharSequence();
+            var nonEquiv1 = "CDEAZF".AsCharSequence();
+            var nonEquiv2 = "ABCDEFG".AsCharSequence();
 <# } #>
             
             string methodName = nameof(UnicodeSet.SetEquals);
@@ -118,11 +118,11 @@ namespace ICU4N.Text
             var equivSubset = "CDEAF".ToCharArray();
             var equivSuperset = "ABCDEFG".ToCharArray();
 <# } else if (charSequence == "ICharSequence") { #>
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSet2 = "BDEFAC".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSet2 = "BDEFAC".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
 <# } #>
             string setOperation = "superset", methodName = nameof(UnicodeSet.IsSupersetOf);
 
@@ -186,11 +186,11 @@ namespace ICU4N.Text
             var equivSubset = "CDEAF".ToCharArray();
             var equivSuperset = "ABCDEFG".ToCharArray();
 <# } else if (charSequence == "ICharSequence") { #>
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSet2 = "BDEFAC".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSet2 = "BDEFAC".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
 <# } #>
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSupersetOf);
 
@@ -250,11 +250,11 @@ namespace ICU4N.Text
             var equivSubset = "CDEAF".ToCharArray();
             var equivSuperset = "ABCDEFG".ToCharArray();
 <# } else if (charSequence == "ICharSequence") { #>
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSet2 = "BDEFAC".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSet2 = "BDEFAC".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
 <# } #>
             string setOperation = "subset", methodName = nameof(UnicodeSet.IsSubsetOf);
 
@@ -319,11 +319,11 @@ namespace ICU4N.Text
             var equivSubset = "CDEAF".ToCharArray();
             var equivSuperset = "ABCDEFG".ToCharArray();
 <# } else if (charSequence == "ICharSequence") { #>
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSet2 = "BDEFAC".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSet2 = "BDEFAC".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
 <# } #>
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
 
@@ -385,10 +385,10 @@ namespace ICU4N.Text
             var equivSubset = "CDEAF".ToCharArray();
             var equivSuperset = "ABCDEFG".ToCharArray();
 <# } else if (charSequence == "ICharSequence") { #>
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
 <# } #>
             string setOperation = "overlap", methodName = nameof(UnicodeSet.Overlaps);
 

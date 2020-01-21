@@ -82,11 +82,11 @@ namespace ICU4N.Text
         [Test]
         public void TestSetEquals_CharSequence()
         {
-            var empty = "".ToCharSequence();
-            var equiv1 = "ABCDEF".ToCharSequence();
-            var equiv2 = "BDEFAC".ToCharSequence();
-            var nonEquiv1 = "CDEAZF".ToCharSequence();
-            var nonEquiv2 = "ABCDEFG".ToCharSequence();
+            var empty = "".AsCharSequence();
+            var equiv1 = "ABCDEF".AsCharSequence();
+            var equiv2 = "BDEFAC".AsCharSequence();
+            var nonEquiv1 = "CDEAZF".AsCharSequence();
+            var nonEquiv2 = "ABCDEFG".AsCharSequence();
             
             string methodName = nameof(UnicodeSet.SetEquals);
 
@@ -226,11 +226,11 @@ namespace ICU4N.Text
         [Test]
         public void TestIsSupersetOf_CharSequence()
         {
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSet2 = "BDEFAC".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSet2 = "BDEFAC".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
             string setOperation = "superset", methodName = nameof(UnicodeSet.IsSupersetOf);
 
             // Test empty set
@@ -402,11 +402,11 @@ namespace ICU4N.Text
         [Test]
         public void TestIsProperSupersetOf_CharSequence()
         {
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSet2 = "BDEFAC".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSet2 = "BDEFAC".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSupersetOf);
 
             // Test empty set
@@ -565,11 +565,11 @@ namespace ICU4N.Text
         [Test]
         public void TestIsSubsetOf_CharSequence()
         {
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSet2 = "BDEFAC".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSet2 = "BDEFAC".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
             string setOperation = "subset", methodName = nameof(UnicodeSet.IsSubsetOf);
 
             // Test empty set
@@ -745,11 +745,11 @@ namespace ICU4N.Text
         [Test]
         public void TestIsProperSubsetOf_CharSequence()
         {
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSet2 = "BDEFAC".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSet2 = "BDEFAC".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
             string setOperation = "proper superset", methodName = nameof(UnicodeSet.IsProperSubsetOf);
 
             // Test empty set
@@ -916,10 +916,10 @@ namespace ICU4N.Text
         [Test]
         public void TestOverlaps_CharSequence()
         {
-            var equivEmptySet = "".ToCharSequence();
-            var equivSet = "ABCDEF".ToCharSequence();
-            var equivSubset = "CDEAF".ToCharSequence();
-            var equivSuperset = "ABCDEFG".ToCharSequence();
+            var equivEmptySet = "".AsCharSequence();
+            var equivSet = "ABCDEF".AsCharSequence();
+            var equivSubset = "CDEAF".AsCharSequence();
+            var equivSuperset = "ABCDEFG".AsCharSequence();
             string setOperation = "overlap", methodName = nameof(UnicodeSet.Overlaps);
 
             // Test empty set

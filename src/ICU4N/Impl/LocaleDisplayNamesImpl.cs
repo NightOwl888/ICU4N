@@ -830,7 +830,7 @@ namespace ICU4N.Impl
             else
             {
                 // ICU4N TODO: Does it make sense to call this twice, once for StringBuilder and once for String?
-                SimpleFormatterImpl.FormatAndReplace(separatorFormat, b, null, b.ToCharSequence(), s.ToCharSequence());
+                SimpleFormatterImpl.FormatAndReplace(separatorFormat, b, null, b.AsCharSequence(), s.AsCharSequence());
             }
             return b;
         }

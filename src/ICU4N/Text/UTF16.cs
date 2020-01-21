@@ -2837,7 +2837,7 @@ namespace ICU4N.Text
             /// 1 if <paramref name="s1"/> &gt; <paramref name="s2"/>.</returns>
             private int CompareCaseInsensitive(string s1, string s2)
             {
-                return Normalizer.CmpEquivFold(s1.ToCharSequence(), s2.ToCharSequence(), m_foldCase_ | m_codePointCompare_
+                return Normalizer.CmpEquivFold(s1.AsCharSequence(), s2.AsCharSequence(), m_foldCase_ | m_codePointCompare_
                         | Normalizer.COMPARE_IGNORE_CASE);
             }
 

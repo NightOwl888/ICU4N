@@ -308,7 +308,7 @@ namespace ICU4N.Dev.Test.Util
                 value += ((value >> 5) & 0x7ff) * 3 + 1;
                 ++num;
             }
-            public ICharSequence GetString() { return s.ToCharSequence(); }
+            public ICharSequence GetString() { return s.AsCharSequence(); }
             public int GetValue() { return value; }
             public int countUniqueFirstChars() { return set.Count; }
             public int GetIndex() { return num; }

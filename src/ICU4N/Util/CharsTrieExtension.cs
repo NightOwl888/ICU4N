@@ -32,7 +32,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public CharsTrie(string trieChars, int offset) 
         {
-            chars_ = trieChars.ToCharSequence();
+            chars_ = trieChars.AsCharSequence();
             pos_ = root_ = offset;
             remainingMatchLength_ = -1;
         }
@@ -55,7 +55,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public CharsTrie(StringBuilder trieChars, int offset) 
         {
-            chars_ = trieChars.ToCharSequence();
+            chars_ = trieChars.AsCharSequence();
             pos_ = root_ = offset;
             remainingMatchLength_ = -1;
         }
@@ -78,7 +78,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public CharsTrie(char[] trieChars, int offset) 
         {
-            chars_ = trieChars.ToCharSequence();
+            chars_ = trieChars.AsCharSequence();
             pos_ = root_ = offset;
             remainingMatchLength_ = -1;
         }

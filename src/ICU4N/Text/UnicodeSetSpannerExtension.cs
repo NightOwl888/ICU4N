@@ -1998,7 +1998,7 @@ namespace ICU4N.Text
                 endLeadContained = unicodeSet.Span(sequence, spanCondition);
                 if (endLeadContained == length)
                 {
-                    return "".ToCharSequence();
+                    return "".AsCharSequence();
                 }
             }
             else
@@ -2014,7 +2014,7 @@ namespace ICU4N.Text
                 startTrailContained = length;
             }
             return endLeadContained == 0 && startTrailContained == length ?
-                sequence.ToCharSequence() :
+                sequence.AsCharSequence() :
                 sequence.Subsequence(endLeadContained, startTrailContained - endLeadContained); // ICU4N: Corrected 2nd parameter
         }
 
@@ -2042,7 +2042,7 @@ namespace ICU4N.Text
                 endLeadContained = unicodeSet.Span(sequence, spanCondition);
                 if (endLeadContained == length)
                 {
-                    return "".ToCharSequence();
+                    return "".AsCharSequence();
                 }
             }
             else
@@ -2058,7 +2058,7 @@ namespace ICU4N.Text
                 startTrailContained = length;
             }
             return endLeadContained == 0 && startTrailContained == length ?
-                sequence.ToCharSequence() :
+                sequence.AsCharSequence() :
                 sequence.Subsequence(endLeadContained, startTrailContained - endLeadContained); // ICU4N: Corrected 2nd parameter
         }
 
@@ -2086,7 +2086,7 @@ namespace ICU4N.Text
                 endLeadContained = unicodeSet.Span(sequence, spanCondition);
                 if (endLeadContained == length)
                 {
-                    return "".ToCharSequence();
+                    return "".AsCharSequence();
                 }
             }
             else
@@ -2102,7 +2102,7 @@ namespace ICU4N.Text
                 startTrailContained = length;
             }
             return endLeadContained == 0 && startTrailContained == length ?
-                sequence.ToCharSequence() :
+                sequence.AsCharSequence() :
                 sequence.Subsequence(endLeadContained, startTrailContained - endLeadContained); // ICU4N: Corrected 2nd parameter
         }
 
@@ -2130,7 +2130,7 @@ namespace ICU4N.Text
                 endLeadContained = unicodeSet.Span(sequence, spanCondition);
                 if (endLeadContained == length)
                 {
-                    return "".ToCharSequence();
+                    return "".AsCharSequence();
                 }
             }
             else

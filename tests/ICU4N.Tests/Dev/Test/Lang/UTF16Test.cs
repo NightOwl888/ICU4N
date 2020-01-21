@@ -254,7 +254,7 @@ namespace ICU4N.Dev.Test.Lang
             }
 
             StringBuffer strbuffer = new StringBuffer("0xD805");
-            UTF16.CharAt(strbuffer.ToCharSequence(), 0);
+            UTF16.CharAt(strbuffer.AsCharSequence(), 0);
         }
 
         /**

@@ -194,7 +194,7 @@ namespace ICU4N.Util
                             pos_ = pos - 1;
                             skipValue_ = true;
                         }
-                        entry_.Chars = str_.ToCharSequence();
+                        entry_.Chars = str_.AsCharSequence();
                         return entry_;
                     }
                 }
@@ -236,7 +236,7 @@ namespace ICU4N.Util
             pos_ = -1;
             // We reset entry_.chars every time we return entry_
             // just because the caller might have modified the Entry.
-            entry_.Chars = str_.ToCharSequence();
+            entry_.Chars = str_.AsCharSequence();
             entry_.Value = -1;  // no real value for str
             return entry_;
         }
@@ -266,7 +266,7 @@ namespace ICU4N.Util
             if (isFinal)
             {
                 pos_ = -1;
-                entry_.Chars = str_.ToCharSequence();
+                entry_.Chars = str_.AsCharSequence();
                 entry_.Value = value;
                 return -1;
             }
@@ -669,7 +669,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public static CharsTrieEnumerator GetEnumerator(string trieChars, int offset, int maxStringLength)
         {
-            return new CharsTrieEnumerator(trieChars.ToCharSequence(), offset, -1, maxStringLength);
+            return new CharsTrieEnumerator(trieChars.AsCharSequence(), offset, -1, maxStringLength);
         }
 
         /// <summary>
@@ -686,7 +686,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public static CharsTrieEnumerator GetEnumerator(StringBuilder trieChars, int offset, int maxStringLength)
         {
-            return new CharsTrieEnumerator(trieChars.ToCharSequence(), offset, -1, maxStringLength);
+            return new CharsTrieEnumerator(trieChars.AsCharSequence(), offset, -1, maxStringLength);
         }
 
         /// <summary>
@@ -703,7 +703,7 @@ namespace ICU4N.Util
         /// <stable>ICU 4.8</stable>
         public static CharsTrieEnumerator GetEnumerator(char[] trieChars, int offset, int maxStringLength)
         {
-            return new CharsTrieEnumerator(trieChars.ToCharSequence(), offset, -1, maxStringLength);
+            return new CharsTrieEnumerator(trieChars.AsCharSequence(), offset, -1, maxStringLength);
         }
 
         /// <summary>

@@ -402,7 +402,7 @@ namespace ICU4N.Impl.Coll
                     }
                     try
                     {
-                        sink.AddRelation(strength, empty, UTF16.ValueOf(cp).ToCharSequence(), empty.Value);
+                        sink.AddRelation(strength, empty, UTF16.ValueOf(cp).AsCharSequence(), empty.Value);
                     }
                     catch (Exception e)
                     {
@@ -453,7 +453,7 @@ namespace ICU4N.Impl.Coll
                     }
                     try
                     {
-                        sink.AddRelation(strength, empty, UTF16.ValueOf(prev).ToCharSequence(), empty.Value);
+                        sink.AddRelation(strength, empty, UTF16.ValueOf(prev).AsCharSequence(), empty.Value);
                     }
                     catch (Exception e)
                     {

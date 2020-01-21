@@ -38,7 +38,7 @@ namespace ICU4N.Util
         public CharsTrieBuilder Add(string s, int value) // ICU4N TODO: API Generate
         {
 #pragma warning disable 612, 618
-            AddImpl(s.ToCharSequence(), value);
+            AddImpl(s.AsCharSequence(), value);
 #pragma warning restore 612, 618
             return this;
         }
@@ -56,7 +56,7 @@ namespace ICU4N.Util
         public CharsTrieBuilder Add(StringBuilder s, int value) // ICU4N TODO: API Generate
         {
 #pragma warning disable 612, 618
-            AddImpl(s.ToCharSequence(), value);
+            AddImpl(s.AsCharSequence(), value);
 #pragma warning restore 612, 618
             return this;
         }
@@ -74,7 +74,7 @@ namespace ICU4N.Util
         public CharsTrieBuilder Add(char[] s, int value) // ICU4N TODO: API Generate
         {
 #pragma warning disable 612, 618
-            AddImpl(s.ToCharSequence(), value);
+            AddImpl(s.AsCharSequence(), value);
 #pragma warning restore 612, 618
             return this;
         }

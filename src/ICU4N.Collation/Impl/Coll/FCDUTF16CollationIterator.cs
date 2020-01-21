@@ -456,7 +456,7 @@ namespace ICU4N.Impl.Coll
             // with the result of normalizing [segmentStart, segmentLimit[.
             segmentStart = from;
             segmentLimit = to;
-            seq = normalized.ToCharSequence();
+            seq = normalized.AsCharSequence();
             start = 0;
             limit = start + normalized.Length;
         }

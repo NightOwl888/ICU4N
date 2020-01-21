@@ -316,7 +316,7 @@ namespace ICU4N.Impl
                 {
                     ICUResourceBundle b = (ICUResourceBundle)breaks.Get(index);
                     string br = b.GetString();
-                    filterSet.Add(br.ToCharSequence());
+                    filterSet.Add(br.AsCharSequence());
                 }
             }
         }

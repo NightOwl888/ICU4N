@@ -780,13 +780,13 @@ namespace ICU4N.Text
             long ce1, ce2;
             if (settings.ReadOnly.DontCheckFCD)
             {
-                UTF16CollationIterator ci = new UTF16CollationIterator(data, numeric, varTop.ToCharSequence(), 0);
+                UTF16CollationIterator ci = new UTF16CollationIterator(data, numeric, varTop.AsCharSequence(), 0);
                 ce1 = ci.NextCE();
                 ce2 = ci.NextCE();
             }
             else
             {
-                FCDUTF16CollationIterator ci = new FCDUTF16CollationIterator(data, numeric, varTop.ToCharSequence(), 0);
+                FCDUTF16CollationIterator ci = new FCDUTF16CollationIterator(data, numeric, varTop.AsCharSequence(), 0);
                 ce1 = ci.NextCE();
                 ce2 = ci.NextCE();
             }
@@ -1103,7 +1103,7 @@ namespace ICU4N.Text
             // Although it could work, the ICU documentation clearly states that
             // "collation keys cannot be compared with other collator implementations",
             // so reusing SortKey would just be confusing.
-            buffer.RawCollationKey = GetRawCollationKey(source.ToCharSequence(), buffer.RawCollationKey, buffer);
+            buffer.RawCollationKey = GetRawCollationKey(source.AsCharSequence(), buffer.RawCollationKey, buffer);
             return new CollationKey(source, buffer.RawCollationKey);
         }
 
@@ -1131,7 +1131,7 @@ namespace ICU4N.Text
             try
             {
                 buffer = GetCollationBuffer();
-                return GetRawCollationKey(source.ToCharSequence(), key, buffer);
+                return GetRawCollationKey(source.AsCharSequence(), key, buffer);
             }
             finally
             {
@@ -1397,7 +1397,7 @@ namespace ICU4N.Text
         public override int Compare(string source, string target)
         {
 #pragma warning disable 612, 618
-            return DoCompare(source.ToCharSequence(), target.ToCharSequence());
+            return DoCompare(source.AsCharSequence(), target.AsCharSequence());
 #pragma warning restore 612, 618
         }
 

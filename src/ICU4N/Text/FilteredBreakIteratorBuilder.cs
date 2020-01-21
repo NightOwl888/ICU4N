@@ -72,17 +72,17 @@ namespace ICU4N.Text
 
         public virtual bool SuppressBreakAfter(string str) // ICU4N specific
         {
-            return SuppressBreakAfter(str.ToCharSequence());
+            return SuppressBreakAfter(str.AsCharSequence());
         }
 
         public virtual bool SuppressBreakAfter(StringBuilder str) // ICU4N specific
         {
-            return SuppressBreakAfter(str.ToCharSequence());
+            return SuppressBreakAfter(str.AsCharSequence());
         }
 
         public virtual bool SuppressBreakAfter(char[] str) // ICU4N specific
         {
-            return SuppressBreakAfter(str.ToCharSequence());
+            return SuppressBreakAfter(str.AsCharSequence());
         }
 
         /// <summary>
@@ -101,17 +101,17 @@ namespace ICU4N.Text
 
         public virtual bool UnsuppressBreakAfter(string str) // ICU4N specific
         {
-            return UnsuppressBreakAfter(str.ToCharSequence());
+            return UnsuppressBreakAfter(str.AsCharSequence());
         }
 
         public virtual bool UnsuppressBreakAfter(StringBuilder str) // ICU4N specific
         {
-            return UnsuppressBreakAfter(str.ToCharSequence());
+            return UnsuppressBreakAfter(str.AsCharSequence());
         }
 
         public virtual bool UnsuppressBreakAfter(char[] str) // ICU4N specific
         {
-            return UnsuppressBreakAfter(str.ToCharSequence());
+            return UnsuppressBreakAfter(str.AsCharSequence());
         }
 
         /// <summary>

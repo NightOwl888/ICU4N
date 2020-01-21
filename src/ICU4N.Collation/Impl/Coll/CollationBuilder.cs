@@ -112,7 +112,7 @@ namespace ICU4N.Impl.Coll
             {
                 // normal reset to a character or string
                 string nfdString = nfd.Normalize(str);
-                cesLength = dataBuilder.GetCEs(nfdString.ToCharSequence(), ces, 0);
+                cesLength = dataBuilder.GetCEs(nfdString.AsCharSequence(), ces, 0);
                 if (cesLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     throw new ArgumentException(
@@ -572,7 +572,7 @@ namespace ICU4N.Impl.Coll
             if (extension.Length != 0)
             {
                 string nfdExtension = nfd.Normalize(extension);
-                cesLength = dataBuilder.GetCEs(nfdExtension.ToCharSequence(), ces, cesLength);
+                cesLength = dataBuilder.GetCEs(nfdExtension.AsCharSequence(), ces, cesLength);
                 if (cesLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     throw new ArgumentException(
@@ -1004,7 +1004,7 @@ namespace ICU4N.Impl.Coll
                 {
                     string str = stringIter.Current;
                     if (IgnoreString(str) || str.ContentEquals(nfdString)) { continue; }
-                    ce32 = AddIfDifferent(prefix, str.ToCharSequence(), newCEs, newCEsLength, ce32);
+                    ce32 = AddIfDifferent(prefix, str.AsCharSequence(), newCEs, newCEsLength, ce32);
                 }
             }
             else
@@ -1016,12 +1016,12 @@ namespace ICU4N.Impl.Coll
                     string prefix = prefixIter.Current;
                     if (IgnorePrefix(prefix)) { continue; }
                     bool samePrefix = prefix.ContentEquals(nfdPrefix);
-                    ICharSequence prefixCharSequence = prefix.ToCharSequence();
+                    ICharSequence prefixCharSequence = prefix.AsCharSequence();
                     while (stringIter.MoveNext())
                     {
                         string str = stringIter.Current;
                         if (IgnoreString(str) || (samePrefix && str.ContentEquals(nfdString))) { continue; }
-                        ce32 = AddIfDifferent(prefixCharSequence, str.ToCharSequence(), newCEs, newCEsLength, ce32);
+                        ce32 = AddIfDifferent(prefixCharSequence, str.AsCharSequence(), newCEs, newCEsLength, ce32);
                     }
                     stringIter.Reset();
                 }
@@ -1262,7 +1262,7 @@ namespace ICU4N.Impl.Coll
             {
                 Debug.Assert(iter.Codepoint != UnicodeSetIterator.IsString);
                 string nfdString = nfd.GetDecomposition(iter.Codepoint);
-                cesLength = dataBuilder.GetCEs(nfdString.ToCharSequence(), ces, 0);
+                cesLength = dataBuilder.GetCEs(nfdString.AsCharSequence(), ces, 0);
                 if (cesLength > Collation.MAX_EXPANSION_LENGTH)
                 {
                     // Too many CEs from the decomposition (unusual), ignore this composite.
@@ -1271,7 +1271,7 @@ namespace ICU4N.Impl.Coll
                     continue;
                 }
                 string composite = iter.GetString();
-                AddIfDifferent(prefix, composite.ToCharSequence(), ces, cesLength, Collation.UNASSIGNED_CE32);
+                AddIfDifferent(prefix, composite.AsCharSequence(), ces, cesLength, Collation.UNASSIGNED_CE32);
             }
         }
 

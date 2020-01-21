@@ -10,17 +10,17 @@ namespace ICU4N.Text
         private ICharSequence characters;
 
         public CharsDictionaryMatcher(string chars)
-            : this(chars.ToCharSequence())
+            : this(chars.AsCharSequence())
         {
         }
 
         public CharsDictionaryMatcher(StringBuilder chars)
-            : this(chars.ToCharSequence())
+            : this(chars.AsCharSequence())
         {
         }
 
         public CharsDictionaryMatcher(char[] chars)
-            : this(chars.ToCharSequence())
+            : this(chars.AsCharSequence())
         {
         }
 

@@ -508,7 +508,7 @@ namespace ICU4N.Impl
         /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
         public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(string text, int index) // ICU4N specific
         {
-            return new Trie2CharSequenceEnumerator(this, text.ToCharSequence(), index);
+            return new Trie2CharSequenceEnumerator(this, text.AsCharSequence(), index);
         }
 
         /// <summary>
@@ -520,7 +520,7 @@ namespace ICU4N.Impl
         /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
         public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(StringBuilder text, int index) // ICU4N specific
         {
-            return new Trie2CharSequenceEnumerator(this, text.ToCharSequence(), index);
+            return new Trie2CharSequenceEnumerator(this, text.AsCharSequence(), index);
         }
 
         /// <summary>
@@ -532,7 +532,7 @@ namespace ICU4N.Impl
         /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
         public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(char[] text, int index) // ICU4N specific
         {
-            return new Trie2CharSequenceEnumerator(this, text.ToCharSequence(), index);
+            return new Trie2CharSequenceEnumerator(this, text.AsCharSequence(), index);
         }
 
         /// <summary>

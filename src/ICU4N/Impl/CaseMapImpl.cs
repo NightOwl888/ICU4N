@@ -21,7 +21,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="src">String to iterate over.</param>
         public StringContextEnumerator(string src)
-            : this(src.ToCharSequence())
+            : this(src.AsCharSequence())
         {
         }
 
@@ -30,7 +30,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="src">String to iterate over.</param>
         public StringContextEnumerator(StringBuilder src)
-            : this(src.ToCharSequence())
+            : this(src.AsCharSequence())
         {
         }
 
@@ -39,7 +39,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="src">String to iterate over.</param>
         public StringContextEnumerator(char[] src)
-            : this(src.ToCharSequence())
+            : this(src.AsCharSequence())
         {
         }
 

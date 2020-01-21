@@ -1793,7 +1793,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(string s1, string s2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(s1.ToCharSequence(), s2.ToCharSequence(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(s1.AsCharSequence(), s2.AsCharSequence(), (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -1988,7 +1988,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, int char32b, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(UTF16.ValueOf(char32a).ToCharSequence(), UTF16.ValueOf(char32b).ToCharSequence(), (int)comparison | (int)foldCase | INPUT_IS_FCD, (int)unicodeVersion);
+            return InternalCompare(UTF16.ValueOf(char32a).AsCharSequence(), UTF16.ValueOf(char32b).AsCharSequence(), (int)comparison | (int)foldCase | INPUT_IS_FCD, (int)unicodeVersion);
         }
 
         // ---------------------------------
@@ -2053,7 +2053,7 @@ namespace ICU4N.Text
         /// <stable>ICU 2.8</stable>
         public static int Compare(int char32a, string str2, NormalizerComparison comparison, FoldCase foldCase, NormalizerUnicodeVersion unicodeVersion)
         {
-            return InternalCompare(UTF16.ValueOf(char32a).ToCharSequence(), str2.ToCharSequence(), (int)comparison | (int)foldCase, (int)unicodeVersion);
+            return InternalCompare(UTF16.ValueOf(char32a).AsCharSequence(), str2.AsCharSequence(), (int)comparison | (int)foldCase, (int)unicodeVersion);
         }
 
         /* Concatenation of normalized strings --------------------------------- */
@@ -2858,13 +2858,13 @@ namespace ICU4N.Text
                 if (spanQCYes1 < s1.Length)
                 {
                     StringBuilder fcd1 = new StringBuilder(s1.Length + 16).Append(s1, 0, spanQCYes1 - 0); // ICU4N: Checked 3rd parameter math
-                    s1 = n2.NormalizeSecondAndAppend(fcd1, s1.Subsequence(spanQCYes1, s1.Length - spanQCYes1)).ToCharSequence(); // ICU4N: Checked 2nd parameter math
+                    s1 = n2.NormalizeSecondAndAppend(fcd1, s1.Subsequence(spanQCYes1, s1.Length - spanQCYes1)).AsCharSequence(); // ICU4N: Checked 2nd parameter math
 
                 }
                 if (spanQCYes2 < s2.Length)
                 {
                     StringBuilder fcd2 = new StringBuilder(s2.Length + 16).Append(s2, 0, spanQCYes2 - 0); // ICU4N: Checked 3rd parameter math
-                    s2 = n2.NormalizeSecondAndAppend(fcd2, s2.Subsequence(spanQCYes2, s2.Length - spanQCYes2)).ToCharSequence(); // ICU4N: Corrected 2nd parameter math
+                    s2 = n2.NormalizeSecondAndAppend(fcd2, s2.Subsequence(spanQCYes2, s2.Length - spanQCYes2)).AsCharSequence(); // ICU4N: Corrected 2nd parameter math
                 }
             }
 
@@ -3236,7 +3236,7 @@ namespace ICU4N.Text
                     }
 
                     /* set next level pointers to case folding */
-                    cs1 = fold1.ToCharSequence();
+                    cs1 = fold1.AsCharSequence();
                     s1 = 0;
                     limit1 = fold1.Length;
 
@@ -3293,7 +3293,7 @@ namespace ICU4N.Text
                     }
 
                     /* set next level pointers to case folding */
-                    cs2 = fold2.ToCharSequence();
+                    cs2 = fold2.AsCharSequence();
                     s2 = 0;
                     limit2 = fold2.Length;
 
@@ -3344,7 +3344,7 @@ namespace ICU4N.Text
                     }
 
                     /* set next level pointers to decomposition */
-                    cs1 = decomp1.ToCharSequence();
+                    cs1 = decomp1.AsCharSequence();
                     s1 = 0;
                     limit1 = decomp1.Length;
 
@@ -3395,7 +3395,7 @@ namespace ICU4N.Text
                     }
 
                     /* set next level pointers to decomposition */
-                    cs2 = decomp2.ToCharSequence();
+                    cs2 = decomp2.AsCharSequence();
                     s2 = 0;
                     limit2 = decomp2.Length;
 

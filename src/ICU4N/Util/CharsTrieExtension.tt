@@ -55,7 +55,7 @@ namespace ICU4N.Util
 <# if (charSequence=="ICharSequence") { #>
             chars_ = trieChars;
 <# } else { #>
-            chars_ = trieChars.ToCharSequence();
+            chars_ = trieChars.AsCharSequence();
 <# } #>
             pos_ = root_ = offset;
             remainingMatchLength_ = -1;

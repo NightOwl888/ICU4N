@@ -150,7 +150,7 @@ namespace ICU4N.Text
                 throw new ArgumentNullException(nameof(target));
             foreach (var item in this)
             {
-                target.Add(item.ToCharSequence());
+                target.Add(item.AsCharSequence());
             }
             return target;
         }
