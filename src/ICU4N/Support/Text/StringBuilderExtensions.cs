@@ -15,7 +15,7 @@ namespace ICU4N.Support.Text
         /// </summary>
         /// <param name="text">This <see cref="StringBuilder"/>.</param>
         /// <returns>An <see cref="StringBuilderCharSequence"/>.</returns>
-        internal static IAppendable ToAppendable(this StringBuilder text)
+        internal static IAppendable AsAppendable(this StringBuilder text)
         {
             return new StringBuilderCharSequence(text);
         }

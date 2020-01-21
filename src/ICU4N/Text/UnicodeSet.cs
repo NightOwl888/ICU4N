@@ -2378,7 +2378,7 @@ namespace ICU4N.Text
             StringBuilder rebuiltPat = new StringBuilder();
             RuleCharacterIterator chars =
                     new RuleCharacterIterator(pattern, symbols, pos);
-            ApplyPattern(chars, symbols, rebuiltPat.ToAppendable(), options);
+            ApplyPattern(chars, symbols, rebuiltPat.AsAppendable(), options);
             if (chars.InVariable)
             {
                 SyntaxError(chars, "Extra chars in variable value");
@@ -2598,11 +2598,11 @@ namespace ICU4N.Text
                     switch (setMode)
                     {
                         case SETMODE1_UNICODESET:
-                            nested.ApplyPattern(chars, symbols, patBuf.ToAppendable(), options);
+                            nested.ApplyPattern(chars, symbols, patBuf.AsAppendable(), options);
                             break;
                         case SETMODE2_PROPERTYPAT:
                             chars.SkipIgnored(opts);
-                            nested.ApplyPropertyPattern(chars, patBuf.ToAppendable(), symbols);
+                            nested.ApplyPropertyPattern(chars, patBuf.AsAppendable(), symbols);
                             break;
                         case SETMODE3_PREPARSED: // `nested' already parsed
                             nested.ToPattern(patBuf, false);

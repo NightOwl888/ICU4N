@@ -83,7 +83,7 @@ namespace ICU4N.Impl
     public sealed partial class ReorderingBuffer : IAppendable
     {
         public ReorderingBuffer(Normalizer2Impl ni, StringBuilder dest, int destCapacity)
-            : this(ni, dest.ToAppendable(), destCapacity)
+            : this(ni, dest.AsAppendable(), destCapacity)
         {
         }
 

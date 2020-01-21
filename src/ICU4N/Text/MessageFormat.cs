@@ -2933,7 +2933,7 @@ namespace ICU4N.Text
         {
             public AppendableWrapper(StringBuilder sb)
             {
-                app = sb.ToAppendable();
+                app = sb.AsAppendable();
                 length = sb.Length;
                 attributes = null;
             }
