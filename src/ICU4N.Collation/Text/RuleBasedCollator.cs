@@ -1506,7 +1506,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    if (str == null)
+                    if (str is null)
                     {
                         str = new StringBuilderCharSequence(new StringBuilder());
                     }
