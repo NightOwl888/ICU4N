@@ -1,6 +1,8 @@
 ﻿using ICU4N.Logging;
 using ICU4N.Support;
+using ICU4N.Support.Globalization;
 using ICU4N.Util;
+using J2N;
 using System;
 using System.IO;
 using System.Reflection;
@@ -81,13 +83,13 @@ namespace ICU4N.Impl
 
         public static bool Exists(string resourceName)
         {
-            return typeof(ICUData).FindAndGetManifestResourceStream(resourceName) != null;
+            return typeof(ICUData).FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(resourceName)) != null;
         }
 
         private static Stream GetStream(Type root, string resourceName, bool required)
         {
             Stream i;
-            i = root.FindAndGetManifestResourceStream(resourceName);
+            i = root.FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(resourceName));
             if (i == null && required)
             {
                 throw new MissingManifestResourceException("could not locate data " + resourceName +
@@ -103,7 +105,7 @@ namespace ICU4N.Impl
         internal static Stream GetStream(Assembly loader, string resourceName, bool required)
         {
             Stream i = null;
-            i = loader.FindAndGetManifestResourceStream(resourceName);
+            i = loader.FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(resourceName));
             if (i == null && required)
             {
                 throw new MissingManifestResourceException("could not locate data " + loader.ToString() + " Resource: " + resourceName);

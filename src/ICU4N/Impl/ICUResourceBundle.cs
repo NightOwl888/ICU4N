@@ -1,7 +1,7 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.Collections;
+﻿using ICU4N.Support.Collections;
+using ICU4N.Support.Globalization;
 using ICU4N.Util;
-using J2N.Collections;
+using J2N;
 using J2N.Collections.Generic.Extensions;
 using System;
 using System.Collections.Generic;
@@ -708,7 +708,7 @@ namespace ICU4N.Impl
         {
             try
             {
-                using (Stream s = root.FindAndGetManifestResourceStream(bn + FULL_LOCALE_NAMES_LIST))
+                using (Stream s = root.FindAndGetManifestResourceStream(ResourceUtil.ConvertResourceName(bn + FULL_LOCALE_NAMES_LIST)))
                 {
                     if (s != null)
                     {
