@@ -119,9 +119,12 @@ namespace ICU4N.Impl
                 : base(container, key, resource)
             {
                 string s = wholeBundle.reader.GetString(resource);
-                // Allow the reader cache's SoftReference to do its job.
-                if (s.Length < ICUResourceBundleReader.LARGE_SIZE / 2 ||
-                        CacheValue<object>.FutureInstancesWillBeStrong)
+
+                // ICU4N: Factored out LARGE_SIZE/FutureInstancesWillBeStrong, as it is not possible in .NET to have a memory-sensitive cache.
+                // ReaderCache is a strong cache in ICU4N.
+                // However, we still use cached strings over LARGE_SIZE / 2
+
+                if (s.Length < ICUResourceBundleReader.LARGE_SIZE / 2)
                 {
                     value = s;
                 }

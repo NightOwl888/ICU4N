@@ -1,6 +1,7 @@
 ﻿using ICU4N.Support;
 using ICU4N.Util;
 using J2N;
+using J2N.Collections.Concurrent;
 using J2N.IO;
 using J2N.Numerics;
 using J2N.Text;
@@ -10,6 +11,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Impl
 {
@@ -102,10 +104,11 @@ namespace ICU4N.Impl
         private const int URES_ATT_USES_POOL_BUNDLE = 4;
 
         private static readonly CharBuffer EMPTY_16_BIT_UNITS = CharBuffer.Wrap(new char[] { '\0' });  // read-only
+
         /// <summary>
-        /// Objects with more value bytes are stored in <see cref="SoftReference{T}"/>s.
-        /// Smaller objects (which are not much larger than a <see cref="SoftReference{T}"/>)
-        /// are stored directly, avoiding the overhead of the reference.
+        /// Objects are always cached, and we are relying on virtual memory to manage the memory consumption
+        /// rather than having a memory-sensitive cache. However, we are leaving this constant for parity with
+        /// ICU4J.
         /// </summary>
         internal const int LARGE_SIZE = 24;
 
@@ -639,7 +642,7 @@ namespace ICU4N.Impl
                 // which makes code compiled for a newer JDK (7 and up) not run on an older one (6 and below).
                 s = ((ICharSequence)b16BitUnits).Subsequence(offset, length).ToString(); // ICU4N: Corrected 2nd parameter
             }
-            return (string)resourceCache.PutIfAbsent(res, s, s.Length * 2);
+            return (string)resourceCache.GetOrAdd(res, s, s.Length * 2);
         }
 
         private string MakeStringFromBytes(int offset, int length)
@@ -692,7 +695,7 @@ namespace ICU4N.Impl
             offset = GetResourceByteOffset(offset);
             int length = GetInt32(offset);
             string s = MakeStringFromBytes(offset + 4, length);
-            return (string)resourceCache.PutIfAbsent(res, s, s.Length * 2);
+            return (string)resourceCache.GetOrAdd(res, s, s.Length * 2);
         }
 
         /// <summary>
@@ -767,7 +770,7 @@ namespace ICU4N.Impl
                     offset = GetResourceByteOffset(offset);
                     length = GetInt32(offset);
                     string s = MakeStringFromBytes(offset + 4, length);
-                    return (string)resourceCache.PutIfAbsent(res, s, length * 2);
+                    return (string)resourceCache.GetOrAdd(res, s, length * 2);
                 }
             }
             else
@@ -909,7 +912,7 @@ namespace ICU4N.Impl
             }
             Array array = (type == UResourceType.Array) ?
                     (Array)new Array32(this, offset) : new Array16(this, offset);
-            return (Array)resourceCache.PutIfAbsent(res, array, 0);
+            return (Array)resourceCache.GetOrAdd(res, array, 0);
         }
 
         internal Table GetTable(int res)
@@ -946,7 +949,7 @@ namespace ICU4N.Impl
                 table = new Table32(this, offset);
                 size = table.Length * 4;
             }
-            return (Table)resourceCache.PutIfAbsent(res, table, size);
+            return (Table)resourceCache.GetOrAdd(res, table, size);
         }
 
         // ICUResource.Value --------------------------------------------------- ***
@@ -954,7 +957,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// From C++ uresdata.c gPublicTypes[URES_LIMIT].
         /// </summary>
-        private static UResourceType[] PUBLIC_TYPES = {
+        private static readonly UResourceType[] PUBLIC_TYPES = {
             UResourceType.String,
             UResourceType.Binary,
             UResourceType.Table,
@@ -1361,12 +1364,12 @@ namespace ICU4N.Impl
         /// This cache uses int[] and Object[] arrays to minimize object creation
         /// and avoid auto-boxing.
         /// <para/>
-        /// Large resource objects are usually stored in <see cref="SoftReference{T}"/>s.
-        /// <para/>
         /// For few resources, a small table is used with binary search.
         /// When more resources are cached, then the data structure changes to be faster
         /// but also use more memory.
         /// </remarks>
+        // ICU4N: This class was redesigned not to use SoftCache and the lock was changed
+        // to a ReaderWriterLockSlim to allow multiple threads to read simultaneously.
         private sealed class ResourceCache
         {
             // Number of items to be stored in a simple array with binary search and insertion sort.
@@ -1383,52 +1386,29 @@ namespace ICU4N.Impl
             private int length;
 
             // Trie-like tree of levels, used when length < 0.
-            private int maxOffsetBits;
+            private readonly int maxOffsetBits;
             /// <summary>
             /// Number of bits in each level, each stored in a nibble.
             /// </summary>
-            private int levelBitsList;
+            private readonly int levelBitsList;
             private Level rootLevel;
 
-            private static bool StoreDirectly(int size)
-            {
-                return size < LARGE_SIZE || CacheValue<object>.FutureInstancesWillBeStrong;
-            }
-
-            private static object PutIfCleared(object[] values, int index, object item, int size)
-            {
-                object value = values[index];
-                if (!(value is SoftReference<object>))
-                {
-                    // The caller should be consistent for each resource,
-                    // that is, create equivalent objects of equal size every time,
-                    // but the CacheValue "strength" may change over time.
-                    // assert size < LARGE_SIZE;
-                    return value;
-                }
-                Debug.Assert(size >= LARGE_SIZE);
-                value = ((SoftReference<object>)value).Get();
-                if (value != null)
-                {
-                    return value;
-                }
-                values[index] = CacheValue<object>.FutureInstancesWillBeStrong ?
-                        item : new SoftReference<object>(item);
-                return item;
-            }
+            private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion); // ICU4N: used for synchronization instead of this
 
             private sealed class Level
             {
-                int levelBitsList;
-                int shift;
-                int mask;
-                int[] keys;
-                object[] values;
+                private readonly int levelBitsList;
+                private readonly int shift;
+                private readonly int mask;
+                private readonly int[] keys;
+                private readonly object[] values;
+                private readonly ReaderWriterLockSlim syncLock;
 
-                internal Level(int levelBitsList, int shift)
+                internal Level(int levelBitsList, int shift, ReaderWriterLockSlim syncLock)
                 {
                     this.levelBitsList = levelBitsList;
                     this.shift = shift;
+                    this.syncLock = syncLock ?? throw new ArgumentNullException(nameof(syncLock));
                     int bits = levelBitsList & 0xf;
                     Debug.Assert(bits != 0);
                     int length = 1 << bits;
@@ -1437,53 +1417,87 @@ namespace ICU4N.Impl
                     values = new object[length];
                 }
 
-                internal object Get(int key)
+                public object Get(int key)
                 {
                     int index = (key >> shift) & mask;
-                    int k = keys[index];
-                    if (k == key)
+                    syncLock.EnterReadLock();
+                    try
                     {
-                        return values[index];
-                    }
-                    if (k == 0)
-                    {
-                        Level level = (Level)values[index];
-                        if (level != null)
+                        int k = keys[index];
+                        if (k == key)
                         {
-                            return level.Get(key);
+                            return values[index];
                         }
+                        if (k == 0)
+                        {
+                            Level level = (Level)values[index];
+                            if (level != null)
+                            {
+                                return level.Get(key);
+                            }
+                        }
+                        return null;
                     }
-                    return null;
+                    finally
+                    {
+                        syncLock.ExitReadLock();
+                    }
                 }
 
-                internal object PutIfAbsent(int key, object item, int size)
+                public object GetOrAdd(int key, object item, int size)
                 {
                     int index = (key >> shift) & mask;
-                    int k = keys[index];
-                    if (k == key)
+                    syncLock.EnterUpgradeableReadLock();
+                    try
                     {
-                        return PutIfCleared(values, index, item, size);
-                    }
-                    if (k == 0)
-                    {
-                        Level level2 = (Level)values[index];
-                        if (level2 != null)
+                        int k = keys[index];
+                        if (k == key)
                         {
-                            return level2.PutIfAbsent(key, item, size);
+                            return values[index]; // ICU4N: Simplified - no need to call PutIfCleared if not using SoftReference
                         }
-                        keys[index] = key;
-                        values[index] = StoreDirectly(size) ? item : new SoftReference<object>(item);
-                        return item;
+                        if (k == 0)
+                        {
+                            Level level2 = (Level)values[index];
+                            if (level2 != null)
+                            {
+                                return level2.GetOrAdd(key, item, size);
+                            }
+
+                            syncLock.EnterWriteLock();
+                            try
+                            {
+                                keys[index] = key;
+                                values[index] = item; // ICU4N: No SoftReference used, since .NET relies on virtual memory. See https://stackoverflow.com/a/7102321
+                            }
+                            finally
+                            {
+                                syncLock.ExitWriteLock();
+                            }
+                            return item;
+                        }
+                        // Collision: Add a child level, move the old item there,
+                        // and then insert the current item.
+                        Level level = new Level(levelBitsList >> 4, shift + (levelBitsList & 0xf), syncLock);
+                        int i = (k >> level.shift) & level.mask;
+                        level.keys[i] = k;
+                        level.values[i] = values[index];
+
+                        syncLock.EnterWriteLock();
+                        try
+                        {
+                            keys[index] = 0;
+                            values[index] = level;
+                        }
+                        finally
+                        {
+                            syncLock.ExitWriteLock();
+                        }
+                        return level.GetOrAdd(key, item, size);
                     }
-                    // Collision: Add a child level, move the old item there,
-                    // and then insert the current item.
-                    Level level = new Level(levelBitsList >> 4, shift + (levelBitsList & 0xf));
-                    int i = (k >> level.shift) & level.mask;
-                    level.keys[i] = k;
-                    level.values[i] = values[index];
-                    keys[index] = 0;
-                    values[index] = level;
-                    return level.PutIfAbsent(key, item, size);
+                    finally
+                    {
+                        syncLock.ExitUpgradeableReadLock();
+                    }
                 }
             }
 
@@ -1588,9 +1602,10 @@ namespace ICU4N.Impl
                 return ~start;
             }
 
-            internal object Get(int res)
+            public object Get(int res)
             {
-                lock (this)
+                syncLock.EnterReadLock();
+                try
                 {
                     // Integers and empty resources need not be cached.
                     // The cache itself uses res=0 for "no match".
@@ -1616,52 +1631,66 @@ namespace ICU4N.Impl
                             return null;
                         }
                     }
-                    if (value is SoftReference<object>)
-                    {
-                        value = ((SoftReference<object>)value).Get();
-                    }
+                    // ICU4N: No SoftReference used, since .NET relies on virtual memory. See https://stackoverflow.com/a/7102321
                     return value;  // null if the reference was cleared
+                }
+                finally
+                {
+                    syncLock.ExitReadLock();
                 }
             }
 
-            internal object PutIfAbsent(int res, object item, int size)
+            public object GetOrAdd(int res, object item, int size)
             {
-                lock (this)
+                syncLock.EnterUpgradeableReadLock();
+                try
                 {
                     if (length >= 0)
                     {
                         int index = FindSimple(res);
                         if (index >= 0)
                         {
-                            return PutIfCleared(values, index, item, size);
+                            return values[index]; // ICU4N: Simplified - no need to call PutIfCleared if not using SoftReference
                         }
                         else if (length < SIMPLE_LENGTH)
                         {
                             index = ~index;
-                            if (index < length)
+                            syncLock.EnterWriteLock();
+                            try
                             {
-                                System.Array.Copy(keys, index, keys, index + 1, length - index);
-                                System.Array.Copy(values, index, values, index + 1, length - index);
+                                if (index < length)
+                                {
+                                    System.Array.Copy(keys, index, keys, index + 1, length - index);
+                                    System.Array.Copy(values, index, values, index + 1, length - index);
+                                }
+                                ++length;
+                                keys[index] = res;
+                                values[index] = item; // ICU4N: No SoftReference used, since .NET relies on virtual memory. See https://stackoverflow.com/a/7102321
                             }
-                            ++length;
-                            keys[index] = res;
-                            values[index] = StoreDirectly(size) ? item : new SoftReference<object>(item);
+                            finally
+                            {
+                                syncLock.ExitWriteLock();
+                            }
                             return item;
                         }
                         else /* not found && length == SIMPLE_LENGTH */
                         {
                             // Grow to become trie-like.
-                            rootLevel = new Level(levelBitsList, 0);
+                            rootLevel = new Level(levelBitsList, 0, syncLock);
                             for (int i = 0; i < SIMPLE_LENGTH; ++i)
                             {
-                                rootLevel.PutIfAbsent(MakeKey(keys[i]), values[i], 0);
+                                rootLevel.GetOrAdd(MakeKey(keys[i]), values[i], 0);
                             }
                             keys = null;
                             values = null;
                             length = -1;
                         }
                     }
-                    return rootLevel.PutIfAbsent(MakeKey(res), item, size);
+                    return rootLevel.GetOrAdd(MakeKey(res), item, size);
+                }
+                finally
+                {
+                    syncLock.ExitUpgradeableReadLock();
                 }
             }
         }
