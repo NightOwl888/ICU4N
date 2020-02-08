@@ -23,7 +23,7 @@ namespace ICU4N.Impl
             internal abstract ResourceBundleWrapper Load();
         }
 
-        private class BundleCache : SoftCache<string, ResourceBundleWrapper, Loader>
+        private class BundleCache : Cache<string, ResourceBundleWrapper, Loader>
         {
             protected override ResourceBundleWrapper CreateInstance(string unusedKey, Loader loader)
             {

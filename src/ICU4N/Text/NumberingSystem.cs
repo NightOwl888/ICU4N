@@ -366,7 +366,7 @@ namespace ICU4N.Text
         /// Cache to hold the NumberingSystems by Locale.
         /// </summary>
         private static CacheBase<string, NumberingSystem, LocaleLookupData> cachedLocaleData =
-                new AnonymousSoftCache<string, NumberingSystem, LocaleLookupData>(
+                new AnonymousCache<string, NumberingSystem, LocaleLookupData>(
                     createInstance: (key, localeLookupData) => { return LookupInstanceByLocale(localeLookupData); });
 
 
@@ -374,7 +374,7 @@ namespace ICU4N.Text
         /// Cache to hold the NumberingSystems by name.
         /// </summary>
         private static CacheBase<string, NumberingSystem, object> cachedStringData =
-                   new AnonymousSoftCache<string, NumberingSystem, object>(
+                   new AnonymousCache<string, NumberingSystem, object>(
                        createInstance: (key, localeLookupData) => { return LookupInstanceByName(key); });
     }
 }

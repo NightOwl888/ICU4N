@@ -39,7 +39,7 @@ namespace ICU4N.Util
 
         private static readonly CacheBase<string, string, object> nameCache = new NameCache();
 
-        private class NameCache : SoftCache<string, string, object>
+        private class NameCache : Cache<string, string, object>
         {
             protected override string CreateInstance(string tmpLocaleID, object unused)
             {
@@ -236,9 +236,9 @@ namespace ICU4N.Util
             FORMAT // ICU4N TODO: API - this corresponds to CultureInfo.CurrentCulture in .NET
         }
 
-        private static readonly SoftCache<CultureInfo, ULocale, object> CACHE = new ULocaleCache();
+        private static readonly Cache<CultureInfo, ULocale, object> CACHE = new ULocaleCache();
 
-        private class ULocaleCache : SoftCache<CultureInfo, ULocale, object>
+        private class ULocaleCache : Cache<CultureInfo, ULocale, object>
         {
             protected override ULocale CreateInstance(CultureInfo key, object unused)
             {

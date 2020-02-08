@@ -75,7 +75,7 @@ namespace ICU4N.Impl
             internal abstract ICUResourceBundle Load();
         }
 
-        private class BundleCache : SoftCache<string, ICUResourceBundle, Loader>
+        private class BundleCache : Cache<string, ICUResourceBundle, Loader>
         {
             protected override ICUResourceBundle CreateInstance(string unusedKey, Loader loader)
             {
@@ -893,7 +893,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private class AvailableEntryCache : SoftCache<string, AvailEntry, Assembly>
+        private class AvailableEntryCache : Cache<string, AvailEntry, Assembly>
         {
             protected override AvailEntry CreateInstance(string key, Assembly assembly)
             {
@@ -908,7 +908,7 @@ namespace ICU4N.Impl
 
         /// <summary>
         /// Stores the locale information in a cache accessed by key (bundle prefix).
-        /// The cached objects are <see cref="AvailEntry"/>s. The cache is implemented by <see cref="SoftCache{K, V, D}"/>
+        /// The cached objects are <see cref="AvailEntry"/>s. The cache is implemented by <see cref="Cache{K, V, D}"/>
         /// so it can be GC'd.
         /// </summary>
         private static AvailEntry GetAvailEntry(string key, Assembly assembly)

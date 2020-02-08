@@ -313,7 +313,7 @@ namespace ICU4N.Impl
 
         private static CacheBase<string, Norm2AllModes, ByteBuffer> cache = new Norm2SoftCache();
 
-        private class Norm2SoftCache : SoftCache<string, Norm2AllModes, ByteBuffer>
+        private class Norm2SoftCache : Cache<string, Norm2AllModes, ByteBuffer>
         {
             protected override Norm2AllModes CreateInstance(string key, ByteBuffer bytes)
             {

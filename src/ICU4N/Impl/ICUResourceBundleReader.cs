@@ -171,7 +171,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private class ReaderCache : SoftCache<ReaderCacheKey, ICUResourceBundleReader, Assembly>
+        private class ReaderCache : Cache<ReaderCacheKey, ICUResourceBundleReader, Assembly>
         {
             /// <seealso cref="CacheBase{K, V, D}.CreateInstance(K, D)"/>
             protected override ICUResourceBundleReader CreateInstance(ReaderCacheKey key, Assembly assembly)
