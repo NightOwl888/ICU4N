@@ -14,10 +14,10 @@ namespace ICU4N.Impl.Locale
         private static readonly Cache CACHE = new Cache();
         public static readonly BaseLocale Root = BaseLocale.GetInstance("", "", "", "");
 
-        private string _language = "";
-        private string _script = "";
-        private string _region = "";
-        private string _variant = "";
+        private readonly string _language = "";
+        private readonly string _script = "";
+        private readonly string _region = "";
+        private readonly string _variant = "";
 
         private volatile int _hash = 0;
 
@@ -182,10 +182,10 @@ namespace ICU4N.Impl.Locale
 
         private class Key : IComparable<Key>
         {
-            private string _lang = "";
-            private string _scrt = "";
-            private string _regn = "";
-            private string _vart = "";
+            private readonly string _lang = "";
+            private readonly string _scrt = "";
+            private readonly string _regn = "";
+            private readonly string _vart = "";
 
             private volatile int _hash; // Default to 0
 

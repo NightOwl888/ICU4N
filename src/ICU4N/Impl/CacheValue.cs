@@ -1,5 +1,7 @@
 ﻿using ICU4N.Support;
-using ICU4N.Util;
+using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Threading;
 
 namespace ICU4N.Impl
 {
@@ -10,43 +12,35 @@ namespace ICU4N.Impl
     public enum CacheValueStrength
     {
         /// <summary>
-        /// Subsequent <see cref="CacheValue{V}.GetInstance(V)"/>-created objects
+        /// Subsequent <see cref="CacheValue{TValue}.GetInstance(Func{TValue})"/>-created objects
         /// will hold direct references to their values.
         /// </summary>
         Strong = 1,
         /// <summary>
-        /// Subsequent <c>GetInstance()</c>-created objects
-        /// will hold <see cref="Support.SoftReference{T}"/>s to their values.
+        /// Subsequent <see cref="CacheValue{TValue}.GetInstance(Func{TValue})"/>-created objects
+        /// will use <see cref="MemoryCache"/> to hold their values, each with a sliding expiration of 5 minutes.
         /// </summary>
         Soft = 0 // ICU4N specific - assigning value explicitly to 0, the default for value types in .NET
     }
 
     /// <summary>
     /// Value type for cache items:
-    /// Holds a value either via a direct reference or via a <see cref="Reference{T}"/>,
-    /// depending on the current "strength" when <see cref="GetInstance(V)"/> was called.
+    /// Holds a value via a direct reference.
     /// </summary>
     /// <remarks>
-    /// The value is <i>conceptually</i> immutable.
-    /// If it is held via a direct reference, then it is actually immutable.
-    /// <para/>
-    /// A <see cref="Reference{T}"/> may be cleared (garbage-collected),
-    /// after which <see cref="Get()"/> returns null.
-    /// It can then be reset via <see cref="ResetIfCleared(V)"/>.
-    /// The new value should be the same as, or equivalent to, the old value.
+    /// The value is immutable.
     /// <para/>
     /// Null values are supported. They can be distinguished from cleared values
     /// via <see cref="IsNull"/>.
     /// </remarks>
-    /// <typeparam name="V">Cache instance value type.</typeparam>
-    public abstract class CacheValue<V> where V : class
+    /// <typeparam name="TValue">Cache instance value type.</typeparam>
+    public abstract class CacheValue<TValue> where TValue : class
     {
+        private static readonly CacheValue<TValue> NULL_VALUE = new NullValue();
         private static volatile CacheValueStrength strength = CacheValueStrength.Soft;
 
-        private static readonly CacheValue<V> NULL_VALUE = new NullValue();
-
         /// <summary>
-        /// Gets or Sets the "strength" of value references for subsequent <see cref="GetInstance(V)"/> calls.
+        /// Gets or Sets the "strength" of value references for subsequent <see cref="GetInstance(Func{TValue})"/> calls.
         /// </summary>
         public static CacheValueStrength Strength
         {
@@ -55,106 +49,100 @@ namespace ICU4N.Impl
         }
 
         /// <summary>
-        /// Returns true if the "strength" is set to <see cref="CacheValueStrength.Strong"/>.
+        /// Returns <c>true</c> if the <see cref="Strength"/> is set to <see cref="CacheValueStrength.Strong"/>.
         /// </summary>
-        public static bool FutureInstancesWillBeStrong { get { return strength == CacheValueStrength.Strong; } }
+        public static bool FutureInstancesWillBeStrong => strength == CacheValueStrength.Strong;
 
         /// <summary>
-        /// Returns a <see cref="CacheValue{V}"/> instance that holds the value.
-        /// It holds it directly if the value is null or if the current "strength" is <see cref="CacheValueStrength.Strong"/>.
-        /// Otherwise, it holds it via a <see cref="Reference{T}"/>.
+        /// Returns a <see cref="CacheValue{TValue}"/> instance that holds the value.
         /// </summary>
-        public static CacheValue<V> GetInstance(V value)
+        /// <param name="createValue">A delegate used to create the value. Note this method is called immediately and may be called
+        /// periodically if <see cref="Strength"/> is <see cref="CacheValueStrength.Soft"/>.</param>
+        /// <returns>A <see cref="CacheValue{TValue}"/> instance that holds the value.</returns>
+        public static CacheValue<TValue> GetInstance(Func<TValue> createValue)
         {
-            if (value == null)
+            TValue value;
+            if (createValue == null || (value = createValue()) is null)
             {
                 return NULL_VALUE;
             }
-            return strength == CacheValueStrength.Strong ? (CacheValue <V> )new StrongValue(value) : new SoftValue(value);
+            return strength == CacheValueStrength.Strong ? (CacheValue<TValue>)new StrongValue(value) : new SoftValue(value, createValue);
         }
 
         /// <summary>
-        /// Distinguishes a null value from a <see cref="Reference{T}"/> value that has been cleared.
         /// Returns true if this object represents a null value.
         /// </summary>
-        public virtual bool IsNull { get { return false; } }
+        public virtual bool IsNull => false;
 
         /// <summary>
-        /// Returns the value (which can be null),
-        /// or null if it was held in a <see cref="Reference{T}"/> and has been cleared.
+        /// Returns the value (which can be null).
         /// </summary>
-        public abstract V Get();
+        public abstract TValue Get();
 
-        /// <summary>
-        /// If the value was held via a <see cref="Reference{T}"/> which has been cleared,
-        /// then it is replaced with a new <see cref="Reference{T}"/> to the new value,
-        /// and the new value is returned.
-        /// The old and new values should be the same or equivalent.
-        /// <para/>
-        /// Otherwise the old value is returned.
-        /// </summary>
-        /// <param name="value">Replacement value, for when the current <see cref="Reference{T}"/> has been cleared.</param>
-        /// <returns>The old or new value.</returns>
-        public abstract V ResetIfCleared(V value);
 
-        private sealed class NullValue : CacheValue<V>
+        private sealed class NullValue : CacheValue<TValue>
         {
-            public override bool IsNull { get { return true; } }
+            public override bool IsNull => true;
 
-            public override V Get() { return default(V); }
-
-            public override V ResetIfCleared(V value)
-            {
-                if (value != null)
-                {
-                    throw new ICUException("resetting a null value to a non-null value");
-                }
-                return default(V);
-            }
+            public override TValue Get() => default;
         }
 
-        private sealed class StrongValue : CacheValue<V>
+        private sealed class StrongValue : CacheValue<TValue>
         {
-            private V value;
+            private readonly TValue value;
 
-            internal StrongValue(V value)
+            internal StrongValue(TValue value)
             { this.value = value; }
 
-            public override V Get() { return value; }
-
-            public override V ResetIfCleared(V value)
-            {
-                // value and this.value should be equivalent, but
-                // we do not require equals() to be implemented appropriately.
-                return this.value;
-            }
+            public override TValue Get() => value;
         }
 
-        private sealed class SoftValue : CacheValue<V>
+        // ICU4N: Utilize ReaderWriterLockSlim to get better throughput on reads
+        private sealed class SoftValue : CacheValue<TValue>
         {
-            private volatile Reference<V> reference;  // volatile for unsynchronized get()
+            private SoftReference<TValue> reference;
+            private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+            private readonly Func<TValue> createValue;
+            private static readonly TimeSpan SlidingExpiration = new TimeSpan(hours: 0, minutes: 5, seconds: 0);
 
-            internal SoftValue(V value)
-            { reference = new SoftReference<V>(value); }
-
-            public override V Get() { return reference.Get(); }
-
-            public override V ResetIfCleared(V value)
+            public SoftValue(TValue initialValue, Func<TValue> createValue)
             {
-                lock (this)
+                this.createValue = createValue ?? throw new ArgumentNullException(nameof(createValue));
+                this.reference = CreateReference(initialValue);
+            }
+
+            private SoftReference<TValue> CreateReference(TValue value)
+            {
+                return new SoftReference<TValue>(value, new MemoryCacheEntryOptions { SlidingExpiration = SlidingExpiration });
+            }
+
+            public override TValue Get()
+            {
+                syncLock.EnterUpgradeableReadLock();
+                try
                 {
-                    V oldValue = reference.Get();
-                    if (oldValue == null)
+                    if (reference.TryGetValue(out TValue value))
+                        return value;
+
+                    syncLock.EnterWriteLock();
+                    try
                     {
-                        reference = new SoftReference<V>(value);
+                        // Double check another thread didn't beat us
+                        if (reference.TryGetValue(out value))
+                            return value;
+
+                        value = createValue();
+                        reference = CreateReference(value);
                         return value;
                     }
-                    else
+                    finally
                     {
-                        // value and oldValue should be equivalent, but
-                        // we do not require equals() to be implemented appropriately.
-                        return oldValue;
+                        syncLock.ExitWriteLock();
                     }
+                }
+                finally
+                {
+                    syncLock.ExitUpgradeableReadLock();
                 }
             }
         }

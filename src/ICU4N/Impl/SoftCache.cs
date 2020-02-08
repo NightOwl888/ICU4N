@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace ICU4N.Impl
 {
@@ -7,124 +7,53 @@ namespace ICU4N.Impl
     /// Generic, thread-safe cache implementation.
     /// </summary>
     /// <remarks>
-    /// To use, pass a delegate that implements the <see cref="CacheBase{TKey, TValue, TData}.CreateInstance(TKey, TData)"/> method.
-    /// </remarks>
-    /// <typeparam name="K">Cache lookup key type</typeparam>
-    /// <typeparam name="V">Cache instance value type (must not be a CacheValue)</typeparam>
-    /// <typeparam name="D">Data type for creating a new instance value</typeparam>
-    /// <seealso cref="SoftCache{K, V, D}"/>
-    /// <seealso cref="CacheBase{TKey, TValue, TData}"/>
-    /// <author>Shad Storhaug</author>
-    public class AnonymousSoftCache<K, V, D> : SoftCache<K, V, D> where V : class
-    {
-        private readonly Func<K, D, V> createInstance;
-        public AnonymousSoftCache(Func<K,D,V> createInstance)
-        {
-            this.createInstance = createInstance ?? throw new ArgumentNullException(nameof(createInstance));
-        }
-
-        protected override V CreateInstance(K key, D data)
-        {
-            return createInstance(key, data);
-        }
-    }
-
-    /// <summary>
-    /// Generic, thread-safe cache implementation.
-    /// </summary>
-    /// <remarks>
-    /// To use, instantiate a subclass which implements the <see cref="CacheBase{TKey, TValue, TData}.CreateInstance(TKey, TData)"/> method,
-    /// and call Get() with the key and the data. The Get() call will use the data
-    /// only if it needs to call <see cref="CacheBase{TKey, TValue, TData}.CreateInstance(TKey, TData)"/>, otherwise the data is ignored.
+    /// To use, create a long-lived instance (either a static reference or singleton lifestyle), then call
+    /// <see cref="GetOrCreate(TKey, Func{TKey, TValue})"/>, which serves as a getter for the cached value.
+    /// The second argument is a delegate that is used to create the value when the cache item
+    /// is missing.
     /// <para/>
-    /// When caching instances while the CacheValue "strength" is <see cref="CacheValueStrength.Soft"/>,
-    /// the runtime can later release these instances once they are not used any more at all.
-    /// If such an instance is then requested again, the <see cref="GetInstance(K, D)"/> method 
-    /// will call <see cref="CacheBase{TKey, TValue, TData}.CreateInstance(TKey, TData)"/> again and reset the CacheValue.
-    /// The cache holds on to its map of keys to CacheValues forever.
+    /// The cache holds on to its dictionary of keys to cache values forever.
     /// <para/>
-    /// A value can be null if <see cref="CacheBase{TKey, TValue, TData}.CreateInstance(TKey, TData)"/> returns null.
-    /// In this case, it must do so consistently for the same key and data.
+    /// The value can be <c>null</c> if the <c>valueFactory</c> parameter of <see cref="GetOrCreate(TKey, Func{TKey, TValue})"/>
+    /// is <c>null</c> or returns <c>null</c>.
+    /// <para/>
+    /// The value can either be a direct reference or a <see cref="CacheValue{TValue}"/>. To actually make the cache hold "soft" references,
+    /// the return value of <c>valueFactory</c> can be instantiated with <see cref="CacheValue{TValue}.GetInstance(Func{TValue})"/>. If
+    /// <see cref="CacheValue{TValue}.Strength"/> is <see cref="CacheValueStrength.Soft"/>, its <see cref="Func{TValue}"/> parameter is not <c>null</c>
+    /// and does not return <c>null</c>, the <see cref="CacheValue{TValue}"/> will be a "soft" reference, meaning that its value is kept in
+    /// memory for a period of 5 minutes after its last access.
     /// </remarks>
-    /// <typeparam name="K">Cache lookup key type</typeparam>
-    /// <typeparam name="V">Cache instance value type (must not be a CacheValue)</typeparam>
-    /// <typeparam name="D">Data type for creating a new instance value</typeparam>
-    /// <author>Markus Scherer, Mark Davis</author>
-    public abstract class SoftCache<K, V, D> : CacheBase<K, V, D> where V : class
+    /// <typeparam name="TKey">Cache lookup key type.</typeparam>
+    /// <typeparam name="TValue">Cache instance value type (must not be a <see cref="CacheValue{V}"/>).</typeparam>
+    /// <author>Markus Scherer, Mark Davis, Shad Storhaug</author>
+    // ICU4N: Refactored to use atomic calls and not require subclasses in order to utilze. Instead, we simply
+    // pass a delegate to the GetOrCreate() method that loads the cache value if it was not previously cached.
+    public class SoftCache<TKey, TValue> : CacheBase<TKey, TValue> where TValue : class
     {
-        //private ConcurrentDictionary<K, object> map = new ConcurrentDictionary<K, object>();
-        private IDictionary<K, object> map = new Dictionary<K, object>();
-        private object syncLock = new object();
+        private readonly ConcurrentDictionary<TKey, object> map = new ConcurrentDictionary<TKey, object>();
 
-        public override V GetInstance(K key, D data)
+        /// <inheritdoc/>
+        public override TValue GetOrCreate(TKey key, Func<TKey, TValue> valueFactory)
         {
-            // We synchronize twice, once in the ConcurrentHashMap and
-            // once in valueRef.resetIfCleared(value),
-            // because we prefer the fine-granularity locking of the ConcurrentHashMap
-            // over coarser locking on the whole cache instance.
-            // We use a CacheValue (a second level of indirection) because
-            // ConcurrentHashMap.putIfAbsent() never replaces the key's value, and if it were
-            // a simple Reference we would not be able to reset its value after it has been cleared.
-            // (And ConcurrentHashMap.put() always replaces the value, which we don't want either.)
-            object mapValue = null;
-            lock (syncLock)
-                map.TryGetValue(key, out mapValue);
-            if (mapValue != null)
-            {
-                if (!(mapValue is CacheValue<V>))
-                {
-                    // The value was stored directly.
-                    return (V)mapValue;
-                }
-                CacheValue<V> cv = (CacheValue<V>)mapValue;
-                if (cv.IsNull)
-                {
-                    return null;
-                }
-                V value = cv.Get();
-                if (value != null)
-                {
-                    return value;
-                }
-                // The instance has been evicted, its Reference cleared.
-                // Create and set a new instance.
-                value = CreateInstance(key, data);
-                return cv.ResetIfCleared(value);
-            }
-            else /* valueRef == null */
+            object mapValue = map.GetOrAdd(key, (k) =>
             {
                 // We had never cached an instance for this key.
-                V value = CreateInstance(key, data);
-                mapValue = (value != null && CacheValue<V>.FutureInstancesWillBeStrong) ?
-                        value : (object)CacheValue<V>.GetInstance(value);
-                object temp;
-                lock (syncLock)
-                {
-                    // ICU4N TODO: use PutIfAbsent logic from elsewhere to utilize ConcurrentDictionary...?
-                    if (!map.TryGetValue(key, out temp))
-                    {
-                        // put if absent
-                        map[key] = mapValue;
-                    }
-                    mapValue = temp;
-                }
-                if (mapValue == null)
-                {
-                    // Normal "put": Our new value is now cached.
-                    return value;
-                }
 
-                // Race condition: Another thread beat us to putting a CacheValue
-                // into the map. Return its value, but just in case the garbage collector
-                // was aggressive, we also offer our new instance for caching.
-                if (!(mapValue is CacheValue<V>))
-                {
-                    // The value was stored directly.
-                    return (V)mapValue;
-                }
-                CacheValue<V> cv = (CacheValue<V>)mapValue;
-                return cv.ResetIfCleared(value);
+                if (valueFactory is null)
+                    return CacheValue<TValue>.GetInstance(null);
+
+                return valueFactory(k) ?? (object)CacheValue<TValue>.GetInstance(null);
+            });
+            if (!(mapValue is CacheValue<TValue> cv))
+            {
+                // The value was stored directly.
+                return (TValue)mapValue;
             }
+            if (cv.IsNull)
+            {
+                return null;
+            }
+            return cv.Get();
         }
     }
 }

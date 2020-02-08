@@ -17,21 +17,10 @@ namespace ICU4N.Impl
         private string baseName = null;
         private IList<string> keys = null;
 
-        /// <summary>Loader for bundle instances, for caching.</summary>
-        private abstract class Loader
-        {
-            internal abstract ResourceBundleWrapper Load();
-        }
+        // ICU4N: Factored out Loader and BundleCache and changed to GetOrCreate() method that
+        // uses a delegate to do all of this inline.
 
-        private class BundleCache : SoftCache<string, ResourceBundleWrapper, Loader>
-        {
-            protected override ResourceBundleWrapper CreateInstance(string unusedKey, Loader loader)
-            {
-                return loader.Load();
-            }
-        }
-
-        private static CacheBase<string, ResourceBundleWrapper, Loader> BUNDLE_CACHE = new BundleCache();
+        private static readonly CacheBase<string, ResourceBundleWrapper> BUNDLE_CACHE = new SoftCache<string, ResourceBundleWrapper>();
 
 
         private ResourceBundleWrapper(ResourceBundle bundle)
@@ -151,20 +140,8 @@ namespace ICU4N.Impl
                     (localeID.Length == lang.Length || localeID[lang.Length] == '_');
         }
 
-        private class BundleCacheLoader : Loader
-        {
-            private readonly Func<ResourceBundleWrapper> load;
-
-            public BundleCacheLoader(Func<ResourceBundleWrapper> load)
-            {
-                this.load = load;
-            }
-
-            internal override ResourceBundleWrapper Load()
-            {
-                return load();
-            }
-        }
+        // ICU4N: Factored out BundleCacheLoader and changed to GetOrCreate() method that
+        // uses a delegate to do all of this inline.
 
         private static ResourceBundleWrapper InstantiateBundle(
                  string baseName, string localeID, string defaultID,
@@ -172,7 +149,7 @@ namespace ICU4N.Impl
         {
             string name = string.IsNullOrEmpty(localeID) ? baseName : baseName + '_' + localeID;
             string cacheKey = disableFallback ? name : name + '#' + defaultID;
-            return BUNDLE_CACHE.GetInstance(cacheKey, new BundleCacheLoader(load: () =>
+            return BUNDLE_CACHE.GetOrCreate(cacheKey, (key) =>
             {
                 ResourceBundleWrapper parent = null;
                 int i = localeID.LastIndexOf('_');
@@ -283,7 +260,7 @@ namespace ICU4N.Impl
                     if (DEBUG) Console.Out.WriteLine("Returning null for " + baseName + "_" + localeID);
                 }
                 return b;
-            }));
+            });
         }
     }
 }

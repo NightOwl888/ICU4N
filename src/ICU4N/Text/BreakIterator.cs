@@ -941,12 +941,12 @@ namespace ICU4N.Text
             }
             if (iterCache[kind] != null)
             {
-                BreakIteratorCache cache2 = (BreakIteratorCache)iterCache[kind].Get();
-                if (cache2 != null)
+                BreakIteratorCache cache = (BreakIteratorCache)iterCache[kind].Get();
+                if (cache != null)
                 {
-                    if (cache2.Locale.Equals(where))
+                    if (cache.Locale.Equals(where))
                     {
-                        return cache2.CreateBreakInstance();
+                        return cache.CreateBreakInstance();
                     }
                 }
             }
@@ -954,11 +954,9 @@ namespace ICU4N.Text
             // sigh, all to avoid linking in ICULocaleData...
             BreakIterator result = GetShim().CreateBreakIterator(where, kind);
 
-            BreakIteratorCache cache = new BreakIteratorCache(where, result);
-            iterCache[kind] = CacheValue<BreakIteratorCache>.GetInstance(cache);
-            if (result is RuleBasedBreakIterator)
+            iterCache[kind] = CacheValue<BreakIteratorCache>.GetInstance(() => new BreakIteratorCache(where, result));
+            if (result is RuleBasedBreakIterator rbbi)
             {
-                RuleBasedBreakIterator rbbi = (RuleBasedBreakIterator)result;
                 rbbi.BreakType = kind;
             }
 

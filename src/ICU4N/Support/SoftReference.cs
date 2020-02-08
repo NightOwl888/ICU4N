@@ -1,43 +1,32 @@
-﻿using ICU4N.Support.Collections;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.Extensions.Caching.Memory;
 
 namespace ICU4N.Support
 {
-    internal class SoftReference<T> : Reference<T> where T : class
+    /// <summary>
+    /// A reference that can be configured to be kept in memory based on <see cref="MemoryCacheEntryOptions"/>.
+    /// <para/>
+    /// While not really a "soft" reference like the one in Java that is memory-sensitive, <see cref="SoftReference{T}"/>
+    /// uses <see cref="MemoryCache"/> to store/evict a cached value based on a caching policy supplied
+    /// in the constructor. The instance itself is the key to the cache, so the user must take care not
+    /// to use the same value for multiple <see cref="SoftReference{T}"/> instances.
+    /// <para/>
+    /// When the cached item is no longer available, <see cref="TryGetValue(out T)"/> will return <c>false</c>.
+    /// To reload, a new <see cref="SoftReference{T}"/> instance must be created to replace the expired cache
+    /// reference.
+    /// </summary>
+    /// <typeparam name="T">The type of value to cache.</typeparam>
+    internal class SoftReference<T>
     {
-        private ReferenceQueue<T> queue;
-        private T value;
+        private static readonly MemoryCache innerCache = new MemoryCache(new MemoryCacheOptions());
 
-        public SoftReference(T val)
+        public SoftReference(T value, MemoryCacheEntryOptions options)
         {
-            this.value = val;
+            innerCache.Set(this, value, options);
         }
 
-        public SoftReference(T val, ReferenceQueue<T> queue)
+        public bool TryGetValue(out T value)
         {
-            this.value = val;
-            this.queue = queue;
-        }
-
-        public void Clear()
-        {
-            this.value = default(T);
-        }
-
-        public bool Enqueue()
-        {
-            if (this.queue == null)
-            {
-                return false;
-            }
-            return this.queue.Enqueue(this);
-        }
-
-        public override T Get()
-        {
-            return this.value;
+            return innerCache.TryGetValue(this, out value);
         }
     }
 }

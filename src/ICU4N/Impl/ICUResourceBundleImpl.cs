@@ -119,9 +119,9 @@ namespace ICU4N.Impl
                 : base(container, key, resource)
             {
                 string s = wholeBundle.reader.GetString(resource);
-                // Allow the reader cache's SoftReference to do its job.
-                if (s.Length < ICUResourceBundleReader.LARGE_SIZE / 2 ||
-                        CacheValue<object>.FutureInstancesWillBeStrong)
+
+                // Allow the reader cache's SoftValue to do its job.
+                if (s.Length < ICUResourceBundleReader.LARGE_SIZE / 2 || CacheValue<string>.FutureInstancesWillBeStrong)
                 {
                     value = s;
                 }

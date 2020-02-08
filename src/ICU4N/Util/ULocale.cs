@@ -37,15 +37,10 @@ namespace ICU4N.Util
     {
         private static readonly object syncLock = new object();
 
-        private static readonly CacheBase<string, string, object> nameCache = new NameCache();
+        private static readonly CacheBase<string, string> nameCache = new SoftCache<string, string>();
 
-        private class NameCache : SoftCache<string, string, object>
-        {
-            protected override string CreateInstance(string tmpLocaleID, object unused)
-            {
-                return new LocaleIDParser(tmpLocaleID).GetName();
-            }
-        }
+        // ICU4N: Factored out NameCache and changed to GetOrCreate() method that
+        // uses a delegate to do all of this inline.
 
         /**
          * Useful constant for language.
@@ -236,15 +231,10 @@ namespace ICU4N.Util
             FORMAT // ICU4N TODO: API - this corresponds to CultureInfo.CurrentCulture in .NET
         }
 
-        private static readonly SoftCache<CultureInfo, ULocale, object> CACHE = new ULocaleCache();
+        private static readonly SoftCache<CultureInfo, ULocale> CACHE = new SoftCache<CultureInfo, ULocale>();
 
-        private class ULocaleCache : SoftCache<CultureInfo, ULocale, object>
-        {
-            protected override ULocale CreateInstance(CultureInfo key, object unused)
-            {
-                return DotNetLocaleHelper.ToULocale(key);
-            }
-        }
+        // ICU4N: Factored out ULocaleCache and changed to GetOrCreate() method that
+        // uses a delegate to do all of this inline.
 
         /**
          * Cache the locale.
@@ -364,7 +354,7 @@ namespace ICU4N.Util
             {
                 return null;
             }
-            return CACHE.GetInstance(loc, null /* unused */);
+            return CACHE.GetOrCreate(loc, (key) => DotNetLocaleHelper.ToULocale(key));
         }
 
         /**
@@ -1202,7 +1192,7 @@ namespace ICU4N.Util
             {
                 tmpLocaleID = localeID;
             }
-            return nameCache.GetInstance(tmpLocaleID, null /* unused */);
+            return nameCache.GetOrCreate(tmpLocaleID, (key) => new LocaleIDParser(key).GetName());
         }
 
         /**

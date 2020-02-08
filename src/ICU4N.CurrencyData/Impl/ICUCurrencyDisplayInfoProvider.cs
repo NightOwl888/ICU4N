@@ -88,12 +88,12 @@ namespace ICU4N.Impl
             /// <para/>
             /// Holds data for only one currency. If another currency is requested, the old cache item is overwritten.
             /// </remarks>
-            private volatile String[] pluralsDataCache = null;
+            private volatile string[] pluralsDataCache = null;
 
             /// <summary>
             /// Cache for <see cref="SymbolMap"/> and <see cref="NameMap"/>.
             /// </summary>
-            private volatile SoftReference<ParsingData> parsingDataCache = new SoftReference<ParsingData>(null);
+            private volatile ParsingDataInfo parsingDataCache = new ParsingDataInfo() { ParsingData = null }; // ICU4N: Eliminated SoftReference
 
             /// <summary>
             /// Cache for <see cref="GetUnitPatterns()"/>.
@@ -185,7 +185,7 @@ namespace ICU4N.Impl
             public override string GetPluralName(string isoCode, string pluralKey)
             {
                 StandardPlural? plural = StandardPluralUtil.OrNullFromString(pluralKey);
-                string[] pluralsData = fetchPluralsData(isoCode);
+                string[] pluralsData = FetchPluralsData(isoCode);
 
                 // See http://unicode.org/reports/tr35/#Currencies, especially the fallback rule.
                 string result = null;
@@ -289,7 +289,7 @@ namespace ICU4N.Impl
                 return result;
             }
 
-            internal string[] fetchPluralsData(string isoCode)
+            internal string[] FetchPluralsData(string isoCode)
             {
                 string[] result = pluralsDataCache;
                 if (result == null || !result[0].Equals(isoCode))
@@ -306,14 +306,14 @@ namespace ICU4N.Impl
 
             internal ParsingData FetchParsingData()
             {
-                ParsingData result = parsingDataCache.Get();
+                ParsingData result = parsingDataCache.ParsingData;
                 if (result == null)
                 {
                     result = new ParsingData();
                     CurrencySink sink = new CurrencySink(!fallback, CurrencySink.EntrypointTable.TOP);
                     sink.parsingData = result;
                     rb.GetAllItemsWithFallback("", sink);
-                    parsingDataCache = new SoftReference<ParsingData>(result);
+                    parsingDataCache = new ParsingDataInfo { ParsingData = result };
                 }
                 return result;
             }
@@ -349,6 +349,12 @@ namespace ICU4N.Impl
             ////////////////////////////////////////////
             /// END DATA FRONTEND -- START DATA SINK ///
             ////////////////////////////////////////////
+
+            // ICU4N: Cache to eliminate the need for SoftReference
+            private class ParsingDataInfo
+            {
+                public ParsingData ParsingData { get; set; }
+            }
 
             private sealed class CurrencySink : ResourceSink
             {

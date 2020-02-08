@@ -308,14 +308,7 @@ namespace ICU4N.Impl
                     return singleton.allModes;
                 }
             }
-            return cache.GetInstance(name, bytes);
-        }
-
-        private static CacheBase<string, Norm2AllModes, ByteBuffer> cache = new Norm2SoftCache();
-
-        private class Norm2SoftCache : SoftCache<string, Norm2AllModes, ByteBuffer>
-        {
-            protected override Norm2AllModes CreateInstance(string key, ByteBuffer bytes)
+            return cache.GetOrCreate(name, (key) =>
             {
                 Normalizer2Impl impl;
                 if (bytes == null)
@@ -327,8 +320,13 @@ namespace ICU4N.Impl
                     impl = new Normalizer2Impl().Load(bytes);
                 }
                 return new Norm2AllModes(impl);
-            }
+            });
         }
+
+        private static readonly CacheBase<string, Norm2AllModes> cache = new SoftCache<string, Norm2AllModes>();
+
+        // ICU4N: Factored out Norm2SoftCache and changed to GetOrCreate() method that
+        // uses a delegate to do all of this inline.
 
         public static readonly NoopNormalizer2 NoopNormalizer2 = new NoopNormalizer2();
 

@@ -65,25 +65,12 @@ namespace ICU4N.Impl
         }
 
         internal WholeBundle wholeBundle;
-        private ICUResourceBundle container;
+        private readonly ICUResourceBundle container;
 
-        /// <summary>
-        /// Loader for bundle instances, for caching.
-        /// </summary>
-        private abstract class Loader
-        {
-            internal abstract ICUResourceBundle Load();
-        }
+        // ICU4N: Factored out Loader and BundleCache and changed to GetOrCreate() method that
+        // uses a delegate to do all of this inline.
 
-        private class BundleCache : SoftCache<string, ICUResourceBundle, Loader>
-        {
-            protected override ICUResourceBundle CreateInstance(string unusedKey, Loader loader)
-            {
-                return loader.Load();
-            }
-        }
-
-        private static readonly CacheBase<string, ICUResourceBundle, Loader> BUNDLE_CACHE = new BundleCache();
+        private static readonly CacheBase<string, ICUResourceBundle> BUNDLE_CACHE = new SoftCache<string, ICUResourceBundle>();
 
         /// <summary>
         /// Returns a functionally equivalent locale, considering keywords as well, for the specified keyword.
@@ -893,27 +880,22 @@ namespace ICU4N.Impl
             }
         }
 
-        private class AvailableEntryCache : SoftCache<string, AvailEntry, Assembly>
-        {
-            protected override AvailEntry CreateInstance(string key, Assembly assembly)
-            {
-                return new AvailEntry(key, assembly);
-            }
-        }
+        // ICU4N: Factored out AvailableEntryCache and changed to GetOrCreate() method that
+        // uses a delegate to do all of this inline.
 
         /// <summary>
         /// Cache used for AvailableEntry
         /// </summary>
-        private static CacheBase<string, AvailEntry, Assembly> GET_AVAILABLE_CACHE = new AvailableEntryCache();
+        private static readonly CacheBase<string, AvailEntry> GET_AVAILABLE_CACHE = new SoftCache<string, AvailEntry>();
 
         /// <summary>
         /// Stores the locale information in a cache accessed by key (bundle prefix).
-        /// The cached objects are <see cref="AvailEntry"/>s. The cache is implemented by <see cref="SoftCache{K, V, D}"/>
+        /// The cached objects are <see cref="AvailEntry"/>s. The cache is implemented by <see cref="SoftCache{TKey, TValue}"/>
         /// so it can be GC'd.
         /// </summary>
         private static AvailEntry GetAvailEntry(string key, Assembly assembly)
         {
-            return GET_AVAILABLE_CACHE.GetInstance(key, assembly);
+            return GET_AVAILABLE_CACHE.GetOrCreate(key, (k) => new AvailEntry(k, assembly)); // ICU4N: Use a delegate to create the value inline so we don't need extra classes
         }
 
         private static ICUResourceBundle FindResourceWithFallback(string path,
@@ -1281,42 +1263,21 @@ namespace ICU4N.Impl
                     (localeID.Length == lang.Length || localeID[lang.Length] == '_');
         }
 
-        // ICU4N TODO: Revert back to this implementation
-        //private class BundleLoader : Loader
-        //{
-        //    private readonly Func<ICUResourceBundle> load;
-        //    public BundleLoader(Func<ICUResourceBundle> load)
-        //    {
-        //        this.load = load;
-        //    }
+        // ICU4N: Factored out BundleLoader and changed to GetOrCreate() method that
+        // uses a delegate to do all of this inline.
 
-        //    internal override ICUResourceBundle Load()
-        //    {
-        //        return load();
-        //    }
-        //}
-
-        private class BundleLoader : Loader
+        private static ICUResourceBundle InstantiateBundle(
+            string baseName, string localeID, string defaultID,
+            Assembly root, OpenType openType)
         {
-            private readonly string baseName;
-            private readonly string localeID;
-            private readonly string defaultID;
-            private readonly Assembly root;
-            private readonly OpenType openType;
-            private readonly string fullName;
-
-            public BundleLoader(string baseName, string localeID, string defaultID,
-                Assembly root, OpenType openType, string fullName)
-            {
-                this.baseName = baseName;
-                this.localeID = localeID;
-                this.defaultID = defaultID;
-                this.root = root;
-                this.openType = openType;
-                this.fullName = fullName;
-            }
-
-            internal override ICUResourceBundle Load()
+            Debug.Assert(localeID.IndexOf('@') < 0);
+            Debug.Assert(defaultID == null || defaultID.IndexOf('@') < 0);
+            string fullName = ICUResourceBundleReader.GetFullName(baseName, localeID);
+            char openTypeChar = (char)('0' + (int)openType);
+            string cacheKey = openType != OpenType.LocaleDefaultRoot ?
+                    fullName + '#' + openTypeChar :
+                        fullName + '#' + openTypeChar + '#' + defaultID;
+            return BUNDLE_CACHE.GetOrCreate(cacheKey, (key) =>
             {
                 if (DEBUG) Console.Out.WriteLine("Creating " + fullName);
                 // here we assume that java type resource bundle organization
@@ -1400,107 +1361,7 @@ namespace ICU4N.Impl
                     }
                 }
                 return b;
-            }
-        }
-
-        private static ICUResourceBundle InstantiateBundle(
-            string baseName, string localeID, string defaultID,
-            Assembly root, OpenType openType)
-        {
-            Debug.Assert(localeID.IndexOf('@') < 0);
-            Debug.Assert(defaultID == null || defaultID.IndexOf('@') < 0);
-            string fullName = ICUResourceBundleReader.GetFullName(baseName, localeID);
-            char openTypeChar = (char)('0' + (int)openType);
-            string cacheKey = openType != OpenType.LocaleDefaultRoot ?
-                    fullName + '#' + openTypeChar :
-                        fullName + '#' + openTypeChar + '#' + defaultID;
-            return BUNDLE_CACHE.GetInstance(cacheKey, new BundleLoader(baseName, localeID, defaultID, root, openType, fullName));
-
-            //return BUNDLE_CACHE.GetInstance(cacheKey, new BundleLoader(load: () =>
-            //{
-            //    if (DEBUG) Console.Out.WriteLine("Creating " + fullName);
-            //    // here we assume that java type resource bundle organization
-            //    // is required then the base name contains '.' else
-            //    // the resource organization is of ICU type
-            //    // so clients can instantiate resources of the type
-            //    // com.mycompany.data.MyLocaleElements_en.res and
-            //    // com.mycompany.data.MyLocaleElements.res
-            //    //
-            //    string rootLocale = (baseName.IndexOf('.') == -1) ? "root" : "";
-            //    string localeName = string.IsNullOrEmpty(localeID) ? rootLocale : localeID;
-            //    ICUResourceBundle b = ICUResourceBundle.CreateBundle(baseName, localeName, root);
-
-            //    if (DEBUG) Console.Out.WriteLine("The bundle created is: " + b + " and openType=" + openType + " and bundle.getNoFallback=" + (b != null && b.NoFallback));
-            //    if (openType == OpenType.DIRECT || (b != null && b.NoFallback))
-            //    {
-            //        // no fallback because the caller said so or because the bundle says so
-            //        //
-            //        // TODO for b!=null: In C++, ures_openDirect() builds the parent chain
-            //        // for its bundle unless its nofallback flag is set.
-            //        // Otherwise we get test failures.
-            //        // For example, item aliases are followed via ures_openDirect(),
-            //        // and fail if the target bundle needs fallbacks but the chain is not set.
-            //        // Figure out why Java does not build the parent chain
-            //        // for a bundle that does not have nofallback.
-            //        // Are the relevant test cases just disabled?
-            //        // Do item aliases not get followed via "direct" loading?
-            //        return b;
-            //    }
-
-            //    // fallback to locale ID parent
-            //    if (b == null)
-            //    {
-            //        int i = localeName.LastIndexOf('_');
-            //        if (i != -1)
-            //        {
-            //            // Chop off the last underscore and the subtag after that.
-            //            string temp = localeName.Substring(0, i - 0); // ICU4N: Checked 2nd parameter
-            //            b = InstantiateBundle(baseName, temp, defaultID, root, openType);
-            //        }
-            //        else
-            //        {
-            //            // No underscore, only a base language subtag.
-            //            if (openType == OpenType.LOCALE_DEFAULT_ROOT &&
-            //                    !LocaleIDStartsWithLangSubtag(defaultID, localeName))
-            //            {
-            //                // Go to the default locale before root.
-            //                b = InstantiateBundle(baseName, defaultID, defaultID, root, openType);
-            //            }
-            //            else if (openType != OpenType.LOCALE_ONLY && !string.IsNullOrEmpty(rootLocale))
-            //            {
-            //                // Ultimately go to root.
-            //                b = ICUResourceBundle.CreateBundle(baseName, rootLocale, root);
-            //            }
-            //        }
-            //    }
-            //    else
-            //    {
-            //        UResourceBundle parent = null;
-            //        localeName = b.GetLocaleID();
-            //        int i = localeName.LastIndexOf('_');
-
-            //        // TODO: C++ uresbund.cpp also checks for %%ParentIsRoot. Why not Java?
-            //        string parentLocaleName = ((ICUResourceBundleImpl.ResourceTable)b).FindString("%%Parent");
-            //        if (parentLocaleName != null)
-            //        {
-            //            parent = InstantiateBundle(baseName, parentLocaleName, defaultID, root, openType);
-            //        }
-            //        else if (i != -1)
-            //        {
-            //            parent = InstantiateBundle(baseName, localeName.Substring(0, i - 0), defaultID, root, openType); // ICU4N: Checked 2nd parameter
-            //        }
-            //        else if (!localeName.Equals(rootLocale))
-            //        {
-            //            parent = InstantiateBundle(baseName, rootLocale, defaultID, root, openType);
-            //        }
-
-            //        if (!b.Equals(parent))
-            //        {
-            //            b.SetParent(parent);
-            //        }
-            //    }
-            //    return b;
-            //}));
+            });
         }
 
         internal ICUResourceBundle Get(string aKey, IDictionary<string, string> aliasesVisited, UResourceBundle requested)
