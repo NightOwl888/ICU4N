@@ -1,121 +1,34 @@
-﻿using ICU4N.Support;
-using ICU4N.Support.Collections;
-using System.Collections.Generic;
+﻿using J2N.Collections.Concurrent;
 
 namespace ICU4N.Impl.Locale
 {
-    public abstract class LocaleObjectCache<K, V> where V : class
+    public abstract class LocaleObjectCache<TKey, TValue> where TValue : class
     {
-        //private ConcurrentDictionary<K, CacheEntry> _map;
-        private readonly IDictionary<K, CacheEntry> _map;
-        private readonly ReferenceQueue<V> _queue = new ReferenceQueue<V>();
+        private readonly LurchTable<TKey, TValue> _map;
 
         public LocaleObjectCache()
-            //: this(16, 16)
             : this(16)
         {
         }
 
         public LocaleObjectCache(int initialCapacity)
         {
-            _map = new Dictionary<K, CacheEntry>(initialCapacity);
+            // ICU4N: Since .NET doesn't have a memory-sensitive cache, we are using an LRU cache with a fixed size.
+            // This ensures that the culture(s) that the application uses most stay near the top of the cache and
+            // less used cultures get popped off of the bottom of the cache.
+            _map = new LurchTable<TKey, TValue>(initialCapacity, LurchTableOrder.Access, limit: 64, comparer: null);
         }
 
-        //public LocaleObjectCache(int initialCapacity, int concurrencyLevel)
-        //{
-        //    _map = new ConcurrentDictionary<K, CacheEntry>(concurrencyLevel, initialCapacity);
-        //}
-
-        public virtual V Get(K key)
+        public virtual TValue Get(TKey key)
         {
-            V value = null;
-
-            CleanStaleEntries();
-            CacheEntry entry;
-            lock (_map)
-            {
-                if (_map.TryGetValue(key, out entry) && entry != null)
-                {
-                    value = entry.Get();
-                }
-            }
-            if (value == null)
-            {
-                key = NormalizeKey(key);
-                V newVal = CreateObject(key);
-                if (key == null || newVal == null)
-                {
-                    // subclass must return non-null key/value object
-                    return null;
-                }
-
-                CacheEntry newEntry = new CacheEntry(key, newVal, _queue);
-
-                while (value == null)
-                {
-                    CleanStaleEntries();
-                    lock (_map)
-                    {
-                        if (!_map.TryGetValue(key, out entry)) // ICU4N TODO: Fix PutIfAbsent functionality and ConcurrentDictionary
-                        {
-                            value = newVal;
-                            break;
-                        }
-                        else
-                        {
-                            _map[key] = newEntry;
-                            value = entry.Get();
-                        }
-                    }
-
-                    //entry = _map.PutIfAbsent(key, newEntry);
-                    //if (entry == null)
-                    //{
-                    //    value = newVal;
-                    //    break;
-                    //}
-                    //else
-                    //{
-                    //    value = entry.Get();
-                    //}
-                }
-            }
-            return value;
+            return _map.GetOrAdd(key, CreateObject);
         }
 
-        private void CleanStaleEntries()
-        {
-            CacheEntry entry;
-            while ((entry = (CacheEntry)_queue.Poll()) != null)
-            {
-                lock (_map)
-                {
-                    _map.Remove(entry.Key);
-                }
-            }
-        }
+        protected abstract TValue CreateObject(TKey key);
 
-        protected abstract V CreateObject(K key);
-
-        protected virtual K NormalizeKey(K key)
+        protected virtual TKey NormalizeKey(TKey key)
         {
             return key;
-        }
-
-        private class CacheEntry : SoftReference<V>
-        {
-            private K _key;
-
-            internal CacheEntry(K key, V value, ReferenceQueue<V> queue)
-                : base(value, queue)
-            {
-                _key = key;
-            }
-
-            internal virtual K Key
-            {
-                get { return _key; }
-            }
         }
     }
 }
