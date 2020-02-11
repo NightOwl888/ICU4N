@@ -187,7 +187,6 @@ namespace ICU4N.Impl
         public static SortedSet<T> DoOperation<T>(SortedSet<T> a, SortedSetOperation relation, SortedSet<T> b) where T : IComparable<T>
         {
             // TODO: optimize this as above
-            SortedSet<T> temp;
             switch (relation)
             {
                 case SortedSetOperation.UnionWith:
@@ -208,12 +207,8 @@ namespace ICU4N.Impl
                 case SortedSetOperation.SymmetricExceptWith:
                     a.SymmetricExceptWith(b);
                     return a;
-                // the following is the only case not really supported by .NET
                 case SortedSetOperation.B_ExceptWith:
-                    temp = new SortedSet<T>(b, GenericComparer.NaturalComparer<T>());
-                    temp.ExceptWith(a);
-                    a.Clear();
-                    a.UnionWith(temp);
+                    a.ExceptWith(b);
                     return a;
                 case SortedSetOperation.None:
                     a.Clear();
