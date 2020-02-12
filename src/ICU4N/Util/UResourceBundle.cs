@@ -337,38 +337,32 @@ namespace ICU4N.Util
 
         private enum RootType { Missing, ICU, DotNet }
 
-        private static IDictionary<string, RootType> ROOT_CACHE = new ConcurrentDictionary<string, RootType>();
+        private static readonly ConcurrentDictionary<string, RootType> ROOT_CACHE = new ConcurrentDictionary<string, RootType>();
 
         private static RootType GetRootType(string baseName, Assembly root)
         {
-            RootType rootType;
-
-            if (!ROOT_CACHE.TryGetValue(baseName, out rootType))
+            return ROOT_CACHE.GetOrAdd(baseName, (key) =>
             {
                 string rootLocale = (baseName.IndexOf('.') == -1) ? "root" : "";
                 try
                 {
                     ICUResourceBundle.GetBundleInstance(baseName, rootLocale, root, true);
-                    rootType = RootType.ICU;
+                    return RootType.ICU;
                 }
                 catch (MissingManifestResourceException)
                 {
                     try
                     {
                         ResourceBundleWrapper.GetBundleInstance(baseName, rootLocale, root, true);
-                        rootType = RootType.DotNet;
+                        return RootType.DotNet;
                     }
                     catch (MissingManifestResourceException)
                     {
                         //throw away the exception
-                        rootType = RootType.Missing;
+                        return RootType.Missing;
                     }
                 }
-
-                ROOT_CACHE[baseName] = rootType;
-            }
-
-            return rootType;
+            });
         }
 
         private static void SetRootType(string baseName, RootType rootType)
