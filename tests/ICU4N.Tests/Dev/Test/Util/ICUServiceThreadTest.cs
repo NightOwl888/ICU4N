@@ -50,7 +50,7 @@ namespace ICU4N.Dev.Test.Util
          * uses the default collator for the locale as the comparator to
          * sort the display names, and null for the matchID.
          */
-        public static SortedDictionary<string, string> GetDisplayNames(ICUService service, ULocale locale)
+        public static IDictionary<string, string> GetDisplayNames(ICUService service, ULocale locale)
         {
             //Collator col;
             //try

@@ -681,7 +681,7 @@ namespace ICU4N.Impl
             string baseName = root.GetManifestResourceBaseName(suffix);
             foreach (var s in root.GetManifestResourceNames()
                 .Where(name => name.StartsWith(baseName, StringComparison.Ordinal))
-                .Select(n => n.Replace(baseName, "")))
+                .Select(n => n.Length != 0 ? n.Replace(baseName, "") : n))
             {
                 if (s.EndsWith(".res", StringComparison.Ordinal))
                 {

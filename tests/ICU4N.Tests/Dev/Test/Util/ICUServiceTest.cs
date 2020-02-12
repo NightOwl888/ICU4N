@@ -47,7 +47,7 @@ namespace ICU4N.Dev.Test.Util
          * the locale as the comparator to sort the display names, and null for
          * the matchID.
          */
-        public SortedDictionary<string, string> GetDisplayNames(ICUService service)
+        public IDictionary<string, string> GetDisplayNames(ICUService service)
         {
             ULocale locale = ULocale.GetDefault();
             //Collator col = Collator.getInstance(locale.toLocale());
@@ -60,7 +60,7 @@ namespace ICU4N.Dev.Test.Util
          * uses the default collator for the locale as the comparator to
          * sort the display names, and null for the matchID.
          */
-        public SortedDictionary<string, string> GetDisplayNames(ICUService service, ULocale locale)
+        public IDictionary<string, string> GetDisplayNames(ICUService service, ULocale locale)
         {
             //Collator col = Collator.getInstance(locale.toLocale());
             CompareInfo col = CompareInfo.GetCompareInfo(locale.ToLocale().Name);
@@ -71,7 +71,7 @@ namespace ICU4N.Dev.Test.Util
          * uses the default collator for the locale as the comparator to
          * sort the display names.
          */
-        public SortedDictionary<string, string> GetDisplayNames(ICUService service, ULocale locale, string matchID)
+        public IDictionary<string, string> GetDisplayNames(ICUService service, ULocale locale, string matchID)
         {
             //Collator col = Collator.getInstance(locale.toLocale());
             CompareInfo col = CompareInfo.GetCompareInfo(locale.ToLocale().Name);
