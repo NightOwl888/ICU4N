@@ -31,7 +31,7 @@ namespace ICU4N.Impl
             }
         }
 
-        private static CacheBase<string, ResourceBundleWrapper, Loader> BUNDLE_CACHE = new BundleCache();
+        private static readonly CacheBase<string, ResourceBundleWrapper, Loader> BUNDLE_CACHE = new BundleCache();
 
 
         private ResourceBundleWrapper(ResourceBundle bundle)
@@ -120,8 +120,7 @@ namespace ICU4N.Impl
         {
             if (root == null)
             {
-                // ICU4N TODO: Check this
-                root = typeof(ICUData).GetTypeInfo().Assembly; //ClassLoaderUtil.getClassLoader();
+                root = GetAssembly(baseName); // ICU4N: Load the correct assembly based on baseName if not explicitly provided
             }
             ResourceBundleWrapper b;
             if (disableFallback)

@@ -98,7 +98,7 @@ namespace ICU4N.Util
         // The best approach will probably be to use the same method that Microsoft did for
         // CodePages: Require the end user to register a factory at startup so either a standard
         // or custom one can be provided.
-        private static Assembly GetAssembly(string baseName)
+        internal static Assembly GetAssembly(string baseName)
         {
             if (IsResourceFor("coll", baseName))
                 return GetAssemblyFor("ICU4N.Impl.Coll.Collation, ICU4N.Collation");
