@@ -898,7 +898,8 @@ namespace ICU4N.Dev.Test.Util
 
             Logln("Testing functional equivalents for calendar...");
             getFunctionalEquivalentTestCases(ICUData.IcuBaseName,
-                                             typeof(Calendar).GetTypeInfo().Assembly,
+                                             //typeof(Calendar).GetTypeInfo().Assembly, // ICU4N TODO: If we ever port the Calendar type, we should reference it here
+                                             typeof(BreakIterator).GetTypeInfo().Assembly,
                        CALENDAR_RESNAME, CALENDAR_KEYWORD, false, calCases);
 
             Logln("Testing error conditions:");

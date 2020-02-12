@@ -2,6 +2,7 @@
 using ICU4N.Support.Globalization;
 using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
+using J2N.Collections.ObjectModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -475,7 +476,7 @@ namespace ICU4N.Impl
         /// uses the current default Locale as the locale, null as
         /// the comparer, and null for the matchID.
         /// </summary>
-        public virtual SortedDictionary<string, string> GetDisplayNames()
+        public virtual IDictionary<string, string> GetDisplayNames()
         {
             ULocale locale = ULocale.GetDefault(Category.DISPLAY);
             return GetDisplayNames(locale, (IComparer<string>)null, null);
@@ -485,7 +486,7 @@ namespace ICU4N.Impl
         /// Convenience override of <see cref="GetDisplayNames(ULocale, IComparer{string}, string)"/> that
         /// uses null for the comparer, and null for the matchID.
         /// </summary>
-        public virtual SortedDictionary<string, string> GetDisplayNames(ULocale locale)
+        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale)
         {
             return GetDisplayNames(locale, (IComparer<string>)null, null);
         }
@@ -494,7 +495,7 @@ namespace ICU4N.Impl
         /// Convenience override of <see cref="GetDisplayNames(ULocale, IComparer{string}, string)"/> that
         /// uses null for the matchID, thus returning all display names.
         /// </summary>
-        public virtual SortedDictionary<string, string> GetDisplayNames(ULocale locale, CompareInfo com)
+        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, CompareInfo com)
         {
             return GetDisplayNames(locale, com.ToComparer(), null);
         }
@@ -503,7 +504,7 @@ namespace ICU4N.Impl
         /// Convenience override of <see cref="GetDisplayNames(ULocale, IComparer{string}, string)"/> that
         /// uses null for the matchID, thus returning all display names.
         /// </summary>
-        public virtual SortedDictionary<string, string> GetDisplayNames(ULocale locale, IComparer<string> com) // ICU4N TODO: API Add overloads for IComparer<StringBuilder> and IComparer<char[]> ?
+        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, IComparer<string> com)
         {
             return GetDisplayNames(locale, com, null);
         }
@@ -512,7 +513,7 @@ namespace ICU4N.Impl
         /// Convenience override of <see cref="GetDisplayNames(ULocale, IComparer{string}, string)"/> that
         /// uses null for the comparator.
         /// </summary>
-        public virtual SortedDictionary<string, string> GetDisplayNames(ULocale locale, string matchID)
+        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, string matchID)
         {
             return GetDisplayNames(locale, (IComparer<string>)null, matchID);
         }
@@ -527,7 +528,7 @@ namespace ICU4N.Impl
         /// those in the set.  The display names are sorted based on the
         /// comparer provided.
         /// </summary>
-        public virtual SortedDictionary<string, string> GetDisplayNames(ULocale locale, CompareInfo com, string matchID)
+        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, CompareInfo com, string matchID)
         {
             return GetDisplayNames(locale, com.ToComparer(), matchID);
         }
@@ -542,7 +543,7 @@ namespace ICU4N.Impl
         /// those in the set.  The display names are sorted based on the
         /// comparer provided.
         /// </summary>
-        public virtual SortedDictionary<string, string> GetDisplayNames(ULocale locale, IComparer<string> com, string matchID) // ICU4N TODO: API Add overloads for IComparer<StringBuilder> and IComparer<char[]> ?
+        public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, IComparer<string> com, string matchID)
         {
             SortedDictionary<string, string> dncache = null;
             LocaleRef reference = dnref;
@@ -572,8 +573,7 @@ namespace ICU4N.Impl
                             }
                         }
 
-                        // ICU4N TODO: Need to make the cache unmodifiable, but stil keep the type a SortedDictionary
-                        //dncache = dncache.ToUnmodifiableDictionary();
+                        //dncache = dncache.AsReadOnly();
                         dnref = new LocaleRef(dncache, locale, com);
                     }
                     else
@@ -587,21 +587,17 @@ namespace ICU4N.Impl
             ICUServiceKey matchKey = CreateKey(matchID);
             if (matchKey == null)
             {
-                return dncache;
+                return dncache.AsReadOnly();
             }
 
             // ICU4N: Rather than copying and then removing the items (which isn't allowed with
             // .NET iterators), we reverse the logic and add the items only if they are fallback.
-            SortedDictionary<string, string> result = new SortedDictionary<string, string>(((SortedDictionary<string, string>)dncache).Comparer);
-            using (var iter = dncache.GetEnumerator())
+            IDictionary<string, string> result = new SortedDictionary<string, string>(dncache.Comparer);
+            foreach (var e in dncache)
             {
-                while (iter.MoveNext())
+                if (matchKey.IsFallbackOf(e.Value))
                 {
-                    var e = iter.Current;
-                    if (matchKey.IsFallbackOf(e.Value))
-                    {
-                        result.Add(e.Key, e.Value);
-                    }
+                    result.Add(e.Key, e.Value);
                 }
             }
             return result;
@@ -612,8 +608,8 @@ namespace ICU4N.Impl
         private class LocaleRef
         {
             private readonly ULocale locale;
-            private SortedDictionary<string, string> dnCache;
-            private IComparer<string> com;
+            private readonly SortedDictionary<string, string> dnCache;
+            private readonly IComparer<string> com;
 
             internal LocaleRef(SortedDictionary<string, string> dnCache, ULocale locale, IComparer<string> com)
             {
