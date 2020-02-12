@@ -1,6 +1,4 @@
 ﻿using ICU4N.Impl;
-using ICU4N.Support.Collections;
-using J2N.Collections;
 using J2N.Collections.Generic.Extensions;
 using J2N.IO;
 using System;
@@ -97,13 +95,41 @@ namespace ICU4N.Util
 
         // ICU4N TODO: Our main assembly won't be able to load any LanguageData, RegionData, etc.
         // Need to come up with a better way to retrieve these values
+        // The best approach will probably be to use the same method that Microsoft did for
+        // CodePages: Require the end user to register a factory at startup so either a standard
+        // or custom one can be provided.
         private static Assembly GetAssembly(string baseName)
         {
-            if (baseName.EndsWith("/lang", StringComparison.Ordinal) || baseName.Contains("/lang/"))
+            if (IsResourceFor("coll", baseName))
+                return GetAssemblyFor("ICU4N.Impl.Coll.Collation, ICU4N.Collation");
+            if (IsResourceFor("curr", baseName))
+                return GetAssemblyFor("ICU4N.Impl.ICUCurrencyDisplayInfoProvider, ICU4N.CurrencyData");
+            if (IsResourceFor("lang", baseName))
                 return LocaleDisplayNamesImpl.LangDataTables.impl.GetType().GetTypeInfo().Assembly;
-            if (baseName.EndsWith("/region", StringComparison.Ordinal) || baseName.Contains("/region/"))
+            if (IsResourceFor("region", baseName))
                 return LocaleDisplayNamesImpl.RegionDataTables.impl.GetType().GetTypeInfo().Assembly;
+            if (IsResourceFor("translit", baseName))
+                return GetAssemblyFor("ICU4N.Text.Transliterator, ICU4N.Transliterator");
 
+            return ICUResourceBundle.IcuDataAssembly;
+        }
+
+        private static bool IsResourceFor(string resourceFolder, string baseName)
+        {
+            return baseName.EndsWith($"/{resourceFolder}", StringComparison.Ordinal) || baseName.Contains($"/{resourceFolder}/");
+        }
+
+        private static Assembly GetAssemblyFor(string type)
+        {
+            Type providerType = System.Type.GetType(type);
+            // ICU4N NOTE: If providerType is null, it means that the assembly the type is in is not referenced in the client project
+            if (providerType != null)
+            {
+                return providerType.GetTypeInfo().Assembly;
+            }
+
+            // Nowhere else to go, so return the IcuDataAssembly. This will result in
+            // GetManifestResourceStream() returning null when the type doesn't exist.
             return ICUResourceBundle.IcuDataAssembly;
         }
 
