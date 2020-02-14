@@ -120,11 +120,8 @@ namespace ICU4N.Impl
             {
                 string s = wholeBundle.reader.GetString(resource);
 
-                // ICU4N: Factored out LARGE_SIZE/FutureInstancesWillBeStrong, as it is not possible in .NET to have a memory-sensitive cache.
-                // ReaderCache is a strong cache in ICU4N.
-                // However, we still use cached strings over LARGE_SIZE / 2
-
-                if (s.Length < ICUResourceBundleReader.LARGE_SIZE / 2)
+                // Allow the reader cache's SoftValue to do its job.
+                if (s.Length < ICUResourceBundleReader.LARGE_SIZE / 2 || CacheValue<string>.FutureInstancesWillBeStrong)
                 {
                     value = s;
                 }

@@ -153,7 +153,7 @@ namespace ICU4N.Text
             // Then look up those mappings for the locale and resolve the keyword.
             string key = baseName + "@numbers=" + numbersKeyword;
             LocaleLookupData localeLookupData = new LocaleLookupData(locale, numbersKeyword);
-            return cachedLocaleData.GetInstance(key, localeLookupData);
+            return cachedLocaleData.GetOrCreate(key, (k) => LookupInstanceByLocale(localeLookupData));
         }
 
         internal class LocaleLookupData
@@ -244,7 +244,7 @@ namespace ICU4N.Text
         public static NumberingSystem GetInstanceByName(string name)
         {
             // Get the numbering system from the cache.
-            return cachedStringData.GetInstance(name, null /* unused */);
+            return cachedStringData.GetOrCreate(name, (key) => LookupInstanceByName(key));
         }
 
         private static NumberingSystem LookupInstanceByName(string name)
@@ -315,10 +315,7 @@ namespace ICU4N.Text
         /// Returns the radix of the current numbering system.
         /// </summary>
         /// <stable>ICU 4.2</stable>
-        public virtual int Radix
-        {
-            get { return radix; }
-        }
+        public virtual int Radix => radix;
 
         /// <summary>
         /// Returns the description string of the current numbering system.
@@ -330,19 +327,13 @@ namespace ICU4N.Text
         /// this numbering system.
         /// </summary>
         /// <stable>ICU 4.2</stable>
-        public virtual string Description
-        {
-            get { return desc; }
-        }
+        public virtual string Description => desc;
 
         /// <summary>
         /// Returns the string representing the name of the numbering system.
         /// </summary>
         /// <stable>ICU 4.6</stable>
-        public virtual string Name
-        {
-            get { return name; }
-        }
+        public virtual string Name => name;
 
         /// <summary>
         /// Returns the numbering system's algorithmic status.  If true,
@@ -351,10 +342,7 @@ namespace ICU4N.Text
         /// uses a fixed set of digits.
         /// </summary>
         /// <stable>ICU 4.2</stable>
-        public virtual bool IsAlgorithmic
-        {
-            get { return algorithmic; }
-        }
+        public virtual bool IsAlgorithmic => algorithmic;
 
         private string desc;
         private int radix;
@@ -365,16 +353,14 @@ namespace ICU4N.Text
         /// <summary>
         /// Cache to hold the NumberingSystems by Locale.
         /// </summary>
-        private static CacheBase<string, NumberingSystem, LocaleLookupData> cachedLocaleData =
-                new AnonymousCache<string, NumberingSystem, LocaleLookupData>(
-                    createInstance: (key, localeLookupData) => { return LookupInstanceByLocale(localeLookupData); });
-
+        /// 
+        private static readonly CacheBase<string, NumberingSystem> cachedLocaleData =
+            new SoftCache<string, NumberingSystem>();
 
         /// <summary>
         /// Cache to hold the NumberingSystems by name.
         /// </summary>
-        private static CacheBase<string, NumberingSystem, object> cachedStringData =
-                   new AnonymousCache<string, NumberingSystem, object>(
-                       createInstance: (key, localeLookupData) => { return LookupInstanceByName(key); });
+        private static readonly CacheBase<string, NumberingSystem> cachedStringData =
+            new SoftCache<string, NumberingSystem>();
     }
 }

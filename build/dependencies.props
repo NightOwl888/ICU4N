@@ -2,6 +2,9 @@
   <PropertyGroup Label="NuGet Package Reference Versions">
     <J2NPackageReferenceVersion>2.0.0-beta-0002</J2NPackageReferenceVersion>
     <MicrosoftCSharpPackageReferenceVersion>4.4.0</MicrosoftCSharpPackageReferenceVersion>
+    <MicrosoftExtensionsCachingMemoryPackageReferenceVersion>3.1.1</MicrosoftExtensionsCachingMemoryPackageReferenceVersion>
+    <MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NETSTANDARD1_3>1.1.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NETSTANDARD1_3>
+    <MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NET4_5_1>1.1.2</MicrosoftExtensionsCachingMemoryPackageReferenceVersion_NET4_5_1>
     <MicrosoftNETTestSdkPackageReferenceVersion>16.1.1</MicrosoftNETTestSdkPackageReferenceVersion>
     <NerdBankGitVersioningPackageReferenceVersion>[2.3.183]</NerdBankGitVersioningPackageReferenceVersion>
     <NETStandardLibrary20PackageReferenceVersion>2.0.3</NETStandardLibrary20PackageReferenceVersion>

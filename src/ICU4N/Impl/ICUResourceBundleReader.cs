@@ -5,6 +5,7 @@ using J2N.Collections.Concurrent;
 using J2N.IO;
 using J2N.Numerics;
 using J2N.Text;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -136,7 +137,7 @@ namespace ICU4N.Impl
 
         private ResourceCache resourceCache;
 
-        private static ReaderCache CACHE = new ReaderCache();
+        private static readonly SoftCache<ReaderCacheKey, ICUResourceBundleReader> CACHE = new SoftCache<ReaderCacheKey, ICUResourceBundleReader>();
         private static readonly ICUResourceBundleReader NULL_READER = new ICUResourceBundleReader();
 
         private class ReaderCacheKey
@@ -156,11 +157,10 @@ namespace ICU4N.Impl
                 {
                     return true;
                 }
-                if (!(obj is ReaderCacheKey))
+                if (!(obj is ReaderCacheKey info))
                 {
                     return false;
                 }
-                ReaderCacheKey info = (ReaderCacheKey)obj;
                 return this.baseName.Equals(info.baseName)
                         && this.localeID.Equals(info.localeID);
             }
@@ -171,42 +171,8 @@ namespace ICU4N.Impl
             }
         }
 
-        private class ReaderCache : Cache<ReaderCacheKey, ICUResourceBundleReader, Assembly>
-        {
-            /// <seealso cref="CacheBase{K, V, D}.CreateInstance(K, D)"/>
-            protected override ICUResourceBundleReader CreateInstance(ReaderCacheKey key, Assembly assembly)
-            {
-                string fullName = ICUResourceBundleReader.GetFullName(key.baseName, key.localeID);
-                try
-                {
-                    ByteBuffer inBytes;
-                    if (key.baseName != null && key.baseName.StartsWith(ICUData.IcuBaseName, StringComparison.Ordinal))
-                    {
-                        string itemPath = fullName.Substring(ICUData.IcuBaseName.Length + 1);
-                        inBytes = ICUBinary.GetData(assembly, fullName, itemPath);
-                        if (inBytes == null)
-                        {
-                            return NULL_READER;
-                        }
-                    }
-                    else
-                    {
-                        // Closed by getByteBufferFromInputStreamAndCloseStream().
-                        Stream stream = ICUData.GetStream(assembly, fullName);
-                        if (stream == null)
-                        {
-                            return NULL_READER;
-                        }
-                        inBytes = ICUBinary.GetByteBufferFromStreamAndDisposeStream(stream);
-                    }
-                    return new ICUResourceBundleReader(inBytes, key.baseName, key.localeID, assembly);
-                }
-                catch (IOException ex)
-                {
-                    throw new ICUUncheckedIOException("Data file " + fullName + " is corrupt - " + ex.Message, ex);
-                }
-            }
-        }
+        // ICU4N: Factored out ReaderCache and changed to GetOrCreate() method that
+        // uses a delegate to do all of this inline.
 
         /// <summary>
         /// Default constructor, just used for <see cref="NULL_READER"/>.
@@ -239,7 +205,38 @@ namespace ICU4N.Impl
         internal static ICUResourceBundleReader GetReader(string baseName, string localeID, Assembly root)
         {
             ReaderCacheKey info = new ReaderCacheKey(baseName, localeID);
-            ICUResourceBundleReader reader = CACHE.GetInstance(info, root);
+            ICUResourceBundleReader reader = CACHE.GetOrCreate(info, (key) =>
+            {
+                string fullName = ICUResourceBundleReader.GetFullName(key.baseName, key.localeID);
+                try
+                {
+                    ByteBuffer inBytes;
+                    if (key.baseName != null && key.baseName.StartsWith(ICUData.IcuBaseName, StringComparison.Ordinal))
+                    {
+                        string itemPath = fullName.Substring(ICUData.IcuBaseName.Length + 1);
+                        inBytes = ICUBinary.GetData(root, fullName, itemPath);
+                        if (inBytes == null)
+                        {
+                            return NULL_READER;
+                        }
+                    }
+                    else
+                    {
+                        // Closed by getByteBufferFromInputStreamAndCloseStream().
+                        Stream stream = ICUData.GetStream(root, fullName);
+                        if (stream == null)
+                        {
+                            return NULL_READER;
+                        }
+                        inBytes = ICUBinary.GetByteBufferFromStreamAndDisposeStream(stream);
+                    }
+                    return new ICUResourceBundleReader(inBytes, key.baseName, key.localeID, root);
+                }
+                catch (IOException ex)
+                {
+                    throw new ICUUncheckedIOException("Data file " + fullName + " is corrupt - " + ex.Message, ex);
+                }
+            });
             if (reader == NULL_READER)
             {
                 return null;
@@ -1368,10 +1365,11 @@ namespace ICU4N.Impl
         /// When more resources are cached, then the data structure changes to be faster
         /// but also use more memory.
         /// </remarks>
-        // ICU4N: This class was redesigned not to use SoftCache and the lock was changed
-        // to a ReaderWriterLockSlim to allow multiple threads to read simultaneously.
         private sealed class ResourceCache
         {
+            // ICU4N: To simulate "soft" references, we hold onto cache entries using a sliding expiration.
+            private static readonly TimeSpan SlidingExpiration = new TimeSpan(hours: 0, minutes: 5, seconds: 0);
+
             // Number of items to be stored in a simple array with binary search and insertion sort.
             private const int SIMPLE_LENGTH = 32;
 
@@ -1393,7 +1391,55 @@ namespace ICU4N.Impl
             private readonly int levelBitsList;
             private Level rootLevel;
 
-            private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion); // ICU4N: used for synchronization instead of this
+            // ICU4N: The lock was changed to a ReaderWriterLockSlim to allow multiple threads to read simultaneously.
+            private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+
+            private static bool StoreDirectly(int size)
+            {
+                return size < LARGE_SIZE || CacheValue<object>.FutureInstancesWillBeStrong;
+            }
+
+            // ICU4N: syncLock is assumed to already have an open upgradable read lock
+            private static object PutIfCleared(object[] values, int index, object item, int size, ReaderWriterLockSlim syncLock)
+            {
+                object value = values[index];
+                if (!(value is SoftReference<object> softRefence))
+                {
+                    // The caller should be consistent for each resource,
+                    // that is, create equivalent objects of equal size every time,
+                    // but the CacheValue "strength" may change over time.
+                    // assert size < LARGE_SIZE;
+                    return value;
+                }
+                Debug.Assert(size >= LARGE_SIZE);
+                if (softRefence.TryGetValue(out value))
+                {
+                    return value;
+                }
+                syncLock.EnterWriteLock();
+                try
+                {
+                    // Prevent double entry
+                    if (softRefence.TryGetValue(out value))
+                        return value;
+
+                    if (CacheValue<object>.FutureInstancesWillBeStrong)
+                    {
+                        values[index] = item;
+                    }
+                    else
+                    {
+                        values[index] = new SoftReference<object>(
+                            item,
+                            new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
+                    }
+                }
+                finally
+                {
+                    syncLock.ExitWriteLock();
+                }
+                return item;
+            }
 
             private sealed class Level
             {
@@ -1453,7 +1499,7 @@ namespace ICU4N.Impl
                         int k = keys[index];
                         if (k == key)
                         {
-                            return values[index]; // ICU4N: Simplified - no need to call PutIfCleared if not using SoftReference
+                            return PutIfCleared(values, index, item, size, syncLock);
                         }
                         if (k == 0)
                         {
@@ -1467,7 +1513,10 @@ namespace ICU4N.Impl
                             try
                             {
                                 keys[index] = key;
-                                values[index] = item; // ICU4N: No SoftReference used, since .NET relies on virtual memory. See https://stackoverflow.com/a/7102321
+                                values[index] = StoreDirectly(size) ? item
+                                    : new SoftReference<object>(
+                                        item,
+                                        new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
                             }
                             finally
                             {
@@ -1631,7 +1680,8 @@ namespace ICU4N.Impl
                             return null;
                         }
                     }
-                    // ICU4N: No SoftReference used, since .NET relies on virtual memory. See https://stackoverflow.com/a/7102321
+                    if (value is SoftReference<object> softReference)
+                        softReference.TryGetValue(out value);
                     return value;  // null if the reference was cleared
                 }
                 finally
@@ -1650,7 +1700,7 @@ namespace ICU4N.Impl
                         int index = FindSimple(res);
                         if (index >= 0)
                         {
-                            return values[index]; // ICU4N: Simplified - no need to call PutIfCleared if not using SoftReference
+                            return PutIfCleared(values, index, item, size, syncLock);
                         }
                         else if (length < SIMPLE_LENGTH)
                         {
@@ -1665,7 +1715,10 @@ namespace ICU4N.Impl
                                 }
                                 ++length;
                                 keys[index] = res;
-                                values[index] = item; // ICU4N: No SoftReference used, since .NET relies on virtual memory. See https://stackoverflow.com/a/7102321
+                                values[index] = StoreDirectly(size) ? item
+                                    : new SoftReference<object>(
+                                        item,
+                                        new MemoryCacheEntryOptions { SlidingExpiration = ResourceCache.SlidingExpiration });
                             }
                             finally
                             {

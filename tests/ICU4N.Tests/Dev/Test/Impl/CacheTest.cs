@@ -15,7 +15,7 @@ namespace ICU4N.Dev.Test.Impl
             CacheValue<object> nv = CacheValue<object>.GetInstance(null);
             assertTrue("null CacheValue isNull()", nv.IsNull);
             assertTrue("null CacheValue get()==null", nv.Get() == null);
-            // ICU4N: ResetIfCleared/FutureInstancesWillBeStrong factored out, as we are always strong
+            // ICU4N: ResetIfCleared factored out, using factory method in GetOrCreate() instead
             //assertTrue("null CacheValue reset==null", nv.ResetIfCleared(null) == null);
             //try
             //{
@@ -32,42 +32,40 @@ namespace ICU4N.Dev.Test.Impl
         [Test]
         public void TestStrongCacheValue()
         {
-            // ICU4N: ResetIfCleared/FutureInstancesWillBeStrong factored out, as we are always strong
-            //bool wasStrong = CacheValue<object>.FutureInstancesWillBeStrong;
-            //CacheValue<object>.Strength = CacheValueStrength.Strong;
-            //assertTrue("setStrength(STRONG).futureInstancesWillBeStrong()",
-            //        CacheValue<object>.FutureInstancesWillBeStrong);
-            CacheValue<Object> sv = CacheValue<Object>.GetInstance(this);
+            bool wasStrong = CacheValue<object>.FutureInstancesWillBeStrong;
+            CacheValue<object>.Strength = CacheValueStrength.Strong;
+            assertTrue("setStrength(STRONG).futureInstancesWillBeStrong()",
+                    CacheValue<object>.FutureInstancesWillBeStrong);
+            CacheValue<Object> sv = CacheValue<Object>.GetInstance(() => this);
             assertFalse("strong CacheValue not isNull()", sv.IsNull);
             assertTrue("strong CacheValue get()==same", sv.Get() == this);
-            //// A strong CacheValue never changes value.
-            //// The implementation does not check that the new value is equal to the old one,
-            //// or even of equal type, so it does not matter which new value we pass in.
-            //assertTrue("strong CacheValue reset==same", sv.ResetIfCleared("") == this);
-            //if (!wasStrong)
-            //{
-            //    CacheValue<object>.Strength = CacheValueStrength.Soft;
-            //}
+            // A strong CacheValue never changes value.
+            // The implementation does not check that the new value is equal to the old one,
+            // or even of equal type, so it does not matter which new value we pass in.
+            //assertTrue("strong CacheValue reset==same", sv.ResetIfCleared("") == this); // ICU4N: ResetIfCleared factored out, using factory method in GetOrCreate() instead
+            if (!wasStrong)
+            {
+                CacheValue<object>.Strength = CacheValueStrength.Soft;
+            }
         }
 
-        // ICU4N: ResetIfCleared/FutureInstancesWillBeStrong factored out, as we are always strong
-        ///** Code coverage for CacheValue. */
-        //[Test]
-        //public void TestSoftCacheValue()
-        //{
-        //    bool wasStrong = CacheValue<object>.FutureInstancesWillBeStrong;
-        //    CacheValue<object>.Strength = CacheValueStrength.Soft;
-        //    assertFalse("setStrength(SOFT).futureInstancesWillBeStrong()",
-        //            CacheValue<object>.FutureInstancesWillBeStrong);
-        //    CacheValue<Object> sv = CacheValue<object>.GetInstance(this);
-        //    assertFalse("soft CacheValue not isNull()", sv.IsNull);
-        //    Object v = sv.Get();
-        //    assertTrue("soft CacheValue get()==same or null", v == this || v == null);
-        //    assertTrue("soft CacheValue reset==same", sv.ResetIfCleared(this) == this);
-        //    if (wasStrong)
-        //    {
-        //        CacheValue<object>.Strength = CacheValueStrength.Strong;
-        //    }
-        //}
+        /** Code coverage for CacheValue. */
+        [Test]
+        public void TestSoftCacheValue()
+        {
+            bool wasStrong = CacheValue<object>.FutureInstancesWillBeStrong;
+            CacheValue<object>.Strength = CacheValueStrength.Soft;
+            assertFalse("setStrength(SOFT).futureInstancesWillBeStrong()",
+                    CacheValue<object>.FutureInstancesWillBeStrong);
+            CacheValue<Object> sv = CacheValue<object>.GetInstance(() => this);
+            assertFalse("soft CacheValue not isNull()", sv.IsNull);
+            Object v = sv.Get();
+            assertTrue("soft CacheValue get()==same or null", v == this || v == null);
+            //assertTrue("soft CacheValue reset==same", sv.ResetIfCleared(this) == this); // ICU4N: ResetIfCleared factored out, using factory method in GetOrCreate() instead
+            if (wasStrong)
+            {
+                CacheValue<object>.Strength = CacheValueStrength.Strong;
+            }
+        }
     }
 }
