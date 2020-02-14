@@ -114,11 +114,7 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-<# if (appendable == "IAppendable") { #>
-                dest.Append(src, start, start + length);
-<# } else { #>
-                dest.Append(src, start, length); // ICU4N: (start + length) - start == length
-<# } #>
+                dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
     <# } #>

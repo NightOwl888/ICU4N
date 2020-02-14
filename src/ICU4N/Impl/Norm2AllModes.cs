@@ -11,23 +11,6 @@ namespace ICU4N.Impl
 
         // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModesExtension.tt
 
-        //internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
-        //{
-        //    if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence &&
-        //        ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
-        //    {
-        //        throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-        //    }
-        //    try
-        //    {
-        //        return dest.Append(src.ToString());
-        //    }
-        //    catch (IOException e)
-        //    {
-        //        throw new ICUUncheckedIOException(e);  // Avoid declaring "throws IOException".
-        //    }
-        //}
-
         // ICU4N specific: Moved NormalizeSecondAndAppend(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
 
         // ICU4N specific: Moved Append(StringBuilder, ICharSequence) to Norm2AllModesExtension.tt
@@ -65,19 +48,6 @@ namespace ICU4N.Impl
         // ICU4N specific: Moved Normalize(ICharSequence, StringBuilder) to Norm2AllModesExtension.tt
 
         // ICU4N specific: Moved Normalize(ICharSequence, IAppendable) to Norm2AllModesExtension.tt
-
-        //internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
-        //{
-        //    if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence &&
-        //        ((StringBuilderCharSequence)src).StringBuilder == ((StringBuilderCharSequence)dest).StringBuilder))
-        //    {
-        //        throw new ArgumentException($"'{nameof(src)}' cannot be the same instance as '{nameof(dest)}'");
-        //    }
-        //    ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
-        //    Normalize(src, buffer);
-        //    buffer.Flush();
-        //    return dest;
-        //}
 
         // ICU4N specific: Moved Normalize(ICharSequence, ReorderingBuffer) to Norm2AllModesExtension.tt
 

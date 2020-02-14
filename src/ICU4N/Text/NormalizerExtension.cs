@@ -23,10 +23,10 @@ namespace ICU4N.Text
                 return Append(s, 0, s.Length);
             }
 
-            public IAppendable Append(string s, int sStart, int sLimit)
+            public IAppendable Append(string s, int sStart, int sLength)
             {
-                int len = sLimit - sStart;
-                if (len <= (limit - offset))
+                int sLimit = sStart + sLength;
+                if (sLength <= (limit - offset))
                 {
                     while (sStart < sLimit)
                     {  // TODO: Is there a better way to copy the characters?
@@ -35,7 +35,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    offset += len;
+                    offset += sLength;
                 }
                 return this;
             }
@@ -45,10 +45,10 @@ namespace ICU4N.Text
                 return Append(s, 0, s.Length);
             }
 
-            public IAppendable Append(StringBuilder s, int sStart, int sLimit)
+            public IAppendable Append(StringBuilder s, int sStart, int sLength)
             {
-                int len = sLimit - sStart;
-                if (len <= (limit - offset))
+                int sLimit = sStart + sLength;
+                if (sLength <= (limit - offset))
                 {
                     while (sStart < sLimit)
                     {  // TODO: Is there a better way to copy the characters?
@@ -57,7 +57,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    offset += len;
+                    offset += sLength;
                 }
                 return this;
             }
@@ -67,10 +67,10 @@ namespace ICU4N.Text
                 return Append(s, 0, s.Length);
             }
 
-            public IAppendable Append(char[] s, int sStart, int sLimit)
+            public IAppendable Append(char[] s, int sStart, int sLength)
             {
-                int len = sLimit - sStart;
-                if (len <= (limit - offset))
+                int sLimit = sStart + sLength;
+                if (sLength <= (limit - offset))
                 {
                     while (sStart < sLimit)
                     {  // TODO: Is there a better way to copy the characters?
@@ -79,7 +79,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    offset += len;
+                    offset += sLength;
                 }
                 return this;
             }
@@ -89,10 +89,10 @@ namespace ICU4N.Text
                 return Append(s, 0, s.Length);
             }
 
-            public IAppendable Append(ICharSequence s, int sStart, int sLimit)
+            public IAppendable Append(ICharSequence s, int sStart, int sLength)
             {
-                int len = sLimit - sStart;
-                if (len <= (limit - offset))
+                int sLimit = sStart + sLength;
+                if (sLength <= (limit - offset))
                 {
                     while (sStart < sLimit)
                     {  // TODO: Is there a better way to copy the characters?
@@ -101,7 +101,7 @@ namespace ICU4N.Text
                 }
                 else
                 {
-                    offset += len;
+                    offset += sLength;
                 }
                 return this;
             }

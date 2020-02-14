@@ -397,7 +397,7 @@ namespace ICU4N.Impl
                         try
                         {
                             // append the lowercase mapping
-                            output.Append(exceptions, excOffset, excOffset + full);
+                            output.Append(exceptions, excOffset, full); // ICU4N: (excOffset + full) - excOffset == full
 
                             /* return the string length */
                             return full;
@@ -633,7 +633,7 @@ namespace ICU4N.Impl
                         try
                         {
                             // append the result string
-                            output.Append(exceptions, excOffset, excOffset + full);
+                            output.Append(exceptions, excOffset, full); // ICU4N: (excOffset + full) - excOffset == full
 
                             /* return the string length */
                             return full;
@@ -908,7 +908,7 @@ namespace ICU4N.Impl
                         try
                         {
                             // append the result string
-                            output.Append(exceptions, excOffset, excOffset + full);
+                            output.Append(exceptions, excOffset, full); // ICU4N: (excOffset + full) - excOffset == full
 
                             /* return the string length */
                             return full;

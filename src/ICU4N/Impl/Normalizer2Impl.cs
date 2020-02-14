@@ -295,9 +295,9 @@ namespace ICU4N.Impl
             return Append(csq);
         }
 
-        IAppendable IAppendable.Append(string csq, int start, int end)
+        IAppendable IAppendable.Append(string csq, int start, int length)
         {
-            return Append(csq, start, end);
+            return Append(csq, start, length);
         }
 
         IAppendable IAppendable.Append(StringBuilder csq)
@@ -305,9 +305,9 @@ namespace ICU4N.Impl
             return Append(csq);
         }
 
-        IAppendable IAppendable.Append(StringBuilder csq, int start, int end)
+        IAppendable IAppendable.Append(StringBuilder csq, int start, int length)
         {
-            return Append(csq, start, end);
+            return Append(csq, start, length);
         }
 
         IAppendable IAppendable.Append(char[] csq)
@@ -315,9 +315,9 @@ namespace ICU4N.Impl
             return Append(csq);
         }
 
-        IAppendable IAppendable.Append(char[] csq, int start, int end)
+        IAppendable IAppendable.Append(char[] csq, int start, int length)
         {
-            return Append(csq, start, end);
+            return Append(csq, start, length);
         }
 
         IAppendable IAppendable.Append(ICharSequence csq)
@@ -325,9 +325,9 @@ namespace ICU4N.Impl
             return Append(csq);
         }
 
-        IAppendable IAppendable.Append(ICharSequence csq, int start, int end)
+        IAppendable IAppendable.Append(ICharSequence csq, int start, int length)
         {
-            return Append(csq, start, end);
+            return Append(csq, start, length);
         }
 
         #endregion
@@ -1292,7 +1292,7 @@ namespace ICU4N.Impl
                     leadCC = 0;
                 }
                 ++mapping;  // skip over the firstUnit
-                buffer.Append(extraData, mapping, mapping + length, leadCC, trailCC);
+                buffer.Append(extraData, mapping, length, leadCC, trailCC); // ICU4N: Corrected 3rd parameter
             }
         }
 

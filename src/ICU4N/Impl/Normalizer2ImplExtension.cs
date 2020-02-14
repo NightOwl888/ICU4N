@@ -143,31 +143,31 @@ namespace ICU4N.Impl
     public sealed partial class ReorderingBuffer
     {
 
-        public bool Equals(string s, int start, int limit)
+        public bool Equals(string s, int start, int length) // ICU4N specific: changed limit to length
         {
-            return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
         }
 
-        public bool Equals(StringBuilder s, int start, int limit)
+        public bool Equals(StringBuilder s, int start, int length) // ICU4N specific: changed limit to length
         {
-            return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
         }
 
-        public bool Equals(char[] s, int start, int limit)
+        public bool Equals(char[] s, int start, int length) // ICU4N specific: changed limit to length
         {
-            return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
         }
 
-        internal bool Equals(ICharSequence s, int start, int limit)
+        internal bool Equals(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
         {
-            return UTF16Plus.Equal(str, 0, str.Length, s, start, limit);
+            return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
         }
 
         // s must be in NFD, otherwise change the implementation.
-        public void Append(string s, int start, int limit,
-            int leadCC, int trailCC)
+        public void Append(string s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
         {
-            if (start == limit)
+            if (length == 0)
             {
                 return;
             }
@@ -175,17 +175,18 @@ namespace ICU4N.Impl
             {
                 if (trailCC <= 1)
                 {
-                    reorderStart = str.Length + (limit - start);
+                    reorderStart = str.Length + length;
                 }
                 else if (leadCC <= 1)
                 {
                     reorderStart = str.Length + 1;  // Ok if not a code point boundary.
                 }
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 lastCC = trailCC;
             }
             else
             {
+                int limit = start + length;
                 int c = Character.CodePointAt(s, start);
                 start += Character.CharCount(c);
                 Insert(c, leadCC);  // insert first code point
@@ -208,10 +209,10 @@ namespace ICU4N.Impl
         }
 
         // s must be in NFD, otherwise change the implementation.
-        public void Append(StringBuilder s, int start, int limit,
-            int leadCC, int trailCC)
+        public void Append(StringBuilder s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
         {
-            if (start == limit)
+            if (length == 0)
             {
                 return;
             }
@@ -219,17 +220,18 @@ namespace ICU4N.Impl
             {
                 if (trailCC <= 1)
                 {
-                    reorderStart = str.Length + (limit - start);
+                    reorderStart = str.Length + length;
                 }
                 else if (leadCC <= 1)
                 {
                     reorderStart = str.Length + 1;  // Ok if not a code point boundary.
                 }
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 lastCC = trailCC;
             }
             else
             {
+                int limit = start + length;
                 int c = Character.CodePointAt(s, start);
                 start += Character.CharCount(c);
                 Insert(c, leadCC);  // insert first code point
@@ -252,10 +254,10 @@ namespace ICU4N.Impl
         }
 
         // s must be in NFD, otherwise change the implementation.
-        public void Append(char[] s, int start, int limit,
-            int leadCC, int trailCC)
+        public void Append(char[] s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
         {
-            if (start == limit)
+            if (length == 0)
             {
                 return;
             }
@@ -263,17 +265,18 @@ namespace ICU4N.Impl
             {
                 if (trailCC <= 1)
                 {
-                    reorderStart = str.Length + (limit - start);
+                    reorderStart = str.Length + length;
                 }
                 else if (leadCC <= 1)
                 {
                     reorderStart = str.Length + 1;  // Ok if not a code point boundary.
                 }
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 lastCC = trailCC;
             }
             else
             {
+                int limit = start + length;
                 int c = Character.CodePointAt(s, start);
                 start += Character.CharCount(c);
                 Insert(c, leadCC);  // insert first code point
@@ -296,10 +299,10 @@ namespace ICU4N.Impl
         }
 
         // s must be in NFD, otherwise change the implementation.
-        internal void Append(ICharSequence s, int start, int limit,
-            int leadCC, int trailCC)
+        internal void Append(ICharSequence s, int start, int length,
+            int leadCC, int trailCC) // ICU4N specific: changed limit to length
         {
-            if (start == limit)
+            if (length == 0)
             {
                 return;
             }
@@ -307,17 +310,18 @@ namespace ICU4N.Impl
             {
                 if (trailCC <= 1)
                 {
-                    reorderStart = str.Length + (limit - start);
+                    reorderStart = str.Length + length;
                 }
                 else if (leadCC <= 1)
                 {
                     reorderStart = str.Length + 1;  // Ok if not a code point boundary.
                 }
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 lastCC = trailCC;
             }
             else
             {
+                int limit = start + length;
                 int c = Character.CodePointAt(s, start);
                 start += Character.CharCount(c);
                 Insert(c, leadCC);  // insert first code point
@@ -383,44 +387,44 @@ namespace ICU4N.Impl
             return this;
         }
 
-        public ReorderingBuffer Append(string s, int start, int limit)
+        public ReorderingBuffer Append(string s, int start, int length) // ICU4N specific: changed limit to length
         {
-            if (start != limit)
+            if (length != 0)
             {
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 lastCC = 0;
                 reorderStart = str.Length;
             }
             return this;
         }
 
-        public ReorderingBuffer Append(StringBuilder s, int start, int limit)
+        public ReorderingBuffer Append(StringBuilder s, int start, int length) // ICU4N specific: changed limit to length
         {
-            if (start != limit)
+            if (length != 0)
             {
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 lastCC = 0;
                 reorderStart = str.Length;
             }
             return this;
         }
 
-        public ReorderingBuffer Append(char[] s, int start, int limit)
+        public ReorderingBuffer Append(char[] s, int start, int length) // ICU4N specific: changed limit to length
         {
-            if (start != limit)
+            if (length != 0)
             {
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 lastCC = 0;
                 reorderStart = str.Length;
             }
             return this;
         }
 
-        internal ReorderingBuffer Append(ICharSequence s, int start, int limit)
+        internal ReorderingBuffer Append(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
         {
-            if (start != limit)
+            if (length != 0)
             {
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 lastCC = 0;
                 reorderStart = str.Length;
             }
@@ -433,18 +437,18 @@ namespace ICU4N.Impl
         /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
         /// Normally used after quick check loops find a non-empty sequence.
         /// </summary>
-        public ReorderingBuffer FlushAndAppendZeroCC(string s, int start, int limit)
+        public ReorderingBuffer FlushAndAppendZeroCC(string s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (appIsStringBuilder)
             {
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 reorderStart = str.Length;
             }
             else
             {
                 try
                 {
-                    app.Append(str).Append(s, start, limit);
+                    app.Append(str).Append(s, start, length); // ICU4N: checked 3rd parameter
                     str.Length = 0;
                     reorderStart = 0;
                 }
@@ -463,18 +467,18 @@ namespace ICU4N.Impl
         /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
         /// Normally used after quick check loops find a non-empty sequence.
         /// </summary>
-        public ReorderingBuffer FlushAndAppendZeroCC(StringBuilder s, int start, int limit)
+        public ReorderingBuffer FlushAndAppendZeroCC(StringBuilder s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (appIsStringBuilder)
             {
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 reorderStart = str.Length;
             }
             else
             {
                 try
                 {
-                    app.Append(str).Append(s, start, limit);
+                    app.Append(str).Append(s, start, length); // ICU4N: checked 3rd parameter
                     str.Length = 0;
                     reorderStart = 0;
                 }
@@ -493,18 +497,18 @@ namespace ICU4N.Impl
         /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
         /// Normally used after quick check loops find a non-empty sequence.
         /// </summary>
-        public ReorderingBuffer FlushAndAppendZeroCC(char[] s, int start, int limit)
+        public ReorderingBuffer FlushAndAppendZeroCC(char[] s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (appIsStringBuilder)
             {
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 reorderStart = str.Length;
             }
             else
             {
                 try
                 {
-                    app.Append(str).Append(s, start, limit);
+                    app.Append(str).Append(s, start, length); // ICU4N: checked 3rd parameter
                     str.Length = 0;
                     reorderStart = 0;
                 }
@@ -523,18 +527,18 @@ namespace ICU4N.Impl
         /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
         /// Normally used after quick check loops find a non-empty sequence.
         /// </summary>
-        internal ReorderingBuffer FlushAndAppendZeroCC(ICharSequence s, int start, int limit)
+        internal ReorderingBuffer FlushAndAppendZeroCC(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (appIsStringBuilder)
             {
-                str.Append(s, start, limit - start); // ICU4N: corrected 3rd parameter
+                str.Append(s, start, length); // ICU4N: checked 3rd parameter
                 reorderStart = str.Length;
             }
             else
             {
                 try
                 {
-                    app.Append(str).Append(s, start, limit);
+                    app.Append(str).Append(s, start, length); // ICU4N: checked 3rd parameter
                     str.Length = 0;
                     reorderStart = 0;
                 }
@@ -938,17 +942,17 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        public static bool Equal(string s1, int start1, int limit1,
-            string s2, int start2, int limit2)
+        public static bool Equal(string s1, int start1, int length1,
+            string s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
@@ -956,6 +960,7 @@ namespace ICU4N.Impl
             {
                 return true;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -969,20 +974,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        public static bool Equal(string s1, int start1, int limit1,
-            StringBuilder s2, int start2, int limit2)
+        public static bool Equal(string s1, int start1, int length1,
+            StringBuilder s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -996,20 +1002,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        public static bool Equal(string s1, int start1, int limit1,
-            char[] s2, int start2, int limit2)
+        public static bool Equal(string s1, int start1, int length1,
+            char[] s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1023,20 +1030,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(string s1, int start1, int limit1,
-            ICharSequence s2, int start2, int limit2)
+        internal static bool Equal(string s1, int start1, int length1,
+            ICharSequence s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1050,20 +1058,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        public static bool Equal(StringBuilder s1, int start1, int limit1,
-            string s2, int start2, int limit2)
+        public static bool Equal(StringBuilder s1, int start1, int length1,
+            string s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1077,17 +1086,17 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        public static bool Equal(StringBuilder s1, int start1, int limit1,
-            StringBuilder s2, int start2, int limit2)
+        public static bool Equal(StringBuilder s1, int start1, int length1,
+            StringBuilder s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
@@ -1095,6 +1104,7 @@ namespace ICU4N.Impl
             {
                 return true;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1108,20 +1118,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        public static bool Equal(StringBuilder s1, int start1, int limit1,
-            char[] s2, int start2, int limit2)
+        public static bool Equal(StringBuilder s1, int start1, int length1,
+            char[] s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1135,20 +1146,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(StringBuilder s1, int start1, int limit1,
-            ICharSequence s2, int start2, int limit2)
+        internal static bool Equal(StringBuilder s1, int start1, int length1,
+            ICharSequence s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1162,20 +1174,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        public static bool Equal(char[] s1, int start1, int limit1,
-            string s2, int start2, int limit2)
+        public static bool Equal(char[] s1, int start1, int length1,
+            string s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1189,20 +1202,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        public static bool Equal(char[] s1, int start1, int limit1,
-            StringBuilder s2, int start2, int limit2)
+        public static bool Equal(char[] s1, int start1, int length1,
+            StringBuilder s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1216,17 +1230,17 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        public static bool Equal(char[] s1, int start1, int limit1,
-            char[] s2, int start2, int limit2)
+        public static bool Equal(char[] s1, int start1, int length1,
+            char[] s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
@@ -1234,6 +1248,7 @@ namespace ICU4N.Impl
             {
                 return true;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1247,20 +1262,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(char[] s1, int start1, int limit1,
-            ICharSequence s2, int start2, int limit2)
+        internal static bool Equal(char[] s1, int start1, int length1,
+            ICharSequence s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1274,20 +1290,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(ICharSequence s1, int start1, int limit1,
-            string s2, int start2, int limit2)
+        internal static bool Equal(ICharSequence s1, int start1, int length1,
+            string s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1301,20 +1318,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(ICharSequence s1, int start1, int limit1,
-            StringBuilder s2, int start2, int limit2)
+        internal static bool Equal(ICharSequence s1, int start1, int length1,
+            StringBuilder s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1328,20 +1346,21 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(ICharSequence s1, int start1, int limit1,
-            char[] s2, int start2, int limit2)
+        internal static bool Equal(ICharSequence s1, int start1, int length1,
+            char[] s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1355,17 +1374,17 @@ namespace ICU4N.Impl
         /// <summary>
         /// Compares two character subsequences for binary equality.
         /// </summary>
-        /// <param name="s1">first sequence</param>
-        /// <param name="start1">start offset in first sequence</param>
-        /// <param name="limit1">limit offset in first sequence</param>
-        /// <param name="s2">second sequence</param>
-        /// <param name="start2">start offset in second sequence</param>
-        /// <param name="limit2">limit offset in second sequence</param>
+        /// <param name="s1">First sequence.</param>
+        /// <param name="start1">Start offset in first sequence.</param>
+        /// <param name="length1">Length of first sequence.</param>
+        /// <param name="s2">Second sequence.</param>
+        /// <param name="start2">Start offset in second sequence.</param>
+        /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(ICharSequence s1, int start1, int limit1,
-            ICharSequence s2, int start2, int limit2)
+        internal static bool Equal(ICharSequence s1, int start1, int length1,
+            ICharSequence s2, int start2, int length2)
         {
-            if ((limit1 - start1) != (limit2 - start2))
+            if (length1 != length2)
             {
                 return false;
             }
@@ -1373,6 +1392,7 @@ namespace ICU4N.Impl
             {
                 return true;
             }
+            int limit1 = start1 + length1;
             while (start1 < limit1)
             {
                 if (s1[start1++] != s2[start2++])
@@ -1551,7 +1571,7 @@ namespace ICU4N.Impl
                 {
                     if (buffer != null)
                     {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src);
+                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                     }
                     else
                     {
@@ -1655,7 +1675,7 @@ namespace ICU4N.Impl
                 {
                     if (buffer != null)
                     {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src);
+                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                     }
                     else
                     {
@@ -1759,7 +1779,7 @@ namespace ICU4N.Impl
                 {
                     if (buffer != null)
                     {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src);
+                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                     }
                     else
                     {
@@ -1863,7 +1883,7 @@ namespace ICU4N.Impl
                 {
                     if (buffer != null)
                     {
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, src);
+                        buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                     }
                     else
                     {
@@ -1931,8 +1951,8 @@ namespace ICU4N.Impl
                 c = Character.CodePointAt(s, src);
                 cc = GetCC(GetNorm16(c));
             };
-            buffer.Append(s, 0, src, firstCC, prevCC);
-            buffer.Append(s, src, limit);
+            buffer.Append(s, 0, src - 0, firstCC, prevCC); // ICU4N: Corrected 3rd parameter
+            buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
         }
 
         public void DecomposeAndAppend(StringBuilder s, bool doDecompose, ReorderingBuffer buffer)
@@ -1963,8 +1983,8 @@ namespace ICU4N.Impl
                 c = Character.CodePointAt(s, src);
                 cc = GetCC(GetNorm16(c));
             };
-            buffer.Append(s, 0, src, firstCC, prevCC);
-            buffer.Append(s, src, limit);
+            buffer.Append(s, 0, src - 0, firstCC, prevCC); // ICU4N: Corrected 3rd parameter
+            buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
         }
 
         public void DecomposeAndAppend(char[] s, bool doDecompose, ReorderingBuffer buffer)
@@ -1995,8 +2015,8 @@ namespace ICU4N.Impl
                 c = Character.CodePointAt(s, src);
                 cc = GetCC(GetNorm16(c));
             };
-            buffer.Append(s, 0, src, firstCC, prevCC);
-            buffer.Append(s, src, limit);
+            buffer.Append(s, 0, src - 0, firstCC, prevCC); // ICU4N: Corrected 3rd parameter
+            buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
         }
 
         internal void DecomposeAndAppend(ICharSequence s, bool doDecompose, ReorderingBuffer buffer)
@@ -2027,8 +2047,8 @@ namespace ICU4N.Impl
                 c = Character.CodePointAt(s, src);
                 cc = GetCC(GetNorm16(c));
             };
-            buffer.Append(s, 0, src, firstCC, prevCC);
-            buffer.Append(s, src, limit);
+            buffer.Append(s, 0, src - 0, firstCC, prevCC); // ICU4N: Corrected 3rd parameter
+            buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
         }
 
         // Very similar to ComposeQuickCheck(): Make the same changes in both places if relevant.
@@ -2055,7 +2075,7 @@ namespace ICU4N.Impl
                     {
                         if (prevBoundary != limit && doCompose)
                         {
-                            buffer.Append(s, prevBoundary, limit);
+                            buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
                         }
                         return true;
                     }
@@ -2122,7 +2142,7 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             buffer.Append(MapAlgorithmic(c, norm16), 0);
                             prevBoundary = src;
@@ -2137,11 +2157,11 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             int mapping = norm16 >> OFFSET_SHIFT;
                             int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
-                            buffer.Append(extraData, mapping, mapping + length);
+                            buffer.Append(extraData, mapping, length); // ICU4N: Corrected 3rd parameter
                             prevBoundary = src;
                             continue;
                         }
@@ -2156,7 +2176,7 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             prevBoundary = src;
                             continue;
@@ -2204,7 +2224,7 @@ namespace ICU4N.Impl
                                 --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
-                                    buffer.Append(s, prevBoundary, prevSrc);
+                                    buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                                 }
                                 buffer.Append((char)syllable);
                                 prevBoundary = src;
@@ -2231,7 +2251,7 @@ namespace ICU4N.Impl
                         --prevSrc;  // Replace the Hangul LV as well.
                         if (prevBoundary != prevSrc)
                         {
-                            buffer.Append(s, prevBoundary, prevSrc);
+                            buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                         }
                         buffer.Append((char)syllable);
                         prevBoundary = src;
@@ -2265,7 +2285,7 @@ namespace ICU4N.Impl
                             {
                                 if (doCompose)
                                 {
-                                    buffer.Append(s, prevBoundary, limit);
+                                    buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
                                 }
                                 return true;
                             }
@@ -2317,7 +2337,7 @@ namespace ICU4N.Impl
                 }
                 if (doCompose && prevBoundary != prevSrc)
                 {
-                    buffer.Append(s, prevBoundary, prevSrc);
+                    buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                 }
                 int recomposeStartIndex = buffer.Length;
                 // We know there is not a boundary here.
@@ -2329,7 +2349,7 @@ namespace ICU4N.Impl
                 Recompose(buffer, recomposeStartIndex, onlyContiguous);
                 if (!doCompose)
                 {
-                    if (!buffer.Equals(s, prevSrc, src))
+                    if (!buffer.Equals(s, prevSrc, src - prevSrc)) // ICU4N: Corrected 3rd parameter
                     {
                         return false;
                     }
@@ -2363,7 +2383,7 @@ namespace ICU4N.Impl
                     {
                         if (prevBoundary != limit && doCompose)
                         {
-                            buffer.Append(s, prevBoundary, limit);
+                            buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
                         }
                         return true;
                     }
@@ -2430,7 +2450,7 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             buffer.Append(MapAlgorithmic(c, norm16), 0);
                             prevBoundary = src;
@@ -2445,11 +2465,11 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             int mapping = norm16 >> OFFSET_SHIFT;
                             int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
-                            buffer.Append(extraData, mapping, mapping + length);
+                            buffer.Append(extraData, mapping, length); // ICU4N: Corrected 3rd parameter
                             prevBoundary = src;
                             continue;
                         }
@@ -2464,7 +2484,7 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             prevBoundary = src;
                             continue;
@@ -2512,7 +2532,7 @@ namespace ICU4N.Impl
                                 --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
-                                    buffer.Append(s, prevBoundary, prevSrc);
+                                    buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                                 }
                                 buffer.Append((char)syllable);
                                 prevBoundary = src;
@@ -2539,7 +2559,7 @@ namespace ICU4N.Impl
                         --prevSrc;  // Replace the Hangul LV as well.
                         if (prevBoundary != prevSrc)
                         {
-                            buffer.Append(s, prevBoundary, prevSrc);
+                            buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                         }
                         buffer.Append((char)syllable);
                         prevBoundary = src;
@@ -2573,7 +2593,7 @@ namespace ICU4N.Impl
                             {
                                 if (doCompose)
                                 {
-                                    buffer.Append(s, prevBoundary, limit);
+                                    buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
                                 }
                                 return true;
                             }
@@ -2625,7 +2645,7 @@ namespace ICU4N.Impl
                 }
                 if (doCompose && prevBoundary != prevSrc)
                 {
-                    buffer.Append(s, prevBoundary, prevSrc);
+                    buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                 }
                 int recomposeStartIndex = buffer.Length;
                 // We know there is not a boundary here.
@@ -2637,7 +2657,7 @@ namespace ICU4N.Impl
                 Recompose(buffer, recomposeStartIndex, onlyContiguous);
                 if (!doCompose)
                 {
-                    if (!buffer.Equals(s, prevSrc, src))
+                    if (!buffer.Equals(s, prevSrc, src - prevSrc)) // ICU4N: Corrected 3rd parameter
                     {
                         return false;
                     }
@@ -2671,7 +2691,7 @@ namespace ICU4N.Impl
                     {
                         if (prevBoundary != limit && doCompose)
                         {
-                            buffer.Append(s, prevBoundary, limit);
+                            buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
                         }
                         return true;
                     }
@@ -2738,7 +2758,7 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             buffer.Append(MapAlgorithmic(c, norm16), 0);
                             prevBoundary = src;
@@ -2753,11 +2773,11 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             int mapping = norm16 >> OFFSET_SHIFT;
                             int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
-                            buffer.Append(extraData, mapping, mapping + length);
+                            buffer.Append(extraData, mapping, length); // ICU4N: Corrected 3rd parameter
                             prevBoundary = src;
                             continue;
                         }
@@ -2772,7 +2792,7 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             prevBoundary = src;
                             continue;
@@ -2820,7 +2840,7 @@ namespace ICU4N.Impl
                                 --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
-                                    buffer.Append(s, prevBoundary, prevSrc);
+                                    buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                                 }
                                 buffer.Append((char)syllable);
                                 prevBoundary = src;
@@ -2847,7 +2867,7 @@ namespace ICU4N.Impl
                         --prevSrc;  // Replace the Hangul LV as well.
                         if (prevBoundary != prevSrc)
                         {
-                            buffer.Append(s, prevBoundary, prevSrc);
+                            buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                         }
                         buffer.Append((char)syllable);
                         prevBoundary = src;
@@ -2881,7 +2901,7 @@ namespace ICU4N.Impl
                             {
                                 if (doCompose)
                                 {
-                                    buffer.Append(s, prevBoundary, limit);
+                                    buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
                                 }
                                 return true;
                             }
@@ -2933,7 +2953,7 @@ namespace ICU4N.Impl
                 }
                 if (doCompose && prevBoundary != prevSrc)
                 {
-                    buffer.Append(s, prevBoundary, prevSrc);
+                    buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                 }
                 int recomposeStartIndex = buffer.Length;
                 // We know there is not a boundary here.
@@ -2945,7 +2965,7 @@ namespace ICU4N.Impl
                 Recompose(buffer, recomposeStartIndex, onlyContiguous);
                 if (!doCompose)
                 {
-                    if (!buffer.Equals(s, prevSrc, src))
+                    if (!buffer.Equals(s, prevSrc, src - prevSrc)) // ICU4N: Corrected 3rd parameter
                     {
                         return false;
                     }
@@ -2979,7 +2999,7 @@ namespace ICU4N.Impl
                     {
                         if (prevBoundary != limit && doCompose)
                         {
-                            buffer.Append(s, prevBoundary, limit);
+                            buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
                         }
                         return true;
                     }
@@ -3046,7 +3066,7 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             buffer.Append(MapAlgorithmic(c, norm16), 0);
                             prevBoundary = src;
@@ -3061,11 +3081,11 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             int mapping = norm16 >> OFFSET_SHIFT;
                             int length = extraData[mapping++] & MAPPING_LENGTH_MASK;
-                            buffer.Append(extraData, mapping, mapping + length);
+                            buffer.Append(extraData, mapping, length); // ICU4N: Corrected 3rd parameter
                             prevBoundary = src;
                             continue;
                         }
@@ -3080,7 +3100,7 @@ namespace ICU4N.Impl
                         {
                             if (prevBoundary != prevSrc)
                             {
-                                buffer.Append(s, prevBoundary, prevSrc);
+                                buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                             }
                             prevBoundary = src;
                             continue;
@@ -3128,7 +3148,7 @@ namespace ICU4N.Impl
                                 --prevSrc;  // Replace the Jamo L as well.
                                 if (prevBoundary != prevSrc)
                                 {
-                                    buffer.Append(s, prevBoundary, prevSrc);
+                                    buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                                 }
                                 buffer.Append((char)syllable);
                                 prevBoundary = src;
@@ -3155,7 +3175,7 @@ namespace ICU4N.Impl
                         --prevSrc;  // Replace the Hangul LV as well.
                         if (prevBoundary != prevSrc)
                         {
-                            buffer.Append(s, prevBoundary, prevSrc);
+                            buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                         }
                         buffer.Append((char)syllable);
                         prevBoundary = src;
@@ -3189,7 +3209,7 @@ namespace ICU4N.Impl
                             {
                                 if (doCompose)
                                 {
-                                    buffer.Append(s, prevBoundary, limit);
+                                    buffer.Append(s, prevBoundary, limit - prevBoundary); // ICU4N: Corrected 3rd parameter
                                 }
                                 return true;
                             }
@@ -3241,7 +3261,7 @@ namespace ICU4N.Impl
                 }
                 if (doCompose && prevBoundary != prevSrc)
                 {
-                    buffer.Append(s, prevBoundary, prevSrc);
+                    buffer.Append(s, prevBoundary, prevSrc - prevBoundary); // ICU4N: Corrected 3rd parameter
                 }
                 int recomposeStartIndex = buffer.Length;
                 // We know there is not a boundary here.
@@ -3253,7 +3273,7 @@ namespace ICU4N.Impl
                 Recompose(buffer, recomposeStartIndex, onlyContiguous);
                 if (!doCompose)
                 {
-                    if (!buffer.Equals(s, prevSrc, src))
+                    if (!buffer.Equals(s, prevSrc, src - prevSrc)) // ICU4N: Corrected 3rd parameter
                     {
                         return false;
                     }
@@ -3899,7 +3919,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                buffer.Append(s, src, limit);
+                buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
             }
         }
 
@@ -3931,7 +3951,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                buffer.Append(s, src, limit);
+                buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
             }
         }
 
@@ -3963,7 +3983,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                buffer.Append(s, src, limit);
+                buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
             }
         }
 
@@ -3995,7 +4015,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                buffer.Append(s, src, limit);
+                buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
             }
         }
 
@@ -4072,7 +4092,7 @@ namespace ICU4N.Impl
                     {
                         if (buffer != null)
                         {
-                            buffer.FlushAndAppendZeroCC(s, prevSrc, src);
+                            buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                         }
                         break;
                     }
@@ -4117,8 +4137,8 @@ namespace ICU4N.Impl
                     {
                         // The last lccc==0 character is excluded from the
                         // flush-and-append call in case it needs to be modified.
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary);
-                        buffer.Append(s, prevBoundary, src);
+                        buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary - prevSrc); // ICU4N: Corrected 3rd parameter
+                        buffer.Append(s, prevBoundary, src - prevBoundary); // ICU4N: Corrected 3rd parameter
                     }
                     // The start of the current character (c).
                     prevSrc = src;
@@ -4247,7 +4267,7 @@ namespace ICU4N.Impl
                     {
                         if (buffer != null)
                         {
-                            buffer.FlushAndAppendZeroCC(s, prevSrc, src);
+                            buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                         }
                         break;
                     }
@@ -4292,8 +4312,8 @@ namespace ICU4N.Impl
                     {
                         // The last lccc==0 character is excluded from the
                         // flush-and-append call in case it needs to be modified.
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary);
-                        buffer.Append(s, prevBoundary, src);
+                        buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary - prevSrc); // ICU4N: Corrected 3rd parameter
+                        buffer.Append(s, prevBoundary, src - prevBoundary); // ICU4N: Corrected 3rd parameter
                     }
                     // The start of the current character (c).
                     prevSrc = src;
@@ -4422,7 +4442,7 @@ namespace ICU4N.Impl
                     {
                         if (buffer != null)
                         {
-                            buffer.FlushAndAppendZeroCC(s, prevSrc, src);
+                            buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                         }
                         break;
                     }
@@ -4467,8 +4487,8 @@ namespace ICU4N.Impl
                     {
                         // The last lccc==0 character is excluded from the
                         // flush-and-append call in case it needs to be modified.
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary);
-                        buffer.Append(s, prevBoundary, src);
+                        buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary - prevSrc); // ICU4N: Corrected 3rd parameter
+                        buffer.Append(s, prevBoundary, src - prevBoundary); // ICU4N: Corrected 3rd parameter
                     }
                     // The start of the current character (c).
                     prevSrc = src;
@@ -4597,7 +4617,7 @@ namespace ICU4N.Impl
                     {
                         if (buffer != null)
                         {
-                            buffer.FlushAndAppendZeroCC(s, prevSrc, src);
+                            buffer.FlushAndAppendZeroCC(s, prevSrc, src - prevSrc); // ICU4N: Corrected 3rd parameter
                         }
                         break;
                     }
@@ -4642,8 +4662,8 @@ namespace ICU4N.Impl
                     {
                         // The last lccc==0 character is excluded from the
                         // flush-and-append call in case it needs to be modified.
-                        buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary);
-                        buffer.Append(s, prevBoundary, src);
+                        buffer.FlushAndAppendZeroCC(s, prevSrc, prevBoundary - prevSrc); // ICU4N: Corrected 3rd parameter
+                        buffer.Append(s, prevBoundary, src - prevBoundary); // ICU4N: Corrected 3rd parameter
                     }
                     // The start of the current character (c).
                     prevSrc = src;
@@ -4724,7 +4744,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                buffer.Append(s, src, limit);
+                buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
             }
         }
 
@@ -4753,7 +4773,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                buffer.Append(s, src, limit);
+                buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
             }
         }
 
@@ -4782,7 +4802,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                buffer.Append(s, src, limit);
+                buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
             }
         }
 
@@ -4811,7 +4831,7 @@ namespace ICU4N.Impl
             }
             else
             {
-                buffer.Append(s, src, limit);
+                buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
             }
         }
 

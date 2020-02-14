@@ -143,7 +143,7 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-                dest.Append(src, start, length); // ICU4N: (start + length) - start == length
+                dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
     
@@ -160,7 +160,7 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-                dest.Append(src, start, length); // ICU4N: (start + length) - start == length
+                dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
     
@@ -177,7 +177,7 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-                dest.Append(src, start, length); // ICU4N: (start + length) - start == length
+                dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
     
@@ -194,7 +194,7 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-                dest.Append(src, start, length); // ICU4N: (start + length) - start == length
+                dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
         
@@ -211,7 +211,7 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-                dest.Append(src, start, start + length);
+                dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
     
@@ -228,7 +228,7 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-                dest.Append(src, start, start + length);
+                dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
     
@@ -245,7 +245,7 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-                dest.Append(src, start, start + length);
+                dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
     
@@ -262,7 +262,7 @@ namespace ICU4N.Impl
                 {
                     return;
                 }
-                dest.Append(src, start, start + length);
+                dest.Append(src, start, length); // ICU4N: corrected 3rd parameter
             }
         }
     
