@@ -2213,7 +2213,7 @@ namespace ICU4N.Text
         /// <returns>new string derived from source by replacing every occurrence of <paramref name="oldChar32"/> with
         /// <paramref name="newChar32"/>, unless when no <paramref name="oldChar32"/> is found in source then source will be returned.</returns>
         /// <stable>ICU 2.6</stable>
-        public static string Replace(string source, int oldChar32, int newChar32) // ICU4N TODO: API - since this method is for JDK 1.3, is it needed in .NET ?
+        public static string Replace(string source, int oldChar32, int newChar32)
         {
             if (oldChar32 <= 0 || oldChar32 > CodePointMaxValue)
             {
@@ -2280,7 +2280,7 @@ namespace ICU4N.Text
         /// When no <paramref name="oldStr"/> is found in <paramref name="source"/>, then source will be returned.
         /// </returns>
         /// <stable>ICU 2.6</stable>
-        public static string Replace(string source, string oldStr, string newStr) // ICU4N TODO: API - since this method is for JDK 1.3, is it needed in .NET ?
+        public static string Replace(string source, string oldStr, string newStr)
         {
             int index = IndexOf(source, oldStr);
             if (index == -1)

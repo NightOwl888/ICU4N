@@ -122,7 +122,6 @@ namespace ICU4N
     /// <see cref="UUnicodeCategory"/>
     /// <see cref="UCharacterDirection"/>
     // ICU4N TODO: API Add all members of System.Char to this class
-    // ICU4N TODO: API Merge Support.Character with this class
     public static partial class UChar // ICU4N specific - renamed from UCharacter to match .NET and made class static because there are no instance members
     {
         // ICU4N specific - copy UNASSIGNED from UCharacterEnums.ECharacterCategory (since we cannot inherit via interface)
@@ -686,11 +685,6 @@ namespace ICU4N
         // ICU4N: We definitely don't need any of the Java.. functions. 
         // In .NET, it is not so straightforward to determine if a character
         // is an identifier (and it is not built in).
-
-        // ICU4N TODO: Perhaps it would make sense to duplicate these from Java,
-        // since in .NET determining if a string is an identifier is difficult.
-        // Note we will need to do this for C# and VB at least (possibly others).
-        // Here are the exact rules for C#: https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/lexical-structure#identifiers
 
         /// <summary>
         /// Determines if the specified code point is a lowercase character.

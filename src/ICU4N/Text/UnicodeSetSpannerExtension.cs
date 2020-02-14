@@ -1849,7 +1849,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(string sequence) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(string sequence)
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1865,7 +1865,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(StringBuilder sequence) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(StringBuilder sequence)
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1881,7 +1881,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(char[] sequence) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(char[] sequence)
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1897,7 +1897,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(ICharSequence sequence) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(ICharSequence sequence)
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1915,7 +1915,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(string sequence, TrimOption trimOption) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(string sequence, TrimOption trimOption)
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1933,7 +1933,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption)
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1951,7 +1951,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(char[] sequence, TrimOption trimOption) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(char[] sequence, TrimOption trimOption)
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1969,7 +1969,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption)
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1989,7 +1989,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(string sequence, TrimOption trimOption, SpanCondition spanCondition) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(string sequence, TrimOption trimOption, SpanCondition spanCondition)
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
@@ -2033,7 +2033,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption, SpanCondition spanCondition) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption, SpanCondition spanCondition)
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
@@ -2077,7 +2077,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(char[] sequence, TrimOption trimOption, SpanCondition spanCondition) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(char[] sequence, TrimOption trimOption, SpanCondition spanCondition)
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
@@ -2121,7 +2121,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption, SpanCondition spanCondition) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        internal virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption, SpanCondition spanCondition)
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;

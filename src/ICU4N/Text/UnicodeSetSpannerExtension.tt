@@ -259,7 +259,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        <#=charSequenceAccessibility#> virtual ICharSequence Trim(<#=charSequence#> sequence) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        <#=charSequenceAccessibility#> virtual ICharSequence Trim(<#=charSequence#> sequence)
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -279,7 +279,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        <#=charSequenceAccessibility#> virtual ICharSequence Trim(<#=charSequence#> sequence, TrimOption trimOption) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        <#=charSequenceAccessibility#> virtual ICharSequence Trim(<#=charSequence#> sequence, TrimOption trimOption)
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -301,7 +301,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        <#=charSequenceAccessibility#> virtual ICharSequence Trim(<#=charSequence#> sequence, TrimOption trimOption, SpanCondition spanCondition) // ICU4N TODO: API - return string? or return the same datatype that is passed?
+        <#=charSequenceAccessibility#> virtual ICharSequence Trim(<#=charSequence#> sequence, TrimOption trimOption, SpanCondition spanCondition)
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
