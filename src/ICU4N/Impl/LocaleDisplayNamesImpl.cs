@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Resources;
 using System.Text;
+using System.Threading;
 
 namespace ICU4N.Impl
 {
@@ -84,18 +85,14 @@ namespace ICU4N.Impl
 
         new public static LocaleDisplayNames GetInstance(ULocale locale, DialectHandling dialectHandling)
         {
-            lock (cache)
-            {
-                return cache.Get(locale, dialectHandling);
-            }
+            // ICU4N: Switched to using ReaderWriterLockSlim instead of lock (cache)
+            return cache.Get(locale, dialectHandling);
         }
 
         new public static LocaleDisplayNames GetInstance(ULocale locale, params DisplayContext[] contexts)
         {
-            lock (cache)
-            {
-                return cache.Get(locale, contexts);
-            }
+            // ICU4N: Switched to using ReaderWriterLockSlim instead of lock (cache)
+            return cache.Get(locale, contexts);
         }
 
         private sealed class CapitalizationContextSink : ResourceSink
@@ -843,20 +840,43 @@ namespace ICU4N.Impl
             private DisplayContext nameLength;
             private DisplayContext substituteHandling;
             private LocaleDisplayNames cache;
+            private readonly ReaderWriterLockSlim syncLock = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+
             public LocaleDisplayNames Get(ULocale locale, DialectHandling dialectHandling)
             {
-                if (!(dialectHandling == this.dialectHandling && DisplayContext.CapitalizationNone == this.capitalization &&
-                        DisplayContext.LengthFull == this.nameLength && DisplayContext.Substitute == this.substituteHandling &&
-                        locale.Equals(this.locale)))
+                syncLock.EnterUpgradeableReadLock();
+                try
                 {
-                    this.locale = locale;
-                    this.dialectHandling = dialectHandling;
-                    this.capitalization = DisplayContext.CapitalizationNone;
-                    this.nameLength = DisplayContext.LengthFull;
-                    this.substituteHandling = DisplayContext.Substitute;
-                    this.cache = new LocaleDisplayNamesImpl(locale, dialectHandling);
+                    if (!(dialectHandling == this.dialectHandling && DisplayContext.CapitalizationNone == this.capitalization &&
+                            DisplayContext.LengthFull == this.nameLength && DisplayContext.Substitute == this.substituteHandling &&
+                            locale.Equals(this.locale)))
+                    {
+                        syncLock.EnterWriteLock();
+                        try
+                        {
+                            if (!(dialectHandling == this.dialectHandling && DisplayContext.CapitalizationNone == this.capitalization &&
+                                DisplayContext.LengthFull == this.nameLength && DisplayContext.Substitute == this.substituteHandling &&
+                                locale.Equals(this.locale)))
+                            {
+                                this.locale = locale;
+                                this.dialectHandling = dialectHandling;
+                                this.capitalization = DisplayContext.CapitalizationNone;
+                                this.nameLength = DisplayContext.LengthFull;
+                                this.substituteHandling = DisplayContext.Substitute;
+                                this.cache = new LocaleDisplayNamesImpl(locale, dialectHandling);
+                            }
+                        }
+                        finally
+                        {
+                            syncLock.ExitWriteLock();
+                        }
+                    }
+                    return cache;
                 }
-                return cache;
+                finally
+                {
+                    syncLock.ExitUpgradeableReadLock();
+                }
             }
             public LocaleDisplayNames Get(ULocale locale, params DisplayContext[] contexts)
             {
@@ -885,18 +905,40 @@ namespace ICU4N.Impl
                             break;
                     }
                 }
-                if (!(dialectHandlingIn == this.dialectHandling && capitalizationIn == this.capitalization &&
+                syncLock.EnterUpgradeableReadLock();
+                try
+                {
+                    if (!(dialectHandlingIn == this.dialectHandling && capitalizationIn == this.capitalization &&
                         nameLengthIn == this.nameLength && substituteHandling == this.substituteHandling &&
                         locale.Equals(this.locale)))
-                {
-                    this.locale = locale;
-                    this.dialectHandling = dialectHandlingIn;
-                    this.capitalization = capitalizationIn;
-                    this.nameLength = nameLengthIn;
-                    this.substituteHandling = substituteHandling;
-                    this.cache = new LocaleDisplayNamesImpl(locale, contexts);
+                    {
+                        syncLock.EnterWriteLock();
+                        try
+                        {
+                            if (!(dialectHandlingIn == this.dialectHandling && capitalizationIn == this.capitalization &&
+                                nameLengthIn == this.nameLength && substituteHandling == this.substituteHandling &&
+                                locale.Equals(this.locale)))
+                            {
+
+                                this.locale = locale;
+                                this.dialectHandling = dialectHandlingIn;
+                                this.capitalization = capitalizationIn;
+                                this.nameLength = nameLengthIn;
+                                this.substituteHandling = substituteHandling;
+                                this.cache = new LocaleDisplayNamesImpl(locale, contexts);
+                            }
+                        }
+                        finally
+                        {
+                            syncLock.ExitWriteLock();
+                        }
+                    }
+                    return cache;
                 }
-                return cache;
+                finally
+                {
+                    syncLock.ExitUpgradeableReadLock();
+                }
             }
         }
     }
