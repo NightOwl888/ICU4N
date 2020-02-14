@@ -331,12 +331,12 @@ namespace ICU4N.Impl
         {
         }
 
-        internal override bool SuppressBreakAfter(ICharSequence str) // ICU4N TODO: API should be public
+        public override bool SuppressBreakAfter(ICharSequence str)
         {
             return filterSet.Add(str);
         }
 
-        internal override bool UnsuppressBreakAfter(ICharSequence str) // ICU4N TODO: API should be public
+        public override bool UnsuppressBreakAfter(ICharSequence str)
         {
             return filterSet.Remove(str);
         }

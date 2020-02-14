@@ -209,7 +209,7 @@ namespace ICU4N.Text
         /// </returns>
         /// <exception cref="IndexOutOfRangeException">Thrown if offset16 is out of bounds.</exception>
         /// <stable>ICU 2.1</stable>
-        internal static int CharAt(ICharSequence source, int offset16)
+        public static int CharAt(ICharSequence source, int offset16)
         {
             if (offset16 < 0 || offset16 >= source.Length)
             {
@@ -348,7 +348,7 @@ namespace ICU4N.Text
         /// <param name="s">to test</param>
         /// <returns>The code point IF the string is non-null and consists of a single code point. Otherwise returns -1.</returns>
         /// <stable>ICU 54</stable>
-        internal static int GetSingleCodePoint(ICharSequence s)
+        public static int GetSingleCodePoint(ICharSequence s)
         {
             if (s == null || s.Length == 0)
             {
@@ -500,7 +500,7 @@ namespace ICU4N.Text
         /// <param name="s">String to test.</param>
         /// <returns>Equivalent of code point comparator comparing two strings.</returns>
         /// <stable>ICU 54</stable>
-        internal static int CompareCodePoint(int codePoint, ICharSequence s)
+        public static int CompareCodePoint(int codePoint, ICharSequence s)
         {
             if (s == null)
             {

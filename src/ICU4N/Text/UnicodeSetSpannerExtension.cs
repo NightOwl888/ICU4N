@@ -65,7 +65,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to count characters in.</param>
         /// <returns>The count. Zero if there are none.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual int CountIn(ICharSequence sequence)
+        public virtual int CountIn(ICharSequence sequence)
         {
             return CountIn(sequence, CountMethod.MinElements, SpanCondition.Simple);
         }
@@ -117,7 +117,7 @@ namespace ICU4N.Text
         /// <param name="countMethod">Whether to treat an entire span as a match, or individual elements as matches.</param>
         /// <returns>The count. Zero if there are none.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual int CountIn(ICharSequence sequence, CountMethod countMethod)
+        public virtual int CountIn(ICharSequence sequence, CountMethod countMethod)
         {
             return CountIn(sequence, countMethod, SpanCondition.Simple);
         }
@@ -271,7 +271,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns>The count. Zero if there are none.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual int CountIn(ICharSequence sequence, CountMethod countMethod, SpanCondition spanCondition)
+        public virtual int CountIn(ICharSequence sequence, CountMethod countMethod, SpanCondition spanCondition)
         {
             int count = 0;
             int start = 0;
@@ -345,7 +345,7 @@ namespace ICU4N.Text
         /// <param name="sequence">Character sequence to replace matching spans in.</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string DeleteFrom(ICharSequence sequence)
+        public virtual string DeleteFrom(ICharSequence sequence)
         {
             return ReplaceFrom(sequence, "", CountMethod.WholeSpan, SpanCondition.Simple);
         }
@@ -409,7 +409,7 @@ namespace ICU4N.Text
         /// or the non-matching (<see cref="SpanCondition.NotContained"/>).</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string DeleteFrom(ICharSequence sequence, SpanCondition spanCondition)
+        public virtual string DeleteFrom(ICharSequence sequence, SpanCondition spanCondition)
         {
             return ReplaceFrom(sequence, "", CountMethod.WholeSpan, spanCondition);
         }
@@ -465,7 +465,7 @@ namespace ICU4N.Text
         /// <param name="replacement">Replacement sequence. To delete, use "".</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(string sequence, ICharSequence replacement)
+        public virtual string ReplaceFrom(string sequence, ICharSequence replacement)
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
@@ -521,7 +521,7 @@ namespace ICU4N.Text
         /// <param name="replacement">Replacement sequence. To delete, use "".</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(StringBuilder sequence, ICharSequence replacement)
+        public virtual string ReplaceFrom(StringBuilder sequence, ICharSequence replacement)
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
@@ -577,7 +577,7 @@ namespace ICU4N.Text
         /// <param name="replacement">Replacement sequence. To delete, use "".</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(char[] sequence, ICharSequence replacement)
+        public virtual string ReplaceFrom(char[] sequence, ICharSequence replacement)
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
@@ -591,7 +591,7 @@ namespace ICU4N.Text
         /// <param name="replacement">Replacement sequence. To delete, use "".</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, string replacement)
+        public virtual string ReplaceFrom(ICharSequence sequence, string replacement)
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
@@ -605,7 +605,7 @@ namespace ICU4N.Text
         /// <param name="replacement">Replacement sequence. To delete, use "".</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, StringBuilder replacement)
+        public virtual string ReplaceFrom(ICharSequence sequence, StringBuilder replacement)
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
@@ -619,7 +619,7 @@ namespace ICU4N.Text
         /// <param name="replacement">Replacement sequence. To delete, use "".</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, char[] replacement)
+        public virtual string ReplaceFrom(ICharSequence sequence, char[] replacement)
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
@@ -633,7 +633,7 @@ namespace ICU4N.Text
         /// <param name="replacement">Replacement sequence. To delete, use "".</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, ICharSequence replacement)
+        public virtual string ReplaceFrom(ICharSequence sequence, ICharSequence replacement)
         {
             return ReplaceFrom(sequence, replacement, CountMethod.MinElements, SpanCondition.Simple);
         }
@@ -689,7 +689,7 @@ namespace ICU4N.Text
         /// <param name="countMethod">Whether to treat an entire span as a match, or individual elements as matches.</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(string sequence, ICharSequence replacement, CountMethod countMethod)
+        public virtual string ReplaceFrom(string sequence, ICharSequence replacement, CountMethod countMethod)
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
@@ -745,7 +745,7 @@ namespace ICU4N.Text
         /// <param name="countMethod">Whether to treat an entire span as a match, or individual elements as matches.</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(StringBuilder sequence, ICharSequence replacement, CountMethod countMethod)
+        public virtual string ReplaceFrom(StringBuilder sequence, ICharSequence replacement, CountMethod countMethod)
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
@@ -801,7 +801,7 @@ namespace ICU4N.Text
         /// <param name="countMethod">Whether to treat an entire span as a match, or individual elements as matches.</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(char[] sequence, ICharSequence replacement, CountMethod countMethod)
+        public virtual string ReplaceFrom(char[] sequence, ICharSequence replacement, CountMethod countMethod)
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
@@ -815,7 +815,7 @@ namespace ICU4N.Text
         /// <param name="countMethod">Whether to treat an entire span as a match, or individual elements as matches.</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, string replacement, CountMethod countMethod)
+        public virtual string ReplaceFrom(ICharSequence sequence, string replacement, CountMethod countMethod)
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
@@ -829,7 +829,7 @@ namespace ICU4N.Text
         /// <param name="countMethod">Whether to treat an entire span as a match, or individual elements as matches.</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, StringBuilder replacement, CountMethod countMethod)
+        public virtual string ReplaceFrom(ICharSequence sequence, StringBuilder replacement, CountMethod countMethod)
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
@@ -843,7 +843,7 @@ namespace ICU4N.Text
         /// <param name="countMethod">Whether to treat an entire span as a match, or individual elements as matches.</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, char[] replacement, CountMethod countMethod)
+        public virtual string ReplaceFrom(ICharSequence sequence, char[] replacement, CountMethod countMethod)
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
@@ -857,7 +857,7 @@ namespace ICU4N.Text
         /// <param name="countMethod">Whether to treat an entire span as a match, or individual elements as matches.</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, ICharSequence replacement, CountMethod countMethod)
+        public virtual string ReplaceFrom(ICharSequence sequence, ICharSequence replacement, CountMethod countMethod)
         {
             return ReplaceFrom(sequence, replacement, countMethod, SpanCondition.Simple);
         }
@@ -1056,7 +1056,7 @@ namespace ICU4N.Text
         /// or <see cref="SpanCondition.Simple"/>) or the non-matching (<see cref="SpanCondition.NotContained"/>)</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(string sequence, ICharSequence replacement, CountMethod countMethod,
+        public virtual string ReplaceFrom(string sequence, ICharSequence replacement, CountMethod countMethod,
             SpanCondition spanCondition)
         {
             SpanCondition copySpan = spanCondition == SpanCondition.NotContained ? SpanCondition.Simple
@@ -1300,7 +1300,7 @@ namespace ICU4N.Text
         /// or <see cref="SpanCondition.Simple"/>) or the non-matching (<see cref="SpanCondition.NotContained"/>)</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(StringBuilder sequence, ICharSequence replacement, CountMethod countMethod,
+        public virtual string ReplaceFrom(StringBuilder sequence, ICharSequence replacement, CountMethod countMethod,
             SpanCondition spanCondition)
         {
             SpanCondition copySpan = spanCondition == SpanCondition.NotContained ? SpanCondition.Simple
@@ -1544,7 +1544,7 @@ namespace ICU4N.Text
         /// or <see cref="SpanCondition.Simple"/>) or the non-matching (<see cref="SpanCondition.NotContained"/>)</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(char[] sequence, ICharSequence replacement, CountMethod countMethod,
+        public virtual string ReplaceFrom(char[] sequence, ICharSequence replacement, CountMethod countMethod,
             SpanCondition spanCondition)
         {
             SpanCondition copySpan = spanCondition == SpanCondition.NotContained ? SpanCondition.Simple
@@ -1605,7 +1605,7 @@ namespace ICU4N.Text
         /// or <see cref="SpanCondition.Simple"/>) or the non-matching (<see cref="SpanCondition.NotContained"/>)</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, string replacement, CountMethod countMethod,
+        public virtual string ReplaceFrom(ICharSequence sequence, string replacement, CountMethod countMethod,
             SpanCondition spanCondition)
         {
             SpanCondition copySpan = spanCondition == SpanCondition.NotContained ? SpanCondition.Simple
@@ -1666,7 +1666,7 @@ namespace ICU4N.Text
         /// or <see cref="SpanCondition.Simple"/>) or the non-matching (<see cref="SpanCondition.NotContained"/>)</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, StringBuilder replacement, CountMethod countMethod,
+        public virtual string ReplaceFrom(ICharSequence sequence, StringBuilder replacement, CountMethod countMethod,
             SpanCondition spanCondition)
         {
             SpanCondition copySpan = spanCondition == SpanCondition.NotContained ? SpanCondition.Simple
@@ -1727,7 +1727,7 @@ namespace ICU4N.Text
         /// or <see cref="SpanCondition.Simple"/>) or the non-matching (<see cref="SpanCondition.NotContained"/>)</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, char[] replacement, CountMethod countMethod,
+        public virtual string ReplaceFrom(ICharSequence sequence, char[] replacement, CountMethod countMethod,
             SpanCondition spanCondition)
         {
             SpanCondition copySpan = spanCondition == SpanCondition.NotContained ? SpanCondition.Simple
@@ -1788,7 +1788,7 @@ namespace ICU4N.Text
         /// or <see cref="SpanCondition.Simple"/>) or the non-matching (<see cref="SpanCondition.NotContained"/>)</param>
         /// <returns>Modified string.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual string ReplaceFrom(ICharSequence sequence, ICharSequence replacement, CountMethod countMethod,
+        public virtual string ReplaceFrom(ICharSequence sequence, ICharSequence replacement, CountMethod countMethod,
             SpanCondition spanCondition)
         {
             SpanCondition copySpan = spanCondition == SpanCondition.NotContained ? SpanCondition.Simple
@@ -1849,7 +1849,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(string sequence)
+        public virtual ICharSequence Trim(string sequence)
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1865,7 +1865,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(StringBuilder sequence)
+        public virtual ICharSequence Trim(StringBuilder sequence)
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1881,7 +1881,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(char[] sequence)
+        public virtual ICharSequence Trim(char[] sequence)
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1897,7 +1897,7 @@ namespace ICU4N.Text
         /// <param name="sequence">The sequence to trim.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(ICharSequence sequence)
+        public virtual ICharSequence Trim(ICharSequence sequence)
         {
             return Trim(sequence, TrimOption.Both, SpanCondition.Simple);
         }
@@ -1915,7 +1915,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(string sequence, TrimOption trimOption)
+        public virtual ICharSequence Trim(string sequence, TrimOption trimOption)
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1933,7 +1933,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption)
+        public virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption)
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1951,7 +1951,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(char[] sequence, TrimOption trimOption)
+        public virtual ICharSequence Trim(char[] sequence, TrimOption trimOption)
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1969,7 +1969,7 @@ namespace ICU4N.Text
         /// or <see cref="TrimOption.Both"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption)
+        public virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption)
         {
             return Trim(sequence, trimOption, SpanCondition.Simple);
         }
@@ -1989,7 +1989,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(string sequence, TrimOption trimOption, SpanCondition spanCondition)
+        public virtual ICharSequence Trim(string sequence, TrimOption trimOption, SpanCondition spanCondition)
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
@@ -2033,7 +2033,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption, SpanCondition spanCondition)
+        public virtual ICharSequence Trim(StringBuilder sequence, TrimOption trimOption, SpanCondition spanCondition)
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
@@ -2077,7 +2077,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(char[] sequence, TrimOption trimOption, SpanCondition spanCondition)
+        public virtual ICharSequence Trim(char[] sequence, TrimOption trimOption, SpanCondition spanCondition)
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;
@@ -2121,7 +2121,7 @@ namespace ICU4N.Text
         /// <see cref="SpanCondition.NotContained"/>.</param>
         /// <returns>A subsequence.</returns>
         /// <stable>ICU 54</stable>
-        internal virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption, SpanCondition spanCondition)
+        public virtual ICharSequence Trim(ICharSequence sequence, TrimOption trimOption, SpanCondition spanCondition)
         {
             int endLeadContained, startTrailContained;
             int length = sequence.Length;

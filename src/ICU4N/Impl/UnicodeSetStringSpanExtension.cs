@@ -86,7 +86,7 @@ namespace ICU4N.Impl
         /// <param name="start">The start index that the span begins.</param>
         /// <param name="spanCondition">The span condition.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
-        internal int Span(ICharSequence s, int start, SpanCondition spanCondition)
+        public int Span(ICharSequence s, int start, SpanCondition spanCondition)
         {
             if (spanCondition == SpanCondition.NotContained)
             {
@@ -1118,7 +1118,7 @@ namespace ICU4N.Impl
         /// <param name="spanCondition">The span condition.</param>
         /// <param name="outCount">The count.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
-        internal int SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition,
+        public int SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition,
             out int outCount)
         {
             if (spanCondition == SpanCondition.NotContained)
@@ -1998,7 +1998,7 @@ namespace ICU4N.Impl
         /// <param name="length"></param>
         /// <param name="spanCondition">The span condition</param>
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        internal int SpanBack(ICharSequence s, int length, SpanCondition spanCondition)
+        public int SpanBack(ICharSequence s, int length, SpanCondition spanCondition)
         {
             lock (this)
             {

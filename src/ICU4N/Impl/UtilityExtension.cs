@@ -366,7 +366,7 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        internal static string Hex(ICharSequence s)
+        public static string Hex(ICharSequence s)
         {
             return Hex(s, 4, ",", true, new StringBuilder()).ToString();
         }
@@ -499,7 +499,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="StringBuilder"/>.
         /// </summary>
-        internal static StringBuilder Hex(string s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
+        public static StringBuilder Hex(string s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
         {
             try
             {
@@ -663,7 +663,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="StringBuilder"/>.
         /// </summary>
-        internal static StringBuilder Hex(StringBuilder s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
+        public static StringBuilder Hex(StringBuilder s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
         {
             try
             {
@@ -827,7 +827,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="StringBuilder"/>.
         /// </summary>
-        internal static StringBuilder Hex(char[] s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
+        public static StringBuilder Hex(char[] s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
         {
             try
             {
@@ -868,7 +868,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="StringBuilder"/>.
         /// </summary>
-        internal static StringBuilder Hex(ICharSequence s, int width, string separator, bool useCodePoints, StringBuilder result)
+        public static StringBuilder Hex(ICharSequence s, int width, string separator, bool useCodePoints, StringBuilder result)
         {
             try
             {
@@ -909,7 +909,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="StringBuilder"/>.
         /// </summary>
-        internal static StringBuilder Hex(ICharSequence s, int width, StringBuilder separator, bool useCodePoints, StringBuilder result)
+        public static StringBuilder Hex(ICharSequence s, int width, StringBuilder separator, bool useCodePoints, StringBuilder result)
         {
             try
             {
@@ -950,7 +950,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="StringBuilder"/>.
         /// </summary>
-        internal static StringBuilder Hex(ICharSequence s, int width, char[] separator, bool useCodePoints, StringBuilder result)
+        public static StringBuilder Hex(ICharSequence s, int width, char[] separator, bool useCodePoints, StringBuilder result)
         {
             try
             {
@@ -991,7 +991,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="StringBuilder"/>.
         /// </summary>
-        internal static StringBuilder Hex(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
+        public static StringBuilder Hex(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, StringBuilder result)
         {
             try
             {
@@ -1032,7 +1032,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(string s, int width, string separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(string s, int width, string separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1073,7 +1073,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(string s, int width, StringBuilder separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(string s, int width, StringBuilder separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1114,7 +1114,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(string s, int width, char[] separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(string s, int width, char[] separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1155,7 +1155,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(string s, int width, ICharSequence separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(string s, int width, ICharSequence separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1196,7 +1196,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(StringBuilder s, int width, string separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(StringBuilder s, int width, string separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1237,7 +1237,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(StringBuilder s, int width, StringBuilder separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(StringBuilder s, int width, StringBuilder separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1278,7 +1278,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(StringBuilder s, int width, char[] separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(StringBuilder s, int width, char[] separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1319,7 +1319,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(StringBuilder s, int width, ICharSequence separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(StringBuilder s, int width, ICharSequence separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1360,7 +1360,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(char[] s, int width, string separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(char[] s, int width, string separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1401,7 +1401,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(char[] s, int width, StringBuilder separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(char[] s, int width, StringBuilder separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1442,7 +1442,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(char[] s, int width, char[] separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(char[] s, int width, char[] separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1483,7 +1483,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(char[] s, int width, ICharSequence separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(char[] s, int width, ICharSequence separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1524,7 +1524,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(ICharSequence s, int width, string separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(ICharSequence s, int width, string separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1565,7 +1565,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(ICharSequence s, int width, StringBuilder separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(ICharSequence s, int width, StringBuilder separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1606,7 +1606,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(ICharSequence s, int width, char[] separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(ICharSequence s, int width, char[] separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1647,7 +1647,7 @@ namespace ICU4N.Impl
         /// digits.  E.g., hex('ab'...) => "0041,0042".  Append the output
         /// to the given <see cref="IAppendable"/>.
         /// </summary>
-        internal static T Hex<T>(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, T result) where T : IAppendable
+        public static T Hex<T>(ICharSequence s, int width, ICharSequence separator, bool useCodePoints, T result) where T : IAppendable
         {
             try
             {
@@ -1714,7 +1714,7 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        internal static string Hex(string s, int width, ICharSequence separator)
+        public static string Hex(string s, int width, ICharSequence separator)
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
@@ -1750,7 +1750,7 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        internal static string Hex(StringBuilder s, int width, ICharSequence separator)
+        public static string Hex(StringBuilder s, int width, ICharSequence separator)
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
@@ -1786,7 +1786,7 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        internal static string Hex(char[] s, int width, ICharSequence separator)
+        public static string Hex(char[] s, int width, ICharSequence separator)
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
@@ -1795,7 +1795,7 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        internal static string Hex(ICharSequence s, int width, string separator)
+        public static string Hex(ICharSequence s, int width, string separator)
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
@@ -1804,7 +1804,7 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        internal static string Hex(ICharSequence s, int width, StringBuilder separator)
+        public static string Hex(ICharSequence s, int width, StringBuilder separator)
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
@@ -1813,7 +1813,7 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        internal static string Hex(ICharSequence s, int width, char[] separator)
+        public static string Hex(ICharSequence s, int width, char[] separator)
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
@@ -1822,7 +1822,7 @@ namespace ICU4N.Impl
         /// Convert a string to comma-separated groups of 4 hex uppercase
         /// digits.  E.g., hex('ab') => "0041,0042".
         /// </summary>
-        internal static string Hex(ICharSequence s, int width, ICharSequence separator)
+        public static string Hex(ICharSequence s, int width, ICharSequence separator)
         {
             return Hex(s, width, separator, true, new StringBuilder()).ToString();
         }
@@ -1942,7 +1942,7 @@ namespace ICU4N.Impl
         /// digit is always emitted regardless of this parameter.
         /// </param>
         /// <returns>A reference to result.</returns>
-        internal static T AppendNumber<T>(T result, int n,
+        public static T AppendNumber<T>(T result, int n,
             int radix, int minDigits) where T : IAppendable
         {
             try
@@ -2018,7 +2018,7 @@ namespace ICU4N.Impl
         /// and return FALSE. Otherwise, append the escaped notation and
         /// return TRUE.
         /// </summary>
-        internal static bool EscapeUnprintable(IAppendable result, int c)
+        public static bool EscapeUnprintable(IAppendable result, int c)
         {
             try
             {

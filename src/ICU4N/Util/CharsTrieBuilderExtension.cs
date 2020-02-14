@@ -78,7 +78,7 @@ namespace ICU4N.Util
         /// <param name="value">The value associated with this char sequence.</param>
         /// <returns>This.</returns>
         /// <stable>ICU 4.8</stable>
-        internal CharsTrieBuilder Add(ICharSequence s, int value)
+        public CharsTrieBuilder Add(ICharSequence s, int value)
         {
 #pragma warning disable 612, 618
             AddImpl(s, value);

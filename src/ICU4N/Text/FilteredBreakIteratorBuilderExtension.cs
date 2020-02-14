@@ -69,7 +69,7 @@ namespace ICU4N.Text
         /// <c>false</c> if the call was a no-op because the string was already being suppressed.</returns>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal abstract bool SuppressBreakAfter(ICharSequence str);
+        public abstract bool SuppressBreakAfter(ICharSequence str);
 
         /// <summary>
         /// Stop suppressing a certain string from being the end of the segment.
@@ -130,6 +130,6 @@ namespace ICU4N.Text
         /// false if the call was a no-op because the string was not being suppressed.</returns>
         /// <draft>ICU 60</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal abstract bool UnsuppressBreakAfter(ICharSequence str);
+        public abstract bool UnsuppressBreakAfter(ICharSequence str);
     }
 }

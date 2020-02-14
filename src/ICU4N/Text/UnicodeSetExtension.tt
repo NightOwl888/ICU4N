@@ -45,8 +45,7 @@ namespace ICU4N.Text
         /// <seealso cref="AddAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
         // See ticket #11395, this is safe.
-<# if (charSequence == "char[]") { #>[CLSCompliant(false)]<# } #>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> virtual UnicodeSet AddAll(params <#=charSequence#>[] collection) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
+        internal virtual UnicodeSet AddAll(params <#=charSequence#>[] collection) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
         {
             CheckFrozen();
             foreach (var csq in collection)
@@ -65,7 +64,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>this object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet AddAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using UnionWithChars in .NET)
+        internal UnicodeSet AddAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using UnionWithChars in .NET)
         {
             CheckFrozen();
             int cp;
@@ -89,7 +88,7 @@ namespace ICU4N.Text
         /// <param name="s">The string to complement.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet Complement(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWith in .NET)
+        internal UnicodeSet Complement(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWith in .NET)
         {
             CheckFrozen();
             int cp = GetSingleCP(s);
@@ -122,7 +121,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet ComplementAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWithChars in .NET)
+        internal UnicodeSet ComplementAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using SymmetricExceptWithChars in .NET)
         {
             return ComplementAll(FromAll(s));
         }
@@ -132,7 +131,7 @@ namespace ICU4N.Text
         /// <seealso cref="ContainsAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
 <# if (charSequence == "ICharSequence") { #>
-        <#=charSequenceAccessibility#> virtual bool ContainsAll<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+        internal virtual bool ContainsAll<T>(IEnumerable<T> collection) where T : <#=charSequence#> // ICU4N specific - changed from public to internal (we are using IsSupersetOf in .NET)
 <# } else { #>
         internal virtual bool ContainsAll(IEnumerable<<#=charSequence#>> collection) // ICU4N specific - changed from public to internal (we are using IsSupersetOf in .NET)
 <# } #>
@@ -156,7 +155,7 @@ namespace ICU4N.Text
         /// <param name="s">String containing characters to be checked for containment.</param>
         /// <returns>true if the condition is met.</returns>
         /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> bool ContainsSome(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
+        internal bool ContainsSome(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
         {
             return !ContainsNone(s);
         }
@@ -166,7 +165,7 @@ namespace ICU4N.Text
         /// <seealso cref="ContainsSome(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
 <# if (charSequence == "ICharSequence") { #>
-        <#=charSequenceAccessibility#> bool ContainsSome<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+        internal bool ContainsSome<T>(IEnumerable<T> collection) where T : <#=charSequence#> // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
 <# } else { #>
         internal bool ContainsSome(IEnumerable<<#=charSequence#>> collection) // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
 <# } #>
@@ -179,7 +178,7 @@ namespace ICU4N.Text
         /// <seealso cref="RemoveAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
 <# if (charSequence == "ICharSequence") { #>
-        <#=charSequenceAccessibility#> virtual UnicodeSet RemoveAll<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+        internal virtual UnicodeSet RemoveAll<T>(IEnumerable<T> collection) where T : <#=charSequence#> // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
 <# } else { #>
         internal virtual UnicodeSet RemoveAll(IEnumerable<<#=charSequence#>> collection) // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
 <# } #>
@@ -201,7 +200,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet RemoveAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using ExceptWithChars in .NET)
+        internal UnicodeSet RemoveAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using ExceptWithChars in .NET)
         {
             return RemoveAll(FromAll(s));
         }
@@ -216,7 +215,7 @@ namespace ICU4N.Text
         /// <param name="cs">The string to be retained.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet Retain(<#=charSequence#> cs) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
+        internal UnicodeSet Retain(<#=charSequence#> cs) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
         {
             int cp = GetSingleCP(cs);
             if (cp < 0)
@@ -243,7 +242,7 @@ namespace ICU4N.Text
         /// <seealso cref="RetainAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
 <# if (charSequence == "ICharSequence") { #>
-        <#=charSequenceAccessibility#> virtual UnicodeSet RetainAll<T>(IEnumerable<T> collection) where T : <#=charSequence#>
+        internal virtual UnicodeSet RetainAll<T>(IEnumerable<T> collection) where T : <#=charSequence#> // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
 <# } else { #>
         internal virtual UnicodeSet RetainAll(IEnumerable<<#=charSequence#>> collection) // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
 <# } #>
@@ -265,7 +264,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "internal"#> UnicodeSet RetainAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using IntersectWithChars in .NET)
+        internal UnicodeSet RetainAll(<#=charSequence#> s) // ICU4N specific - changed from public to internal (we are using IntersectWithChars in .NET)
         {
             return RetainAll(FromAll(s));
         }
@@ -296,9 +295,9 @@ namespace ICU4N.Text
         }
 <# } #>
 <# foreach (var appendable in appendables) { #>
-	<# foreach (var charSequence in charSequences) { #>
+    <# foreach (var charSequence in charSequences) { #>
 
-	    // TODO: create class Appendables?
+        // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(<#=appendable#> app, <#=charSequence#> s)
         {
@@ -537,7 +536,7 @@ namespace ICU4N.Text
         /// Tests whether the text matches at the offset. If so, returns the end of the longest substring that it matches. If not, returns -1.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual int MatchesAt(<#=charSequence#> text, int offset)
+        internal virtual int MatchesAt(<#=charSequence#> text, int offset) // ICU4N: Marked internal because it is obsolete
         {
             int lastLen = -1;
 
@@ -688,7 +687,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>A newly created set containing the given characters.</returns>
         /// <stable>ICU 2.0</stable>
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static UnicodeSet FromAll(<#=charSequence#> s)
+        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static UnicodeSet FromAll(<#=charSequence#> s) // ICU4N TODO: API - rename FromChars() to match other APIs
         {
             return new UnicodeSet().AddAll(s);
         }
@@ -834,7 +833,7 @@ namespace ICU4N.Text
         /// <param name="outCount">Returns the count.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
         [Obsolete("This API is ICU internal only.")]
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual int SpanAndCount(<#=charSequence#> s, int start, SpanCondition spanCondition, out int outCount)
+        internal virtual int SpanAndCount(<#=charSequence#> s, int start, SpanCondition spanCondition, out int outCount) // ICU4N: Made internal because it is obsolete
         {
             outCount = default(int);
             int end = s.Length;
@@ -1032,7 +1031,7 @@ namespace ICU4N.Text
         /// Otherwise return <see cref="int.MaxValue"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> static int GetSingleCodePoint(<#=charSequence#> s)
+        internal static int GetSingleCodePoint(<#=charSequence#> s) // ICU4N: Made internal because it is obsolete
         {
             return CharSequences.GetSingleCodePoint(s);
         }
@@ -1045,7 +1044,7 @@ namespace ICU4N.Text
         /// If there is no match, length is returned.
         /// </summary>
         [Obsolete("This API is ICU internal only.Use span instead.")]
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual int FindIn(<#=charSequence#> value, int fromIndex, bool findNot)
+        internal virtual int FindIn(<#=charSequence#> value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -1069,7 +1068,7 @@ namespace ICU4N.Text
         /// BEFORE index is not in the <see cref="UnicodeSet"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only. Use spanBack instead.")]
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual int FindLastIn(<#=charSequence#> value, int fromIndex, bool findNot)
+        internal virtual int FindLastIn(<#=charSequence#> value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -1095,7 +1094,7 @@ namespace ICU4N.Text
         /// <param name="matches">A bool to either strip all that matches or don't match with the current <see cref="UnicodeSet"/> object.</param>
         /// <returns>The string after it has been stripped.</returns>
         [Obsolete("This API is ICU internal only. Use replaceFrom.")]
-        <#= charSequence=="ICharSequence" ? charSequenceAccessibility : "public"#> virtual string StripFrom(<#=charSequence#> source, bool matches)
+        internal virtual string StripFrom(<#=charSequence#> source, bool matches) // ICU4N: Made internal because it is obsolete
         {
             StringBuilder result = new StringBuilder();
             for (int pos = 0; pos < source.Length;)

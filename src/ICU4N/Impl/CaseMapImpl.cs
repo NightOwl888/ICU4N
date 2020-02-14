@@ -47,7 +47,7 @@ namespace ICU4N.Impl
         /// Constructor.
         /// </summary>
         /// <param name="src">String to iterate over.</param>
-        internal StringContextEnumerator(ICharSequence src)
+        public StringContextEnumerator(ICharSequence src)
         {
             this.s = src;
             limit = src.Length;
@@ -382,7 +382,7 @@ namespace ICU4N.Impl
                 length = newText.EndIndex;
             }
 
-            internal override void SetText(ICharSequence newText)
+            public override void SetText(ICharSequence newText)
             {
                 length = newText.Length;
             }

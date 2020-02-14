@@ -484,7 +484,7 @@ namespace ICU4N.Impl
         /// <param name="src">The source of the string Buffer passed.</param>
         /// <param name="caseFlags">The boolean array of case flags.</param>
         /// <returns>An array of ASCII code points.</returns>
-        internal static StringBuilder Encode(ICharSequence src, bool[] caseFlags)
+        public static StringBuilder Encode(ICharSequence src, bool[] caseFlags)
         {
             int n, delta, handledCPCount, basicLength, bias, j, m, q, k, t, srcCPCount;
             char c, c2;
@@ -1242,7 +1242,7 @@ namespace ICU4N.Impl
         /// <param name="src">The source of the string buffer being passed.</param>
         /// <param name="caseFlags">The array of bool case flags.</param>
         /// <returns><see cref="StringBuilder"/> string.</returns>
-        internal static StringBuilder Decode(ICharSequence src, bool[] caseFlags)
+        public static StringBuilder Decode(ICharSequence src, bool[] caseFlags)
         {
             int srcLength = src.Length;
             StringBuilder dest = new StringBuilder(src.Length);

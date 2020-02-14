@@ -542,7 +542,7 @@ namespace ICU4N.Impl
         /// <param name="text">A text string to be iterated over.</param>
         /// <param name="index">The starting iteration position within the input text.</param>
         /// <returns>The <see cref="Trie2CharSequenceEnumerator"/>.</returns>
-        internal virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(ICharSequence text, int index)
+        public virtual Trie2CharSequenceEnumerator GetCharSequenceEnumerator(ICharSequence text, int index)
         {
             return new Trie2CharSequenceEnumerator(this, text, index);
         }

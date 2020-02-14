@@ -57,7 +57,7 @@ namespace ICU4N.Impl
         /// Skips over Pattern_White_Space starting at index i of the string.
         /// </summary>
         /// <returns>The smallest index at or after i with a non-white space character.</returns>
-        internal static int SkipWhiteSpace(ICharSequence s, int i)
+        public static int SkipWhiteSpace(ICharSequence s, int i)
         {
             while (i < s.Length && IsWhiteSpace(s[i]))
             {
@@ -144,7 +144,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="s"></param>
         /// <returns>true if there are no Pattern_White_Space or Pattern_Syntax characters in s.</returns>
-        internal static bool IsIdentifier(ICharSequence s)
+        public static bool IsIdentifier(ICharSequence s)
         {
             int limit = s.Length;
             if (limit == 0)
@@ -242,7 +242,7 @@ namespace ICU4N.Impl
         /// true if there are no Pattern_White_Space or Pattern_Syntax characters
         /// in <paramref name="s"/> between <paramref name="start"/> and (exclusive) <paramref name="limit"/>.
         /// </returns>
-        internal static bool IsIdentifier(ICharSequence s, int start, int limit)
+        public static bool IsIdentifier(ICharSequence s, int start, int limit)
         {
             if (start >= limit)
             {
@@ -313,7 +313,7 @@ namespace ICU4N.Impl
         /// The smallest index at or after <paramref name="i"/> with
         /// a Pattern_White_Space or Pattern_Syntax character.
         /// </returns>
-        internal static int SkipIdentifier(ICharSequence s, int i)
+        public static int SkipIdentifier(ICharSequence s, int i)
         {
             while (i < s.Length && !IsSyntaxOrWhiteSpace(s[i]))
             {

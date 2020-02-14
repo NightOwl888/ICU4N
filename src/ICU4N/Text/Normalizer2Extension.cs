@@ -52,7 +52,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.4</stable>
-        internal abstract StringBuilder Normalize(ICharSequence src, StringBuilder dest);
+        public abstract StringBuilder Normalize(ICharSequence src, StringBuilder dest);
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -62,7 +62,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal abstract IAppendable Normalize(string src, IAppendable dest);
+        public abstract IAppendable Normalize(string src, IAppendable dest);
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -72,7 +72,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal abstract IAppendable Normalize(StringBuilder src, IAppendable dest);
+        public abstract IAppendable Normalize(StringBuilder src, IAppendable dest);
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -82,7 +82,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal abstract IAppendable Normalize(char[] src, IAppendable dest);
+        public abstract IAppendable Normalize(char[] src, IAppendable dest);
 
         /// <summary>
         /// Writes the normalized form of the source string to the destination string
@@ -92,7 +92,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal abstract IAppendable Normalize(ICharSequence src, IAppendable dest);
+        public abstract IAppendable Normalize(ICharSequence src, IAppendable dest);
 
         /// <summary>
         /// Appends the normalized form of the <paramref name="second"/> string to the <paramref name="first"/> string
@@ -143,7 +143,7 @@ namespace ICU4N.Text
         /// <param name="second">Second string, will be normalized.</param>
         /// <returns><paramref name="first"/></returns>
         /// <stable>ICU 4.4</stable>
-        internal abstract StringBuilder NormalizeSecondAndAppend(
+        public abstract StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, ICharSequence second);
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace ICU4N.Text
         /// <param name="second">Second string, should be normalized.</param>
         /// <returns><paramref name="first"/></returns>
         /// <stable>ICU 4.4</stable>
-        internal abstract StringBuilder Append(StringBuilder first, ICharSequence second);
+        public abstract StringBuilder Append(StringBuilder first, ICharSequence second);
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -240,7 +240,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>true if <paramref name="s"/> is normalized.</returns>
         /// <stable>ICU 4.4</stable>
-        internal abstract bool IsNormalized(ICharSequence s);
+        public abstract bool IsNormalized(ICharSequence s);
 
         /// <summary>
         /// Tests if the string is normalized.
@@ -296,7 +296,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
-        internal abstract QuickCheckResult QuickCheck(ICharSequence s);
+        public abstract QuickCheckResult QuickCheck(ICharSequence s);
 
         /// <summary>
         /// Returns the end of the normalized substring of the input string.
@@ -380,7 +380,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>"yes" span end index.</returns>
         /// <stable>ICU 4.4</stable>
-        internal abstract int SpanQuickCheckYes(ICharSequence s);
+        public abstract int SpanQuickCheckYes(ICharSequence s);
 
     }
 }

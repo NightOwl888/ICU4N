@@ -126,7 +126,7 @@ namespace ICU4N
         /// <seealso cref="UProperty"/>
         /// <seealso cref="TryGetPropertyEnum(ICharSequence, out int)"/>
         /// <stable>ICU 2.4</stable>
-        internal static int GetPropertyEnum(ICharSequence propertyAlias)
+        public static int GetPropertyEnum(ICharSequence propertyAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
 #pragma warning disable 612, 618
@@ -260,7 +260,7 @@ namespace ICU4N
         /// <seealso cref="UProperty"/>
         /// <seealso cref="GetPropertyEnum(ICharSequence)"/>
         /// <stable>ICU4N 60.1.0</stable>
-        internal static bool TryGetPropertyEnum(ICharSequence propertyAlias, out int result) // ICU4N TODO: Tests
+        public static bool TryGetPropertyEnum(ICharSequence propertyAlias, out int result) // ICU4N TODO: Tests
         {
             result = 0;
             int propEnum = UPropertyAliases.Instance.GetPropertyEnum(propertyAlias);
@@ -446,7 +446,7 @@ namespace ICU4N
         /// <seealso cref="UProperty"/>
         /// <seealso cref="TryGetPropertyValueEnum(UProperty, ICharSequence, out int)"/>
         /// <stable>ICU 2.4</stable>
-        internal static int GetPropertyValueEnum(UProperty property, ICharSequence valueAlias)
+        public static int GetPropertyValueEnum(UProperty property, ICharSequence valueAlias)
         {
             int propEnum = UPropertyAliases.Instance.GetPropertyValueEnum(property, valueAlias);
 #pragma warning disable 612, 618
@@ -617,7 +617,7 @@ namespace ICU4N
         /// <stable>ICU 60.1.0</stable>
         /// <seealso cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>
         // ICU4N specific
-        internal static bool TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias, out int result) // ICU4N TODO: Tests
+        public static bool TryGetPropertyValueEnum(UProperty property, ICharSequence valueAlias, out int result) // ICU4N TODO: Tests
         {
             return UPropertyAliases.Instance.TryGetPropertyValueEnum(property, valueAlias, out result);
         }
@@ -721,7 +721,7 @@ namespace ICU4N
         /// <param name="index">The index of the first or only char forming the code point.</param>
         /// <returns>The code point at the index.</returns>
         /// <stable>ICU 3.0</stable>
-        internal static int CodePointAt(ICharSequence seq, int index)
+        public static int CodePointAt(ICharSequence seq, int index)
         {
             // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
@@ -841,7 +841,7 @@ namespace ICU4N
         /// <param name="index">The index after the last or only char forming the code point.</param>
         /// <returns>The code point before the index.</returns>
         /// <stable>ICU 3.0</stable>
-        internal static int CodePointBefore(ICharSequence seq, int index)
+        public static int CodePointBefore(ICharSequence seq, int index)
         {
             // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (seq == null)
@@ -992,7 +992,7 @@ namespace ICU4N
         /// <param name="limit">the limit of the range</param>
         /// <returns>the number of code points in the range</returns>
         /// <stable>ICU 3.0</stable>
-        internal static int CodePointCount(ICharSequence text, int start, int limit)
+        public static int CodePointCount(ICharSequence text, int start, int limit)
         {
             // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)
@@ -1217,7 +1217,7 @@ namespace ICU4N
         /// <param name="codePointOffset">The number of code points by which to offset the index.</param>
         /// <returns>The adjusted index.</returns>
         /// <stable>ICU 3.0</stable>
-        internal static int OffsetByCodePoints(ICharSequence text, int index, int codePointOffset)
+        public static int OffsetByCodePoints(ICharSequence text, int index, int codePointOffset)
         {
             // ICU4N specific - throw ArgumentNullException rather than falling back on NullReferenceException
             if (text == null)

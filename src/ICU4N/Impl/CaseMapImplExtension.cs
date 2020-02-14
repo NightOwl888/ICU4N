@@ -446,7 +446,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal static string ToLower(CaseLocale caseLocale, int options, ICharSequence src)
+        public static string ToLower(CaseLocale caseLocale, int options, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
@@ -525,7 +525,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static StringBuilder ToLower(CaseLocale caseLocale, int options,
+        public static StringBuilder ToLower(CaseLocale caseLocale, int options,
             ICharSequence src, StringBuilder dest, Edits edits)
         {
             try
@@ -544,7 +544,7 @@ namespace ICU4N.Impl
             }
         }
         
-        internal static T ToLower<T>(CaseLocale caseLocale, int options,
+        public static T ToLower<T>(CaseLocale caseLocale, int options,
             string src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -563,7 +563,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToLower<T>(CaseLocale caseLocale, int options,
+        public static T ToLower<T>(CaseLocale caseLocale, int options,
             StringBuilder src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -582,7 +582,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToLower<T>(CaseLocale caseLocale, int options,
+        public static T ToLower<T>(CaseLocale caseLocale, int options,
             char[] src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -601,7 +601,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToLower<T>(CaseLocale caseLocale, int options,
+        public static T ToLower<T>(CaseLocale caseLocale, int options,
             ICharSequence src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -686,7 +686,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal static string ToUpper(CaseLocale caseLocale, int options, ICharSequence src)
+        public static string ToUpper(CaseLocale caseLocale, int options, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
@@ -792,7 +792,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static StringBuilder ToUpper(CaseLocale caseLocale, int options,
+        public static StringBuilder ToUpper(CaseLocale caseLocale, int options,
             ICharSequence src, StringBuilder dest, Edits edits)
         {
             try
@@ -820,7 +820,7 @@ namespace ICU4N.Impl
             }
         }
         
-        internal static T ToUpper<T>(CaseLocale caseLocale, int options,
+        public static T ToUpper<T>(CaseLocale caseLocale, int options,
             string src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -848,7 +848,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToUpper<T>(CaseLocale caseLocale, int options,
+        public static T ToUpper<T>(CaseLocale caseLocale, int options,
             StringBuilder src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -876,7 +876,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToUpper<T>(CaseLocale caseLocale, int options,
+        public static T ToUpper<T>(CaseLocale caseLocale, int options,
             char[] src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -904,7 +904,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToUpper<T>(CaseLocale caseLocale, int options,
+        public static T ToUpper<T>(CaseLocale caseLocale, int options,
             ICharSequence src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -1001,7 +1001,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, ICharSequence src)
+        public static string ToTitle(CaseLocale caseLocale, int options, BreakIterator iter, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
@@ -1429,7 +1429,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static StringBuilder ToTitle(
+        public static StringBuilder ToTitle(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
             ICharSequence src, StringBuilder dest, Edits edits)
         {
@@ -1564,7 +1564,7 @@ namespace ICU4N.Impl
             }
         }
         
-        internal static T ToTitle<T>(
+        public static T ToTitle<T>(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
             string src, T dest, Edits edits) where T : IAppendable
         {
@@ -1699,7 +1699,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToTitle<T>(
+        public static T ToTitle<T>(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
             StringBuilder src, T dest, Edits edits) where T : IAppendable
         {
@@ -1834,7 +1834,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToTitle<T>(
+        public static T ToTitle<T>(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
             char[] src, T dest, Edits edits) where T : IAppendable
         {
@@ -1969,7 +1969,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T ToTitle<T>(
+        public static T ToTitle<T>(
             CaseLocale caseLocale, int options, BreakIterator titleIter,
             ICharSequence src, T dest, Edits edits) where T : IAppendable
         {
@@ -2167,7 +2167,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal static string Fold(int options, ICharSequence src)
+        public static string Fold(int options, ICharSequence src)
         {
             if (src.Length <= 100 && (options & OmitUnchangedText) == 0)
             {
@@ -2266,7 +2266,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static StringBuilder Fold(int options,
+        public static StringBuilder Fold(int options,
             ICharSequence src, StringBuilder dest, Edits edits)
         {
             try
@@ -2292,7 +2292,7 @@ namespace ICU4N.Impl
             }
         }
         
-        internal static T Fold<T>(int options,
+        public static T Fold<T>(int options,
             string src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -2318,7 +2318,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T Fold<T>(int options,
+        public static T Fold<T>(int options,
             StringBuilder src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -2344,7 +2344,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T Fold<T>(int options,
+        public static T Fold<T>(int options,
             char[] src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -2370,7 +2370,7 @@ namespace ICU4N.Impl
             }
         }
     
-        internal static T Fold<T>(int options,
+        public static T Fold<T>(int options,
             ICharSequence src, T dest, Edits edits) where T : IAppendable
         {
             try
@@ -3029,7 +3029,7 @@ namespace ICU4N.Impl
             /// Keep this consistent with the C++ versions in ustrcase.cpp (UTF-16) and ucasemap.cpp (UTF-8).
             /// </summary>
             /// <exception cref="IOException"/>
-            internal static StringBuilder ToUpper(int options,
+            public static StringBuilder ToUpper(int options,
                 ICharSequence src, StringBuilder dest, Edits edits)
             {
                 int state = 0;
@@ -3205,7 +3205,7 @@ namespace ICU4N.Impl
             /// Keep this consistent with the C++ versions in ustrcase.cpp (UTF-16) and ucasemap.cpp (UTF-8).
             /// </summary>
             /// <exception cref="IOException"/>
-            internal static T ToUpper<T>(int options,
+            public static T ToUpper<T>(int options,
                 string src, T dest, Edits edits) where T : IAppendable
             {
                 int state = 0;
@@ -3381,7 +3381,7 @@ namespace ICU4N.Impl
             /// Keep this consistent with the C++ versions in ustrcase.cpp (UTF-16) and ucasemap.cpp (UTF-8).
             /// </summary>
             /// <exception cref="IOException"/>
-            internal static T ToUpper<T>(int options,
+            public static T ToUpper<T>(int options,
                 StringBuilder src, T dest, Edits edits) where T : IAppendable
             {
                 int state = 0;
@@ -3557,7 +3557,7 @@ namespace ICU4N.Impl
             /// Keep this consistent with the C++ versions in ustrcase.cpp (UTF-16) and ucasemap.cpp (UTF-8).
             /// </summary>
             /// <exception cref="IOException"/>
-            internal static T ToUpper<T>(int options,
+            public static T ToUpper<T>(int options,
                 char[] src, T dest, Edits edits) where T : IAppendable
             {
                 int state = 0;
@@ -3733,7 +3733,7 @@ namespace ICU4N.Impl
             /// Keep this consistent with the C++ versions in ustrcase.cpp (UTF-16) and ucasemap.cpp (UTF-8).
             /// </summary>
             /// <exception cref="IOException"/>
-            internal static T ToUpper<T>(int options,
+            public static T ToUpper<T>(int options,
                 ICharSequence src, T dest, Edits edits) where T : IAppendable
             {
                 int state = 0;

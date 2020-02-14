@@ -99,7 +99,7 @@ namespace ICU4N.Util
         /// <param name="trieChars"><see cref="ICharSequence"/> that contains the serialized trie.</param>
         /// <param name="offset">Root offset of the trie in the <see cref="ICharSequence"/>.</param>
         /// <stable>ICU 4.8</stable>
-        internal CharsTrie(ICharSequence trieChars, int offset) 
+        public CharsTrie(ICharSequence trieChars, int offset) 
         {
             chars_ = trieChars;
             pos_ = root_ = offset;
@@ -450,7 +450,7 @@ namespace ICU4N.Util
         /// <param name="sLimit">The (exclusive) end index of the string in <paramref name="s"/>.</param>
         /// <returns>The match/value <see cref="Result"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        internal Result Next(ICharSequence s, int sIndex, int sLimit)
+        public Result Next(ICharSequence s, int sIndex, int sLimit)
         {
             if (sIndex >= sLimit)
             {

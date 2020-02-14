@@ -68,7 +68,7 @@ namespace ICU4N.Text
         /// <param name="info">Output container of IDNA processing details.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal abstract StringBuilder LabelToASCII(ICharSequence label, StringBuilder dest, IDNAInfo info);
+        public abstract StringBuilder LabelToASCII(ICharSequence label, StringBuilder dest, IDNAInfo info);
 
         /// <summary>
         /// Converts a single domain name label into its Unicode form for human-readable display.
@@ -116,7 +116,7 @@ namespace ICU4N.Text
         /// <param name="info">Output container of IDNA processing details.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal abstract StringBuilder LabelToUnicode(ICharSequence label, StringBuilder dest, IDNAInfo info);
+        public abstract StringBuilder LabelToUnicode(ICharSequence label, StringBuilder dest, IDNAInfo info);
 
         /// <summary>
         /// Converts a whole domain name into its ASCII form for DNS lookup.
@@ -172,7 +172,7 @@ namespace ICU4N.Text
         /// <param name="info">Output container of IDNA processing details.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal abstract StringBuilder NameToASCII(ICharSequence name, StringBuilder dest, IDNAInfo info);
+        public abstract StringBuilder NameToASCII(ICharSequence name, StringBuilder dest, IDNAInfo info);
 
         /// <summary>
         /// Converts a whole domain name into its Unicode form for human-readable display.
@@ -220,6 +220,6 @@ namespace ICU4N.Text
         /// <param name="info">Output container of IDNA processing details.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal abstract StringBuilder NameToUnicode(ICharSequence name, StringBuilder dest, IDNAInfo info);
-	}
+        public abstract StringBuilder NameToUnicode(ICharSequence name, StringBuilder dest, IDNAInfo info);
+    }
 }

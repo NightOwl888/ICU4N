@@ -3006,7 +3006,7 @@ namespace ICU4N.Text
         internal virtual UnicodeSet AddAll<T>(IEnumerable<T> source) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
         {
             CheckFrozen();
-            foreach (object o in source)
+            foreach (var o in source)
             {
                 Add(o.ToString());
             }

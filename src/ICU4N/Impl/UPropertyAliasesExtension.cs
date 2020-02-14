@@ -199,88 +199,16 @@ namespace ICU4N.Impl
         /// If the property name is not known, this method returns
         /// <see cref="UProperty.Undefined"/>.
         /// </summary>
-        internal int GetPropertyEnum(ICharSequence alias)
+        public int GetPropertyEnum(ICharSequence alias)
         {
             return GetPropertyOrValueEnum(0, alias);
         }
-		
-		/// <summary>
+
+        /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
-		/// <seealso cref="TryGetPropertyValueEnum(UProperty, string, out int)"/>
-		public int GetPropertyValueEnum(UProperty property, string alias)
-        {
-            int valueMapIndex = FindProperty((int)property);
-            if (valueMapIndex == 0)
-            {
-                throw new ArgumentException(
-                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", (int)property) + ")");
-            }
-            valueMapIndex = valueMaps[valueMapIndex + 1];
-            if (valueMapIndex == 0)
-            {
-                throw new ArgumentException(
-                        "Property " + property + " (0x" + string.Format("{0:x2}", (int)property) +
-                        ") does not have named values");
-            }
-            // valueMapIndex is the start of the property's valueMap,
-            // where the first word is the BytesTrie offset.
-            return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
-        }
-		
-		/// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-		/// <seealso cref="TryGetPropertyValueEnum(UProperty, StringBuilder, out int)"/>
-		public int GetPropertyValueEnum(UProperty property, StringBuilder alias)
-        {
-            int valueMapIndex = FindProperty((int)property);
-            if (valueMapIndex == 0)
-            {
-                throw new ArgumentException(
-                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", (int)property) + ")");
-            }
-            valueMapIndex = valueMaps[valueMapIndex + 1];
-            if (valueMapIndex == 0)
-            {
-                throw new ArgumentException(
-                        "Property " + property + " (0x" + string.Format("{0:x2}", (int)property) +
-                        ") does not have named values");
-            }
-            // valueMapIndex is the start of the property's valueMap,
-            // where the first word is the BytesTrie offset.
-            return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
-        }
-		
-		/// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-		/// <seealso cref="TryGetPropertyValueEnum(UProperty, char[], out int)"/>
-		public int GetPropertyValueEnum(UProperty property, char[] alias)
-        {
-            int valueMapIndex = FindProperty((int)property);
-            if (valueMapIndex == 0)
-            {
-                throw new ArgumentException(
-                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", (int)property) + ")");
-            }
-            valueMapIndex = valueMaps[valueMapIndex + 1];
-            if (valueMapIndex == 0)
-            {
-                throw new ArgumentException(
-                        "Property " + property + " (0x" + string.Format("{0:x2}", (int)property) +
-                        ") does not have named values");
-            }
-            // valueMapIndex is the start of the property's valueMap,
-            // where the first word is the BytesTrie offset.
-            return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
-        }
-		
-		/// <summary>
-        /// Returns a value enum given a property enum and one of its value names.
-        /// </summary>
-		/// <seealso cref="TryGetPropertyValueEnum(UProperty, ICharSequence, out int)"/>
-		internal int GetPropertyValueEnum(UProperty property, ICharSequence alias)
+        /// <seealso cref="TryGetPropertyValueEnum(UProperty, string, out int)"/>
+        public int GetPropertyValueEnum(UProperty property, string alias)
         {
             int valueMapIndex = FindProperty((int)property);
             if (valueMapIndex == 0)
@@ -303,7 +231,79 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
-		/// <seealso cref="GetPropertyValueEnum(UProperty, string)"/>
+        /// <seealso cref="TryGetPropertyValueEnum(UProperty, StringBuilder, out int)"/>
+        public int GetPropertyValueEnum(UProperty property, StringBuilder alias)
+        {
+            int valueMapIndex = FindProperty((int)property);
+            if (valueMapIndex == 0)
+            {
+                throw new ArgumentException(
+                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", (int)property) + ")");
+            }
+            valueMapIndex = valueMaps[valueMapIndex + 1];
+            if (valueMapIndex == 0)
+            {
+                throw new ArgumentException(
+                        "Property " + property + " (0x" + string.Format("{0:x2}", (int)property) +
+                        ") does not have named values");
+            }
+            // valueMapIndex is the start of the property's valueMap,
+            // where the first word is the BytesTrie offset.
+            return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
+        }
+
+        /// <summary>
+        /// Returns a value enum given a property enum and one of its value names.
+        /// </summary>
+        /// <seealso cref="TryGetPropertyValueEnum(UProperty, char[], out int)"/>
+        public int GetPropertyValueEnum(UProperty property, char[] alias)
+        {
+            int valueMapIndex = FindProperty((int)property);
+            if (valueMapIndex == 0)
+            {
+                throw new ArgumentException(
+                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", (int)property) + ")");
+            }
+            valueMapIndex = valueMaps[valueMapIndex + 1];
+            if (valueMapIndex == 0)
+            {
+                throw new ArgumentException(
+                        "Property " + property + " (0x" + string.Format("{0:x2}", (int)property) +
+                        ") does not have named values");
+            }
+            // valueMapIndex is the start of the property's valueMap,
+            // where the first word is the BytesTrie offset.
+            return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
+        }
+
+        /// <summary>
+        /// Returns a value enum given a property enum and one of its value names.
+        /// </summary>
+        /// <seealso cref="TryGetPropertyValueEnum(UProperty, ICharSequence, out int)"/>
+        public int GetPropertyValueEnum(UProperty property, ICharSequence alias)
+        {
+            int valueMapIndex = FindProperty((int)property);
+            if (valueMapIndex == 0)
+            {
+                throw new ArgumentException(
+                        "Invalid property enum " + property + " (0x" + string.Format("{0:x2}", (int)property) + ")");
+            }
+            valueMapIndex = valueMaps[valueMapIndex + 1];
+            if (valueMapIndex == 0)
+            {
+                throw new ArgumentException(
+                        "Property " + property + " (0x" + string.Format("{0:x2}", (int)property) +
+                        ") does not have named values");
+            }
+            // valueMapIndex is the start of the property's valueMap,
+            // where the first word is the BytesTrie offset.
+            return GetPropertyOrValueEnum(valueMaps[valueMapIndex], alias);
+        }
+
+        /// <summary>
+        /// Returns a value enum given a property enum and one of its value names.
+        /// </summary>
+        /// <seealso cref="GetPropertyValueEnum(UProperty, string)"/>
         public bool TryGetPropertyValueEnum(UProperty property, string alias, out int result)
         {
 #pragma warning disable 612, 618
@@ -330,7 +330,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
-		/// <seealso cref="GetPropertyValueEnum(UProperty, StringBuilder)"/>
+        /// <seealso cref="GetPropertyValueEnum(UProperty, StringBuilder)"/>
         public bool TryGetPropertyValueEnum(UProperty property, StringBuilder alias, out int result)
         {
 #pragma warning disable 612, 618
@@ -357,7 +357,7 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
-		/// <seealso cref="GetPropertyValueEnum(UProperty, char[])"/>
+        /// <seealso cref="GetPropertyValueEnum(UProperty, char[])"/>
         public bool TryGetPropertyValueEnum(UProperty property, char[] alias, out int result)
         {
 #pragma warning disable 612, 618
@@ -384,8 +384,8 @@ namespace ICU4N.Impl
         /// <summary>
         /// Returns a value enum given a property enum and one of its value names.
         /// </summary>
-		/// <seealso cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>
-        internal bool TryGetPropertyValueEnum(UProperty property, ICharSequence alias, out int result)
+        /// <seealso cref="GetPropertyValueEnum(UProperty, ICharSequence)"/>
+        public bool TryGetPropertyValueEnum(UProperty property, ICharSequence alias, out int result)
         {
 #pragma warning disable 612, 618
             result = (int)UProperty.Undefined;
@@ -407,5 +407,5 @@ namespace ICU4N.Impl
             return result != (int)UProperty.Undefined;
 #pragma warning restore 612, 618
         }
-	}
+    }
 }

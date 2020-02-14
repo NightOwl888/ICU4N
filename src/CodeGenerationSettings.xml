@@ -7,11 +7,11 @@
     <charSequence>ICharSequence</charSequence>
   </charSequences>
   <!-- Accessibility of ICharSequence interface -->
-  <charSequenceAccessibility>internal</charSequenceAccessibility>
+  <charSequenceAccessibility>public</charSequenceAccessibility>
   <appendables>
     <appendable>StringBuilder</appendable>
     <appendable>IAppendable</appendable>
   </appendables>
   <!-- Accessibility of IAppendable interface -->
-  <appendableAccessibility>internal</appendableAccessibility>
+  <appendableAccessibility>public</appendableAccessibility>
 </codeGen>

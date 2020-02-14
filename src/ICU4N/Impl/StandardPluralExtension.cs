@@ -155,7 +155,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="keyword">Keyword for example "few" or "other".</param>
         /// <returns>The plural form corresponding to the keyword, or null.</returns>
-        internal static StandardPlural? OrNullFromString(ICharSequence keyword)
+        public static StandardPlural? OrNullFromString(ICharSequence keyword)
         {
             switch (keyword.Length)
             {
@@ -233,7 +233,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="keyword">Keyword for example "few" or "other".</param>
         /// <returns>The plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.</returns>
-        internal static StandardPlural OrOtherFromString(ICharSequence keyword)
+        public static StandardPlural OrOtherFromString(ICharSequence keyword)
         {
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? p.Value : StandardPlural.Other;
@@ -312,7 +312,7 @@ namespace ICU4N.Impl
         /// <param name="result">>When this method returns, contains the index of the plural form corresponding to the keyword, otherwise
         /// <see cref="T:default(StandardPlural)"/>. This parameter is passed uninitialized.</param>
         /// <returns><c>true</c> if the <paramref name="keyword"/> is valid; otherwise <c>false</c>.</returns>
-        internal static bool TryFromString(ICharSequence keyword, out StandardPlural result)
+        public static bool TryFromString(ICharSequence keyword, out StandardPlural result)
         {
             StandardPlural? p = OrNullFromString(keyword);
             if (p != null)
@@ -365,7 +365,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="keyword">Keyword for example "few" or "other".</param>
         /// <returns>The index of the plural form corresponding to the keyword, or a negative value.</returns>
-        internal static int IndexOrNegativeFromString(ICharSequence keyword)
+        public static int IndexOrNegativeFromString(ICharSequence keyword)
         {
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : -1;
@@ -409,7 +409,7 @@ namespace ICU4N.Impl
         /// </summary>
         /// <param name="keyword">Keyword for example "few" or "other".</param>
         /// <returns>The index of the plural form corresponding to the keyword, or <see cref="StandardPlural.Other"/>.</returns>
-        internal static int IndexOrOtherIndexFromString(ICharSequence keyword)
+        public static int IndexOrOtherIndexFromString(ICharSequence keyword)
         {
             StandardPlural? p = OrNullFromString(keyword);
             return p != null ? (int)p.Value : (int)StandardPlural.Other;

@@ -560,7 +560,7 @@ namespace ICU4N.Text
         /// <param name="newText">A <see cref="ICharSequence"/> containing the text to analyze with
         /// this <see cref="BreakIterator"/>.</param>
         /// <draft>ICU 60</draft>
-        internal virtual void SetText(ICharSequence newText)
+        public virtual void SetText(ICharSequence newText)
         {
             SetText(new CharSequenceCharacterIterator(newText));
         }

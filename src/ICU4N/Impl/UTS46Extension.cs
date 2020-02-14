@@ -34,7 +34,7 @@ namespace ICU4N.Impl
             return Process(label, true, true, dest, info);
         }
 
-        internal override StringBuilder LabelToASCII(ICharSequence label, StringBuilder dest, IDNAInfo info)
+        public override StringBuilder LabelToASCII(ICharSequence label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, true, dest, info);
         }
@@ -54,7 +54,7 @@ namespace ICU4N.Impl
             return Process(label, true, false, dest, info);
         }
 
-        internal override StringBuilder LabelToUnicode(ICharSequence label, StringBuilder dest, IDNAInfo info)
+        public override StringBuilder LabelToUnicode(ICharSequence label, StringBuilder dest, IDNAInfo info)
         {
             return Process(label, true, false, dest, info);
         }
@@ -104,7 +104,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        internal override StringBuilder NameToASCII(ICharSequence name, StringBuilder dest, IDNAInfo info)
+        public override StringBuilder NameToASCII(ICharSequence name, StringBuilder dest, IDNAInfo info)
         {
             Process(name, false, true, dest, info);
             if (dest.Length >= 254 && !info.Errors.Contains(IDNAError.DomainNameTooLong) &&
@@ -134,7 +134,7 @@ namespace ICU4N.Impl
             return Process(name, false, false, dest, info);
         }
 
-        internal override StringBuilder NameToUnicode(ICharSequence name, StringBuilder dest, IDNAInfo info)
+        public override StringBuilder NameToUnicode(ICharSequence name, StringBuilder dest, IDNAInfo info)
         {
             return Process(name, false, false, dest, info);
         }

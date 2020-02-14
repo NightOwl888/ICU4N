@@ -75,7 +75,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.4</stable>
-        internal override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
+        public override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
         {
             if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
             {
@@ -94,7 +94,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal override IAppendable Normalize(string src, IAppendable dest)
+        public override IAppendable Normalize(string src, IAppendable dest)
         {
             return Normalize(src, dest, SpanCondition.Simple);
         }
@@ -107,7 +107,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal override IAppendable Normalize(StringBuilder src, IAppendable dest)
+        public override IAppendable Normalize(StringBuilder src, IAppendable dest)
         {
             if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
             {
@@ -124,7 +124,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal override IAppendable Normalize(char[] src, IAppendable dest)
+        public override IAppendable Normalize(char[] src, IAppendable dest)
         {
             return Normalize(src, dest, SpanCondition.Simple);
         }
@@ -137,7 +137,7 @@ namespace ICU4N.Text
         /// <param name="dest">Destination string; its contents is replaced with normalized <paramref name="src"/>.</param>
         /// <returns><paramref name="dest"/></returns>
         /// <stable>ICU 4.6</stable>
-        internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
+        public override IAppendable Normalize(ICharSequence src, IAppendable dest)
         {
             if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
                 && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
@@ -201,7 +201,7 @@ namespace ICU4N.Text
         /// <param name="first">First string, should be normalized.</param>
         /// <param name="second">Second string, will be normalized.</param>
         /// <returns><paramref name="first"/></returns>
-        internal override StringBuilder NormalizeSecondAndAppend(
+        public override StringBuilder NormalizeSecondAndAppend(
             StringBuilder first, ICharSequence second)
         {
             return NormalizeSecondAndAppend(first, second, true);
@@ -262,7 +262,7 @@ namespace ICU4N.Text
         /// <param name="second">Second string, should be normalized.</param>
         /// <returns><paramref name="first"/></returns>
         /// <stable>ICU 4.4</stable>
-        internal override StringBuilder Append(StringBuilder first, ICharSequence second)
+        public override StringBuilder Append(StringBuilder first, ICharSequence second)
         {
             return NormalizeSecondAndAppend(first, second, false);
         }
@@ -376,7 +376,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>true if s is normalized.</returns>
         /// <stable>ICU 4.4</stable>
-        internal override bool IsNormalized(ICharSequence s)
+        public override bool IsNormalized(ICharSequence s)
         {
             SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)
@@ -537,7 +537,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>The quick check result.</returns>
         /// <stable>ICU 4.4</stable>
-        internal override QuickCheckResult QuickCheck(ICharSequence s)
+        public override QuickCheckResult QuickCheck(ICharSequence s)
         {
             QuickCheckResult result = QuickCheckResult.Yes;
             SpanCondition spanCondition = SpanCondition.Simple;
@@ -721,7 +721,7 @@ namespace ICU4N.Text
         /// <param name="s">Input string.</param>
         /// <returns>"yes" span end index.</returns>
         /// <stable>ICU 4.4</stable>
-        internal override int SpanQuickCheckYes(ICharSequence s)
+        public override int SpanQuickCheckYes(ICharSequence s)
         {
             SpanCondition spanCondition = SpanCondition.Simple;
             for (int prevSpanLimit = 0; prevSpanLimit < s.Length;)

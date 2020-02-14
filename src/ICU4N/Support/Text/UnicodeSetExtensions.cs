@@ -8,7 +8,7 @@ namespace ICU4N.Support.Text
     /// <summary>
     /// ICU4J compatible method names, in case you don't like the rewiring of ICU4N.
     /// </summary>
-    public static partial class UnicodeSetExtensions
+    internal static partial class UnicodeSetExtensions
     {
         /// <summary>
         /// Add a collection (as strings) into this <see cref="UnicodeSet"/>.

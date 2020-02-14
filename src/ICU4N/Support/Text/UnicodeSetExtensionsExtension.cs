@@ -13,7 +13,7 @@ using System.Text;
 
 namespace ICU4N.Text
 {
-    public static partial class UnicodeSetExtensions
+    internal static partial class UnicodeSetExtensions
     {
 
         /// <seealso cref="UnicodeSet.AddAll(UnicodeSet)"/>
@@ -57,7 +57,7 @@ namespace ICU4N.Text
         /// <provisional>This API might change or be removed in a future release.</provisional>
         // See ticket #11395, this is safe.
 
-        internal static UnicodeSet AddAll(this UnicodeSet set, params ICharSequence[] collection)
+        public static UnicodeSet AddAll(this UnicodeSet set, params ICharSequence[] collection)
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -121,7 +121,7 @@ namespace ICU4N.Text
         /// <returns>this object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static UnicodeSet AddAll(this UnicodeSet set, ICharSequence s)
+        public static UnicodeSet AddAll(this UnicodeSet set, ICharSequence s)
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -197,7 +197,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static UnicodeSet Complement(this UnicodeSet set, ICharSequence s)
+        public static UnicodeSet Complement(this UnicodeSet set, ICharSequence s)
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -261,7 +261,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static UnicodeSet ComplementAll(this UnicodeSet set, ICharSequence s)
+        public static UnicodeSet ComplementAll(this UnicodeSet set, ICharSequence s)
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -301,7 +301,7 @@ namespace ICU4N.Text
         /// <seealso cref="UnicodeSet.ContainsAll(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static bool ContainsAll<T>(this UnicodeSet set, IEnumerable<T> collection) where T : ICharSequence
+        public static bool ContainsAll<T>(this UnicodeSet set, IEnumerable<T> collection) where T : ICharSequence
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -365,7 +365,7 @@ namespace ICU4N.Text
         /// <returns>true if the condition is met.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static bool ContainsSome(this UnicodeSet set, ICharSequence s)
+        public static bool ContainsSome(this UnicodeSet set, ICharSequence s)
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -405,7 +405,7 @@ namespace ICU4N.Text
         /// <seealso cref="UnicodeSet.ContainsSome(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static bool ContainsSome<T>(this UnicodeSet set, IEnumerable<T> collection) where T : ICharSequence
+        public static bool ContainsSome<T>(this UnicodeSet set, IEnumerable<T> collection) where T : ICharSequence
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -469,7 +469,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static UnicodeSet RemoveAll(this UnicodeSet set, ICharSequence s)
+        public static UnicodeSet RemoveAll(this UnicodeSet set, ICharSequence s)
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -509,7 +509,7 @@ namespace ICU4N.Text
         /// <seealso cref="UnicodeSet.RemoveAll(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static UnicodeSet RemoveAll<T>(this UnicodeSet set, IEnumerable<T> collection) where T : ICharSequence
+        public static UnicodeSet RemoveAll<T>(this UnicodeSet set, IEnumerable<T> collection) where T : ICharSequence
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -577,7 +577,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static UnicodeSet Retain(this UnicodeSet set, ICharSequence cs)
+        public static UnicodeSet Retain(this UnicodeSet set, ICharSequence cs)
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -617,7 +617,7 @@ namespace ICU4N.Text
         /// <seealso cref="UnicodeSet.RetainAll(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static UnicodeSet RetainAll<T>(this UnicodeSet set, IEnumerable<T> collection) where T : ICharSequence
+        public static UnicodeSet RetainAll<T>(this UnicodeSet set, IEnumerable<T> collection) where T : ICharSequence
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));
@@ -681,7 +681,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal static UnicodeSet RetainAll(this UnicodeSet set, ICharSequence s)
+        public static UnicodeSet RetainAll(this UnicodeSet set, ICharSequence s)
         {
             if (set == null)
                 throw new ArgumentNullException(nameof(set));

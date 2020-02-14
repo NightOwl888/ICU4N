@@ -53,7 +53,7 @@ namespace ICU4N.Impl
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer
         /// and returns the length of the decomposition (2 or 3).
         /// </summary>
-        internal static int Decompose(int c, IAppendable buffer)
+        public static int Decompose(int c, IAppendable buffer)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace ICU4N.Impl
         /// Decomposes <paramref name="c"/>, which must be a Hangul syllable, into buffer.
         /// This is the raw, not recursive, decomposition. Its length is always 2.
         /// </summary>
-        internal static void GetRawDecomposition(int c, IAppendable buffer)
+        public static void GetRawDecomposition(int c, IAppendable buffer)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace ICU4N.Impl
             return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
         }
 
-        internal bool Equals(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
+        public bool Equals(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
         {
             return UTF16Plus.Equal(str, 0, str.Length, s, start, length);
         }
@@ -299,7 +299,7 @@ namespace ICU4N.Impl
         }
 
         // s must be in NFD, otherwise change the implementation.
-        internal void Append(ICharSequence s, int start, int length,
+        public void Append(ICharSequence s, int start, int length,
             int leadCC, int trailCC) // ICU4N specific: changed limit to length
         {
             if (length == 0)
@@ -376,7 +376,7 @@ namespace ICU4N.Impl
             return this;
         }
 
-        internal ReorderingBuffer Append(ICharSequence s)
+        public ReorderingBuffer Append(ICharSequence s)
         {
             if (s.Length != 0)
             {
@@ -420,7 +420,7 @@ namespace ICU4N.Impl
             return this;
         }
 
-        internal ReorderingBuffer Append(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
+        public ReorderingBuffer Append(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (length != 0)
             {
@@ -527,7 +527,7 @@ namespace ICU4N.Impl
         /// Then appends the new text to the <see cref="IAppendable"/> or <see cref="System.Text.StringBuilder"/>.
         /// Normally used after quick check loops find a non-empty sequence.
         /// </summary>
-        internal ReorderingBuffer FlushAndAppendZeroCC(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
+        public ReorderingBuffer FlushAndAppendZeroCC(ICharSequence s, int start, int length) // ICU4N specific: changed limit to length
         {
             if (appIsStringBuilder)
             {
@@ -634,7 +634,7 @@ namespace ICU4N.Impl
         /// <param name="s1">s1 first sequence</param>
         /// <param name="s2">s2 second sequence</param>
         /// <returns>true if s1 contains the same text as s2.</returns>
-        internal static bool Equal(string s1, ICharSequence s2)
+        public static bool Equal(string s1, ICharSequence s2)
         {
             int length = s1.Length;
             if (length != s2.Length)
@@ -730,7 +730,7 @@ namespace ICU4N.Impl
         /// <param name="s1">s1 first sequence</param>
         /// <param name="s2">s2 second sequence</param>
         /// <returns>true if s1 contains the same text as s2.</returns>
-        internal static bool Equal(StringBuilder s1, ICharSequence s2)
+        public static bool Equal(StringBuilder s1, ICharSequence s2)
         {
             int length = s1.Length;
             if (length != s2.Length)
@@ -826,7 +826,7 @@ namespace ICU4N.Impl
         /// <param name="s1">s1 first sequence</param>
         /// <param name="s2">s2 second sequence</param>
         /// <returns>true if s1 contains the same text as s2.</returns>
-        internal static bool Equal(char[] s1, ICharSequence s2)
+        public static bool Equal(char[] s1, ICharSequence s2)
         {
             int length = s1.Length;
             if (length != s2.Length)
@@ -849,7 +849,7 @@ namespace ICU4N.Impl
         /// <param name="s1">s1 first sequence</param>
         /// <param name="s2">s2 second sequence</param>
         /// <returns>true if s1 contains the same text as s2.</returns>
-        internal static bool Equal(ICharSequence s1, string s2)
+        public static bool Equal(ICharSequence s1, string s2)
         {
             int length = s1.Length;
             if (length != s2.Length)
@@ -872,7 +872,7 @@ namespace ICU4N.Impl
         /// <param name="s1">s1 first sequence</param>
         /// <param name="s2">s2 second sequence</param>
         /// <returns>true if s1 contains the same text as s2.</returns>
-        internal static bool Equal(ICharSequence s1, StringBuilder s2)
+        public static bool Equal(ICharSequence s1, StringBuilder s2)
         {
             int length = s1.Length;
             if (length != s2.Length)
@@ -895,7 +895,7 @@ namespace ICU4N.Impl
         /// <param name="s1">s1 first sequence</param>
         /// <param name="s2">s2 second sequence</param>
         /// <returns>true if s1 contains the same text as s2.</returns>
-        internal static bool Equal(ICharSequence s1, char[] s2)
+        public static bool Equal(ICharSequence s1, char[] s2)
         {
             int length = s1.Length;
             if (length != s2.Length)
@@ -918,7 +918,7 @@ namespace ICU4N.Impl
         /// <param name="s1">s1 first sequence</param>
         /// <param name="s2">s2 second sequence</param>
         /// <returns>true if s1 contains the same text as s2.</returns>
-        internal static bool Equal(ICharSequence s1, ICharSequence s2)
+        public static bool Equal(ICharSequence s1, ICharSequence s2)
         {
             if (s1 == s2)
             {
@@ -1037,7 +1037,7 @@ namespace ICU4N.Impl
         /// <param name="start2">Start offset in second sequence.</param>
         /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(string s1, int start1, int length1,
+        public static bool Equal(string s1, int start1, int length1,
             ICharSequence s2, int start2, int length2)
         {
             if (length1 != length2)
@@ -1153,7 +1153,7 @@ namespace ICU4N.Impl
         /// <param name="start2">Start offset in second sequence.</param>
         /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(StringBuilder s1, int start1, int length1,
+        public static bool Equal(StringBuilder s1, int start1, int length1,
             ICharSequence s2, int start2, int length2)
         {
             if (length1 != length2)
@@ -1269,7 +1269,7 @@ namespace ICU4N.Impl
         /// <param name="start2">Start offset in second sequence.</param>
         /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(char[] s1, int start1, int length1,
+        public static bool Equal(char[] s1, int start1, int length1,
             ICharSequence s2, int start2, int length2)
         {
             if (length1 != length2)
@@ -1297,7 +1297,7 @@ namespace ICU4N.Impl
         /// <param name="start2">Start offset in second sequence.</param>
         /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(ICharSequence s1, int start1, int length1,
+        public static bool Equal(ICharSequence s1, int start1, int length1,
             string s2, int start2, int length2)
         {
             if (length1 != length2)
@@ -1325,7 +1325,7 @@ namespace ICU4N.Impl
         /// <param name="start2">Start offset in second sequence.</param>
         /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(ICharSequence s1, int start1, int length1,
+        public static bool Equal(ICharSequence s1, int start1, int length1,
             StringBuilder s2, int start2, int length2)
         {
             if (length1 != length2)
@@ -1353,7 +1353,7 @@ namespace ICU4N.Impl
         /// <param name="start2">Start offset in second sequence.</param>
         /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(ICharSequence s1, int start1, int length1,
+        public static bool Equal(ICharSequence s1, int start1, int length1,
             char[] s2, int start2, int length2)
         {
             if (length1 != length2)
@@ -1381,7 +1381,7 @@ namespace ICU4N.Impl
         /// <param name="start2">Start offset in second sequence.</param>
         /// <param name="length2">Length of second sequence.</param>
         /// <returns>true if s1.SubSequence(start1, limit1) contains the same text as s2.SubSequence(start2, limit2).</returns>
-        internal static bool Equal(ICharSequence s1, int start1, int length1,
+        public static bool Equal(ICharSequence s1, int start1, int length1,
             ICharSequence s2, int start2, int length2)
         {
             if (length1 != length2)
@@ -1433,7 +1433,7 @@ namespace ICU4N.Impl
         }
 
         // NFD without an NFD Normalizer2 instance.
-        internal StringBuilder Decompose(ICharSequence s, StringBuilder dest)
+        public StringBuilder Decompose(ICharSequence s, StringBuilder dest)
         {
             Decompose(s, 0, s.Length, dest, s.Length);
             return dest;
@@ -1495,7 +1495,7 @@ namespace ICU4N.Impl
         /// limit can be NULL if src is NUL-terminated.
         /// <paramref name="destLengthEstimate"/> is the initial <paramref name="dest"/> buffer capacity and can be -1.
         /// </summary>
-        internal void Decompose(ICharSequence s, int src, int limit, StringBuilder dest,
+        public void Decompose(ICharSequence s, int src, int limit, StringBuilder dest,
             int destLengthEstimate)
         {
             if (destLengthEstimate < 0)
@@ -1822,7 +1822,7 @@ namespace ICU4N.Impl
         // Dual functionality:
         // buffer!=NULL: normalize
         // buffer==NULL: isNormalized/quickCheck/spanQuickCheckYes
-        internal int Decompose(ICharSequence s, int src, int limit,
+        public int Decompose(ICharSequence s, int src, int limit,
             ReorderingBuffer buffer)
         {
             int minNoCP = minDecompNoCP;
@@ -2019,7 +2019,7 @@ namespace ICU4N.Impl
             buffer.Append(s, src, limit - src); // ICU4N: Corrected 3rd parameter
         }
 
-        internal void DecomposeAndAppend(ICharSequence s, bool doDecompose, ReorderingBuffer buffer)
+        public void DecomposeAndAppend(ICharSequence s, bool doDecompose, ReorderingBuffer buffer)
         {
             int limit = s.Length;
             if (limit == 0)
@@ -2978,7 +2978,7 @@ namespace ICU4N.Impl
         // Very similar to ComposeQuickCheck(): Make the same changes in both places if relevant.
         // doCompose: normalize
         // !doCompose: isNormalized (buffer must be empty and initialized)
-        internal bool Compose(ICharSequence s, int src, int limit,
+        public bool Compose(ICharSequence s, int src, int limit,
                            bool onlyContiguous,
                            bool doCompose,
                            ReorderingBuffer buffer)
@@ -3749,7 +3749,7 @@ namespace ICU4N.Impl
         /// bit 0: set if "maybe"; otherwise, if the span length&lt;s.Length
         /// then the quick check result is "no"
         /// </returns>
-        internal int ComposeQuickCheck(ICharSequence s, int src, int limit,
+        public int ComposeQuickCheck(ICharSequence s, int src, int limit,
             bool onlyContiguous, bool doSpan)
         {
             int qcResult = 0;
@@ -3987,7 +3987,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal void ComposeAndAppend(ICharSequence s,
+        public void ComposeAndAppend(ICharSequence s,
             bool doCompose,
             bool onlyContiguous,
             ReorderingBuffer buffer)
@@ -4547,7 +4547,7 @@ namespace ICU4N.Impl
         // Dual functionality:
         // buffer!=NULL: normalize
         // buffer==NULL: isNormalized/quickCheck/spanQuickCheckYes
-        internal int MakeFCD(ICharSequence s, int src, int limit, ReorderingBuffer buffer)
+        public int MakeFCD(ICharSequence s, int src, int limit, ReorderingBuffer buffer)
         {
             // Note: In this function we use buffer->appendZeroCC() because we track
             // the lead and trail combining classes here, rather than leaving it to
@@ -4806,7 +4806,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal void MakeFCDAndAppend(ICharSequence s, bool doMakeFCD, ReorderingBuffer buffer)
+        public void MakeFCDAndAppend(ICharSequence s, bool doMakeFCD, ReorderingBuffer buffer)
         {
             int src = 0, limit = s.Length;
             if (!buffer.IsEmpty)

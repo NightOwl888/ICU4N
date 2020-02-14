@@ -278,7 +278,7 @@ namespace ICU4N.Text
         /// <param name="src">Source <see cref="ICharSequence"/>.</param>
         /// <returns>Normalized <paramref name="src"/>.</returns>
         /// <stable>ICU 4.4</stable>
-        internal virtual string Normalize(ICharSequence src)
+        public virtual string Normalize(ICharSequence src)
         {
             if (src is StringCharSequence)
             {

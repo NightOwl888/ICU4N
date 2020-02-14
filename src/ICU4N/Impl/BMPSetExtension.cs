@@ -16,7 +16,7 @@ namespace ICU4N.Impl
     public sealed partial class BMPSet
     {
 
-	    /// <summary>
+        /// <summary>
         /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
         /// It must be <paramref name="spanCondition"/>==0 or 1.
         /// </summary>
@@ -156,7 +156,7 @@ namespace ICU4N.Impl
             return i;
         }
 
-	    /// <summary>
+        /// <summary>
         /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
         /// It must be <paramref name="spanCondition"/>==0 or 1.
         /// </summary>
@@ -296,7 +296,7 @@ namespace ICU4N.Impl
             return i;
         }
 
-	    /// <summary>
+        /// <summary>
         /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
         /// It must be <paramref name="spanCondition"/>==0 or 1.
         /// </summary>
@@ -436,7 +436,7 @@ namespace ICU4N.Impl
             return i;
         }
 
-	    /// <summary>
+        /// <summary>
         /// Span the initial substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
         /// It must be <paramref name="spanCondition"/>==0 or 1.
         /// </summary>
@@ -450,7 +450,7 @@ namespace ICU4N.Impl
         /// sufficient length for trail unit for each surrogate pair. Handle single surrogates as surrogate code points
         /// as usual in ICU.
         /// </remarks>
-        internal int Span(ICharSequence s, int start, SpanCondition spanCondition,
+        public int Span(ICharSequence s, int start, SpanCondition spanCondition,
             out int outCount)
         {
             char c, c2;
@@ -576,10 +576,10 @@ namespace ICU4N.Impl
             return i;
         }
 
-	    /// <summary>
+        /// <summary>
         /// Symmetrical with <see cref="Span(string, int, SpanCondition, out int)"/>.
         /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
-		/// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
+        /// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
         /// </summary>
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         public int SpanBack(string s, int limit, SpanCondition spanCondition)
@@ -707,10 +707,10 @@ namespace ICU4N.Impl
             return limit + 1;
         }
 
-	    /// <summary>
+        /// <summary>
         /// Symmetrical with <see cref="Span(StringBuilder, int, SpanCondition, out int)"/>.
         /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
-		/// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
+        /// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
         /// </summary>
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         public int SpanBack(StringBuilder s, int limit, SpanCondition spanCondition)
@@ -838,10 +838,10 @@ namespace ICU4N.Impl
             return limit + 1;
         }
 
-	    /// <summary>
+        /// <summary>
         /// Symmetrical with <see cref="Span(char[], int, SpanCondition, out int)"/>.
         /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
-		/// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
+        /// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
         /// </summary>
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         public int SpanBack(char[] s, int limit, SpanCondition spanCondition)
@@ -969,13 +969,13 @@ namespace ICU4N.Impl
             return limit + 1;
         }
 
-	    /// <summary>
+        /// <summary>
         /// Symmetrical with <see cref="Span(ICharSequence, int, SpanCondition, out int)"/>.
         /// Span the trailing substring for which each character c has <paramref name="spanCondition"/>==Contains(c). 
-		/// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
+        /// It must be <paramref name="s"/>.Length >= limit and <paramref name="spanCondition"/>==0 or 1.
         /// </summary>
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
-        internal int SpanBack(ICharSequence s, int limit, SpanCondition spanCondition)
+        public int SpanBack(ICharSequence s, int limit, SpanCondition spanCondition)
         {
             char c, c2;
 
@@ -1099,5 +1099,5 @@ namespace ICU4N.Impl
             }
             return limit + 1;
         }
-	}
+    }
 }

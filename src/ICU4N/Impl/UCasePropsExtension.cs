@@ -232,7 +232,7 @@ namespace ICU4N.Impl
         /// <seealso cref="ICasePropertiesContextEnumerator"/>
         /// <seealso cref="MaxStringLength"/>
         /// <internal/>
-        internal int ToFullLower(int c, ICasePropertiesContextEnumerator iter, IAppendable output, CaseLocale caseLocale)
+        public int ToFullLower(int c, ICasePropertiesContextEnumerator iter, IAppendable output, CaseLocale caseLocale)
         {
             int result, props;
 
@@ -671,7 +671,7 @@ namespace ICU4N.Impl
             return ToUpperOrTitle(c, iter, output, caseLocale, true);
         }
 
-        internal int ToFullUpper(int c, ICasePropertiesContextEnumerator iter,
+        public int ToFullUpper(int c, ICasePropertiesContextEnumerator iter,
             IAppendable output,
             CaseLocale caseLocale)
         {
@@ -685,7 +685,7 @@ namespace ICU4N.Impl
             return ToUpperOrTitle(c, iter, output, caseLocale, false);
         }
 
-        internal int ToFullTitle(int c, ICasePropertiesContextEnumerator iter,
+        public int ToFullTitle(int c, ICasePropertiesContextEnumerator iter,
             IAppendable output,
             CaseLocale caseLocale)
         {
@@ -829,7 +829,7 @@ namespace ICU4N.Impl
         // it for uppercase and lowercase characters (I-grave vs. i-grave)
         // together in a way that they still fold to common result strings.
 
-        internal int ToFullFolding(int c, IAppendable output, int options)
+        public int ToFullFolding(int c, IAppendable output, int options)
         {
             int result;
             int props;

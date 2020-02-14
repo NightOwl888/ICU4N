@@ -51,7 +51,7 @@ namespace ICU4N.Text
         /// <seealso cref="AddAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
         // See ticket #11395, this is safe.
-[CLSCompliant(false)]        internal virtual UnicodeSet AddAll(params char[][] collection) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
+        internal virtual UnicodeSet AddAll(params char[][] collection) // ICU4N specific - changed from public to internal (we are using UnionWith in .NET)
         {
             CheckFrozen();
             foreach (var csq in collection)
@@ -378,7 +378,7 @@ namespace ICU4N.Text
 
         /// <seealso cref="ContainsAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
-        internal virtual bool ContainsAll<T>(IEnumerable<T> collection) where T : ICharSequence
+        internal virtual bool ContainsAll<T>(IEnumerable<T> collection) where T : ICharSequence // ICU4N specific - changed from public to internal (we are using IsSupersetOf in .NET)
         {
             foreach (var o in collection)
             {
@@ -461,7 +461,7 @@ namespace ICU4N.Text
 
         /// <seealso cref="ContainsSome(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
-        internal bool ContainsSome<T>(IEnumerable<T> collection) where T : ICharSequence
+        internal bool ContainsSome<T>(IEnumerable<T> collection) where T : ICharSequence // ICU4N specific - changed from public to internal (we are using Overlaps in .NET)
         {
             return !ContainsNone(collection);
         }
@@ -504,7 +504,7 @@ namespace ICU4N.Text
 
         /// <seealso cref="RemoveAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
-        internal virtual UnicodeSet RemoveAll<T>(IEnumerable<T> collection) where T : ICharSequence
+        internal virtual UnicodeSet RemoveAll<T>(IEnumerable<T> collection) where T : ICharSequence // ICU4N specific - changed from public to internal (we are using ExceptWith in .NET)
         {
             CheckFrozen();
             foreach (var o in collection)
@@ -720,7 +720,7 @@ namespace ICU4N.Text
 
         /// <seealso cref="RetainAll(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
-        internal virtual UnicodeSet RetainAll<T>(IEnumerable<T> collection) where T : ICharSequence
+        internal virtual UnicodeSet RetainAll<T>(IEnumerable<T> collection) where T : ICharSequence // ICU4N specific - changed from public to internal (we are using IntersectWith in .NET)
         {
             CheckFrozen();
             // TODO optimize
@@ -823,8 +823,8 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-	
-	    // TODO: create class Appendables?
+    
+        // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(StringBuilder app, string s)
         {
@@ -838,7 +838,7 @@ namespace ICU4N.Text
             }
         }
     
-	    // TODO: create class Appendables?
+        // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(StringBuilder app, StringBuilder s)
         {
@@ -852,7 +852,7 @@ namespace ICU4N.Text
             }
         }
     
-	    // TODO: create class Appendables?
+        // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(StringBuilder app, char[] s)
         {
@@ -866,7 +866,7 @@ namespace ICU4N.Text
             }
         }
     
-	    // TODO: create class Appendables?
+        // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(StringBuilder app, ICharSequence s)
         {
@@ -879,8 +879,8 @@ namespace ICU4N.Text
                 throw new ICUUncheckedIOException(e);
             }
         }
-    	
-	    // TODO: create class Appendables?
+        
+        // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(IAppendable app, string s)
         {
@@ -894,7 +894,7 @@ namespace ICU4N.Text
             }
         }
     
-	    // TODO: create class Appendables?
+        // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(IAppendable app, StringBuilder s)
         {
@@ -908,7 +908,7 @@ namespace ICU4N.Text
             }
         }
     
-	    // TODO: create class Appendables?
+        // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(IAppendable app, char[] s)
         {
@@ -922,7 +922,7 @@ namespace ICU4N.Text
             }
         }
     
-	    // TODO: create class Appendables?
+        // TODO: create class Appendables?
         /// <exception cref="IOException"/>
         private static void Append(IAppendable app, ICharSequence s)
         {
@@ -1328,7 +1328,7 @@ namespace ICU4N.Text
         /// Tests whether the text matches at the offset. If so, returns the end of the longest substring that it matches. If not, returns -1.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public virtual int MatchesAt(string text, int offset)
+        internal virtual int MatchesAt(string text, int offset) // ICU4N: Marked internal because it is obsolete
         {
             int lastLen = -1;
 
@@ -1374,7 +1374,7 @@ namespace ICU4N.Text
         /// Tests whether the text matches at the offset. If so, returns the end of the longest substring that it matches. If not, returns -1.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public virtual int MatchesAt(StringBuilder text, int offset)
+        internal virtual int MatchesAt(StringBuilder text, int offset) // ICU4N: Marked internal because it is obsolete
         {
             int lastLen = -1;
 
@@ -1420,7 +1420,7 @@ namespace ICU4N.Text
         /// Tests whether the text matches at the offset. If so, returns the end of the longest substring that it matches. If not, returns -1.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public virtual int MatchesAt(char[] text, int offset)
+        internal virtual int MatchesAt(char[] text, int offset) // ICU4N: Marked internal because it is obsolete
         {
             int lastLen = -1;
 
@@ -1466,7 +1466,7 @@ namespace ICU4N.Text
         /// Tests whether the text matches at the offset. If so, returns the end of the longest substring that it matches. If not, returns -1.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        internal virtual int MatchesAt(ICharSequence text, int offset)
+        internal virtual int MatchesAt(ICharSequence text, int offset) // ICU4N: Marked internal because it is obsolete
         {
             int lastLen = -1;
 
@@ -2016,7 +2016,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        internal UnicodeSet Add(ICharSequence s)
+        public UnicodeSet Add(ICharSequence s)
         {
             CheckFrozen();
             int cp = GetSingleCP(s);
@@ -2176,7 +2176,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>A newly created set containing the given string.</returns>
         /// <stable>ICU 2.0</stable>
-        internal static UnicodeSet From(ICharSequence s)
+        public static UnicodeSet From(ICharSequence s)
         {
             return new UnicodeSet().Add(s);
         }
@@ -2187,7 +2187,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>A newly created set containing the given characters.</returns>
         /// <stable>ICU 2.0</stable>
-        public static UnicodeSet FromAll(string s)
+        public static UnicodeSet FromAll(string s) // ICU4N TODO: API - rename FromChars() to match other APIs
         {
             return new UnicodeSet().AddAll(s);
         }
@@ -2198,7 +2198,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>A newly created set containing the given characters.</returns>
         /// <stable>ICU 2.0</stable>
-        public static UnicodeSet FromAll(StringBuilder s)
+        public static UnicodeSet FromAll(StringBuilder s) // ICU4N TODO: API - rename FromChars() to match other APIs
         {
             return new UnicodeSet().AddAll(s);
         }
@@ -2209,7 +2209,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>A newly created set containing the given characters.</returns>
         /// <stable>ICU 2.0</stable>
-        public static UnicodeSet FromAll(char[] s)
+        public static UnicodeSet FromAll(char[] s) // ICU4N TODO: API - rename FromChars() to match other APIs
         {
             return new UnicodeSet().AddAll(s);
         }
@@ -2220,7 +2220,7 @@ namespace ICU4N.Text
         /// <param name="s">The source string.</param>
         /// <returns>A newly created set containing the given characters.</returns>
         /// <stable>ICU 2.0</stable>
-        internal static UnicodeSet FromAll(ICharSequence s)
+        public static UnicodeSet FromAll(ICharSequence s) // ICU4N TODO: API - rename FromChars() to match other APIs
         {
             return new UnicodeSet().AddAll(s);
         }
@@ -2302,7 +2302,7 @@ namespace ICU4N.Text
         /// <param name="s">The string to be removed.</param>
         /// <returns>This object, for chaining.</returns>
         /// <stable>ICU 2.0</stable>
-        internal UnicodeSet Remove(ICharSequence s)
+        public UnicodeSet Remove(ICharSequence s)
         {
             int cp = GetSingleCP(s);
             if (cp < 0)
@@ -2384,7 +2384,7 @@ namespace ICU4N.Text
         /// <param name="s">String to be checked for containment.</param>
         /// <returns><tt>true</tt> if this set contains the specified string.</returns>
         /// <stable>ICU 2.0</stable>
-        internal bool Contains(ICharSequence s)
+        public bool Contains(ICharSequence s)
         {
             int cp = GetSingleCP(s);
             if (cp < 0)
@@ -2440,7 +2440,7 @@ namespace ICU4N.Text
         /// <param name="s">String containing characters to be checked for containment.</param>
         /// <returns>true if the test condition is met.</returns>
         /// <stable>ICU 2.0</stable>
-        internal virtual bool ContainsNone(ICharSequence s)
+        public virtual bool ContainsNone(ICharSequence s)
         {
             return Span(s, SpanCondition.NotContained) == s.Length;
         }
@@ -2496,7 +2496,7 @@ namespace ICU4N.Text
         /// <param name="spanCondition">The span condition.</param>
         /// <returns>The length of the span.</returns>
         /// <stable>ICU 4.4</stable>
-        internal virtual int Span(ICharSequence s, SpanCondition spanCondition)
+        public virtual int Span(ICharSequence s, SpanCondition spanCondition)
         {
             return Span(s, 0, spanCondition);
         }
@@ -2662,7 +2662,7 @@ namespace ICU4N.Text
         /// <param name="spanCondition">The span condition.</param>
         /// <returns>The string index which ends the span (i.e. exclusive).</returns>
         /// <stable>ICU 4.4</stable>
-        internal virtual int Span(ICharSequence s, int start, SpanCondition spanCondition)
+        public virtual int Span(ICharSequence s, int start, SpanCondition spanCondition)
         {
             int ignoredOutCount;
             int end = s.Length;
@@ -2708,7 +2708,7 @@ namespace ICU4N.Text
         /// <param name="outCount">Returns the count.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
         [Obsolete("This API is ICU internal only.")]
-        public virtual int SpanAndCount(string s, int start, SpanCondition spanCondition, out int outCount)
+        internal virtual int SpanAndCount(string s, int start, SpanCondition spanCondition, out int outCount) // ICU4N: Made internal because it is obsolete
         {
             outCount = default(int);
             int end = s.Length;
@@ -2753,7 +2753,7 @@ namespace ICU4N.Text
         /// <param name="outCount">Returns the count.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
         [Obsolete("This API is ICU internal only.")]
-        public virtual int SpanAndCount(StringBuilder s, int start, SpanCondition spanCondition, out int outCount)
+        internal virtual int SpanAndCount(StringBuilder s, int start, SpanCondition spanCondition, out int outCount) // ICU4N: Made internal because it is obsolete
         {
             outCount = default(int);
             int end = s.Length;
@@ -2798,7 +2798,7 @@ namespace ICU4N.Text
         /// <param name="outCount">Returns the count.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
         [Obsolete("This API is ICU internal only.")]
-        public virtual int SpanAndCount(char[] s, int start, SpanCondition spanCondition, out int outCount)
+        internal virtual int SpanAndCount(char[] s, int start, SpanCondition spanCondition, out int outCount) // ICU4N: Made internal because it is obsolete
         {
             outCount = default(int);
             int end = s.Length;
@@ -2843,7 +2843,7 @@ namespace ICU4N.Text
         /// <param name="outCount">Returns the count.</param>
         /// <returns>The limit (exclusive end) of the span.</returns>
         [Obsolete("This API is ICU internal only.")]
-        internal virtual int SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition, out int outCount)
+        internal virtual int SpanAndCount(ICharSequence s, int start, SpanCondition spanCondition, out int outCount) // ICU4N: Made internal because it is obsolete
         {
             outCount = default(int);
             int end = s.Length;
@@ -3024,7 +3024,7 @@ namespace ICU4N.Text
         /// <param name="spanCondition">The span condition.</param>
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         /// <stable>ICU 4.4</stable>
-        internal virtual int SpanBack(ICharSequence s, SpanCondition spanCondition)
+        public virtual int SpanBack(ICharSequence s, SpanCondition spanCondition)
         {
             return SpanBack(s, s.Length, spanCondition);
         }
@@ -3221,7 +3221,7 @@ namespace ICU4N.Text
         /// <param name="spanCondition">The span condition.</param>
         /// <returns>The string index which starts the span (i.e. inclusive).</returns>
         /// <stable>ICU 4.4</stable>
-        internal virtual int SpanBack(ICharSequence s, int fromIndex, SpanCondition spanCondition)
+        public virtual int SpanBack(ICharSequence s, int fromIndex, SpanCondition spanCondition)
         {
             if (fromIndex <= 0)
             {
@@ -3313,7 +3313,7 @@ namespace ICU4N.Text
 
         /// <seealso cref="ContainsNone(UnicodeSet)"/>
         /// <stable>ICU 4.4</stable>
-        internal virtual bool ContainsNone<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual bool ContainsNone<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             foreach (var o in collection)
             {
@@ -3378,7 +3378,7 @@ namespace ICU4N.Text
         /// Note that this (=String) order is UTF-16 order -- *not* code point order.
         /// </summary>
         /// <stable>ICU 4.4</stable>
-        internal static int Compare(ICharSequence str, int codePoint)
+        public static int Compare(ICharSequence str, int codePoint)
         {
 #pragma warning disable 612, 618
             return CharSequences.Compare(str, codePoint);
@@ -3434,7 +3434,7 @@ namespace ICU4N.Text
         /// Note that this (=String) order is UTF-16 order -- *not* code point order.
         /// </summary>
         /// <stable>ICU 4.4</stable>
-        internal static int Compare(int codePoint, ICharSequence str)
+        public static int Compare(int codePoint, ICharSequence str)
         {
 #pragma warning disable 612, 618
             return -CharSequences.Compare(str, codePoint);
@@ -3446,7 +3446,7 @@ namespace ICU4N.Text
         /// Otherwise return <see cref="int.MaxValue"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public static int GetSingleCodePoint(string s)
+        internal static int GetSingleCodePoint(string s) // ICU4N: Made internal because it is obsolete
         {
             return CharSequences.GetSingleCodePoint(s);
         }
@@ -3456,7 +3456,7 @@ namespace ICU4N.Text
         /// Otherwise return <see cref="int.MaxValue"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public static int GetSingleCodePoint(StringBuilder s)
+        internal static int GetSingleCodePoint(StringBuilder s) // ICU4N: Made internal because it is obsolete
         {
             return CharSequences.GetSingleCodePoint(s);
         }
@@ -3466,7 +3466,7 @@ namespace ICU4N.Text
         /// Otherwise return <see cref="int.MaxValue"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        public static int GetSingleCodePoint(char[] s)
+        internal static int GetSingleCodePoint(char[] s) // ICU4N: Made internal because it is obsolete
         {
             return CharSequences.GetSingleCodePoint(s);
         }
@@ -3476,7 +3476,7 @@ namespace ICU4N.Text
         /// Otherwise return <see cref="int.MaxValue"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only.")]
-        internal static int GetSingleCodePoint(ICharSequence s)
+        internal static int GetSingleCodePoint(ICharSequence s) // ICU4N: Made internal because it is obsolete
         {
             return CharSequences.GetSingleCodePoint(s);
         }
@@ -3487,7 +3487,7 @@ namespace ICU4N.Text
         /// If there is no match, length is returned.
         /// </summary>
         [Obsolete("This API is ICU internal only.Use span instead.")]
-        public virtual int FindIn(string value, int fromIndex, bool findNot)
+        internal virtual int FindIn(string value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -3508,7 +3508,7 @@ namespace ICU4N.Text
         /// If there is no match, length is returned.
         /// </summary>
         [Obsolete("This API is ICU internal only.Use span instead.")]
-        public virtual int FindIn(StringBuilder value, int fromIndex, bool findNot)
+        internal virtual int FindIn(StringBuilder value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -3529,7 +3529,7 @@ namespace ICU4N.Text
         /// If there is no match, length is returned.
         /// </summary>
         [Obsolete("This API is ICU internal only.Use span instead.")]
-        public virtual int FindIn(char[] value, int fromIndex, bool findNot)
+        internal virtual int FindIn(char[] value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -3550,7 +3550,7 @@ namespace ICU4N.Text
         /// If there is no match, length is returned.
         /// </summary>
         [Obsolete("This API is ICU internal only.Use span instead.")]
-        internal virtual int FindIn(ICharSequence value, int fromIndex, bool findNot)
+        internal virtual int FindIn(ICharSequence value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -3572,7 +3572,7 @@ namespace ICU4N.Text
         /// BEFORE index is not in the <see cref="UnicodeSet"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only. Use spanBack instead.")]
-        public virtual int FindLastIn(string value, int fromIndex, bool findNot)
+        internal virtual int FindLastIn(string value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -3595,7 +3595,7 @@ namespace ICU4N.Text
         /// BEFORE index is not in the <see cref="UnicodeSet"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only. Use spanBack instead.")]
-        public virtual int FindLastIn(StringBuilder value, int fromIndex, bool findNot)
+        internal virtual int FindLastIn(StringBuilder value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -3618,7 +3618,7 @@ namespace ICU4N.Text
         /// BEFORE index is not in the <see cref="UnicodeSet"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only. Use spanBack instead.")]
-        public virtual int FindLastIn(char[] value, int fromIndex, bool findNot)
+        internal virtual int FindLastIn(char[] value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -3641,7 +3641,7 @@ namespace ICU4N.Text
         /// BEFORE index is not in the <see cref="UnicodeSet"/>.
         /// </summary>
         [Obsolete("This API is ICU internal only. Use spanBack instead.")]
-        internal virtual int FindLastIn(ICharSequence value, int fromIndex, bool findNot)
+        internal virtual int FindLastIn(ICharSequence value, int fromIndex, bool findNot) // ICU4N: Made internal because it is obsolete
         {
             //TODO add strings, optimize, using ICU4C algorithms
             int cp;
@@ -3665,7 +3665,7 @@ namespace ICU4N.Text
         /// <param name="matches">A bool to either strip all that matches or don't match with the current <see cref="UnicodeSet"/> object.</param>
         /// <returns>The string after it has been stripped.</returns>
         [Obsolete("This API is ICU internal only. Use replaceFrom.")]
-        public virtual string StripFrom(string source, bool matches)
+        internal virtual string StripFrom(string source, bool matches) // ICU4N: Made internal because it is obsolete
         {
             StringBuilder result = new StringBuilder();
             for (int pos = 0; pos < source.Length;)
@@ -3685,7 +3685,7 @@ namespace ICU4N.Text
         /// <param name="matches">A bool to either strip all that matches or don't match with the current <see cref="UnicodeSet"/> object.</param>
         /// <returns>The string after it has been stripped.</returns>
         [Obsolete("This API is ICU internal only. Use replaceFrom.")]
-        public virtual string StripFrom(StringBuilder source, bool matches)
+        internal virtual string StripFrom(StringBuilder source, bool matches) // ICU4N: Made internal because it is obsolete
         {
             StringBuilder result = new StringBuilder();
             for (int pos = 0; pos < source.Length;)
@@ -3705,7 +3705,7 @@ namespace ICU4N.Text
         /// <param name="matches">A bool to either strip all that matches or don't match with the current <see cref="UnicodeSet"/> object.</param>
         /// <returns>The string after it has been stripped.</returns>
         [Obsolete("This API is ICU internal only. Use replaceFrom.")]
-        public virtual string StripFrom(char[] source, bool matches)
+        internal virtual string StripFrom(char[] source, bool matches) // ICU4N: Made internal because it is obsolete
         {
             StringBuilder result = new StringBuilder();
             for (int pos = 0; pos < source.Length;)
@@ -3725,7 +3725,7 @@ namespace ICU4N.Text
         /// <param name="matches">A bool to either strip all that matches or don't match with the current <see cref="UnicodeSet"/> object.</param>
         /// <returns>The string after it has been stripped.</returns>
         [Obsolete("This API is ICU internal only. Use replaceFrom.")]
-        internal virtual string StripFrom(ICharSequence source, bool matches)
+        internal virtual string StripFrom(ICharSequence source, bool matches) // ICU4N: Made internal because it is obsolete
         {
             StringBuilder result = new StringBuilder();
             for (int pos = 0; pos < source.Length;)

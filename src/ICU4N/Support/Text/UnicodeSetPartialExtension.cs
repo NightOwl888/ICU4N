@@ -58,7 +58,7 @@ namespace ICU4N.Text
         /// <provisional>This API might change or be removed in a future release.</provisional>
         // See ticket #11395, this is safe.
 
-        internal virtual UnicodeSet UnionWith(params ICharSequence[] collection)
+        public virtual UnicodeSet UnionWith(params ICharSequence[] collection)
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -118,7 +118,7 @@ namespace ICU4N.Text
         /// <returns>this object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual UnicodeSet UnionWithChars(ICharSequence s)
+        public virtual UnicodeSet UnionWithChars(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -190,7 +190,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual UnicodeSet SymmetricExceptWith(ICharSequence s)
+        public virtual UnicodeSet SymmetricExceptWith(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -250,7 +250,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual UnicodeSet SymmetricExceptWithChars(ICharSequence s)
+        public virtual UnicodeSet SymmetricExceptWithChars(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -290,7 +290,7 @@ namespace ICU4N.Text
         /// <seealso cref="IsSupersetOf(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool IsSupersetOf<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual bool IsSupersetOf<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -350,7 +350,7 @@ namespace ICU4N.Text
         /// <returns>true if the condition is met.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool Overlaps(ICharSequence s)
+        public virtual bool Overlaps(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -390,7 +390,7 @@ namespace ICU4N.Text
         /// <seealso cref="Overlaps(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool Overlaps<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual bool Overlaps<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -430,7 +430,7 @@ namespace ICU4N.Text
         /// <seealso cref="ExceptWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual UnicodeSet ExceptWith<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual UnicodeSet ExceptWith<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -490,7 +490,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual UnicodeSet ExceptWithChars(ICharSequence s)
+        public virtual UnicodeSet ExceptWithChars(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -554,7 +554,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual UnicodeSet IntersectWith(ICharSequence cs)
+        public virtual UnicodeSet IntersectWith(ICharSequence cs)
         {
             if (cs == null)
                 throw new ArgumentNullException(nameof(cs));
@@ -594,7 +594,7 @@ namespace ICU4N.Text
         /// <seealso cref="IntersectWith(UnicodeSet)"/>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual UnicodeSet IntersectWith<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual UnicodeSet IntersectWith<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -654,7 +654,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual UnicodeSet IntersectWithChars(ICharSequence s)
+        public virtual UnicodeSet IntersectWithChars(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -704,7 +704,7 @@ namespace ICU4N.Text
         /// <returns>true if the <see cref="UnicodeSet"/> object is a superset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool IsSupersetOf(ICharSequence s)
+        public virtual bool IsSupersetOf(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -772,7 +772,7 @@ namespace ICU4N.Text
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool IsProperSupersetOf(ICharSequence s)
+        public virtual bool IsProperSupersetOf(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -881,7 +881,7 @@ namespace ICU4N.Text
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper superset of <paramref name="collection"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool IsProperSupersetOf<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual bool IsProperSupersetOf<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -962,7 +962,7 @@ namespace ICU4N.Text
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool IsSubsetOf(ICharSequence s)
+        public virtual bool IsSubsetOf(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -1112,7 +1112,7 @@ namespace ICU4N.Text
         /// <returns>true if the <see cref="UnicodeSet"/> object is a subset of <paramref name="collection"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool IsSubsetOf<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual bool IsSubsetOf<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -1210,7 +1210,7 @@ namespace ICU4N.Text
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool IsProperSubsetOf(ICharSequence s)
+        public virtual bool IsProperSubsetOf(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -1358,7 +1358,7 @@ namespace ICU4N.Text
         /// <returns>true if the <see cref="UnicodeSet"/> object is a proper subset of <paramref name="collection"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool IsProperSubsetOf<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual bool IsProperSubsetOf<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));
@@ -1452,7 +1452,7 @@ namespace ICU4N.Text
         /// <returns>true if the <see cref="UnicodeSet"/> object contains the same characters as <paramref name="s"/>; otherwise, false.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool SetEquals(ICharSequence s)
+        public virtual bool SetEquals(ICharSequence s)
         {
             if (s == null)
                 throw new ArgumentNullException(nameof(s));
@@ -1597,7 +1597,7 @@ namespace ICU4N.Text
         /// <returns><c>true</c> if the sets contain the same elements; otherwise <c>false</c>.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual bool SetEquals<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual bool SetEquals<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
                 return false;
@@ -1743,7 +1743,7 @@ namespace ICU4N.Text
         /// <returns>This object, for chaining.</returns>
         /// <draft>ICU4N 60.1</draft>
         /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal virtual UnicodeSet SymmetricExceptWith<T>(IEnumerable<T> collection) where T : ICharSequence
+        public virtual UnicodeSet SymmetricExceptWith<T>(IEnumerable<T> collection) where T : ICharSequence
         {
             if (collection == null)
                 throw new ArgumentNullException(nameof(collection));

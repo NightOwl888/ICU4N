@@ -3,7 +3,7 @@
 namespace ICU4N.Globalization
 {
     [Obsolete("This API is ICU internal only.")]
-    public partial class CharSequences
+    internal partial class CharSequences // ICU4N specific - marked internal, since the functionality is obsolete
     {
         // TODO
         // compareTo(a, b);

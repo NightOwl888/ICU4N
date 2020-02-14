@@ -59,7 +59,7 @@ namespace ICU4N.Text
         /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
         /// <exception cref="ArgumentException">For bad argument syntax.</exception>
         /// <stable>ICU 57</stable>
-        internal static SimpleFormatter Compile(ICharSequence pattern)
+        public static SimpleFormatter Compile(ICharSequence pattern)
         {
             return CompileMinMaxArguments(pattern, 0, int.MaxValue);
         }
@@ -129,7 +129,7 @@ namespace ICU4N.Text
         /// <returns>The new <see cref="SimpleFormatter"/> object.</returns>
         /// <exception cref="ArgumentException">For bad argument syntax and too few or too many arguments.</exception>
         /// <stable>ICU 57</stable>
-        internal static SimpleFormatter CompileMinMaxArguments(ICharSequence pattern, int min, int max)
+        public static SimpleFormatter CompileMinMaxArguments(ICharSequence pattern, int min, int max)
         {
             StringBuilder sb = new StringBuilder();
             string compiledPattern = SimpleFormatterImpl.CompileToStringMinMaxArguments(pattern, sb, min, max);
@@ -168,7 +168,7 @@ namespace ICU4N.Text
         /// Formats the given values.
         /// </summary>
         /// <stable>ICU 57</stable>
-        internal string Format(params ICharSequence[] values)
+        public string Format(params ICharSequence[] values)
         {
             return SimpleFormatterImpl.FormatCompiledPattern(compiledPattern, values);
         }
@@ -264,7 +264,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns><paramref name="appendTo"/></returns>
         /// <stable>ICU 57</stable>
-        internal StringBuilder FormatAndAppend(
+        public StringBuilder FormatAndAppend(
             StringBuilder appendTo, int[] offsets, params ICharSequence[] values)
         {
             return SimpleFormatterImpl.FormatAndAppend(compiledPattern, appendTo, offsets, values);
@@ -365,7 +365,7 @@ namespace ICU4N.Text
         /// </param>
         /// <returns><paramref name="result"/></returns>
         /// <stable>ICU 57</stable>
-        internal StringBuilder FormatAndReplace(
+        public StringBuilder FormatAndReplace(
             StringBuilder result, int[] offsets, params ICharSequence[] values)
         {
             return SimpleFormatterImpl.FormatAndReplace(compiledPattern, result, offsets, values);

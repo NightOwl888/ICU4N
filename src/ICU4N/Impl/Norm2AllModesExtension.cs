@@ -43,7 +43,7 @@ namespace ICU4N.Impl
             return dest.Append(src);
         }
 
-        internal override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
+        public override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
         {
             if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
             {
@@ -53,7 +53,7 @@ namespace ICU4N.Impl
             return dest.Append(src);
         }
 
-        internal override IAppendable Normalize(string src, IAppendable dest)
+        public override IAppendable Normalize(string src, IAppendable dest)
         {
             try
             {
@@ -65,7 +65,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal override IAppendable Normalize(StringBuilder src, IAppendable dest)
+        public override IAppendable Normalize(StringBuilder src, IAppendable dest)
         {
             if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
             {
@@ -81,7 +81,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal override IAppendable Normalize(char[] src, IAppendable dest)
+        public override IAppendable Normalize(char[] src, IAppendable dest)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
+        public override IAppendable Normalize(ICharSequence src, IAppendable dest)
         {
             if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
                 && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
@@ -129,7 +129,7 @@ namespace ICU4N.Impl
             return first.Append(second.ToString());
         }
 
-        internal override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second)
+        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second)
         {
             if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
             {
@@ -157,7 +157,7 @@ namespace ICU4N.Impl
             return first.Append(second);
         }
 
-        internal override StringBuilder Append(StringBuilder first, ICharSequence second)
+        public override StringBuilder Append(StringBuilder first, ICharSequence second)
         {
             if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
             {
@@ -172,7 +172,7 @@ namespace ICU4N.Impl
 
         public override bool IsNormalized(char[] s) { return true; }
 
-        internal override bool IsNormalized(ICharSequence s) { return true; }
+        public override bool IsNormalized(ICharSequence s) { return true; }
 
         public override QuickCheckResult QuickCheck(string s) { return QuickCheckResult.Yes; }
 
@@ -180,7 +180,7 @@ namespace ICU4N.Impl
 
         public override QuickCheckResult QuickCheck(char[] s) { return QuickCheckResult.Yes; }
 
-        internal override QuickCheckResult QuickCheck(ICharSequence s) { return QuickCheckResult.Yes; }
+        public override QuickCheckResult QuickCheck(ICharSequence s) { return QuickCheckResult.Yes; }
 
         public override int SpanQuickCheckYes(string s) { return s.Length; }
 
@@ -188,7 +188,7 @@ namespace ICU4N.Impl
 
         public override int SpanQuickCheckYes(char[] s) { return s.Length; }
 
-        internal override int SpanQuickCheckYes(ICharSequence s) { return s.Length; }
+        public override int SpanQuickCheckYes(ICharSequence s) { return s.Length; }
 
     }
 
@@ -220,7 +220,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        internal override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
+        public override StringBuilder Normalize(ICharSequence src, StringBuilder dest)
         {
             if (src is StringBuilderCharSequence && ((StringBuilderCharSequence)src).Value == dest)
             {
@@ -231,7 +231,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        internal override IAppendable Normalize(string src, IAppendable dest)
+        public override IAppendable Normalize(string src, IAppendable dest)
         {
             ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
             Normalize(src, buffer);
@@ -239,7 +239,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        internal override IAppendable Normalize(StringBuilder src, IAppendable dest)
+        public override IAppendable Normalize(StringBuilder src, IAppendable dest)
         {
             if (dest is StringBuilderCharSequence && ((StringBuilderCharSequence)dest).Value == src)
             {
@@ -251,7 +251,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        internal override IAppendable Normalize(char[] src, IAppendable dest)
+        public override IAppendable Normalize(char[] src, IAppendable dest)
         {
             ReorderingBuffer buffer = new ReorderingBuffer(Impl, dest, src.Length);
             Normalize(src, buffer);
@@ -259,7 +259,7 @@ namespace ICU4N.Impl
             return dest;
         }
 
-        internal override IAppendable Normalize(ICharSequence src, IAppendable dest)
+        public override IAppendable Normalize(ICharSequence src, IAppendable dest)
         {
             if ((dest == src) || (src is StringBuilderCharSequence && dest is StringBuilderCharSequence 
                 && ((StringBuilderCharSequence)src).Value == ((StringBuilderCharSequence)dest).Value))
@@ -278,7 +278,7 @@ namespace ICU4N.Impl
 
         protected abstract void Normalize(char[] src, ReorderingBuffer buffer);
 
-        internal abstract void Normalize(ICharSequence src, ReorderingBuffer buffer);
+        public abstract void Normalize(ICharSequence src, ReorderingBuffer buffer);
 
         public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, string second)
         {
@@ -295,7 +295,7 @@ namespace ICU4N.Impl
             return NormalizeSecondAndAppend(first, second, true);
         }
 
-        internal override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second)
+        public override StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second)
         {
             return NormalizeSecondAndAppend(first, second, true);
         }
@@ -315,7 +315,7 @@ namespace ICU4N.Impl
             return NormalizeSecondAndAppend(first, second, false);
         }
 
-        internal override StringBuilder Append(StringBuilder first, ICharSequence second)
+        public override StringBuilder Append(StringBuilder first, ICharSequence second)
         {
             return NormalizeSecondAndAppend(first, second, false);
         }
@@ -348,7 +348,7 @@ namespace ICU4N.Impl
             return first;
         }
 
-        internal virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second, bool doNormalize)
+        public virtual StringBuilder NormalizeSecondAndAppend(StringBuilder first, ICharSequence second, bool doNormalize)
         {
             if (second is StringBuilderCharSequence && ((StringBuilderCharSequence)second).Value == first)
             {
@@ -369,7 +369,7 @@ namespace ICU4N.Impl
         protected abstract void NormalizeAndAppend(
             char[] src, bool doNormalize, ReorderingBuffer buffer);
 
-        internal abstract void NormalizeAndAppend(
+        public abstract void NormalizeAndAppend(
             ICharSequence src, bool doNormalize, ReorderingBuffer buffer);
 
         public override bool IsNormalized(string s)
@@ -387,7 +387,7 @@ namespace ICU4N.Impl
             return s.Length == SpanQuickCheckYes(s);
         }
 
-        internal override bool IsNormalized(ICharSequence s)
+        public override bool IsNormalized(ICharSequence s)
         {
             return s.Length == SpanQuickCheckYes(s);
         }
@@ -407,7 +407,7 @@ namespace ICU4N.Impl
             return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
         }
 
-        internal override QuickCheckResult QuickCheck(ICharSequence s)
+        public override QuickCheckResult QuickCheck(ICharSequence s)
         {
             return IsNormalized(s) ? QuickCheckResult.Yes : QuickCheckResult.No;
         }
@@ -431,7 +431,7 @@ namespace ICU4N.Impl
             Impl.Decompose(src, 0, src.Length, buffer);
         }
 
-        internal override void Normalize(ICharSequence src, ReorderingBuffer buffer)
+        public override void Normalize(ICharSequence src, ReorderingBuffer buffer)
         {
             Impl.Decompose(src, 0, src.Length, buffer);
         }
@@ -451,7 +451,7 @@ namespace ICU4N.Impl
             Impl.DecomposeAndAppend(src, doNormalize, buffer);
         }
 
-        internal override void NormalizeAndAppend(ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
+        public override void NormalizeAndAppend(ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
         {
             Impl.DecomposeAndAppend(src, doNormalize, buffer);
         }
@@ -471,7 +471,7 @@ namespace ICU4N.Impl
             return Impl.Decompose(s, 0, s.Length, null);
         }
 
-        internal override int SpanQuickCheckYes(ICharSequence s)
+        public override int SpanQuickCheckYes(ICharSequence s)
         {
             return Impl.Decompose(s, 0, s.Length, null);
         }
@@ -495,7 +495,7 @@ namespace ICU4N.Impl
             Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
         }
 
-        internal override void Normalize(ICharSequence src, ReorderingBuffer buffer)
+        public override void Normalize(ICharSequence src, ReorderingBuffer buffer)
         {
             Impl.Compose(src, 0, src.Length, onlyContiguous, true, buffer);
         }
@@ -518,7 +518,7 @@ namespace ICU4N.Impl
             Impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
         }
 
-        internal override void NormalizeAndAppend(
+        public override void NormalizeAndAppend(
             ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
         {
             Impl.ComposeAndAppend(src, doNormalize, onlyContiguous, buffer);
@@ -548,7 +548,7 @@ namespace ICU4N.Impl
                                 new ReorderingBuffer(Impl, new StringBuilder(), 5));
         }
 
-        internal override bool IsNormalized(ICharSequence s)
+        public override bool IsNormalized(ICharSequence s)
         {
             // 5: small destCapacity for substring normalization
             return Impl.Compose(s, 0, s.Length,
@@ -607,7 +607,7 @@ namespace ICU4N.Impl
             }
         }
 
-        internal override QuickCheckResult QuickCheck(ICharSequence s)
+        public override QuickCheckResult QuickCheck(ICharSequence s)
         {
             int spanLengthAndMaybe = Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, false);
             if ((spanLengthAndMaybe & 1) != 0)
@@ -639,7 +639,7 @@ namespace ICU4N.Impl
             return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
         }
 
-        internal override int SpanQuickCheckYes(ICharSequence s)
+        public override int SpanQuickCheckYes(ICharSequence s)
         {
             return Impl.ComposeQuickCheck(s, 0, s.Length, onlyContiguous, true).TripleShift(1);
         }
@@ -664,7 +664,7 @@ namespace ICU4N.Impl
             Impl.MakeFCD(src, 0, src.Length, buffer);
         }
 
-        internal override void Normalize(ICharSequence src, ReorderingBuffer buffer)
+        public override void Normalize(ICharSequence src, ReorderingBuffer buffer)
         {
             Impl.MakeFCD(src, 0, src.Length, buffer);
         }
@@ -687,7 +687,7 @@ namespace ICU4N.Impl
             Impl.MakeFCDAndAppend(src, doNormalize, buffer);
         }
 
-        internal override void NormalizeAndAppend(
+        public override void NormalizeAndAppend(
             ICharSequence src, bool doNormalize, ReorderingBuffer buffer)
         {
             Impl.MakeFCDAndAppend(src, doNormalize, buffer);
@@ -708,7 +708,7 @@ namespace ICU4N.Impl
             return Impl.MakeFCD(s, 0, s.Length, null);
         }
 
-        internal override int SpanQuickCheckYes(ICharSequence s)
+        public override int SpanQuickCheckYes(ICharSequence s)
         {
             return Impl.MakeFCD(s, 0, s.Length, null);
         }

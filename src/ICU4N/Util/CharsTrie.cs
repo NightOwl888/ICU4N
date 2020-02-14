@@ -718,7 +718,7 @@ namespace ICU4N.Util
         /// Otherwise, the iterator returns strings with this maximum length.</param>
         /// <returns>A new <see cref="CharsTrieEnumerator"/>.</returns>
         /// <stable>ICU 4.8</stable>
-        internal static CharsTrieEnumerator GetEnumerator(ICharSequence trieChars, int offset, int maxStringLength)
+        public static CharsTrieEnumerator GetEnumerator(ICharSequence trieChars, int offset, int maxStringLength)
         {
             return new CharsTrieEnumerator(trieChars, offset, -1, maxStringLength);
         }
