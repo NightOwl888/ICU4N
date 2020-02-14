@@ -2038,10 +2038,10 @@ namespace ICU4N.Text
 
             internal void DumpCache()
             {
-                Console.Out.Write("fTextIdx:%d   fBufIdx:%d%n", fTextIdx, fBufIdx); // ICU4N TODO: String format
+                Console.Out.Write($"fTextIdx:{fTextIdx}   fBufIdx:{fBufIdx}");
                 for (int i = fStartBufIdx; ; i = ModChunkSize(i + 1))
                 {
-                    Console.Out.Write("%d  %d%n", i, fBoundaries[i]); // ICU4N TODO: String format
+                    Console.Out.Write($"{i}  {fBoundaries[i]}");
                     if (i == fEndBufIdx)
                     {
                         break;
@@ -2062,8 +2062,7 @@ namespace ICU4N.Text
 
             internal int[] fBoundaries = new int[CACHE_SIZE];
             internal short[] fStatuses = new short[CACHE_SIZE];
-
-            DictionaryBreakEngine.DequeI fSideBuffer = new DictionaryBreakEngine.DequeI();
+            internal readonly DictionaryBreakEngine.DequeI fSideBuffer = new DictionaryBreakEngine.DequeI();
         }
     }
 }
