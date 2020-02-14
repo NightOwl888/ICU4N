@@ -1,9 +1,7 @@
 ﻿using ICU4N.Impl;
 using ICU4N.Util;
-using J2N.Text;
 using System;
 using System.Globalization;
-using System.Text;
 
 namespace ICU4N.Text
 {
@@ -20,7 +18,7 @@ namespace ICU4N.Text
     /// </summary>
     /// <draft>ICU 60</draft>
     /// <provisional>This API might change or be removed in a future release.</provisional>
-    public abstract class FilteredBreakIteratorBuilder
+    public abstract partial class FilteredBreakIteratorBuilder
     {
         /// <summary>
         /// Construct a <see cref="FilteredBreakIteratorBuilder"/> based on sentence break exception rules in a locale.
@@ -68,64 +66,7 @@ namespace ICU4N.Text
             return new SimpleFilteredSentenceBreakIteratorBuilder();
         }
 
-        // ICU4N TODO: API Generate APIs
-
-        public virtual bool SuppressBreakAfter(string str) // ICU4N specific
-        {
-            return SuppressBreakAfter(str.AsCharSequence());
-        }
-
-        public virtual bool SuppressBreakAfter(StringBuilder str) // ICU4N specific
-        {
-            return SuppressBreakAfter(str.AsCharSequence());
-        }
-
-        public virtual bool SuppressBreakAfter(char[] str) // ICU4N specific
-        {
-            return SuppressBreakAfter(str.AsCharSequence());
-        }
-
-        /// <summary>
-        /// Suppress a certain string from being the end of a segment.
-        /// For example, suppressing "Mr.", then segments ending in "Mr." will not be returned
-        /// by the iterator.
-        /// </summary>
-        /// <param name="str">The string to suppress, such as "Mr."</param>
-        /// <returns>true if the string was not present and now added,
-        /// false if the call was a no-op because the string was already being suppressed.</returns>
-        /// <draft>ICU 60</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal abstract bool SuppressBreakAfter(ICharSequence str);
-
-
-
-        public virtual bool UnsuppressBreakAfter(string str) // ICU4N specific
-        {
-            return UnsuppressBreakAfter(str.AsCharSequence());
-        }
-
-        public virtual bool UnsuppressBreakAfter(StringBuilder str) // ICU4N specific
-        {
-            return UnsuppressBreakAfter(str.AsCharSequence());
-        }
-
-        public virtual bool UnsuppressBreakAfter(char[] str) // ICU4N specific
-        {
-            return UnsuppressBreakAfter(str.AsCharSequence());
-        }
-
-        /// <summary>
-        /// Stop suppressing a certain string from being the end of the segment.
-        /// This function does not create any new segment boundaries, but only serves to un-do
-        /// the effect of earlier calls to <see cref="SuppressBreakAfter(ICharSequence)"/>, or to un-do the effect of
-        /// locale data which may be suppressing certain strings.
-        /// </summary>
-        /// <param name="str">The str the string to unsuppress, such as "Mr."</param>
-        /// <returns>true if the string was present and now removed,
-        /// false if the call was a no-op because the string was not being suppressed.</returns>
-        /// <draft>ICU 60</draft>
-        /// <provisional>This API might change or be removed in a future release.</provisional>
-        internal abstract bool UnsuppressBreakAfter(ICharSequence str);
+        // ICU4N specific - moved SuppressBreakAfter and UnsuppressBreakAfter methods to FilteredBreakIteratorBuilderExtension.tt
 
         /// <summary>
         /// Wrap (adopt) an existing break iterator in a new filtered instance.

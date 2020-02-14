@@ -87,10 +87,20 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Norm2AllModesExtension.tt</DependentUpon>
     </None>
+    <None Include="Text\FilteredBreakIteratorBuilderExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FilteredBreakIteratorBuilderExtension.tt</DependentUpon>
+    </None>
     <None Include="Text\Normalizer2Extension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Normalizer2Extension.tt</DependentUpon>
+    </None>
+    <None Include="Util\CharsTrieBuilderExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CharsTrieBuilderExtension.tt</DependentUpon>
     </None>
   </ItemGroup>
 
@@ -195,6 +205,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CaseMapExtension.tt</DependentUpon>
     </Compile>
+    <Compile Update="Text\FilteredBreakIteratorBuilderExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>FilteredBreakIteratorBuilderExtension.tt</DependentUpon>
+    </Compile>
     <Compile Update="Text\FilteredNormalizer2Extension.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -234,6 +249,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>UTF16Extension.tt</DependentUpon>
+    </Compile>
+    <Compile Update="Util\CharsTrieBuilderExtension.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CharsTrieBuilderExtension.tt</DependentUpon>
     </Compile>
     <Compile Update="Util\CharsTrieExtension.cs">
       <DesignTime>True</DesignTime>
@@ -326,6 +346,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>CaseMapExtension.cs</LastGenOutput>
     </None>
+    <None Update="Text\FilteredBreakIteratorBuilderExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>FilteredBreakIteratorBuilderExtension.cs</LastGenOutput>
+    </None>
     <None Update="Text\FilteredNormalizer2Extension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>FilteredNormalizer2Extension.cs</LastGenOutput>
@@ -357,6 +381,10 @@
     <None Update="Text\UTF16Extension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UTF16Extension.cs</LastGenOutput>
+    </None>
+    <None Update="Util\CharsTrieBuilderExtension.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>CharsTrieBuilderExtension.cs</LastGenOutput>
     </None>
     <None Update="Util\CharsTrieExtension.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

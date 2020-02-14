@@ -2,7 +2,6 @@
 using J2N.Text;
 using System;
 using System.Diagnostics;
-using System.Text;
 
 namespace ICU4N.Util
 {
@@ -13,7 +12,7 @@ namespace ICU4N.Util
     /// </summary>
     /// <stable>ICU 4.8</stable>
     /// <author>Markus W. Scherer</author>
-    public sealed class CharsTrieBuilder : StringTrieBuilder
+    public sealed partial class CharsTrieBuilder : StringTrieBuilder
     {
         /// <summary>
         /// Constructs an empty builder.
@@ -24,78 +23,6 @@ namespace ICU4N.Util
             : base()
 #pragma warning restore 612, 618
         { }
-
-        /// <summary>
-        /// Adds a (string, value) pair.
-        /// The string must be unique.
-        /// The string contents will be copied; the builder does not keep
-        /// a reference to the input <see cref="ICharSequence"/>.
-        /// </summary>
-        /// <param name="s">The input string.</param>
-        /// <param name="value">The value associated with this char sequence.</param>
-        /// <returns>This.</returns>
-        /// <stable>ICU 4.8</stable>
-        public CharsTrieBuilder Add(string s, int value) // ICU4N TODO: API Generate
-        {
-#pragma warning disable 612, 618
-            AddImpl(s.AsCharSequence(), value);
-#pragma warning restore 612, 618
-            return this;
-        }
-
-        /// <summary>
-        /// Adds a (string, value) pair.
-        /// The string must be unique.
-        /// The string contents will be copied; the builder does not keep
-        /// a reference to the input <see cref="ICharSequence"/>.
-        /// </summary>
-        /// <param name="s">The input string.</param>
-        /// <param name="value">The value associated with this char sequence.</param>
-        /// <returns>This.</returns>
-        /// <stable>ICU 4.8</stable>
-        public CharsTrieBuilder Add(StringBuilder s, int value) // ICU4N TODO: API Generate
-        {
-#pragma warning disable 612, 618
-            AddImpl(s.AsCharSequence(), value);
-#pragma warning restore 612, 618
-            return this;
-        }
-
-        /// <summary>
-        /// Adds a (string, value) pair.
-        /// The string must be unique.
-        /// The string contents will be copied; the builder does not keep
-        /// a reference to the input <see cref="ICharSequence"/>.
-        /// </summary>
-        /// <param name="s">The input string.</param>
-        /// <param name="value">The value associated with this char sequence.</param>
-        /// <returns>This.</returns>
-        /// <stable>ICU 4.8</stable>
-        public CharsTrieBuilder Add(char[] s, int value) // ICU4N TODO: API Generate
-        {
-#pragma warning disable 612, 618
-            AddImpl(s.AsCharSequence(), value);
-#pragma warning restore 612, 618
-            return this;
-        }
-
-        /// <summary>
-        /// Adds a (string, value) pair.
-        /// The string must be unique.
-        /// The string contents will be copied; the builder does not keep
-        /// a reference to the input <see cref="ICharSequence"/>.
-        /// </summary>
-        /// <param name="s">The input string.</param>
-        /// <param name="value">The value associated with this char sequence.</param>
-        /// <returns>This.</returns>
-        /// <stable>ICU 4.8</stable>
-        internal CharsTrieBuilder Add(ICharSequence s, int value) // ICU4N TODO: API Generate
-        {
-#pragma warning disable 612, 618
-            AddImpl(s, value);
-#pragma warning restore 612, 618
-            return this;
-        }
 
         /// <summary>
         /// Builds a <see cref="CharsTrie"/> for the <see cref="Add(string, int)"/>ed data.
