@@ -1,8 +1,7 @@
-﻿using ICU4N.Support.Collections;
-using ICU4N.Support.Globalization;
+﻿using ICU4N.Globalization;
+using ICU4N.Support.Collections;
 using ICU4N.Util;
 using J2N.Collections.Generic.Extensions;
-using J2N.Collections.ObjectModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -497,7 +496,7 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, CompareInfo com)
         {
-            return GetDisplayNames(locale, com.ToComparer(), null);
+            return GetDisplayNames(locale, com.AsComparer(), null);
         }
 
         /// <summary>
@@ -530,7 +529,7 @@ namespace ICU4N.Impl
         /// </summary>
         public virtual IDictionary<string, string> GetDisplayNames(ULocale locale, CompareInfo com, string matchID)
         {
-            return GetDisplayNames(locale, com.ToComparer(), matchID);
+            return GetDisplayNames(locale, com.AsComparer(), matchID);
         }
 
         /// <summary>

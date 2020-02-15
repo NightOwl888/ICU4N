@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ICU4N.Support.Globalization
 {
-    public static class CultureInfoExtensions
+    internal static class CultureInfoExtensions
     {
         public static string GetLanguage(this CultureInfo culture)
         {

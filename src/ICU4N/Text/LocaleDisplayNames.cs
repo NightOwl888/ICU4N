@@ -147,7 +147,7 @@ namespace ICU4N.Text
             private readonly bool useSelf;
 
             internal UiListItemComparer(CompareInfo collator, bool useSelf) // ICU4N specific overload, since CompareInfo doesn't implement IComparer<string>
-                : this(collator.ToComparer(), useSelf)
+                : this(collator.AsComparer(), useSelf)
             {
             }
 
