@@ -363,7 +363,7 @@ namespace ICU4N.Text
     // hold onto a reference of CultureInfo/ULocale
     // After doing so, we need to update the docs above. We should try to ensure that our MessageFormat
     // is actually thread safe, rather than going the original route.
-    public class MessageFormat : UFormat
+    internal class MessageFormat : UFormat // ICU4N: Marked internal until implementation is completed
     {
         // Incremented by 1 for ICU 4.8's new format.
         //internal static readonly long serialVersionUID = 7136212545847378652L;
@@ -3180,7 +3180,7 @@ namespace ICU4N.Text
     /// from <see cref="MessageFormat.FormatToCharacterIterator(object)"/>.
     /// </summary>
     /// <stable>ICU 3.8</stable>
-    public class MessageFormatField : FormatField
+    internal class MessageFormatField : FormatField // ICU4N: Marked internal until implementation is completed
     {
 
         //private static readonly long serialVersionUID = 7510380454602616157L;

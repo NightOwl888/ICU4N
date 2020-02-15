@@ -13,7 +13,7 @@ namespace ICU4N.Text
     /// <author>markdavis</author>
     /// <internal/>
     [Obsolete("This API is ICU internal only.")]
-    public sealed class PluralRanges : IFreezable<PluralRanges>, IComparable<PluralRanges>
+    internal sealed class PluralRanges : IFreezable<PluralRanges>, IComparable<PluralRanges> // ICU4N: Marked internal since it is obsolete anyway
     {
         private volatile bool isFrozen;
         private Matrix matrix = new Matrix();

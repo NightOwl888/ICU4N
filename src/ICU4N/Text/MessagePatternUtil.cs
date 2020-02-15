@@ -20,7 +20,7 @@ namespace ICU4N.Text
     /// </summary>
     /// <stable>ICU 49</stable>
     /// <author>Markus Scherer</author>
-    public static class MessagePatternUtil
+    internal static class MessagePatternUtil // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// Factory method, builds and returns a <see cref="MessageNode"/> from a <see cref="MessageFormat"/> pattern string.
@@ -235,7 +235,7 @@ namespace ICU4N.Text
     /// This class and all subclasses are immutable and thread-safe.
     /// </summary>
     /// <stable>ICU 49</stable>
-    public class MessagePatternNode
+    public class MessagePatternNode // ICU4N: Marked internal until implementation is completed
     {
         internal MessagePatternNode() { }
     }
@@ -244,7 +244,7 @@ namespace ICU4N.Text
     /// A Node representing a parsed <see cref="MessageFormat"/> pattern string.
     /// </summary>
     /// <stable>ICU 49</stable>
-    public class MessageNode : MessagePatternNode
+    internal class MessageNode : MessagePatternNode // ICU4N: Marked internal until implementation is completed
     {
         /// <returns>The list of MessageContentsNode nodes that this message contains.</returns>
         /// <stable>ICU 49</stable>
@@ -291,7 +291,7 @@ namespace ICU4N.Text
     /// Use <see cref="Type"/> to determine the type and the actual <see cref="MessagePatternNode"/> subclass.
     /// </summary>
     /// <stable>ICU 49</stable>
-    public class MessageContentsNode : MessagePatternNode
+    internal class MessageContentsNode : MessagePatternNode // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// The type of a piece of <see cref="MessageNode"/> contents.
@@ -355,7 +355,7 @@ namespace ICU4N.Text
     /// Literal text, a piece of MessageNode contents.
     /// </summary>
     /// <stable>ICU 49</stable>
-    public class TextNode : MessageContentsNode
+    internal class TextNode : MessageContentsNode // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// Gets or sets the literal text at this point in the message
@@ -386,7 +386,7 @@ namespace ICU4N.Text
     /// A piece of <see cref="MessageNode"/> contents representing a message argument and its details.
     /// </summary>
     /// <stable>ICU 49</stable>
-    public class ArgNode : MessageContentsNode
+    internal class ArgNode : MessageContentsNode // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// Gets or Sets the argument type.
@@ -496,7 +496,7 @@ namespace ICU4N.Text
     /// (Which is a choice/plural/select argument which selects among nested messages.)
     /// </summary>
     /// <stable>ICU 49</stable>
-    public class ComplexArgStyleNode : MessagePatternNode
+    internal class ComplexArgStyleNode : MessagePatternNode // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// Gets or sets the argument type (same as <see cref="ArgType"/>getArgType() on the parent <see cref="ArgNode"/>)
@@ -623,7 +623,7 @@ namespace ICU4N.Text
     /// with its selection criterium.
     /// </summary>
     /// <stable>ICU 49</stable>
-    public class VariantNode : MessagePatternNode
+    internal class VariantNode : MessagePatternNode // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// Gets the selector string.

@@ -12,7 +12,7 @@ namespace ICU4N.Impl
     /// <summary>
     /// Loader for plural rules data.
     /// </summary>
-    public class PluralRulesLoader
+    internal class PluralRulesLoader // ICU4N: Marked internal until implementation is completed
 #pragma warning disable 612, 618
         : PluralRulesFactory
 #pragma warning restore 612, 618

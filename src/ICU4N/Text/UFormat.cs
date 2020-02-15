@@ -13,7 +13,7 @@ namespace ICU4N.Text
     /// <author>weiv</author>
     /// <author>Alan Liu</author>
     /// <stable>ICU 2.8</stable>
-    public abstract class UFormat : Formatter // ICU4N TODO: API - Add IFormatProvider, ICustomFormatter. See: https://stackoverflow.com/a/35577288
+    internal abstract class UFormat : Formatter // ICU4N: Marked internal until formatters are refactored // ICU4N TODO: API - Add IFormatProvider, ICustomFormatter. See: https://stackoverflow.com/a/35577288
     {
         // jdk1.4.2 serialver
         //private static readonly long serialVersionUID = -4964390515840164416L;

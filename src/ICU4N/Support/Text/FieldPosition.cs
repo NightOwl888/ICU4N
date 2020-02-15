@@ -16,7 +16,7 @@ namespace ICU4N.Support.Text
     /// various format classes (for example <c>NumberFormat.IntegerField</c>) or
     /// one of the fields of type
     /// </remarks>
-    public class FieldPosition
+    internal class FieldPosition
     {
         private int myField, beginIndex, endIndex;
 

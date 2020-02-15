@@ -19,7 +19,7 @@ namespace ICU4N.Text
     /// </summary>
     /// <internal/>
     [Obsolete("This API is ICU internal only.")]
-    public abstract class PluralRulesFactory
+    internal abstract class PluralRulesFactory // ICU4N: Marked internal, since it is obsolete anyway
     {
         /// <summary>
         /// Sole constructor
@@ -228,11 +228,11 @@ namespace ICU4N.Text
         // TODO Remove RulesList by moving its API and fields into PluralRules.
         /// <internal/>
         [Obsolete("This API is ICU internal only")]
-        public const string CategorySeparator = ";  ";
+        internal const string CategorySeparator = ";  "; // ICU4N: Marked internal since it is obsolete anyway
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public const string KeywordRuleSeparator = ": ";
+        internal const string KeywordRuleSeparator = ": "; // ICU4N: Marked internal since it is obsolete anyway
 
         //private static readonly long serialVersionUID = 1;
 
@@ -370,7 +370,7 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public enum Operand
+        internal enum Operand // ICU4N: Marked internal since it is obsolete anyway
         {
             /// <summary>
             /// The double value of the entire number.
@@ -926,7 +926,7 @@ namespace ICU4N.Text
         {
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public readonly PluralRulesSampleType sampleType;
+            internal readonly PluralRulesSampleType sampleType; // ICU4N: Marked internal since it is obsolete anyway
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
@@ -934,7 +934,7 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public readonly bool bounded;
+            internal readonly bool bounded; // ICU4N: Marked internal since it is obsolete anyway
 
             /// <summary>
             /// The samples must be immutable.
@@ -1025,7 +1025,7 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual ISet<double> AddSamples(ISet<double> result)
+            internal virtual ISet<double> AddSamples(ISet<double> result) // ICU4N: Marked internal since it is obsolete anyway
             {
                 foreach (FixedDecimalRange item in samples)
                 {
@@ -1070,14 +1070,14 @@ namespace ICU4N.Text
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual ICollection<FixedDecimalRange> Samples
+            internal virtual ICollection<FixedDecimalRange> Samples // ICU4N: Marked internal since it is obsolete anyway
             {
                 get { return samples; }
             }
 
             /// <internal/>
             [Obsolete("This API is ICU internal only.")]
-            public virtual void GetStartEndSamples(ICollection<FixedDecimal> target)
+            internal virtual void GetStartEndSamples(ICollection<FixedDecimal> target) // ICU4N: Marked internal since it is obsolete anyway
             {
                 foreach (FixedDecimalRange item in samples)
                 {
@@ -2186,7 +2186,7 @@ namespace ICU4N.Text
         /// <returns>The keyword of the selected rule.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual string Select(double number, int countVisibleFractionDigits, long fractionaldigits)
+        internal virtual string Select(double number, int countVisibleFractionDigits, long fractionaldigits) // ICU4N: Marked internal since it is obsolete anyway
         {
             return rules.Select(new FixedDecimal(number, countVisibleFractionDigits, fractionaldigits));
         }
@@ -2238,7 +2238,7 @@ namespace ICU4N.Text
             ICollection<double> values = GetAllKeywordValues(keyword);
             if (values != null && values.Count == 1)
             {
-                return values.First(); //values.iterator().next();
+                return values.First();
             }
             return NoUniqueValue;
         }
@@ -2269,13 +2269,13 @@ namespace ICU4N.Text
         /// is immutable. It will be empty if the <paramref name="keyword"/> is not defined.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual ICollection<double> GetAllKeywordValues(string keyword, PluralRulesSampleType type)
+        internal virtual ICollection<double> GetAllKeywordValues(string keyword, PluralRulesSampleType type) // ICU4N: Marked internal since it is obsolete anyway
         {
             if (!IsLimited(keyword, type))
             {
                 return null;
             }
-            ICollection<Double> samples = GetSamples(keyword, type);
+            ICollection<double> samples = GetSamples(keyword, type);
             return samples == null ? null : samples.AsReadOnly();
         }
 
@@ -2314,7 +2314,7 @@ namespace ICU4N.Text
         /// <returns>A list of values matching the <paramref name="keyword"/>.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual ICollection<double> GetSamples(string keyword, PluralRulesSampleType sampleType)
+        internal virtual ICollection<double> GetSamples(string keyword, PluralRulesSampleType sampleType) // ICU4N: Marked internal since it is obsolete anyway
         {
             if (!keywords.Contains(keyword))
             {
@@ -2360,7 +2360,7 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual bool AddSample(string keyword, /*Number*/ object sample, int maxCount, ICollection<double> result) // ICU4N: sample will always be a number
+        internal virtual bool AddSample(string keyword, /*Number*/ object sample, int maxCount, ICollection<double> result) // ICU4N: Marked internal since it is obsolete anyway // ICU4N: sample will always be a number
         {
             string selectedKeyword = sample is FixedDecimal ? Select((FixedDecimal)sample) : Select((double)sample);
             if (selectedKeyword.Equals(keyword))
@@ -2492,8 +2492,8 @@ namespace ICU4N.Text
         /// <returns>The <see cref="PluralRulesKeywordStatus"/>.</returns>
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual PluralRulesKeywordStatus GetKeywordStatus(string keyword, int offset, ICollection<double> explicits,
-                ref double? uniqueValue, PluralRulesSampleType sampleType) // ICU4N TODO: API Try to cleanup ref param
+        internal virtual PluralRulesKeywordStatus GetKeywordStatus(string keyword, int offset, ICollection<double> explicits,
+                ref double? uniqueValue, PluralRulesSampleType sampleType)  // ICU4N: Marked internal since it is obsolete anyway
         {
             //if (uniqueValue != null)
             //{
@@ -2584,28 +2584,28 @@ namespace ICU4N.Text
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual int CompareTo(PluralRules other)
+        internal virtual int CompareTo(PluralRules other) // ICU4N: Marked internal since it is obsolete anyway
         {
             return ToString().CompareToOrdinal(other.ToString());
         }
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual bool IsLimited(string keyword)
+        internal virtual bool IsLimited(string keyword) // ICU4N: Marked internal since it is obsolete anyway
         {
             return rules.IsLimited(keyword, PluralRulesSampleType.Integer);
         }
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual bool IsLimited(string keyword, PluralRulesSampleType sampleType)
+        internal virtual bool IsLimited(string keyword, PluralRulesSampleType sampleType) // ICU4N: Marked internal since it is obsolete anyway
         {
             return rules.IsLimited(keyword, sampleType);
         }
 
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]
-        public virtual bool ComputeLimited(string keyword, PluralRulesSampleType sampleType)
+        internal virtual bool ComputeLimited(string keyword, PluralRulesSampleType sampleType) // ICU4N: Marked internal since it is obsolete anyway
         {
             return rules.ComputeLimited(keyword, sampleType);
         }
@@ -2635,7 +2635,7 @@ namespace ICU4N.Text
     /// </summary>
     /// <internal/>
     [Obsolete("This API is ICU internal only.")]
-    public enum PluralRulesSampleType
+    internal enum PluralRulesSampleType // ICU4N: Marked internal since it is obsolete anyway
     {
         /// <internal/>
         [Obsolete("This API is ICU internal only.")]

@@ -12,7 +12,7 @@ namespace ICU4N.Support.Text
     /// methods to be named Format and there was a collision.
     /// </summary>
     // ICU4N TODO: API - Add IFormatProvider, ICustomFormatter. See: https://stackoverflow.com/a/35577288
-    public abstract class Formatter
+    internal abstract class Formatter
 #if FEATURE_CLONEABLE
         : ICloneable
 #endif
@@ -266,7 +266,7 @@ namespace ICU4N.Support.Text
     /// <see cref="Formatter.FormatToCharacterIterator(object)"/> method returns
     /// in subclasses.
     /// </summary>
-    public class FormatField : AttributedCharacterIteratorAttribute
+    internal class FormatField : AttributedCharacterIteratorAttribute
     {
 
         private static readonly long serialVersionUID = 276966692217360283L;

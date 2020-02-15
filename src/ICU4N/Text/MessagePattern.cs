@@ -48,7 +48,7 @@ namespace ICU4N.Text
     /// </list>
     /// </remarks>
     /// <stable>ICU 4.8</stable>
-    public enum ApostropheMode
+    internal enum ApostropheMode // ICU4N: Marked internal until implementation of formatters are completed
     {
         /// <summary>
         /// A literal apostrophe is represented by
@@ -83,7 +83,7 @@ namespace ICU4N.Text
     /// with a nesting level one greater than the surrounding message.
     /// </summary>
     /// <stable>ICU 4.8</stable>
-    public enum MessagePatternArgType
+    internal enum MessagePatternArgType // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// The argument has no specified type.
@@ -135,7 +135,7 @@ namespace ICU4N.Text
     /// Part type constants.
     /// </summary>
     /// <stable>ICU 4.8</stable>
-    public enum MessagePatternPartType // ICU4N specific - renamed from MessagePattern.Part.Type
+    internal enum MessagePatternPartType // ICU4N: Marked internal until implementation is completed // ICU4N specific - renamed from MessagePattern.Part.Type
     {
         /// <summary>
         /// Start of a message pattern (main or nested).
@@ -261,7 +261,7 @@ namespace ICU4N.Text
     /// <summary>
     /// Extension methods for <see cref="MessagePatternArgType"/> and <see cref="MessagePatternPartType"/>.
     /// </summary>
-    public static class MessagePatternEnumExtensions
+    internal static class MessagePatternEnumExtensions // ICU4N: Marked internal until implementation is completed
     {
         /// <summary>
         /// 
@@ -295,7 +295,7 @@ namespace ICU4N.Text
     /// and for syntax elements of "complex" arguments.
     /// </summary>
     /// <stable>ICU 4.8</stable>
-    public sealed class MessagePatternPart // ICU4N renamed from MessagePattern.Part
+    internal sealed class MessagePatternPart // ICU4N: Marked internal until implementation is completed // ICU4N renamed from MessagePattern.Part
 #if FEATURE_CLONEABLE
         : ICloneable
 #endif
@@ -521,7 +521,7 @@ namespace ICU4N.Text
     /// </remarks>
     /// <stable>ICU 4.8</stable>
     /// <author>Markus Scherer</author>
-    public sealed class MessagePattern : IFreezable<MessagePattern>
+    internal sealed class MessagePattern : IFreezable<MessagePattern> // ICU4N: Marked internal until implementation of formatters are completed
 #if FEATURE_CLONEABLE
         , ICloneable
 #endif
@@ -773,7 +773,7 @@ namespace ICU4N.Text
         /// the string is a valid "pattern identifier" but not a number.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public static readonly int ArgNameNotNumber = -1;
+        public const int ArgNameNotNumber = -1;
 
         /// <summary>
         /// Return value from <see cref="ValidateArgumentName(string)"/> for when
@@ -782,7 +782,7 @@ namespace ICU4N.Text
         /// or it have only ASCII digits but there is a leading zero or the number is too large.
         /// </summary>
         /// <stable>ICU 4.8</stable>
-        public static readonly int ArgNameNotValid = -2;
+        public const int ArgNameNotValid = -2;
 
         /// <summary>
         /// Returns a version of the parsed pattern string where each ASCII apostrophe
@@ -929,7 +929,7 @@ namespace ICU4N.Text
         /// </summary>
         /// <seealso cref="GetNumericValue(MessagePatternPart)"/>
         /// <stable>ICU 4.8</stable>
-        public static readonly double NoNumericValue = -123456789;
+        public const double NoNumericValue = -123456789;
 
         /// <summary>
         /// Returns the "offset:" value of a <see cref="PluralFormat"/> argument, or 0 if none is specified.

@@ -13,7 +13,7 @@ namespace ICU4N.Support.Text
 {
     // from Apache Harmony
 
-    public class ChoiceFormat : Formatter
+    internal class ChoiceFormat : Formatter
     {
         //private static readonly long serialVersionUID = 1795184449645032964L;
 

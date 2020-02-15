@@ -127,7 +127,7 @@ namespace ICU4N.Text
     /// </remarks>
     /// <author>tschumann (Tim Schumann)</author>
     /// <stable>ICU 3.8</stable>
-    public class PluralFormat : UFormat
+    internal class PluralFormat : UFormat // ICU4N: Marked internal until implementation is completed
     {
         //private static readonly long serialVersionUID = 1L;
 
