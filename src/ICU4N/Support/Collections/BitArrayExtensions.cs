@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Support.Collections
 {
@@ -9,7 +7,7 @@ namespace ICU4N.Support.Collections
     /// This class provides supporting methods of java.util.BitSet
     /// that are not present in System.Collections.BitArray.
     /// </summary>
-    public static class BitArrayExtensions
+    internal static class BitArrayExtensions
     {
         /// <summary>
         /// Returns the value of the bit with the specified index. The value

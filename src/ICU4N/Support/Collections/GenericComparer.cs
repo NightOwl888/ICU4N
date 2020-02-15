@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace ICU4N.Support.Collections
 {
-    public static class GenericComparer
+    internal static class GenericComparer
     {
         /// <summary>
         /// Get the natural <see cref="IComparer{T}"/> for the provided object class.

@@ -2,7 +2,7 @@
 
 namespace ICU4N.Support.Collections
 {
-    public static class DictionaryExtensions
+    internal static class DictionaryExtensions
     {
         public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
         {

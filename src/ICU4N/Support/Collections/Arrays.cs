@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-
-namespace ICU4N.Support.Collections
+﻿namespace ICU4N.Support.Collections
 {
     internal static class Arrays
     {

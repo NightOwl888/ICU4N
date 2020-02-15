@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace ICU4N.Support.Collections
 {
-    public static class ListExtensions
+    internal static class ListExtensions
     {
         /// <summary>
         /// Copies a range of elements from an <see cref="IList{T}"/> starting at the specified source index and pastes them to another <see cref="IList{T}"/> starting at the specified 
