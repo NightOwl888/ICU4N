@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ICU4N.Support
 {
-    public static class IntegerExtensions
+    internal static class IntegerExtensions
     {
         /// <summary>
         /// Converts an <see cref="int"/> into an <see cref="Enum"/> of type <typeparamref name="T"/>.

@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace ICU4N.Support
 {
-    public class AnonymousComparer<T> : IComparer<T>
+    internal class AnonymousComparer<T> : IComparer<T>
     {
         private readonly Func<T, T, int> compare;
 
         public AnonymousComparer(Func<T, T, int> compare)
         {
-            if (compare == null)
-                throw new ArgumentNullException(nameof(compare));
-            this.compare = compare;
+            this.compare = compare ?? throw new ArgumentNullException(nameof(compare));
         }
 
         public int Compare(T x, T y)

@@ -1,5 +1,4 @@
-﻿using J2N;
-using System;
+﻿using System;
 using System.Globalization;
 
 namespace ICU4N.Support
@@ -7,14 +6,14 @@ namespace ICU4N.Support
     /// <summary>
     /// A simple class for number conversions.
     /// </summary>
-    public static class Number
+    internal static class Number
     {
         /// <summary>
         /// Converts a number to System.String.
         /// </summary>
         /// <param name="d"></param>
         /// <returns></returns>
-        public static System.String ToString(double d)
+        public static string ToString(double d)
         {
             if ((double)(int)d == d)
             {
